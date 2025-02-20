@@ -35,8 +35,8 @@ final tabsProvider =
     final appSettings = await space.appSettings();
 
     if (appSettings.news().active()) {
-      final newsList = await ref.watch(newsListProvider(spaceId).future);
-      if (newsList.isNotEmpty) {
+      final updateList = await ref.watch(updateListProvider(spaceId).future);
+      if (updateList.isNotEmpty) {
         tabs.add(TabEntry.news);
       }
     }

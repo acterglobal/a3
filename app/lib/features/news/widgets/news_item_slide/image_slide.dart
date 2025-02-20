@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_media_error_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::image_slide');
 
 class ImageSlide extends StatefulWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
   final NewsMediaErrorState errorState;  // Add the enum as a parameter
 
   const ImageSlide({
@@ -28,7 +29,7 @@ class _ImageSlideState extends State<ImageSlide> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: NewsUpdateKeys.imageUpdateContent,
+      key: UpdateKeys.imageUpdateContent,
       child: renderImageContent(),
     );
   }

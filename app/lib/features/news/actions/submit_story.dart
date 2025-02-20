@@ -16,9 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::updates::submit_news');
+final _log = Logger('a3::updates::submit_story');
 
-Future<void> sendNews(BuildContext context, WidgetRef ref) async {
+Future<void> sendStory(BuildContext context, WidgetRef ref) async {
   // Hide Keyboard
   SystemChannels.textInput.invokeMethod('TextInput.hide');
 
@@ -38,7 +38,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   // Show loading message
   EasyLoading.show(status: lang.slidePosting);
   final space = await ref.read(spaceProvider(spaceId).future);
-  NewsEntryDraft draft = space.newsDraft();
+  StoryDraft draft = space.storyDraft();
   int slideIdx = 0;
   for (final slidePost in newsSlideList) {
     // for users
@@ -46,9 +46,9 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
     // If slide type is text
     try {
       final slide = await switch (slidePost.type) {
-        UpdateSlideType.text => makeTextSlideForNews(ref, slidePost, lang),
-        UpdateSlideType.image => makeImageSlideForNews(ref, slidePost, lang),
-        UpdateSlideType.video => makeVideoSlideForNews(ref, slidePost, lang),
+        UpdateSlideType.text => makeTextSlideForStory(ref, slidePost, lang),
+        UpdateSlideType.image => makeImageSlideForStory(ref, slidePost, lang),
+        UpdateSlideType.video => makeVideoSlideForStory(ref, slidePost, lang),
       };
       await draft.addSlide(slide);
     } catch (err, s) {

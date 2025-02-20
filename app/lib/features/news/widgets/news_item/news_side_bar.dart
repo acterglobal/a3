@@ -1,6 +1,7 @@
 import 'package:acter/common/actions/redact_content.dart';
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
@@ -10,6 +11,7 @@ import 'package:acter/features/comments/providers/comments_providers.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/notifications/types.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
@@ -17,8 +19,8 @@ import 'package:acter/features/read_receipts/widgets/read_counter.dart';
 import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show NewsEntry;
 import 'package:atlas_icons/atlas_icons.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,131 +30,150 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::sidebar');
 
 class NewsSideBar extends ConsumerWidget {
-  final NewsEntry news;
+  final UpdateEntry updateEntry;
 
   const NewsSideBar({
     super.key,
-    required this.news,
+    required this.updateEntry,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final objectId = news.eventId().toString();
-    final roomId = news.roomId().toString();
+    final objectId = updateEntry.eventId().toString();
+    final roomId = updateEntry.roomId().toString();
     final userId = ref.watch(myUserIdStrProvider);
-    final isLikedByMe = ref.watch(likedByMeProvider(news));
-    final likesCount = ref.watch(totalLikesForNewsProvider(news));
+    final isLikedByMe = ref.watch(likedByMeProvider(updateEntry));
+    final likesCount = ref.watch(totalLikesForNewsProvider(updateEntry));
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
     final commentCount = ref
             .watch(
-              newsCommentsCountProvider(
-                news.asCommentsManagerProvider(),
+              updateCommentsCountProvider(
+                updateEntry.asCommentsManagerProvider(),
               ),
             )
             .valueOrNull ??
         0;
     final bodyLarge = Theme.of(context).textTheme.bodyLarge;
 
-    return Align(
-      alignment: Alignment.bottomRight,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          const Spacer(),
-          ReadCounterWidget(
-            manager: news.readReceipts(),
-            triggerAfterSecs: 3,
-          ),
-          const SizedBox(height: 5),
-          LikeButton(
-            isLiked: isLikedByMe.valueOrNull ?? false,
-            likeCount: likesCount.valueOrNull ?? 0,
-            style: bodyLarge?.copyWith(fontSize: 13),
-            color: Theme.of(context).colorScheme.textColor,
-            onTap: () async {
-              final manager =
-                  await ref.read(newsReactionsProvider(news).future);
-              final status = manager.likedByMe();
-              _log.info('my like status: $status');
-              if (!status) {
-                await manager.sendLike();
-              } else {
-                await manager.redactLike(null, null);
-              }
-            },
-          ),
-          const SizedBox(height: 10),
-          IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment.bottomRight,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            const Spacer(),
+            ReadCounterWidget(
+              manager: updateEntry.readReceipts(),
+              triggerAfterSecs: 3,
+            ),
+            const SizedBox(height: 5),
+            LikeButton(
+              isLiked: isLikedByMe.valueOrNull ?? false,
+              likeCount: likesCount.valueOrNull ?? 0,
+              style: bodyLarge?.copyWith(fontSize: 13),
+              color: Theme.of(context).colorScheme.textColor,
+              onTap: () async {
+                final manager =
+                    await ref.read(updateReactionsProvider(updateEntry).future);
+                final status = manager.likedByMe();
+                _log.info('my like status: $status');
+                if (!status) {
+                  await manager.sendLike();
+                } else {
+                  await manager.redactLike(null, null);
+                }
+              },
+            ),
+            const SizedBox(height: 10),
+            IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  showDragHandle: true,
+                  useSafeArea: true,
+                  builder: (context) => CommentsSectionWidget(
+                    managerProvider: updateEntry.asCommentsManagerProvider(),
+                    shrinkWrap: false,
+                    centerTitle: true,
+                    useCompactEmptyState: false,
+                    autoSubscribeSection: SubscriptionSubType
+                        .comments, // we want to be using the comments only on boosts
+                    actions: [
+                      ObjectNotificationStatus(
+                        objectId: objectId,
+                        subType: SubscriptionSubType.comments,
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: Column(
+                children: [
+                  ShadowEffectWidget(
+                    child: Icon(Atlas.comment_blank),
+                  ),
+                  const SizedBox(height: 4),
+                  ShadowEffectWidget(
+                    child: Text(commentCount.toString(), style: style),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            InkWell(
+              key: UpdateKeys.newsSidebarActionBottomSheet,
+              onTap: () => showModalBottomSheet(
                 showDragHandle: true,
                 useSafeArea: true,
-                builder: (context) => CommentsSectionWidget(
-                  managerProvider: news.asCommentsManagerProvider(),
-                  shrinkWrap: false,
-                  centerTitle: true,
-                  useCompactEmptyState: false,
-                  autoSubscribeSection: SubscriptionSubType
-                      .comments, // we want to be using the comments only on boosts
-                  actions: [
-                    ObjectNotificationStatus(
-                      objectId: objectId,
-                      subType: SubscriptionSubType.comments,
+                context: context,
+                isScrollControlled: true,
+                isDismissible: true,
+                constraints: BoxConstraints(maxHeight: 300),
+                builder: (context) => ActionBox(
+                  news: updateEntry,
+                  userId: userId,
+                  roomId: roomId,
+                ),
+              ),
+              child: _SideBarItem(
+                icon:
+                    ShadowEffectWidget(child: Icon(Atlas.dots_horizontal_thin)),
+                label: '',
+                style: bodyLarge?.copyWith(fontSize: 13),
+              ),
+            ),
+            const SizedBox(height: 10),
+            isStory(updateEntry)
+                ? buildUserAvatar(context, ref)
+                : ActerAvatar(
+                    options: AvatarOptions(
+                      AvatarInfo(
+                        uniqueId: roomId,
+                        displayName: space.avatarInfo.displayName,
+                        avatar: space.avatarInfo.avatar,
+                        onAvatarTap: () => goToSpace(context, roomId),
+                      ),
+                      size: 42,
                     ),
-                  ],
-                ),
-              );
-            },
-            icon: Column(
-              children: [
-                ShadowEffectWidget(
-                  child: Icon(Atlas.comment_blank),
-                ),
-                const SizedBox(height: 4),
-                ShadowEffectWidget(
-                  child: Text(commentCount.toString(), style: style),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          InkWell(
-            key: NewsUpdateKeys.newsSidebarActionBottomSheet,
-            onTap: () => showModalBottomSheet(
-              showDragHandle: true,
-              useSafeArea: true,
-              context: context,
-              isScrollControlled: true,
-              isDismissible: true,
-              constraints: BoxConstraints(maxHeight: 300),
-              builder: (context) => ActionBox(
-                news: news,
-                userId: userId,
-                roomId: roomId,
-              ),
-            ),
-            child: _SideBarItem(
-              icon: ShadowEffectWidget(child: Icon(Atlas.dots_horizontal_thin)),
-              label: '',
-              style: bodyLarge?.copyWith(fontSize: 13),
-            ),
-          ),
-          const SizedBox(height: 10),
-          ActerAvatar(
-            options: AvatarOptions(
-              AvatarInfo(
-                uniqueId: roomId,
-                displayName: space.avatarInfo.displayName,
-                avatar: space.avatarInfo.avatar,
-                onAvatarTap: () => goToSpace(context, roomId),
-              ),
-              size: 42,
-            ),
-          ),
-          const SizedBox(height: 15),
-        ],
+                  ),
+            const SizedBox(height: 15),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildUserAvatar(BuildContext context, WidgetRef ref) {
+    final roomId = updateEntry.roomId().toString();
+    final userId = updateEntry.sender().toString();
+    final memberInfo =
+        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+    return ActerAvatar(
+      options: AvatarOptions.DM(
+        memberInfo,
+        size: 24,
       ),
     );
   }
@@ -186,7 +207,7 @@ class _SideBarItem extends StatelessWidget {
 
 class ActionBox extends ConsumerWidget {
   final String userId;
-  final NewsEntry news;
+  final UpdateEntry news;
   final String roomId;
 
   const ActionBox({
@@ -248,7 +269,7 @@ class ActionBox extends ConsumerWidget {
                     horizontal: 5,
                   ),
                   child: TextButton.icon(
-                    key: NewsUpdateKeys.newsSidebarActionRemoveBtn,
+                    key: UpdateKeys.newsSidebarActionRemoveBtn,
                     onPressed: () => openRedactContentDialog(
                       context,
                       title: lang.removeThisPost,
@@ -266,7 +287,7 @@ class ActionBox extends ConsumerWidget {
                       },
                       roomId: roomId,
                       isSpace: true,
-                      removeBtnKey: NewsUpdateKeys.removeButton,
+                      removeBtnKey: UpdateKeys.removeButton,
                     ),
                     icon: const Icon(Atlas.trash_thin),
                     label: Text(lang.remove),
@@ -279,7 +300,7 @@ class ActionBox extends ConsumerWidget {
                     horizontal: 5,
                   ),
                   child: TextButton.icon(
-                    key: NewsUpdateKeys.newsSidebarActionReportBtn,
+                    key: UpdateKeys.newsSidebarActionReportBtn,
                     onPressed: () => openReportContentDialog(
                       context,
                       title: lang.reportThisPost,

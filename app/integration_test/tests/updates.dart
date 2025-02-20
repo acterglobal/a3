@@ -2,7 +2,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
+import 'package:acter/features/news/pages/add_news/add_news_page.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/search/model/keys.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
@@ -33,8 +33,7 @@ extension ActerNews on ConvenientTest {
   }
 
   Future<void> toggleBackgroundColor() async {
-    final slideBackgroundColorKey =
-        find.byKey(NewsUpdateKeys.slideBackgroundColor);
+    final slideBackgroundColorKey = find.byKey(UpdateKeys.slideBackgroundColor);
     await slideBackgroundColorKey.should(findsOneWidget);
     await slideBackgroundColorKey.tap();
 
@@ -42,7 +41,7 @@ extension ActerNews on ConvenientTest {
   }
 
   Future<EditorState> addTextSlide(String text) async {
-    final addTextSlideKey = find.byKey(NewsUpdateKeys.addTextSlide);
+    final addTextSlideKey = find.byKey(UpdateKeys.addTextSlide);
     await addTextSlideKey.should(findsOneWidget);
     await addTextSlideKey.tap();
     final editorState = await _getNewsTextEditorState();
@@ -54,16 +53,16 @@ extension ActerNews on ConvenientTest {
 
   Future<void> submitNews(String? spaceId) async {
     if (spaceId != null) {
-      await selectSpace(spaceId, NewsUpdateKeys.selectSpace);
+      await selectSpace(spaceId, UpdateKeys.selectSpace);
     }
 
-    final submit = find.byKey(NewsUpdateKeys.newsSubmitBtn);
+    final submit = find.byKey(UpdateKeys.newsSubmitBtn);
     await tester.ensureVisible(submit);
     await submit.tap();
   }
 
   Future<void> addImageSlide({String? filepath}) async {
-    final addImageSlideKey = find.byKey(NewsUpdateKeys.addImageSlide);
+    final addImageSlideKey = find.byKey(UpdateKeys.addImageSlide);
     await addImageSlideKey.should(findsOneWidget);
 
     // Adding Image Slide Object into Slide List
@@ -72,15 +71,15 @@ extension ActerNews on ConvenientTest {
     final imageFile = await convertAssetImageToXFile(
       filepath ?? 'assets/images/update_onboard.png',
     );
-    final slide = NewsSlideItem(
-      type: NewsSlideType.image,
+    final slide = UpdateSlideItem(
+      type: UpdateSlideType.image,
       mediaFile: imageFile,
     );
     ref.read(newsStateProvider.notifier).addSlide(slide);
   }
 
   Future<void> addVideoSlide({String? filepath}) async {
-    final addVideoSlideKey = find.byKey(NewsUpdateKeys.addVideoSlide);
+    final addVideoSlideKey = find.byKey(UpdateKeys.addVideoSlide);
     await addVideoSlideKey.should(findsOneWidget);
 
     // Adding Video Slide Object into Slide List
@@ -88,8 +87,8 @@ extension ActerNews on ConvenientTest {
     final ref = ProviderScope.containerOf(context);
     final videoFile =
         await convertAssetImageToXFile(filepath ?? 'assets/videos/video.mp4');
-    final slide = NewsSlideItem(
-      type: NewsSlideType.video,
+    final slide = UpdateSlideItem(
+      type: UpdateSlideType.video,
       mediaFile: videoFile,
     );
     ref.read(newsStateProvider.notifier).addSlide(slide);
@@ -97,14 +96,14 @@ extension ActerNews on ConvenientTest {
 
   Future<void> openAddSlide() async {
     // Open bottom sheet for adding more slide
-    final addMoreNewsKey = find.byKey(NewsUpdateKeys.addNewsSlide);
+    final addMoreNewsKey = find.byKey(UpdateKeys.addNewsUpdate);
     await addMoreNewsKey.should(findsOneWidget);
     await addMoreNewsKey.tap();
   }
 
   Future<void> closeAddSlide() async {
     // Close bottom sheet
-    final cancelKey = find.byKey(NewsUpdateKeys.cancelButton);
+    final cancelKey = find.byKey(UpdateKeys.cancelButton);
     await cancelKey.should(findsOneWidget);
     await cancelKey.tap();
   }
@@ -121,7 +120,7 @@ void updateTests() {
     await t.submitNews(spaceId);
 
     // we expect to be thrown to the news screen and see our latest item first:
-    final textUpdateContent = find.byKey(NewsUpdateKeys.textUpdateContent);
+    final textUpdateContent = find.byKey(UpdateKeys.textUpdateContent);
     await textUpdateContent.should(findsOneWidget);
     await find.text(text).should(findsWidgets);
   });
@@ -156,7 +155,7 @@ void updateTests() {
     await t.submitNews(spaceId);
 
     // we expect to be thrown to the news screen and see our latest item first:
-    final textUpdateContent = find.byKey(NewsUpdateKeys.textUpdateContent);
+    final textUpdateContent = find.byKey(UpdateKeys.textUpdateContent);
     await textUpdateContent.should(findsOneWidget);
     await find.text(text).should(findsOneWidget);
     await find
@@ -174,7 +173,7 @@ void updateTests() {
     await t.submitNews(spaceId);
 
     // we expect to be thrown to the news screen and see our latest item first:
-    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    final imageUpdateContent = find.byKey(UpdateKeys.imageUpdateContent);
     await imageUpdateContent.should(findsOneWidget);
   });
 
@@ -187,7 +186,7 @@ void updateTests() {
     await t.submitNews(spaceId);
 
     // we expect to be thrown to the news screen and see our latest item first:
-    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    final imageUpdateContent = find.byKey(UpdateKeys.imageUpdateContent);
     await imageUpdateContent.should(findsOneWidget);
     await t.gotoSpace(spaceId);
     await t.navigateTo([
@@ -209,7 +208,7 @@ void updateTests() {
     await t.submitNews(spaceId);
 
     // we expect to be thrown to the news screen and see our latest item first:
-    final videoUpdateContent = find.byKey(NewsUpdateKeys.videoNewsContent);
+    final videoUpdateContent = find.byKey(UpdateKeys.videoNewsContent);
     await videoUpdateContent.should(findsOneWidget);
   });
 
@@ -233,7 +232,7 @@ void updateTests() {
 
     await t.submitNews(null); // no space selected, this will fail
     // so we select a space
-    await t.selectSpace(spaceId, NewsUpdateKeys.selectSpace);
+    await t.selectSpace(spaceId, UpdateKeys.selectSpace);
     await t.submitNews(null); // text is empty, so this will fail
 
     await t.trigger(
@@ -256,7 +255,7 @@ void updateTests() {
 
     // we expect to be thrown to the news screen and see our latest item first:
     // For Image
-    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    final imageUpdateContent = find.byKey(UpdateKeys.imageUpdateContent);
     await imageUpdateContent.should(findsOneWidget);
   });
 
@@ -269,16 +268,16 @@ void updateTests() {
     await t.submitNews(spaceId);
 
     // we expect to be thrown to the news screen and see our latest item first:
-    final imageUpdateContent = find.byKey(NewsUpdateKeys.imageUpdateContent);
+    final imageUpdateContent = find.byKey(UpdateKeys.imageUpdateContent);
     await imageUpdateContent.should(findsOneWidget);
 
     // open news sidebar bottom sheet for action buttons
-    await t.trigger(NewsUpdateKeys.newsSidebarActionBottomSheet);
+    await t.trigger(UpdateKeys.newsSidebarActionBottomSheet);
 
     // click on remove button for show confirm dialog
-    await t.trigger(NewsUpdateKeys.newsSidebarActionRemoveBtn);
+    await t.trigger(UpdateKeys.newsSidebarActionRemoveBtn);
 
     // click on remove button
-    await t.trigger(NewsUpdateKeys.removeButton);
+    await t.trigger(UpdateKeys.removeButton);
   });
 }

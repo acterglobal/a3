@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
-import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 const addNewsKey = Key('add-news');
 
@@ -39,7 +40,7 @@ class AddNewsPage extends ConsumerStatefulWidget {
 
 class AddNewsState extends ConsumerState<AddNewsPage> {
   EditorState textEditorState = EditorState.blank();
-  NewsSlideItem? selectedNewsPost;
+  UpdateSlideItem? selectedNewsPost;
 
   @override
   void initState() {
@@ -51,9 +52,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     });
     ref.listenManual(newsStateProvider, fireImmediately: true,
         (prevState, nextState) async {
-      final nextSlide = nextState.currentNewsSlide;
-      final isText = nextSlide != null && nextSlide.type == NewsSlideType.text;
-      final changed = prevState?.currentNewsSlide != nextSlide;
+      final nextSlide = nextState.currentUpdateSlide;
+      final isText =
+          nextSlide != null && nextSlide.type == UpdateSlideType.text;
+      final changed = prevState?.currentUpdateSlide != nextSlide;
       if (isText && changed) {
         final document = ActerDocumentHelpers.parse(
           nextSlide.text ?? '',
@@ -87,7 +89,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           });
         }
       } else {
-        setState(() => selectedNewsPost = nextState.currentNewsSlide);
+        setState(() => selectedNewsPost = nextState.currentUpdateSlide);
       }
     });
   }
@@ -122,14 +124,14 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: <Widget>[
             OutlinedButton(
-              key: NewsUpdateKeys.cancelClose,
+              key: UpdateKeys.cancelClose,
               onPressed: () => Navigator.pop(context, false),
               child: Text(
                 L10n.of(context).no,
               ),
             ),
             ActerDangerActionButton(
-              key: NewsUpdateKeys.confirmDeleteDraft,
+              key: UpdateKeys.confirmDeleteDraft,
               onPressed: () async {
                 Navigator.pop(context, true);
               },
@@ -151,7 +153,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   AppBar appBarUI(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        key: NewsUpdateKeys.closeEditor,
+        key: UpdateKeys.closeEditor,
         onPressed: () async {
           // Hide Keyboard
           SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -178,7 +180,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                 label: Text(L10n.of(context).action),
               ),
               IconButton(
-                key: NewsUpdateKeys.slideBackgroundColor,
+                key: UpdateKeys.slideBackgroundColor,
                 onPressed: () {
                   final notifier = ref.read(newsStateProvider.notifier);
                   notifier.changeTextSlideBackgroundColor();
@@ -194,8 +196,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 90),
       child: FloatingActionButton(
-        key: NewsUpdateKeys.newsSubmitBtn,
-        onPressed: () => sendNews(context, ref),
+        key: UpdateKeys.newsSubmitBtn,
+        onPressed: () => context.pushNamed(
+          Routes.actionAddUpdatePostTo.name,
+          queryParameters: {
+            'spaceId': widget.initialSelectedSpace,
+          },
+        ),
         child: const Icon(Icons.send),
       ),
     );
@@ -259,7 +266,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         //News content UI
         Expanded(child: newsContentUI()),
         //Slide options
-        const NewsSlideOptions(),
+        const UpdateSlideOptions(),
       ],
     );
   }
@@ -286,9 +293,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
   Widget slidePostUI(BuildContext context) {
     return selectedNewsPost.map(
           (slide) => switch (slide.type) {
-            NewsSlideType.text => slideTextPostUI(context),
-            NewsSlideType.image => slideImagePostUI(context, slide),
-            NewsSlideType.video => slideVideoPostUI(context, slide),
+            UpdateSlideType.text => slideTextPostUI(context),
+            UpdateSlideType.image => slideImagePostUI(context, slide),
+            UpdateSlideType.video => slideVideoPostUI(context, slide),
           },
         ) ??
         emptySlidePostUI(context);
@@ -316,7 +323,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 40),
           OutlinedButton(
-            key: NewsUpdateKeys.addTextSlide,
+            key: UpdateKeys.addTextSlide,
             onPressed: () {
               NewsUtils.addTextSlide(
                 ref: ref,
@@ -327,7 +334,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            key: NewsUpdateKeys.addImageSlide,
+            key: UpdateKeys.addImageSlide,
             onPressed: () async => await NewsUtils.addImageSlide(
               ref: ref,
               refDetails: widget.refDetails,
@@ -336,7 +343,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            key: NewsUpdateKeys.addVideoSlide,
+            key: UpdateKeys.addVideoSlide,
             onPressed: () async => await NewsUtils.addVideoSlide(
               ref: ref,
               refDetails: widget.refDetails,
@@ -358,7 +365,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
         child: SingleChildScrollView(
           child: IntrinsicHeight(
             child: HtmlEditor(
-              key: NewsUpdateKeys.textSlideInputField,
+              key: UpdateKeys.textSlideInputField,
               editorState: textEditorState,
               editable: true,
               autoFocus: false,
@@ -375,7 +382,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     );
   }
 
-  Widget slideImagePostUI(BuildContext context, NewsSlideItem slide) {
+  Widget slideImagePostUI(BuildContext context, UpdateSlideItem slide) {
     final imageFile = slide.mediaFile;
     if (imageFile == null) throw 'media file of image slide not available';
     return Container(
@@ -388,7 +395,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
     );
   }
 
-  Widget slideVideoPostUI(BuildContext context, NewsSlideItem slide) {
+  Widget slideVideoPostUI(BuildContext context, UpdateSlideItem slide) {
     final videoFile = slide.mediaFile;
     if (videoFile == null) throw 'media file of video slide not available';
     return Container(

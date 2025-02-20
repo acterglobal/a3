@@ -1,12 +1,14 @@
+import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 
 import 'package:acter/common/toolkit/errors/util.dart';
-import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+
+import 'image_slide_widget_test.dart';
 
 class MockNewsSlide extends Mock implements NewsSlide {}
 
@@ -15,11 +17,11 @@ class MockFfiBufferUint8 extends Mock implements FfiBufferUint8 {}
 
 void main() {
   group('VideoSlide Widget Test', () {
-    late MockNewsSlide mockSlide;
+    late MockUpdateSlide mockSlide;
     late MockFfiBufferUint8 mockFfiBuffer;
 
     setUp(() {
-      mockSlide = MockNewsSlide();
+      mockSlide = MockUpdateSlide();
       mockFfiBuffer = MockFfiBufferUint8();
     });
 
