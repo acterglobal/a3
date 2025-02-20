@@ -28,7 +28,8 @@ final updateListProvider =
   entries.addAll(stories);
   entries.addAll(news);
 
-  // sort
+  entries.sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+
   return entries;
 });
 
