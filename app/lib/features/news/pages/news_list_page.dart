@@ -4,9 +4,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:acter/features/news/widgets/news_grid_view.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_filter_buttons.dart';
 import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -90,8 +92,16 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
           appBar: _buildAppBar(value),
           body: ValueListenableBuilder(
             valueListenable: stillLoadingForSelectedItem,
-            builder: (context, loading, child) =>
-                loading ? const NewsSkeletonWidget() : _buildBody(value),
+            builder: (context, loading, child) => loading
+                ? const NewsSkeletonWidget()
+                : Stack(
+                    children: [
+                      _buildBody(value),
+                      SafeArea(
+                        child: ShadowEffectWidget(child: NewsFilterButtons()),
+                      ),
+                    ],
+                  ),
           ),
         );
       },
@@ -190,7 +200,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         image: 'assets/images/empty_updates.svg',
         primaryButton: ActerPrimaryActionButton(
           onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-          child: Text(lang.addBoost),
+          child: Text(lang.add),
         ),
       ),
     );
