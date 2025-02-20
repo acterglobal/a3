@@ -1,13 +1,14 @@
-use acter_core::referencing::ExecuteReference;
+use acter_core::referencing::{ExecuteReference, RoomParam};
 use anyhow::Result;
 use futures::{
-    lock::Mutex,
+    future::join_all,
+    lock::{Mutex, MutexGuard},
     pin_mut,
     stream::{Stream, StreamExt},
 };
 use imbl::vector::Vector;
 use matrix_sdk_base::{
-    ruma::{api::client::sync::sync_events, assign, OwnedRoomId},
+    ruma::{api::client::sync::sync_events, assign, OwnedRoomId, RoomId},
     RoomState,
 };
 use matrix_sdk_ui::{
@@ -18,13 +19,11 @@ use matrix_sdk_ui::{
     timeline::{Timeline as SdkTimeline, TimelineItem},
 };
 use std::{
+    cmp::Ordering,
     collections::HashMap,
     fmt,
     ops::Deref,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
+    sync::{atomic::AtomicBool, Arc},
 };
 use tokio::{
     sync::{
@@ -43,7 +42,7 @@ use super::{
         RUNTIME,
     },
     simple_convo::SimpleConvo,
-    Client, Room, Space,
+    Client, Convo, Room, Space,
 };
 
 struct Timeline {
@@ -282,6 +281,12 @@ impl Client {
                     .iter()
                     .filter(|room| !prev_ui_rooms.contains_key(room.room_id()))
                 {
+                    let key = latest_message_storage_key(ui_room.room_id()).as_storage_key();
+                    let latest_message = me.store().get_raw::<RoomMessage>(&key).await.ok();
+
+                    let loaded_latest_msg = latest_message.is_some();
+                    let latest_message = Arc::new(RwLock::new(latest_message));
+
                     // Initialize the timeline.
                     let Ok(builder) = ui_room.default_room_timeline_builder().await else {
                         error!("Failed to get default timeline builder");
@@ -299,13 +304,31 @@ impl Client {
                         continue;
                     };
                     let (items, stream) = sdk_timeline.subscribe().await;
+                    let my_id = user_id.clone();
+                    let mut fetched_latest_msg = false;
+                    for item in items.clone().into_iter().rev() {
+                        if item.as_event().is_some() {
+                            let mut ri = room_infos.lock().await;
+                            if let Some(info) = ri.get_mut(ui_room.room_id()) {
+                                let full_event = RoomMessage::from((item.clone(), my_id.clone()));
+                                me.set_latest_message(ui_room.room_id(), info, full_event)
+                                    .await;
+                            }
+                            fetched_latest_msg = true;
+                            break;
+                        }
+                    }
+                    if !fetched_latest_msg && !loaded_latest_msg {
+                        if let Err(err) = sdk_timeline.paginate_backwards(10).await {
+                            error!(?err, room_id=?ui_room.room_id(), "backpagination failed");
+                        }
+                    }
                     let items = Arc::new(Mutex::new(items));
 
                     // Spawn a timeline task that will listen to all the timeline item changes.
-                    let room_id = ui_room.room_id().to_owned();
                     let i = items.clone();
                     let ri = room_infos.clone();
-                    let my_id = user_id.clone();
+                    let room_id = ui_room.room_id().to_owned();
                     let timeline_task = tokio::spawn(async move {
                         pin_mut!(stream);
                         let items = i;
@@ -405,9 +428,15 @@ impl Client {
                     {
                         let convo = simple_convos.remove(convo_idx).update_room(inner);
                         // convo.update_latest_msg_ts().await;
-                        insert_to_convo(&mut simple_convos, convo);
+                        let mut room_infos = self.sync_controller.room_infos.lock().await;
+                        insert_to_convo(&mut simple_convos, convo, &mut room_infos);
                     } else {
-                        insert_to_convo(&mut simple_convos, SimpleConvo::new(self.clone(), inner));
+                        let mut room_infos = self.sync_controller.room_infos.lock().await;
+                        insert_to_convo(
+                            &mut simple_convos,
+                            SimpleConvo::new(self.clone(), inner),
+                            &mut room_infos,
+                        );
                     }
                     // also clear from convos if it was in there...
                     remove_from(&mut spaces, &r_id);
@@ -424,6 +453,97 @@ impl Client {
                 .map(ExecuteReference::Room)
                 .collect(),
         );
+    }
+
+    async fn set_latest_message(
+        &self,
+        room_id: &RoomId,
+        room_info: &mut ExtraRoomInfo,
+        new_msg: RoomMessage,
+    ) {
+        if let Some(prev_msg) = room_info.clone().latest_msg {
+            if prev_msg.event_id() == new_msg.event_id()
+                && prev_msg.event_type() == new_msg.event_type()
+            {
+                trace!("Nothing to update, room message stayed the same");
+                return;
+            }
+        }
+        trace!(?room_id, "Setting latest message");
+        room_info.latest_msg = Some(new_msg.clone());
+
+        let key = latest_message_storage_key(room_id);
+        self.store().set_raw(&key.as_storage_key(), &new_msg).await;
+        info!("******************** changed latest msg: {:?}", key.clone());
+        self.executor().notify(vec![key]);
+    }
+
+    pub(crate) async fn load_from_cache(&self) {
+        let (s, c) = self.get_spaces_and_chats();
+        // FIXME for a lack of a better system, we just sort by room-id
+        let mut spaces = s
+            .into_iter()
+            .map(|r| Space::new(self.clone(), r))
+            .collect::<Vector<Space>>();
+        {
+            let rooms = self.sync_controller.rooms.read().await;
+            let room_infos = self.sync_controller.room_infos.lock().await;
+            spaces.sort_by(|a, b| {
+                let a_ts = room_infos
+                    .get(a.room_id())
+                    .and_then(|info| info.latest_msg.clone())
+                    .and_then(|x| x.origin_server_ts());
+                let b_ts = room_infos
+                    .get(b.room_id())
+                    .and_then(|info| info.latest_msg.clone())
+                    .and_then(|x| x.origin_server_ts());
+                if a_ts.is_none() == b_ts.is_none() {
+                    return Ordering::Equal;
+                }
+                if a_ts.is_some() == b_ts.is_none() {
+                    return Ordering::Less;
+                }
+                if a_ts.is_none() == b_ts.is_some() {
+                    return Ordering::Greater;
+                }
+                a_ts.unwrap().cmp(&b_ts.unwrap())
+            });
+            self.spaces.write().await.append(spaces);
+        }
+
+        let mut convos = join_all(c.clone().into_iter().map(|r| Convo::new(self.clone(), r))).await;
+        convos.sort();
+        self.convos.write().await.append(convos.into());
+
+        let mut simple_convos: Vector<SimpleConvo> = c
+            .into_iter()
+            .map(|r| SimpleConvo::new(self.clone(), r))
+            .collect();
+        {
+            let rooms = self.sync_controller.rooms.read().await;
+            let room_infos = self.sync_controller.room_infos.lock().await;
+            simple_convos.sort_by(|a, b| {
+                let a_ts = room_infos
+                    .get(a.room_id())
+                    .and_then(|info| info.latest_msg.clone())
+                    .and_then(|x| x.origin_server_ts());
+                let b_ts = room_infos
+                    .get(b.room_id())
+                    .and_then(|info| info.latest_msg.clone())
+                    .and_then(|x| x.origin_server_ts());
+                if a_ts.is_none() == b_ts.is_none() {
+                    return Ordering::Equal;
+                }
+                if a_ts.is_some() == b_ts.is_none() {
+                    return Ordering::Less;
+                }
+                if a_ts.is_none() == b_ts.is_some() {
+                    return Ordering::Greater;
+                }
+                a_ts.unwrap().cmp(&b_ts.unwrap())
+            });
+            self.simple_convos.write().await.append(simple_convos);
+        }
     }
 }
 
@@ -447,12 +567,24 @@ fn remove_from_convo(
 fn insert_to_convo(
     target: &mut RwLockWriteGuard<ObservableVector<SimpleConvo>>,
     convo: SimpleConvo,
+    room_infos: &mut MutexGuard<HashMap<OwnedRoomId, ExtraRoomInfo>>,
 ) {
-    if let Some(msg_ts) = convo.latest_message_ts() {
-        if let Some(idx) = target.iter().position(|s| match s.latest_message_ts() {
-            Some(ts) => ts < msg_ts,
-            None => false,
-        }) {
+    if let Some(msg_ts) = room_infos
+        .get(convo.deref().room_id())
+        .and_then(|info| info.latest_msg.clone())
+        .and_then(|x| x.origin_server_ts())
+    {
+        let result = target.iter().position(|convo| {
+            let origin_server_ts = room_infos
+                .get(convo.deref().room_id())
+                .and_then(|info| info.latest_msg.clone())
+                .and_then(|x| x.origin_server_ts());
+            match origin_server_ts {
+                Some(ts) => ts < msg_ts,
+                None => false,
+            }
+        });
+        if let Some(idx) = result {
             target.insert(idx, convo);
             return;
         }
@@ -460,4 +592,8 @@ fn insert_to_convo(
 
     // fallback: push at the end.
     target.push_back(convo);
+}
+
+fn latest_message_storage_key(room_id: &RoomId) -> ExecuteReference {
+    ExecuteReference::RoomParam(room_id.to_owned(), RoomParam::LatestMessage)
 }

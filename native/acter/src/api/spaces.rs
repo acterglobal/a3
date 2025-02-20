@@ -44,26 +44,6 @@ pub struct Space {
     pub(crate) inner: Room,
 }
 
-impl PartialEq for Space {
-    fn eq(&self, other: &Self) -> bool {
-        self.inner.room_id() == other.inner.room_id()
-    }
-}
-
-impl Eq for Space {}
-
-impl PartialOrd for Space {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Space {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.room_id().cmp(other.room_id())
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct HistoryState {
     /// The last `end` send from the server
