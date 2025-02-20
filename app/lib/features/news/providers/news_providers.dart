@@ -10,19 +10,32 @@ final newsListProvider = AsyncNotifierProvider.family<AsyncNewsListNotifier,
     List<NewsEntry>, String?>(
   () => AsyncNewsListNotifier(),
 );
+
+final newsUpdateListProvider =
+    FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
+  final news = (await ref.watch(newsListProvider(arg).future))
+      .map((inner) => UpdateNewsEntry(inner))
+      .toList();
+  return news;
+});
+
 final storiesListProvider =
     AsyncNotifierProvider.family<AsyncStoryListNotifier, List<Story>, String?>(
   () => AsyncStoryListNotifier(),
 );
 
-final updateListProvider =
+final storyUpdateListProvider =
     FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
-  final news = (await ref.watch(newsListProvider(arg).future))
-      .map((inner) => UpdateNewsEntry(inner))
-      .toList();
   final stories = (await ref.watch(storiesListProvider(arg).future))
       .map((inner) => UpdateStoryEntry(inner))
       .toList();
+  return stories;
+});
+
+final updateListProvider =
+    FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
+  final news = await ref.watch(newsUpdateListProvider(arg).future);
+  final stories = await ref.watch(storyUpdateListProvider(arg).future);
 
   final List<UpdateEntry> entries = [];
   entries.addAll(stories);
