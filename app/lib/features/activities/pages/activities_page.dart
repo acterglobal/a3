@@ -4,9 +4,9 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/activities/widgets/invitation_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
-import 'package:acter/features/invitations/widgets/invitation_card.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/invitations/widgets/has_invites_tile.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
@@ -80,7 +80,9 @@ class ActivitiesPage extends ConsumerWidget {
           showSectionBg: false,
           isShowSeeAllButton: false,
         ),
-        InvitationCard(invitation: invitations.first),
+        InvitationWidget(
+          invitation: invitations.first,
+        ),
       ];
     }
     return [

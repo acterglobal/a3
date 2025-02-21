@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/empty_state_widget.dart';
+import 'package:acter/features/activities/widgets/invitation_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
-import 'package:acter/features/invitations/widgets/invitation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -29,7 +29,7 @@ class InvitesPage extends ConsumerWidget {
       );
     }
     return ListView.builder(
-      itemBuilder: (context, index) => InvitationCard(
+      itemBuilder: (context, index) => InvitationWidget(
         invitation: invitations[index],
       ),
       itemCount: invitations.length,

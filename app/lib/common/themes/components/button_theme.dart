@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:flutter/material.dart';
 
-ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
+ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors, TextTheme textTheme) =>
     ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(
@@ -9,23 +9,34 @@ ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
           vertical: 12,
         ),
         elevation: 0,
+        textStyle: textTheme.titleMedium?.copyWith(
+          color: colors.primary,
+          fontSize: 15,
+        ),
         backgroundColor: colors.primary,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
 
-ElevatedButtonThemeData dangerButtonThemeMaker(ColorScheme colors) =>
+ElevatedButtonThemeData dangerButtonThemeMaker(ColorScheme colors, TextTheme textTheme) =>
     ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         elevation: 0,
+         textStyle: textTheme.titleMedium?.copyWith(
+          color: colors.primary,
+          fontSize: 15,
+        ),
         backgroundColor: colors.error,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );

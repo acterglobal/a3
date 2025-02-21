@@ -16,7 +16,7 @@ extension ActerChatThemeExtension on ThemeData {
   ActerChatTheme get chatTheme => const ActerChatTheme();
 
   ElevatedButtonThemeData get dangerButtonTheme =>
-      dangerButtonThemeMaker(colorScheme);
+      dangerButtonThemeMaker(colorScheme, textTheme);
 
   TextButtonThemeData get inlineTextButtonTheme =>
       inlineTextButtonThemeMaker(colorScheme);
@@ -60,7 +60,7 @@ class ActerTheme {
     dividerTheme: dividerTheme,
     dialogTheme: dialogTheme,
     bottomSheetTheme: bottomSheetTheme,
-    elevatedButtonTheme: elevatedButtonTheme(colorScheme),
+    elevatedButtonTheme: elevatedButtonTheme(colorScheme, textTheme),
     outlinedButtonTheme: outlinedButtonTheme(colorScheme, textTheme),
     textButtonTheme: textButtonTheme(colorScheme),
     iconButtonTheme: iconButtonTheme,
