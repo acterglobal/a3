@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
     ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         elevation: 0,
         backgroundColor: colors.primary,
         foregroundColor: Colors.white,
