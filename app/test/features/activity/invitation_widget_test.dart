@@ -81,6 +81,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.text('Test Room default'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+      expect(find.text('Accept'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.text('Decline'), findsOneWidget);
     });
     testWidgets('renders with custom avatar info', (tester) async {
       final customAvatarInfo = AvatarInfo(
@@ -97,6 +101,10 @@ void main() {
       // Look for the custom avatar info's display name
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.textContaining('custom'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+      expect(find.text('Accept'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.text('Decline'), findsOneWidget);
     });
 
     testWidgets('renders DM invitation correctly', (tester) async {
@@ -117,6 +125,10 @@ void main() {
 
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.textContaining('Alice DM'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+      expect(find.text('Start DM'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.text('Decline'), findsOneWidget);
     });
 
     testWidgets('renders with custom avatar image', (tester) async {
@@ -135,6 +147,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ActerAvatar), findsOneWidget);
+      expect(find.textContaining('Alice'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
+      expect(find.text('Accept'), findsOneWidget);
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.text('Decline'), findsOneWidget);
     });
   });
 }
