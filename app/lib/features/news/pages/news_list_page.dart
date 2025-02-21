@@ -156,12 +156,15 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         if (updateList.isEmpty) return newsEmptyStateUI(context);
 
         return useGridMode
-            ? NewsGridView(
-                updateList: updateList,
-                onTapNewItem: (index) {
-                  this.useGridMode.value = false;
-                  currentIndex.value = index;
-                },
+            ? Padding(
+                padding: const EdgeInsets.only(top: 70),
+                child: NewsGridView(
+                  updateList: updateList,
+                  onTapNewItem: (index) {
+                    this.useGridMode.value = false;
+                    currentIndex.value = index;
+                  },
+                ),
               )
             : NewsFullView(
                 updateList: updateList,
