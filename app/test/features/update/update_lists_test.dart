@@ -146,7 +146,6 @@ void main() {
       when(() => slide4.typeStr()).thenReturn('text');
       when(() => slide4.msgContent())
           .thenReturn(MockMsgContent(bodyText: 'This is the fourth Updates'));
-      final entry4 = MockUpdatesEntry(slides_: [slide4], eventId_: 'fourthId');
 
       final updateEntries = [entry1, entry2, entry3];
       await tester.pumpProviderWidget(
