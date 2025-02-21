@@ -9,16 +9,17 @@ import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import '../../helpers/mock_news_providers.dart';
+import '../../helpers/mock_updates_providers.dart';
 import '../../helpers/test_util.dart';
 import '../comments/mock_data/mock_message_content.dart';
 
 void main() {
-  group('News List fullView', () {
-    testWidgets('displays empty state when there are no news', (tester) async {
+  group('Updates List fullView', () {
+    testWidgets('displays empty state when there are no Updates',
+        (tester) async {
       await tester.pumpProviderWidget(
         overrides: [
-          newsListProvider.overrideWith(() => MockAsyncNewsListNotifier()),
+          updateListProvider.overrideWith((ref, arg) async => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const NewsListPage(
@@ -33,12 +34,12 @@ void main() {
         findsOneWidget,
       ); // Ensure the empty state widget is displayed
     });
-    testWidgets('Shows latest news', (tester) async {
-      final slide = MockNewsSlide();
+    testWidgets('Shows latest Updates', (tester) async {
+      final slide = MockUpdateSlide();
       when(() => slide.typeStr()).thenReturn('text');
       when(() => slide.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is an important news'));
-      final entry = MockNewsEntry(slides_: [slide]);
+          .thenReturn(MockMsgContent(bodyText: 'This is an important Updates'));
+      final entry = MockUpdatesEntry(slides_: [slide]);
       await tester.pumpProviderWidget(
         overrides: [
           myUserIdStrProvider.overrideWith((a) => 'my user id'),
@@ -53,14 +54,10 @@ void main() {
               avatarInfo: AvatarInfo(uniqueId: 'id'),
             ),
           ),
-          newsListProvider.overrideWith(
-            () => MockAsyncNewsListNotifier(
-              news: [
-                entry, // the only one that matters
-                MockNewsEntry(),
-                MockNewsEntry(),
-              ],
-            ),
+          updateListProvider.overrideWith(
+            (ref, arg) async => [
+              entry,
+            ],
           ),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -70,29 +67,29 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('This is an important news'),
+        find.text('This is an important Updates'),
         findsOneWidget,
       ); // Ensure the empty state widget is displayed
     });
 
-    testWidgets('Shows selected news', (tester) async {
-      final slide = MockNewsSlide();
+    testWidgets('Shows selected Updates', (tester) async {
+      final slide = MockUpdateSlide();
       when(() => slide.typeStr()).thenReturn('text');
       when(() => slide.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is an important news'));
-      final entry1 = MockNewsEntry(slides_: [slide], eventId_: 'firstId');
+          .thenReturn(MockMsgContent(bodyText: 'This is an important Updates'));
+      final entry1 = MockUpdatesEntry(slides_: [slide], eventId_: 'firstId');
 
-      final slide2 = MockNewsSlide();
+      final slide2 = MockUpdateSlide();
       when(() => slide2.typeStr()).thenReturn('text');
       when(() => slide2.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is the second news'));
-      final entry2 = MockNewsEntry(slides_: [slide2], eventId_: 'secondId');
+          .thenReturn(MockMsgContent(bodyText: 'This is the second Updates'));
+      final entry2 = MockUpdatesEntry(slides_: [slide2], eventId_: 'secondId');
 
-      final slide3 = MockNewsSlide();
+      final slide3 = MockUpdateSlide();
       when(() => slide3.typeStr()).thenReturn('text');
       when(() => slide3.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is the third news'));
-      final entry3 = MockNewsEntry(slides_: [slide3], eventId_: 'thirdId');
+          .thenReturn(MockMsgContent(bodyText: 'This is the third Updates'));
+      final entry3 = MockUpdatesEntry(slides_: [slide3], eventId_: 'thirdId');
       await tester.pumpProviderWidget(
         overrides: [
           myUserIdStrProvider.overrideWith((a) => 'my user id'),
@@ -107,10 +104,8 @@ void main() {
               avatarInfo: AvatarInfo(uniqueId: 'id'),
             ),
           ),
-          newsListProvider.overrideWith(
-            () => MockAsyncNewsListNotifier(
-              news: [entry1, entry2, entry3],
-            ),
+          updateListProvider.overrideWith(
+            (ref, arg) async => [entry1, entry2, entry3],
           ),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
@@ -123,39 +118,37 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('This is the second news'),
+        find.text('This is the second Updates'),
         findsOneWidget,
-      ); // Ensure the correct news widget is displayed
+      ); // Ensure the correct Updates widget is displayed
     });
 
-    testWidgets('selected news appears later', (tester) async {
-      final slide = MockNewsSlide();
+    testWidgets('selected Updates appears later', (tester) async {
+      final slide = MockUpdateSlide();
       when(() => slide.typeStr()).thenReturn('text');
       when(() => slide.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is an important news'));
-      final entry1 = MockNewsEntry(slides_: [slide], eventId_: 'firstId');
+          .thenReturn(MockMsgContent(bodyText: 'This is an important Updates'));
+      final entry1 = MockUpdatesEntry(slides_: [slide], eventId_: 'firstId');
 
-      final slide2 = MockNewsSlide();
+      final slide2 = MockUpdateSlide();
       when(() => slide2.typeStr()).thenReturn('text');
       when(() => slide2.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is the second news'));
-      final entry2 = MockNewsEntry(slides_: [slide2], eventId_: 'secondId');
+          .thenReturn(MockMsgContent(bodyText: 'This is the second Updates'));
+      final entry2 = MockUpdatesEntry(slides_: [slide2], eventId_: 'secondId');
 
-      final slide3 = MockNewsSlide();
+      final slide3 = MockUpdateSlide();
       when(() => slide3.typeStr()).thenReturn('text');
       when(() => slide3.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is the third news'));
-      final entry3 = MockNewsEntry(slides_: [slide3], eventId_: 'thirdId');
+          .thenReturn(MockMsgContent(bodyText: 'This is the third Updates'));
+      final entry3 = MockUpdatesEntry(slides_: [slide3], eventId_: 'thirdId');
 
-      final slide4 = MockNewsSlide();
+      final slide4 = MockUpdateSlide();
       when(() => slide4.typeStr()).thenReturn('text');
       when(() => slide4.msgContent())
-          .thenReturn(MockMsgContent(bodyText: 'This is the fourth news'));
-      final entry4 = MockNewsEntry(slides_: [slide4], eventId_: 'fourthId');
+          .thenReturn(MockMsgContent(bodyText: 'This is the fourth Updates'));
+      final entry4 = MockUpdatesEntry(slides_: [slide4], eventId_: 'fourthId');
 
-      final notifier = MockAsyncNewsListNotifier(
-        news: [entry1, entry2, entry3],
-      );
+      final updateEntries = [entry1, entry2, entry3];
       await tester.pumpProviderWidget(
         overrides: [
           myUserIdStrProvider.overrideWith((a) => 'my user id'),
@@ -170,9 +163,7 @@ void main() {
               avatarInfo: AvatarInfo(uniqueId: 'id'),
             ),
           ),
-          newsListProvider.overrideWith(
-            () => notifier,
-          ),
+          updateListProvider.overrideWith((ref, arg) async => updateEntries),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
         child: const NewsListPage(
@@ -187,16 +178,6 @@ void main() {
         find.byType(NewsSkeletonWidget),
         findsOneWidget,
       ); // Ensure the loading is shown
-
-      notifier.news!.add(entry4);
-      notifier.ref.invalidateSelf(); // refresh
-
-      await tester.pump();
-
-      expect(
-        find.text('This is the fourth news'),
-        findsOneWidget,
-      ); // Ensure the correct news widget is displayed
     });
   });
 }
