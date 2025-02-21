@@ -1422,10 +1422,10 @@ object Convo {
     fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<RoomMessage>;
+    fn latest_message() -> Future<Result<OptionRoomMessage>>;
 
     /// Latest message timestamp or 0
-    fn latest_message_ts() -> u64;
+    fn latest_message_ts() -> Future<Result<u64>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;

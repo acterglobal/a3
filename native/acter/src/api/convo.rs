@@ -37,6 +37,7 @@ use tracing::{error, info, trace, warn};
 use crate::TimelineStream;
 
 use super::{
+    common::OptionRoomMessage,
     client::Client,
     message::RoomMessage,
     room::Room,
@@ -51,205 +52,110 @@ type LatestMsgLock = Arc<RwLock<Option<RoomMessage>>>;
 pub struct Convo {
     client: Client,
     inner: Room,
-    latest_message: LatestMsgLock,
-    timeline: Arc<Timeline>,
-    timeline_listener: Arc<JoinHandle<()>>,
-}
-
-impl PartialEq for Convo {
-    fn eq(&self, other: &Self) -> bool {
-        self.inner.room_id() == other.inner.room_id()
-            && self.latest_message_ts() == other.latest_message_ts()
-    }
-}
-
-impl Eq for Convo {}
-
-impl PartialOrd for Convo {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Convo {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.latest_message_ts().cmp(&self.latest_message_ts())
-    }
 }
 
 fn latest_message_storage_key(room_id: &RoomId) -> ExecuteReference {
     ExecuteReference::RoomParam(room_id.to_owned(), RoomParam::LatestMessage)
 }
 
-async fn set_latest_msg(
-    client: &Client,
-    room_id: &RoomId,
-    lock: &LatestMsgLock,
-    new_msg: RoomMessage,
-) {
-    let key = latest_message_storage_key(room_id);
-    {
-        let Ok(mut msg_lock) = lock.write() else {
-            error!(
-                ?room_id,
-                "Locking latest message for update failed. poisoned."
-            );
-            return;
-        };
-
-        if let Some(prev) = msg_lock.deref() {
-            if prev.event_id() == new_msg.event_id() && new_msg.event_type() == prev.event_type() {
-                trace!("Nothing to update, room message stayed the same");
-                return;
-            }
-        }
-        trace!(?room_id, "Setting latest message");
-        *msg_lock = Some(new_msg.clone());
-    }
-
-    client
-        .store()
-        .set_raw(&key.as_storage_key(), &new_msg)
-        .await;
-    info!("******************** changed latest msg: {:?}", key.clone());
-    client.executor().notify(vec![key]);
-}
-
 impl Convo {
-    pub(crate) async fn new(client: Client, inner: Room) -> Self {
-        let timeline = Arc::new(
-            inner
-                .room
-                .timeline()
-                .await
-                .expect("Creating a timeline builder doesn’t fail"),
-        );
-        let latest_message_content: Option<RoomMessage> = client
-            .store()
-            .get_raw(&latest_message_storage_key(inner.room_id()).as_storage_key())
-            .await
-            .ok();
-
-        let has_latest_msg = latest_message_content.is_some();
-        let latest_message = Arc::new(RwLock::new(latest_message_content));
-
-        let user_id = client
-            .deref()
-            .user_id()
-            .expect("User must be logged in")
-            .to_owned();
-        let latest_msg_room = inner.clone();
-        let latest_msg_client = client.clone();
-        let last_msg_tl = timeline.clone();
-        let last_msg_lock_tl = latest_message.clone();
-
-        let listener = RUNTIME.spawn(async move {
-            let (current, mut incoming) = last_msg_tl.subscribe().await;
-            let mut event_found = false;
-            for msg in current.into_iter().rev() {
-                if msg.as_event().is_some() {
-                    let full_event = RoomMessage::from((msg, user_id.clone()));
-                    set_latest_msg(
-                        &latest_msg_client,
-                        latest_msg_room.room_id(),
-                        &last_msg_lock_tl,
-                        full_event,
-                    )
-                    .await;
-                    event_found = true;
-                    break;
-                }
-            }
-            if !event_found && !has_latest_msg {
-                // let’s trigger a back pagination in hope that helps us...
-                if let Err(error) = last_msg_tl.paginate_backwards(10).await {
-                    error!(?error, room_id=?latest_msg_room.room_id(), "backpagination failed");
-                }
-            }
-            while let Some(ev) = incoming.next().await {
-                let Some(msg) = last_msg_tl.latest_event().await else {
-                    continue;
-                };
-                let room_id = latest_msg_room.room_id();
-
-                let full_event = RoomMessage::new_event_item(user_id.clone(), &msg);
-                set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
-            }
-            warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
-        });
-
-        Convo {
-            inner,
-            client,
-            latest_message,
-            timeline,
-            timeline_listener: Arc::new(listener),
-        }
+    pub(crate) fn new(client: Client, inner: Room) -> Self {
+        Convo { client, inner }
     }
 
     pub(crate) fn update_room(self, room: Room) -> Self {
-        let Convo {
-            client,
-            latest_message,
-            timeline,
-            timeline_listener,
-            ..
-        } = self;
+        let Convo { client, .. } = self;
         Convo {
             client,
-            timeline,
-            latest_message,
-            timeline_listener,
             inner: room,
         }
     }
 
-    pub fn timeline_stream(&self) -> TimelineStream {
-        TimelineStream::new(self.inner.clone(), self.timeline.clone())
+    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
+        let client = self.client.clone();
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let timelines = client.sync_controller.timelines.lock().await;
+                let room_id = inner.room.room_id();
+                let timeline = timelines.get(room_id).context("timeline not started yet")?;
+                Ok(TimelineStream::new(inner, timeline.inner.clone()))
+            })
+            .await?
     }
 
-    pub async fn items(&self) -> Vec<RoomMessage> {
-        let user_id = self.client.user_id().expect("User must be logged in");
-        self.timeline
-            .items()
-            .await
-            .clone()
-            .into_iter()
-            .map(|x| RoomMessage::from((x, user_id.clone())))
-            .collect()
+    pub async fn items(&self) -> Result<Vec<RoomMessage>> {
+        let client = self.client.clone();
+        let room_id = self.inner.room.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let timelines = client.sync_controller.timelines.lock().await;
+                let timeline = timelines
+                    .get(&room_id)
+                    .context("timeline not started yet")?;
+                let user_id = client.user_id()?;
+                let tl_items = timeline
+                    .inner
+                    .items()
+                    .await
+                    .into_iter()
+                    .map(|x| RoomMessage::from((x, user_id.clone())))
+                    .collect();
+                Ok(tl_items)
+            })
+            .await?
     }
 
     pub fn num_unread_notification_count(&self) -> u64 {
-        self.inner.unread_notification_counts().notification_count
+        self.inner
+            .room
+            .unread_notification_counts()
+            .notification_count
     }
+
     pub fn num_unread_messages(&self) -> u64 {
-        self.inner.num_unread_messages()
+        self.inner.room.num_unread_messages()
     }
 
     pub fn num_unread_mentions(&self) -> u64 {
-        self.inner.unread_notification_counts().highlight_count
+        self.inner.room.unread_notification_counts().highlight_count
     }
 
-    pub fn latest_message_ts(&self) -> u64 {
-        self.latest_message
-            .read()
-            .map(|a| a.as_ref().map(|r| r.origin_server_ts()))
-            .ok()
-            .flatten()
-            .flatten()
-            .unwrap_or_default()
+    pub async fn latest_message_ts(&self) -> Result<u64> {
+        let client = self.client.clone();
+        let room_id = self.inner.room.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let room_infos = client.sync_controller.room_infos.lock().await;
+                let info = room_infos
+                    .get(&room_id)
+                    .context("room info not inited yet")?;
+                let ts = info.latest_msg().and_then(|x| x.origin_server_ts());
+                Ok(ts.unwrap_or_default())
+            })
+            .await?
     }
 
-    pub fn latest_message(&self) -> Option<RoomMessage> {
-        self.latest_message.read().map(|i| i.clone()).ok().flatten()
+    pub async fn latest_message(&self) -> Result<OptionRoomMessage> {
+        let client = self.client.clone();
+        let room_id = self.inner.room.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let room_infos = client.sync_controller.room_infos.lock().await;
+                let info = room_infos
+                    .get(&room_id)
+                    .context("room info not inited yet")?;
+                Ok(OptionRoomMessage::new(info.latest_msg()))
+            })
+            .await?
     }
 
     pub fn get_room_id(&self) -> OwnedRoomId {
-        self.room_id().to_owned()
+        self.inner.room.room_id().to_owned()
     }
 
     pub fn get_room_id_str(&self) -> String {
-        self.room_id().to_string()
+        self.inner.room.room_id().to_string()
     }
 
     pub fn is_dm(&self) -> bool {
@@ -261,14 +167,13 @@ impl Convo {
     }
 
     pub async fn set_bookmarked(&self, is_bookmarked: bool) -> Result<bool> {
-        let room = self.inner.room.clone();
-        Ok(RUNTIME
+        let inner = self.inner.clone();
+        RUNTIME
             .spawn(async move {
-                room.set_is_favourite(is_bookmarked, None)
-                    .await
-                    .map(|()| true)
+                inner.room.set_is_favourite(is_bookmarked, None).await?;
+                Ok(true)
             })
-            .await??)
+            .await?
     }
 
     pub fn is_low_priority(&self) -> bool {
@@ -276,10 +181,13 @@ impl Convo {
     }
 
     pub async fn permalink(&self) -> Result<String> {
-        let room = self.inner.room.clone();
-        Ok(RUNTIME
-            .spawn(async move { room.matrix_permalink(false).await.map(|u| u.to_string()) })
-            .await??)
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let uri = inner.room.matrix_permalink(false).await?;
+                Ok(uri.to_string())
+            })
+            .await?
     }
 
     pub fn dm_users(&self) -> Vec<String> {
@@ -292,16 +200,14 @@ impl Convo {
     }
 
     pub async fn msg_draft(&self) -> Result<OptionComposeDraft> {
-        if !self.is_joined() {
+        if !self.inner.is_joined() {
             bail!("Unable to fetch composer draft of a room we are not in");
         }
-        let room = self.room.clone();
+        let inner = self.inner.clone();
         RUNTIME
             .spawn(async move {
-                let draft = room.load_composer_draft().await?;
-
-                Ok(OptionComposeDraft::new(draft.map(|composer_draft| {
-                    let (msg_type, event_id) = match composer_draft.draft_type {
+                let draft = inner.room.load_composer_draft().await?.map(|x| {
+                    let (msg_type, event_id) = match x.draft_type {
                         ComposerDraftType::NewMessage => ("new".to_string(), None),
                         ComposerDraftType::Edit { event_id } => {
                             ("edit".to_string(), Some(event_id))
@@ -310,13 +216,9 @@ impl Convo {
                             ("reply".to_string(), Some(event_id))
                         }
                     };
-                    ComposeDraft::new(
-                        composer_draft.plain_text,
-                        composer_draft.html_text,
-                        msg_type,
-                        event_id,
-                    )
-                })))
+                    ComposeDraft::new(x.plain_text, x.html_text, msg_type, event_id)
+                });
+                Ok(OptionComposeDraft::new(draft))
             })
             .await?
     }
@@ -331,20 +233,17 @@ impl Convo {
         if !self.is_joined() {
             bail!("Unable to save composer draft of a room we are not in");
         }
-        let room = self.room.clone();
+        let inner = self.inner.clone();
 
         let draft_type = match (draft_type.as_str(), event_id) {
             ("new", None) => ComposerDraftType::NewMessage,
             ("edit", Some(id)) => ComposerDraftType::Edit {
                 event_id: OwnedEventId::try_from(id)?,
             },
-
             ("reply", Some(id)) => ComposerDraftType::Reply {
                 event_id: OwnedEventId::try_from(id)?,
             },
-
-            ("reply", _) | ("edit", _) => bail!("Invalid event id"),
-
+            ("reply", None) | ("edit", None) => bail!("Invalid event id"),
             (draft_type, _) => bail!("Invalid draft type {draft_type}"),
         };
 
@@ -356,20 +255,20 @@ impl Convo {
 
         RUNTIME
             .spawn(async move {
-                room.save_composer_draft(msg_draft).await?;
+                inner.room.save_composer_draft(msg_draft).await?;
                 Ok(true)
             })
             .await?
     }
 
     pub async fn clear_msg_draft(&self) -> Result<bool> {
-        if !self.is_joined() {
+        if !self.inner.is_joined() {
             bail!("Unable to remove composer draft of a room we are not in");
         }
-        let room = self.room.clone();
+        let inner = self.inner.clone();
         RUNTIME
             .spawn(async move {
-                let draft = room.clear_composer_draft();
+                inner.room.clear_composer_draft().await?;
                 Ok(true)
             })
             .await?
@@ -601,16 +500,29 @@ impl Client {
     }
 
     pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {
-        let convos = self.convos.clone();
+        let rooms = self.sync_controller.rooms.clone();
+        let me = self.clone();
         async_stream::stream! {
             let (current_items, stream) = {
-                let locked = convos.read().await;
+                let locked = rooms.read().await;
+                let values: Vec<Convo> = locked
+                    .iter()
+                    .filter(|room| room.is_space())
+                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone()))
+                    .map(|inner| Convo::new(me.clone(), inner))
+                    .collect();
                 (
-                    ConvoDiff::current_items(locked.clone().into_iter().collect()),
+                    ConvoDiff::current_items(values),
                     locked.subscribe(),
                 )
             };
-            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
+                diff,
+                |x| {
+                    let inner = Room::new(me.core.clone(), x.inner_room().clone());
+                    Convo::new(me.clone(), inner)
+                },
+            ));
             yield current_items;
 
             while let Some(d) = remap.next().await {

@@ -41,7 +41,6 @@ use super::{
         utils::{remap_for_diff, ApiVectorDiff},
         RUNTIME,
     },
-    simple_convo::SimpleConvo,
     Client, Convo, Room, Space,
 };
 
@@ -105,8 +104,6 @@ impl Default for SyncController {
     }
 }
 
-pub type SimpleConvoDiff = ApiVectorDiff<SimpleConvo>;
-
 impl SyncController {
     pub fn new() -> Self {
         SyncController {
@@ -137,37 +134,6 @@ impl SyncController {
                 Ok(true)
             })
             .await?
-    }
-
-    pub fn convos_stream(&self, client: Client) -> impl Stream<Item = SimpleConvoDiff> {
-        let rooms = self.rooms.clone();
-        async_stream::stream! {
-            let (current_items, stream) = {
-                let locked = rooms.read().await;
-                let values: Vec<SimpleConvo> = locked
-                    .iter()
-                    .filter(|room| room.is_space())
-                    .map(|room| Room::new(client.core.clone(), room.inner_room().clone()))
-                    .map(|inner| SimpleConvo::new(client.clone(), inner))
-                    .collect();
-                (
-                    SimpleConvoDiff::current_items(values),
-                    locked.subscribe(),
-                )
-            };
-            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
-                diff,
-                |x| {
-                    let inner = Room::new(client.core.clone(), x.inner_room().clone());
-                    SimpleConvo::new(client.clone(), inner)
-                },
-            ));
-            yield current_items;
-
-            while let Some(d) = remap.next().await {
-                yield d
-            }
-        }
     }
 }
 
@@ -406,7 +372,7 @@ impl Client {
             let client = self.core.client();
             let mut updated: Vec<OwnedRoomId> = vec![];
 
-            let mut simple_convos = self.simple_convos.write().await;
+            let mut convos = self.convos.write().await;
             let mut spaces = self.spaces.write().await;
 
             for room in changed_rooms {
@@ -415,7 +381,7 @@ impl Client {
                     trace!(?r_id, "room gone");
                     // remove rooms we aren’t in (anymore)
                     remove_from(&mut spaces, &r_id);
-                    remove_from_convo(&mut simple_convos, &r_id);
+                    remove_from_convo(&mut convos, &r_id);
                     if let Err(error) = self.executor().clear_room(&r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
@@ -433,20 +399,20 @@ impl Client {
                         spaces.push_front(Space::new(self.clone(), inner))
                     }
                     // also clear from convos if it was in there...
-                    remove_from_convo(&mut simple_convos, &r_id);
+                    remove_from_convo(&mut convos, &r_id);
                     updated.push(r_id);
                 } else {
-                    if let Some(convo_idx) = simple_convos.iter().position(|s| s.room_id() == r_id)
+                    if let Some(convo_idx) = convos.iter().position(|s| s.room_id() == r_id)
                     {
-                        let convo = simple_convos.remove(convo_idx).update_room(inner);
+                        let convo = convos.remove(convo_idx).update_room(inner);
                         // convo.update_latest_msg_ts().await;
                         let mut room_infos = self.sync_controller.room_infos.lock().await;
-                        insert_to_convo(&mut simple_convos, convo, &mut room_infos);
+                        insert_to_convo(&mut convos, convo, &mut room_infos);
                     } else {
                         let mut room_infos = self.sync_controller.room_infos.lock().await;
                         insert_to_convo(
-                            &mut simple_convos,
-                            SimpleConvo::new(self.clone(), inner),
+                            &mut convos,
+                            Convo::new(self.clone(), inner),
                             &mut room_infos,
                         );
                     }
@@ -492,6 +458,7 @@ impl Client {
 
     pub(crate) async fn load_from_cache(&self) {
         let (s, c) = self.get_spaces_and_chats();
+
         // FIXME for a lack of a better system, we just sort by room-id
         let mut spaces = s
             .into_iter()
@@ -523,18 +490,14 @@ impl Client {
             self.spaces.write().await.append(spaces);
         }
 
-        let mut convos = join_all(c.clone().into_iter().map(|r| Convo::new(self.clone(), r))).await;
-        convos.sort();
-        self.convos.write().await.append(convos.into());
-
-        let mut simple_convos: Vector<SimpleConvo> = c
+        let mut convos: Vector<Convo> = c
             .into_iter()
-            .map(|r| SimpleConvo::new(self.clone(), r))
+            .map(|r| Convo::new(self.clone(), r))
             .collect();
         {
             let rooms = self.sync_controller.rooms.read().await;
             let room_infos = self.sync_controller.room_infos.lock().await;
-            simple_convos.sort_by(|a, b| {
+            convos.sort_by(|a, b| {
                 let a_ts = room_infos
                     .get(a.room_id())
                     .and_then(|info| info.latest_msg.clone())
@@ -554,7 +517,7 @@ impl Client {
                 }
                 a_ts.unwrap().cmp(&b_ts.unwrap())
             });
-            self.simple_convos.write().await.append(simple_convos);
+            self.convos.write().await.append(convos);
         }
     }
 }
@@ -567,7 +530,7 @@ fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &Ow
 }
 
 fn remove_from_convo(
-    target: &mut RwLockWriteGuard<ObservableVector<SimpleConvo>>,
+    target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
     r_id: &OwnedRoomId,
 ) {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
@@ -577,8 +540,8 @@ fn remove_from_convo(
 
 // we expect convo to always stay sorted.
 fn insert_to_convo(
-    target: &mut RwLockWriteGuard<ObservableVector<SimpleConvo>>,
-    convo: SimpleConvo,
+    target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
+    convo: Convo,
     room_infos: &mut MutexGuard<HashMap<OwnedRoomId, ExtraRoomInfo>>,
 ) {
     if let Some(msg_ts) = room_infos

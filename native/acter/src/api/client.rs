@@ -45,11 +45,9 @@ use super::{
 };
 
 mod models;
-mod simple_convo;
 mod sliding_sync;
 mod sync;
 
-use simple_convo::SimpleConvo;
 pub use sliding_sync::SyncController;
 pub use sync::{HistoryLoadState, SyncState};
 
@@ -82,7 +80,6 @@ pub struct Client {
     pub(crate) sync_controller: SyncController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
-    pub simple_convos: Arc<RwLock<ObservableVector<SimpleConvo>>>,
 }
 
 impl Deref for Client {
@@ -191,7 +188,6 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            simple_convos: Default::default(),
             invitation_controller: InvitationController::new(core),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
