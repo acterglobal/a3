@@ -226,8 +226,9 @@ impl Member {
                         <StoryEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
-                    // Not an acter space or story Posts are not activated..
-                    return false;
+                    // Story is less restricted than news
+                    // Everyone can post story as default
+                    return true;
                 }
             }
             MemberPermission::CanPostPin => {
