@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+enum PostType { story, boost }
+
 class AddNewsPostToPage extends ConsumerStatefulWidget {
   final String? initialSelectedSpace;
 
@@ -21,9 +23,8 @@ class AddNewsPostToPage extends ConsumerStatefulWidget {
 }
 
 class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
-  int selectedOption = 1;
+  PostType selectedOption = PostType.story;
   ValueNotifier<bool> canPostBoost = ValueNotifier(false);
-  bool canLinkSpaces = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
           ref.watch(roomMembershipProvider(selectedSpaceId)).valueOrNull;
       canPostBoost.value = membership?.canString('CanPostNews') == true;
       if (canPostBoost.value == false) {
-        selectedOption = 1;
+        selectedOption = PostType.story;
       }
     }
     return Scaffold(
@@ -59,7 +60,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
           'Stories',
           'Everyone can see, this is from you. It disappears in 14 days',
           Icons.amp_stories,
-          1,
+          PostType.story,
         ),
         ValueListenableBuilder<bool>(
           valueListenable: canPostBoost,
@@ -69,7 +70,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
               'Boost',
               'Important News. Sends a push notification to 17 members',
               Icons.rocket_launch_sharp,
-              2,
+              PostType.boost,
             );
           },
         ),
@@ -77,7 +78,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
         Padding(
           padding: const EdgeInsets.all(18),
           child: ActerPrimaryActionButton(
-            onPressed: () => selectedOption == 1
+            onPressed: () => selectedOption == PostType.story
                 ? sendStory(context, ref)
                 : sendNews(context, ref),
             child: Text(lang.post.toUpperCase()),
@@ -129,7 +130,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
     String title,
     String description,
     IconData iconData,
-    int optionValue,
+    PostType optionValue,
   ) {
     final color = !isEnable ? Theme.of(context).disabledColor : null;
     return InkWell(
@@ -171,7 +172,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
               onChanged: isEnable
                   ? (value) {
                       setState(() {
-                        selectedOption = optionValue;
+                        selectedOption = value as PostType;
                       });
                     }
                   : null,
