@@ -5,8 +5,11 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+
+final _log = Logger('a3::common::sync_notifier');
 
 // ignore_for_file: avoid_print
 class SyncNotifier extends Notifier<SyncState> {
@@ -69,6 +72,7 @@ class SyncNotifier extends Notifier<SyncState> {
     _syncPoller?.cancel();
     _errorPoller?.cancel();
 
+    _log.info('================= startSync ====================');
     final sync = syncState = client.startSync();
 
     _syncListener = sync.firstSyncedRx(); // keep it resident in memory
