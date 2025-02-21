@@ -46,7 +46,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
 
   void _initializeAvatarInfo() {
     setState(() {
-      avatarInfo = AvatarInfo(uniqueId: widget.invitation.roomIdStr());
+      avatarInfo = AvatarInfo(uniqueId: roomId);
     });
   }
 
@@ -56,7 +56,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
     setState(() {
       roomTitle = title.text();
       avatarInfo = AvatarInfo(
-        uniqueId: widget.invitation.roomIdStr(),
+        uniqueId: roomId,
         displayName: roomTitle,
       );
     });
@@ -64,7 +64,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
     if (avatarData != null) {
       setState(() {
         avatarInfo = AvatarInfo(
-          uniqueId: widget.invitation.roomIdStr(),
+          uniqueId: roomId,
           displayName: roomTitle,
           avatar: MemoryImage(Uint8List.fromList(avatarData.asTypedList())),
         );
@@ -85,7 +85,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildLeadingImageUI(),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Expanded(
               child: buildContentUI(context),
             ),
@@ -108,7 +108,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
             )
           : AvatarOptions(
               avatarInfo,
-              size: 24,
+              size: 48,
             ),
     );
   }
@@ -118,13 +118,9 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildTitle(context),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         buildInvitationType(context),
-        if (!widget.invitation.isDm()) ...[
-          const SizedBox(height: 4),
-          buildInviterChip(),
-        ],
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         buildActionButtons(context),
       ],
     );
@@ -141,31 +137,26 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   }
 
   Widget buildInvitationType(BuildContext context) {
-    return Text(
-      isDM
-          ? lang.invitationToDM
-          : (isSpace ? lang.invitationToSpace : lang.invitationToChat),
-      style: Theme.of(context).textTheme.bodyMedium,
-    );
-  }
-
-  Widget buildInviterChip() {
-
-
-    return Chip(
-      visualDensity: VisualDensity.compact,
-      avatar: ActerAvatar(
-        options: AvatarOptions.DM(
-          AvatarInfo(
-            uniqueId: senderId,
-            displayName: profile?.displayName,
-            avatar: profile?.avatar,
-          ),
-          size: 24,
-        ),
-      ),
-      label: Text(profile?.displayName ?? senderId),
-    );
+    final inviterName = profile?.displayName ?? senderId;
+    return isDM
+        ? Text(
+            lang.invitationToDM,
+            style: Theme.of(context).textTheme.labelLarge,
+          )
+        : Wrap(
+            children: [
+              Text(
+                isSpace ? lang.invitationToSpace : lang.invitationToChat,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+              Text(
+                inviterName,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
+            ],
+          );
   }
 
   Widget buildActionButtons(BuildContext context) {
@@ -189,8 +180,6 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.joining);
     final client = await ref.read(alwaysClientProvider.future);
-    final roomId = widget.invitation.roomIdStr();
-    final isSpace = widget.invitation.room().isSpace();
     try {
       await widget.invitation.accept();
     } catch (e, s) {
