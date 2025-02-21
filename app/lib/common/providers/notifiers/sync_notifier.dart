@@ -26,7 +26,7 @@ class SyncNotifier extends Notifier<SyncState> {
   @override
   SyncState build() {
     _providerSubscription = ref.listen<AsyncValue<ffi.Client?>>(
-      alwaysClientProvider,
+      clientProvider,
       (AsyncValue<ffi.Client?>? oldVal, AsyncValue<ffi.Client?> newVal) {
         final newClient = newVal.valueOrNull;
         if (newClient == null) {
