@@ -57,8 +57,8 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
         SectionHeader(title: lang.select),
         postOptionItemUI(
           true,
-          'Stories',
-          'Everyone can see, this is from you. It disappears in 14 days',
+          lang.story,
+          lang.storyInfo,
           Icons.amp_stories,
           PostType.story,
         ),
@@ -67,8 +67,8 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
           builder: (context, canPostBoost, child) {
             return postOptionItemUI(
               canPostBoost,
-              'Boost',
-              'Important News. Sends a push notification to 17 members',
+              lang.boost,
+              lang.boostInfo,
               Icons.rocket_launch_sharp,
               PostType.boost,
             );
