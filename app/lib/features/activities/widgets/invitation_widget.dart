@@ -40,14 +40,8 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   @override
   void initState() {
     super.initState();
-    _initializeAvatarInfo();
+    avatarInfo = AvatarInfo(uniqueId: roomId);
     _fetchDetails();
-  }
-
-  void _initializeAvatarInfo() {
-    setState(() {
-      avatarInfo = AvatarInfo(uniqueId: roomId);
-    });
   }
 
   void _fetchDetails() async {
@@ -138,16 +132,17 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
 
   Widget buildInvitationType(BuildContext context) {
     final inviterName = profile?.displayName ?? senderId;
+    final inviteTypeTextStyle = Theme.of(context).textTheme.labelLarge;
     return isDM
         ? Text(
             lang.invitationToDM,
-            style: Theme.of(context).textTheme.labelLarge,
+            style: inviteTypeTextStyle,
           )
         : Wrap(
             children: [
               Text(
                 isSpace ? lang.invitationToSpace : lang.invitationToChat,
-                style: Theme.of(context).textTheme.labelLarge,
+                style: inviteTypeTextStyle,
               ),
               Text(
                 inviterName,
