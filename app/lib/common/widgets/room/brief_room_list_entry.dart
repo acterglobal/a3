@@ -8,6 +8,7 @@ class BriefRoomEntry extends ConsumerWidget {
   final String roomId;
   final String? selectedValue;
   final String canCheck;
+  final String? secondaryCanCheck;
   final String keyPrefix;
   final Function(String)? onSelect;
   final Widget Function(bool)? trailingBuilder;
@@ -17,6 +18,7 @@ class BriefRoomEntry extends ConsumerWidget {
     super.key,
     required this.roomId,
     required this.canCheck,
+    this.secondaryCanCheck,
     this.onSelect,
     required this.keyPrefix,
     this.selectedValue,
@@ -27,19 +29,29 @@ class BriefRoomEntry extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomMembership = ref.watch(roomMembershipProvider(roomId));
-    final canLink = roomMembership.maybeWhen(
+
+    bool canPermission = roomMembership.maybeWhen(
       data: (membership) => membership?.canString(canCheck) == true,
       orElse: () => false,
     );
+
+    if (secondaryCanCheck != null) {
+      bool seocndayrCanPermission = roomMembership.maybeWhen(
+        data: (membership) => membership?.canString(secondaryCanCheck!) == true,
+        orElse: () => false,
+      );
+      canPermission = canPermission || seocndayrCanPermission;
+    }
+
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
-    Widget? trailing = trailingBuilder.map((cb) => cb(canLink));
+    Widget? trailing = trailingBuilder.map((cb) => cb(canPermission));
     if (trailing == null && selectedValue == roomId) {
       trailing = const Icon(Icons.check_circle_outline);
     }
     return ListTile(
       key: Key('$keyPrefix-$roomId'),
-      enabled: canLink,
+      enabled: (canPermission),
       leading: RoomAvatarBuilder(
         roomId: roomId,
         avatarSize: 24,
@@ -47,7 +59,7 @@ class BriefRoomEntry extends ConsumerWidget {
       title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,
-      onTap: canLink ? onSelect.map((cb) => () => cb(roomId)) : null,
+      onTap: (canPermission) ? onSelect.map((cb) => () => cb(roomId)) : null,
     );
   }
 }

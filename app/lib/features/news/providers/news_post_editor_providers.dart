@@ -39,7 +39,8 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   Future<void> changeNewsPostSpaceId(BuildContext context) async {
     final spaceId = await selectSpaceDrawer(
       context: context,
-      canCheck: 'CanInvite',
+      canCheck: 'CanPostNews',
+      secondaryCanCheck: 'CanPostStories',
     );
     state = state.copyWith(newsPostSpaceId: spaceId);
   }

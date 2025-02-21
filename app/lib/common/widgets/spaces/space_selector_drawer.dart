@@ -8,6 +8,7 @@ Future<String?> selectSpaceDrawer({
   required BuildContext context,
   Key? key = selectSpaceDrawerKey,
   String canCheck = 'CanLinkSpaces',
+  String? secondaryCanCheck,
   String? currentSpaceId,
   Widget? title,
 }) async {
@@ -22,6 +23,7 @@ Future<String?> selectSpaceDrawer({
       child: SelectRoomDrawer(
         key: key,
         canCheck: canCheck,
+        secondaryCanCheck: secondaryCanCheck,
         currentSpaceId: currentSpaceId,
         title: title ?? Text(L10n.of(context).selectSpace),
         keyPrefix: 'select-space',
