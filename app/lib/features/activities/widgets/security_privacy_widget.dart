@@ -62,6 +62,7 @@ class SecurityPrivacyWidget extends ConsumerWidget {
         Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         ConstrainedBox(
+          key: Key('subtitle-key'),
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width - 100,
           ),
