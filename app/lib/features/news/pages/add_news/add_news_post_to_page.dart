@@ -31,6 +31,11 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
 
   @override
   Widget build(BuildContext context) {
+    //Default initialisation
+    selectedPostType.value = PostTypeSelection.none;
+    canPostBoost.value = false;
+    canPostStories.value = false;
+
     //Initialize variables based on the selected space
     final selectedSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
     if (selectedSpaceId != null) {
@@ -38,7 +43,6 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
           ref.watch(roomMembershipProvider(selectedSpaceId)).valueOrNull;
       canPostBoost.value = membership?.canString('CanPostNews') == true;
       canPostStories.value = membership?.canString('CanPostStories') == true;
-      selectedPostType.value = PostTypeSelection.none;
     }
 
     //Start build UI
