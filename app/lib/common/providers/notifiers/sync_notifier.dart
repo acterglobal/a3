@@ -39,10 +39,10 @@ class SyncNotifier extends Notifier<SyncState> {
         // hack unfortunately means we have two wait a bit but that means
         // we get past the threshold where it is okay to schedule...
         client = newClient;
-        Future.delayed(
-          const Duration(milliseconds: 1500),
-          () => _restartSync(),
-        );
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          _log.info('**************** _restartSync 1 *****************');
+          _restartSync();
+        });
       },
       fireImmediately: true,
     );
@@ -54,13 +54,17 @@ class SyncNotifier extends Notifier<SyncState> {
     state.countDown.map(
       (countDown) {
         if (countDown == 0) {
+          _log.info('**************** _restartSync 2 *****************');
           _restartSync();
         } else {
           // just count down.
           state = state.copyWith(countDown: countDown - 1);
         }
       },
-      orElse: () => _restartSync(),
+      orElse: () {
+        _log.info('**************** _restartSync 3 *****************');
+        _restartSync();
+      },
     );
   }
 
