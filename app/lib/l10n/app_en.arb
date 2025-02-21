@@ -1113,7 +1113,7 @@
   "@sentAnImage": {},
   "server": "Server",
   "@server": {},
-  "sessions": "Sessions",
+  "sessions": "Session",
   "@sessions": {},
   "sessionTokenName": "Session Token Name",
   "@sessionTokenName": {},
@@ -1309,6 +1309,16 @@
   "@unverifiedSessions": {},
   "unverifiedSessionsDescription": "You have devices logged in your account that aren’t verified. This can be a security risk. Please ensure this is okay.",
   "@unverifiedSessionsDescription": {},
+  "unverifiedSessionsCount": "There are {count} unverified sessions logged in",
+  "@unverifiedSessionsCount": {
+    "description": "Text shown for number of unverified sessions",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "6"
+      }
+    }
+  },
   "upcoming": "Upcoming",
   "@upcoming": {},
   "updatePowerLevel": "Update Permission level",

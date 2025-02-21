@@ -61,7 +61,7 @@ class ActerTheme {
     dialogTheme: dialogTheme,
     bottomSheetTheme: bottomSheetTheme,
     elevatedButtonTheme: elevatedButtonTheme(colorScheme),
-    outlinedButtonTheme: outlinedButtonTheme,
+    outlinedButtonTheme: outlinedButtonTheme(colorScheme, textTheme),
     textButtonTheme: textButtonTheme(colorScheme),
     iconButtonTheme: iconButtonTheme,
     inputDecorationTheme: inputDecorationTheme,

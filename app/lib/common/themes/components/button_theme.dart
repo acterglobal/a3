@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
     ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         elevation: 0,
         backgroundColor: colors.primary,
         foregroundColor: Colors.white,
@@ -38,16 +41,26 @@ TextButtonThemeData inlineTextButtonThemeMaker(ColorScheme colors) =>
       ),
     );
 
-final outlinedButtonTheme = OutlinedButtonThemeData(
-  style: OutlinedButton.styleFrom(
-    padding: const EdgeInsets.all(18),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    foregroundColor: Colors.white,
-    backgroundColor: Colors.transparent,
-  ),
-);
+OutlinedButtonThemeData outlinedButtonTheme(ColorScheme colors, TextTheme textTheme) =>
+    OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colors.primary,
+        side: BorderSide(color: colors.primary),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+        textStyle: textTheme.titleMedium?.copyWith(
+          color: colors.primary,
+          fontSize: 15,
+        ),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    );
 
 TextButtonThemeData textButtonTheme(ColorScheme colors) => TextButtonThemeData(
       style: TextButton.styleFrom(
