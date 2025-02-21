@@ -207,6 +207,11 @@ object OptionComposeDraft {
     fn draft() -> Option<ComposeDraft>;
 }
 
+object OptionRoomMessage {
+    /// get data
+    fn data() -> Option<RoomMessage>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;

@@ -45,15 +45,15 @@ use super::{
     Client, Convo, Room, Space,
 };
 
-struct Timeline {
-    inner: Arc<SdkTimeline>,
+pub(crate) struct Timeline {
+    pub(crate) inner: Arc<SdkTimeline>,
     items: Arc<Mutex<Vector<Arc<TimelineItem>>>>,
     task: JoinHandle<()>,
 }
 
 /// Extra room information, like its display name, etc.
 #[derive(Debug, Clone)]
-struct ExtraRoomInfo {
+pub(crate) struct ExtraRoomInfo {
     /// Content of the raw m.room.name event, if available.
     raw_name: Option<String>,
 
@@ -67,6 +67,12 @@ struct ExtraRoomInfo {
     latest_msg: Option<RoomMessage>,
 }
 
+impl ExtraRoomInfo {
+    pub fn latest_msg(&self) -> Option<RoomMessage> {
+        self.latest_msg.clone()
+    }
+}
+
 #[derive(Clone)]
 pub struct SyncController {
     /// The sync service used for synchronizing events.
@@ -78,10 +84,10 @@ pub struct SyncController {
     pub(crate) ui_rooms: Arc<Mutex<HashMap<OwnedRoomId, room_list_service::Room>>>,
 
     /// Timelines data structures for each room.
-    timelines: Arc<Mutex<HashMap<OwnedRoomId, Timeline>>>,
+    pub(crate) timelines: Arc<Mutex<HashMap<OwnedRoomId, Timeline>>>,
 
     /// Extra information about rooms.
-    room_infos: Arc<Mutex<HashMap<OwnedRoomId, ExtraRoomInfo>>>,
+    pub(crate) room_infos: Arc<Mutex<HashMap<OwnedRoomId, ExtraRoomInfo>>>,
 
     /// Task listening to room list service changes, and spawning timelines.
     main_listener: Arc<Mutex<Option<JoinHandle<()>>>>,
