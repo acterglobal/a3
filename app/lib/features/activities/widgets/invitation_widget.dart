@@ -30,6 +30,13 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   String? roomTitle;
   late AvatarInfo avatarInfo;
 
+  L10n get lang => L10n.of(context);
+  bool get isDM => widget.invitation.isDm();
+  bool get isSpace => widget.invitation.room().isSpace();
+  String get roomId => widget.invitation.roomIdStr();
+  String get senderId => widget.invitation.senderIdStr();
+  dynamic get profile => ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
+
   @override
   void initState() {
     super.initState();
@@ -89,11 +96,6 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   }
 
   Widget buildLeadingImageUI() {
-    final isDM = widget.invitation.isDm();
-    final profile =
-        ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
-    final roomId = widget.invitation.roomIdStr();
-
     return ActerAvatar(
       options: isDM
           ? AvatarOptions.DM(
@@ -129,12 +131,6 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   }
 
   Widget buildTitle(BuildContext context) {
-    final isDM = widget.invitation.isDm();
-    final profile =
-        ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
-    final roomId = widget.invitation.roomIdStr();
-    final senderId = widget.invitation.senderIdStr();
-
     return GestureDetector(
       onTap: () => showRoomPreview(context: context, roomIdOrAlias: roomId),
       child: Text(
@@ -145,10 +141,6 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   }
 
   Widget buildInvitationType(BuildContext context) {
-    final lang = L10n.of(context);
-    final isDM = widget.invitation.isDm();
-    final isSpace = widget.invitation.room().isSpace();
-
     return Text(
       isDM
           ? lang.invitationToDM
@@ -158,9 +150,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   }
 
   Widget buildInviterChip() {
-    final profile =
-        ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
-    final senderId = widget.invitation.senderIdStr();
+
 
     return Chip(
       visualDensity: VisualDensity.compact,
@@ -179,19 +169,17 @@ class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
   }
 
   Widget buildActionButtons(BuildContext context) {
-    final lang = L10n.of(context);
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         ElevatedButton(
-          onPressed: () => _onTapDeclineInvite(context),
-          child: Text(lang.decline),
+          onPressed: () => _onTapAcceptInvite(context),
+          child: Text(isDM ? lang.startDM : lang.accept),
         ),
         const SizedBox(width: 8),
         OutlinedButton(
-          onPressed: () => _onTapAcceptInvite(context),
-          child: Text(lang.accept),
+          onPressed: () => _onTapDeclineInvite(context),
+          child: Text(lang.decline),
         ),
       ],
     );
