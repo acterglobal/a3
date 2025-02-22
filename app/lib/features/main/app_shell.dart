@@ -22,6 +22,8 @@ import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_notifify/acter_notifify.dart';
+import 'package:acter_notifify/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -146,6 +148,8 @@ class AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    setActerNotififyL1On(ActerNotififyL10n.of(context));
+
     // get platform of context.
     if (ref.watch(clientProvider).valueOrNull == null) {
       // at the very startup we might not yet have a client loaded
