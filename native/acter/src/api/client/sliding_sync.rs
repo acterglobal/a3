@@ -402,8 +402,7 @@ impl Client {
                     remove_from_convo(&mut convos, &r_id);
                     updated.push(r_id);
                 } else {
-                    if let Some(convo_idx) = convos.iter().position(|s| s.room_id() == r_id)
-                    {
+                    if let Some(convo_idx) = convos.iter().position(|s| s.room_id() == r_id) {
                         let convo = convos.remove(convo_idx).update_room(inner);
                         // convo.update_latest_msg_ts().await;
                         let mut room_infos = self.sync_controller.room_infos.lock().await;
@@ -490,10 +489,10 @@ impl Client {
             self.spaces.write().await.append(spaces);
         }
 
-        let mut convos: Vector<Convo> = c
+        let mut convos = c
             .into_iter()
             .map(|r| Convo::new(self.clone(), r))
-            .collect();
+            .collect::<Vector<Convo>>();
         {
             let rooms = self.sync_controller.rooms.read().await;
             let room_infos = self.sync_controller.room_infos.lock().await;
@@ -529,10 +528,7 @@ fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &Ow
     }
 }
 
-fn remove_from_convo(
-    target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
-    r_id: &OwnedRoomId,
-) {
+fn remove_from_convo(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id: &OwnedRoomId) {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
         target.remove(idx);
     }

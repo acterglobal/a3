@@ -37,8 +37,8 @@ use tracing::{error, info, trace, warn};
 use crate::TimelineStream;
 
 use super::{
-    common::OptionRoomMessage,
     client::Client,
+    common::OptionRoomMessage,
     message::RoomMessage,
     room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
