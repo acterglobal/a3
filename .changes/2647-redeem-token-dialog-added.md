@@ -1,0 +1,1 @@
+- [improvement] : If user don't own the code, they can now redeem it directly instead of copying it.
