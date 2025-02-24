@@ -3,7 +3,6 @@ import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
@@ -100,7 +99,6 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   }
 
   AppBar _buildAppBar(bool useGridMode) {
-    final spaceId = widget.spaceId;
     final canPop = widget.newsViewMode == NewsViewMode.gridView &&
         this.useGridMode.value == true;
     return AppBar(
