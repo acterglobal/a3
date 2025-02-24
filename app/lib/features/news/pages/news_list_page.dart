@@ -91,14 +91,8 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
           appBar: _buildAppBar(value),
           body: ValueListenableBuilder(
             valueListenable: stillLoadingForSelectedItem,
-            builder: (context, loading, child) => loading
-                ? const NewsSkeletonWidget()
-                : Stack(
-                    children: [
-                      _buildBody(value),
-                      SafeArea(child: NewsFilterButtons()),
-                    ],
-                  ),
+            builder: (context, loading, child) =>
+                loading ? const NewsSkeletonWidget() : _buildBody(value),
           ),
         );
       },
@@ -124,16 +118,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
               icon: const Icon(Icons.arrow_back),
             )
           : const SizedBox.shrink(),
-      title: widget.newsViewMode == NewsViewMode.gridView
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(L10n.of(context).boosts),
-                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-              ],
-            )
-          : const SizedBox.shrink(),
+      title: NewsFilterButtons(),
       actions: [
         AddButtonWithCanPermission(
           canString: 'CanPostNews',
@@ -156,15 +141,12 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         if (updateList.isEmpty) return newsEmptyStateUI(context);
 
         return useGridMode
-            ? Padding(
-                padding: const EdgeInsets.only(top: 70),
-                child: NewsGridView(
-                  updateList: updateList,
-                  onTapNewItem: (index) {
-                    this.useGridMode.value = false;
-                    currentIndex.value = index;
-                  },
-                ),
+            ? NewsGridView(
+                updateList: updateList,
+                onTapNewItem: (index) {
+                  this.useGridMode.value = false;
+                  currentIndex.value = index;
+                },
               )
             : NewsFullView(
                 updateList: updateList,
