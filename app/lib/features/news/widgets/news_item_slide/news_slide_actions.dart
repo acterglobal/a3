@@ -12,8 +12,6 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -129,7 +127,6 @@ class NewsSlideActions extends ConsumerWidget {
     WidgetRef ref,
     RefDetails referenceDetails,
   ) {
-    final lang = L10n.of(context);
     final title = referenceDetails.title();
     if (title == null) return SizedBox.shrink();
     return Card(
