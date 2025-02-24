@@ -151,6 +151,7 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
   //App Bar
   AppBar appBarUI(BuildContext context) {
+    final actionButtonColor = Theme.of(context).colorScheme.onSurface;
     return AppBar(
       leading: IconButton(
         key: UpdateKeys.closeEditor,
@@ -171,13 +172,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
               OutlinedButton.icon(
                 onPressed: () => selectActionItemDialog(context),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  side: BorderSide(color: actionButtonColor),
                 ),
-                icon: const Icon(Icons.add),
-                label: Text(L10n.of(context).action),
+                icon: Icon(Icons.add, color: actionButtonColor),
+                label: Text(
+                  L10n.of(context).action,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
               IconButton(
                 key: UpdateKeys.slideBackgroundColor,
