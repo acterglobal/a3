@@ -39,24 +39,26 @@ class NewsFilterButtons extends ConsumerWidget {
             UpdateFilters.values[index];
       },
       children: UpdateFilters.values
-          .map((filter) => _buildFilterButton(filter, lang))
+          .map((filter) => _buildFilterButton(ref, filter, lang))
           .toList(),
     );
   }
 
-  Widget _buildFilterButton(UpdateFilters filter, L10n lang) {
+  Widget _buildFilterButton(WidgetRef ref, UpdateFilters filter, L10n lang) {
     return Row(
       children: [
-        _buildFilterText(filter, lang),
+        _buildFilterText(ref, filter, lang),
         if (filter != UpdateFilters.story) _buildDivider(),
       ],
     );
   }
 
-  Widget _buildFilterText(UpdateFilters filter, L10n lang) {
+  Widget _buildFilterText(WidgetRef ref, UpdateFilters filter, L10n lang) {
+    final isSelected = ref.watch(updateFilterProvider) == filter;
     return Text(
       _getFilterText(filter, lang),
       style: TextStyle(
+        fontSize: isSelected ? 18.0 : 16.0,
         shadows: [
           Shadow(
             offset: const Offset(1, 1),
@@ -81,7 +83,7 @@ class NewsFilterButtons extends ConsumerWidget {
 
   Widget _buildDivider() {
     return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 6),
       child: Container(
         height: 15,
         width: 1,
