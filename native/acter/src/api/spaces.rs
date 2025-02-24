@@ -162,16 +162,17 @@ impl Space {
 
 impl Space {
     #[cfg(feature = "testing")]
-    pub async fn timeline_stream(&self) -> TimelineStream {
-        let room = self.inner.clone();
-        let timeline = Arc::new(
-            self.inner
-                .deref()
-                .timeline()
-                .await
-                .expect("Timeline creation doesn’t fail"),
-        );
-        TimelineStream::new(room, timeline)
+    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
+        let client = self.client.clone();
+        let inner = self.inner.clone();
+        RUNTIME
+            .spawn(async move {
+                let timelines = client.sync_controller.timelines.read().await;
+                let room_id = inner.room.room_id();
+                let timeline = timelines.get(room_id).context("timeline not started yet")?;
+                Ok(TimelineStream::new(inner, Arc::new(timeline.clone())))
+            })
+            .await?
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
@@ -416,7 +417,7 @@ impl Client {
                 let values: Vec<Space> = locked
                     .iter()
                     .filter(|room| room.is_space())
-                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone()))
+                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone(), me.sync_controller.clone()))
                     .map(|inner| Space::new(me.clone(), inner))
                     .collect();
                 (
@@ -427,7 +428,7 @@ impl Client {
             let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
                 diff,
                 |x: room_list_service::Room| {
-                    let inner = Room::new(me.core.clone(), x.inner_room().clone());
+                    let inner = Room::new(me.core.clone(), x.inner_room().clone(), me.sync_controller.clone());
                     Space::new(me.clone(), inner)
                 },
             ));
@@ -441,19 +442,23 @@ impl Client {
 
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn space_typed(&self, room_id: &RoomId) -> Option<Space> {
-        let ui_rooms = self.sync_controller.ui_rooms.lock().await;
-        let me = self.clone();
+        let ui_rooms = self.sync_controller.ui_rooms.read().await;
         ui_rooms
             .get(room_id)
             .filter(|r| r.is_space())
-            .map(|room| Room::new(me.core.clone(), room.inner_room().clone()))
-            .map(|inner| Space::new(me.clone(), inner))
+            .map(|room| {
+                Room::new(
+                    self.core.clone(),
+                    room.inner_room().clone(),
+                    self.sync_controller.clone(),
+                )
+            })
+            .map(|inner| Space::new(self.clone(), inner))
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
-        let ui_rooms = self.sync_controller.ui_rooms.lock().await;
-        let me = self.clone();
+        let ui_rooms = self.sync_controller.ui_rooms.read().await;
         let space = ui_rooms
             .iter()
             .find(|(room_id, room)| {
@@ -469,12 +474,18 @@ impl Client {
                 }
                 false
             })
-            .map(|(room_id, room)| Room::new(me.core.clone(), room.inner_room().clone()))
-            .map(|inner| Space::new(me.clone(), inner));
+            .map(|(room_id, room)| {
+                Room::new(
+                    self.core.clone(),
+                    room.inner_room().clone(),
+                    self.sync_controller.clone(),
+                )
+            })
+            .map(|inner| Space::new(self.clone(), inner));
         match space {
             Some(space) => Ok(space),
             None => {
-                let room_id = me.resolve_room_alias(room_alias.clone()).await?;
+                let room_id = self.resolve_room_alias(room_alias.clone()).await?;
                 self.space_typed(&room_id).await.context(format!(
                     "Space with alias {room_alias} ({room_id}) not found"
                 ))

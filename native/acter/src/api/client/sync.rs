@@ -22,7 +22,6 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use matrix_sdk_ui::eyeball_im::ObservableVector;
 use std::{
     borrow::Cow,
     collections::BTreeMap,
@@ -32,6 +31,7 @@ use std::{
         atomic::{AtomicBool, Ordering},
         Arc,
     },
+    time::Instant,
 };
 use tokio::{
     sync::{
@@ -259,6 +259,7 @@ impl Client {
         sync_keys: Vec<OwnedRoomId>,
         first_sync_task: Mutable<Option<JoinHandle<Result<()>>>>,
         history: Mutable<HistoryLoadState>,
+        start: Instant,
     ) {
         let me = self.clone();
         let first_sync_task_inner = first_sync_task.clone();
@@ -271,6 +272,7 @@ impl Client {
         *first_sync_inner = Some(tokio::spawn(async move {
             trace!(user_id=?me.user_id_ref(), "refreshing history");
             let mut spaces = me.spaces().await?;
+            info!("first sync - 666666 - {:?}", start.elapsed());
             let initial_space_setup = spaces
                 .iter()
                 .map(|r| r.room_id().to_owned())
@@ -304,6 +306,7 @@ impl Client {
                 history.lock_mut().done_loading(room_id.to_owned());
             }))
             .await;
+            info!("first sync - 777777 - {:?}", start.elapsed());
             // once done, let’s reset the first_sync_task to clear it from memory
             first_sync_task_inner.set(None);
             Ok(())
@@ -320,7 +323,12 @@ impl Client {
         futures::future::join_all(
             new_spaces
                 .into_iter()
-                .map(|room| Space::new(self.clone(), Room::new(self.core.clone(), room)))
+                .map(|room| {
+                    Space::new(
+                        self.clone(),
+                        Room::new(self.core.clone(), room, self.sync_controller.clone()),
+                    )
+                })
                 .map(|mut space| {
                     let history = history.clone();
                     async move {
@@ -371,25 +379,25 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
+                let start = Instant::now();
                 let (first_synced_tx, first_synced_rx) = channel(1);
                 let first_synced_arc = Arc::new(first_synced_tx);
 
                 let (sync_error_tx, sync_error_rx) = channel(1);
                 let sync_error_arc = Arc::new(sync_error_tx);
 
-                me.start_sliding_sync().await?;
-
                 let initial = Arc::new(AtomicBool::from(true));
                 let sync_state = SyncState::new(first_synced_rx, sync_error_rx);
                 let history_loading = sync_state.history_loading.clone();
                 let first_sync_task = sync_state.first_sync_task.clone();
 
+                let me_cl = me.clone();
                 let handle = tokio::spawn(async move {
                     info!("spawning sync callback");
 
                     let mut sync_settings = SyncSettings::new().timeout(Duration::from_secs(25));
 
-                    match me.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
+                    match me_cl.store().get_raw::<Option<String>>(SYNC_TOKEN_KEY).await {
                         Ok(Some(token)) => {
                             trace!(?token, "sync found token!");
                             sync_settings = sync_settings.token(token);
@@ -402,11 +410,13 @@ impl Client {
                         }
                         _ => {}
                     }
+                    info!("first sync - 111111 - {:?}", start.elapsed());
 
                     // keep the sync timeout below the actual connection timeout to ensure we receive it
                     // back before the server timeout occurred
 
                     let mut sync_stream = Box::pin(client.sync_stream(sync_settings).await);
+                    info!("first sync - 222222 - {:?}", start.elapsed());
 
                     // fetch the events that received when offline
                     while let Some(result) = sync_stream.next().await {
@@ -433,6 +443,7 @@ impl Client {
                             info!("received first sync");
                             trace!(user_id=?client.user_id(), "initial synced");
                             invitation_controller.load_invitations().await;
+                            info!("first sync - 333333 - {:?}", start.elapsed());
 
                             initial.store(false, Ordering::SeqCst);
 
@@ -443,10 +454,11 @@ impl Client {
                             };
                             let sync_keys = response.rooms.join.keys().cloned().collect();
                             // background and keep the handle around.
-                            me.refresh_history_on_start(
+                            me_cl.refresh_history_on_start(
                                 sync_keys,
                                 first_sync_task.clone(),
                                 history_loading.clone(),
+                                start,
                             );
                         } else {
                             // see if we have new spaces to catch up upon
@@ -455,7 +467,7 @@ impl Client {
                                 if history_loading.lock_mut().knows_room(room_id) {
                                     continue;
                                 }
-                                let Some(full_room) = me.get_room(room_id) else {
+                                let Some(full_room) = me_cl.get_room(room_id) else {
                                     error!("room not found. how can that be?");
                                     continue;
                                 };
@@ -465,7 +477,7 @@ impl Client {
                             }
 
                             if !new_spaces.is_empty() {
-                                me.refresh_history_on_way(history_loading.clone(), new_spaces)
+                                me_cl.refresh_history_on_way(history_loading.clone(), new_spaces)
                                     .await;
                             }
                         }
@@ -485,13 +497,14 @@ impl Client {
                                 .collect();
                             if !keys.is_empty() {
                                 info!("account data keys: {keys:?}");
-                                me.executor().notify(keys);
+                                me_cl.executor().notify(keys);
                             }
                         }
 
                         if let Ok(mut w) = state.try_write() {
                             if w.should_stop_syncing {
                                 w.is_syncing = false;
+                                info!("first sync - 444444 - {:?}", start.elapsed());
                                 trace!("Stopping syncing upon user request");
                                 return;
                             }
@@ -503,7 +516,7 @@ impl Client {
                         }
 
                         trace!(token = response.next_batch, "storing sync token");
-                        if let Err(error) = me
+                        if let Err(error) = me_cl
                             .store()
                             .set_raw(SYNC_TOKEN_KEY, &response.next_batch)
                             .await
@@ -519,6 +532,9 @@ impl Client {
                         w.is_syncing = false;
                     };
                 });
+
+                me.start_sliding_sync().await?;
+                info!("first sync - 555555 - {:?}", start.elapsed());
 
                 sync_state.handle.set(Some(handle));
                 Ok(sync_state)

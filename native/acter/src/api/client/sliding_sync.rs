@@ -2,10 +2,10 @@ use acter_core::referencing::{ExecuteReference, RoomParam};
 use anyhow::Result;
 use futures::{
     future::join_all,
-    lock::{Mutex, MutexGuard},
     pin_mut,
     stream::{Stream, StreamExt},
 };
+use futures_signals::signal::Mutable;
 use imbl::vector::Vector;
 use matrix_sdk_base::{
     ruma::{api::client::sync::sync_events, assign, OwnedRoomId, RoomId},
@@ -44,10 +44,11 @@ use super::{
     Client, Convo, Room, Space,
 };
 
+#[derive(Debug, Clone)]
 pub(crate) struct Timeline {
     pub(crate) inner: Arc<SdkTimeline>,
-    items: Arc<Mutex<Vector<Arc<TimelineItem>>>>,
-    task: JoinHandle<()>,
+    pub(crate) items: Arc<RwLock<ObservableVector<Arc<TimelineItem>>>>,
+    task: Arc<JoinHandle<()>>,
 }
 
 /// Extra room information, like its display name, etc.
@@ -67,6 +68,10 @@ pub(crate) struct ExtraRoomInfo {
 }
 
 impl ExtraRoomInfo {
+    pub fn display_name(&self) -> Option<String> {
+        self.display_name.clone()
+    }
+
     pub fn latest_msg(&self) -> Option<RoomMessage> {
         self.latest_msg.clone()
     }
@@ -75,21 +80,21 @@ impl ExtraRoomInfo {
 #[derive(Clone)]
 pub struct SyncController {
     /// The sync service used for synchronizing events.
-    sync_service: Arc<Mutex<Option<SyncService>>>,
+    sync_service: Arc<Mutable<Option<SyncService>>>,
 
     pub(crate) rooms: Arc<RwLock<ObservableVector<room_list_service::Room>>>,
 
     /// Room list service rooms known to the app.
-    pub(crate) ui_rooms: Arc<Mutex<HashMap<OwnedRoomId, room_list_service::Room>>>,
+    pub(crate) ui_rooms: Arc<RwLock<HashMap<OwnedRoomId, room_list_service::Room>>>,
 
     /// Timelines data structures for each room.
-    pub(crate) timelines: Arc<Mutex<HashMap<OwnedRoomId, Timeline>>>,
+    pub(crate) timelines: Arc<RwLock<HashMap<OwnedRoomId, Timeline>>>,
 
     /// Extra information about rooms.
-    pub(crate) room_infos: Arc<Mutex<HashMap<OwnedRoomId, ExtraRoomInfo>>>,
+    pub(crate) room_infos: Arc<RwLock<HashMap<OwnedRoomId, ExtraRoomInfo>>>,
 
     /// Task listening to room list service changes, and spawning timelines.
-    main_listener: Arc<Mutex<Option<JoinHandle<()>>>>,
+    main_listener: Arc<Mutable<Option<JoinHandle<()>>>>,
 }
 
 impl fmt::Debug for SyncController {
@@ -117,18 +122,23 @@ impl SyncController {
     }
 
     pub async fn cancel(&self) -> Result<bool> {
-        let mut me = self.clone();
+        let mut timelines = self.timelines.clone();
+        let mut main_listener = self.main_listener.clone();
+        let mut sync_service = self.sync_service.clone();
         RUNTIME
             .spawn(async move {
-                let mut sync_service = me.sync_service.lock().await;
-                if let Some(sync_service) = sync_service.take() {
-                    sync_service.stop().await;
-                }
-
-                let timelines = me.timelines.lock().await;
-                for (room_id, timeline) in timelines.iter() {
+                for (room_id, timeline) in timelines.read().await.iter() {
                     info!("abort room timeline listener: {}", room_id);
                     timeline.task.abort();
+                }
+                timelines.write().await.clear();
+
+                if let Some(main_listener) = main_listener.replace(None) {
+                    main_listener.abort();
+                }
+
+                if let Some(sync_service) = sync_service.replace(None) {
+                    sync_service.stop().await;
                 }
 
                 Ok(true)
@@ -227,7 +237,7 @@ impl Client {
                 // we couldn't do below, because it's a sync lock, and has to be
                 // sync b/o rendering; and we'd have to cross await points
                 // below).
-                let prev_ui_rooms = ui_rooms.lock().await.clone();
+                let prev_ui_rooms = ui_rooms.read().await.clone();
 
                 let mut new_ui_rooms = HashMap::new();
                 let mut new_timelines = vec![];
@@ -243,7 +253,7 @@ impl Client {
                             warn!("couldn't figure whether a room is a DM or not: {err}");
                         })
                         .ok();
-                    room_infos.lock().await.insert(
+                    room_infos.write().await.insert(
                         room.room_id().to_owned(),
                         ExtraRoomInfo {
                             raw_name,
@@ -286,8 +296,8 @@ impl Client {
                     let mut fetched_latest_msg = false;
                     for item in items.clone().into_iter().rev() {
                         if item.as_event().is_some() {
-                            let mut ri = room_infos.lock().await;
-                            if let Some(info) = ri.get_mut(ui_room.room_id()) {
+                            if let Some(info) = room_infos.write().await.get_mut(ui_room.room_id())
+                            {
                                 let full_event = RoomMessage::from((item.clone(), my_id.clone()));
                                 me.set_latest_message(ui_room.room_id(), info, full_event)
                                     .await;
@@ -301,7 +311,7 @@ impl Client {
                             error!(?err, room_id=?ui_room.room_id(), "backpagination failed");
                         }
                     }
-                    let items = Arc::new(Mutex::new(items));
+                    let items = Arc::new(RwLock::new(ObservableVector::from(items)));
 
                     // Spawn a timeline task that will listen to all the timeline item changes.
                     let i = items.clone();
@@ -313,9 +323,55 @@ impl Client {
                         let room_infos = ri;
                         while let Some(diffs) = stream.next().await {
                             // Apply the diffs to the list of timeline items.
-                            let mut items = items.lock().await;
-                            for diff in diffs {
-                                diff.apply(&mut items);
+                            let mut items = items.write().await;
+                            for diff in diffs.clone() {
+                                match diff {
+                                    VectorDiff::Append { values } => {
+                                        info!("items append");
+                                        items.append(values);
+                                    }
+                                    VectorDiff::Clear => {
+                                        info!("items clear");
+                                        items.clear();
+                                    }
+                                    VectorDiff::Insert { index, value } => {
+                                        info!("items insert");
+                                        items.insert(index, value);
+                                    }
+                                    VectorDiff::PopBack => {
+                                        info!("items pop back");
+                                        items.pop_back();
+                                    }
+                                    VectorDiff::PopFront => {
+                                        info!("items pop front");
+                                        items.pop_front();
+                                    }
+                                    VectorDiff::PushBack { value } => {
+                                        info!("items push back");
+                                        items.push_back(value);
+                                    }
+                                    VectorDiff::PushFront { value } => {
+                                        info!("items push front");
+                                        items.push_front(value);
+                                    }
+                                    VectorDiff::Remove { index } => {
+                                        info!("items remove");
+                                        items.remove(index);
+                                    }
+                                    VectorDiff::Reset { values } => {
+                                        info!("items reset");
+                                        items.clear();
+                                        items.append(values);
+                                    }
+                                    VectorDiff::Set { index, value } => {
+                                        info!("items set");
+                                        items.set(index, value);
+                                    }
+                                    VectorDiff::Truncate { length } => {
+                                        info!("items truncate");
+                                        items.truncate(length);
+                                    }
+                                }
                             }
 
                             // Update the latest message of room.
@@ -323,7 +379,7 @@ impl Client {
                                 if item.as_event().is_some() {
                                     let full_event =
                                         RoomMessage::from((item.clone(), my_id.clone()));
-                                    let mut ri = room_infos.lock().await;
+                                    let mut ri = room_infos.write().await;
                                     if let Some(info) = ri.get_mut(&room_id) {
                                         info.latest_msg = Some(full_event);
                                     }
@@ -337,7 +393,7 @@ impl Client {
                         Timeline {
                             inner: sdk_timeline,
                             items,
-                            task: timeline_task,
+                            task: Arc::new(timeline_task),
                         },
                     ));
 
@@ -345,8 +401,8 @@ impl Client {
                     new_ui_rooms.insert(ui_room.room_id().to_owned(), ui_room.clone());
                 }
 
-                ui_rooms.lock().await.extend(new_ui_rooms);
-                timelines.lock().await.extend(new_timelines);
+                ui_rooms.write().await.extend(new_ui_rooms);
+                timelines.write().await.extend(new_timelines);
 
                 me.update_rooms(&all_rooms).await;
 
@@ -358,10 +414,10 @@ impl Client {
         // This will sync (with encryption) until an error happens or the program is stopped.
         sync_service.start().await;
 
-        let mut sync_service_cl = self.sync_controller.sync_service.lock().await;
+        let mut sync_service_cl = self.sync_controller.sync_service.lock_mut();
         *sync_service_cl = Some(sync_service);
 
-        let mut main_listener_cl = self.sync_controller.main_listener.lock().await;
+        let mut main_listener_cl = self.sync_controller.main_listener.lock_mut();
         *main_listener_cl = Some(main_listener);
 
         Ok(())
@@ -389,7 +445,11 @@ impl Client {
                     continue;
                 }
 
-                let inner = Room::new(self.core.clone(), room.inner_room().clone());
+                let inner = Room::new(
+                    self.core.clone(),
+                    room.inner_room().clone(),
+                    self.sync_controller.clone(),
+                );
 
                 if inner.is_space() {
                     if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
@@ -405,10 +465,10 @@ impl Client {
                     if let Some(convo_idx) = convos.iter().position(|s| s.room_id() == r_id) {
                         let convo = convos.remove(convo_idx).update_room(inner);
                         // convo.update_latest_msg_ts().await;
-                        let mut room_infos = self.sync_controller.room_infos.lock().await;
+                        let mut room_infos = self.sync_controller.room_infos.write().await;
                         insert_to_convo(&mut convos, convo, &mut room_infos);
                     } else {
-                        let mut room_infos = self.sync_controller.room_infos.lock().await;
+                        let mut room_infos = self.sync_controller.room_infos.write().await;
                         insert_to_convo(
                             &mut convos,
                             Convo::new(self.clone(), inner),
@@ -465,7 +525,7 @@ impl Client {
             .collect::<Vector<Space>>();
         {
             let rooms = self.sync_controller.rooms.read().await;
-            let room_infos = self.sync_controller.room_infos.lock().await;
+            let room_infos = self.sync_controller.room_infos.read().await;
             spaces.sort_by(|a, b| {
                 let a_ts = room_infos
                     .get(a.room_id())
@@ -495,7 +555,7 @@ impl Client {
             .collect::<Vector<Convo>>();
         {
             let rooms = self.sync_controller.rooms.read().await;
-            let room_infos = self.sync_controller.room_infos.lock().await;
+            let room_infos = self.sync_controller.room_infos.read().await;
             convos.sort_by(|a, b| {
                 let a_ts = room_infos
                     .get(a.room_id())
@@ -538,7 +598,7 @@ fn remove_from_convo(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_i
 fn insert_to_convo(
     target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
     convo: Convo,
-    room_infos: &mut MutexGuard<HashMap<OwnedRoomId, ExtraRoomInfo>>,
+    room_infos: &mut RwLockWriteGuard<HashMap<OwnedRoomId, ExtraRoomInfo>>,
 ) {
     if let Some(msg_ts) = room_infos
         .get(convo.deref().room_id())

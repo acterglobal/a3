@@ -17,13 +17,16 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
+use matrix_sdk_ui::timeline::{TimelineEventItemId, TimelineItem};
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
 use crate::{Client, Room, RoomMessage, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
+use super::{
+    client::Timeline,
+    utils::{remap_for_diff, ApiVectorDiff},
+};
 
 pub mod msg_draft;
 use msg_draft::MsgContentDraft;
@@ -38,13 +41,13 @@ pub struct TimelineStream {
 }
 
 impl TimelineStream {
-    pub fn new(room: Room, timeline: Arc<Timeline>) -> Self {
+    pub(crate) fn new(room: Room, timeline: Arc<Timeline>) -> Self {
         TimelineStream { room, timeline }
     }
 
     pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
-        let timeline = self.timeline.clone();
-        let user_id = self
+        let items = self.timeline.items.clone();
+        let my_id = self
             .room
             .deref()
             .client()
@@ -53,26 +56,33 @@ impl TimelineStream {
             .to_owned();
 
         async_stream::stream! {
-            let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-            yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, user_id.clone()))).collect());
-
-            let mut remap = timeline_stream.map(|diff| diff.into_iter().map(|d| remap_for_diff(
-                d,
-                |x| RoomMessage::from((x, user_id.clone())),
-            )).collect::<Vec<_>>()
-            );
+            let (current_items, stream) = {
+                let locked = items.read().await;
+                let values: Vec<RoomMessage> = locked
+                    .clone()
+                    .into_iter()
+                    .map(|inner| RoomMessage::from((inner, my_id.clone())))
+                    .collect();
+                (
+                    RoomMessageDiff::current_items(values),
+                    locked.subscribe(),
+                )
+            };
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
+                diff,
+                |x: Arc<TimelineItem>| RoomMessage::from((x, my_id.clone())),
+            ));
+            yield current_items;
 
             while let Some(d) = remap.next().await {
-                for e in d {
-                    yield e
-                }
+                yield d
             }
         }
     }
 
     /// Get the next count messages backwards, and return whether it reached the end
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
 
         Ok(RUNTIME
             .spawn(async move { timeline.paginate_backwards(count).await })
@@ -82,15 +92,15 @@ impl TimelineStream {
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
         let event_id = OwnedEventId::try_from(event_id)?;
 
-        let timeline = self.timeline.clone();
-        let user_id = self.room.user_id()?;
+        let timeline = self.timeline.inner.clone();
+        let my_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(RoomMessage::new_event_item(user_id, &tl))
+                Ok(RoomMessage::new_event_item(my_id, &tl))
             })
             .await?
     }
@@ -105,7 +115,7 @@ impl TimelineStream {
         }
         let room = self.room.clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
 
         RUNTIME
             .spawn(async move {
@@ -128,7 +138,7 @@ impl TimelineStream {
         }
         let room = self.room.deref().clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -168,7 +178,7 @@ impl TimelineStream {
         }
         let room = self.room.deref().clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
         let event_id = EventId::parse(event_id)?;
         let client = self.room.client();
 
@@ -203,7 +213,7 @@ impl TimelineStream {
         thread: String,
         event_id: String,
     ) -> Result<bool> {
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
         let receipt_type = match receipt_type.as_str() {
             "FullyRead" => create_receipt::v3::ReceiptType::FullyRead,
             "Read" => create_receipt::v3::ReceiptType::Read,
@@ -232,7 +242,7 @@ impl TimelineStream {
     }
 
     pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
         let receipt = if user_triggered {
             create_receipt::v3::ReceiptType::Read
         } else {
@@ -253,7 +263,7 @@ impl TimelineStream {
         public_read_receipt: Option<String>,
         private_read_receipt: Option<String>,
     ) -> Result<bool> {
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
         let fully_read = match fully_read {
             Some(x) => match EventId::parse(x) {
                 Ok(event_id) => Some(event_id),
@@ -300,7 +310,7 @@ impl TimelineStream {
         }
         let room = self.room.clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.clone();
+        let timeline = self.timeline.inner.clone();
         let unique_id =
             match OwnedEventId::try_from(unique_id.clone()).map(TimelineEventItemId::EventId) {
                 Ok(o) => o,

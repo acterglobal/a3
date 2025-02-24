@@ -76,10 +76,10 @@ impl Convo {
         let inner = self.inner.clone();
         RUNTIME
             .spawn(async move {
-                let timelines = client.sync_controller.timelines.lock().await;
+                let timelines = client.sync_controller.timelines.read().await;
                 let room_id = inner.room.room_id();
                 let timeline = timelines.get(room_id).context("timeline not started yet")?;
-                Ok(TimelineStream::new(inner, timeline.inner.clone()))
+                Ok(TimelineStream::new(inner, Arc::new(timeline.clone())))
             })
             .await?
     }
@@ -89,7 +89,7 @@ impl Convo {
         let room_id = self.inner.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let timelines = client.sync_controller.timelines.lock().await;
+                let timelines = client.sync_controller.timelines.read().await;
                 let timeline = timelines
                     .get(&room_id)
                     .context("timeline not started yet")?;
@@ -126,7 +126,7 @@ impl Convo {
         let room_id = self.inner.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let room_infos = client.sync_controller.room_infos.lock().await;
+                let room_infos = client.sync_controller.room_infos.read().await;
                 let info = room_infos
                     .get(&room_id)
                     .context("room info not inited yet")?;
@@ -141,7 +141,7 @@ impl Convo {
         let room_id = self.inner.room.room_id().to_owned();
         RUNTIME
             .spawn(async move {
-                let room_infos = client.sync_controller.room_infos.lock().await;
+                let room_infos = client.sync_controller.room_infos.read().await;
                 let info = room_infos
                     .get(&room_id)
                     .context("room info not inited yet")?;
@@ -508,7 +508,7 @@ impl Client {
                 let values: Vec<Convo> = locked
                     .iter()
                     .filter(|room| room.is_space())
-                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone()))
+                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone(), me.sync_controller.clone()))
                     .map(|inner| Convo::new(me.clone(), inner))
                     .collect();
                 (
@@ -519,7 +519,7 @@ impl Client {
             let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
                 diff,
                 |x| {
-                    let inner = Room::new(me.core.clone(), x.inner_room().clone());
+                    let inner = Room::new(me.core.clone(), x.inner_room().clone(), me.sync_controller.clone());
                     Convo::new(me.clone(), inner)
                 },
             ));

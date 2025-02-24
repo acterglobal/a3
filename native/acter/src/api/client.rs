@@ -48,7 +48,7 @@ mod models;
 mod sliding_sync;
 mod sync;
 
-pub use sliding_sync::SyncController;
+pub(crate) use sliding_sync::{SyncController, Timeline};
 pub use sync::{HistoryLoadState, SyncState};
 
 #[derive(Default, Builder, Debug)]
@@ -161,19 +161,21 @@ impl Client {
 
         self.join_room_typed(parsed, servers).await
     }
+
     pub async fn join_room_typed(
         &self,
         room_id_or_alias: OwnedRoomOrAliasId,
         server_names: Vec<OwnedServerName>,
     ) -> Result<Room> {
         let core = self.core.clone();
+        let sync_controller = self.sync_controller.clone();
         RUNTIME
             .spawn(async move {
                 let joined = core
                     .client()
                     .join_room_by_id_or_alias(&room_id_or_alias, server_names.as_slice())
                     .await?;
-                Ok(Room::new(core.clone(), joined))
+                Ok(Room::new(core.clone(), joined, sync_controller))
             })
             .await?
     }
@@ -183,16 +185,17 @@ impl Client {
 impl Client {
     pub async fn new(client: SdkClient, state: ClientState) -> Result<Self> {
         let core = CoreClient::new(client.clone()).await?;
+        let sync_controller = SyncController::new();
         let mut cl = Client {
             core: core.clone(),
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(core),
+            invitation_controller: InvitationController::new(core, sync_controller.clone()),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
-            sync_controller: SyncController::new(),
+            sync_controller,
         };
         cl.load_from_cache().await;
         cl.setup_handlers();
@@ -201,6 +204,7 @@ impl Client {
 
     fn get_spaces_and_chats(&self) -> (Vec<Room>, Vec<Room>) {
         let core = self.core.clone();
+        let sync_controller = self.sync_controller.clone();
         // only include items we are ourselves are currently joined in
         self.core
             .client()
@@ -209,7 +213,7 @@ impl Client {
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), inner| {
-                    let room = Room::new(core.clone(), inner.clone());
+                    let room = Room::new(core.clone(), inner.clone(), sync_controller.clone());
                     if inner.is_space() {
                         spaces.push(room);
                     } else {
@@ -316,7 +320,11 @@ impl Client {
         if room_id_or_alias.is_room_id() {
             let room_id = RoomId::parse(room_id_or_alias.as_str())?;
             let room = self.room_by_id_typed(&room_id)?;
-            return Ok(Room::new(self.core.clone(), room));
+            return Ok(Room::new(
+                self.core.clone(),
+                room,
+                self.sync_controller.clone(),
+            ));
         }
 
         let room_alias = RoomAliasId::parse(room_id_or_alias.as_str())?;
@@ -360,19 +368,31 @@ impl Client {
             // looping locally first
             if let Some(con_alias) = r.canonical_alias() {
                 if con_alias == room_alias {
-                    return Ok(Room::new(self.core.clone(), r));
+                    return Ok(Room::new(
+                        self.core.clone(),
+                        r,
+                        self.sync_controller.clone(),
+                    ));
                 }
             }
             for alt_alias in r.alt_aliases() {
                 if alt_alias == room_alias {
-                    return Ok(Room::new(self.core.clone(), r));
+                    return Ok(Room::new(
+                        self.core.clone(),
+                        r,
+                        self.sync_controller.clone(),
+                    ));
                 }
             }
         }
         // nothing found, try remote:
         let response = client.resolve_room_alias(room_alias).await?;
         let room = self.room_by_id_typed(&response.room_id)?;
-        Ok(Room::new(self.core.clone(), room))
+        Ok(Room::new(
+            self.core.clone(),
+            room,
+            self.sync_controller.clone(),
+        ))
     }
 
     pub fn dm_with_user(&self, user_id: String) -> Result<OptionString> {
