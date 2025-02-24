@@ -158,11 +158,18 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
             )
           : OutlinedButton(
               key: NewsUpdateKeys.selectSpace,
+              style: OutlinedButton.styleFrom(
+                side:
+                    BorderSide(color: Theme.of(context).colorScheme.onSurface),
+              ),
               onPressed: () async {
                 final notifier = ref.read(newsStateProvider.notifier);
                 await notifier.changeNewsPostSpaceId(context);
               },
-              child: Text(L10n.of(context).selectSpace),
+              child: Text(
+                L10n.of(context).selectSpace,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
     );
   }
