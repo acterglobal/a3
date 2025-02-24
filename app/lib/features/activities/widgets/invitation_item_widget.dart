@@ -13,10 +13,10 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::activities::invitation_widget');
 
-class InvitationWidget extends ConsumerStatefulWidget {
+class InvitationItemWidget extends ConsumerStatefulWidget {
   final Invitation invitation;
 
-  const InvitationWidget({
+  const InvitationItemWidget({
     super.key,
     required this.invitation,
   });
@@ -26,7 +26,7 @@ class InvitationWidget extends ConsumerStatefulWidget {
       _InvitationWidgetState();
 }
 
-class _InvitationWidgetState extends ConsumerState<InvitationWidget> {
+class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
   String? roomTitle;
   late AvatarInfo avatarInfo;
 

@@ -4,7 +4,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/features/activities/widgets/invitation_widget.dart';
+import 'package:acter/features/activities/widgets/invitation_item_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -80,7 +80,7 @@ class ActivitiesPage extends ConsumerWidget {
           showSectionBg: false,
           isShowSeeAllButton: false,
         ),
-        InvitationWidget(
+        InvitationItemWidget(
           invitation: invitations.first,
         ),
       ];
