@@ -68,31 +68,20 @@ class MemberUpdateEvent extends ConsumerWidget {
               : firstName != null
                   ? lang.chatJoinedDisplayName(firstName)
                   : lang.chatJoinedUserId(senderId),
-          'Left' => isMe
-              ? lang.chatYouLeft
-              : firstName != null
-                  ? lang.chatUserLeft(firstName)
-                  : lang.chatUserLeft(senderId),
+          'Left' =>
+            isMe ? lang.chatYouLeft : lang.chatUserLeft(firstName ?? senderId),
           'Banned' => isMe
               ? lang.chatYouBanned(msgContent)
-              : firstName != null
-                  ? lang.chatUserBanned(firstName, msgContent)
-                  : lang.chatUserBanned(senderId, msgContent),
+              : lang.chatUserBanned(firstName ?? senderId, msgContent),
           'Unbanned' => isMe
               ? lang.chatYouUnbanned(msgContent)
-              : firstName != null
-                  ? lang.chatUserUnbanned(firstName, msgContent)
-                  : lang.chatUserUnbanned(senderId, msgContent),
+              : lang.chatUserUnbanned(firstName ?? senderId, msgContent),
           'Kicked' => isMe
               ? lang.chatYouKicked(msgContent)
-              : firstName != null
-                  ? lang.chatUserKicked(firstName, msgContent)
-                  : lang.chatUserKicked(senderId, msgContent),
+              : lang.chatUserKicked(firstName ?? senderId, msgContent),
           'KickedAndBanned' => isMe
               ? lang.chatYouKickedBanned(msgContent)
-              : firstName != null
-                  ? lang.chatUserKickedBanned(firstName, msgContent)
-                  : lang.chatUserKickedBanned(senderId, msgContent),
+              : lang.chatUserKickedBanned(firstName ?? senderId, msgContent),
           'InvitationAccepted' => isMe
               ? lang.chatYouAcceptedInvite
               : firstName != null
