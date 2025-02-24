@@ -1,7 +1,8 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
 
-ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
+ElevatedButtonThemeData elevatedButtonTheme() =>
     ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(
@@ -9,28 +10,39 @@ ElevatedButtonThemeData elevatedButtonTheme(ColorScheme colors) =>
           vertical: 12,
         ),
         elevation: 0,
-        backgroundColor: colors.primary,
+        textStyle: textTheme.titleMedium?.copyWith(
+          color: colorScheme.primary,
+          fontSize: 15,
+        ),
+        backgroundColor: colorScheme.primary,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
 
-ElevatedButtonThemeData dangerButtonThemeMaker(ColorScheme colors) =>
+ElevatedButtonThemeData dangerButtonThemeMaker() =>
     ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         elevation: 0,
-        backgroundColor: colors.error,
+         textStyle: textTheme.titleMedium?.copyWith(
+          color: colorScheme.primary,
+          fontSize: 15,
+        ),
+        backgroundColor: colorScheme.error,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
 
-TextButtonThemeData inlineTextButtonThemeMaker(ColorScheme colors) =>
+TextButtonThemeData inlineTextButtonThemeMaker() =>
     TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: Colors.white,
@@ -41,11 +53,11 @@ TextButtonThemeData inlineTextButtonThemeMaker(ColorScheme colors) =>
       ),
     );
 
-OutlinedButtonThemeData outlinedButtonTheme(ColorScheme colors, TextTheme textTheme) =>
+OutlinedButtonThemeData outlinedButtonTheme() =>
     OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: colors.primary,
-        side: BorderSide(color: colors.primary),
+        foregroundColor: colorScheme.primary,
+        side: BorderSide(color: colorScheme.primary),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -54,7 +66,7 @@ OutlinedButtonThemeData outlinedButtonTheme(ColorScheme colors, TextTheme textTh
           vertical: 12,
         ),
         textStyle: textTheme.titleMedium?.copyWith(
-          color: colors.primary,
+          color: colorScheme.primary,
           fontSize: 15,
         ),
         minimumSize: Size.zero,
@@ -62,11 +74,11 @@ OutlinedButtonThemeData outlinedButtonTheme(ColorScheme colors, TextTheme textTh
       ),
     );
 
-TextButtonThemeData textButtonTheme(ColorScheme colors) => TextButtonThemeData(
+TextButtonThemeData textButtonTheme() => TextButtonThemeData(
       style: TextButton.styleFrom(
         elevation: 0,
-        iconColor: colors.onSurface,
-        foregroundColor: colors.onSurface,
+        iconColor: colorScheme.onSurface,
+        foregroundColor: colorScheme.onSurface,
       ),
     );
 final iconButtonTheme = IconButtonThemeData(
