@@ -34,7 +34,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
@@ -146,7 +146,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 

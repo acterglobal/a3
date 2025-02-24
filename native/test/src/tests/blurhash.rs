@@ -32,7 +32,7 @@ async fn image_blurhash_support() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
@@ -119,7 +119,7 @@ async fn video_blurhash_support() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 

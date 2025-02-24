@@ -33,7 +33,7 @@ async fn edit_text_msg() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
@@ -169,7 +169,7 @@ async fn edit_image_msg() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 

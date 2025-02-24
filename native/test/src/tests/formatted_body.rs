@@ -28,7 +28,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     .await?;
 
     let sisko_convo = sisko.convo(room_id.to_string()).await?;
-    let sisko_timeline = sisko_convo.timeline_stream();
+    let sisko_timeline = sisko_convo.timeline_stream().await?;
 
     let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
@@ -60,7 +60,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), move || {
         let timeline = room_tl.clone();
         async move {
-            for v in timeline.items().await {
+            for v in timeline.items().await? {
                 let Some(event_id) = match_room_msg(&v, "<strong>Hello</strong>") else {
                     continue;
                 };

@@ -31,7 +31,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     .await?;
 
     let sisko_convo = sisko.convo(room_id.to_string()).await?;
-    let sisko_timeline = sisko_convo.timeline_stream();
+    let sisko_timeline = sisko_convo.timeline_stream().await?;
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
@@ -55,7 +55,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     .await?;
 
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
-    let kyra_timeline = kyra_convo.timeline_stream();
+    let kyra_timeline = kyra_convo.timeline_stream().await?;
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());
     sisko_timeline.send_message(Box::new(draft)).await?;
