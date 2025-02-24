@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
+import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter/router/utils.dart';
@@ -144,8 +145,11 @@ class NewsSlideActions extends ConsumerWidget {
               extra: token,
             );
           } catch (e) {
-            await Clipboard.setData(ClipboardData(text: title));
-            EasyLoading.showToast(lang.messageCopiedToClipboard);
+            await showReedemTokenDialog(
+              context,
+              ref,
+              title,
+            );
           }
         },
         title: Text(
