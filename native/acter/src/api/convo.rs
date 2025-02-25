@@ -500,29 +500,16 @@ impl Client {
     }
 
     pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {
-        let rooms = self.sync_controller.rooms.clone();
-        let me = self.clone();
+        let convos = self.convos.clone();
         async_stream::stream! {
             let (current_items, stream) = {
-                let locked = rooms.read().await;
-                let values: Vec<Convo> = locked
-                    .iter()
-                    .filter(|room| room.is_space())
-                    .map(|room| Room::new(me.core.clone(), room.inner_room().clone(), me.sync_controller.clone()))
-                    .map(|inner| Convo::new(me.clone(), inner))
-                    .collect();
+                let locked = convos.read().await;
                 (
-                    ConvoDiff::current_items(values),
+                    ConvoDiff::current_items(locked.clone().into_iter().collect()),
                     locked.subscribe(),
                 )
             };
-            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
-                diff,
-                |x| {
-                    let inner = Room::new(me.core.clone(), x.inner_room().clone(), me.sync_controller.clone());
-                    Convo::new(me.clone(), inner)
-                },
-            ));
+            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
             while let Some(d) = remap.next().await {
