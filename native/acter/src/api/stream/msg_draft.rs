@@ -1,3 +1,4 @@
+use acter_core::models::TextMessageContent;
 use anyhow::Result;
 use core::time::Duration;
 use matrix_sdk::room::Room;
@@ -8,7 +9,8 @@ use matrix_sdk_base::ruma::{
             message::{
                 AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
                 ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-                RoomMessageEventContentWithoutRelation, VideoInfo, VideoMessageEventContent,
+                RoomMessageEventContentWithoutRelation, TextMessageEventContent, UrlPreview,
+                VideoInfo, VideoMessageEventContent,
             },
             ImageInfo, MediaSource, ThumbnailInfo,
         },
@@ -23,13 +25,16 @@ use tracing::{info, warn};
 pub(crate) enum MsgContentDraft {
     TextPlain {
         body: String,
+        url_previews: Vec<UrlPreview>,
     },
     TextMarkdown {
         body: String,
+        url_previews: Vec<UrlPreview>,
     },
     TextHtml {
         html: String,
         plain: String,
+        url_previews: Vec<UrlPreview>,
     },
     Image {
         source: String,
@@ -467,24 +472,38 @@ impl MsgDraft {
         room: &Room,
     ) -> Result<RoomMessageEventContentWithoutRelation> {
         let MsgDraft { inner, mentions } = self;
-        let event_content = match inner {
-            MsgContentDraft::TextPlain { body } => {
-                RoomMessageEventContentWithoutRelation::text_plain(body)
+        let event_content = RoomMessageEventContentWithoutRelation::new(match inner {
+            MsgContentDraft::TextPlain { body, url_previews } => {
+                let mut inner = TextMessageEventContent::plain(body);
+                if !url_previews.is_empty() {
+                    inner.url_previews = Some(url_previews.clone());
+                }
+                MessageType::Text(inner)
             }
-            MsgContentDraft::TextMarkdown { body } => {
-                RoomMessageEventContentWithoutRelation::text_markdown(body)
+            MsgContentDraft::TextMarkdown { body, url_previews } => {
+                let mut inner = TextMessageEventContent::markdown(body);
+                if !url_previews.is_empty() {
+                    inner.url_previews = Some(url_previews.clone());
+                }
+                MessageType::Text(inner)
             }
-            MsgContentDraft::TextHtml { html, plain } => {
-                RoomMessageEventContentWithoutRelation::text_html(plain, html)
+            MsgContentDraft::TextHtml {
+                html,
+                plain,
+                url_previews,
+            } => {
+                let mut inner = TextMessageEventContent::html(plain, html);
+                if !url_previews.is_empty() {
+                    inner.url_previews = Some(url_previews.clone());
+                }
+                MessageType::Text(inner)
             }
 
             MsgContentDraft::Location {
                 body,
                 geo_uri,
                 info,
-            } => RoomMessageEventContentWithoutRelation::new(MessageType::Location(
-                LocationMessageEventContent::new(body, geo_uri),
-            )),
+            } => MessageType::Location(LocationMessageEventContent::new(body, geo_uri)),
 
             MsgContentDraft::Image {
                 source,
@@ -523,7 +542,7 @@ impl MsgDraft {
                 };
                 image_content.info = Some(Box::new(info));
                 image_content.filename = filename;
-                RoomMessageEventContentWithoutRelation::new(MessageType::Image(image_content))
+                MessageType::Image(image_content)
             }
             MsgContentDraft::Audio {
                 source,
@@ -562,7 +581,7 @@ impl MsgDraft {
                 };
                 audio_content.info = Some(Box::new(info));
                 audio_content.filename = filename;
-                RoomMessageEventContentWithoutRelation::new(MessageType::Audio(audio_content))
+                MessageType::Audio(audio_content)
             }
             MsgContentDraft::Video {
                 source,
@@ -601,7 +620,7 @@ impl MsgDraft {
                 };
                 video_content.info = Some(Box::new(info));
                 video_content.filename = filename;
-                RoomMessageEventContentWithoutRelation::new(MessageType::Video(video_content))
+                MessageType::Video(video_content)
             }
             MsgContentDraft::File {
                 source,
@@ -640,9 +659,9 @@ impl MsgDraft {
                 };
                 file_content.info = Some(Box::new(info));
                 file_content.filename = filename;
-                RoomMessageEventContentWithoutRelation::new(MessageType::File(file_content))
+                MessageType::File(file_content)
             }
-        };
+        });
         Ok(event_content.add_mentions(mentions))
     }
 }

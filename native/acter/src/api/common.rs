@@ -16,7 +16,7 @@ use matrix_sdk_base::{
                 AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
                 FileMessageEventContent, ImageMessageEventContent, LocationInfo,
                 LocationMessageEventContent, TextMessageEventContent,
-                UnstableAudioDetailsContentBlock, VideoInfo, VideoMessageEventContent,
+                UnstableAudioDetailsContentBlock, UrlPreview, VideoInfo, VideoMessageEventContent,
             },
             ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
         },
@@ -137,6 +137,7 @@ pub enum MsgContent {
     Text {
         body: String,
         formatted_body: Option<String>,
+        url_previews: Vec<UrlPreview>,
     },
     Image {
         body: String,
@@ -197,6 +198,7 @@ impl From<&TextMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
+            url_previews: value.url_previews.clone().unwrap_or_default(),
         }
     }
 }
@@ -206,6 +208,7 @@ impl From<TextMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body,
             formatted_body: value.formatted.map(|x| x.body),
+            url_previews: value.url_previews.clone().unwrap_or_default(),
         }
     }
 }
@@ -267,6 +270,7 @@ impl From<&EmoteMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
+            url_previews: Default::default(),
         }
     }
 }
@@ -331,6 +335,7 @@ impl MsgContent {
         MsgContent::Text {
             body,
             formatted_body: None,
+            url_previews: Default::default(),
         }
     }
 
@@ -509,6 +514,13 @@ impl MsgContent {
         match self {
             MsgContent::Link { link, .. } => Some(link.clone()),
             _ => None,
+        }
+    }
+
+    pub fn url_previews(&self) -> Vec<UrlPreview> {
+        match self {
+            MsgContent::Text { url_previews, .. } => url_previews.clone(),
+            _ => vec![],
         }
     }
 }

@@ -324,15 +324,25 @@ impl TimelineStream {
 
 impl Client {
     pub fn text_plain_draft(&self, body: String) -> MsgDraft {
-        MsgDraft::new(MsgContentDraft::TextPlain { body })
+        MsgDraft::new(MsgContentDraft::TextPlain {
+            body,
+            url_previews: Default::default(),
+        })
     }
 
     pub fn text_markdown_draft(&self, body: String) -> MsgDraft {
-        MsgDraft::new(MsgContentDraft::TextMarkdown { body })
+        MsgDraft::new(MsgContentDraft::TextMarkdown {
+            body,
+            url_previews: Default::default(),
+        })
     }
 
     pub fn text_html_draft(&self, html: String, plain: String) -> MsgDraft {
-        MsgDraft::new(MsgContentDraft::TextHtml { html, plain })
+        MsgDraft::new(MsgContentDraft::TextHtml {
+            html,
+            plain,
+            url_previews: Default::default(),
+        })
     }
 
     pub fn image_draft(&self, source: String, mimetype: String) -> MsgDraft {
