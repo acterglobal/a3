@@ -2,7 +2,6 @@
 
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
