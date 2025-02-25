@@ -5,9 +5,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/security/email_confirmation_widget.dart';
-import 'package:acter/features/activities/widgets/invitation_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/invitations/providers/invitations_providers.dart';
+import 'package:acter/features/invitations/widgets/has_invites_tile.dart';
+import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
@@ -24,6 +26,7 @@ class ActivitiesPage extends ConsumerWidget {
       Key('activities-one-unverified-session');
   static const Key unverifiedSessionsCard =
       Key('activities-unverified-sessions');
+  static Key unconfirmedEmailsKey = Key('activities-has-unconfirmed-emails');
 
   const ActivitiesPage({super.key});
 
@@ -109,31 +112,22 @@ class ActivitiesPage extends ConsumerWidget {
     // ignore: unused_local_variable
     final allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
     final children = [];
-    final security = [];
 
     final syncStateWidget = renderSyncingState(context, ref);
 
-    security.add(BackupStateWidget());
+    // Invitation
+    final invitationWidget = buildInvitationUI(context, ref);
+    if (invitationWidget != null) children.add(invitationWidget);
 
-    security.add(EmailConfirmationWidget());
+    // Security and Privacy
+    final security = buildSecurityAndPrivacyUI(context, ref);
+    if (security != null) children.add(security);
 
     // FIXME: disabled until this flow actually works well
     // final sessions = renderSessions(context, ref);
     // if (sessions != null) {
     //   security.add(sessions);
     // }
-    children.add(InvitationWidget());
-
-    if (security.isNotEmpty) {
-      children.add(
-        SectionHeader(
-          title: L10n.of(context).securityAndPrivacy,
-          showSectionBg: false,
-          isShowSeeAllButton: false,
-        ),
-      );
-      children.addAll(security);
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -158,6 +152,47 @@ class ActivitiesPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget? buildInvitationUI(BuildContext context, WidgetRef ref) {
+    final invitations = ref.watch(invitationListProvider);
+    if (invitations.isEmpty) return null;
+    return Column(
+      children: [
+        SectionHeader(
+          title: L10n.of(context).invitations,
+          showSectionBg: false,
+          isShowSeeAllButton: false,
+        ),
+        invitations.length == 1
+            ? InvitationItemWidget(invitation: invitations.first)
+            : HasInvitesTile(count: invitations.length),
+      ],
+    );
+  }
+
+  Widget? buildSecurityAndPrivacyUI(BuildContext context, WidgetRef ref) {
+    final isBackupFeatureEnabled =
+        ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
+    final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
+
+    final List<Widget> security = [];
+
+    if (isBackupFeatureEnabled) security.add(BackupStateWidget());
+    if (hasUnconfirmedEmails) security.add(EmailConfirmationWidget());
+
+    if (security.isEmpty) return null;
+
+    return Column(
+      children: [
+        SectionHeader(
+          title: L10n.of(context).securityAndPrivacy,
+          showSectionBg: false,
+          isShowSeeAllButton: false,
+        ),
+        ...security,
+      ],
     );
   }
 }

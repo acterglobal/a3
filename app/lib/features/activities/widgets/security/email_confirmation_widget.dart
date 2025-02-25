@@ -1,12 +1,11 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-const Key unconfirmedEmailsKey = Key('activities-has-unconfirmed-emails');
 
 class EmailConfirmationWidget extends ConsumerWidget {
   const EmailConfirmationWidget({super.key});
@@ -18,7 +17,7 @@ class EmailConfirmationWidget extends ConsumerWidget {
     if (!hasUnconfirmedEmails) return SizedBox.shrink();
 
     return Card(
-      key: unconfirmedEmailsKey,
+      key: ActivitiesPage.unconfirmedEmailsKey,
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
       child: ListTile(
         onTap: () => context.goNamed(Routes.emailAddresses.name),
