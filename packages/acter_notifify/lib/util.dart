@@ -30,7 +30,7 @@ final useLocal = Platform.isAndroid ||
 final usePush = Platform.isAndroid || Platform.isIOS;
 
 Future<int> notificationsCount() async {
-  if (Platform.isLinux) return 0; // not supported
+  if (Platform.isLinux || Platform.isWindows) return 0; // not supported
   return (await flutterLocalNotificationsPlugin.getActiveNotifications())
       .length;
 }
@@ -119,7 +119,8 @@ Future<String> deviceName() async {
         titleAndBodyForObjectDescriptionChange(notification),
       PushStyles.creation => titleAndBodyForObjectCreation(notification),
       PushStyles.redaction => titleAndBodyForObjectRedaction(notification),
-      PushStyles.otherChanges => titleAndBodyForObjectOtherChanges(notification),
+      PushStyles.otherChanges =>
+        titleAndBodyForObjectOtherChanges(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
