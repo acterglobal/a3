@@ -9,13 +9,12 @@ class AlwaysClientNotifier extends AsyncNotifier<Client> {
   late ProviderSubscription subscription;
   @override
   FutureOr<Client> build() async {
-    subscription = ref.listen<AsyncValue<Client?>>(clientProvider, _updated);
-    final client = await ref.read(clientProvider.future);
-    if (client != null) {
-      return client;
-    }
-
     final cpl = completer ??= Completer<Client>();
+    subscription = ref.listen<AsyncValue<Client?>>(
+      clientProvider,
+      _updated,
+      fireImmediately: true,
+    );
     return cpl.future;
   }
 
@@ -23,12 +22,16 @@ class AlwaysClientNotifier extends AsyncNotifier<Client> {
     // set up the refresh
     final newClient = newV.valueOrNull;
     if (newClient != null) {
-      state = AsyncData(newClient);
-      // and inform any pending completers
-      completer?.complete(newClient);
-      completer = null;
-    } else {
-      state = AsyncValue.loading();
+      final cmpl = completer;
+      if (cmpl != null) {
+        // we need to complete the previous future
+        // which internally sets the new state
+        cmpl.complete(newClient);
+        completer = null;
+      } else {
+        // we need to update to the new value
+        state = AsyncData(newClient);
+      }
     }
   }
 }
