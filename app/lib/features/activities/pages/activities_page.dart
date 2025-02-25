@@ -4,11 +4,9 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/features/activities/widgets/invitation_item_widget.dart';
+import 'package:acter/features/activities/widgets/invitation_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
-import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/invitations/widgets/has_invites_tile.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
@@ -66,33 +64,6 @@ class ActivitiesPage extends ConsumerWidget {
       );
     }
     return null;
-  }
-
-  List<Widget>? renderInvitations(BuildContext context, WidgetRef ref) {
-    final invitations = ref.watch(invitationListProvider);
-    if (invitations.isEmpty) {
-      return null;
-    }
-    if (invitations.length == 1) {
-      return [
-        SectionHeader(
-          title: L10n.of(context).invitations,
-          showSectionBg: false,
-          isShowSeeAllButton: false,
-        ),
-        InvitationItemWidget(
-          invitation: invitations.first,
-        ),
-      ];
-    }
-    return [
-      SectionHeader(
-        title: L10n.of(context).invitations,
-        showSectionBg: false,
-        isShowSeeAllButton: false,
-      ),
-      HasInvitesTile(count: invitations.length),
-    ];
   }
 
   Widget? renderSessions(BuildContext context, WidgetRef ref) {
@@ -177,11 +148,7 @@ class ActivitiesPage extends ConsumerWidget {
     // if (sessions != null) {
     //   security.add(sessions);
     // }
-
-    final invitations = renderInvitations(context, ref);
-    if (invitations != null && invitations.isNotEmpty) {
-      children.addAll(invitations);
-    }
+    children.add(InvitationWidget());
 
     if (security.isNotEmpty) {
       children.add(
