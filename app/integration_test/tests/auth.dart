@@ -102,8 +102,7 @@ void authTests() {
       MainNavKeys.activities,
     ]);
 
-    final emailAddrUnconfirmed =
-        find.byKey(ActivitiesPage.unconfirmedEmailsKey);
+    final emailAddrUnconfirmed = find.byKey(ActivitiesPage.unconfirmedEmails);
     await t.tester.ensureVisible(emailAddrUnconfirmed);
     await emailAddrUnconfirmed.should(findsOneWidget);
 
