@@ -1,9 +1,9 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,19 +21,19 @@ Widget? buildSessionsWidget(BuildContext context, WidgetRef ref) {
     if (sessions.isEmpty) return null;
     if (sessions.length == 1) return SessionCard(deviceRecord: sessions[0]);
 
-    return Card(
-      child: ListTile(
-        leading: Icon(Atlas.warning_bold, color: warningColor),
-        title: Text(
-          lang.unverifiedSessionsTitle(sessions.length),
-        ),
-        trailing: OutlinedButton(
+    return SecurityPrivacyWidget(
+      icon: Icons.warning_amber_rounded,
+      iconColor: warningColor,
+      title: lang.unverifiedSessionsTitle(sessions.length),
+      subtitle: '',
+      actions: [
+        OutlinedButton(
           onPressed: () {
             context.pushNamed(Routes.settingSessions.name);
           },
           child: Text(lang.review),
         ),
-      ),
+      ],
     );
   });
 }
