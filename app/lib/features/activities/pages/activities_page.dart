@@ -4,6 +4,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/activities/widgets/email_confirmation_widget.dart';
 import 'package:acter/features/activities/widgets/invitation_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -23,7 +24,6 @@ class ActivitiesPage extends ConsumerWidget {
       Key('activities-one-unverified-session');
   static const Key unverifiedSessionsCard =
       Key('activities-unverified-sessions');
-  static const Key unconfirmedEmails = Key('activities-has-unconfirmed-emails');
 
   const ActivitiesPage({super.key});
 
@@ -106,21 +106,6 @@ class ActivitiesPage extends ConsumerWidget {
     return BackupStateWidget();
   }
 
-  Widget renderUnconfirmedEmailAddrs(BuildContext context) {
-    final lang = L10n.of(context);
-    return Card(
-      key: unconfirmedEmails,
-      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
-      child: ListTile(
-        onTap: () => context.goNamed(Routes.emailAddresses.name),
-        leading: const Icon(Atlas.envelope_minus_thin),
-        title: Text(lang.unconfirmedEmailsActivityTitle),
-        subtitle: Text(lang.unconfirmedEmailsActivitySubtitle),
-        trailing: const Icon(Icons.keyboard_arrow_right_outlined),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
@@ -138,10 +123,8 @@ class ActivitiesPage extends ConsumerWidget {
         security.add(backups);
       }
     }
-    final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
-    if (hasUnconfirmedEmails) {
-      security.add(renderUnconfirmedEmailAddrs(context));
-    }
+
+    security.add(EmailConfirmationWidget());
 
     // FIXME: disabled until this flow actually works well
     // final sessions = renderSessions(context, ref);
