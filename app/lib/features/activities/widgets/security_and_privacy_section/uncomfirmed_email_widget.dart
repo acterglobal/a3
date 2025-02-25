@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
+import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -14,7 +14,7 @@ Widget? buildUnconfirmedEmailWidget(BuildContext context, WidgetRef ref) {
 
   if (!hasUnconfirmedEmails) return null;
 
-  return SecurityPrivacyWidget(
+  return ActivitySectionItemWidget(
     icon: Atlas.envelope_minus_thin,
     iconColor: warningColor,
     title: lang.unconfirmedEmailsActivityTitle,

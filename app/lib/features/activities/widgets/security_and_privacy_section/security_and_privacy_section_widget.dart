@@ -25,9 +25,10 @@ Widget? buildSecurityAndPrivacySectionWidget(
     securityWidgetList.add(unconfirmedEmailWidget);
   }
 
+  //FIXME: disabled until this flow actually works well
   //Add Sessions Widget
-  final sessions = buildSessionsWidget(context, ref);
-  if (sessions != null) securityWidgetList.add(sessions);
+  // final sessions = buildSessionsWidget(context, ref);
+  // if (sessions != null) securityWidgetList.add(sessions);
 
   //If there are no security widgets, return null
   if (securityWidgetList.isEmpty) return null;

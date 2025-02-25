@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SecurityPrivacyWidget extends ConsumerWidget {
+class ActivitySectionItemWidget extends ConsumerWidget {
   final IconData icon;
   final Color? iconColor;
   final String title;
   final String? subtitle;
   final List<Widget>? actions;
 
-  const SecurityPrivacyWidget({
+  const ActivitySectionItemWidget({
     super.key,
     required this.icon,
     this.iconColor,

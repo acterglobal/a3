@@ -1,5 +1,5 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
+import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
 import 'package:acter/features/backups/dialogs/show_confirm_disabling.dart';
 import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
@@ -43,7 +43,7 @@ class BackupStateWidget extends ConsumerWidget {
   Widget renderUnknown(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return Skeletonizer(
-      child: SecurityPrivacyWidget(
+      child: ActivitySectionItemWidget(
         icon: Icons.warning_amber_rounded,
         iconColor: warningColor,
         title: lang.encryptionBackupMissing,
@@ -60,7 +60,7 @@ class BackupStateWidget extends ConsumerWidget {
 
   Widget renderCanResetAction(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return SecurityPrivacyWidget(
+    return ActivitySectionItemWidget(
       icon: Atlas.check_website_thin,
       iconColor: Theme.of(context).colorScheme.primary,
       title: lang.encryptionBackupEnabled,
@@ -76,9 +76,9 @@ class BackupStateWidget extends ConsumerWidget {
 
   Widget renderRecoverAction(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    // Since SecurityPrivacyWidget only supports one action button,
+    // Since ActivitySectionItemWidget only supports one action button,
     // we'll use the primary action (provide key) and handle reset differently if needed
-    return SecurityPrivacyWidget(
+    return ActivitySectionItemWidget(
       icon: Icons.warning_amber_rounded,
       iconColor: warningColor,
       title: lang.encryptionBackupProvideKey,
@@ -101,7 +101,7 @@ class BackupStateWidget extends ConsumerWidget {
 
   Widget renderStartAction(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return SecurityPrivacyWidget(
+    return ActivitySectionItemWidget(
       icon: Icons.warning_amber_rounded,
       iconColor: warningColor,
       title: lang.encryptionBackupNoBackup,

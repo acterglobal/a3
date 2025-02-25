@@ -1,7 +1,7 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
+import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ Widget? buildSessionsWidget(BuildContext context, WidgetRef ref) {
     if (sessions.isEmpty) return null;
     if (sessions.length == 1) return SessionCard(deviceRecord: sessions[0]);
 
-    return SecurityPrivacyWidget(
+    return ActivitySectionItemWidget(
       icon: Icons.warning_amber_rounded,
       iconColor: warningColor,
       title: lang.unverifiedSessionsTitle(sessions.length),
