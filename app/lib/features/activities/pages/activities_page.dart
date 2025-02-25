@@ -1,10 +1,10 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter/features/activities/widgets/security/email_confirmation_widget.dart';
+import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
@@ -108,26 +108,20 @@ class ActivitiesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    // update the inner provider...
-    // ignore: unused_local_variable
-    final allDone = ref.watch(hasActivitiesProvider) == UrgencyBadge.none;
-    final children = [];
 
+    final activityWidgetsSections = [];
+
+    // Syncing State Section
     final syncStateWidget = renderSyncingState(context, ref);
+    if (syncStateWidget != null) activityWidgetsSections.add(syncStateWidget);
 
-    // Invitation
+    // Invitation Section
     final invitationWidget = buildInvitationUI(context, ref);
-    if (invitationWidget != null) children.add(invitationWidget);
+    if (invitationWidget != null) activityWidgetsSections.add(invitationWidget);
 
-    // Security and Privacy
-    final security = buildSecurityAndPrivacyUI(context, ref);
-    if (security != null) children.add(security);
-
-    // FIXME: disabled until this flow actually works well
-    // final sessions = renderSessions(context, ref);
-    // if (sessions != null) {
-    //   security.add(sessions);
-    // }
+    // Security and Privacy Section
+    final securityWidget = buildSecurityAndPrivacyUI(context, ref);
+    if (securityWidget != null) activityWidgetsSections.add(securityWidget);
 
     return Scaffold(
       appBar: AppBar(
@@ -138,9 +132,9 @@ class ActivitiesPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (syncStateWidget != null) syncStateWidget,
-            if (children.isNotEmpty) ...children,
-            if (children.isEmpty)
+            if (activityWidgetsSections.isNotEmpty)
+              ...activityWidgetsSections
+            else
               Center(
                 heightFactor: 1.5,
                 child: EmptyState(
@@ -173,15 +167,40 @@ class ActivitiesPage extends ConsumerWidget {
   }
 
   Widget? buildSecurityAndPrivacyUI(BuildContext context, WidgetRef ref) {
-    final isBackupFeatureEnabled =
-        ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
-    final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
+    final lang = L10n.of(context);
 
     final List<Widget> security = [];
 
+    //Add Backup State Widget if feature is enabled
+    final isBackupFeatureEnabled =
+        ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
     if (isBackupFeatureEnabled) security.add(BackupStateWidget());
-    if (hasUnconfirmedEmails) security.add(EmailConfirmationWidget());
 
+    //Add Unconfirmed Emails Widget if there are unconfirmed emails
+    final hasUnconfirmedEmails = ref.watch(hasUnconfirmedEmailAddresses);
+    if (hasUnconfirmedEmails) {
+      security.add(
+        SecurityPrivacyWidget(
+          icon: Atlas.envelope_minus_thin,
+          iconColor: warningColor,
+          title: lang.unconfirmedEmailsActivityTitle,
+          subtitle: lang.unconfirmedEmailsActivitySubtitle,
+          actions: [
+            OutlinedButton(
+              onPressed: () => context.goNamed(Routes.emailAddresses.name),
+              child: Text(lang.confirmedEmailAddresses),
+            ),
+          ],
+        ),
+      );
+    }
+// FIXME: disabled until this flow actually works well
+    // final sessions = renderSessions(context, ref);
+    // if (sessions != null) {
+    //   security.add(sessions);
+    // }
+
+    //If there are no security widgets, return null
     if (security.isEmpty) return null;
 
     return Column(
