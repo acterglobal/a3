@@ -16,7 +16,8 @@ use matrix_sdk_base::{
                 AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
                 FileMessageEventContent, ImageMessageEventContent, LocationInfo,
                 LocationMessageEventContent, TextMessageEventContent,
-                UnstableAudioDetailsContentBlock, UrlPreview, VideoInfo, VideoMessageEventContent,
+                UnstableAudioDetailsContentBlock, UrlPreview as RumaUrlPreview, VideoInfo,
+                VideoMessageEventContent,
             },
             ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
         },
@@ -137,7 +138,7 @@ pub enum MsgContent {
     Text {
         body: String,
         formatted_body: Option<String>,
-        url_previews: Vec<UrlPreview>,
+        url_previews: Vec<RumaUrlPreview>,
     },
     Image {
         body: String,
@@ -330,6 +331,37 @@ impl TryFrom<&AttachmentContent> for MsgContent {
     }
 }
 
+pub struct UrlPreview(pub(crate) RumaUrlPreview);
+
+impl UrlPreview {
+    pub fn new(prev: &RumaUrlPreview) -> Self {
+        Self(prev.clone())
+    }
+    pub fn url(&self) -> Option<String> {
+        self.0.url.clone()
+    }
+    pub fn title(&self) -> Option<String> {
+        self.0.title.clone()
+    }
+    pub fn description(&self) -> Option<String> {
+        self.0.description.clone()
+    }
+
+    pub fn has_image(&self) -> bool {
+        false // not yet supported
+              // !self.0.image.is_none()
+    }
+    pub fn image_source(&self) -> Option<MediaSource> {
+        None // not yet support
+             // self.0.image.as_ref().map(|image| MediaSource {
+             //     inner: match image.source {
+             //         PreviewImageSource::EncryptedImage(e) => SdkMediaSource::Encrypted(e.clone()),
+             //         PreviewImageSource::Url(u) => SdkMediaSource::Plain(u.clone()),
+             //     },
+             // })
+    }
+}
+
 impl MsgContent {
     pub(crate) fn from_text(body: String) -> Self {
         MsgContent::Text {
@@ -519,8 +551,17 @@ impl MsgContent {
 
     pub fn url_previews(&self) -> Vec<UrlPreview> {
         match self {
-            MsgContent::Text { url_previews, .. } => url_previews.clone(),
+            MsgContent::Text { url_previews, .. } => {
+                url_previews.iter().map(UrlPreview::new).collect()
+            }
             _ => vec![],
+        }
+    }
+
+    pub fn has_url_previews(&self) -> bool {
+        match self {
+            MsgContent::Text { url_previews, .. } => !url_previews.is_empty(),
+            _ => false,
         }
     }
 }

@@ -1,5 +1,5 @@
 use acter_core::models::TextMessageContent;
-use anyhow::Result;
+use anyhow::{bail, Result};
 use core::time::Duration;
 use matrix_sdk::room::Room;
 use matrix_sdk_base::ruma::{
@@ -9,8 +9,8 @@ use matrix_sdk_base::ruma::{
             message::{
                 AudioInfo, AudioMessageEventContent, FileInfo, FileMessageEventContent,
                 ImageMessageEventContent, LocationInfo, LocationMessageEventContent, MessageType,
-                RoomMessageEventContentWithoutRelation, TextMessageEventContent, UrlPreview,
-                VideoInfo, VideoMessageEventContent,
+                RoomMessageEventContentWithoutRelation, TextMessageEventContent,
+                UrlPreview as RumaUrlPreview, VideoInfo, VideoMessageEventContent,
             },
             ImageInfo, MediaSource, ThumbnailInfo,
         },
@@ -25,16 +25,16 @@ use tracing::{info, warn};
 pub(crate) enum MsgContentDraft {
     TextPlain {
         body: String,
-        url_previews: Vec<UrlPreview>,
+        url_previews: Vec<RumaUrlPreview>,
     },
     TextMarkdown {
         body: String,
-        url_previews: Vec<UrlPreview>,
+        url_previews: Vec<RumaUrlPreview>,
     },
     TextHtml {
         html: String,
         plain: String,
-        url_previews: Vec<UrlPreview>,
+        url_previews: Vec<RumaUrlPreview>,
     },
     Image {
         source: String,
@@ -99,6 +99,28 @@ impl MsgContentDraft {
             }
         }
         self
+    }
+
+    fn add_ref_details(&mut self, ref_details: crate::RefDetails) -> Result<()> {
+        Ok(match self {
+            MsgContentDraft::TextHtml { url_previews, .. }
+            | MsgContentDraft::TextMarkdown { url_previews, .. }
+            | MsgContentDraft::TextPlain { url_previews, .. } => {
+                url_previews.push(ref_details.try_into()?);
+            }
+            _ => bail!("Url Preview not supported"),
+        })
+    }
+
+    fn add_url_preview(&mut self, preview: RumaUrlPreview) -> Result<()> {
+        Ok(match self {
+            MsgContentDraft::TextHtml { url_previews, .. }
+            | MsgContentDraft::TextMarkdown { url_previews, .. }
+            | MsgContentDraft::TextPlain { url_previews, .. } => {
+                url_previews.push(preview);
+            }
+            _ => bail!("Url Preview not supported"),
+        })
     }
 
     fn size(mut self, value: u64) -> Self {
@@ -365,6 +387,17 @@ impl MsgDraft {
         mentions.user_ids.insert(user_id);
         Ok(MsgDraft { inner, mentions })
     }
+
+    pub fn add_ref_details(&mut self, ref_details: Box<crate::RefDetails>) -> Result<Self> {
+        self.inner.add_ref_details(*ref_details)?;
+        Ok(self.clone())
+    }
+
+    pub fn add_url_preview(&mut self, preview: Box<crate::UrlPreview>) -> Result<Self> {
+        self.inner.add_url_preview((*preview).0)?;
+        Ok(self.clone())
+    }
+
     pub fn add_room_mention(&self, mention: bool) -> Result<Self> {
         let MsgDraft {
             inner,
