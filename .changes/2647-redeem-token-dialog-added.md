@@ -1,1 +1,1 @@
-- [improvement] : If user don't own the code, they can now redeem it directly instead of copying it.
+- [improvement] : Simplified invite code redemption from some-one clicks on invite code from Boost Action post.
