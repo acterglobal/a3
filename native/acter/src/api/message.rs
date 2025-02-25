@@ -201,23 +201,23 @@ impl RoomEventItem {
                     }
                     Some(MembershipChange::Banned) => {
                         me.msg_type(Some("Banned".to_string()));
-                        "banned".to_string()
+                        m.user_id().to_string()
                     }
                     Some(MembershipChange::Unbanned) => {
                         me.msg_type(Some("Unbanned".to_string()));
-                        "unbanned".to_string()
+                        m.user_id().to_string()
                     }
                     Some(MembershipChange::Kicked) => {
                         me.msg_type(Some("Kicked".to_string()));
-                        "kicked".to_string()
+                        m.user_id().to_string()
                     }
                     Some(MembershipChange::Invited) => {
                         me.msg_type(Some("Invited".to_string()));
-                        "invited".to_string()
+                        m.user_id().to_string()
                     }
                     Some(MembershipChange::KickedAndBanned) => {
                         me.msg_type(Some("KickedAndBanned".to_string()));
-                        "kicked and banned".to_string()
+                        m.user_id().to_string()
                     }
                     Some(MembershipChange::InvitationAccepted) => {
                         me.msg_type(Some("InvitationAccepted".to_string()));
@@ -233,7 +233,7 @@ impl RoomEventItem {
                     }
                     Some(MembershipChange::Knocked) => {
                         me.msg_type(Some("Knocked".to_string()));
-                        "knocked".to_string()
+                        m.user_id().to_string()
                     }
                     Some(MembershipChange::KnockAccepted) => {
                         me.msg_type(Some("KnockAccepted".to_string()));
@@ -262,10 +262,17 @@ impl RoomEventItem {
                 if let Some(change) = p.displayname_change() {
                     let msg_content = match (&change.old, &change.new) {
                         (Some(old), Some(new)) => {
-                            MsgContent::from_text(format!("changed name {old} -> {new}"))
+                            me.msg_type(Some(("ChangedDisplayName").to_string()));
+                            MsgContent::from_text(format!("{old} -> {new}"))
                         }
-                        (None, Some(new)) => MsgContent::from_text(format!("set name to {new}")),
-                        (Some(_), None) => MsgContent::from_text("removed name".to_string()),
+                        (None, Some(new)) => {
+                            me.msg_type(Some(("SetDisplayName").to_string()));
+                            MsgContent::from_text(new.to_string())
+                        }
+                        (Some(_), None) => {
+                            me.msg_type(Some(("RemoveDisplayName").to_string()));
+                            MsgContent::from_text("removed display name".to_string())
+                        }
                         (None, None) => {
                             // why would that ever happen?
                             MsgContent::from_text("kept name unset".to_string())
@@ -275,8 +282,11 @@ impl RoomEventItem {
                 }
                 if let Some(change) = p.avatar_url_change() {
                     if let Some(uri) = change.new.as_ref() {
-                        let msg_content =
-                            MsgContent::from_image("new_picture".to_string(), uri.clone());
+                        me.msg_type(Some(("ChangeProfileAvatar").to_string()));
+                        let msg_content = MsgContent::from_image(
+                            "updated profile avatar".to_string(),
+                            uri.clone(),
+                        );
                         me.msg_content(Some(msg_content));
                     }
                 }

@@ -1,0 +1,1 @@
+- [improvement] : Improved Invitation Section UI on the activity page.
