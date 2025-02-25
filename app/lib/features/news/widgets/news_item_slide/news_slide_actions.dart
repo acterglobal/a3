@@ -5,14 +5,13 @@ import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
+import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -128,7 +127,6 @@ class NewsSlideActions extends ConsumerWidget {
     WidgetRef ref,
     RefDetails referenceDetails,
   ) {
-    final lang = L10n.of(context);
     final title = referenceDetails.title();
     if (title == null) return SizedBox.shrink();
     return Card(
@@ -144,8 +142,11 @@ class NewsSlideActions extends ConsumerWidget {
               extra: token,
             );
           } catch (e) {
-            await Clipboard.setData(ClipboardData(text: title));
-            EasyLoading.showToast(lang.messageCopiedToClipboard);
+            await showReedemTokenDialog(
+              context,
+              ref,
+              title,
+            );
           }
         },
         title: Text(
