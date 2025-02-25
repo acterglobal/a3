@@ -1,4 +1,3 @@
-import 'package:acter/features/activities/widgets/security_and_privacy_section/sessions_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/uncomfirmed_email_widget.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
