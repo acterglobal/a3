@@ -29,8 +29,12 @@ final useLocal = Platform.isAndroid ||
 
 final usePush = Platform.isAndroid || Platform.isIOS;
 
+final useBadge = !(Platform.isLinux || Platform.isWindows || Platform.isMacOS);
+
 Future<int> notificationsCount() async {
-  if (Platform.isLinux) return 0; // not supported
+  if (Platform.isLinux || !useLocal) {
+    return 0; // not supported
+  }
   return (await flutterLocalNotificationsPlugin.getActiveNotifications())
       .length;
 }
@@ -46,7 +50,7 @@ Future<void> removeNotificationsForRoom(String roomId) async {
 }
 
 Future<void> updateBadgeCount(int newCount) async {
-  if (Platform.isLinux || Platform.isMacOS) return; // not supported
+  if (!useBadge) return; // not supported
   if (await AppBadgePlus.isSupported()) {
     await AppBadgePlus.updateBadge(0);
     // await AppBadgePlus.updateBadge(newCount);
@@ -119,7 +123,8 @@ Future<String> deviceName() async {
         titleAndBodyForObjectDescriptionChange(notification),
       PushStyles.creation => titleAndBodyForObjectCreation(notification),
       PushStyles.redaction => titleAndBodyForObjectRedaction(notification),
-      PushStyles.otherChanges => titleAndBodyForObjectOtherChanges(notification),
+      PushStyles.otherChanges =>
+        titleAndBodyForObjectOtherChanges(notification),
       _ => _fallbackTitleAndBody(notification),
     };
 
