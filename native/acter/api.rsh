@@ -1410,7 +1410,7 @@ object Convo {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// Get the timeline for the room
-    fn timeline_stream() -> TimelineStream;
+    fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// how many unread notifications for this chat
     fn num_unread_notification_count() -> u64;

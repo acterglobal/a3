@@ -163,14 +163,15 @@ impl Space {
 impl Space {
     #[cfg(feature = "testing")]
     pub async fn timeline_stream(&self) -> Result<TimelineStream> {
-        let client = self.client.clone();
-        let inner = self.inner.clone();
+        let room = self.inner.clone();
+        let sync_controller = self.client.sync_controller.clone();
         RUNTIME
             .spawn(async move {
-                let timelines = client.sync_controller.timelines.read().await;
-                let room_id = inner.room.room_id();
-                let timeline = timelines.get(room_id).context("timeline not started yet")?;
-                Ok(TimelineStream::new(inner, Arc::new(timeline.clone())))
+                let timelines = sync_controller.timelines.read().await;
+                let timeline = timelines
+                    .get(room.room.room_id())
+                    .context("timeline not started yet")?;
+                Ok(TimelineStream::new(room, Arc::new(timeline.clone())))
             })
             .await?
     }

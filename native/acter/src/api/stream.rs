@@ -19,7 +19,7 @@ use matrix_sdk_base::{
 };
 use matrix_sdk_ui::timeline::{TimelineEventItemId, TimelineItem};
 use std::{ops::Deref, sync::Arc};
-use tracing::info;
+use tracing::{error, info};
 
 use crate::{Client, Room, RoomMessage, RUNTIME};
 
@@ -46,7 +46,7 @@ impl TimelineStream {
     }
 
     pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
-        let items = self.timeline.items.clone();
+        let timeline = self.timeline.clone();
         let my_id = self
             .room
             .deref()
@@ -57,7 +57,7 @@ impl TimelineStream {
 
         async_stream::stream! {
             let (current_items, stream) = {
-                let locked = items.read().await;
+                let locked = timeline.items.read().await;
                 let values: Vec<RoomMessage> = locked
                     .clone()
                     .into_iter()
@@ -82,24 +82,28 @@ impl TimelineStream {
 
     /// Get the next count messages backwards, and return whether it reached the end
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
 
-        Ok(RUNTIME
-            .spawn(async move { timeline.paginate_backwards(count).await })
-            .await??)
+        RUNTIME
+            .spawn(async move {
+                let result = timeline.inner.paginate_backwards(count).await?;
+                Ok(result)
+            })
+            .await?
     }
 
     pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
         let event_id = OwnedEventId::try_from(event_id)?;
-
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let my_id = self.room.user_id()?;
 
         RUNTIME
             .spawn(async move {
-                let Some(tl) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Event not found")
-                };
+                let tl = timeline
+                    .inner
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Event not found")?;
                 Ok(RoomMessage::new_event_item(my_id, &tl))
             })
             .await?
@@ -114,8 +118,8 @@ impl TimelineStream {
             bail!("Unable to send message in a room we are not in");
         }
         let room = self.room.clone();
+        let timeline = self.timeline.clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.inner.clone();
 
         RUNTIME
             .spawn(async move {
@@ -126,7 +130,7 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let msg = draft.into_room_msg(&room).await?;
-                timeline.send(msg.with_relation(None).into()).await;
+                timeline.inner.send(msg.with_relation(None).into()).await;
                 Ok(true)
             })
             .await?
@@ -138,9 +142,8 @@ impl TimelineStream {
         }
         let room = self.room.deref().clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
 
         RUNTIME
             .spawn(async move {
@@ -151,9 +154,11 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
 
-                let Some(item) = timeline.item_by_event_id(&event_id).await else {
-                    bail!("Unable to find event");
-                };
+                let item = timeline
+                    .inner
+                    .item_by_event_id(&event_id)
+                    .await
+                    .context("Unable to find event")?;
 
                 if !item.is_own() {
                     // !item.is_editable() { // FIXME: matrix-sdk is_editable doesn't allow us to post other things
@@ -161,12 +166,13 @@ impl TimelineStream {
                 }
 
                 let item = timeline
+                    .inner
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
                 let event_content = draft.into_room_msg(&room).await?;
                 let new_content = EditedContent::RoomMessage(event_content);
-                timeline.edit(&item.identifier(), new_content).await?;
+                timeline.inner.edit(&item.identifier(), new_content).await?;
                 Ok(true)
             })
             .await?
@@ -178,9 +184,8 @@ impl TimelineStream {
         }
         let room = self.room.deref().clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let event_id = EventId::parse(event_id)?;
-        let client = self.room.client();
 
         RUNTIME
             .spawn(async move {
@@ -191,11 +196,13 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let reply_item = timeline
+                    .inner
                     .replied_to_info_from_event_id(&event_id)
                     .await
                     .context("Not found which item would be replied to")?;
                 let content = draft.into_room_msg(&room).await?;
                 timeline
+                    .inner
                     .send_reply(
                         content.with_relation(None).into(),
                         reply_item,
@@ -213,7 +220,7 @@ impl TimelineStream {
         thread: String,
         event_id: String,
     ) -> Result<bool> {
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let receipt_type = match receipt_type.as_str() {
             "FullyRead" => create_receipt::v3::ReceiptType::FullyRead,
             "Read" => create_receipt::v3::ReceiptType::Read,
@@ -233,16 +240,17 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                timeline
+                let result = timeline
+                    .inner
                     .send_single_receipt(receipt_type, thread, event_id)
                     .await?;
-                Ok(true)
+                Ok(result)
             })
             .await?
     }
 
     pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let receipt = if user_triggered {
             create_receipt::v3::ReceiptType::Read
         } else {
@@ -251,7 +259,7 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let result = timeline.mark_as_read(receipt).await?;
+                let result = timeline.inner.mark_as_read(receipt).await?;
                 Ok(result)
             })
             .await?
@@ -263,7 +271,7 @@ impl TimelineStream {
         public_read_receipt: Option<String>,
         private_read_receipt: Option<String>,
     ) -> Result<bool> {
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let fully_read = match fully_read {
             Some(x) => match EventId::parse(x) {
                 Ok(event_id) => Some(event_id),
@@ -298,7 +306,7 @@ impl TimelineStream {
                     .fully_read_marker(fully_read)
                     .public_read_receipt(public_read_receipt)
                     .private_read_receipt(private_read_receipt);
-                timeline.send_multiple_receipts(receipts).await?;
+                timeline.inner.send_multiple_receipts(receipts).await?;
                 Ok(true)
             })
             .await?
@@ -310,7 +318,7 @@ impl TimelineStream {
         }
         let room = self.room.clone();
         let my_id = self.room.user_id()?;
-        let timeline = self.timeline.inner.clone();
+        let timeline = self.timeline.clone();
         let unique_id =
             match OwnedEventId::try_from(unique_id.clone()).map(TimelineEventItemId::EventId) {
                 Ok(o) => o,
@@ -325,7 +333,7 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send reaction in this room");
                 }
-                timeline.toggle_reaction(&unique_id, &key).await?;
+                timeline.inner.toggle_reaction(&unique_id, &key).await?;
                 Ok(true)
             })
             .await?
