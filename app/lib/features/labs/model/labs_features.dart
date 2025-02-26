@@ -30,13 +30,10 @@ enum LabsFeature {
   static List<LabsFeature> get defaults =>
       isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
-  static List<LabsFeature> get releaseDefaults => [
-        LabsFeature.mobilePushNotifications,
-      ];
+  static List<LabsFeature> get releaseDefaults => [];
 
   static List<LabsFeature> get nightlyDefaults => [
         LabsFeature.encryptionBackup,
-        LabsFeature.mobilePushNotifications,
         // LabsFeature.chatNG,
       ];
 }

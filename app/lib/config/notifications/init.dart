@@ -6,8 +6,7 @@ import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/firebase_options.dart';
 import 'package:acter/config/notifications/util.dart';
 import 'package:acter/config/setup.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/acter_notifify.dart';
@@ -149,11 +148,11 @@ bool _handleMessageTapForContext(
   return true;
 }
 
-bool _isEnabled() {
+Future<bool> _isEnabled() async {
   try {
     // ignore: use_build_context_synchronously
-    if (!mainProviderContainer
-        .read(isActiveProvider(LabsFeature.mobilePushNotifications))) {
+    if (!await mainProviderContainer
+        .read(isPushNotificationsActiveProvider.future)) {
       _log.info(
         'Showing push notifications has been disabled on this device. Ignoring',
       );

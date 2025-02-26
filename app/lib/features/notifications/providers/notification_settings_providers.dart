@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:acter/features/notifications/providers/notifiers/notification_settings_notifier.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -17,3 +18,8 @@ final autoSubscribeProvider = FutureProvider((ref) async {
   final settingsLoader = await ref.watch(userAppSettingsProvider.future);
   return settingsLoader.autoSubscribeOnActivity();
 });
+
+final isPushNotificationsActiveProvider = createAsyncPrefProvider<bool>(
+  prefKey: 'pushNotifications',
+  defaultValue: true,
+);
