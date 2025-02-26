@@ -25,7 +25,6 @@ Widget? buildSessionsWidget(BuildContext context, WidgetRef ref) {
       icon: Icons.warning_amber_rounded,
       iconColor: warningColor,
       title: lang.unverifiedSessionsTitle(sessions.length),
-      subtitle: '',
       actions: [
         OutlinedButton(
           onPressed: () {
