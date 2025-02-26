@@ -107,6 +107,10 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                 ],
               ),
             ),
+            SizedBox(height: 4),
+            NewsPostTimeWidget(
+              originServerTs: widget.updateEntry.originServerTs(),
+            ),
           ],
         ),
       ),
