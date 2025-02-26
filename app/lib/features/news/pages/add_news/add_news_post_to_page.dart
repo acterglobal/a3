@@ -156,7 +156,9 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
     required IconData iconData,
     required PostTypeSelection postTypeSelection,
   }) {
-    final color = !isEnable ? Theme.of(context).disabledColor : null;
+    final color = !isEnable
+        ? Theme.of(context).disabledColor
+        : Theme.of(context).colorScheme.onSurface;
     return InkWell(
       onTap: isEnable ? () => selectedPostType.value = postTypeSelection : null,
       child: Padding(
