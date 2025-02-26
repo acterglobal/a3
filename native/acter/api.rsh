@@ -994,6 +994,18 @@ object RoomEventItem {
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
+    /// original sender id, if this msg is reply to another msg
+    fn replied_to_sender() -> Option<string>;
+
+    /// original msg body, if this msg is reply to another msg
+    fn replied_to_body() -> Option<string>;
+
+    /// original msg type, if this msg is reply to another msg
+    fn replied_to_msgtype() -> Option<string>;
+
+    /// original msg content, if this msg is reply to another msg
+    fn replied_to_content() -> Option<MsgContent>;
+
     /// the list of users that read this message
     fn read_users() -> Vec<string>;
 

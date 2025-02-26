@@ -317,6 +317,7 @@ impl Client {
                     let i = items.clone();
                     let ri = room_infos.clone();
                     let room_id = ui_room.room_id().to_owned();
+                    let tl = sdk_timeline.clone();
                     let timeline_task = tokio::spawn(async move {
                         pin_mut!(stream);
                         let items = i;
@@ -328,7 +329,10 @@ impl Client {
                                 match diff {
                                     VectorDiff::Append { values } => {
                                         info!("items append");
-                                        items.append(values);
+                                        items.append(values.clone());
+                                        for value in values {
+                                            fetch_details_for_event(value, tl.clone()).await;
+                                        }
                                     }
                                     VectorDiff::Clear => {
                                         info!("items clear");
@@ -336,7 +340,8 @@ impl Client {
                                     }
                                     VectorDiff::Insert { index, value } => {
                                         info!("items insert");
-                                        items.insert(index, value);
+                                        items.insert(index, value.clone());
+                                        fetch_details_for_event(value, tl.clone()).await;
                                     }
                                     VectorDiff::PopBack => {
                                         info!("items pop back");
@@ -348,11 +353,13 @@ impl Client {
                                     }
                                     VectorDiff::PushBack { value } => {
                                         info!("items push back");
-                                        items.push_back(value);
+                                        items.push_back(value.clone());
+                                        fetch_details_for_event(value, tl.clone()).await;
                                     }
                                     VectorDiff::PushFront { value } => {
                                         info!("items push front");
-                                        items.push_front(value);
+                                        items.push_front(value.clone());
+                                        fetch_details_for_event(value, tl.clone()).await;
                                     }
                                     VectorDiff::Remove { index } => {
                                         info!("items remove");
@@ -361,11 +368,15 @@ impl Client {
                                     VectorDiff::Reset { values } => {
                                         info!("items reset");
                                         items.clear();
-                                        items.append(values);
+                                        items.append(values.clone());
+                                        for value in values {
+                                            fetch_details_for_event(value, tl.clone()).await;
+                                        }
                                     }
                                     VectorDiff::Set { index, value } => {
                                         info!("items set");
-                                        items.set(index, value);
+                                        items.set(index, value.clone());
+                                        fetch_details_for_event(value, tl.clone()).await;
                                     }
                                     VectorDiff::Truncate { length } => {
                                         info!("items truncate");
@@ -644,4 +655,16 @@ fn insert_to_convo(
 
 fn latest_message_storage_key(room_id: &RoomId) -> ExecuteReference {
     ExecuteReference::RoomParam(room_id.to_owned(), RoomParam::LatestMessage)
+}
+
+async fn fetch_details_for_event(item: Arc<TimelineItem>, timeline: Arc<SdkTimeline>) {
+    if let Some(event) = item.as_event() {
+        if let Ok(info) = event.replied_to_info() {
+            let replied_to = info.event_id();
+            info!("fetching replied_to: {}", replied_to);
+            if let Err(err) = timeline.fetch_details_for_event(replied_to).await {
+                error!("error when fetching replied_to_info via timeline: {err}");
+            }
+        }
+    }
 }
