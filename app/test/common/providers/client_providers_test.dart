@@ -42,6 +42,7 @@ void main() {
       final cl = MockClient();
 
       provider.state = AsyncValue.data(cl);
+      await tester.pumpAndSettle();
       expect(container.read(alwaysClientProvider).isLoading, false);
       expect(container.read(alwaysClientProvider).value, cl);
 
@@ -63,6 +64,7 @@ void main() {
       final cl = MockClient();
 
       provider.state = AsyncValue.data(cl);
+      await tester.pumpAndSettle();
       expect(container.read(alwaysClientProvider).isLoading, false);
       expect(container.read(alwaysClientProvider).value, cl);
 
@@ -81,6 +83,7 @@ void main() {
 
       // user logs out, no client left
       provider.state = AsyncValue.data(null);
+      await tester.pumpAndSettle();
       expect(container.read(alwaysClientProvider).isLoading, true);
       await container.pump();
       await expectLater(
@@ -89,6 +92,49 @@ void main() {
       );
       expect(container.read(alwaysClientProvider).isLoading, true);
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('syncs with delay', (tester) async {
+      final provider = MockClientNotifier(client: null);
+      final syncNotifier = MockSyncNotifier();
+      final container = ProviderContainer(
+        overrides: [
+          // no client
+          clientProvider.overrideWith(() => provider),
+          syncStateProvider.overrideWith(() => syncNotifier),
+        ],
+      );
+      expect(syncNotifier.clientSet, 0);
+      final cl = MockClient();
+      container.read(clientProvider);
+      provider.state = AsyncValue.data(cl);
+      expect(syncNotifier.restarted, 0);
+      expect(syncNotifier.clientSet, 0);
+      await tester.pumpAndSettle();
+      expect(container.read(isSyncingStateProvider), true); // read again
+      expect(syncNotifier.restarted, 0); // no sync yet
+      await tester
+          .pumpAndSettle(Duration(seconds: 3)); // sync state takes a moment;
+      expect(container.read(isSyncingStateProvider), true); // read again
+      expect(syncNotifier.restarted, 1);
+      expect(syncNotifier.clientSet, 1);
+    });
+
+    testWidgets('always client only sets once upon start', (tester) async {
+      final cl = MockClient();
+      final provider = PendingUntilFoundMockClientNotifier();
+      final container = ProviderContainer(
+        overrides: [
+          // no client
+          clientProvider.overrideWith(() => provider),
+        ],
+      );
+      expect(container.read(alwaysClientProvider).isLoading, true);
+      int called = 0;
+      container.listen(alwaysClientProvider, (p, a) => called += 1);
+      provider.setClient(cl);
+      await tester.pumpAndSettle();
+      expect(called, 1);
     });
   });
 }

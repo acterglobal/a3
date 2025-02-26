@@ -37,11 +37,11 @@ class MembershipUpdateWidget extends ConsumerWidget {
       }
     } else if (msgType == 'Invited') {
       if (message.author.id == myUserId) {
-        textMsg = lang.chatYouInvited;
+        textMsg = lang.chatYouInvited('');
       } else if (firstName != null) {
-        textMsg = lang.chatInvitedDisplayName(firstName);
+        textMsg = lang.chatInvitedDisplayName(firstName, '');
       } else {
-        textMsg = lang.chatInvitedUserId(message.author.id);
+        textMsg = lang.chatInvitedUserId(message.author.id, '');
       }
     } else {
       textMsg = message.metadata?['body'] ?? '';

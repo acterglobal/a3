@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:acter/features/activities/widgets/security_privacy_widget.dart';
+import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 
 void main() {
   Future<void> pumpSecurityWidget(
@@ -16,7 +16,7 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           home: Scaffold(
-            body: SecurityPrivacyWidget(
+            body: ActivitySectionItemWidget(
               icon: icon ?? Icons.security,
               iconColor: iconColor,
               title: title ?? 'Test Title',

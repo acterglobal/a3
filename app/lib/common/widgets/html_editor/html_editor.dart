@@ -466,7 +466,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return EditorStyle.desktop(
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
-      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
+      selectionColor: Theme.of(context).colorScheme.secondary,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
             text: Theme.of(context)
@@ -483,7 +483,7 @@ class HtmlEditorState extends State<HtmlEditor> {
     return EditorStyle.mobile(
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
-      selectionColor: Theme.of(context).colorScheme.secondaryContainer,
+      selectionColor: Theme.of(context).colorScheme.secondary,
       textStyleConfiguration: widget.textStyleConfiguration ??
           TextStyleConfiguration(
             text: Theme.of(context)

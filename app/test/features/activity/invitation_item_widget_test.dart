@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:acter/features/activities/widgets/invitation_item_widget.dart';
+import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -196,7 +196,8 @@ void main() {
       // Setup for DM without profile info
       when(() => mockInvitation.isDm()).thenReturn(true);
       when(() => mockRoom.displayName()).thenAnswer(
-          (_) => Future.value(MockOptionString(null)),); // No room name for DM
+        (_) => Future.value(MockOptionString(null)),
+      ); // No room name for DM
 
       await buildTestWidget(tester, avatarInfo: null);
       await tester.pumpAndSettle();
