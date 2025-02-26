@@ -17,9 +17,12 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
+use matrix_sdk_ui::{
+    eyeball_im::VectorDiff,
+    timeline::{Timeline, TimelineEventItemId, TimelineItem},
+};
 use std::{ops::Deref, sync::Arc};
-use tracing::info;
+use tracing::{error, info};
 
 use crate::{Client, Room, RoomMessage, RUNTIME};
 
@@ -53,17 +56,133 @@ impl TimelineStream {
             .to_owned();
 
         async_stream::stream! {
-            let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
+            let (timeline_items, mut timeline_stream) = timeline.clone().subscribe().await;
             yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, user_id.clone()))).collect());
 
-            let mut remap = timeline_stream.map(|diff| diff.into_iter().map(|d| remap_for_diff(
-                d,
-                |x| RoomMessage::from((x, user_id.clone())),
-            )).collect::<Vec<_>>()
-            );
+            let mut remap = timeline_stream.map(async |diffs| {
+                let mut result = vec![];
+                for diff in diffs.clone() {
+                    match diff {
+                        VectorDiff::Append { values } => {
+                            info!("items append");
+                            let mut items = vec![];
+                            for value in values {
+                                fetch_details_for_event(value.clone(), timeline.clone()).await;
+                                items.push(RoomMessage::from((value, user_id.clone())));
+                            }
+                            result.push(ApiVectorDiff {
+                                action: "Append".to_string(),
+                                values: Some(items),
+                                index: None,
+                                value: None,
+                            });
+                        }
+                        VectorDiff::Clear => {
+                            info!("items clear");
+                            result.push(ApiVectorDiff {
+                                action: "Clear".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            });
+                        }
+                        VectorDiff::Insert { index, value } => {
+                            info!("items insert");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            result.push(ApiVectorDiff {
+                                action: "Insert".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: Some(RoomMessage::from((value, user_id.clone()))),
+                            });
+                        }
+                        VectorDiff::PopBack => {
+                            info!("items pop back");
+                            result.push(ApiVectorDiff {
+                                action: "PopBack".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            });
+                        }
+                        VectorDiff::PopFront => {
+                            info!("items pop front");
+                            result.push(ApiVectorDiff {
+                                action: "PopFront".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            });
+                        }
+                        VectorDiff::PushBack { value } => {
+                            info!("items push back");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            result.push(ApiVectorDiff {
+                                action: "PushBack".to_string(),
+                                values: None,
+                                index: None,
+                                value: Some(RoomMessage::from((value, user_id.clone()))),
+                            });
+                        }
+                        VectorDiff::PushFront { value } => {
+                            info!("items push front");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            result.push(ApiVectorDiff {
+                                action: "PushFront".to_string(),
+                                values: None,
+                                index: None,
+                                value: Some(RoomMessage::from((value, user_id.clone()))),
+                            });
+                        }
+                        VectorDiff::Remove { index } => {
+                            info!("items remove");
+                            result.push(ApiVectorDiff {
+                                action: "Remove".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: None,
+                            });
+                        }
+                        VectorDiff::Reset { values } => {
+                            info!("items reset");
+                            let mut items = vec![];
+                            for value in values {
+                                fetch_details_for_event(value.clone(), timeline.clone()).await;
+                                items.push(RoomMessage::from((value, user_id.clone())));
+                            }
+                            result.push(ApiVectorDiff {
+                                action: "Reset".to_string(),
+                                values: Some(items),
+                                index: None,
+                                value: None,
+                            });
+                        }
+                        VectorDiff::Set { index, value } => {
+                            info!("items set");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            result.push(ApiVectorDiff {
+                                action: "Set".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: Some(RoomMessage::from((value, user_id.clone()))),
+                            });
+                        }
+                        VectorDiff::Truncate { length } => {
+                            info!("items truncate");
+                            result.push(ApiVectorDiff {
+                                action: "Truncate".to_string(),
+                                values: None,
+                                index: Some(length),
+                                value: None,
+                            });
+                        }
+                    }
+                }
+                result
+            });
 
             while let Some(d) = remap.next().await {
-                for e in d {
+                for e in d.await {
                     yield e
                 }
             }
@@ -385,5 +504,20 @@ impl Client {
             geo_uri,
             info: None,
         })
+    }
+}
+
+async fn fetch_details_for_event(item: Arc<TimelineItem>, timeline: Arc<Timeline>) {
+    if let Some(event) = item.as_event() {
+        if let Ok(info) = event.replied_to_info() {
+            let replied_to = info.event_id();
+            info!("fetching replied_to: {}", replied_to);
+            if let Err(err) = timeline.fetch_details_for_event(replied_to).await {
+                error!("error when fetching replied_to_info via timeline: {err}");
+            }
+            if timeline.item_by_event_id(replied_to).await.is_none() {
+                error!("error when finding replied_to");
+            }
+        }
     }
 }
