@@ -3,7 +3,7 @@ use anyhow::{bail, Context, Result};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
-    room::{Room, RoomMember},
+    room::{Room as SdkRoom, RoomMember},
 };
 use matrix_sdk_base::{
     ruma::{
@@ -22,8 +22,9 @@ use tokio_retry::{strategy::FixedInterval, Retry};
 use tracing::{error, info};
 
 use super::{
-    client::Client,
+    client::{Client, SyncController},
     profile::{PublicProfile, UserProfile},
+    room::Room,
     RUNTIME,
 };
 
@@ -38,8 +39,9 @@ pub struct Invitation {
     core: CoreClient,
     origin_server_ts: Option<u64>,
     is_dm: bool,
-    room: Room,
+    room: SdkRoom,
     sender: Sender,
+    sync_controller: SyncController,
 }
 
 impl Invitation {
@@ -47,8 +49,12 @@ impl Invitation {
         self.origin_server_ts
     }
 
-    pub fn room(&self) -> crate::Room {
-        crate::Room::new(self.core.clone(), self.room.clone())
+    pub fn room(&self) -> Room {
+        Room::new(
+            self.core.clone(),
+            self.room.clone(),
+            self.sync_controller.clone(),
+        )
     }
 
     pub fn is_dm(&self) -> bool {
@@ -149,15 +155,17 @@ pub(crate) struct InvitationController {
     invitations: Mutable<Vec<Invitation>>,
     stripped_event_handle: Option<EventHandlerHandle>,
     sync_event_handle: Option<EventHandlerHandle>,
+    sync_controller: SyncController,
 }
 
 impl InvitationController {
-    pub fn new(core: CoreClient) -> Self {
+    pub fn new(core: CoreClient, sync_controller: SyncController) -> Self {
         InvitationController {
             core,
             invitations: Default::default(),
             stripped_event_handle: None,
             sync_event_handle: None,
+            sync_controller,
         }
     }
 
@@ -167,7 +175,7 @@ impl InvitationController {
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
-             room: Room,
+             room: SdkRoom,
              Ctx(me): Ctx<InvitationController>| async move {
                 // user got invitation
                 me.clone().process_stripped_event(ev, room);
@@ -177,7 +185,7 @@ impl InvitationController {
 
         client.add_event_handler_context(self.clone());
         let handle = client.add_event_handler(
-            |ev: SyncRoomMemberEvent, room: Room, Ctx(me): Ctx<InvitationController>| async move {
+            |ev: SyncRoomMemberEvent, room: SdkRoom, Ctx(me): Ctx<InvitationController>| async move {
                 // user accepted or rejected invitation
                 me.clone().process_sync_event(ev, room);
             },
@@ -214,6 +222,7 @@ impl InvitationController {
                     origin_server_ts: None,
                     room: room.clone(),
                     sender: Sender::Member(inviter),
+                    sync_controller: self.sync_controller.clone(),
                 };
                 invitations.push(invitation);
             }
@@ -222,7 +231,7 @@ impl InvitationController {
         Ok(())
     }
 
-    fn process_stripped_event(&mut self, ev: StrippedRoomMemberEvent, room: Room) -> Result<()> {
+    fn process_stripped_event(&mut self, ev: StrippedRoomMemberEvent, room: SdkRoom) -> Result<()> {
         // filter only event for me
         let user_id = self
             .core
@@ -250,6 +259,7 @@ impl InvitationController {
                 origin_server_ts: Some(since_the_epoch.as_millis() as u64),
                 room: room.clone(),
                 sender: Sender::IdOnly(sender.to_owned()),
+                sync_controller: self.sync_controller.clone(),
             };
             let mut invitations = self.invitations.lock_mut();
             if !invitations
@@ -262,7 +272,7 @@ impl InvitationController {
         Ok(())
     }
 
-    fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: Room) {
+    fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: SdkRoom) {
         if let Some(evt) = ev.as_original() {
             // filter only event for me
             let user_id = self.core.client().user_id().expect("UserId needed");
