@@ -16,11 +16,10 @@ import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -126,8 +125,7 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> _initPushForClient(Client client) async {
-    final pushActive =
-        ref.read(isActiveProvider(LabsFeature.mobilePushNotifications));
+    final pushActive = await ref.read(isPushNotificationsActiveProvider.future);
     if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
