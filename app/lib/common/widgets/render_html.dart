@@ -17,7 +17,7 @@ class RenderHtml extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Html(
       onLinkTap: (target) async {
-        await openLink(target.toString(), context);
+        await openLink(ref, target.toString(), context);
       },
       data: text,
       defaultTextStyle: defaultTextStyle,

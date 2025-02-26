@@ -351,7 +351,7 @@ Future<void> onMessageLinkTap(
     ///If link is other than matrix room link
     ///Then open it on browser
     else {
-      await openLink(uri.toString(), context);
+      await openLink(ref, uri.toString(), context);
     }
   }
 }
