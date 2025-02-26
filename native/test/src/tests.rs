@@ -26,4 +26,5 @@ mod tasks;
 mod templates;
 mod thumbnail;
 mod typing;
+mod url_previews;
 mod verification;

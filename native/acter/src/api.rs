@@ -90,7 +90,7 @@ pub use common::{
     duration_from_secs, new_colorize_builder, new_display_builder, new_obj_ref_builder,
     new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
     OptionComposeDraft, OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo,
-    ThumbnailSize,
+    ThumbnailSize, UrlPreview,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
