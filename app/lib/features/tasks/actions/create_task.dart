@@ -140,8 +140,8 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
                 child: Row(
                   children: [
-                    const SelectSpaceFormField(
-                      canPermission: 'CanPostTask',
+                    SelectSpaceFormField(
+                      canCheck: (m) => m?.canString('CanPostTask') == true,
                       useCompactView: true,
                     ),
                     const Text(' > '),

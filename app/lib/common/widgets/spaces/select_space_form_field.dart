@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? title;
   final String? selectTitle;
   final String? emptyText;
-  final String canPermission;
+  final RoomCanCheck? canCheck;
   final bool mandatory;
   final bool useCompactView;
 
@@ -22,7 +23,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.selectTitle,
     this.emptyText,
     this.mandatory = true,
-    required this.canPermission,
+    this.canCheck,
     this.useCompactView = false,
   });
 
@@ -30,7 +31,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     final newSelectedSpaceId = await selectSpaceDrawer(
       context: context,
       currentSpaceId: ref.read(selectedSpaceIdProvider),
-      canCheck: (m) => m?.canString(canPermission) == true,
+      canCheck: canCheck,
       title: Text(selectTitle ?? L10n.of(context).selectSpace),
     );
     ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;

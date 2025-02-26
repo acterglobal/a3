@@ -228,7 +228,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   Widget _buildParentSpace() {
     final lang = L10n.of(context);
     return SelectSpaceFormField(
-      canPermission: 'CanLinkSpaces',
+      canCheck: (m) => m?.canString('CanLinkSpaces') == true,
       mandatory: false,
       title: lang.parentSpace,
       selectTitle: lang.selectParentSpace,

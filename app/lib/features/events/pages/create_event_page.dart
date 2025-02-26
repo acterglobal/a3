@@ -144,7 +144,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
-              const SelectSpaceFormField(canPermission: 'CanPostEvent'),
+              SelectSpaceFormField(
+                canCheck: (m) => m?.canString('CanPostEvent') == true,
+              ),
               const SizedBox(height: 20),
               _eventActionButtons(),
               const SizedBox(height: 30),
