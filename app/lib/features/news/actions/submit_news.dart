@@ -27,7 +27,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
   final spaceId = ref.read(newsStateProvider).newsPostSpaceId ??
       await selectSpaceDrawer(
         context: context,
-        canCheck: 'CanPostNews',
+        canCheck: (m) => m?.canString('CanPostNews') == true,
       );
 
   if (spaceId == null) {

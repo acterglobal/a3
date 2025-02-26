@@ -12,7 +12,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? title;
   final String? selectTitle;
   final String? emptyText;
-  final String canCheck;
+  final String canPermission;
   final bool mandatory;
   final bool useCompactView;
 
@@ -22,7 +22,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.selectTitle,
     this.emptyText,
     this.mandatory = true,
-    required this.canCheck,
+    required this.canPermission,
     this.useCompactView = false,
   });
 
@@ -30,7 +30,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     final newSelectedSpaceId = await selectSpaceDrawer(
       context: context,
       currentSpaceId: ref.read(selectedSpaceIdProvider),
-      canCheck: canCheck,
+      canCheck: (m) => m?.canString(canPermission) == true,
       title: Text(selectTitle ?? L10n.of(context).selectSpace),
     );
     ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
