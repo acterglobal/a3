@@ -90,20 +90,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
         Padding(
           padding: const EdgeInsets.all(18),
           child: ActerPrimaryActionButton(
-            onPressed: () {
-              if (selectedSpaceId == null || selectedSpaceId.isEmpty) {
-                EasyLoading.showToast(lang.pleaseSelectSpace);
-              } else if (canPostBoost.value == false &&
-                  canPostStories.value == false) {
-                EasyLoading.showToast(lang.notHaveBoostStoryPermission);
-              } else if (selectedPostType.value == PostTypeSelection.none) {
-                EasyLoading.showToast(lang.pleaseSelectePostType);
-              } else if (selectedPostType.value == PostTypeSelection.story) {
-                sendStory(context, ref);
-              } else if (selectedPostType.value == PostTypeSelection.boost) {
-                sendNews(context, ref);
-              }
-            },
+            onPressed: () => onTapPostUpdate(lang, selectedSpaceId),
             child: Text(lang.post.toUpperCase()),
           ),
         ),
@@ -146,6 +133,20 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
       padding: const EdgeInsets.all(18),
       child: spaceSelectorWidget,
     );
+  }
+
+  void onTapPostUpdate(L10n lang, String? selectedSpaceId) {
+    if (selectedSpaceId == null || selectedSpaceId.isEmpty) {
+      EasyLoading.showToast(lang.pleaseSelectSpace);
+    } else if (canPostBoost.value == false && canPostStories.value == false) {
+      EasyLoading.showToast(lang.notHaveBoostStoryPermission);
+    } else if (selectedPostType.value == PostTypeSelection.none) {
+      EasyLoading.showToast(lang.pleaseSelectePostType);
+    } else if (selectedPostType.value == PostTypeSelection.story) {
+      sendStory(context, ref);
+    } else if (selectedPostType.value == PostTypeSelection.boost) {
+      sendNews(context, ref);
+    }
   }
 
   Widget postOptionItemUI({
