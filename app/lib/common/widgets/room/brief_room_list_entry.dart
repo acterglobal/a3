@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class BriefRoomEntry extends ConsumerWidget {
   final String roomId;
   final String? selectedValue;
-  final RoomCanCheck canCheck;
+  final RoomCanCheck? canCheck;
   final String keyPrefix;
   final Function(String)? onSelect;
   final Widget Function(bool)? trailingBuilder;
@@ -17,7 +17,7 @@ class BriefRoomEntry extends ConsumerWidget {
   const BriefRoomEntry({
     super.key,
     required this.roomId,
-    required this.canCheck,
+    this.canCheck,
     this.onSelect,
     required this.keyPrefix,
     this.selectedValue,

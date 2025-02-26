@@ -23,7 +23,7 @@ enum RoomType {
 }
 
 class SelectRoomDrawer extends ConsumerStatefulWidget {
-  final RoomCanCheck canCheck;
+  final RoomCanCheck? canCheck;
   final String? currentSpaceId;
   final Widget title;
   final String keyPrefix;
@@ -31,7 +31,7 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
 
   const SelectRoomDrawer({
     super.key,
-    required this.canCheck,
+    this.canCheck,
     this.currentSpaceId,
     required this.title,
     required this.roomType,
