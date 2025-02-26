@@ -38,7 +38,7 @@ class SyncNotifier extends Notifier<SyncState> {
         client = newClient;
         Future.delayed(
           const Duration(milliseconds: 1500),
-          () => _restartSync(),
+          () => restartSync(),
         );
       },
       fireImmediately: true,
@@ -51,17 +51,17 @@ class SyncNotifier extends Notifier<SyncState> {
     state.countDown.map(
       (countDown) {
         if (countDown == 0) {
-          _restartSync();
+          restartSync();
         } else {
           // just count down.
           state = state.copyWith(countDown: countDown - 1);
         }
       },
-      orElse: () => _restartSync(),
+      orElse: () => restartSync(),
     );
   }
 
-  void _restartSync() {
+  void restartSync() {
     // reset states
     syncState?.cancel();
     _retryTimer?.cancel();
