@@ -102,25 +102,27 @@ impl MsgContentDraft {
     }
 
     fn add_ref_details(&mut self, ref_details: crate::RefDetails) -> Result<()> {
-        Ok(match self {
+        match self {
             MsgContentDraft::TextHtml { url_previews, .. }
             | MsgContentDraft::TextMarkdown { url_previews, .. }
             | MsgContentDraft::TextPlain { url_previews, .. } => {
                 url_previews.push(ref_details.try_into()?);
             }
             _ => bail!("Url Preview not supported"),
-        })
+        };
+        Ok(())
     }
 
     fn add_url_preview(&mut self, preview: RumaUrlPreview) -> Result<()> {
-        Ok(match self {
+        match self {
             MsgContentDraft::TextHtml { url_previews, .. }
             | MsgContentDraft::TextMarkdown { url_previews, .. }
             | MsgContentDraft::TextPlain { url_previews, .. } => {
                 url_previews.push(preview);
             }
             _ => bail!("Url Preview not supported"),
-        })
+        };
+        Ok(())
     }
 
     fn size(mut self, value: u64) -> Self {
@@ -388,14 +390,22 @@ impl MsgDraft {
         Ok(MsgDraft { inner, mentions })
     }
 
-    pub fn add_ref_details(&mut self, ref_details: Box<crate::RefDetails>) -> Result<Self> {
-        self.inner.add_ref_details(*ref_details)?;
-        Ok(self.clone())
+    pub fn add_ref_details(&self, ref_details: Box<crate::RefDetails>) -> Result<Self> {
+        let MsgDraft {
+            mut inner,
+            mut mentions,
+        } = self.clone();
+        inner.add_ref_details(*ref_details)?;
+        Ok(MsgDraft { inner, mentions })
     }
 
-    pub fn add_url_preview(&mut self, preview: Box<crate::UrlPreview>) -> Result<Self> {
-        self.inner.add_url_preview((*preview).0)?;
-        Ok(self.clone())
+    pub fn add_url_preview(&self, preview: Box<crate::UrlPreview>) -> Result<Self> {
+        let MsgDraft {
+            mut inner,
+            mut mentions,
+        } = self.clone();
+        inner.add_url_preview((*preview).0)?;
+        Ok(MsgDraft { inner, mentions })
     }
 
     pub fn add_room_mention(&self, mention: bool) -> Result<Self> {

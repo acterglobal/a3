@@ -116,7 +116,7 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let msg = draft.into_room_msg(&room).await?;
-                timeline.send(msg.with_relation(None).into()).await;
+                timeline.send(msg.with_relation(None).into()).await?;
                 Ok(true)
             })
             .await?
