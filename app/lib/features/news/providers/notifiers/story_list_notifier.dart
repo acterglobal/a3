@@ -27,7 +27,7 @@ class AsyncStoryListNotifier extends FamilyAsyncNotifier<List<Story>, String?> {
     _poller = _listener.listen(
       (data) async {
         _log.info('stories subscribe received');
-        state = await AsyncValue.guard(() => _fetchStories(client, spaceId));
+        state = AsyncValue.data(await _fetchStories(client, spaceId));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
