@@ -20,8 +20,10 @@ import 'package:acter/features/profile/pages/my_profile_page.dart';
 import 'package:acter/features/public_room_search/pages/search_public_directory.dart';
 import 'package:acter/features/settings/pages/backup_page.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
+import 'package:acter/features/settings/pages/calendar_settings_page.dart';
 import 'package:acter/features/settings/pages/change_password.dart';
 import 'package:acter/features/settings/pages/chat_settings_page.dart';
+import 'package:acter/features/settings/pages/customizations_settings_page.dart';
 import 'package:acter/features/settings/pages/email_addresses.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
@@ -105,6 +107,28 @@ final homeShellRoutes = [
       return MaterialPage(
         key: state.pageKey,
         child: const ChatSettingsPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingsCalendar.name,
+    path: Routes.settingsCalendar.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return MaterialPage(
+        key: state.pageKey,
+        child: const CalendarSettingsPage(),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.settingsCustomizations.name,
+    path: Routes.settingsCustomizations.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return MaterialPage(
+        key: state.pageKey,
+        child: const CustomizationsSettingsPage(),
       );
     },
   ),
