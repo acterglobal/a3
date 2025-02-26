@@ -2429,5 +2429,11 @@
   "chatYouLeft": "Du hast verlassen",
   "@chatYouLeft": {},
   "chatYouBanned": "Du hast {name} verbannt",
-  "@chatYouBanned": {}
+  "@chatYouBanned": {},
+  "shareChat": "Chat teilen",
+  "@shareChat": {},
+  "unableToLoadFile": "Datei hochladen fehlgeschlagen",
+  "@unableToLoadFile": {},
+  "shareSuperInvite": "Einladungscode teilen",
+  "@shareSuperInvite": {}
 }
