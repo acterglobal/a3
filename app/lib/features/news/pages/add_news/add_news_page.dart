@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
+import 'package:acter/features/news/pages/add_news/add_news_post_to_page.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/news/widgets/news_post_editor/news_slide_options.dart';
 import 'package:acter/features/news/widgets/news_post_editor/select_action_item.dart';
@@ -20,7 +20,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 const addNewsKey = Key('add-news');
 
@@ -198,11 +197,10 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
       padding: const EdgeInsets.only(bottom: 90),
       child: FloatingActionButton(
         key: UpdateKeys.newsSubmitBtn,
-        onPressed: () => context.pushNamed(
-          Routes.actionAddUpdatePostTo.name,
-          queryParameters: {
-            'spaceId': widget.initialSelectedSpace,
-          },
+        onPressed: () => showModalBottomSheet<void>(
+          context: context,
+          enableDrag: false,
+          builder: (context) => AddNewsPostToPage(),
         ),
         child: const Icon(Icons.send),
       ),
