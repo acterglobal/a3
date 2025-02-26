@@ -1,6 +1,6 @@
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter/features/news/pages/add_news_page.dart';
+import 'package:acter/features/news/pages/add_news/add_news_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -73,11 +73,11 @@ void main() {
         );
 
         // we are asked to  add a text slide
-        final addTextFinder = find.byKey(NewsUpdateKeys.addTextSlide);
+        final addTextFinder = find.byKey(UpdateKeys.addTextSlide);
         expect(addTextFinder, findsOneWidget);
 
         // try to go back
-        final closeFinder = find.byKey(NewsUpdateKeys.closeEditor);
+        final closeFinder = find.byKey(UpdateKeys.closeEditor);
         expect(closeFinder, findsOneWidget);
         await tester.tap(closeFinder);
         await tester.pumpAndSettle();
@@ -105,11 +105,10 @@ void main() {
         );
 
         final mainPageBtn = find.byKey(_RoutableMainPage.gotoBtn);
-        final addImageFinder = find.byKey(NewsUpdateKeys.addImageSlide);
-        final closeFinder = find.byKey(NewsUpdateKeys.closeEditor);
-        final confirmCloseFinder =
-            find.byKey(NewsUpdateKeys.confirmDeleteDraft);
-        final cancelCloseFinder = find.byKey(NewsUpdateKeys.cancelClose);
+        final addImageFinder = find.byKey(UpdateKeys.addImageSlide);
+        final closeFinder = find.byKey(UpdateKeys.closeEditor);
+        final confirmCloseFinder = find.byKey(UpdateKeys.confirmDeleteDraft);
+        final cancelCloseFinder = find.byKey(UpdateKeys.cancelClose);
 
         // route to the inner
 

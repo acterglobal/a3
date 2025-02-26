@@ -25199,6 +25199,27 @@ class Api {
       _RoomPowerLevelsNewsKeyReturn Function(
         int,
       )>();
+  late final _roomPowerLevelsStoriesPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsStoriesReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_stories");
+
+  late final _roomPowerLevelsStories = _roomPowerLevelsStoriesPtr.asFunction<
+      _RoomPowerLevelsStoriesReturn Function(
+        int,
+      )>();
+  late final _roomPowerLevelsStoriesKeyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomPowerLevelsStoriesKeyReturn Function(
+            ffi.IntPtr,
+          )>>("__RoomPowerLevels_stories_key");
+
+  late final _roomPowerLevelsStoriesKey =
+      _roomPowerLevelsStoriesKeyPtr.asFunction<
+          _RoomPowerLevelsStoriesKeyReturn Function(
+            int,
+          )>();
   late final _roomPowerLevelsEventsPtr = _lookup<
       ffi.NativeFunction<
           _RoomPowerLevelsEventsReturn Function(
@@ -25508,6 +25529,26 @@ class Api {
       int Function(
         int,
       )>();
+  late final _storiesSettingsActivePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__StoriesSettings_active");
+
+  late final _storiesSettingsActive = _storiesSettingsActivePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _storiesSettingsUpdaterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__StoriesSettings_updater");
+
+  late final _storiesSettingsUpdater = _storiesSettingsUpdaterPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _tasksSettingsActivePtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -25575,6 +25616,16 @@ class Api {
           )>>("__ActerAppSettings_news");
 
   late final _acterAppSettingsNews = _acterAppSettingsNewsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _acterAppSettingsStoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__ActerAppSettings_stories");
+
+  late final _acterAppSettingsStories = _acterAppSettingsStoriesPtr.asFunction<
       int Function(
         int,
       )>();
@@ -52487,6 +52538,50 @@ class RoomPowerLevels {
     return tmp2;
   }
 
+  int? stories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsStories(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String storiesKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsStoriesKey(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   int? events() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -53076,6 +53171,43 @@ class NewsSettings {
   }
 }
 
+class StoriesSettings {
+  final Api _api;
+  final _Box _box;
+
+  StoriesSettings._(this._api, this._box);
+
+  bool active() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storiesSettingsActive(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  SimpleOnOffSettingBuilder updater() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storiesSettingsUpdater(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SimpleOnOffSettingBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SimpleOnOffSettingBuilder._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class TasksSettings {
   final Api _api;
   final _Box _box;
@@ -53206,6 +53338,20 @@ class ActerAppSettings {
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsSettings");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = NewsSettings._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  StoriesSettings stories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterAppSettingsStories(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoriesSettings");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoriesSettings._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -66615,6 +66761,22 @@ class _RoomPowerLevelsNewsReturn extends ffi.Struct {
 }
 
 class _RoomPowerLevelsNewsKeyReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomPowerLevelsStoriesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsStoriesKeyReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()

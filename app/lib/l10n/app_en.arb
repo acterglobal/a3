@@ -2391,6 +2391,13 @@
   "tryAgain": "Try Again",
   "unableToLoadVideo": "Unable to load video",
   "unableToLoadImage": "Unable to load image",
+  "story": "Story",
+  "storyInfo": "Everyone can see, this is from you",
+  "boostInfo": "Important News. Sends a push notification to space members",
+  "notHaveBoostStoryPermission": "You do not have permission to post Boost or Story in selected space",
+  "pleaseSelectePostType": "Please select post type",
+  "postTo": "Post to",
+  "post": "Post",
   "unableToLoadFile": "Unable to load file",
   "@addComment": {}
 }

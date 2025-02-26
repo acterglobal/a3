@@ -4,6 +4,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/pins/widgets/pin_list_item_widget.dart';
 import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -16,10 +17,10 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class NewsSlideActions extends ConsumerWidget {
-  final NewsSlide newsSlide;
+class UpdateSlideActions extends ConsumerWidget {
+  final UpdateSlide newsSlide;
 
-  const NewsSlideActions({
+  const UpdateSlideActions({
     super.key,
     required this.newsSlide,
   });

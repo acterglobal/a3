@@ -28,7 +28,7 @@ class AsyncNewsListNotifier
     _poller = _listener.listen(
       (data) async {
         _log.info('news subscribe received');
-        state = await AsyncValue.guard(() => _fetchNews(client, spaceId));
+        state = AsyncValue.data(await _fetchNews(client, spaceId));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);

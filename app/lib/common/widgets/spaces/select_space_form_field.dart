@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final String? title;
   final String? selectTitle;
   final String? emptyText;
-  final String canCheck;
+  final RoomCanCheck? canCheck;
   final bool mandatory;
   final bool useCompactView;
 
@@ -22,7 +23,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.selectTitle,
     this.emptyText,
     this.mandatory = true,
-    required this.canCheck,
+    this.canCheck,
     this.useCompactView = false,
   });
 

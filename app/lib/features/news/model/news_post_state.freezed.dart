@@ -16,8 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$NewsPostState {
-  NewsSlideItem? get currentNewsSlide => throw _privateConstructorUsedError;
-  List<NewsSlideItem> get newsSlideList => throw _privateConstructorUsedError;
+  UpdateSlideItem? get currentUpdateSlide => throw _privateConstructorUsedError;
+  List<UpdateSlideItem> get newsSlideList => throw _privateConstructorUsedError;
   String? get newsPostSpaceId => throw _privateConstructorUsedError;
 
   /// Create a copy of NewsPostState
@@ -34,8 +34,8 @@ abstract class $NewsPostStateCopyWith<$Res> {
       _$NewsPostStateCopyWithImpl<$Res, NewsPostState>;
   @useResult
   $Res call(
-      {NewsSlideItem? currentNewsSlide,
-      List<NewsSlideItem> newsSlideList,
+      {UpdateSlideItem? currentUpdateSlide,
+      List<UpdateSlideItem> newsSlideList,
       String? newsPostSpaceId});
 }
 
@@ -54,19 +54,19 @@ class _$NewsPostStateCopyWithImpl<$Res, $Val extends NewsPostState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? currentNewsSlide = freezed,
+    Object? currentUpdateSlide = freezed,
     Object? newsSlideList = null,
     Object? newsPostSpaceId = freezed,
   }) {
     return _then(_value.copyWith(
-      currentNewsSlide: freezed == currentNewsSlide
-          ? _value.currentNewsSlide
-          : currentNewsSlide // ignore: cast_nullable_to_non_nullable
-              as NewsSlideItem?,
+      currentUpdateSlide: freezed == currentUpdateSlide
+          ? _value.currentUpdateSlide
+          : currentUpdateSlide // ignore: cast_nullable_to_non_nullable
+              as UpdateSlideItem?,
       newsSlideList: null == newsSlideList
           ? _value.newsSlideList
           : newsSlideList // ignore: cast_nullable_to_non_nullable
-              as List<NewsSlideItem>,
+              as List<UpdateSlideItem>,
       newsPostSpaceId: freezed == newsPostSpaceId
           ? _value.newsPostSpaceId
           : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
@@ -84,8 +84,8 @@ abstract class _$$NewsPostStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {NewsSlideItem? currentNewsSlide,
-      List<NewsSlideItem> newsSlideList,
+      {UpdateSlideItem? currentUpdateSlide,
+      List<UpdateSlideItem> newsSlideList,
       String? newsPostSpaceId});
 }
 
@@ -102,19 +102,19 @@ class __$$NewsPostStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? currentNewsSlide = freezed,
+    Object? currentUpdateSlide = freezed,
     Object? newsSlideList = null,
     Object? newsPostSpaceId = freezed,
   }) {
     return _then(_$NewsPostStateImpl(
-      currentNewsSlide: freezed == currentNewsSlide
-          ? _value.currentNewsSlide
-          : currentNewsSlide // ignore: cast_nullable_to_non_nullable
-              as NewsSlideItem?,
+      currentUpdateSlide: freezed == currentUpdateSlide
+          ? _value.currentUpdateSlide
+          : currentUpdateSlide // ignore: cast_nullable_to_non_nullable
+              as UpdateSlideItem?,
       newsSlideList: null == newsSlideList
           ? _value._newsSlideList
           : newsSlideList // ignore: cast_nullable_to_non_nullable
-              as List<NewsSlideItem>,
+              as List<UpdateSlideItem>,
       newsPostSpaceId: freezed == newsPostSpaceId
           ? _value.newsPostSpaceId
           : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
@@ -127,17 +127,17 @@ class __$$NewsPostStateImplCopyWithImpl<$Res>
 
 class _$NewsPostStateImpl implements _NewsPostState {
   const _$NewsPostStateImpl(
-      {this.currentNewsSlide,
-      final List<NewsSlideItem> newsSlideList = const [],
+      {this.currentUpdateSlide,
+      final List<UpdateSlideItem> newsSlideList = const [],
       this.newsPostSpaceId})
       : _newsSlideList = newsSlideList;
 
   @override
-  final NewsSlideItem? currentNewsSlide;
-  final List<NewsSlideItem> _newsSlideList;
+  final UpdateSlideItem? currentUpdateSlide;
+  final List<UpdateSlideItem> _newsSlideList;
   @override
   @JsonKey()
-  List<NewsSlideItem> get newsSlideList {
+  List<UpdateSlideItem> get newsSlideList {
     if (_newsSlideList is EqualUnmodifiableListView) return _newsSlideList;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_newsSlideList);
@@ -148,7 +148,7 @@ class _$NewsPostStateImpl implements _NewsPostState {
 
   @override
   String toString() {
-    return 'NewsPostState(currentNewsSlide: $currentNewsSlide, newsSlideList: $newsSlideList, newsPostSpaceId: $newsPostSpaceId)';
+    return 'NewsPostState(currentUpdateSlide: $currentUpdateSlide, newsSlideList: $newsSlideList, newsPostSpaceId: $newsPostSpaceId)';
   }
 
   @override
@@ -156,8 +156,8 @@ class _$NewsPostStateImpl implements _NewsPostState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NewsPostStateImpl &&
-            (identical(other.currentNewsSlide, currentNewsSlide) ||
-                other.currentNewsSlide == currentNewsSlide) &&
+            (identical(other.currentUpdateSlide, currentUpdateSlide) ||
+                other.currentUpdateSlide == currentUpdateSlide) &&
             const DeepCollectionEquality()
                 .equals(other._newsSlideList, _newsSlideList) &&
             (identical(other.newsPostSpaceId, newsPostSpaceId) ||
@@ -165,7 +165,7 @@ class _$NewsPostStateImpl implements _NewsPostState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, currentNewsSlide,
+  int get hashCode => Object.hash(runtimeType, currentUpdateSlide,
       const DeepCollectionEquality().hash(_newsSlideList), newsPostSpaceId);
 
   /// Create a copy of NewsPostState
@@ -179,14 +179,14 @@ class _$NewsPostStateImpl implements _NewsPostState {
 
 abstract class _NewsPostState implements NewsPostState {
   const factory _NewsPostState(
-      {final NewsSlideItem? currentNewsSlide,
-      final List<NewsSlideItem> newsSlideList,
+      {final UpdateSlideItem? currentUpdateSlide,
+      final List<UpdateSlideItem> newsSlideList,
       final String? newsPostSpaceId}) = _$NewsPostStateImpl;
 
   @override
-  NewsSlideItem? get currentNewsSlide;
+  UpdateSlideItem? get currentUpdateSlide;
   @override
-  List<NewsSlideItem> get newsSlideList;
+  List<UpdateSlideItem> get newsSlideList;
   @override
   String? get newsPostSpaceId;
 

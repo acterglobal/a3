@@ -6,8 +6,8 @@ part 'news_post_state.freezed.dart';
 @freezed
 class NewsPostState with _$NewsPostState {
   const factory NewsPostState({
-    NewsSlideItem? currentNewsSlide,
-    @Default([]) List<NewsSlideItem> newsSlideList,
+    UpdateSlideItem? currentUpdateSlide,
+    @Default([]) List<UpdateSlideItem> newsSlideList,
     String? newsPostSpaceId,
   }) = _NewsPostState;
 }

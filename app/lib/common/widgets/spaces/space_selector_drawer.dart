@@ -7,7 +7,7 @@ const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
 Future<String?> selectSpaceDrawer({
   required BuildContext context,
   Key? key = selectSpaceDrawerKey,
-  String canCheck = 'CanLinkSpaces',
+  RoomCanCheck? canCheck,
   String? currentSpaceId,
   Widget? title,
 }) async {

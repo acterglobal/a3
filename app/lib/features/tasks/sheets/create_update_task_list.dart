@@ -105,7 +105,9 @@ class _CreateUpdateTaskListConsumerState
                 _widgetTaskListName(),
                 _widgetDescription(),
                 const SizedBox(height: 20),
-                const SelectSpaceFormField(canCheck: 'CanPostTaskList'),
+                SelectSpaceFormField(
+                  canCheck: (m) => m?.canString('CanPostTaskList') == true,
+                ),
                 _widgetMoreDetails(),
                 const SizedBox(height: 20),
                 _widgetCreateButton(),

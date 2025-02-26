@@ -7,7 +7,7 @@ const Key selectChatDrawerKey = Key('chat-widgets-select-chat-drawer');
 Future<String?> selectChatDrawer({
   required BuildContext context,
   Key? key = selectChatDrawerKey,
-  String canCheck = 'CanInvite',
+  RoomCanCheck? canCheck,
   String? currentChatId,
   Widget? title,
 }) async {
@@ -18,10 +18,10 @@ Future<String?> selectChatDrawer({
     isDismissible: true,
     builder: (context) => SelectRoomDrawer(
       key: key,
-      canCheck: canCheck,
       title: title ?? Text(L10n.of(context).selectChat),
       keyPrefix: 'select-chat',
       roomType: RoomType.groupChat,
+      canCheck: canCheck,
     ),
   );
   if (selected == null) {
