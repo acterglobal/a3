@@ -16,7 +16,6 @@ enum LabsFeature {
   encryptionBackup,
 
   // candidates for always on
-  comments,
   deviceCalendarSync,
   mobilePushNotifications,
 
@@ -25,20 +24,16 @@ enum LabsFeature {
   events,
   pins,
   autoSubscribe,
+  comments,
   showNotifications; // old name for desktop notifications
 
   static List<LabsFeature> get defaults =>
       isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
-  static List<LabsFeature> get releaseDefaults => [
-        LabsFeature.mobilePushNotifications,
-        LabsFeature.deviceCalendarSync,
-      ];
+  static List<LabsFeature> get releaseDefaults => [];
 
   static List<LabsFeature> get nightlyDefaults => [
         LabsFeature.encryptionBackup,
-        LabsFeature.deviceCalendarSync,
-        LabsFeature.mobilePushNotifications,
         // LabsFeature.chatNG,
       ];
 }
