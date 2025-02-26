@@ -1,1 +1,0 @@
- - [Fix] : Resolved issue with 'Manage' button not opening Edit Invite Code on the Invite Page.
