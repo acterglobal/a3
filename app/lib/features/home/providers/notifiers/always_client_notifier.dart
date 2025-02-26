@@ -32,6 +32,10 @@ class AlwaysClientNotifier extends AsyncNotifier<Client> {
         // we need to update to the new value
         state = AsyncData(newClient);
       }
+    } else if (old?.valueOrNull != null) {
+      // we had a value previously, but now we don't, go back to endlessly
+      // pending to stop all dependents in their track.
+      state = AsyncValue.loading();
     }
   }
 }

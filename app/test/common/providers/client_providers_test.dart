@@ -42,6 +42,7 @@ void main() {
       final cl = MockClient();
 
       provider.state = AsyncValue.data(cl);
+      await tester.pumpAndSettle();
       expect(container.read(alwaysClientProvider).isLoading, false);
       expect(container.read(alwaysClientProvider).value, cl);
 
@@ -63,6 +64,7 @@ void main() {
       final cl = MockClient();
 
       provider.state = AsyncValue.data(cl);
+      await tester.pumpAndSettle();
       expect(container.read(alwaysClientProvider).isLoading, false);
       expect(container.read(alwaysClientProvider).value, cl);
 
@@ -81,6 +83,7 @@ void main() {
 
       // user logs out, no client left
       provider.state = AsyncValue.data(null);
+      await tester.pumpAndSettle();
       expect(container.read(alwaysClientProvider).isLoading, true);
       await container.pump();
       await expectLater(
