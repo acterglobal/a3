@@ -21,7 +21,7 @@ Future<TaskList?> selectTaskList({
   spaceId ??= await selectSpace(
     context: context,
     ref: ref,
-    canCheck: 'CanPostTask',
+    canCheck: (m) => m?.canString('CanPostTask') == true,
   );
   if (!context.mounted) return null;
 

@@ -4,6 +4,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -13,6 +14,8 @@ import 'package:path/path.dart';
 
 final _log = Logger('a3::common::room::select_drawer');
 
+typedef RoomCanCheck = bool Function(Member?);
+
 // ChildRoomType configures the sub child type of the `Spaces`
 enum RoomType {
   groupChat,
@@ -20,8 +23,7 @@ enum RoomType {
 }
 
 class SelectRoomDrawer extends ConsumerStatefulWidget {
-  final String canCheck;
-  final String? secondaryCanCheck;
+  final RoomCanCheck canCheck;
   final String? currentSpaceId;
   final Widget title;
   final String keyPrefix;
@@ -30,7 +32,6 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
   const SelectRoomDrawer({
     super.key,
     required this.canCheck,
-    this.secondaryCanCheck,
     this.currentSpaceId,
     required this.title,
     required this.roomType,
@@ -157,7 +158,6 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
         keyPrefix: widget.keyPrefix,
         selectedValue: current,
         canCheck: widget.canCheck,
-        secondaryCanCheck: widget.secondaryCanCheck,
         onSelect: (roomId) {
           Navigator.pop(context, roomId);
         },

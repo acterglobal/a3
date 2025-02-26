@@ -1,14 +1,14 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BriefRoomEntry extends ConsumerWidget {
   final String roomId;
   final String? selectedValue;
-  final String canCheck;
-  final String? secondaryCanCheck;
+  final RoomCanCheck canCheck;
   final String keyPrefix;
   final Function(String)? onSelect;
   final Widget Function(bool)? trailingBuilder;
@@ -18,7 +18,6 @@ class BriefRoomEntry extends ConsumerWidget {
     super.key,
     required this.roomId,
     required this.canCheck,
-    this.secondaryCanCheck,
     this.onSelect,
     required this.keyPrefix,
     this.selectedValue,
@@ -31,17 +30,9 @@ class BriefRoomEntry extends ConsumerWidget {
     final roomMembership = ref.watch(roomMembershipProvider(roomId));
 
     bool canPermission = roomMembership.maybeWhen(
-      data: (membership) => membership?.canString(canCheck) == true,
+      data: canCheck,
       orElse: () => false,
     );
-
-    if (secondaryCanCheck != null) {
-      bool seocndayrCanPermission = roomMembership.maybeWhen(
-        data: (membership) => membership?.canString(secondaryCanCheck!) == true,
-        orElse: () => false,
-      );
-      canPermission = canPermission || seocndayrCanPermission;
-    }
 
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
