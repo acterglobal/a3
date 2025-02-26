@@ -105,7 +105,7 @@ class PinListItemWidget extends ConsumerWidget {
         ],
       ),
       subtitle: showSpace
-          ? SpaceNameWidget(spaceId: pin.roomIdStr(), isShowBrackets: false)
+          ? SpaceNameWidget(spaceId: pin.roomIdStr(), brackets: false)
           : null,
     );
   }

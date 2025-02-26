@@ -101,8 +101,8 @@ class _NewsItemState extends ConsumerState<NewsItem> {
                   SizedBox(width: 8),
                   SpaceNameWidget(
                     spaceId: roomId,
-                    isShowBrackets: false,
-                    isShowUnderline: true,
+                    brackets: false,
+                    underline: true,
                   ),
                 ],
               ),
@@ -126,7 +126,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           children: [
             InkWell(
               onTap: () => goToSpace(context, roomId),
-              child: SpaceNameWidget(spaceId: roomId, isShowBrackets: false),
+              child: SpaceNameWidget(spaceId: roomId, brackets: false),
             ),
             NewsPostTimeWidget(
               originServerTs: widget.updateEntry.originServerTs(),

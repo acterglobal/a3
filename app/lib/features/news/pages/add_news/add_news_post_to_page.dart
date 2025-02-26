@@ -130,7 +130,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
                 SizedBox(width: 16),
                 SpaceNameWidget(
                   spaceId: newsPostSpaceId,
-                  isShowBrackets: false,
+                  brackets: false,
                 ),
               ],
             ),
