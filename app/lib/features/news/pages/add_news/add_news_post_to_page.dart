@@ -15,9 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 enum PostTypeSelection { story, boost, none }
 
 class AddNewsPostToPage extends ConsumerStatefulWidget {
-  final String? initialSelectedSpace;
-
-  const AddNewsPostToPage({super.key, this.initialSelectedSpace});
+  const AddNewsPostToPage({super.key});
 
   @override
   ConsumerState<AddNewsPostToPage> createState() => _AddNewsPostToPageState();
