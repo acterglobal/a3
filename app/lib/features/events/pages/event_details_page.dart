@@ -25,6 +25,8 @@ import 'package:acter/features/events/widgets/participants_list.dart';
 import 'package:acter/features/events/widgets/skeletons/event_details_skeleton_widget.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
+import 'package:acter/features/notifications/widgets/object_notification_status.dart';
 import 'package:acter/features/share/action/share_space_object_action.dart';
 import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -103,6 +105,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               BookmarkAction(
                 bookmarker: BookmarkType.forEvent(widget.calendarId),
               ),
+              ObjectNotificationStatus(objectId: widget.calendarId),
               _buildActionMenu(calendarEvent),
             ]
           : [],
@@ -354,9 +357,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     showEditTitleBottomSheet(
       context: context,
       titleValue: calendarEvent.title(),
-      onSave: (newName) {
+      onSave: (ref, newName) {
         saveEventTitle(
           context: context,
+          ref: ref,
           calendarEvent: calendarEvent,
           newName: newName,
         );
@@ -380,6 +384,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       draft.status(statusStr);
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
+
+      await autosubscribe(
+        ref: ref,
+        objectId: widget.calendarId,
+        lang: lang,
+      );
       // refresh cache
       final client = await ref.read(alwaysClientProvider.future);
       await client.waitForRsvp(rsvpId.toString(), null);
@@ -684,10 +694,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       context: context,
       descriptionHtmlValue: content?.formatted(),
       descriptionMarkdownValue: content?.body(),
-      onSave: (htmlBodyDescription, plainDescription) {
+      onSave: (ref, htmlBodyDescription, plainDescription) {
         saveEventDescription(
           context: context,
           calendarEvent: ev,
+          ref: ref,
           htmlBodyDescription: htmlBodyDescription,
           plainDescription: plainDescription,
         );

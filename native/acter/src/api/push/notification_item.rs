@@ -527,6 +527,7 @@ impl NotificationItemBuilder {
                         RefDetails::TaskList { .. } => format!("📋 {title}"),
                         RefDetails::Link { .. } => format!("🔗 {title}"),
                         RefDetails::Room { .. } => title,
+                        RefDetails::SuperInviteToken { .. } => title,
                     })
                 } else {
                     builder.title("Reference".to_owned())

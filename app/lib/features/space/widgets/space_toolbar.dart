@@ -107,12 +107,16 @@ class SpaceToolbar extends ConsumerWidget {
                 horizontal: 12,
                 vertical: 6,
               ),
+              side: BorderSide(color: colorScheme.outline),
             ),
             onPressed: () => context.pushNamed(
               Routes.spaceInvite.name,
               pathParameters: {'spaceId': spaceId},
             ),
-            child: Text(lang.invite),
+            child: Text(
+              lang.invite,
+              style: TextStyle(color: colorScheme.outline),
+            ),
           ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),

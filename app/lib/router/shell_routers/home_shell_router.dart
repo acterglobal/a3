@@ -21,7 +21,7 @@ import 'package:acter/features/public_room_search/pages/search_public_directory.
 import 'package:acter/features/settings/pages/backup_page.dart';
 import 'package:acter/features/settings/pages/blocked_users.dart';
 import 'package:acter/features/settings/pages/change_password.dart';
-import 'package:acter/features/settings/pages/chat_settings_page.dart';
+import 'package:acter/features/settings/pages/behavior_settings_page.dart';
 import 'package:acter/features/settings/pages/email_addresses.dart';
 import 'package:acter/features/settings/pages/info_page.dart';
 import 'package:acter/features/settings/pages/labs_page.dart';
@@ -98,13 +98,13 @@ final homeShellRoutes = [
     },
   ),
   GoRoute(
-    name: Routes.settingsChat.name,
-    path: Routes.settingsChat.route,
+    name: Routes.settingsBehavior.name,
+    path: Routes.settingsBehavior.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
       return MaterialPage(
         key: state.pageKey,
-        child: const ChatSettingsPage(),
+        child: const BehaviorSettingsPage(),
       );
     },
   ),

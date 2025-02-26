@@ -304,6 +304,13 @@ pub enum RefDetails {
         #[serde(default, skip_serializing_if = "RefPreview::is_none")]
         preview: RefPreview,
     },
+    SuperInviteToken {
+        token: String,
+        create_dm: bool,
+        accepted_count: u32,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        rooms: Vec<String>,
+    },
 }
 
 impl RefDetails {
@@ -315,6 +322,7 @@ impl RefDetails {
             RefDetails::Link { .. } => "link".to_string(),
             RefDetails::Room { is_space, .. } if *is_space => "space".to_string(),
             RefDetails::Room { .. } => "chat".to_string(),
+            RefDetails::SuperInviteToken { .. } => "super-invite".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
         }
@@ -325,6 +333,7 @@ impl RefDetails {
             RefDetails::Link { .. } => "link".to_string(),
             RefDetails::Room { is_space, .. } if *is_space => "space".to_string(),
             RefDetails::Room { .. } => "chat".to_string(),
+            RefDetails::SuperInviteToken { .. } => "super-invite".to_string(),
             RefDetails::Pin { .. } => "pin".to_string(),
             RefDetails::News { .. } => "news".to_string(),
             RefDetails::Task { action, .. } => action.to_string(),
@@ -335,7 +344,9 @@ impl RefDetails {
 
     pub fn target_id_str(&self) -> Option<String> {
         match self {
-            RefDetails::Link { .. } | RefDetails::Room { .. } => None,
+            RefDetails::Link { .. }
+            | RefDetails::Room { .. }
+            | RefDetails::SuperInviteToken { .. } => None,
             RefDetails::Task { target_id, .. }
             | RefDetails::TaskList { target_id, .. }
             | RefDetails::Pin { target_id, .. }
@@ -346,7 +357,7 @@ impl RefDetails {
 
     pub fn room_id_str(&self) -> Option<String> {
         match self {
-            RefDetails::Link { .. } => None,
+            RefDetails::Link { .. } | RefDetails::SuperInviteToken { .. } => None,
             RefDetails::Room { room_id, .. } => Some(room_id.to_string()),
             RefDetails::Task { room_id, .. }
             | RefDetails::TaskList { room_id, .. }
@@ -358,7 +369,7 @@ impl RefDetails {
 
     pub fn via_servers(&self) -> Vec<String> {
         match self {
-            RefDetails::Link { .. } => vec![],
+            RefDetails::Link { .. } | RefDetails::SuperInviteToken { .. } => vec![],
             RefDetails::Room { via, .. }
             | RefDetails::Task { via, .. }
             | RefDetails::TaskList { via, .. }
@@ -378,6 +389,7 @@ impl RefDetails {
     pub fn title(&self) -> Option<String> {
         match self {
             RefDetails::Link { title, .. } => Some(title.clone()),
+            RefDetails::SuperInviteToken { token, .. } => Some(token.clone()),
             RefDetails::CalendarEvent { preview, .. } => preview.title.clone(),
             RefDetails::Room { preview, .. }
             | RefDetails::Pin { preview, .. }

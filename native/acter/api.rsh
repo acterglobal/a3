@@ -1565,6 +1565,9 @@ object CommentsManager {
     /// String representation of the room id this comments manager is in
     fn room_id_str() -> string;
 
+    /// String of the id of the object the comments are managed for
+    fn object_id_str() -> string;
+
     /// Does this item have any comments?
     fn has_comments() -> bool;
 
@@ -1637,6 +1640,9 @@ object Attachment {
 object AttachmentsManager {
     /// the room this attachments manager lives in
     fn room_id_str() -> string;
+
+    /// the id of the object whose attachments are managed
+    fn object_id_str() -> string;
 
     /// Whether or not the current user can post, edit and delete
     /// attachments in this manager
@@ -3356,6 +3362,9 @@ object SuperInviteToken {
 
     /// Updater for this SuperInviteToken
     fn update_builder() -> SuperInvitesTokenUpdateBuilder;
+
+    /// get the internal reference object
+    fn ref_details() -> RefDetails;
 }
 
 /// Updater/Creator for an invite token

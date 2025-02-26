@@ -7,7 +7,7 @@ void showEditTitleBottomSheet({
   required BuildContext context,
   String? bottomSheetTitle,
   required String titleValue,
-  required Function(String) onSave,
+  required Function(WidgetRef, String) onSave,
 }) {
   showModalBottomSheet(
     showDragHandle: true,
@@ -27,7 +27,7 @@ void showEditTitleBottomSheet({
 class EditTitleSheet extends ConsumerStatefulWidget {
   final String? bottomSheetTitle;
   final String titleValue;
-  final Function(String) onSave;
+  final Function(WidgetRef, String) onSave;
 
   const EditTitleSheet({
     super.key,
@@ -91,7 +91,7 @@ class _EditTitleSheetState extends ConsumerState<EditTitleSheet> {
                   }
 
                   // Need to update change of tile
-                  widget.onSave(_titleController.text.trim());
+                  widget.onSave(ref, _titleController.text.trim());
                 },
                 child: Text(lang.save),
               ),

@@ -1,0 +1,1 @@
+- [improvement] : Simplified invite code redemption from some-one clicks on invite code from Boost Action post.

@@ -34,9 +34,10 @@ class SelectedActionButton extends ConsumerWidget {
       'pin' => pinActionButton(context, ref, refDetails!),
       'calendar-event' => calendarActionButton(context, ref, refDetails!),
       'task-list' => taskListActionButton(context, ref, refDetails!),
-      'link' => linkActionButton(context, refDetails!),
+      'link' => linkActionButton(context, ref, refDetails!),
       'space' => spaceActionButton(context, ref, refDetails!),
       'chat' => chatActionButton(context, ref, refDetails!),
+      'super-invite' => superInviteCodeActionButton(context, ref, refDetails!),
       _ => const SizedBox(),
     };
   }
@@ -145,7 +146,8 @@ class SelectedActionButton extends ConsumerWidget {
         );
   }
 
-  Widget linkActionButton(BuildContext context, RefDetails refDetail) {
+  Widget linkActionButton(
+      BuildContext context, WidgetRef ref, RefDetails refDetail,) {
     final uri = refDetail.uri();
     if (uri == null) return SizedBox.shrink();
     return SizedBox(
@@ -153,7 +155,7 @@ class SelectedActionButton extends ConsumerWidget {
       child: Card(
         child: ListTile(
           leading: const Icon(Atlas.link),
-          onTap: () => openLink(uri, context),
+          onTap: () => openLink(ref, uri, context),
           title: Text(
             refDetail.title() ?? L10n.of(context).unknown,
             maxLines: 2,
@@ -207,4 +209,33 @@ class SelectedActionButton extends ConsumerWidget {
       ),
     );
   }
+
+  Widget superInviteCodeActionButton(BuildContext context, WidgetRef ref, RefDetails refDetail) {
+    final superInvite = refDetail.title();
+    if (superInvite == null) return SizedBox.shrink();
+    return SizedBox(
+      width: 300,
+      child: Card(
+        child: ListTile(
+          leading: const Icon(Atlas.ticket_coupon),
+          onTap: () async {
+            final notifier = ref.read(newsStateProvider.notifier);
+            await notifier.selectInvitationCodeToShare(context);
+          },
+          title: Text(
+            refDetail.title() ?? L10n.of(context).unknown,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            L10n.of(context).inviteCode,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+        ),
+      ),
+    );
+  }
+
 }

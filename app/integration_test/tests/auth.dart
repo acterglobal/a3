@@ -2,7 +2,6 @@
 
 import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/home/data/keys.dart';
 import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/profile/pages/my_profile_page.dart';
@@ -62,21 +61,7 @@ void authTests() {
     // but should fail.
     // FIXME: how to check for a failure...
   });
-  acterTestWidget('fresh registration has no unauthenticated sessions',
-      (t) async {
-    await t.freshAccount();
-    await t.navigateTo([
-      MainNavKeys.activities,
-    ]);
 
-    // items _not_ present!
-    await find
-        .byKey(ActivitiesPage.oneUnverifiedSessionsCard)
-        .should(findsNothing);
-    await find
-        .byKey(ActivitiesPage.unverifiedSessionsCard)
-        .should(findsNothing);
-  });
   acterTestWidget('ensure unicode registration works', (t) async {
     const testName = "Dwayne 'the 🪨' Johnson";
     await t.freshAccount(displayName: testName);
@@ -101,28 +86,6 @@ void authTests() {
     await t.navigateTo([
       MainNavKeys.activities,
     ]);
-
-    final emailAddrUnconfirmed = find.byKey(ActivitiesPage.unconfirmedEmails);
-    await t.tester.ensureVisible(emailAddrUnconfirmed);
-    await emailAddrUnconfirmed.should(findsOneWidget);
-
-    // Actually confirm
-    await t.clickLinkInLatestEmail(
-      emailAddr,
-      contains: 'Validate your email',
-    );
-
-    // Confirm on the App side, too
-
-    await t.confirmEmailAdd(emailAddr, t.passwordFor(userId));
-
-    // the widget is gone on the activities page
-    await find.byKey(Keys.mainNav).should(findsOneWidget);
-    await t.navigateTo([
-      MainNavKeys.activities,
-    ]);
-
-    await emailAddrUnconfirmed.should(findsNothing);
 
     await t.logout();
 

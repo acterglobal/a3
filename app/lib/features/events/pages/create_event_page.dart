@@ -9,6 +9,7 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/utils/events_utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -462,6 +463,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       final eventId = (await draft.send()).toString();
       final client = await ref.read(alwaysClientProvider.future);
       final calendarEvent = await client.waitForCalendarEvent(eventId, null);
+      await autosubscribe(ref: ref, objectId: eventId, lang: lang);
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
