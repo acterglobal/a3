@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/actions/submit_story.dart';
 import 'package:acter/features/news/model/keys.dart';
@@ -35,7 +36,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
     canPostStories.value = false;
 
     //Initialize variables based on the selected space
-    final selectedSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
+    final selectedSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     if (selectedSpaceId != null) {
       final membership =
           ref.watch(roomMembershipProvider(selectedSpaceId)).valueOrNull;
@@ -100,38 +101,16 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
   }
 
   Widget spaceSelector() {
-    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
-
-    final spaceSelectorWidget = (newsPostSpaceId != null)
-        ? InkWell(
-            key: UpdateKeys.selectSpace,
-            onTap: () async {
-              final notifier = ref.read(newsStateProvider.notifier);
-              await notifier.changeNewsPostSpaceId(context);
-            },
-            child: Row(
-              children: [
-                RoomAvatarBuilder(roomId: newsPostSpaceId, avatarSize: 42),
-                SizedBox(width: 16),
-                SpaceNameWidget(
-                  spaceId: newsPostSpaceId,
-                  brackets: false,
-                ),
-              ],
-            ),
-          )
-        : OutlinedButton(
-            key: UpdateKeys.selectSpace,
-            onPressed: () async {
-              final notifier = ref.read(newsStateProvider.notifier);
-              await notifier.changeNewsPostSpaceId(context);
-            },
-            child: Text(L10n.of(context).selectSpace),
-          );
-
     return Padding(
-      padding: const EdgeInsets.all(18),
-      child: spaceSelectorWidget,
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: SelectSpaceFormField(
+        canCheck: (m) =>
+            m?.canString('CanPostNews') == true ||
+            m?.canString('CanPostStories') == true,
+        onSpaceSelected: (spaceId) {
+          ref.read(newsStateProvider.notifier).changeNewsPostSpaceId(context);
+        },
+      ),
     );
   }
 

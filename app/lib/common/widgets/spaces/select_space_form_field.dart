@@ -16,6 +16,7 @@ class SelectSpaceFormField extends ConsumerWidget {
   final RoomCanCheck? canCheck;
   final bool mandatory;
   final bool useCompactView;
+  final void Function(String? spaceId)? onSpaceSelected;
 
   const SelectSpaceFormField({
     super.key,
@@ -25,6 +26,7 @@ class SelectSpaceFormField extends ConsumerWidget {
     this.mandatory = true,
     this.canCheck,
     this.useCompactView = false,
+    this.onSpaceSelected,
   });
 
   void selectSpace(BuildContext context, WidgetRef ref) async {
@@ -35,6 +37,9 @@ class SelectSpaceFormField extends ConsumerWidget {
       title: Text(selectTitle ?? L10n.of(context).selectSpace),
     );
     ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;
+    if (onSpaceSelected != null) {
+      onSpaceSelected!(newSelectedSpaceId);
+    }
   }
 
   @override
@@ -108,7 +113,8 @@ class SelectSpaceFormField extends ConsumerWidget {
             onTapOpenSpaceDetail: false,
             useCompactView: useCompactView,
             onTapSelectSpace: () {
-              if (useCompactView) selectSpace(context, ref);
+              print('onTapSelectSpace');
+              selectSpace(context, ref);
             },
           ),
         ) ??
