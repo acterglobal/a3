@@ -15,38 +15,38 @@ class PostColorScheme {
 //https://www.google.com
 final List<PostColorScheme> postColorSchemes = [
   PostColorScheme(
-    backgroundColor: Colors.brown,
-    foregroundColor: Colors.white,
-    linkColor: Colors.amber,
-  ),
-  PostColorScheme(
-    backgroundColor: Colors.red,
+    backgroundColor: const Color.fromARGB(255, 107, 65, 50),
     foregroundColor: Colors.white,
     linkColor: Colors.amberAccent,
   ),
   PostColorScheme(
-    backgroundColor: Colors.blueGrey,
-    foregroundColor: Colors.white,
-    linkColor: Colors.amber,
-  ),
-  PostColorScheme(
-    backgroundColor: Colors.deepPurple,
+    backgroundColor: const Color.fromARGB(255, 11, 72, 123),
     foregroundColor: Colors.white,
     linkColor: Colors.amberAccent,
   ),
   PostColorScheme(
-    backgroundColor: Colors.purple,
+    backgroundColor: const Color.fromARGB(255, 6, 60, 104),
     foregroundColor: Colors.white,
     linkColor: Colors.amberAccent,
   ),
   PostColorScheme(
-    backgroundColor: Colors.indigo,
+    backgroundColor: const Color.fromARGB(255, 2, 106, 96),
     foregroundColor: Colors.white,
     linkColor: Colors.amberAccent,
   ),
   PostColorScheme(
-    backgroundColor: Colors.pink,
+    backgroundColor: const Color.fromARGB(255, 69, 43, 114),
     foregroundColor: Colors.white,
-    linkColor: Colors.cyanAccent,
+    linkColor: Colors.amberAccent,
+  ),
+  PostColorScheme(
+    backgroundColor: const Color.fromARGB(255, 38, 48, 104),
+    foregroundColor: Colors.white,
+    linkColor: Colors.amberAccent,
+  ),
+  PostColorScheme(
+    backgroundColor: const Color.fromARGB(255, 10, 10, 10),
+    foregroundColor: Colors.white,
+    linkColor: Colors.amberAccent,
   ),
 ];

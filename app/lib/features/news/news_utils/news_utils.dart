@@ -126,4 +126,12 @@ class NewsUtils {
       Theme.of(context).colorScheme.onPrimary,
     );
   }
+
+  static Color getLinkColor(BuildContext context, NewsSlide newsSlide) {
+    final color = newsSlide.colors();
+    return convertColor(
+      color?.link(),
+      Colors.lightBlueAccent,
+    );
+  }
 }
