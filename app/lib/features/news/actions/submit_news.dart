@@ -38,7 +38,11 @@ Future<NewsSlideDraft> _makeTextSlide(
   final textSlideDraft = textDraft.intoNewsSlideDraft();
 
   textSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
 
   final refDetails = slidePost.refDetails;
@@ -76,7 +80,11 @@ Future<NewsSlideDraft> _makeImageSlide(
       .height(decodedImage.height);
   final imageSlideDraft = imageDraft.intoNewsSlideDraft();
   imageSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
 
   final refDetails = slidePost.refDetails;
@@ -108,7 +116,11 @@ Future<NewsSlideDraft> _makeVideoSlide(
   final videoDraft = client.videoDraft(file.path, mimeType).size(bytes.length);
   final videoSlideDraft = videoDraft.intoNewsSlideDraft();
   videoSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {

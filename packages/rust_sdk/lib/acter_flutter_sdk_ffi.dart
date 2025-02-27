@@ -1640,13 +1640,17 @@ class Api {
   ColorizeBuilder newColorizeBuilder(
     int? color,
     int? background,
+    int? link,
   ) {
     final tmp0 = color;
     final tmp4 = background;
+    final tmp8 = link;
     var tmp1 = 0;
     var tmp3 = 0;
     var tmp5 = 0;
     var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
     if (tmp0 == null) {
       tmp1 = 0;
     } else {
@@ -1661,34 +1665,43 @@ class Api {
       final tmp6 = tmp4;
       tmp7 = tmp6;
     }
-    final tmp8 = _newColorizeBuilder(
+    if (tmp8 == null) {
+      tmp9 = 0;
+    } else {
+      tmp9 = 1;
+      final tmp10 = tmp8;
+      tmp11 = tmp10;
+    }
+    final tmp12 = _newColorizeBuilder(
       tmp1,
       tmp3,
       tmp5,
       tmp7,
+      tmp9,
+      tmp11,
     );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    final tmp12 = tmp8.arg2;
-    final tmp13 = tmp8.arg3;
-    final tmp14 = tmp8.arg4;
-    if (tmp10 == 0) {
-      debugAllocation("handle error", tmp11, tmp12);
-      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-      final tmp10_0 =
-          utf8.decode(tmp11_0.asTypedList(tmp12), allowMalformed: true);
-      if (tmp12 > 0) {
-        final ffi.Pointer<ffi.Void> tmp11_0;
-        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-        this.__deallocate(tmp11_0, tmp13, 1);
+    final tmp14 = tmp12.arg0;
+    final tmp15 = tmp12.arg1;
+    final tmp16 = tmp12.arg2;
+    final tmp17 = tmp12.arg3;
+    final tmp18 = tmp12.arg4;
+    if (tmp14 == 0) {
+      debugAllocation("handle error", tmp15, tmp16);
+      final ffi.Pointer<ffi.Uint8> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+      final tmp14_0 =
+          utf8.decode(tmp15_0.asTypedList(tmp16), allowMalformed: true);
+      if (tmp16 > 0) {
+        final ffi.Pointer<ffi.Void> tmp15_0;
+        tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+        this.__deallocate(tmp15_0, tmp17, 1);
       }
-      throw tmp10_0;
+      throw tmp14_0;
     }
-    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
-    final tmp14_1 = _Box(this, tmp14_0, "drop_box_ColorizeBuilder");
-    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
-    final tmp9 = ColorizeBuilder._(this, tmp14_1);
-    return tmp9;
+    final ffi.Pointer<ffi.Void> tmp18_0 = ffi.Pointer.fromAddress(tmp18);
+    final tmp18_1 = _Box(this, tmp18_0, "drop_box_ColorizeBuilder");
+    tmp18_1._finalizer = this._registerFinalizer(tmp18_1);
+    final tmp13 = ColorizeBuilder._(this, tmp18_1);
+    return tmp13;
   }
 
   /// create a display builder
@@ -17759,10 +17772,14 @@ class Api {
             ffi.Uint32,
             ffi.Uint8,
             ffi.Uint32,
+            ffi.Uint8,
+            ffi.Uint32,
           )>>("__new_colorize_builder");
 
   late final _newColorizeBuilder = _newColorizeBuilderPtr.asFunction<
       _NewColorizeBuilderReturn Function(
+        int,
+        int,
         int,
         int,
         int,
@@ -18070,6 +18087,16 @@ class Api {
       _ColorizeBackgroundReturn Function(
         int,
       )>();
+  late final _colorizeLinkPtr = _lookup<
+      ffi.NativeFunction<
+          _ColorizeLinkReturn Function(
+            ffi.IntPtr,
+          )>>("__Colorize_link");
+
+  late final _colorizeLink = _colorizeLinkPtr.asFunction<
+      _ColorizeLinkReturn Function(
+        int,
+      )>();
   late final _colorizeBuilderColorPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -18114,6 +18141,29 @@ class Api {
 
   late final _colorizeBuilderUnsetBackground =
       _colorizeBuilderUnsetBackgroundPtr.asFunction<
+          void Function(
+            int,
+          )>();
+  late final _colorizeBuilderLinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__ColorizeBuilder_link");
+
+  late final _colorizeBuilderLink = _colorizeBuilderLinkPtr.asFunction<
+      void Function(
+        int,
+        int,
+      )>();
+  late final _colorizeBuilderUnsetLinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+          )>>("__ColorizeBuilder_unset_link");
+
+  late final _colorizeBuilderUnsetLink =
+      _colorizeBuilderUnsetLinkPtr.asFunction<
           void Function(
             int,
           )>();
@@ -38310,6 +38360,22 @@ class Colorize {
     return tmp2;
   }
 
+  /// Link color
+  int? link() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._colorizeLink(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -38370,6 +38436,32 @@ class ColorizeBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     _api._colorizeBuilderUnsetBackground(
+      tmp0,
+    );
+    return;
+  }
+
+  /// RGBA color representation as int for the link color
+  void link(
+    int color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._colorizeBuilderLink(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// unset the link color
+  void unsetLink() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._colorizeBuilderUnsetLink(
       tmp0,
     );
     return;
@@ -65012,6 +65104,13 @@ class _ColorizeColorReturn extends ffi.Struct {
 }
 
 class _ColorizeBackgroundReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint32()
+  external int arg1;
+}
+
+class _ColorizeLinkReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint32()

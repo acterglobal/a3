@@ -189,7 +189,11 @@ async fn story_slide_color_test() -> Result<()> {
     let mut slide_draft: StorySlideDraft = user
         .text_plain_draft("This is a simple text".to_owned())
         .into();
-    slide_draft.color(Box::new(new_colorize_builder(None, Some(0xFF112233))?));
+    slide_draft.color(Box::new(new_colorize_builder(
+        None,
+        Some(0xFF112233),
+        Some(0xFF112233),
+    )?));
     draft.add_slide(Box::new(slide_draft)).await?;
     draft.send().await?;
 
@@ -219,6 +223,8 @@ async fn story_slide_color_test() -> Result<()> {
         text_slide.colors().and_then(|e| e.background()),
         Some(0xFF112233)
     );
+    // the correct link color
+    assert_eq!(text_slide.colors().and_then(|e| e.link()), Some(0xFF112233));
 
     Ok(())
 }
