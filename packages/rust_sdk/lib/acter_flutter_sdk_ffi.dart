@@ -25685,6 +25685,21 @@ class Api {
             int,
             int,
           )>();
+  late final _acterAppSettingsBuilderStoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+            ffi.IntPtr,
+          )>>("__ActerAppSettingsBuilder_stories");
+
+  late final _acterAppSettingsBuilderStories =
+      _acterAppSettingsBuilderStoriesPtr.asFunction<
+          void Function(
+            int,
+            int,
+            int,
+          )>();
   late final _acterAppSettingsBuilderPinsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
@@ -53439,6 +53454,29 @@ class ActerAppSettingsBuilder {
       tmp4 = tmp3._box.move();
     }
     _api._acterAppSettingsBuilderNews(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    return;
+  }
+
+  void stories(
+    SimpleOnOffSetting? tasks,
+  ) {
+    final tmp1 = tasks;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      tmp4 = tmp3._box.move();
+    }
+    _api._acterAppSettingsBuilderStories(
       tmp0,
       tmp2,
       tmp4,
