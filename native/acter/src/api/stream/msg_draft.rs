@@ -399,12 +399,12 @@ impl MsgDraft {
         Ok(MsgDraft { inner, mentions })
     }
 
-    pub fn add_url_preview(&self, preview: Box<crate::UrlPreview>) -> Result<Self> {
+    pub fn add_url_preview(&self, preview: Box<crate::LocalUrlPreview>) -> Result<Self> {
         let MsgDraft {
             mut inner,
             mut mentions,
         } = self.clone();
-        inner.add_url_preview((*preview).0)?;
+        inner.add_url_preview((*preview).into())?;
         Ok(MsgDraft { inner, mentions })
     }
 

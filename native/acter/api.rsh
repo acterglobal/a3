@@ -126,7 +126,23 @@ object UrlPreview {
 
     /// The media image source if any
     fn image_source() -> Option<MediaSource>;
+}
 
+/// A locally fetched Url Preview until 
+/// it is submitted
+object LocalUrlPreview {
+    /// the canonical url to use
+    fn url() -> string;
+    /// preview title if any
+    fn title() -> Option<string>;
+    /// description text if any
+    fn description() -> Option<string>;
+
+    /// whether this preview has an image
+    fn has_image() -> bool;
+
+    /// The image url if any
+    fn image_url() -> Option<string>;
 }
 
 /// An acter internal link to a different object
@@ -1302,7 +1318,7 @@ object MsgDraft {
     fn add_ref_details(details: RefDetails) -> Result<MsgDraft>;
 
     /// add a url preview
-    fn add_url_preview(details: UrlPreview) -> Result<MsgDraft>;
+    fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
 
     /// whether to mention the entire room
     fn add_room_mention(mention: bool) -> Result<MsgDraft>;

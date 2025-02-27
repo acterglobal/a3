@@ -334,8 +334,11 @@ impl TryFrom<&AttachmentContent> for MsgContent {
 pub struct UrlPreview(pub(crate) RumaUrlPreview);
 
 impl UrlPreview {
-    pub fn new(prev: &RumaUrlPreview) -> Self {
+    pub fn from(prev: &RumaUrlPreview) -> Self {
         Self(prev.clone())
+    }
+    pub fn new(prev: RumaUrlPreview) -> Self {
+        Self(prev)
     }
     pub fn url(&self) -> Option<String> {
         self.0.url.clone()
@@ -552,7 +555,7 @@ impl MsgContent {
     pub fn url_previews(&self) -> Vec<UrlPreview> {
         match self {
             MsgContent::Text { url_previews, .. } => {
-                url_previews.iter().map(UrlPreview::new).collect()
+                url_previews.iter().map(UrlPreview::from).collect()
             }
             _ => vec![],
         }
