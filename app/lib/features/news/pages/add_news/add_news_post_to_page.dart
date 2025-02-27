@@ -1,11 +1,8 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/room/room_avatar_builder.dart';
-import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
 import 'package:acter/features/news/actions/submit_story.dart';
-import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
