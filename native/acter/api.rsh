@@ -2188,6 +2188,7 @@ object ActerAppSettings {
 
 object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn stories(tasks: Option<SimpleOnOffSetting>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<SimpleOnOffSetting>);
