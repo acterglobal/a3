@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_gen: any
   # UI
   flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
@@ -166,7 +165,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_gen_runner: any
   integration_test:
     sdk: flutter
   icons_launcher: ^3.0.0
