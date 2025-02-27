@@ -2343,6 +2343,8 @@
   "@activeApps": {},
   "postSpaceWiseBoost": "Post space-wide boost",
   "@postSpaceWiseBoost": {},
+  "postSpaceWiseStories": "Post space-wide stories",
+  "@postSpaceWiseStories": {},
   "pinImportantInformation": "Pin important information",
   "@pinImportantInformation": {},
   "calenderWithEvents": "Calender with Events",
