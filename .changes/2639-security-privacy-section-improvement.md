@@ -1,1 +1,0 @@
-- [improvement] : Improved security and privacy UI on the activity page.

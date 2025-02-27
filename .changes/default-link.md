@@ -1,1 +1,0 @@
-- [Feat] You can configure what should happen when you click a system link to give you more control what data is leaked to where: should it be opened with the system directly or copied to your clipboard.

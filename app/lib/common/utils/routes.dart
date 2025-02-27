@@ -94,7 +94,9 @@ enum Routes {
   // -- settings
   settings('/settings'),
   settingsLabs('/settings/labs'),
-  settingsBehavior('/settings/behavior'),
+  settingsChat('/settings/chat'),
+  settingsCalendar('/settings/calendar'),
+  settingsCustomizations('/settings/customizations'),
   settingSessions('/settings/sessions'),
   settingBackup('/settings/backup'),
   settingLanguage('/settings/language'),

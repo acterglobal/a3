@@ -1,6 +1,5 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -76,34 +75,6 @@ class SettingsLabsPage extends ConsumerWidget {
                     EasyLoading.showToast(
                       'Changes will affect after app restart',
                     );
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
-              title: Text(lang.calendar),
-              tiles: [
-                SettingsTile.switchTile(
-                  enabled: isSupportedPlatform,
-                  title: Text(lang.calendarSyncFeatureTitle),
-                  description: Text(lang.calendarSyncFeatureDesc),
-                  initialValue: isSupportedPlatform &&
-                      ref.watch(
-                        isActiveProvider(LabsFeature.deviceCalendarSync),
-                      ),
-                  onToggle: (newVal) async {
-                    await updateFeatureState(
-                      ref,
-                      LabsFeature.deviceCalendarSync,
-                      newVal,
-                    );
-                    if (newVal) {
-                      await initCalendarSync(ignoreRejection: true);
-                      EasyLoading.showToast('Acter Calendars synced');
-                    } else {
-                      await clearActerCalendars();
-                      EasyLoading.showToast('Acter Calendars removes');
-                    }
                   },
                 ),
               ],

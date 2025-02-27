@@ -55,13 +55,55 @@ class SettingsMenu extends ConsumerWidget {
       children: [
         _settingMenuSection(
           context: context,
-          sectionTitle: lang.account,
+          sectionTitle: lang.community,
           children: [
+            MenuItemWidget(
+              innerKey: SettingsMenu.superInvitations,
+              iconData: Atlas.plus_envelope_thin,
+              enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
+              iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
+              title: lang.superInvitations,
+              subTitle: lang.manageYourInvitationCodes,
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.settingsSuperInvites),
+              ),
+              onTap: () async {
+                final hasAccess = await ref.read(hasSuperTokensAccess.future);
+                if (!hasAccess) return;
+                if (!context.mounted) return;
+                if (!isFullPage && context.isLargeScreen) {
+                  context
+                      .pushReplacementNamed(Routes.settingsSuperInvites.name);
+                } else {
+                  context.pushNamed(Routes.settingsSuperInvites.name);
+                }
+              },
+            ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: lang.behaviorSettingsTitle,
+          children: [
+            MenuItemWidget(
+              iconData: Atlas.language_translation,
+              title: lang.language,
+              iconColor: routedColor(context, ref, Routes.settingLanguage),
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.settingLanguage),
+              ),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingLanguage.name);
+                } else {
+                  context.pushNamed(Routes.settingLanguage.name);
+                }
+              },
+            ),
             MenuItemWidget(
               iconData: Atlas.bell_mobile_thin,
               iconColor: routedColor(context, ref, Routes.settingNotifications),
               title: lang.notifications,
-              subTitle: lang.notificationsSettingsAndTargets,
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingNotifications),
               ),
@@ -71,6 +113,75 @@ class SettingsMenu extends ConsumerWidget {
                       .pushReplacementNamed(Routes.settingNotifications.name);
                 } else {
                   context.pushNamed(Routes.settingNotifications.name);
+                }
+              },
+            ),
+            MenuItemWidget(
+              iconData: PhosphorIconsThin.chat,
+              iconColor: routedColor(context, ref, Routes.settingsChat),
+              title: lang.chat,
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.settingsChat),
+              ),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsChat.name);
+                } else {
+                  context.pushNamed(Routes.settingsChat.name);
+                }
+              },
+            ),
+            MenuItemWidget(
+              iconData: PhosphorIconsThin.calendar,
+              iconColor: routedColor(context, ref, Routes.settingsCalendar),
+              title: lang.calendar,
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.settingsCalendar),
+              ),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsCalendar.name);
+                } else {
+                  context.pushNamed(Routes.settingsCalendar.name);
+                }
+              },
+            ),
+            MenuItemWidget(
+              iconData: PhosphorIconsThin.faders,
+              iconColor:
+                  routedColor(context, ref, Routes.settingsCustomizations),
+              title: lang.customizationsTitle,
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.settingsCustomizations),
+              ),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context
+                      .pushReplacementNamed(Routes.settingsCustomizations.name);
+                } else {
+                  context.pushNamed(Routes.settingsCustomizations.name);
+                }
+              },
+            ),
+          ],
+        ),
+        _settingMenuSection(
+          context: context,
+          sectionTitle: lang.securityAndPrivacy,
+          children: [
+            MenuItemWidget(
+              iconData: Atlas.passcode,
+              iconColor: routedColor(context, ref, Routes.changePassword),
+              title: lang.changePassword,
+              subTitle: lang.changePasswordDescription,
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.changePassword),
+              ),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.changePassword.name);
+                } else {
+                  context.pushNamed(Routes.changePassword.name);
                 }
               },
             ),
@@ -91,12 +202,6 @@ class SettingsMenu extends ConsumerWidget {
                 }
               },
             ),
-          ],
-        ),
-        _settingMenuSection(
-          context: context,
-          sectionTitle: lang.securityAndPrivacy,
-          children: [
             MenuItemWidget(
               iconData: Atlas.key_monitor_thin,
               iconColor: routedColor(context, ref, Routes.settingSessions),
@@ -146,72 +251,12 @@ class SettingsMenu extends ConsumerWidget {
                 }
               },
             ),
-            MenuItemWidget(
-              iconData: Atlas.passcode,
-              iconColor: routedColor(context, ref, Routes.changePassword),
-              title: lang.changePassword,
-              subTitle: lang.changePasswordDescription,
-              titleStyles: TextStyle(
-                color: routedColor(context, ref, Routes.changePassword),
-              ),
-              onTap: () {
-                if (!isFullPage && context.isLargeScreen) {
-                  context.pushReplacementNamed(Routes.changePassword.name);
-                } else {
-                  context.pushNamed(Routes.changePassword.name);
-                }
-              },
-            ),
           ],
         ),
         _settingMenuSection(
           context: context,
-          sectionTitle: lang.community,
+          sectionTitle: lang.acter,
           children: [
-            MenuItemWidget(
-              innerKey: SettingsMenu.superInvitations,
-              iconData: Atlas.plus_envelope_thin,
-              enabled: ref.watch(hasSuperTokensAccess).valueOrNull == true,
-              iconColor: routedColor(context, ref, Routes.settingsSuperInvites),
-              title: lang.superInvitations,
-              subTitle: lang.manageYourInvitationCodes,
-              titleStyles: TextStyle(
-                color: routedColor(context, ref, Routes.settingsSuperInvites),
-              ),
-              onTap: () async {
-                final hasAccess = await ref.read(hasSuperTokensAccess.future);
-                if (!hasAccess) return;
-                if (!context.mounted) return;
-                if (!isFullPage && context.isLargeScreen) {
-                  context
-                      .pushReplacementNamed(Routes.settingsSuperInvites.name);
-                } else {
-                  context.pushNamed(Routes.settingsSuperInvites.name);
-                }
-              },
-            ),
-          ],
-        ),
-        _settingMenuSection(
-          context: context,
-          sectionTitle: lang.acterApp,
-          children: [
-            MenuItemWidget(
-              iconData: PhosphorIconsThin.faders,
-              iconColor: routedColor(context, ref, Routes.settingsBehavior),
-              title: lang.behaviorSettingsTitle,
-              subTitle: lang.behaviorSettingsExplainer,
-              titleStyles: TextStyle(
-                color: routedColor(context, ref, Routes.settingsBehavior),
-              ),
-              onTap: () {
-                if (!isFullPage && context.isLargeScreen) {
-                  context.pushReplacementNamed(Routes.settingsBehavior.name);
-                } else {
-                  context.pushNamed(Routes.settingsBehavior.name);
-                }
-              },
-            ),
             MenuItemWidget(
               key: SettingsMenu.labs,
               iconData: Atlas.lab_appliance_thin,
