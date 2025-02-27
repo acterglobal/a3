@@ -55,11 +55,13 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     NewsSlideItem textSlide = NewsSlideItem(
       type: NewsSlideType.text,
       text: '',
-      backgroundColor: clr,
+      backgroundColor: postColors.backgroundColor,
+      foregroundColor: postColors.foregroundColor,
+      linkColor: postColors.linkColor,
       refDetails: refDetails,
     );
     ref.read(newsStateProvider.notifier).addSlide(textSlide);
@@ -70,7 +72,7 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) async {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
     );
@@ -78,7 +80,9 @@ class NewsUtils {
       final slide = NewsSlideItem(
         type: NewsSlideType.image,
         mediaFile: imageFile,
-        backgroundColor: clr,
+        backgroundColor: postColors.backgroundColor,
+        foregroundColor: postColors.foregroundColor,
+        linkColor: postColors.linkColor,
         refDetails: refDetails,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
@@ -90,7 +94,7 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) async {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
     );
@@ -98,7 +102,9 @@ class NewsUtils {
       final slide = NewsSlideItem(
         type: NewsSlideType.video,
         mediaFile: videoFile,
-        backgroundColor: clr,
+        backgroundColor: postColors.backgroundColor,
+        foregroundColor: postColors.foregroundColor,
+        linkColor: postColors.linkColor,
         refDetails: refDetails,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);

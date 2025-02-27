@@ -361,6 +361,13 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
             child: HtmlEditor(
               key: NewsUpdateKeys.textSlideInputField,
               editorState: textEditorState,
+              textStyleConfiguration: TextStyleConfiguration(
+                text: TextStyle(color: selectedNewsPost?.foregroundColor),
+                href: TextStyle(
+                  color: selectedNewsPost?.linkColor,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
               editable: true,
               autoFocus: false,
               // we manage the auto focus manually

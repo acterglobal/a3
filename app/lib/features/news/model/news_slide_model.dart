@@ -14,6 +14,7 @@ class NewsSlideItem {
   String? html;
   Color? backgroundColor;
   Color? foregroundColor;
+  Color? linkColor;
   XFile? mediaFile;
   RefDetails? refDetails;
 
@@ -23,6 +24,7 @@ class NewsSlideItem {
     this.html,
     this.backgroundColor,
     this.foregroundColor,
+    this.linkColor,
     this.mediaFile,
     this.refDetails,
   });
