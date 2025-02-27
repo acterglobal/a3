@@ -113,7 +113,6 @@ class SelectSpaceFormField extends ConsumerWidget {
             onTapOpenSpaceDetail: false,
             useCompactView: useCompactView,
             onTapSelectSpace: () {
-              print('onTapSelectSpace');
               selectSpace(context, ref);
             },
           ),
