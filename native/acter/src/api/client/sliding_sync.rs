@@ -295,13 +295,7 @@ impl Client {
                     let my_id = user_id.clone();
                     let mut fetched_latest_msg = false;
                     for item in items.clone().into_iter().rev() {
-                        if item.as_event().is_some() {
-                            if let Some(info) = room_infos.write().await.get_mut(ui_room.room_id())
-                            {
-                                let full_event = RoomMessage::from((item.clone(), my_id.clone()));
-                                me.set_latest_message(ui_room.room_id(), info, full_event)
-                                    .await;
-                            }
+                        if me.set_latest_message(ui_room.room_id(), item).await {
                             fetched_latest_msg = true;
                             break;
                         }
@@ -318,6 +312,7 @@ impl Client {
                     let ri = room_infos.clone();
                     let room_id = ui_room.room_id().to_owned();
                     let tl = sdk_timeline.clone();
+                    let client = me.clone();
                     let timeline_task = tokio::spawn(async move {
                         pin_mut!(stream);
                         let items = i;
@@ -386,14 +381,39 @@ impl Client {
                             }
 
                             // Update the latest message of room.
-                            if let Some(item) = items.last() {
-                                if item.as_event().is_some() {
-                                    let full_event =
-                                        RoomMessage::from((item.clone(), my_id.clone()));
-                                    let mut ri = room_infos.write().await;
-                                    if let Some(info) = ri.get_mut(&room_id) {
-                                        info.latest_msg = Some(full_event);
+                            for diff in diffs.clone() {
+                                match diff {
+                                    VectorDiff::Append { values } => {
+                                        for value in values {
+                                            if client.set_latest_message(&room_id, value).await {
+                                                break;
+                                            }
+                                        }
                                     }
+                                    VectorDiff::Clear => {}
+                                    VectorDiff::Insert { index, value } => {
+                                        client.set_latest_message(&room_id, value).await;
+                                    }
+                                    VectorDiff::PopBack => {}
+                                    VectorDiff::PopFront => {}
+                                    VectorDiff::PushBack { value } => {
+                                        client.set_latest_message(&room_id, value).await;
+                                    }
+                                    VectorDiff::PushFront { value } => {
+                                        client.set_latest_message(&room_id, value).await;
+                                    }
+                                    VectorDiff::Remove { index } => {}
+                                    VectorDiff::Reset { values } => {
+                                        for value in values {
+                                            if client.set_latest_message(&room_id, value).await {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    VectorDiff::Set { index, value } => {
+                                        client.set_latest_message(&room_id, value).await;
+                                    }
+                                    VectorDiff::Truncate { length } => {}
                                 }
                             }
                         }
@@ -520,18 +540,39 @@ impl Client {
         );
     }
 
-    async fn set_latest_message(
-        &self,
-        room_id: &RoomId,
-        room_info: &mut ExtraRoomInfo,
-        new_msg: RoomMessage,
-    ) {
+    async fn set_latest_message(&self, room_id: &RoomId, item: Arc<TimelineItem>) -> bool {
+        if item.as_event().is_none() {
+            return false;
+        }
+        let Ok(my_id) = self.user_id() else {
+            return false;
+        };
+        let new_msg = RoomMessage::from((item, my_id.clone()));
+        let mut ri = self.sync_controller.room_infos.write().await;
+        let Some(room_info) = ri.get_mut(room_id) else {
+            return false;
+        };
         if let Some(prev_msg) = room_info.clone().latest_msg {
             if prev_msg.event_id() == new_msg.event_id()
                 && prev_msg.event_type() == new_msg.event_type()
             {
                 trace!("Nothing to update, room message stayed the same");
-                return;
+                return false;
+            }
+            // if prev_ts was None, replace prev msg with new msg unconditionally
+            if let Some(prev_ts) = prev_msg.origin_server_ts() {
+                match new_msg.origin_server_ts() {
+                    Some(new_ts) => {
+                        if new_ts <= prev_ts {
+                            // new msg is not the latest
+                            return false;
+                        }
+                    }
+                    None => {
+                        error!("new latest message should have timestamp");
+                        return false;
+                    }
+                }
             }
         }
         trace!(?room_id, "Setting latest message");
@@ -541,6 +582,8 @@ impl Client {
         self.store().set_raw(&key.as_storage_key(), &new_msg).await;
         info!("******************** changed latest msg: {:?}", key.clone());
         self.executor().notify(vec![key]);
+
+        true
     }
 
     pub(crate) async fn load_from_cache(&self) {
