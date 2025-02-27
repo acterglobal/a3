@@ -459,19 +459,16 @@ impl Client {
             let client = self.core.client();
             let mut updated: Vec<OwnedRoomId> = vec![];
 
+            let mut convos = self.convos.write().await;
+            let mut spaces = self.spaces.write().await;
+
             for room in changed_rooms {
                 let r_id = room.room_id().to_owned();
                 if !matches!(room.state(), RoomState::Joined) {
                     trace!(?r_id, "room gone");
                     // remove rooms we aren’t in (anymore)
-                    {
-                        let mut spaces = self.spaces.write().await;
-                        remove_from(&mut spaces, &r_id);
-                    }
-                    {
-                        let mut convos = self.convos.write().await;
-                        remove_from_convo(&mut convos, &r_id);
-                    }
+                    remove_from(&mut spaces, &r_id);
+                    remove_from_convo(&mut convos, &r_id);
                     if let Err(error) = self.executor().clear_room(&r_id).await {
                         error!(?error, "Error removing space {r_id}");
                     }
@@ -486,16 +483,10 @@ impl Client {
                 );
 
                 if inner.is_space() {
-                    let pos = {
-                        let mut spaces = self.spaces.read().await;
-                        spaces.iter().position(|s| s.room_id() == r_id)
-                    };
-                    if let Some(space_idx) = pos {
-                        let mut spaces = self.spaces.write().await;
+                    if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
                         let space = spaces.remove(space_idx).update_room(inner);
                         spaces.insert(space_idx, space);
                     } else {
-                        let mut spaces = self.spaces.write().await;
                         spaces.push_front(Space::new(self.clone(), inner))
                     }
                     // also clear from convos if it was in there...
@@ -503,18 +494,12 @@ impl Client {
                     remove_from_convo(&mut convos, &r_id);
                     updated.push(r_id);
                 } else {
-                    let pos = {
-                        let mut convos = self.convos.read().await;
-                        convos.iter().position(|s| s.room_id() == r_id)
-                    };
-                    if let Some(convo_idx) = pos {
-                        let mut convos = self.convos.write().await;
+                    if let Some(convo_idx) = convos.iter().position(|s| s.room_id() == r_id) {
                         let convo = convos.remove(convo_idx).update_room(inner);
                         // convo.update_latest_msg_ts().await;
                         let mut room_infos = self.sync_controller.room_infos.write().await;
                         insert_to_convo(&mut convos, convo, &mut room_infos);
                     } else {
-                        let mut convos = self.convos.write().await;
                         let mut room_infos = self.sync_controller.room_infos.write().await;
                         insert_to_convo(
                             &mut convos,
@@ -523,7 +508,6 @@ impl Client {
                         );
                     }
                     // also clear from convos if it was in there...
-                    let mut spaces = self.spaces.write().await;
                     remove_from(&mut spaces, &r_id);
                     updated.push(r_id);
                 }
