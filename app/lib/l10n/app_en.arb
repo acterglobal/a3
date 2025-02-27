@@ -2388,6 +2388,8 @@
   "pleaseSelectePostType": "Please select post type",
   "postTo": "Post to",
   "post": "Post",
+  "stories": "Stories",
+  "addStory": "Add Story",
   "unableToLoadFile": "Unable to load file",
   "@addComment": {}
 }
