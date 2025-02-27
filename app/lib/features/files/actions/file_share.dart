@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -21,13 +21,14 @@ Future<void> openFileShareDialog({
     context: context,
     isDismissible: true,
     constraints: const BoxConstraints(maxHeight: 300),
-    builder: (context) => _FileOptionsDialog(
-      file: file,
-      header: header,
-      beforeOptions: beforeOptions,
-      afterOptions: afterOptions,
-      mimeType: mimeType,
-    ),
+    builder:
+        (context) => _FileOptionsDialog(
+          file: file,
+          header: header,
+          beforeOptions: beforeOptions,
+          afterOptions: afterOptions,
+          mimeType: mimeType,
+        ),
   );
 }
 
@@ -53,10 +54,7 @@ class _FileOptionsDialog extends StatelessWidget {
     final lang = L10n.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      constraints: const BoxConstraints(
-        maxWidth: 600,
-        minWidth: 300,
-      ),
+      constraints: const BoxConstraints(maxWidth: 600, minWidth: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -78,9 +76,9 @@ class _FileOptionsDialog extends StatelessWidget {
           ),
           TextButton.icon(
             onPressed: () async {
-              final result = await Share.shareXFiles(
-                [XFile(file.path, mimeType: mimeType)],
-              );
+              final result = await Share.shareXFiles([
+                XFile(file.path, mimeType: mimeType),
+              ]);
               if (result.status == ShareResultStatus.success) {
                 // done, close this dialog
                 if (context.mounted) {

@@ -1,7 +1,7 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class ServerSelectionField extends StatefulWidget {
@@ -40,21 +40,20 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: lang.server,
-          suffix: Icon(
-            Icons.edit,
-            color: hintColor,
-          ),
+          suffix: Icon(Icons.edit, color: hintColor),
         ),
       );
     }
     return TypeAheadField<ServerEntry>(
-      suggestionsCallback: (search) => widget.options
-          .where(
-            (element) =>
-                element.value.contains(search) ||
-                (element.name?.contains(search) ?? false),
-          )
-          .toList(),
+      suggestionsCallback:
+          (search) =>
+              widget.options
+                  .where(
+                    (element) =>
+                        element.value.contains(search) ||
+                        (element.name?.contains(search) ?? false),
+                  )
+                  .toList(),
       builder: (context, controller, focusNode) {
         return TextFormField(
           controller: controller,
@@ -76,14 +75,10 @@ class _ServerSelectionFieldState extends State<ServerSelectionField> {
       },
       itemBuilder: (context, entry) {
         return entry.name.map(
-              (name) => ListTile(
-                title: Text(name),
-                subtitle: Text(entry.value),
-              ),
+              (name) =>
+                  ListTile(title: Text(name), subtitle: Text(entry.value)),
             ) ??
-            ListTile(
-              title: Text(entry.value),
-            );
+            ListTile(title: Text(entry.value));
       },
       onSelected: (entry) => onSubmit(entry.value),
     );

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 // upload and send file (as message) action
 Future<void> attachmentUploadAction({
@@ -47,8 +47,9 @@ Future<void> attachmentUploadAction({
         }
       } else if (mimeType.startsWith('audio/') &&
           attachmentType == AttachmentType.audio) {
-        final audioDraft =
-            client.audioDraft(file.path, mimeType).size(file.lengthSync());
+        final audioDraft = client
+            .audioDraft(file.path, mimeType)
+            .size(file.lengthSync());
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';
@@ -58,8 +59,9 @@ Future<void> attachmentUploadAction({
         }
       } else if (mimeType.startsWith('video/') &&
           attachmentType == AttachmentType.video) {
-        final videoDraft =
-            client.videoDraft(file.path, mimeType).size(file.lengthSync());
+        final videoDraft = client
+            .videoDraft(file.path, mimeType)
+            .size(file.lengthSync());
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';
@@ -68,8 +70,9 @@ Future<void> attachmentUploadAction({
           await stream.sendMessage(videoDraft);
         }
       } else {
-        final fileDraft =
-            client.fileDraft(file.path, mimeType).size(file.lengthSync());
+        final fileDraft = client
+            .fileDraft(file.path, mimeType)
+            .size(file.lengthSync());
         if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
           final remoteId = inputState.selectedMessage?.remoteId;
           if (remoteId == null) throw 'remote id of sel msg not available';

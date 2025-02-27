@@ -11,7 +11,7 @@ import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -39,10 +39,7 @@ class CreateUpdateTaskList extends ConsumerStatefulWidget {
 
   final String? initialSelectedSpace;
 
-  const CreateUpdateTaskList({
-    super.key,
-    this.initialSelectedSpace,
-  });
+  const CreateUpdateTaskList({super.key, this.initialSelectedSpace});
 
   @override
   ConsumerState<CreateUpdateTaskList> createState() =>
@@ -51,8 +48,9 @@ class CreateUpdateTaskList extends ConsumerStatefulWidget {
 
 class _CreateUpdateTaskListConsumerState
     extends ConsumerState<CreateUpdateTaskList> {
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'create task list form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'create task list form',
+  );
   final TextEditingController _titleController = TextEditingController();
   final ValueNotifier<bool> isShowDescription = ValueNotifier(false);
   EditorState textEditorState = EditorState.blank();
@@ -123,10 +121,7 @@ class _CreateUpdateTaskListConsumerState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          lang.taskListName,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        Text(lang.taskListName, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 5),
         TextFormField(
           autofocus: true,
@@ -135,8 +130,11 @@ class _CreateUpdateTaskListConsumerState
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _titleController,
           // required field, space not allowed
-          validator: (val) =>
-              val == null || val.trim().isEmpty ? lang.pleaseEnterAName : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty
+                      ? lang.pleaseEnterAName
+                      : null,
         ),
       ],
     );
@@ -210,8 +208,9 @@ class _CreateUpdateTaskListConsumerState
     if (!_formKey.currentState!.validate()) return;
     EasyLoading.show(status: lang.postingTaskList);
     try {
-      final spaceId =
-          ref.read(selectedSpaceIdProvider).expect('space not selected');
+      final spaceId = ref
+          .read(selectedSpaceIdProvider)
+          .expect('space not selected');
       final space = await ref.read(spaceProvider(spaceId).future);
       final taskListDraft = space.taskListDraft();
 
@@ -221,8 +220,9 @@ class _CreateUpdateTaskListConsumerState
         final sdk = await ref.read(sdkProvider.future);
         final displayBuilder = sdk.api.newDisplayBuilder();
         taskListIconColor.map((color) => displayBuilder.color(color.toInt()));
-        taskListIcon
-            .map((icon) => displayBuilder.icon('acter-icon', icon.name));
+        taskListIcon.map(
+          (icon) => displayBuilder.icon('acter-icon', icon.name),
+        );
         taskListDraft.display(displayBuilder.build());
       }
 

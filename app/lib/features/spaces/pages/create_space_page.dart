@@ -15,7 +15,7 @@ import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -23,18 +23,16 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::spaces::create_space');
 
 // user selected visibility provider
-final _selectedVisibilityProvider =
-    StateProvider.autoDispose<RoomVisibility?>((ref) => null);
+final _selectedVisibilityProvider = StateProvider.autoDispose<RoomVisibility?>(
+  (ref) => null,
+);
 
 class CreateSpacePage extends ConsumerStatefulWidget {
   static const permissionsKey = Key('create-space-permissions-key');
 
   final String? initialParentsSpaceId;
 
-  const CreateSpacePage({
-    super.key,
-    this.initialParentsSpaceId,
-  });
+  const CreateSpacePage({super.key, this.initialParentsSpaceId});
 
   @override
   ConsumerState<CreateSpacePage> createState() =>
@@ -65,17 +63,19 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       // SPACE VISIBLE : If parent space is selected
       final visibleNotifier = ref.read(_selectedVisibilityProvider.notifier);
       visibleNotifier.update(
-        (state) => widget.initialParentsSpaceId != null
-            ? RoomVisibility.SpaceVisible
-            : RoomVisibility.Private,
+        (state) =>
+            widget.initialParentsSpaceId != null
+                ? RoomVisibility.SpaceVisible
+                : RoomVisibility.Private,
       );
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
         final visibleNotifier = ref.read(_selectedVisibilityProvider.notifier);
         visibleNotifier.update(
-          (state) => next != null
-              ? RoomVisibility.SpaceVisible
-              : RoomVisibility.Private,
+          (state) =>
+              next != null
+                  ? RoomVisibility.SpaceVisible
+                  : RoomVisibility.Private,
         );
       });
     });
@@ -83,10 +83,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppbar(), body: _buildBody());
   }
 
   AppBar _buildAppbar() {
@@ -141,11 +138,9 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
             color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(5),
           ),
-          child: spaceAvatar.map(
-                (file) => Image.file(
-                  File(file.path),
-                  fit: BoxFit.cover,
-                ),
+          child:
+              spaceAvatar.map(
+                (file) => Image.file(File(file.path), fit: BoxFit.cover),
               ) ??
               const Icon(Atlas.up_arrow_from_bracket_thin),
         ),
@@ -242,14 +237,8 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          lang.visibilityTitle,
-          style: textTheme.bodyMedium,
-        ),
-        Text(
-          lang.visibilitySubtitle,
-          style: textTheme.bodySmall,
-        ),
+        Text(lang.visibilityTitle, style: textTheme.bodyMedium),
+        Text(lang.visibilitySubtitle, style: textTheme.bodySmall),
         const SizedBox(height: 10),
         InkWell(
           key: CreateSpacePage.permissionsKey,
@@ -276,29 +265,29 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     final lang = L10n.of(context);
     return switch (ref.watch(_selectedVisibilityProvider)) {
       RoomVisibility.Public => RoomVisibilityItem(
-          iconData: Icons.language,
-          title: lang.public,
-          subtitle: lang.publicVisibilitySubtitle,
-          isShowRadio: false,
-        ),
+        iconData: Icons.language,
+        title: lang.public,
+        subtitle: lang.publicVisibilitySubtitle,
+        isShowRadio: false,
+      ),
       RoomVisibility.Private => RoomVisibilityItem(
-          iconData: Icons.lock,
-          title: lang.private,
-          subtitle: lang.privateVisibilitySubtitle,
-          isShowRadio: false,
-        ),
+        iconData: Icons.lock,
+        title: lang.private,
+        subtitle: lang.privateVisibilitySubtitle,
+        isShowRadio: false,
+      ),
       RoomVisibility.SpaceVisible => RoomVisibilityItem(
-          iconData: Atlas.users,
-          title: lang.limited,
-          subtitle: lang.limitedVisibilitySubtitle,
-          isShowRadio: false,
-        ),
+        iconData: Atlas.users,
+        title: lang.limited,
+        subtitle: lang.limitedVisibilitySubtitle,
+        isShowRadio: false,
+      ),
       _ => RoomVisibilityItem(
-          iconData: Icons.lock,
-          title: lang.private,
-          subtitle: lang.privateVisibilitySubtitle,
-          isShowRadio: false,
-        ),
+        iconData: Icons.lock,
+        title: lang.private,
+        subtitle: lang.privateVisibilitySubtitle,
+        isShowRadio: false,
+      ),
     };
   }
 

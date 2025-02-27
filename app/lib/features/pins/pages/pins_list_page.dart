@@ -6,7 +6,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/pins/widgets/pin_list_empty_state.dart';
 import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,35 +40,34 @@ class _AllPinsPageConsumerState extends ConsumerState<PinsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   AppBar _buildAppBar() {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: widget.onSelectPinItem != null
-          ? Text(L10n.of(context).selectPin)
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(L10n.of(context).pins),
-                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-              ],
-            ),
+      title:
+          widget.onSelectPinItem != null
+              ? Text(L10n.of(context).selectPin)
+              : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(L10n.of(context).pins),
+                  if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+                ],
+              ),
       actions: [
         if (widget.onSelectPinItem == null)
           AddButtonWithCanPermission(
             canString: 'CanPostPin',
             spaceId: widget.spaceId,
-            onPressed: () => context.pushNamed(
-              Routes.createPin.name,
-              queryParameters: {'spaceId': spaceId},
-            ),
+            onPressed:
+                () => context.pushNamed(
+                  Routes.createPin.name,
+                  queryParameters: {'spaceId': spaceId},
+                ),
           ),
       ],
     );

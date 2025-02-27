@@ -7,7 +7,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -58,22 +58,23 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
       decoration: InputDecoration(
         hintText: lang.addComment,
         suffixIcon: IconButton(
-          onPressed: () => showEditHtmlDescriptionBottomSheet(
-            context: context,
-            bottomSheetTitle: L10n.of(context).addComment,
-            descriptionHtmlValue: _commentController.text,
-            onSave: (ref, htmlBodyDescription, plainDescription) async {
-              final success = await addComment(
-                ref: ref,
-                plainDescription: plainDescription,
-                htmlBodyDescription: htmlBodyDescription,
-              );
-              if (success) {
-                if (!context.mounted) return;
-                Navigator.pop(context);
-              }
-            },
-          ),
+          onPressed:
+              () => showEditHtmlDescriptionBottomSheet(
+                context: context,
+                bottomSheetTitle: L10n.of(context).addComment,
+                descriptionHtmlValue: _commentController.text,
+                onSave: (ref, htmlBodyDescription, plainDescription) async {
+                  final success = await addComment(
+                    ref: ref,
+                    plainDescription: plainDescription,
+                    htmlBodyDescription: htmlBodyDescription,
+                  );
+                  if (success) {
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                  }
+                },
+              ),
           icon: const Icon(Atlas.arrows_up_right_down_left, size: 14),
         ),
       ),
@@ -86,20 +87,21 @@ class _AddCommentWidgetState extends ConsumerState<AddCommentWidget> {
       builder: (context, value, child) {
         return value
             ? Container(
-                margin: const EdgeInsets.only(left: 12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: const BorderRadius.all(Radius.circular(100)),
-                ),
-                child: IconButton(
-                  key: AddCommentWidget.addCommentButton,
-                  onPressed: () => addComment(
-                    ref: ref,
-                    plainDescription: _commentController.text,
-                  ),
-                  icon: Icon(PhosphorIcons.paperPlaneTilt()),
-                ),
-              )
+              margin: const EdgeInsets.only(left: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: const BorderRadius.all(Radius.circular(100)),
+              ),
+              child: IconButton(
+                key: AddCommentWidget.addCommentButton,
+                onPressed:
+                    () => addComment(
+                      ref: ref,
+                      plainDescription: _commentController.text,
+                    ),
+                icon: Icon(PhosphorIcons.paperPlaneTilt()),
+              ),
+            )
             : const SizedBox.shrink();
       },
     );

@@ -3,7 +3,7 @@ import 'package:acter/features/activities/widgets/invitation_section/invitation_
 import 'package:acter/features/activities/widgets/security_and_privacy_section/security_and_privacy_section_widget.dart';
 import 'package:acter/features/activities/widgets/sync_section/sync_state_section_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ActivitiesPage extends ConsumerWidget {

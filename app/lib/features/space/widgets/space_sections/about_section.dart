@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -11,10 +11,7 @@ final _log = Logger('a3::space::sections::about');
 class AboutSection extends ConsumerWidget {
   final String spaceId;
 
-  const AboutSection({
-    super.key,
-    required this.spaceId,
-  });
+  const AboutSection({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,10 +22,7 @@ class AboutSection extends ConsumerWidget {
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              aboutLabel(context),
-              spaceDescription(context, ref),
-            ],
+            children: [aboutLabel(context), spaceDescription(context, ref)],
           ),
         ),
       ),
@@ -71,9 +65,7 @@ class AboutSection extends ConsumerWidget {
         _log.severe('Failed to load space', e, s);
         return Text(lang.failedToLoadSpace(e));
       },
-      loading: () => Skeletonizer(
-        child: Text(lang.loading),
-      ),
+      loading: () => Skeletonizer(child: Text(lang.loading)),
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,10 +12,7 @@ class InvitePage extends ConsumerWidget {
   static const invitePageKey = Key('room-invite-page-key');
   final String roomId;
 
-  const InvitePage({
-    required this.roomId,
-    super.key = invitePageKey,
-  });
+  const InvitePage({required this.roomId, super.key = invitePageKey});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,10 +24,7 @@ class InvitePage extends ConsumerWidget {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      actions: [
-        _buildPendingActionButton(context),
-        const SizedBox(width: 20),
-      ],
+      actions: [_buildPendingActionButton(context), const SizedBox(width: 20)],
     );
   }
 
@@ -42,15 +36,10 @@ class InvitePage extends ConsumerWidget {
           queryParameters: {'roomId': roomId.toString()},
         );
       },
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.all(8.0),
-      ),
+      style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(8.0)),
       child: Row(
         children: [
-          const Icon(
-            Icons.person_outline_outlined,
-            size: 18,
-          ),
+          const Icon(Icons.person_outline_outlined, size: 18),
           const SizedBox(width: 5),
           Text(
             L10n.of(context).pending,
@@ -88,15 +77,9 @@ class InvitePage extends ConsumerWidget {
       children: [
         RoomProfileHeader(roomId: roomId),
         const SizedBox(height: 10),
-        Text(
-          lang.invite,
-          style: textTheme.titleLarge,
-        ),
+        Text(lang.invite, style: textTheme.titleLarge),
         const SizedBox(height: 5),
-        Text(
-          lang.spaceInviteDescription,
-          style: textTheme.bodySmall,
-        ),
+        Text(lang.spaceInviteDescription, style: textTheme.bodySmall),
       ],
     );
   }
@@ -113,19 +96,21 @@ class InvitePage extends ConsumerWidget {
               iconData: Icons.people_alt_outlined,
               title: lang.inviteSpaceMembersTitle,
               subTitle: lang.inviteSpaceMembersSubtitle,
-              onTap: () => context.pushNamed(
-                Routes.inviteSpaceMembers.name,
-                queryParameters: {'roomId': roomId.toString()},
-              ),
+              onTap:
+                  () => context.pushNamed(
+                    Routes.inviteSpaceMembers.name,
+                    queryParameters: {'roomId': roomId.toString()},
+                  ),
             ),
             MenuItemWidget(
               iconData: Icons.person_add_alt_1,
               title: lang.inviteIndividualUsersTitle,
               subTitle: lang.inviteIndividualUsersSubtitle,
-              onTap: () => context.pushNamed(
-                Routes.inviteIndividual.name,
-                queryParameters: {'roomId': roomId.toString()},
-              ),
+              onTap:
+                  () => context.pushNamed(
+                    Routes.inviteIndividual.name,
+                    queryParameters: {'roomId': roomId.toString()},
+                  ),
             ),
           ],
         ),

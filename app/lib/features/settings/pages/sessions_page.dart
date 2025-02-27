@@ -6,7 +6,7 @@ import 'package:acter/features/settings/widgets/session_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -41,13 +41,9 @@ class SessionsPage extends ConsumerWidget {
           data: (sessions) => buildSessions(context, sessions),
           error: (e, s) {
             _log.severe('Failed to load unknown sessions', e, s);
-            return Center(
-              child: Text(lang.couldNotLoadAllSessions),
-            );
+            return Center(child: Text(lang.couldNotLoadAllSessions));
           },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
         ),
       ),
     );
@@ -99,10 +95,7 @@ class SessionsPage extends ConsumerWidget {
                   color: Theme.of(context).colorScheme.error,
                 ),
               ),
-              Text(
-                lang.unverifiedSessions,
-                style: textTheme.headlineSmall,
-              ),
+              Text(lang.unverifiedSessions, style: textTheme.headlineSmall),
             ],
           ),
         ),

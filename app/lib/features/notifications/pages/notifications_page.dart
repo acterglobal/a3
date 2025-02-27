@@ -19,7 +19,7 @@ import 'package:acter_notifify/util.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -57,12 +57,10 @@ class __AddEmailState extends State<_AddEmail> {
             emailAddr = value.expect('email selection is invalid');
           });
         },
-        dropdownMenuEntries: widget.emails.map((String value) {
-          return DropdownMenuEntry<String>(
-            value: value,
-            label: value,
-          );
-        }).toList(),
+        dropdownMenuEntries:
+            widget.emails.map((String value) {
+              return DropdownMenuEntry<String>(value: value, label: value);
+            }).toList(),
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
@@ -107,18 +105,9 @@ class NotificationsSettingsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: Text(lang.autoSubscribeSettingsTitle),
                   description: Text(lang.autoSubscribeFeatureDesc),
-                  initialValue: ref
-                          .watch(
-                            autoSubscribeProvider,
-                          )
-                          .value ==
-                      true,
+                  initialValue: ref.watch(autoSubscribeProvider).value == true,
                   onToggle: (newVal) async {
-                    await updateAutoSubscribe(
-                      ref,
-                      lang,
-                      newVal,
-                    );
+                    await updateAutoSubscribe(ref, lang, newVal);
                   },
                 ),
               ],
@@ -140,20 +129,8 @@ class NotificationsSettingsPage extends ConsumerWidget {
                   true,
                   false,
                 ),
-                _notifSection(
-                  context,
-                  ref,
-                  lang.dmChat,
-                  false,
-                  true,
-                ),
-                _notifSection(
-                  context,
-                  ref,
-                  lang.encryptedDMChat,
-                  true,
-                  true,
-                ),
+                _notifSection(context, ref, lang.dmChat, false, true),
+                _notifSection(context, ref, lang.encryptedDMChat, true, true),
               ],
             ),
             _pushTargets(context, ref),
@@ -171,11 +148,13 @@ class NotificationsSettingsPage extends ConsumerWidget {
     bool isOneToOne,
   ) {
     final lang = L10n.of(context);
-    final curNotifStatus = ref
+    final curNotifStatus =
+        ref
             .watch(
-              currentNotificationModeProvider(
-                (encrypted: isEncrypted, oneToOne: isOneToOne),
-              ),
+              currentNotificationModeProvider((
+                encrypted: isEncrypted,
+                oneToOne: isOneToOne,
+              )),
             )
             .valueOrNull ??
         '';
@@ -187,27 +166,26 @@ class NotificationsSettingsPage extends ConsumerWidget {
       trailing: PopupMenuButton<String>(
         initialValue: curNotifStatus,
         // Callback that sets the selected popup menu item.
-        onSelected: (newMode) => _onNotifSectionChange(
-          context,
-          ref,
-          isEncrypted,
-          isOneToOne,
-          newMode,
-        ),
-        itemBuilder: (context) => <PopupMenuEntry<String>>[
-          PopupMenuItem<String>(
-            value: 'all',
-            child: Text(lang.allMessages),
-          ),
-          PopupMenuItem<String>(
-            value: 'mentions',
-            child: Text(lang.mentionsAndKeywordsOnly),
-          ),
-          PopupMenuItem<String>(
-            value: 'muted',
-            child: Text(lang.muted),
-          ),
-        ],
+        onSelected:
+            (newMode) => _onNotifSectionChange(
+              context,
+              ref,
+              isEncrypted,
+              isOneToOne,
+              newMode,
+            ),
+        itemBuilder:
+            (context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: 'all',
+                child: Text(lang.allMessages),
+              ),
+              PopupMenuItem<String>(
+                value: 'mentions',
+                child: Text(lang.mentionsAndKeywordsOnly),
+              ),
+              PopupMenuItem<String>(value: 'muted', child: Text(lang.muted)),
+            ],
       ),
     );
   }
@@ -265,24 +243,22 @@ class NotificationsSettingsPage extends ConsumerWidget {
         ),
         emailsLoader.maybeWhen(
           orElse: () => const SizedBox.shrink(),
-          data: (emails) => emails.isEmpty
-              ? const SizedBox.shrink()
-              : IconButton(
-                  icon: const Icon(Atlas.plus_circle_thin),
-                  iconSize: 20,
-                  color: Theme.of(context).colorScheme.surface,
-                  onPressed: () => _onTargetAdd(context, ref, emails),
-                ),
+          data:
+              (emails) =>
+                  emails.isEmpty
+                      ? const SizedBox.shrink()
+                      : IconButton(
+                        icon: const Icon(Atlas.plus_circle_thin),
+                        iconSize: 20,
+                        color: Theme.of(context).colorScheme.surface,
+                        onPressed: () => _onTargetAdd(context, ref, emails),
+                      ),
         ),
       ],
       tiles: pushersLoader.when(
         data: (pushers) {
           if (pushers.isEmpty) {
-            return [
-              SettingsTile(
-                title: Text(lang.noPushTargetsAddedYet),
-              ),
-            ];
+            return [SettingsTile(title: Text(lang.noPushTargetsAddedYet))];
           }
           return pushers
               .map((pusher) => _pusherTile(context, ref, pusher))
@@ -290,17 +266,9 @@ class NotificationsSettingsPage extends ConsumerWidget {
         },
         error: (e, s) {
           _log.severe('Failed to load pushers', e, s);
-          return [
-            SettingsTile(
-              title: Text(lang.failedToLoadPushTargets(e)),
-            ),
-          ];
+          return [SettingsTile(title: Text(lang.failedToLoadPushTargets(e)))];
         },
-        loading: () => [
-          SettingsTile(
-            title: Text(lang.loadingTargets),
-          ),
-        ],
+        loading: () => [SettingsTile(title: Text(lang.loadingTargets))],
       ),
     );
   }
@@ -355,52 +323,54 @@ class NotificationsSettingsPage extends ConsumerWidget {
       title: Text(isEmail ? item.pushkey() : item.deviceDisplayName()),
       description: isEmail ? null : Text(item.appDisplayName()),
       trailing: const Icon(Atlas.dots_vertical_thin),
-      onPressed: (context) => showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(lang.pushTargetDetails),
-          content: SizedBox(
-            width: 300,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ListTile(
-                  title: Text(lang.appId),
-                  subtitle: Text(item.appId()),
+      onPressed:
+          (context) => showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: Text(lang.pushTargetDetails),
+                  content: SizedBox(
+                    width: 300,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        ListTile(
+                          title: Text(lang.appId),
+                          subtitle: Text(item.appId()),
+                        ),
+                        ListTile(
+                          title: Text(lang.pushKey),
+                          subtitle: Text(item.pushkey()),
+                        ),
+                        ListTile(
+                          title: Text(lang.appName),
+                          subtitle: Text(item.appDisplayName()),
+                        ),
+                        ListTile(
+                          title: Text(lang.deviceName),
+                          subtitle: Text(item.deviceDisplayName()),
+                        ),
+                        ListTile(
+                          title: Text(lang.language),
+                          subtitle: Text(item.lang()),
+                        ),
+                      ],
+                    ),
+                    // alert dialog with details;
+                  ),
+                  actionsAlignment: MainAxisAlignment.spaceEvenly,
+                  actions: <Widget>[
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(context, null),
+                      child: Text(lang.closeDialog),
+                    ),
+                    ActerDangerActionButton(
+                      onPressed: () => _onTargetDelete(context, ref, item),
+                      child: Text(lang.deleteTarget),
+                    ),
+                  ],
                 ),
-                ListTile(
-                  title: Text(lang.pushKey),
-                  subtitle: Text(item.pushkey()),
-                ),
-                ListTile(
-                  title: Text(lang.appName),
-                  subtitle: Text(item.appDisplayName()),
-                ),
-                ListTile(
-                  title: Text(lang.deviceName),
-                  subtitle: Text(item.deviceDisplayName()),
-                ),
-                ListTile(
-                  title: Text(lang.language),
-                  subtitle: Text(item.lang()),
-                ),
-              ],
-            ),
-            // alert dialog with details;
           ),
-          actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actions: <Widget>[
-            OutlinedButton(
-              onPressed: () => Navigator.pop(context, null),
-              child: Text(lang.closeDialog),
-            ),
-            ActerDangerActionButton(
-              onPressed: () => _onTargetDelete(context, ref, item),
-              child: Text(lang.deleteTarget),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

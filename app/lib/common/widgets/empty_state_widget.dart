@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
 
 class EmptyState extends StatelessWidget {
@@ -27,10 +27,7 @@ class EmptyState extends StatelessWidget {
     final aPrimaryButton = primaryButton;
     final aSecondaryButton = secondaryButton;
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 10,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -43,10 +40,7 @@ class EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             if (aTitle != null)
-              Text(
-                aTitle,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text(aTitle, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 10),
             if (aSubtitle != null)
               Text(

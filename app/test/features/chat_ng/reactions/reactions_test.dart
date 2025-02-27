@@ -6,7 +6,7 @@ import 'package:acter/features/chat_ng/widgets/reactions/reaction_detail_sheet.d
 import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show ReactionRecord, UserId;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,10 +41,9 @@ Future<void> openReactionsDetailSheet(
   await tester.pump();
   showModalBottomSheet(
     context: tester.element(find.byType(ReactionsList)),
-    builder: (context) => ReactionDetailsSheet(
-      roomId: 'test-room',
-      reactions: reactions,
-    ),
+    builder:
+        (context) =>
+            ReactionDetailsSheet(roomId: 'test-room', reactions: reactions),
   );
   await tester.pumpAndSettle();
 }
@@ -61,7 +60,7 @@ void main() {
             [
               MockReactionRecord(createMockUserId('user-1')),
               MockReactionRecord(createMockUserId('user-2')),
-            ]
+            ],
           ),
         ]);
 
@@ -71,9 +70,9 @@ void main() {
             memberAvatarInfoProvider.overrideWith(
               (ref, param) => MockAvatarInfo(uniqueId: param.userId),
             ),
-            messageReactionsProvider(mockItem).overrideWith(
-              (ref) => reactionsNotifier.state,
-            ),
+            messageReactionsProvider(
+              mockItem,
+            ).overrideWith((ref) => reactionsNotifier.state),
           ],
           child: MaterialApp(
             localizationsDelegates: L10n.localizationsDelegates,
@@ -105,9 +104,9 @@ void main() {
         memberAvatarInfoProvider.overrideWith(
           (ref, param) => MockAvatarInfo(uniqueId: param.userId),
         ),
-        messageReactionsProvider(mockEvent).overrideWith(
-          (ref) => reactionsNotifier.state,
-        ),
+        messageReactionsProvider(
+          mockEvent,
+        ).overrideWith((ref) => reactionsNotifier.state),
       ];
 
       testWidgets('updates tabs when reactions change', (tester) async {
@@ -186,7 +185,7 @@ void main() {
             [
               MockReactionRecord(createMockUserId('user-1')),
               MockReactionRecord(createMockUserId('user-2')),
-            ]
+            ],
           ),
         ];
         await tester.pumpAndSettle();
@@ -206,14 +205,14 @@ void main() {
             [
               MockReactionRecord(createMockUserId('user-1')),
               MockReactionRecord(createMockUserId('user-2')),
-            ]
+            ],
           ),
           (
             '❤️',
             [
               MockReactionRecord(createMockUserId('user-2')),
               MockReactionRecord(createMockUserId('user-3')),
-            ]
+            ],
           ),
         ];
 
@@ -223,9 +222,9 @@ void main() {
             memberAvatarInfoProvider.overrideWith(
               (ref, param) => MockAvatarInfo(uniqueId: param.userId),
             ),
-            messageReactionsProvider(mockEventItem).overrideWith(
-              (ref) => reactions,
-            ),
+            messageReactionsProvider(
+              mockEventItem,
+            ).overrideWith((ref) => reactions),
           ],
           child: MaterialApp(
             localizationsDelegates: L10n.localizationsDelegates,
@@ -241,14 +240,12 @@ void main() {
         );
         await openReactionsDetailSheet(reactions, tester);
         // Check "All" tab content
-        expect(
-          find.byType(ReactionUserItem),
-          findsNWidgets(3),
-        );
+        expect(find.byType(ReactionUserItem), findsNWidgets(3));
 
         // Check 👍 tab
-        await tester
-            .tap(find.byKey(Key('reaction-tab-👍'))); // First tab with count 2
+        await tester.tap(
+          find.byKey(Key('reaction-tab-👍')),
+        ); // First tab with count 2
         await tester.pumpAndSettle();
 
         expect(find.byType(ReactionUserItem), findsNWidgets(2));

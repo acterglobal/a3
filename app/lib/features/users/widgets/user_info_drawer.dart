@@ -7,7 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:acter/common/extensions/options.dart';
@@ -18,16 +18,13 @@ class _UserInfoDrawerInner extends ConsumerWidget {
   final UserProfile? profile;
   final String userId;
 
-  const _UserInfoDrawerInner({
-    required this.userId,
-    required this.profile,
-  });
+  const _UserInfoDrawerInner({required this.userId, required this.profile});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final avatarInfo =
         profile.map((profile) => ref.watch(userAvatarInfoProvider(profile))) ??
-            AvatarInfo(uniqueId: userId);
+        AvatarInfo(uniqueId: userId);
     final displayName = avatarInfo.displayName;
     return SingleChildScrollView(
       child: Padding(
@@ -38,10 +35,7 @@ class _UserInfoDrawerInner extends ConsumerWidget {
             const SizedBox(height: 20),
             _buildAvatarUI(context, avatarInfo),
             const SizedBox(height: 20),
-            if (displayName != null)
-              Center(
-                child: Text(displayName),
-              ),
+            if (displayName != null) Center(child: Text(displayName)),
             const SizedBox(height: 20),
             _buildUserName(context),
             const SizedBox(height: 20),
@@ -57,10 +51,7 @@ class _UserInfoDrawerInner extends ConsumerWidget {
     final myUserId = ref.watch(myUserIdStrProvider);
     final itsMe = userId == myUserId;
     if (itsMe) {
-      return [
-        Center(child: Text(lang.itsYou)),
-        const SizedBox(height: 30),
-      ];
+      return [Center(child: Text(lang.itsYou)), const SizedBox(height: 30)];
     }
 
     return [
@@ -115,19 +106,13 @@ class _UserInfoDrawerInner extends ConsumerWidget {
 class UserInfoDrawer extends ConsumerWidget {
   final String userId;
 
-  const UserInfoDrawer({
-    super.key,
-    required this.userId,
-  });
+  const UserInfoDrawer({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final memberLoader = ref.watch(globalUserProfileProvider(userId));
     return memberLoader.when(
-      data: (profile) => _UserInfoDrawerInner(
-        profile: profile,
-        userId: userId,
-      ),
+      data: (profile) => _UserInfoDrawerInner(profile: profile, userId: userId),
       error: (e, s) {
         _log.severe('Failed to load user', e, s);
         return Padding(

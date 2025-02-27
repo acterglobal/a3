@@ -1,6 +1,6 @@
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class CommentListEmptyStateWidget extends StatelessWidget {
   final bool useCompactView;
@@ -23,8 +23,9 @@ class CommentListEmptyStateWidget extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           L10n.of(context).commentEmptyStateTitle,
-          style:
-              Theme.of(context).textTheme.titleMedium?.copyWith(color: color),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(color: color),
         ),
         Text(
           L10n.of(context).commentEmptyStateAction,
@@ -46,17 +47,15 @@ class CommentListEmptyStateWidget extends StatelessWidget {
             children: [
               Text(
                 L10n.of(context).commentEmptyStateTitle,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    ?.copyWith(color: color),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(color: color),
               ),
               Text(
                 L10n.of(context).commentEmptyStateAction,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    ?.copyWith(color: color),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: color),
               ),
             ],
           ),

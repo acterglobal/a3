@@ -4,7 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::space::actions::update_feature_level');
@@ -22,13 +22,14 @@ Future<bool> updateFeatureLevelChangeDialog(
   final lang = L10n.of(context);
   final newPowerLevel = await showDialog<int?>(
     context: context,
-    builder: (BuildContext context) => _ChangePowerLevelDialog(
-      featureName: featureName,
-      isGlobal: isGlobal,
-      currentPowerLevelName:
-          maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
-      currentPowerLevel: currentPw,
-    ),
+    builder:
+        (BuildContext context) => _ChangePowerLevelDialog(
+          featureName: featureName,
+          isGlobal: isGlobal,
+          currentPowerLevelName:
+              maxPowerLevel == 100 ? powerLevelName(currentPw) : 'Custom',
+          currentPowerLevel: currentPw,
+        ),
   );
   if (newPowerLevel == currentPw) return false;
   if (!context.mounted) {
@@ -65,15 +66,9 @@ Future<bool> updateFeatureLevel(
         );
         return false;
       }
-      res = await space.updateRegularPowerLevels(
-        levelKey,
-        newPowerLevel,
-      );
+      res = await space.updateRegularPowerLevels(levelKey, newPowerLevel);
     } else {
-      res = await space.updateFeaturePowerLevels(
-        levelKey,
-        newPowerLevel,
-      );
+      res = await space.updateFeaturePowerLevels(levelKey, newPowerLevel);
     }
     EasyLoading.showToast(lang.powerLevelSubmitted(featureName));
     return res;
@@ -107,8 +102,9 @@ class _ChangePowerLevelDialog extends StatefulWidget {
 
 class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   final TextEditingController dropDownMenuCtrl = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'change power level form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'change power level form',
+  );
 
   String? currentMemberStatus;
   int? customValue;
@@ -142,16 +138,20 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
     final lang = L10n.of(context);
     final memberStatus = widget.currentPowerLevelName;
     final currentPowerLevel = widget.currentPowerLevel;
-    final label = currentPowerLevel != null
-        ? lang.updateFeaturePowerLevelDialogFromTo(
-            memberStatus,
-            currentPowerLevel,
-          )
-        : lang.updateFeaturePowerLevelDialogFromDefaultTo;
+    final label =
+        currentPowerLevel != null
+            ? lang.updateFeaturePowerLevelDialogFromTo(
+              memberStatus,
+              currentPowerLevel,
+            )
+            : lang.updateFeaturePowerLevelDialogFromDefaultTo;
     return AlertDialog(
-      title: widget.isGlobal
-          ? Text('Update of ${widget.featureName}')
-          : Text(lang.updateFeaturePowerLevelDialogTitle(widget.featureName)),
+      title:
+          widget.isGlobal
+              ? Text('Update of ${widget.featureName}')
+              : Text(
+                lang.updateFeaturePowerLevelDialogTitle(widget.featureName),
+              ),
       content: Form(
         key: _formKey,
         child: Column(
@@ -192,13 +192,12 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: lang.powerLevelCustom,
-                  ),
+                  decoration: InputDecoration(labelText: lang.powerLevelCustom),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(signed: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: true,
+                  ),
                   // Only numbers
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
@@ -225,18 +224,9 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        OutlinedButton(
-          onPressed: onCancel,
-          child: Text(lang.cancel),
-        ),
-        OutlinedButton(
-          onPressed: onUnset,
-          child: Text(lang.unset),
-        ),
-        ActerPrimaryActionButton(
-          onPressed: onSubmit,
-          child: Text(lang.submit),
-        ),
+        OutlinedButton(onPressed: onCancel, child: Text(lang.cancel)),
+        OutlinedButton(onPressed: onUnset, child: Text(lang.unset)),
+        ActerPrimaryActionButton(onPressed: onSubmit, child: Text(lang.submit)),
       ],
     );
   }

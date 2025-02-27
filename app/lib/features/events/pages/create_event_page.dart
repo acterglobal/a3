@@ -16,7 +16,7 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -111,10 +111,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppbar(), body: _buildBody());
   }
 
   // Appbar
@@ -170,9 +167,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
           controller: _eventNameController,
           decoration: InputDecoration(hintText: lang.nameOfTheEvent),
           // required field, space not allowed
-          validator: (val) => val == null || val.trim().isEmpty
-              ? lang.pleaseEnterEventName
-              : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty
+                      ? lang.pleaseEnterEventName
+                      : null,
         ),
       ],
     );
@@ -202,9 +201,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     ),
                     onTap: () => _selectDate(isStartDate: true),
                     // required field, space not allowed
-                    validator: (val) => val == null || val.trim().isEmpty
-                        ? lang.startDateRequired
-                        : null,
+                    validator:
+                        (val) =>
+                            val == null || val.trim().isEmpty
+                                ? lang.startDateRequired
+                                : null,
                   ),
                 ],
               ),
@@ -227,9 +228,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     ),
                     onTap: () => _selectTime(isStartTime: true),
                     // required field, space not allowed
-                    validator: (val) => val == null || val.trim().isEmpty
-                        ? lang.startTimeRequired
-                        : null,
+                    validator:
+                        (val) =>
+                            val == null || val.trim().isEmpty
+                                ? lang.startTimeRequired
+                                : null,
                   ),
                 ],
               ),
@@ -256,9 +259,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     ),
                     onTap: () => _selectDate(isStartDate: false),
                     // required field, space not allowed
-                    validator: (val) => val == null || val.trim().isEmpty
-                        ? lang.endDateRequired
-                        : null,
+                    validator:
+                        (val) =>
+                            val == null || val.trim().isEmpty
+                                ? lang.endDateRequired
+                                : null,
                   ),
                 ],
               ),
@@ -281,9 +286,11 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                     ),
                     onTap: () => _selectTime(isStartTime: false),
                     // required field, space not allowed
-                    validator: (val) => val == null || val.trim().isEmpty
-                        ? lang.endTimeRequired
-                        : null,
+                    validator:
+                        (val) =>
+                            val == null || val.trim().isEmpty
+                                ? lang.endTimeRequired
+                                : null,
                   ),
                 ],
               ),
@@ -382,10 +389,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             autoFocus: false,
             onChanged: (body, html) {
               textEditorState = EditorState(
-                document: ActerDocumentHelpers.parse(
-                  body,
-                  htmlContent: html,
-                ),
+                document: ActerDocumentHelpers.parse(body, htmlContent: html),
               );
             },
           ),
@@ -400,10 +404,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        OutlinedButton(
-          onPressed: context.pop,
-          child: Text(lang.cancel),
-        ),
+        OutlinedButton(onPressed: context.pop, child: Text(lang.cancel)),
         const SizedBox(width: 10),
         ActerPrimaryActionButton(
           key: EventsKeys.eventCreateEditBtn,
@@ -439,11 +440,15 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     try {
       // Replacing hours and minutes from DateTime
       // Start Date
-      final startDateTime =
-          calculateDateTimeWithHours(_selectedStartDate, _selectedStartTime);
+      final startDateTime = calculateDateTimeWithHours(
+        _selectedStartDate,
+        _selectedStartTime,
+      );
       // End Date
-      final endDateTime =
-          calculateDateTimeWithHours(_selectedEndDate, _selectedEndTime);
+      final endDateTime = calculateDateTimeWithHours(
+        _selectedEndDate,
+        _selectedEndTime,
+      );
 
       // Convert utc time zone
       final utcStartDateTime = startDateTime.toUtc().toIso8601String();

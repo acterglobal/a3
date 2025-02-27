@@ -1,6 +1,6 @@
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -33,17 +33,17 @@ class ItemPreviewCard extends StatelessWidget {
   }
 
   IconData getIconByType(ObjectType? refType) => switch (refType) {
-        null => PhosphorIconsThin.tagChevron,
-        ObjectType.pin => Atlas.pin,
-        ObjectType.calendarEvent => Atlas.calendar,
-        ObjectType.taskList => Atlas.list,
-        ObjectType.boost => Atlas.rocket_launch,
-        ObjectType.task => Atlas.check_circle_thin,
-        ObjectType.comment => Atlas.chat_dots_thin,
-        ObjectType.attachment => Atlas.paperclip_thin,
-        ObjectType.space => Atlas.team_group,
-        ObjectType.chat => Atlas.chats,
-      };
+    null => PhosphorIconsThin.tagChevron,
+    ObjectType.pin => Atlas.pin,
+    ObjectType.calendarEvent => Atlas.calendar,
+    ObjectType.taskList => Atlas.list,
+    ObjectType.boost => Atlas.rocket_launch,
+    ObjectType.task => Atlas.check_circle_thin,
+    ObjectType.comment => Atlas.chat_dots_thin,
+    ObjectType.attachment => Atlas.paperclip_thin,
+    ObjectType.space => Atlas.team_group,
+    ObjectType.chat => Atlas.chats,
+  };
 
   String subtitleForType(BuildContext context, ObjectType? refType) =>
       switch (refType) {

@@ -16,7 +16,7 @@ import 'package:acter/features/home/widgets/my_tasks.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -30,9 +30,10 @@ class Dashboard extends ConsumerWidget {
       child: SafeArea(
         bottom: false,
         child: Scaffold(
-          floatingActionButtonLocation: Platform.isIOS
-              ? FloatingActionButtonLocation.miniEndDocked
-              : FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButtonLocation:
+              Platform.isIOS
+                  ? FloatingActionButtonLocation.miniEndDocked
+                  : FloatingActionButtonLocation.miniEndFloat,
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
           appBar: _buildDashboardAppBar(context),
           floatingActionButton: manageQuickAddButton(context, ref),
@@ -45,12 +46,13 @@ class Dashboard extends ConsumerWidget {
   AppBar _buildDashboardAppBar(BuildContext context) {
     final lang = L10n.of(context);
     return AppBar(
-      leading: !isDesktop
-          ? Padding(
-              padding: const EdgeInsets.all(12),
-              child: SvgPicture.asset('assets/icon/acter.svg'),
-            )
-          : const SizedBox.shrink(),
+      leading:
+          !isDesktop
+              ? Padding(
+                padding: const EdgeInsets.all(12),
+                child: SvgPicture.asset('assets/icon/acter.svg'),
+              )
+              : const SizedBox.shrink(),
       centerTitle: true,
       title: Text(isDesktop ? lang.myDashboard : lang.acter),
       actions: <Widget>[
@@ -96,22 +98,23 @@ class Dashboard extends ConsumerWidget {
   Widget _buildDashboardBodyUI(BuildContext context, WidgetRef ref) {
     final hasSpaces = ref.watch(hasSpacesProvider);
     return SingleChildScrollView(
-      child: hasSpaces
-          ? Column(
-              children: [
-                FeaturesNavWidget(),
-                ImportantActivitiesSection(),
-                const SizedBox(height: 12),
-                MyEventsSection(eventFilters: EventFilters.ongoing),
-                MyTasksSection(limit: 5),
-                MyEventsSection(
-                  limit: 3,
-                  eventFilters: EventFilters.upcoming,
-                ),
-                MySpacesSection(limit: 5),
-              ],
-            )
-          : emptyState(context),
+      child:
+          hasSpaces
+              ? Column(
+                children: [
+                  FeaturesNavWidget(),
+                  ImportantActivitiesSection(),
+                  const SizedBox(height: 12),
+                  MyEventsSection(eventFilters: EventFilters.ongoing),
+                  MyTasksSection(limit: 5),
+                  MyEventsSection(
+                    limit: 3,
+                    eventFilters: EventFilters.upcoming,
+                  ),
+                  MySpacesSection(limit: 5),
+                ],
+              )
+              : emptyState(context),
     );
   }
 

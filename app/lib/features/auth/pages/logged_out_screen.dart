@@ -1,7 +1,7 @@
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -9,10 +9,7 @@ import 'package:go_router/go_router.dart';
 class LoggedOutScreen extends ConsumerWidget {
   final bool softLogout;
 
-  const LoggedOutScreen({
-    super.key,
-    required this.softLogout,
-  });
+  const LoggedOutScreen({super.key, required this.softLogout});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,13 +54,13 @@ class LoggedOutScreen extends ConsumerWidget {
               ),
               softLogout
                   ? OutlinedButton(
-                      onPressed: () => context.goNamed(Routes.intro.name),
-                      child: Text(lang.loginAgain),
-                    )
+                    onPressed: () => context.goNamed(Routes.intro.name),
+                    child: Text(lang.loginAgain),
+                  )
                   : OutlinedButton(
-                      onPressed: () => logoutConfirmationDialog(context, ref),
-                      child: Text(lang.clearDBAndReLogin),
-                    ),
+                    onPressed: () => logoutConfirmationDialog(context, ref),
+                    child: Text(lang.clearDBAndReLogin),
+                  ),
             ],
           ),
         ),

@@ -6,7 +6,7 @@ import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,11 +18,7 @@ class SpaceToolbar extends ConsumerWidget {
   final String spaceId;
   final Widget? spaceTitle;
 
-  const SpaceToolbar({
-    super.key,
-    required this.spaceId,
-    this.spaceTitle,
-  });
+  const SpaceToolbar({super.key, required this.spaceId, this.spaceTitle});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,10 +63,11 @@ class SpaceToolbar extends ConsumerWidget {
     submenu.addAll([
       PopupMenuItem(
         key: settingsMenu,
-        onTap: () => context.pushNamed(
-          Routes.spaceSettings.name,
-          pathParameters: {'spaceId': spaceId},
-        ),
+        onTap:
+            () => context.pushNamed(
+              Routes.spaceSettings.name,
+              pathParameters: {'spaceId': spaceId},
+            ),
         child: Text(lang.settings),
       ),
       const PopupMenuDivider(),
@@ -85,10 +82,7 @@ class SpaceToolbar extends ConsumerWidget {
       if (membership?.canString('CanKick') == true &&
           membership?.canString('CanUpdateJoinRule') == true)
         PopupMenuItem(
-          onTap: () => openCloseRoomDialog(
-            context: context,
-            roomId: spaceId,
-          ),
+          onTap: () => openCloseRoomDialog(context: context, roomId: spaceId),
           child: Text(
             lang.closeSpace,
             style: TextStyle(color: colorScheme.error),
@@ -103,16 +97,14 @@ class SpaceToolbar extends ConsumerWidget {
         if (showInviteBtn && invited.length <= 100)
           OutlinedButton(
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               side: BorderSide(color: colorScheme.outline),
             ),
-            onPressed: () => context.pushNamed(
-              Routes.spaceInvite.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
+            onPressed:
+                () => context.pushNamed(
+                  Routes.spaceInvite.name,
+                  pathParameters: {'spaceId': spaceId},
+                ),
             child: Text(
               lang.invite,
               style: TextStyle(color: colorScheme.outline),
@@ -121,17 +113,15 @@ class SpaceToolbar extends ConsumerWidget {
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
           onPressed: () async {
-            final bookmarked =
-                await ref.read(spaceIsBookmarkedProvider(spaceId).future);
+            final bookmarked = await ref.read(
+              spaceIsBookmarkedProvider(spaceId).future,
+            );
             final space = await ref.read(spaceProvider(spaceId).future);
             await space.setBookmarked(!bookmarked);
           },
         ),
         PopupMenuButton(
-          icon: const Icon(
-            Icons.more_vert,
-            key: optionsMenu,
-          ),
+          icon: const Icon(Icons.more_vert, key: optionsMenu),
           iconSize: 28,
           color: colorScheme.surface,
           itemBuilder: (BuildContext context) => submenu,

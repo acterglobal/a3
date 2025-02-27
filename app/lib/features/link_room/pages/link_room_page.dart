@@ -8,7 +8,7 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/link_room/widgets/link_space_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -53,9 +53,10 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
             parentSpaceDataUI(),
             searchUI(),
             Expanded(
-              child: widget.childRoomType == ChildRoomType.chat
-                  ? chatsList()
-                  : spacesList(),
+              child:
+                  widget.childRoomType == ChildRoomType.chat
+                      ? chatsList()
+                      : spacesList(),
             ),
           ],
         ),
@@ -63,7 +64,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//Search
+  //Search
   Widget searchUI() {
     return Search(
       onChanged: (value) {
@@ -74,21 +75,19 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//Parent space
+  //Parent space
   Widget parentSpaceDataUI() {
     final space = ref.watch(selectedSpaceDetailsProvider);
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: space.map(
+      child:
+          space.map(
             (p0) => Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(L10n.of(context).parentSpace),
-                SpaceChip(
-                  spaceId: p0.roomId,
-                  onTapOpenSpaceDetail: false,
-                ),
+                SpaceChip(spaceId: p0.roomId, onTapOpenSpaceDetail: false),
               ],
             ),
           ) ??
@@ -96,7 +95,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//List of chats excluding DMs that can be linked according to the selected parent space
+  //List of chats excluding DMs that can be linked according to the selected parent space
   Widget chatsList() {
     final searchValue = ref.watch(roomSearchValueProvider);
     if (searchValue?.isNotEmpty == true) {
@@ -105,23 +104,26 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
 
     final chatList = ref.watch(
       chatsProvider.select(
-        (rooms) => rooms
-            .where((room) => (!room.isDm()))
-            .map((r) => r.getRoomIdStr())
-            .toList(),
+        (rooms) =>
+            rooms
+                .where((room) => (!room.isDm()))
+                .map((r) => r.getRoomIdStr())
+                .toList(),
       ),
     );
     return chatListUI(chatList);
   }
 
-//Show chat list based on the search term
+  //Show chat list based on the search term
   Widget searchedChatsList() {
     final lang = L10n.of(context);
     final searchedList = ref.watch(roomSearchedChatsProvider);
     return searchedList.when(
-      data: (chats) => chats.isEmpty
-          ? Text(lang.noChatsFoundMatchingYourSearchTerm)
-          : chatListUI(chats),
+      data:
+          (chats) =>
+              chats.isEmpty
+                  ? Text(lang.noChatsFoundMatchingYourSearchTerm)
+                  : chatListUI(chats),
       error: (e, s) {
         _log.severe('Failed to search chats', e, s);
         return errorUI(lang.searchingFailed(e));
@@ -130,19 +132,20 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//Chat List
+  //Chat List
   Widget chatListUI(List<String> chatList) {
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: chatList.length,
-      itemBuilder: (context, index) => LinkRoomListItem(
-        parentId: widget.parentSpaceId,
-        roomId: chatList[index],
-      ),
+      itemBuilder:
+          (context, index) => LinkRoomListItem(
+            parentId: widget.parentSpaceId,
+            roomId: chatList[index],
+          ),
     );
   }
 
-//List of spaces that can be linked according to the selected parent space
+  //List of spaces that can be linked according to the selected parent space
   Widget spacesList() {
     final searchValue = ref.watch(roomSearchValueProvider);
     if (searchValue?.isNotEmpty == true) {
@@ -153,7 +156,7 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     return spaceListUI(spaces.map((space) => space.getRoomIdStr()).toList());
   }
 
-//Show space list based on the search term
+  //Show space list based on the search term
   Widget searchedSpaceList() {
     final lang = L10n.of(context);
     final searchedSpaces = ref.watch(searchedSpacesProvider);
@@ -175,31 +178,27 @@ class _LinkRoomPageConsumerState extends ConsumerState<LinkRoomPage> {
     );
   }
 
-//Space List
+  //Space List
   Widget spaceListUI(List<String> spacesList) {
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       itemCount: spacesList.length,
-      itemBuilder: (context, index) => LinkRoomListItem(
-        parentId: widget.parentSpaceId,
-        roomId: spacesList[index],
-      ),
+      itemBuilder:
+          (context, index) => LinkRoomListItem(
+            parentId: widget.parentSpaceId,
+            roomId: spacesList[index],
+          ),
     );
   }
 
-//Common loading UI
+  //Common loading UI
   Widget loadingUI() {
-    return const Center(
-      heightFactor: 10,
-      child: CircularProgressIndicator(),
-    );
+    return const Center(heightFactor: 10, child: CircularProgressIndicator());
   }
 
-//Common error UI
+  //Common error UI
   Widget errorUI(String message) {
-    return Center(
-      child: Text(message),
-    );
+    return Center(child: Text(message));
   }
 }

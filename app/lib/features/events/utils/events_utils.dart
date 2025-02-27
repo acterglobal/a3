@@ -3,7 +3,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -79,10 +79,7 @@ Future<void> saveEventDescription({
 
 DateTime calculateDateTimeWithHours(DateTime date, TimeOfDay time) {
   // Replacing hours and minutes from DateTime
-  return date.copyWith(
-    hour: time.hour,
-    minute: time.minute,
-  );
+  return date.copyWith(hour: time.hour, minute: time.minute);
 }
 
 String formatDate(CalendarEvent e) {

@@ -2,7 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class SaveUsernamePage extends StatelessWidget {
@@ -10,18 +10,13 @@ class SaveUsernamePage extends StatelessWidget {
   static const continueBtn = Key('reg-continue-btn');
   final String username;
 
-  SaveUsernamePage({
-    super.key,
-    required this.username,
-  });
+  SaveUsernamePage({super.key, required this.username});
 
   final ValueNotifier<bool> isCopied = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(context),
-    );
+    return Scaffold(body: _buildBody(context));
   }
 
   Widget _buildBody(BuildContext context) {
@@ -57,25 +52,17 @@ class SaveUsernamePage extends StatelessWidget {
       children: [
         Text(
           lang.saveUsernameTitle,
-          style:
-              textTheme.headlineMedium?.copyWith(color: colorScheme.secondary),
+          style: textTheme.headlineMedium?.copyWith(
+            color: colorScheme.secondary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
-        Text(
-          lang.saveUsernameDescription1,
-          style: textTheme.bodyMedium,
-        ),
+        Text(lang.saveUsernameDescription1, style: textTheme.bodyMedium),
         const SizedBox(height: 10),
-        Text(
-          lang.saveUsernameDescription2,
-          style: textTheme.bodyMedium,
-        ),
+        Text(lang.saveUsernameDescription2, style: textTheme.bodyMedium),
         const SizedBox(height: 10),
-        Text(
-          lang.saveUsernameDescription3,
-          style: textTheme.bodyMedium,
-        ),
+        Text(lang.saveUsernameDescription3, style: textTheme.bodyMedium),
       ],
     );
   }
@@ -88,21 +75,12 @@ class SaveUsernamePage extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 15,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         child: Column(
           children: [
-            Text(
-              L10n.of(context).acterUsername,
-              style: textTheme.bodySmall,
-            ),
+            Text(L10n.of(context).acterUsername, style: textTheme.bodySmall),
             const SizedBox(height: 15),
-            Text(
-              username,
-              style: textTheme.headlineMedium,
-            ),
+            Text(username, style: textTheme.headlineMedium),
           ],
         ),
       ),
@@ -129,10 +107,7 @@ class SaveUsernamePage extends StatelessWidget {
               if (!isCopiedValue) return const SizedBox.shrink();
               return const Padding(
                 padding: EdgeInsets.only(left: 10),
-                child: Icon(
-                  Atlas.check_circle,
-                  size: 18,
-                ),
+                child: Icon(Atlas.check_circle, size: 18),
               );
             },
           ),
@@ -149,9 +124,10 @@ class SaveUsernamePage extends StatelessWidget {
       builder: (context, isCopiedValue, child) {
         return OutlinedButton(
           key: continueBtn,
-          onPressed: isCopiedValue
-              ? () => context.goNamed(Routes.linkEmail.name)
-              : null,
+          onPressed:
+              isCopiedValue
+                  ? () => context.goNamed(Routes.linkEmail.name)
+                  : null,
           style: OutlinedButton.styleFrom(
             side: isCopiedValue ? null : BorderSide(color: disabledColor),
           ),

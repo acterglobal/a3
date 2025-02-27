@@ -25,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -41,10 +41,7 @@ class RoomPage extends ConsumerWidget {
 
   final String roomId;
 
-  const RoomPage({
-    super.key = roomPageKey,
-    required this.roomId,
-  });
+  const RoomPage({super.key = roomPageKey, required this.roomId});
 
   Widget appBar(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
@@ -58,14 +55,13 @@ class RoomPage extends ConsumerWidget {
       automaticallyImplyLeading: !context.isLargeScreen,
       centerTitle: true,
       toolbarHeight: 70,
-      flexibleSpace: FrostEffect(
-        child: Container(),
-      ),
+      flexibleSpace: FrostEffect(child: Container()),
       title: GestureDetector(
-        onTap: () => context.pushNamed(
-          Routes.chatProfile.name,
-          pathParameters: {'roomId': roomId},
-        ),
+        onTap:
+            () => context.pushNamed(
+              Routes.chatProfile.name,
+              pathParameters: {'roomId': roomId},
+            ),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -77,18 +73,17 @@ class RoomPage extends ConsumerWidget {
             ),
             const SizedBox(height: 5),
             membersLoader.when(
-              data: (members) => Text(
-                lang.membersCount(members.length),
-                style: textTheme.bodySmall,
-              ),
+              data:
+                  (members) => Text(
+                    lang.membersCount(members.length),
+                    style: textTheme.bodySmall,
+                  ),
               skipLoadingOnReload: false,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
                 return Text(lang.errorLoadingMembersCount(e));
               },
-              loading: () => Skeletonizer(
-                child: Text(lang.membersCount(100)),
-              ),
+              loading: () => Skeletonizer(child: Text(lang.membersCount(100))),
             ),
           ],
         ),
@@ -103,16 +98,14 @@ class RoomPage extends ConsumerWidget {
             ),
           ),
         GestureDetector(
-          onTap: () => context.pushNamed(
-            Routes.chatProfile.name,
-            pathParameters: {'roomId': roomId},
-          ),
+          onTap:
+              () => context.pushNamed(
+                Routes.chatProfile.name,
+                pathParameters: {'roomId': roomId},
+              ),
           child: Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: RoomAvatar(
-              roomId: roomId,
-              showParents: true,
-            ),
+            child: RoomAvatar(roomId: roomId, showParents: true),
           ),
         ),
       ],
@@ -122,16 +115,17 @@ class RoomPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return OrientationBuilder(
-      builder: (context, orientation) => Scaffold(
-        resizeToAvoidBottomInset: orientation == Orientation.portrait,
-        body: Column(
-          children: [
-            appBar(context, ref),
-            ChatRoom(roomId: roomId),
-            chatInput(context, ref),
-          ],
-        ),
-      ),
+      builder:
+          (context, orientation) => Scaffold(
+            resizeToAvoidBottomInset: orientation == Orientation.portrait,
+            body: Column(
+              children: [
+                appBar(context, ref),
+                ChatRoom(roomId: roomId),
+                chatInput(context, ref),
+              ],
+            ),
+          ),
     );
   }
 
@@ -157,10 +151,7 @@ class RoomPage extends ConsumerWidget {
 class ChatRoom extends ConsumerStatefulWidget {
   final String roomId;
 
-  const ChatRoom({
-    super.key,
-    required this.roomId,
-  });
+  const ChatRoom({super.key, required this.roomId});
 
   @override
   ConsumerState<ChatRoom> createState() => _ChatRoomConsumerState();
@@ -180,8 +171,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         if (scrollController.offset == 0) {
           final message = ref.read(latestTrackableMessageId(roomId));
           if (message != null) {
-            final timeline =
-                await ref.read(timelineStreamProvider(roomId).future);
+            final timeline = await ref.read(
+              timelineStreamProvider(roomId).future,
+            );
             await timeline.sendSingleReceipt('Read', 'Main', message);
           }
 
@@ -209,16 +201,17 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         child: ListView.builder(
           itemCount: 5,
           shrinkWrap: true,
-          itemBuilder: (context, index) => const Skeletonizer.zone(
-            child: Card(
-              child: ListTile(
-                leading: Bone.circle(size: 48),
-                title: Bone.text(words: 2),
-                subtitle: Bone.text(),
-                trailing: Bone.icon(),
+          itemBuilder:
+              (context, index) => const Skeletonizer.zone(
+                child: Card(
+                  child: ListTile(
+                    leading: Bone.circle(size: 48),
+                    title: Bone.text(words: 2),
+                    subtitle: Bone.text(),
+                    trailing: Bone.icon(),
+                  ),
+                ),
               ),
-            ),
-          ),
         ),
       ),
     );
@@ -233,8 +226,9 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
       return _renderLoading(context);
     }
 
-    final endReached =
-        ref.watch(chatStateProvider(roomId).select((c) => !c.hasMore));
+    final endReached = ref.watch(
+      chatStateProvider(roomId).select((c) => !c.hasMore),
+    );
     final userId = ref.watch(myUserIdStrProvider);
     final isDirectChat =
         ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
@@ -243,9 +237,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
 
     return Expanded(
       child: Chat(
-        keyboardDismissBehavior: Platform.isIOS
-            ? ScrollViewKeyboardDismissBehavior.onDrag
-            : ScrollViewKeyboardDismissBehavior.manual,
+        keyboardDismissBehavior:
+            Platform.isIOS
+                ? ScrollViewKeyboardDismissBehavior.onDrag
+                : ScrollViewKeyboardDismissBehavior.manual,
         customBottomWidget: const SizedBox.shrink(),
         scrollController: scrollController,
         textMessageBuilder: (
@@ -273,10 +268,8 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         // disable image preview
         disableImageGallery: true,
         // custom avatar builder
-        avatarBuilder: (types.User user) => AvatarBuilder(
-          userId: user.id,
-          roomId: roomId,
-        ),
+        avatarBuilder:
+            (types.User user) => AvatarBuilder(userId: user.id, roomId: roomId),
         isLastPage: endReached,
         bubbleBuilder: (
           Widget child, {
@@ -336,9 +329,10 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
         systemMessageBuilder: (msg) => renderSysMessage(context, msg),
         showUserAvatars: !isDirectChat,
         onMessageLongPress: showMessageOptions,
-        onEndReached: ref
-            .read(chatStateProvider(widget.roomId).notifier)
-            .handleEndReached,
+        onEndReached:
+            ref
+                .read(chatStateProvider(widget.roomId).notifier)
+                .handleEndReached,
         onEndReachedThreshold: 0.75,
         onBackgroundTap: ref.read(chatInputProvider.notifier).unsetActions,
         typingIndicatorOptions: TypingIndicatorOptions(
@@ -355,21 +349,21 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   Widget renderSysMessage(BuildContext context, types.SystemMessage message) {
     return switch (message.metadata?['type']) {
       '_invite' => InviteSystemMessageWidget(
-          message: message,
-          roomId: widget.roomId,
-        ),
+        message: message,
+        roomId: widget.roomId,
+      ),
       '_topic' => TopicSystemMessageWidget(
-          message: message,
-          roomId: widget.roomId,
-        ),
+        message: message,
+        roomId: widget.roomId,
+      ),
       '_read_marker' => Center(
-          child: Divider(color: Theme.of(context).indicatorColor),
-        ),
+        child: Divider(color: Theme.of(context).indicatorColor),
+      ),
       '_encryptedInfo' => const EncryptedInfoWidget(),
       _ => SystemMessage(
-          key: Key('chat-room-${message.id}'),
-          message: message.text,
-        )
+        key: Key('chat-room-${message.id}'),
+        message: message.text,
+      ),
     };
   }
 }

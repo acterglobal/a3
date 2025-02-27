@@ -1,12 +1,13 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class ActerSearchWidget extends StatefulWidget {
   static const searchBarKey = Key('acter-search-bar');
-  static const clearSearchActionButtonKey =
-      Key('acter-search-bar-clear-action-btn');
+  static const clearSearchActionButtonKey = Key(
+    'acter-search-bar-clear-action-btn',
+  );
 
   final String? hintText;
   final String? initialText;
@@ -22,10 +23,7 @@ class ActerSearchWidget extends StatefulWidget {
     this.initialText,
     this.leading,
     this.trailing,
-    this.padding = const EdgeInsets.symmetric(
-      horizontal: 10,
-      vertical: 15,
-    ),
+    this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
     required this.onChanged,
     required this.onClear,
   });
@@ -58,8 +56,9 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
         controller: searchTextController,
         leading: widget.leading ?? searchLeadingUIWidget(),
         hintText: widget.hintText ?? L10n.of(context).search,
-        hintStyle:
-            WidgetStateProperty.all(Theme.of(context).textTheme.bodyMedium),
+        hintStyle: WidgetStateProperty.all(
+          Theme.of(context).textTheme.bodyMedium,
+        ),
         trailing: widget.trailing ?? searchTrailingUIWidget(),
         onChanged: (value) => widget.onChanged(value),
       ),
@@ -76,17 +75,17 @@ class _ActerSearchWidgetState extends State<ActerSearchWidget> {
   Iterable<Widget>? searchTrailingUIWidget() {
     return searchTextController.text.isNotEmpty
         ? [
-            IconButton(
-              key: ActerSearchWidget.clearSearchActionButtonKey,
-              onPressed: () {
-                FocusManager.instance.primaryFocus?.unfocus();
-                widget.onClear();
-                searchTextController.clear();
-                setState(() {});
-              },
-              icon: const Icon(Icons.clear),
-            ),
-          ]
+          IconButton(
+            key: ActerSearchWidget.clearSearchActionButtonKey,
+            onPressed: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              widget.onClear();
+              searchTextController.clear();
+              setState(() {});
+            },
+            icon: const Icon(Icons.clear),
+          ),
+        ]
         : null;
   }
 }

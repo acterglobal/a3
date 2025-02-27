@@ -5,7 +5,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -26,83 +26,30 @@ class EmailAddressCard extends ConsumerWidget {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Card(
-      margin: const EdgeInsets.symmetric(
-        vertical: 2,
-        horizontal: 15,
-      ),
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
       child: ListTile(
-        leading: isConfirmed
-            ? Icon(
-                Atlas.envelope_check_thin,
-                color: Theme.of(context).colorScheme.success,
-              )
-            : const Icon(Atlas.envelope_minus_thin),
+        leading:
+            isConfirmed
+                ? Icon(
+                  Atlas.envelope_check_thin,
+                  color: Theme.of(context).colorScheme.success,
+                )
+                : const Icon(Atlas.envelope_minus_thin),
         title: Text(emailAddress),
-        trailing: isConfirmed
-            ? PopupMenuButton(
-                itemBuilder: (context) => <PopupMenuEntry>[
-                  PopupMenuItem(
-                    onTap: () => onUnregister(context, ref),
-                    child: Row(
-                      children: [
-                        const Icon(Atlas.trash_can_thin),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            lang.remove,
-                            style: textTheme.labelSmall,
-                            softWrap: false,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            : SizedBox(
-                child: Wrap(
-                  children: [
-                    IconButton(
-                      key: Key('$emailAddress-already-confirmed-btn'),
-                      onPressed: () => alreadyConfirmedAddress(context, ref),
-                      icon: const Icon(Atlas.envelope_check_thin),
-                    ),
-                    PopupMenuButton(
-                      itemBuilder: (context) => <PopupMenuEntry>[
-                        PopupMenuItem(
-                          onTap: () => alreadyConfirmedAddress(context, ref),
-                          child: Row(
-                            children: [
-                              const Icon(Atlas.envelope_check_thin),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(lang.alreadyConfirmed),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          onTap: () => confirmationTokenAddress(context, ref),
-                          child: Row(
-                            children: [
-                              const Icon(Atlas.passcode_thin),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Text(lang.confirmWithToken),
-                              ),
-                            ],
-                          ),
-                        ),
+        trailing:
+            isConfirmed
+                ? PopupMenuButton(
+                  itemBuilder:
+                      (context) => <PopupMenuEntry>[
                         PopupMenuItem(
                           onTap: () => onUnregister(context, ref),
                           child: Row(
                             children: [
                               const Icon(Atlas.trash_can_thin),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
                                 child: Text(
                                   lang.remove,
                                   style: textTheme.labelSmall,
@@ -113,10 +60,72 @@ class EmailAddressCard extends ConsumerWidget {
                           ),
                         ),
                       ],
-                    ),
-                  ],
+                )
+                : SizedBox(
+                  child: Wrap(
+                    children: [
+                      IconButton(
+                        key: Key('$emailAddress-already-confirmed-btn'),
+                        onPressed: () => alreadyConfirmedAddress(context, ref),
+                        icon: const Icon(Atlas.envelope_check_thin),
+                      ),
+                      PopupMenuButton(
+                        itemBuilder:
+                            (context) => <PopupMenuEntry>[
+                              PopupMenuItem(
+                                onTap:
+                                    () => alreadyConfirmedAddress(context, ref),
+                                child: Row(
+                                  children: [
+                                    const Icon(Atlas.envelope_check_thin),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(lang.alreadyConfirmed),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                onTap:
+                                    () =>
+                                        confirmationTokenAddress(context, ref),
+                                child: Row(
+                                  children: [
+                                    const Icon(Atlas.passcode_thin),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(lang.confirmWithToken),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                onTap: () => onUnregister(context, ref),
+                                child: Row(
+                                  children: [
+                                    const Icon(Atlas.trash_can_thin),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(
+                                        lang.remove,
+                                        style: textTheme.labelSmall,
+                                        softWrap: false,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
       ),
     );
   }
@@ -125,26 +134,27 @@ class EmailAddressCard extends ConsumerWidget {
     final lang = L10n.of(context);
     showAdaptiveDialog(
       context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(lang.areYouSureYouWantToUnregisterEmailAddress),
-        actions: <Widget>[
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(lang.no),
-          ),
-          ActerPrimaryActionButton(
-            onPressed: () async {
-              final account = await ref.read(accountProvider.future);
-              await account.removeEmailAddress(emailAddress);
-              ref.invalidate(emailAddressesProvider);
+      builder:
+          (context) => DefaultDialog(
+            title: Text(lang.areYouSureYouWantToUnregisterEmailAddress),
+            actions: <Widget>[
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(lang.no),
+              ),
+              ActerPrimaryActionButton(
+                onPressed: () async {
+                  final account = await ref.read(accountProvider.future);
+                  await account.removeEmailAddress(emailAddress);
+                  ref.invalidate(emailAddressesProvider);
 
-              if (!context.mounted) return;
-              Navigator.pop(context);
-            },
-            child: Text(lang.yes),
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+                },
+                child: Text(lang.yes),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -233,10 +243,7 @@ class EmailConfirm {
   String token;
   String password;
 
-  EmailConfirm(
-    this.token,
-    this.password,
-  );
+  EmailConfirm(this.token, this.password);
 }
 
 class PasswordConfirm extends StatefulWidget {
@@ -251,8 +258,9 @@ class PasswordConfirm extends StatefulWidget {
 
 class _PasswordConfirmState extends State<PasswordConfirm> {
   final TextEditingController newPassword = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'password confirm form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'password confirm form',
+  );
   bool passwordVisible = false;
 
   @override
@@ -322,8 +330,9 @@ class TokenConfirm extends StatefulWidget {
 class _TokenConfirmState extends State<TokenConfirm> {
   final TextEditingController tokenField = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'token confirm form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'token confirm form',
+  );
   bool passwordVisible = false;
 
   @override

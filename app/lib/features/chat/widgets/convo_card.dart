@@ -10,7 +10,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -48,10 +48,7 @@ class ConvoCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final inner = buildInner(context, ref);
     return animation.map(
-          (val) => SizeTransition(
-            sizeFactor: val,
-            child: inner,
-          ),
+          (val) => SizeTransition(sizeFactor: val, child: inner),
         ) ??
         inner;
   }
@@ -70,24 +67,25 @@ class ConvoCard extends ConsumerWidget {
               child: ListTile(
                 dense: true,
                 onTap: onTap,
-                selected: showSelectedIndication &&
+                selected:
+                    showSelectedIndication &&
                     roomId == ref.watch(selectedChatIdProvider),
                 selectedTileColor: Theme.of(context).colorScheme.primary,
                 leading: avatarWithIndicator(context, ref),
-                title: titleIsLoading
-                    ? Skeletonizer(child: Text(roomId))
-                    : Text(
-                        displayName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.w700),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                title:
+                    titleIsLoading
+                        ? Skeletonizer(child: Text(roomId))
+                        : Text(
+                          displayName,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                 subtitle: buildSubtitle(context, constraints),
-                trailing: constraints.maxWidth < 300
-                    ? null
-                    : trailing ?? _TrailingWidget(roomId: roomId),
+                trailing:
+                    constraints.maxWidth < 300
+                        ? null
+                        : trailing ?? _TrailingWidget(roomId: roomId),
               ),
             ),
           ],
@@ -110,9 +108,7 @@ class ConvoCard extends ConsumerWidget {
           style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(width: 2),
-        Expanded(
-          child: _SubtitleWidget(roomId: roomId),
-        ),
+        Expanded(child: _SubtitleWidget(roomId: roomId)),
       ],
     );
   }
@@ -127,20 +123,11 @@ class ConvoCard extends ConsumerWidget {
     final (notifications, mentions, messages) = unreadCounters;
     final colorScheme = Theme.of(context).colorScheme;
     if (notifications > 0) {
-      return Badge(
-        backgroundColor: colorScheme.badgeImportant,
-        child: child,
-      );
+      return Badge(backgroundColor: colorScheme.badgeImportant, child: child);
     } else if (mentions > 0) {
-      return Badge(
-        backgroundColor: colorScheme.badgeUrgent,
-        child: child,
-      );
+      return Badge(backgroundColor: colorScheme.badgeUrgent, child: child);
     } else if (messages > 0) {
-      return Badge(
-        backgroundColor: colorScheme.badgeUnread,
-        child: child,
-      );
+      return Badge(backgroundColor: colorScheme.badgeUnread, child: child);
     }
     // nothing urgent enough for us to indicate anything
     return child;
@@ -169,10 +156,7 @@ class ConvoCard extends ConsumerWidget {
                       controller.open();
                     }
                   },
-                  icon: const Icon(
-                    Atlas.bell_dash_bold,
-                    size: 14,
-                  ),
+                  icon: const Icon(Atlas.bell_dash_bold, size: 14),
                 );
               },
               menuChildren: [
@@ -284,8 +268,9 @@ class _SubtitleWidget extends ConsumerWidget {
                 Flexible(
                   child: Text(
                     '${simplifyUserId(sender)}: ',
-                    style: textTheme.labelMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -294,8 +279,9 @@ class _SubtitleWidget extends ConsumerWidget {
                     // ignore: unnecessary_string_interpolations
                     data: '''$body''',
                     maxLines: 1,
-                    defaultTextStyle: textTheme.labelMedium
-                        ?.copyWith(overflow: TextOverflow.ellipsis),
+                    defaultTextStyle: textTheme.labelMedium?.copyWith(
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     onLinkTap: (url) => {},
                   ),
                 ),
@@ -318,8 +304,9 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: textTheme.labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -328,26 +315,29 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: textTheme.labelMedium
-                    ?.copyWith(overflow: TextOverflow.ellipsis),
+                defaultTextStyle: textTheme.labelMedium?.copyWith(
+                  overflow: TextOverflow.ellipsis,
+                ),
                 onLinkTap: (url) => {},
               ),
             ),
           ],
         );
       case 'm.sticker':
-        final body = eventItem
-            .msgContent()
-            .expect('m.sticker should have msg content')
-            .body();
+        final body =
+            eventItem
+                .msgContent()
+                .expect('m.sticker should have msg content')
+                .body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: textTheme.labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -367,8 +357,9 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: textTheme.labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -391,16 +382,18 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: textTheme.labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             Expanded(
               child: Text(
                 lang.failedToDecryptMessage,
-                style: textTheme.labelMedium
-                    ?.copyWith(fontStyle: FontStyle.italic),
+                style: textTheme.labelMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -422,8 +415,9 @@ class _SubtitleWidget extends ConsumerWidget {
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)} ',
-                style: textTheme.labelMedium
-                    ?.copyWith(fontStyle: FontStyle.italic),
+                style: textTheme.labelMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -432,26 +426,29 @@ class _SubtitleWidget extends ConsumerWidget {
                 // ignore: unnecessary_string_interpolations
                 data: '''$body''',
                 maxLines: 1,
-                defaultTextStyle: textTheme.labelMedium
-                    ?.copyWith(overflow: TextOverflow.ellipsis),
+                defaultTextStyle: textTheme.labelMedium?.copyWith(
+                  overflow: TextOverflow.ellipsis,
+                ),
                 onLinkTap: (url) => {},
               ),
             ),
           ],
         );
       case 'm.poll.start':
-        final body = eventItem
-            .msgContent()
-            .expect('m.poll.start should have msg content')
-            .body();
+        final body =
+            eventItem
+                .msgContent()
+                .expect('m.poll.start should have msg content')
+                .body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
               child: Text(
                 '${simplifyUserId(sender)}: ',
-                style: textTheme.labelMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -478,10 +475,7 @@ class _SubtitleWidget extends ConsumerWidget {
     if (users.length == 1) {
       final userId = users[0].id;
       final userName = simplifyUserId(userId) ?? userId;
-      return Text(
-        lang.typingUser1(userName),
-        style: textTheme.bodySmall,
-      );
+      return Text(lang.typingUser1(userName), style: textTheme.bodySmall);
     } else if (users.length == 2) {
       final userId1 = users[0].id;
       final userName1 = simplifyUserId(userId1) ?? userId1;

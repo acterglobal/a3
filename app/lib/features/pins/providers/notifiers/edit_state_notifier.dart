@@ -3,7 +3,7 @@ import 'package:acter/features/pins/models/pin_edit_state/pin_edit_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show ActerPin;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -14,7 +14,7 @@ class PinEditNotifier extends StateNotifier<PinEditState> {
   final Ref ref;
 
   PinEditNotifier({required this.pin, required this.ref})
-      : super(const PinEditState(title: '', link: '')) {
+    : super(const PinEditState(title: '', link: '')) {
     _init();
   }
 

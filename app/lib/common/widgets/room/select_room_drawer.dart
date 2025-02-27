@@ -6,7 +6,7 @@ import 'package:acter/common/widgets/room/brief_room_list_entry.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
@@ -14,10 +14,7 @@ import 'package:path/path.dart';
 final _log = Logger('a3::common::room::select_drawer');
 
 // ChildRoomType configures the sub child type of the `Spaces`
-enum RoomType {
-  groupChat,
-  space,
-}
+enum RoomType { groupChat, space }
 
 class SelectRoomDrawer extends ConsumerStatefulWidget {
   final String canCheck;
@@ -42,7 +39,7 @@ class SelectRoomDrawer extends ConsumerStatefulWidget {
   DisplayMode get avatarDisplayMode {
     return switch (roomType) {
       RoomType.space => DisplayMode.Space,
-      RoomType.groupChat => DisplayMode.GroupChat
+      RoomType.groupChat => DisplayMode.GroupChat,
     };
   }
 }
@@ -68,9 +65,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
               ref.read(roomSearchValueProvider.notifier).state = '';
             },
           ),
-          Flexible(
-            child: roomsList(context),
-          ),
+          Flexible(child: roomsList(context)),
         ],
       ),
     );
@@ -95,15 +90,17 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
 
   List<String> allRooms() {
     return switch (widget.roomType) {
-      RoomType.space => ref
-          .watch(bookmarkedSpacesProvider)
-          .followedBy(ref.watch(unbookmarkedSpacesProvider))
-          .map((space) => space.getRoomIdStr())
-          .toList(),
-      RoomType.groupChat => ref
-          .watch(chatsProvider.select((v) => v.where((d) => !d.isDm())))
-          .map((room) => room.getRoomIdStr())
-          .toList(),
+      RoomType.space =>
+        ref
+            .watch(bookmarkedSpacesProvider)
+            .followedBy(ref.watch(unbookmarkedSpacesProvider))
+            .map((space) => space.getRoomIdStr())
+            .toList(),
+      RoomType.groupChat =>
+        ref
+            .watch(chatsProvider.select((v) => v.where((d) => !d.isDm())))
+            .map((room) => room.getRoomIdStr())
+            .toList(),
     };
   }
 
@@ -116,7 +113,7 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
     return roomsListUI(allRooms());
   }
 
-//Show space list based on the search term
+  //Show space list based on the search term
   Widget searchedRoomsList(BuildContext context) {
     final roomsLoader = switch (widget.roomType) {
       RoomType.space => ref.watch(searchedSpacesProvider),
@@ -133,15 +130,14 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
         }
         return roomsListUI(rooms);
       },
-      loading: () => const Center(
-        heightFactor: 10,
-        child: CircularProgressIndicator(),
-      ),
+      loading:
+          () => const Center(
+            heightFactor: 10,
+            child: CircularProgressIndicator(),
+          ),
       error: (e, s) {
         _log.severe('Failed to search space or convo', e, s);
-        return Center(
-          child: Text(lang.searchingFailed(e)),
-        );
+        return Center(child: Text(lang.searchingFailed(e)));
       },
     );
   }
@@ -150,15 +146,16 @@ class _SelectRoomDrawerState extends ConsumerState<SelectRoomDrawer> {
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: rooms.length,
-      itemBuilder: (context, index) => BriefRoomEntry(
-        roomId: rooms[index],
-        keyPrefix: widget.keyPrefix,
-        selectedValue: current,
-        canCheck: widget.canCheck,
-        onSelect: (roomId) {
-          Navigator.pop(context, roomId);
-        },
-      ),
+      itemBuilder:
+          (context, index) => BriefRoomEntry(
+            roomId: rooms[index],
+            keyPrefix: widget.keyPrefix,
+            selectedValue: current,
+            canCheck: widget.canCheck,
+            onSelect: (roomId) {
+              Navigator.pop(context, roomId);
+            },
+          ),
     );
   }
 }

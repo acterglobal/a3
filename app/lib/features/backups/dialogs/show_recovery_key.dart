@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class _ShowRecoveryDialog extends StatelessWidget {
@@ -29,9 +29,7 @@ class _ShowRecoveryDialog extends StatelessWidget {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.copy_rounded),
                   onPressed: () async {
-                    await Clipboard.setData(
-                      ClipboardData(text: recoveryKey),
-                    );
+                    await Clipboard.setData(ClipboardData(text: recoveryKey));
                     EasyLoading.showToast(
                       lang.encryptionBackupRecoveryCopiedToClipboard,
                       toastPosition: EasyLoadingToastPosition.bottom,

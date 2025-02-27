@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -27,10 +27,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           lang.deactivateAccount,
-          style: TextStyle(
-            color: theme.error,
-            fontSize: 26,
-          ),
+          style: TextStyle(color: theme.error, fontSize: 26),
         ),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 650),
@@ -48,10 +45,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                       children: [
                         Text(
                           lang.deactivateAccountTitle,
-                          style: TextStyle(
-                            color: theme.error,
-                            fontSize: 20,
-                          ),
+                          style: TextStyle(color: theme.error, fontSize: 20),
                         ),
                         Text(lang.deactivateAccountDescription),
                       ],
@@ -63,10 +57,7 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   lang.deactivateAccountPasswordTitle,
-                  style: TextStyle(
-                    color: theme.error,
-                    fontSize: 20,
-                  ),
+                  style: TextStyle(color: theme.error, fontSize: 20),
                 ),
               ),
               ConstrainedBox(
@@ -89,11 +80,8 @@ void deactivationConfirmationDialog(BuildContext context, WidgetRef ref) {
           ),
           ActerDangerActionButton(
             key: deactivateConfirmBtn,
-            onPressed: () async => _onConfirm(
-              context,
-              ref,
-              passwordController.text,
-            ),
+            onPressed:
+                () async => _onConfirm(context, ref, passwordController.text),
             child: Text(lang.deactivate),
           ),
         ],

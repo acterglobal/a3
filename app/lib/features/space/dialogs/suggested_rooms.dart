@@ -9,7 +9,7 @@ import 'package:acter/features/space/actions/has_seen_suggested.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -34,18 +34,14 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   void initState() {
     super.initState();
 
-    ref.listenManual(
-      roomsToSuggestProvider(widget.spaceId),
-      (prev, next) {
-        if (next.hasValue) {
-          setState(() {
-            chatsFound = next.valueOrNull?.chats ?? [];
-            spacesFound = next.valueOrNull?.spaces ?? [];
-          });
-        }
-      },
-      fireImmediately: true,
-    );
+    ref.listenManual(roomsToSuggestProvider(widget.spaceId), (prev, next) {
+      if (next.hasValue) {
+        setState(() {
+          chatsFound = next.valueOrNull?.chats ?? [];
+          spacesFound = next.valueOrNull?.spaces ?? [];
+        });
+      }
+    }, fireImmediately: true);
   }
 
   @override
@@ -109,8 +105,8 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
   }
 
   void _toggle(String roomId) {
-    List<String> newSelectedRooms = selectedRooms
-            .map((rooms) => List.from(rooms)) ??
+    List<String> newSelectedRooms =
+        selectedRooms.map((rooms) => List.from(rooms)) ??
         // we had been an _all_ selection, but now we need to take one out.
         chatsFound.followedBy(spacesFound).map((e) => e.roomIdStr()).toList();
     if (!newSelectedRooms.remove(roomId)) {
@@ -122,19 +118,23 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
 
   Future<void> _joinSelected(BuildContext context) async {
     final allRooms = chatsFound.followedBy(spacesFound).toList();
-    List<SpaceHierarchyRoomInfo> roomsToJoin = selectedRooms.map(
-          (p0) => p0
-              .where((rId) {
-                final found = allRooms.any((r) => r.roomIdStr() == rId);
-                if (!found) {
-                  _log.warning(
-                    'Room $rId not found in list. Not sure how that can ever be.',
-                  );
-                }
-                return found;
-              })
-              .map((rId) => allRooms.firstWhere((r) => r.roomIdStr() == rId))
-              .toList(),
+    List<SpaceHierarchyRoomInfo> roomsToJoin =
+        selectedRooms.map(
+          (p0) =>
+              p0
+                  .where((rId) {
+                    final found = allRooms.any((r) => r.roomIdStr() == rId);
+                    if (!found) {
+                      _log.warning(
+                        'Room $rId not found in list. Not sure how that can ever be.',
+                      );
+                    }
+                    return found;
+                  })
+                  .map(
+                    (rId) => allRooms.firstWhere((r) => r.roomIdStr() == rId),
+                  )
+                  .toList(),
         ) ??
         allRooms;
     bool hadFailures = false;
@@ -145,11 +145,12 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       try {
         final servers = room.viaServerNames().toDart();
         final newRoomId = await joinRoom(
-            context: context,
-            ref: ref,
-            roomIdOrAlias: roomId,
-            serverNames: servers,
-            displayMsg: displayMsg,);
+          context: context,
+          ref: ref,
+          roomIdOrAlias: roomId,
+          serverNames: servers,
+          displayMsg: displayMsg,
+        );
         if (newRoomId == null) {
           _log.warning('Joining $roomId failed');
           hadFailures = true;

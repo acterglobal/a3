@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 void showActerIconPicker({
   required BuildContext context,
@@ -67,10 +67,7 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 24,
-        horizontal: 16,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -119,11 +116,15 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   }
 
   Widget _buildColorSelector() {
-    final colorBoxes = iconPickerColors
-        .asMap()
-        .map((index, color) => MapEntry(index, _buildColorBoxItem(color, index)))
-        .values
-        .toList();
+    final colorBoxes =
+        iconPickerColors
+            .asMap()
+            .map(
+              (index, color) =>
+                  MapEntry(index, _buildColorBoxItem(color, index)),
+            )
+            .values
+            .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -149,9 +150,10 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
             margin: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: colorItem,
-              border: colorItem == color
-                  ? Border.all(color: Colors.white, width: 1)
-                  : null,
+              border:
+                  colorItem == color
+                      ? Border.all(color: Colors.white, width: 1)
+                      : null,
               borderRadius: const BorderRadius.all(Radius.circular(100)),
             ),
           ),
@@ -161,21 +163,22 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
   }
 
   Widget _buildIconSelector() {
-    final iconBoxes = ActerIcon.values
-        .asMap()
-        .map((index, acterIcon) =>
-            MapEntry(index, _buildIconBoxItem(acterIcon, index)),)
-        .values
-        .toList();
+    final iconBoxes =
+        ActerIcon.values
+            .asMap()
+            .map(
+              (index, acterIcon) =>
+                  MapEntry(index, _buildIconBoxItem(acterIcon, index)),
+            )
+            .values
+            .toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(L10n.of(context).selectIcon),
         const SizedBox(height: 12),
         Expanded(
-          child: SingleChildScrollView(
-            child: Wrap(children: iconBoxes),
-          ),
+          child: SingleChildScrollView(child: Wrap(children: iconBoxes)),
         ),
       ],
     );
@@ -196,9 +199,10 @@ class _ActerIconPickerState extends State<ActerIconPicker> {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white24,
-              border: acterIconItem == acterIcon
-                  ? Border.all(color: Colors.white, width: 1)
-                  : null,
+              border:
+                  acterIconItem == acterIcon
+                      ? Border.all(color: Colors.white, width: 1)
+                      : null,
               borderRadius: const BorderRadius.all(Radius.circular(100)),
             ),
             child: Icon(acterIconItem.data),

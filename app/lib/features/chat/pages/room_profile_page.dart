@@ -19,7 +19,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -32,10 +32,7 @@ final _log = Logger('a3::chat::room_profile');
 class RoomProfilePage extends ConsumerStatefulWidget {
   final String roomId;
 
-  const RoomProfilePage({
-    super.key,
-    required this.roomId,
-  });
+  const RoomProfilePage({super.key, required this.roomId});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -88,11 +85,12 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     if (membership?.canString('CanSetTopic') == true) {
       menuListItems.add(
         PopupMenuItem(
-          onTap: () => showEditDescriptionBottomSheet(
-            context: context,
-            convo: convo,
-            descriptionValue: convo?.topic() ?? '',
-          ),
+          onTap:
+              () => showEditDescriptionBottomSheet(
+                context: context,
+                convo: convo,
+                descriptionValue: convo?.topic() ?? '',
+              ),
           child: Text(lang.editDescription),
         ),
       );
@@ -103,10 +101,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           membership?.canString('CanUpdateJoinRule') == true) {
         menuListItems.add(
           PopupMenuItem(
-            onTap: () => openCloseRoomDialog(
-              context: context,
-              roomId: convo.getRoomIdStr(),
-            ),
+            onTap:
+                () => openCloseRoomDialog(
+                  context: context,
+                  roomId: convo.getRoomIdStr(),
+                ),
             child: Text(
               lang.closeChat,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -119,12 +118,13 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     return AppBar(
       // custom x-circle when we are in widescreen mode;
       automaticallyImplyLeading: !context.isLargeScreen,
-      leading: context.isLargeScreen
-          ? IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Atlas.xmark_circle_thin),
-            )
-          : null,
+      leading:
+          context.isLargeScreen
+              ? IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Atlas.xmark_circle_thin),
+              )
+              : null,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       actions: [
@@ -149,13 +149,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            _header(
-              context,
-              roomAvatarInfo,
-              membership,
-              convo,
-              isDirectChat,
-            ),
+            _header(context, roomAvatarInfo, membership, convo, isDirectChat),
             _description(context, membership, convo),
             _actions(context, convo, isDirectChat),
             const SizedBox(height: 20),
@@ -259,10 +253,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             left: 16,
             right: 16,
           ),
-          child: Text(
-            topic,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          child: Text(topic, style: Theme.of(context).textTheme.bodySmall),
         ),
       ),
     );
@@ -297,9 +288,10 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
               context: context,
               iconData: Atlas.user_plus_thin,
               actionName: lang.invite,
-              actionItemColor: membership.canString('CanInvite')
-                  ? null
-                  : colorScheme.onSurface,
+              actionItemColor:
+                  membership.canString('CanInvite')
+                      ? null
+                      : colorScheme.onSurface,
               onTap: () => _handleInvite(membership),
             );
           },
@@ -307,10 +299,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             _log.severe('Failed to load room membership', e, s);
             return Text(lang.errorLoadingTileDueTo(e));
           },
-          loading: () => ActionItemSkeleton(
-            iconData: Atlas.user_plus_thin,
-            actionName: lang.invite,
-          ),
+          loading:
+              () => ActionItemSkeleton(
+                iconData: Atlas.user_plus_thin,
+                actionName: lang.invite,
+              ),
         ),
 
         // Share
@@ -342,10 +335,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
   }) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 5,
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -355,17 +345,13 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
           onTap: onTap,
           child: Column(
             children: [
-              Icon(
-                iconData,
-                color: actionItemColor,
-              ),
+              Icon(iconData, color: actionItemColor),
               const SizedBox(height: 10),
               Text(
                 actionName,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    ?.copyWith(color: actionItemColor),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: actionItemColor),
               ),
             ],
           ),
@@ -391,9 +377,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
             ),
             sections: [
               SettingsSection(
-                tiles: [
-                  NotificationsSettingsTile(roomId: widget.roomId),
-                ],
+                tiles: [NotificationsSettingsTile(roomId: widget.roomId)],
               ),
               SettingsSection(
                 tiles: [
@@ -401,10 +385,11 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                     title: Text(L10n.of(context).accessAndVisibility),
                     description: VisibilityChip(roomId: widget.roomId),
                     leading: const Icon(Atlas.lab_appliance_thin),
-                    onPressed: (context) => context.pushNamed(
-                      Routes.chatSettingsVisibility.name,
-                      pathParameters: {'roomId': widget.roomId},
-                    ),
+                    onPressed:
+                        (context) => context.pushNamed(
+                          Routes.chatSettingsVisibility.name,
+                          pathParameters: {'roomId': widget.roomId},
+                        ),
                   ),
                 ],
               ),
@@ -434,19 +419,18 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         children: [
           const SizedBox(height: 10),
           membersLoader.when(
-            data: (members) => Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              child: Text(
-                lang.membersCount(members.length),
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
-            loading: () => Skeletonizer(
-              child: Text(lang.membersCount(0)),
-            ),
+            data:
+                (members) => Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    lang.membersCount(members.length),
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+            loading: () => Skeletonizer(child: Text(lang.membersCount(0))),
             error: (e, s) {
               _log.severe('Failed to load room members', e, s);
               return Text(lang.errorLoadingMembersCount(e));
@@ -464,26 +448,24 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
     await showAdaptiveDialog(
       context: context,
       useRootNavigator: false,
-      builder: (context) => DefaultDialog(
-        title: Text(
-          lang.leaveRoom,
-          style: textTheme.titleSmall,
-        ),
-        subtitle: Text(
-          lang.areYouSureYouWantToLeaveRoom,
-          style: textTheme.bodySmall,
-        ),
-        actions: [
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(lang.no),
+      builder:
+          (context) => DefaultDialog(
+            title: Text(lang.leaveRoom, style: textTheme.titleSmall),
+            subtitle: Text(
+              lang.areYouSureYouWantToLeaveRoom,
+              style: textTheme.bodySmall,
+            ),
+            actions: [
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(lang.no),
+              ),
+              ActerPrimaryActionButton(
+                onPressed: _handleLeaveRoom,
+                child: Text(lang.yes),
+              ),
+            ],
           ),
-          ActerPrimaryActionButton(
-            onPressed: _handleLeaveRoom,
-            child: Text(lang.yes),
-          ),
-        ],
-      ),
     );
   }
 
@@ -557,10 +539,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
         EasyLoading.dismiss();
         return;
       }
-      Share.share(
-        roomLink,
-        subject: lang.linkToChat,
-      );
+      Share.share(roomLink, subject: lang.linkToChat);
       EasyLoading.showToast(lang.sharedSuccessfully);
     } catch (e, s) {
       _log.severe('Couldn’t share this room', e, s);

@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../helpers/mock_room_providers.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 // Mock classes
 class MockInvitation extends Mock implements Invitation {}
@@ -45,19 +45,22 @@ void main() {
     when(() => mockInvitation.senderIdStr()).thenReturn('@alice:example.com');
     when(() => mockInvitation.isDm()).thenReturn(false);
     when(() => mockRoom.isSpace()).thenReturn(true);
-    when(() => mockRoom.displayName())
-        .thenAnswer((_) => Future.value(MockOptionString('Test Room default')));
+    when(
+      () => mockRoom.displayName(),
+    ).thenAnswer((_) => Future.value(MockOptionString('Test Room default')));
 
     // Add room avatar mock
-    when(() => mockRoom.avatar(null))
-        .thenAnswer((_) => Future.value(mockOptionBuffer));
+    when(
+      () => mockRoom.avatar(null),
+    ).thenAnswer((_) => Future.value(mockOptionBuffer));
 
     // Add sender profile mocks
     when(() => mockInvitation.senderProfile()).thenReturn(mockSenderProfile);
     when(() => mockSenderProfile.displayName()).thenReturn('Alice DM');
     when(() => mockSenderProfile.hasAvatar()).thenReturn(false);
-    when(() => mockSenderProfile.getAvatar(null))
-        .thenAnswer((_) => Future.value(mockOptionBuffer));
+    when(
+      () => mockSenderProfile.getAvatar(null),
+    ).thenAnswer((_) => Future.value(mockOptionBuffer));
   });
 
   Future<void> buildTestWidget(
@@ -86,9 +89,7 @@ void main() {
 
   group('InvitationWidget', () {
     testWidgets('renders with default avatar info', (tester) async {
-      await buildTestWidget(
-        tester,
-      );
+      await buildTestWidget(tester);
       await tester.pumpAndSettle();
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.text('Test Room default'), findsOneWidget);
@@ -103,10 +104,7 @@ void main() {
         displayName: 'custom',
       );
 
-      await buildTestWidget(
-        tester,
-        avatarInfo: customAvatarInfo,
-      );
+      await buildTestWidget(tester, avatarInfo: customAvatarInfo);
       await tester.pumpAndSettle();
 
       // Look for the custom avatar info's display name
@@ -126,10 +124,7 @@ void main() {
         avatar: MemoryImage(avatarBytes),
       );
 
-      await buildTestWidget(
-        tester,
-        avatarInfo: avatarInfo,
-      );
+      await buildTestWidget(tester, avatarInfo: avatarInfo);
 
       await tester.pumpAndSettle();
 
@@ -145,8 +140,9 @@ void main() {
       // Space is already default in setUp (mockRoom.isSpace() returns true)
       when(() => mockRoom.isSpace()).thenReturn(true);
       when(() => mockSenderProfile.displayName()).thenReturn('Space Inviter');
-      when(() => mockRoom.displayName())
-          .thenAnswer((_) => Future.value(MockOptionString('Test Space')));
+      when(
+        () => mockRoom.displayName(),
+      ).thenAnswer((_) => Future.value(MockOptionString('Test Space')));
 
       final avatarInfo = AvatarInfo(
         uniqueId: '@spaceinviter:example.com',
@@ -160,10 +156,7 @@ void main() {
       final context = tester.element(find.byType(InvitationItemWidget));
       final l10n = L10n.of(context);
 
-      expect(
-        find.text(l10n.invitationToSpace),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.invitationToSpace), findsOneWidget);
       expect(find.text('Space Inviter'), findsOneWidget);
       expect(find.text('Accept'), findsOneWidget);
     });
@@ -172,8 +165,9 @@ void main() {
       // Setup for regular chat room
       when(() => mockRoom.isSpace()).thenReturn(false);
       when(() => mockSenderProfile.displayName()).thenReturn('Chat Inviter');
-      when(() => mockRoom.displayName())
-          .thenAnswer((_) => Future.value(MockOptionString('Test Chat')));
+      when(
+        () => mockRoom.displayName(),
+      ).thenAnswer((_) => Future.value(MockOptionString('Test Chat')));
 
       final avatarInfo = AvatarInfo(
         uniqueId: '@chatinviter:example.com',
@@ -191,8 +185,9 @@ void main() {
       expect(find.text('Accept'), findsOneWidget);
     });
 
-    testWidgets('renders DM invitation with fallback to sender ID',
-        (tester) async {
+    testWidgets('renders DM invitation with fallback to sender ID', (
+      tester,
+    ) async {
       // Setup for DM without profile info
       when(() => mockInvitation.isDm()).thenReturn(true);
       when(() => mockRoom.displayName()).thenAnswer(

@@ -9,7 +9,7 @@ import 'package:acter/features/attachments/widgets/reference_attachment_item.dar
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentsManager;
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -23,10 +23,7 @@ class AttachmentSectionWidget extends ConsumerWidget {
   static const confirmRedactKey = Key('attachments-confirm-redact');
   final AttachmentsManagerProvider? manager;
 
-  const AttachmentSectionWidget({
-    super.key,
-    this.manager,
-  });
+  const AttachmentSectionWidget({super.key, this.manager});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,13 +31,15 @@ class AttachmentSectionWidget extends ConsumerWidget {
     if (managerProvider == null) {
       return loading();
     }
-    final managerLoader =
-        ref.watch(attachmentsManagerProvider(managerProvider));
+    final managerLoader = ref.watch(
+      attachmentsManagerProvider(managerProvider),
+    );
     return managerLoader.when(
-      data: (manager) => FoundAttachmentSectionWidget(
-        attachmentManager: manager,
-        key: attachmentsKey,
-      ),
+      data:
+          (manager) => FoundAttachmentSectionWidget(
+            attachmentManager: manager,
+            key: attachmentsKey,
+          ),
       error: (e, s) {
         _log.severe('Failed to load attachment manager', e, s);
         return onError(context, e);
@@ -52,20 +51,12 @@ class AttachmentSectionWidget extends ConsumerWidget {
   Widget onError(BuildContext context, Object error) {
     final lang = L10n.of(context);
     return Column(
-      children: [
-        Text(lang.attachments),
-        Text(lang.loadingFailed(error)),
-      ],
+      children: [Text(lang.attachments), Text(lang.loadingFailed(error))],
     );
   }
 
   static Widget loading() {
-    return const Skeletonizer(
-      child: SizedBox(
-        height: 100,
-        width: 100,
-      ),
-    );
+    return const Skeletonizer(child: SizedBox(height: 100, width: 100));
   }
 }
 
@@ -92,13 +83,11 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     );
   }
 
-  Widget referenceAttachmentsUI(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget referenceAttachmentsUI(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final referenceAttachmentsLoader =
-        ref.watch(referenceAttachmentsProvider(attachmentManager));
+    final referenceAttachmentsLoader = ref.watch(
+      referenceAttachmentsProvider(attachmentManager),
+    );
     bool canEdit = attachmentManager.canEditAttachments();
 
     return referenceAttachmentsLoader.when(
@@ -110,10 +99,11 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
               context: context,
               title: lang.references,
               canEdit: canEdit,
-              onTapAdd: () => addSpaceObjectRefDialog(
-                context: context,
-                attachmentManager: attachmentManager,
-              ),
+              onTapAdd:
+                  () => addSpaceObjectRefDialog(
+                    context: context,
+                    attachmentManager: attachmentManager,
+                  ),
             ),
             ListView.builder(
               shrinkWrap: true,
@@ -137,23 +127,18 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
         _log.severe('Failed to load attachments', e, s);
         return Text(L10n.of(context).errorLoadingAttachments(e));
       },
-      loading: () => const Skeletonizer(
-        child: Wrap(
-          spacing: 5.0,
-          runSpacing: 10.0,
-          children: [],
-        ),
-      ),
+      loading:
+          () => const Skeletonizer(
+            child: Wrap(spacing: 5.0, runSpacing: 10.0, children: []),
+          ),
     );
   }
 
-  Widget msgContentAttachmentsUI(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget msgContentAttachmentsUI(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final msgContentAttachmentsLoader =
-        ref.watch(msgContentAttachmentsProvider(attachmentManager));
+    final msgContentAttachmentsLoader = ref.watch(
+      msgContentAttachmentsProvider(attachmentManager),
+    );
     bool canEdit = attachmentManager.canEditAttachments();
 
     return msgContentAttachmentsLoader.when(
@@ -165,30 +150,31 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
               context: context,
               title: lang.attachments,
               canEdit: canEdit,
-              onTapAdd: () => selectAttachment(
-                context: context,
-                onLinkSelected: (title, link) {
-                  Navigator.pop(context);
-                  return handleAttachmentSelected(
+              onTapAdd:
+                  () => selectAttachment(
                     context: context,
-                    ref: ref,
-                    manager: attachmentManager,
-                    title: title,
-                    link: link,
-                    attachmentType: AttachmentType.link,
-                    attachments: [],
-                  );
-                },
-                onSelected: (files, selectedType) {
-                  return handleAttachmentSelected(
-                    context: context,
-                    ref: ref,
-                    manager: attachmentManager,
-                    attachments: files,
-                    attachmentType: selectedType,
-                  );
-                },
-              ),
+                    onLinkSelected: (title, link) {
+                      Navigator.pop(context);
+                      return handleAttachmentSelected(
+                        context: context,
+                        ref: ref,
+                        manager: attachmentManager,
+                        title: title,
+                        link: link,
+                        attachmentType: AttachmentType.link,
+                        attachments: [],
+                      );
+                    },
+                    onSelected: (files, selectedType) {
+                      return handleAttachmentSelected(
+                        context: context,
+                        ref: ref,
+                        manager: attachmentManager,
+                        attachments: files,
+                        attachmentType: selectedType,
+                      );
+                    },
+                  ),
             ),
             ListView.builder(
               shrinkWrap: true,
@@ -211,13 +197,10 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
         _log.severe('Failed to load attachments', e, s);
         return Text(L10n.of(context).errorLoadingAttachments(e));
       },
-      loading: () => const Skeletonizer(
-        child: Wrap(
-          spacing: 5.0,
-          runSpacing: 10.0,
-          children: [],
-        ),
-      ),
+      loading:
+          () => const Skeletonizer(
+            child: Wrap(spacing: 5.0, runSpacing: 10.0, children: []),
+          ),
     );
   }
 
@@ -230,10 +213,7 @@ class FoundAttachmentSectionWidget extends ConsumerWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
+          child: Text(title, style: Theme.of(context).textTheme.titleSmall),
         ),
         if (canEdit) IconButton(onPressed: onTapAdd, icon: Icon(Icons.add)),
       ],

@@ -18,7 +18,7 @@ import 'package:acter/router/router.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -70,23 +70,22 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
   }
 
   // use the globally defined ProviderContainer
-  final wrappedApp =
-      UncontrolledProviderScope(container: mainProviderContainer, child: app);
+  final wrappedApp = UncontrolledProviderScope(
+    container: mainProviderContainer,
+    child: app,
+  );
 
   if (withSentry) {
-    await SentryFlutter.init(
-      (options) {
-        // we use the dart-define default env for the default stuff.
-        options.dsn = Env.sentryDsn;
-        options.environment = Env.sentryEnvironment;
-        options.release = Env.sentryRelease;
+    await SentryFlutter.init((options) {
+      // we use the dart-define default env for the default stuff.
+      options.dsn = Env.sentryDsn;
+      options.environment = Env.sentryEnvironment;
+      options.release = Env.sentryRelease;
 
-        // allows us to check whether the user has activated tracing
-        // and prevent reporting otherwise.
-        options.beforeSend = sentryBeforeSend;
-      },
-      appRunner: () => runApp(wrappedApp),
-    );
+      // allows us to check whether the user has activated tracing
+      // and prevent reporting otherwise.
+      options.beforeSend = sentryBeforeSend;
+    }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
   }

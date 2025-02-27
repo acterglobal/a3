@@ -7,7 +7,7 @@ import 'package:acter/features/events/widgets/event_list_empty_state.dart';
 import 'package:acter/features/events/widgets/event_list_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -28,8 +28,9 @@ class EventListPage extends ConsumerStatefulWidget {
 }
 
 class _EventListPageState extends ConsumerState<EventListPage> {
-  ValueNotifier<EventFilters> eventFilters =
-      ValueNotifier<EventFilters>(EventFilters.all);
+  ValueNotifier<EventFilters> eventFilters = ValueNotifier<EventFilters>(
+    EventFilters.all,
+  );
 
   @override
   void initState() {
@@ -42,35 +43,34 @@ class _EventListPageState extends ConsumerState<EventListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   AppBar _buildAppBar() {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: widget.onSelectEventItem != null
-          ? Text(L10n.of(context).selectEvent)
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(L10n.of(context).events),
-                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-              ],
-            ),
+      title:
+          widget.onSelectEventItem != null
+              ? Text(L10n.of(context).selectEvent)
+              : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(L10n.of(context).events),
+                  if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+                ],
+              ),
       actions: [
         if (widget.onSelectEventItem == null)
           AddButtonWithCanPermission(
             canString: 'CanPostEvent',
             spaceId: widget.spaceId,
-            onPressed: () => context.pushNamed(
-              Routes.createEvent.name,
-              queryParameters: {'spaceId': widget.spaceId},
-            ),
+            onPressed:
+                () => context.pushNamed(
+                  Routes.createEvent.name,
+                  queryParameters: {'spaceId': widget.spaceId},
+                ),
           ),
       ],
     );
@@ -112,10 +112,7 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 4,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Wrap(
           children: [
             FilterChip(
@@ -127,8 +124,8 @@ class _EventListPageState extends ConsumerState<EventListPage> {
             FilterChip(
               selected: eventFilters.value == EventFilters.bookmarked,
               label: Text(lang.bookmarked),
-              onSelected: (value) =>
-                  eventFilters.value = EventFilters.bookmarked,
+              onSelected:
+                  (value) => eventFilters.value = EventFilters.bookmarked,
             ),
             const SizedBox(width: 10),
             FilterChip(
@@ -169,32 +166,38 @@ class _EventListPageState extends ConsumerState<EventListPage> {
     return SingleChildScrollView(
       child: switch (eventFilters.value) {
         EventFilters.bookmarked => _buildEventList(
-            bookmarkedEventListProvider(widget.spaceId),
-          ),
+          bookmarkedEventListProvider(widget.spaceId),
+        ),
         EventFilters.ongoing => _buildEventList(
-            allOngoingEventListWithSearchProvider(widget.spaceId),
-          ),
+          allOngoingEventListWithSearchProvider(widget.spaceId),
+        ),
         EventFilters.upcoming => _buildEventList(
-            allUpcomingEventListWithSearchProvider(widget.spaceId),
-          ),
+          allUpcomingEventListWithSearchProvider(widget.spaceId),
+        ),
         EventFilters.past => _buildEventList(
-            allPastEventListWithSearchProvider(widget.spaceId),
-          ),
+          allPastEventListWithSearchProvider(widget.spaceId),
+        ),
         EventFilters.all => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildEventList(allOngoingEventListWithSearchProvider(widget.spaceId)),
-              const SizedBox(height: 14),
-              _buildEventList(allUpcomingEventListWithSearchProvider(widget.spaceId)),
-              const SizedBox(height: 14),
-              _buildEventList(allPastEventListWithSearchProvider(widget.spaceId)),
-            ],
-          ),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildEventList(
+              allOngoingEventListWithSearchProvider(widget.spaceId),
+            ),
+            const SizedBox(height: 14),
+            _buildEventList(
+              allUpcomingEventListWithSearchProvider(widget.spaceId),
+            ),
+            const SizedBox(height: 14),
+            _buildEventList(allPastEventListWithSearchProvider(widget.spaceId)),
+          ],
+        ),
       },
     );
   }
 
-  Widget _buildEventList(ProviderBase<AsyncValue<List<CalendarEvent>>> provider) {
+  Widget _buildEventList(
+    ProviderBase<AsyncValue<List<CalendarEvent>>> provider,
+  ) {
     return EventListWidget(
       isShowSpaceName: widget.spaceId == null,
       onTapEventItem: widget.onSelectEventItem,

@@ -3,7 +3,7 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class InvitePending extends ConsumerWidget {
   final String roomId;
@@ -33,21 +33,22 @@ class InvitePending extends ConsumerWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
         alignment: Alignment.topCenter,
-        child: invited.isEmpty
-            ? EmptyState(
-                title: L10n.of(context).noPendingInvitesTitle,
-                image: 'assets/images/empty_chat.svg',
-              )
-            : ListView.builder(
-                itemCount: invited.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return UserBuilder(
-                    userId: invited[index].userId().toString(),
-                    roomId: roomId,
-                  );
-                },
-              ),
+        child:
+            invited.isEmpty
+                ? EmptyState(
+                  title: L10n.of(context).noPendingInvitesTitle,
+                  image: 'assets/images/empty_chat.svg',
+                )
+                : ListView.builder(
+                  itemCount: invited.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return UserBuilder(
+                      userId: invited[index].userId().toString(),
+                      roomId: roomId,
+                    );
+                  },
+                ),
       ),
     );
   }

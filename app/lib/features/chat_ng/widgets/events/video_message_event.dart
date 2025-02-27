@@ -7,7 +7,7 @@ import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dar
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VideoMessageEvent extends ConsumerWidget {
@@ -42,9 +42,7 @@ class VideoMessageEvent extends ConsumerWidget {
     return const SizedBox(
       width: 150,
       height: 150,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -54,9 +52,10 @@ class VideoMessageEvent extends ConsumerWidget {
     return InkWell(
       onTap: () async {
         final notifier = ref.read(
-          mediaChatStateProvider(
-            (messageId: messageId, roomId: roomId),
-          ).notifier,
+          mediaChatStateProvider((
+            messageId: messageId,
+            roomId: roomId,
+          )).notifier,
         );
         await notifier.downloadMedia();
       },
@@ -66,27 +65,18 @@ class VideoMessageEvent extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.download,
-              size: 28,
-            ),
+            const Icon(Icons.download, size: 28),
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.video_library_rounded,
-                    size: 18,
-                  ),
+                  const Icon(Icons.video_library_rounded, size: 18),
                   const SizedBox(width: 5),
                   Text(
                     formatBytes(msgSize.truncate()),
@@ -110,19 +100,15 @@ class VideoMessageEvent extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (context) => VideoDialog(
-              title: content.body(),
-              videoFile: mediaFile,
-            ),
+            builder:
+                (context) =>
+                    VideoDialog(title: content.body(), videoFile: mediaFile),
           );
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 300,
-              maxHeight: 300,
-            ),
+            constraints: const BoxConstraints(maxWidth: 300, maxHeight: 300),
             child: Stack(
               alignment: Alignment.center,
               children: [

@@ -9,7 +9,7 @@ import 'package:acter/features/public_room_search/widgets/public_room_item.dart'
 import 'package:acter/features/public_room_search/widgets/server_selection_field.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
@@ -57,10 +57,7 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   Widget _searchBar(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 20,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: SizedBox(
           height: 160,
           child: Column(
@@ -104,8 +101,9 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   }
 
   Widget _filterBy(BuildContext context) {
-    final selected =
-        ref.watch(searchFilterProvider.select((value) => value.filterBy));
+    final selected = ref.watch(
+      searchFilterProvider.select((value) => value.filterBy),
+    );
     return DropdownMenu<FilterBy>(
       initialSelection: selected,
       // requestFocusOnTap is enabled/disabled by platforms when it is null.
@@ -122,18 +120,9 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
         notifier.updateFilters(newFilter ?? FilterBy.both);
       },
       dropdownMenuEntries: const [
-        DropdownMenuEntry<FilterBy>(
-          value: FilterBy.both,
-          label: 'All',
-        ),
-        DropdownMenuEntry<FilterBy>(
-          value: FilterBy.spaces,
-          label: 'Spaces',
-        ),
-        DropdownMenuEntry<FilterBy>(
-          value: FilterBy.chats,
-          label: 'Chats',
-        ),
+        DropdownMenuEntry<FilterBy>(value: FilterBy.both, label: 'All'),
+        DropdownMenuEntry<FilterBy>(value: FilterBy.spaces, label: 'Spaces'),
+        DropdownMenuEntry<FilterBy>(value: FilterBy.chats, label: 'Chats'),
       ],
     );
   }
@@ -143,25 +132,27 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
       firstPageKey: const Next(isStart: true),
       provider: publicSearchProvider,
       // pullToRefresh: true,
-      firstPageProgressIndicatorBuilder: (context, controller) =>
-          loadingPage(context),
-      itemBuilder: (context, item, index) => PublicRoomItem(
-        item: item,
-        onSelected: (item) {
-          final serverName = ref.read(searchFilterProvider).server;
-          return widget.onSelected(item, serverName);
-        },
-      ),
+      firstPageProgressIndicatorBuilder:
+          (context, controller) => loadingPage(context),
+      itemBuilder:
+          (context, item, index) => PublicRoomItem(
+            item: item,
+            onSelected: (item) {
+              final serverName = ref.read(searchFilterProvider).server;
+              return widget.onSelected(item, serverName);
+            },
+          ),
       noItemsFoundIndicatorBuilder: (context, controller) {
         if (ref.read(publicSearchProvider.notifier).isLoading()) {
           return loadingPage(context);
         }
         return nothingFound(context);
       },
-      pagedBuilder: (controller, builder) => PagedSliverList(
-        pagingController: controller,
-        builderDelegate: builder,
-      ),
+      pagedBuilder:
+          (controller, builder) => PagedSliverList(
+            pagingController: controller,
+            builderDelegate: builder,
+          ),
     );
   }
 
@@ -228,12 +219,11 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
 
   @override
   Widget build(BuildContext context) {
-    final searchVal =
-        ref.watch(searchFilterProvider.select((v) => v.searchTerm ?? ''));
+    final searchVal = ref.watch(
+      searchFilterProvider.select((v) => v.searchTerm ?? ''),
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(buildSearchTitle(context)),
-      ),
+      appBar: AppBar(title: Text(buildSearchTitle(context))),
       body: CustomScrollView(
         slivers: [
           _searchBar(context),
@@ -253,9 +243,10 @@ class _PublicRoomSearchState extends ConsumerState<PublicRoomSearch> {
   Widget _serverSelectionBuilder(BuildContext context) {
     String? currentSelection = ref.watch(searchFilterProvider).server;
     if (currentSelection != null) {
-      final foundEntry = defaultServers
-          .where((element) => element.value == currentSelection)
-          .firstOrNull;
+      final foundEntry =
+          defaultServers
+              .where((element) => element.value == currentSelection)
+              .firstOrNull;
       if (foundEntry != null) {
         currentSelection = foundEntry.name ?? foundEntry.value;
       }

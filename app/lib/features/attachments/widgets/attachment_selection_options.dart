@@ -10,7 +10,7 @@ import 'package:acter/features/attachments/widgets/attachment_container.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 
@@ -98,12 +98,7 @@ class AttachmentSelectionOptions extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10.0),
         ),
-        child: Column(
-          children: [
-            Expanded(child: Icon(iconData)),
-            Text(title),
-          ],
-        ),
+        child: Column(children: [Expanded(child: Icon(iconData)), Text(title)]),
       ),
     );
   }
@@ -123,8 +118,9 @@ class AttachmentSelectionOptions extends StatelessWidget {
   }
 
   Future<void> onTapCamera(BuildContext context) async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+    XFile? imageFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    );
     if (imageFile == null) return;
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
@@ -133,8 +129,9 @@ class AttachmentSelectionOptions extends StatelessWidget {
   }
 
   Future<void> onTapImage(BuildContext context) async {
-    XFile? imageFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    XFile? imageFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
     if (imageFile == null) return;
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
@@ -143,8 +140,9 @@ class AttachmentSelectionOptions extends StatelessWidget {
   }
 
   Future<void> onTapVideo(BuildContext context) async {
-    XFile? imageFile =
-        await ImagePicker().pickVideo(source: ImageSource.gallery);
+    XFile? imageFile = await ImagePicker().pickVideo(
+      source: ImageSource.gallery,
+    );
     if (imageFile == null) return;
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
@@ -192,24 +190,26 @@ class AttachmentSelectionOptions extends StatelessWidget {
       final size = MediaQuery.of(context).size;
       showAdaptiveDialog(
         context: context,
-        builder: (context) => Dialog(
-          insetPadding: const EdgeInsets.all(8),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: size.width * 0.5,
-              maxHeight: size.height * 0.5,
+        builder:
+            (context) => Dialog(
+              insetPadding: const EdgeInsets.all(8),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: size.width * 0.5,
+                  maxHeight: size.height * 0.5,
+                ),
+                child: _FileWidget(selectedFiles, type, handleFileUpload),
+              ),
             ),
-            child: _FileWidget(selectedFiles, type, handleFileUpload),
-          ),
-        ),
       );
     } else {
       showModalBottomSheet(
         context: context,
-        builder: (context) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _FileWidget(selectedFiles, type, handleFileUpload),
-        ),
+        builder:
+            (context) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _FileWidget(selectedFiles, type, handleFileUpload),
+            ),
       );
     }
   }
@@ -220,11 +220,7 @@ class _FileWidget extends StatelessWidget {
   final AttachmentType type;
   final OnAttachmentSelected handleFileUpload;
 
-  const _FileWidget(
-    this.selectedFiles,
-    this.type,
-    this.handleFileUpload,
-  );
+  const _FileWidget(this.selectedFiles, this.type, this.handleFileUpload);
 
   @override
   Widget build(BuildContext context) {
@@ -239,9 +235,10 @@ class _FileWidget extends StatelessWidget {
           Wrap(
             spacing: 5.0,
             runSpacing: 10.0,
-            children: selectedFiles
-                .map((file) => _filePreview(context, file))
-                .toList(),
+            children:
+                selectedFiles
+                    .map((file) => _filePreview(context, file))
+                    .toList(),
           ),
           _buildActionBtns(context),
         ],
@@ -279,32 +276,22 @@ class _FileWidget extends StatelessWidget {
     if (type == AttachmentType.camera || type == AttachmentType.image) {
       return AttachmentContainer(
         name: fileName,
-        child: Image.file(
-          file,
-          height: 200,
-          fit: BoxFit.cover,
-        ),
+        child: Image.file(file, height: 200, fit: BoxFit.cover),
       );
     } else if (type == AttachmentType.audio) {
       return AttachmentContainer(
         name: fileName,
-        child: const Center(
-          child: Icon(Atlas.file_sound_thin),
-        ),
+        child: const Center(child: Icon(Atlas.file_sound_thin)),
       );
     } else if (type == AttachmentType.video) {
       return AttachmentContainer(
         name: fileName,
-        child: const Center(
-          child: Icon(Atlas.file_video_thin),
-        ),
+        child: const Center(child: Icon(Atlas.file_video_thin)),
       );
     } else {
       return AttachmentContainer(
         name: fileName,
-        child: const Center(
-          child: Icon(Atlas.plus_file_thin),
-        ),
+        child: const Center(child: Icon(Atlas.plus_file_thin)),
       );
     }
   }

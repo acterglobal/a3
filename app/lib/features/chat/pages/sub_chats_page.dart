@@ -14,7 +14,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -29,10 +29,7 @@ class SubChatsPage extends ConsumerWidget {
 
   final String spaceId;
 
-  const SubChatsPage({
-    super.key,
-    required this.spaceId,
-  });
+  const SubChatsPage({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,79 +76,81 @@ class SubChatsPage extends ConsumerWidget {
       icon: Icon(PhosphorIcons.dotsThreeVertical()),
       iconSize: 28,
       color: Theme.of(context).colorScheme.surface,
-      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        PopupMenuItem(
-          key: SubChatsPage.createSubChatKey,
-          onTap: () => context.pushNamed(
-            Routes.createChat.name,
-            queryParameters: {'spaceId': spaceId},
-            extra: 1,
-          ),
-          child: Row(
-            children: <Widget>[
-              Icon(PhosphorIcons.plus()),
-              const SizedBox(width: 6),
-              Text(lang.createChat),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          key: SubChatsPage.linkSubChatKey,
-          onTap: () => context.pushNamed(
-            Routes.linkChat.name,
-            pathParameters: {'spaceId': spaceId},
-          ),
-          child: Row(
-            children: <Widget>[
-              Icon(PhosphorIcons.link()),
-              const SizedBox(width: 6),
-              Text(lang.linkExistingChat),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          onTap: () => context.pushNamed(
-            Routes.organizeCategories.name,
-            pathParameters: {
-              'spaceId': spaceId,
-              'categoriesFor': CategoriesFor.chats.name,
-            },
-          ),
-          child: Row(
-            children: [
-              Icon(PhosphorIcons.dotsSixVertical()),
-              const SizedBox(width: 6),
-              Text(lang.organize),
-            ],
-          ),
-        ),
-      ],
+      itemBuilder:
+          (BuildContext context) => <PopupMenuEntry>[
+            PopupMenuItem(
+              key: SubChatsPage.createSubChatKey,
+              onTap:
+                  () => context.pushNamed(
+                    Routes.createChat.name,
+                    queryParameters: {'spaceId': spaceId},
+                    extra: 1,
+                  ),
+              child: Row(
+                children: <Widget>[
+                  Icon(PhosphorIcons.plus()),
+                  const SizedBox(width: 6),
+                  Text(lang.createChat),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              key: SubChatsPage.linkSubChatKey,
+              onTap:
+                  () => context.pushNamed(
+                    Routes.linkChat.name,
+                    pathParameters: {'spaceId': spaceId},
+                  ),
+              child: Row(
+                children: <Widget>[
+                  Icon(PhosphorIcons.link()),
+                  const SizedBox(width: 6),
+                  Text(lang.linkExistingChat),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              onTap:
+                  () => context.pushNamed(
+                    Routes.organizeCategories.name,
+                    pathParameters: {
+                      'spaceId': spaceId,
+                      'categoriesFor': CategoriesFor.chats.name,
+                    },
+                  ),
+              child: Row(
+                children: [
+                  Icon(PhosphorIcons.dotsSixVertical()),
+                  const SizedBox(width: 6),
+                  Text(lang.organize),
+                ],
+              ),
+            ),
+          ],
     );
   }
 
   Widget _buildSubChatsUI(BuildContext context, WidgetRef ref) {
     final localCategoryList = ref.watch(
-      localCategoryListProvider(
-        (
-          spaceId: spaceId,
-          categoriesFor: CategoriesFor.chats,
-        ),
-      ),
+      localCategoryListProvider((
+        spaceId: spaceId,
+        categoriesFor: CategoriesFor.chats,
+      )),
     );
 
     return localCategoryList.when(
-      data: (categoryList) => ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: categoryList.length,
-        itemBuilder: (BuildContext context, int index) =>
-            _buildCategoriesList(context, ref, categoryList[index]),
-      ),
+      data:
+          (categoryList) => ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: categoryList.length,
+            itemBuilder:
+                (BuildContext context, int index) =>
+                    _buildCategoriesList(context, ref, categoryList[index]),
+          ),
       error: (e, s) {
         _log.severe('Failed to load the sub-spaces', e, s);
-        return Center(
-          child: Text(L10n.of(context).loadingFailed(e)),
-        );
+        return Center(child: Text(L10n.of(context).loadingFailed(e)));
       },
       loading: () => const GeneralListSkeletonWidget(),
     );
@@ -162,7 +161,8 @@ class SubChatsPage extends ConsumerWidget {
     WidgetRef ref,
     CategoryModelLocal categoryModelLocal,
   ) {
-    final knownChats = ref
+    final knownChats =
+        ref
             .watch(spaceRelationsOverviewProvider(spaceId))
             .valueOrNull
             ?.knownChats ??
@@ -210,9 +210,10 @@ class SubChatsPage extends ConsumerWidget {
         minTileHeight: categoryModelLocal.isUncategorized ? 0 : null,
         shape: const Border(),
         collapsedBackgroundColor: Colors.transparent,
-        title: categoryModelLocal.isUncategorized
-            ? const SizedBox.shrink()
-            : CategoryHeaderView(categoryModelLocal: categoryModelLocal),
+        title:
+            categoryModelLocal.isUncategorized
+                ? const SizedBox.shrink()
+                : CategoryHeaderView(categoryModelLocal: categoryModelLocal),
         children: List<Widget>.generate(entries.length, (index) {
           final roomEntry = entries[index];
           final roomInfo = roomEntry.$1;
@@ -260,10 +261,7 @@ class SubChatsPage extends ConsumerWidget {
               isSuggested: isSuggested,
             ),
             onTap: () => goToChat(context, roomId),
-            margin: const EdgeInsets.symmetric(
-              vertical: 2,
-              horizontal: 8,
-            ),
+            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
           );
         }),
       ),

@@ -5,7 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 final _log = Logger('a3::notifications::actions::unsubscribe');
 
@@ -22,9 +22,10 @@ Future<bool> subscribeObjectPush({
       subType.map((q) => q.asType()),
     );
     ref.invalidate(
-      pushNotificationSubscribedStatusProvider(
-        (objectId: objectId, subType: subType),
-      ),
+      pushNotificationSubscribedStatusProvider((
+        objectId: objectId,
+        subType: subType,
+      )),
     );
     return res;
   } catch (error, stack) {

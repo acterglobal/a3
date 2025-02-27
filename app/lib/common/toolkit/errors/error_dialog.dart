@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:quickalert/models/quickalert_options.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:quickalert/widgets/quickalert_buttons.dart';
@@ -56,16 +56,17 @@ class ActerErrorDialog extends StatelessWidget {
   }) {
     return showGeneralDialog(
       context: context,
-      pageBuilder: (context, anim1, __) => ActerErrorDialog(
-        error: error,
-        stack: stack,
-        title: title,
-        text: text,
-        textBuilder: textBuilder,
-        onRetryTap: onRetryTap,
-        borderRadius: borderRadius,
-        includeBugReportButton: includeBugReportButton,
-      ),
+      pageBuilder:
+          (context, anim1, __) => ActerErrorDialog(
+            error: error,
+            stack: stack,
+            title: title,
+            text: text,
+            textBuilder: textBuilder,
+            onRetryTap: onRetryTap,
+            borderRadius: borderRadius,
+            includeBugReportButton: includeBugReportButton,
+          ),
     );
   }
 
@@ -85,7 +86,8 @@ class ActerErrorDialog extends StatelessWidget {
     final lang = L10n.of(context);
     final err = ErrorCode.guessFromError(error);
     QuickAlertOptions options = QuickAlertOptions(
-      title: title ??
+      title:
+          title ??
           switch (err) {
             ErrorCode.notFound => lang.notFound,
             ErrorCode.forbidden => lang.forbidden,
@@ -95,8 +97,7 @@ class ActerErrorDialog extends StatelessWidget {
       type: switch (err) {
         ErrorCode.notFound ||
         ErrorCode.forbidden ||
-        ErrorCode.unknown =>
-          QuickAlertType.warning,
+        ErrorCode.unknown => QuickAlertType.warning,
         _ => QuickAlertType.error,
       },
       showCancelBtn: true,
@@ -153,14 +154,9 @@ class _ActerErrorAlert extends QuickAlertContainer {
           child: TextButton(
             child: Text(L10n.of(context).reportBug),
             onPressed: () async {
-              final queryParams = {
-                'error': error.toString(),
-              };
+              final queryParams = {'error': error.toString()};
               stack.map((s) => queryParams['stack'] = s.toString());
-              return openBugReport(
-                context,
-                queryParams: queryParams,
-              );
+              return openBugReport(context, queryParams: queryParams);
             },
           ),
         ),
@@ -179,10 +175,7 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
     required String text,
     VoidCallback? onTap,
   }) {
-    final btnText = Text(
-      text,
-      style: defaultTextStyle(isOkayBtn),
-    );
+    final btnText = Text(text, style: defaultTextStyle(isOkayBtn));
     if (isOkayBtn) {
       return buildOkayBtn(context: context, btnText: btnText, onTap: onTap);
     }
@@ -196,30 +189,18 @@ class _ActerErrorActionButtons extends QuickAlertButtons {
   }) {
     return MaterialButton(
       key: ActerErrorDialog.retryBtn,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      color: options.confirmBtnColor ??
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      color:
+          options.confirmBtnColor ??
           context.map((ctx) => Theme.of(ctx).primaryColor),
       onPressed: onTap,
       child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(7.5),
-          child: btnText,
-        ),
+        child: Padding(padding: const EdgeInsets.all(7.5), child: btnText),
       ),
     );
   }
 
-  Widget buildCancelBtn({
-    required Widget btnText,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Center(
-        child: btnText,
-      ),
-    );
+  Widget buildCancelBtn({required Widget btnText, VoidCallback? onTap}) {
+    return GestureDetector(onTap: onTap, child: Center(child: btnText));
   }
 }

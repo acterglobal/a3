@@ -17,13 +17,13 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:riverpod/riverpod.dart';
 
 final newsStateProvider =
     StateNotifierProvider<NewsStateNotifier, NewsPostState>(
-  (ref) => NewsStateNotifier(ref: ref),
-);
+      (ref) => NewsStateNotifier(ref: ref),
+    );
 
 class NewsStateNotifier extends StateNotifier<NewsPostState> {
   final Ref ref;
@@ -60,8 +60,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     final eventId = await selectEventDrawer(context: context);
     RefDetails? refDetails;
     if (eventId != null) {
-      final selectedEvent =
-          await ref.watch(calendarEventProvider(eventId).future);
+      final selectedEvent = await ref.watch(
+        calendarEventProvider(eventId).future,
+      );
       refDetails = await selectedEvent.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
@@ -85,8 +86,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     final taskListId = await selectTaskListDrawer(context: context);
     RefDetails? refDetails;
     if (taskListId != null) {
-      final selectedTaskList =
-          await ref.watch(taskListProvider(taskListId).future);
+      final selectedTaskList = await ref.watch(
+        taskListProvider(taskListId).future,
+      );
       refDetails = await selectedTaskList.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
@@ -98,8 +100,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     final selectedSpaceId = await selectSpaceDrawer(context: context);
     RefDetails? refDetails;
     if (selectedSpaceId != null) {
-      final selectedSpace =
-          await ref.read(spaceProvider(selectedSpaceId).future);
+      final selectedSpace = await ref.read(
+        spaceProvider(selectedSpaceId).future,
+      );
       refDetails = await selectedSpace.refDetails();
     }
     NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;

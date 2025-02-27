@@ -4,7 +4,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 void showAddPinLinkBottomSheet({
   required BuildContext context,
@@ -39,10 +39,7 @@ void showEditPinLinkBottomSheet({
     pinLink: attachmentData.link,
     onSave: (title, link) {
       Navigator.pop(context);
-      final pinAttachment = attachmentData.copyWith(
-        title: title,
-        link: link,
-      );
+      final pinAttachment = attachmentData.copyWith(title: title, link: link);
       ref
           .read(createPinStateProvider.notifier)
           .changeAttachmentTitle(pinAttachment, index);

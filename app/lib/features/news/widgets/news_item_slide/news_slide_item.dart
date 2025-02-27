@@ -6,7 +6,7 @@ import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class NewsSlideItem extends StatelessWidget {
   final NewsSlide slide;
@@ -35,8 +35,8 @@ class NewsSlideItem extends StatelessWidget {
           child: Container(
             color: slideBackgroundColor,
             child: switch (slideType) {
-              'image' => ImageSlide(slide: slide,errorState: errorState,),
-              'video' => VideoSlide(slide: slide,errorState: errorState,),
+              'image' => ImageSlide(slide: slide, errorState: errorState),
+              'video' => VideoSlide(slide: slide, errorState: errorState),
               'text' =>
                 showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
               _ => notSupportedSlide(context, slideType),
@@ -49,10 +49,7 @@ class NewsSlideItem extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Container(
               height: 190,
-              padding: const EdgeInsets.only(
-                right: 60,
-                bottom: 80,
-              ),
+              padding: const EdgeInsets.only(right: 60, bottom: 80),
               child: NewsSlideActions(newsSlide: slide),
             ),
           ),

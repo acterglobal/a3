@@ -3,7 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/share/widgets/external_share_options.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ShareInviteCode extends ConsumerWidget {
@@ -34,7 +34,8 @@ class ShareInviteCode extends ConsumerWidget {
   Widget _buildBody(BuildContext context, WidgetRef ref) {
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? '';
-    final String userName = ref.watch(accountDisplayNameProvider).valueOrNull ??
+    final String userName =
+        ref.watch(accountDisplayNameProvider).valueOrNull ??
         ref.watch(myUserIdStrProvider);
     return Center(
       child: Container(
@@ -43,19 +44,9 @@ class ShareInviteCode extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildMessageContent(
-              context,
-              ref,
-              roomName,
-              userName,
-            ),
+            _buildMessageContent(context, ref, roomName, userName),
             const SizedBox(height: 30),
-            _buildShareIntents(
-              context,
-              ref,
-              roomName,
-              userName,
-            ),
+            _buildShareIntents(context, ref, roomName, userName),
             const SizedBox(height: 10),
             _buildDoneButton(context),
             const SizedBox(height: 5),
@@ -89,9 +80,7 @@ class ShareInviteCode extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(5),
               ),
               padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
-                child: Text(content),
-              ),
+              child: SingleChildScrollView(child: Text(content)),
             ),
           ),
         ],
@@ -109,8 +98,11 @@ class ShareInviteCode extends ConsumerWidget {
     final userId = ref.read(myUserIdStrProvider);
     final qrContent =
         'acter:i/acter.global/$inviteCode?roomDisplayName=$roomName&userId=$userId&userDisplayName=$userName';
-    final shareContent =
-        lang.shareInviteContent(inviteCode, roomName, userName);
+    final shareContent = lang.shareInviteContent(
+      inviteCode,
+      roomName,
+      userName,
+    );
     return ExternalShareOptions(
       qrContent: qrContent,
       shareContentBuilder: () async => shareContent,
@@ -119,10 +111,7 @@ class ShareInviteCode extends ConsumerWidget {
 
   Widget _buildDoneButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: ActerPrimaryActionButton(
         onPressed: () => Navigator.pop(context),
         child: Text(L10n.of(context).done),

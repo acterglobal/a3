@@ -10,7 +10,7 @@ import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -43,10 +43,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       body: Form(
         key: formKey,
         child: Column(
-          children: [
-            _buildAppBar(context),
-            _buildLoginPage(context),
-          ],
+          children: [_buildAppBar(context), _buildLoginPage(context)],
         ),
       ),
     );
@@ -69,10 +66,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (screenHeight > 650)
-                LogoWidget(
-                  width: imageSize,
-                  height: imageSize,
-                ),
+                LogoWidget(width: imageSize, height: imageSize),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
               _buildUsernameInputField(context),
@@ -99,18 +93,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       children: [
         Text(
           lang.welcomeBack,
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-              ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: Theme.of(context).colorScheme.textHighlight,
+          ),
         ),
         const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            lang.loginContinue,
-            textAlign: TextAlign.center,
-          ),
+          child: Text(lang.loginContinue, textAlign: TextAlign.center),
         ),
       ],
     );
@@ -127,12 +117,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           key: LoginPageKeys.usernameField,
           controller: username,
           decoration: InputDecoration(hintText: lang.hintMessageUsername),
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
+          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           // required field, space not allowed
-          validator: (val) =>
-              val == null || val.trim().isEmpty ? lang.emptyUsername : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty ? lang.emptyUsername : null,
         ),
       ],
     );
@@ -160,12 +149,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               },
             ),
           ),
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
+          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           // required field, space allowed
-          validator: (val) =>
-              val == null || val.isEmpty ? lang.emptyPassword : null,
+          validator:
+              (val) => val == null || val.isEmpty ? lang.emptyPassword : null,
         ),
       ],
     );
@@ -174,17 +161,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget _buildLoginButton(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     return authState
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
+        ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
-            key: LoginPageKeys.submitBtn,
-            onPressed: () => handleSubmit(context),
-            child: Text(
-              L10n.of(context).logIn,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          );
+          key: LoginPageKeys.submitBtn,
+          onPressed: () => handleSubmit(context),
+          child: Text(
+            L10n.of(context).logIn,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        );
   }
 
   Widget _buildForgotPassword(BuildContext context) {
@@ -221,10 +206,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
     final authNotifier = ref.read(authStateProvider.notifier);
-    final loginSuccess = await authNotifier.login(
-      username.text,
-      password.text,
-    );
+    final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
       if (context.mounted) {
@@ -234,10 +216,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     } else {
       _log.severe('Failed to login', loginSuccess);
       if (!context.mounted) return;
-      EasyLoading.showError(
-        loginSuccess,
-        duration: const Duration(seconds: 3),
-      );
+      EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));
     }
   }
 }

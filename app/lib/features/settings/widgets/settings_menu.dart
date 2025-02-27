@@ -10,7 +10,7 @@ import 'package:acter/features/super_invites/providers/super_invites_providers.d
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -46,8 +46,9 @@ class SettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final isBackupEnabled =
-        ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
+    final isBackupEnabled = ref.watch(
+      isActiveProvider(LabsFeature.encryptionBackup),
+    );
     final helpCenterUrl = helpUrl;
 
     return Column(
@@ -67,8 +68,9 @@ class SettingsMenu extends ConsumerWidget {
               ),
               onTap: () {
                 if (!isFullPage && context.isLargeScreen) {
-                  context
-                      .pushReplacementNamed(Routes.settingNotifications.name);
+                  context.pushReplacementNamed(
+                    Routes.settingNotifications.name,
+                  );
                 } else {
                   context.pushNamed(Routes.settingNotifications.name);
                 }
@@ -183,8 +185,9 @@ class SettingsMenu extends ConsumerWidget {
                 if (!hasAccess) return;
                 if (!context.mounted) return;
                 if (!isFullPage && context.isLargeScreen) {
-                  context
-                      .pushReplacementNamed(Routes.settingsSuperInvites.name);
+                  context.pushReplacementNamed(
+                    Routes.settingsSuperInvites.name,
+                  );
                 } else {
                   context.pushNamed(Routes.settingsSuperInvites.name);
                 }
@@ -293,17 +296,12 @@ class SettingsMenu extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(
-              left: 15,
-              top: 10,
-            ),
+            padding: const EdgeInsets.only(left: 15, top: 10),
             child: Text(
               sectionTitle,
               style: textTheme.labelLarge?.copyWith(

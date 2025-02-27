@@ -7,7 +7,7 @@ import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -22,8 +22,9 @@ class AddUserToBlock extends StatefulWidget {
 
 class _AddUserToBlockState extends State<AddUserToBlock> {
   final TextEditingController userName = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'blocked user form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'blocked user form',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +41,13 @@ class _AddUserToBlockState extends State<AddUserToBlock> {
               child: TextFormField(
                 controller: userName,
                 // required field, custom format
-                validator: (val) =>
-                    val == null || !val.startsWith('@') || !val.contains(':')
-                        ? lang.formatMustBe
-                        : null,
+                validator:
+                    (val) =>
+                        val == null ||
+                                !val.startsWith('@') ||
+                                !val.contains(':')
+                            ? lang.formatMustBe
+                            : null,
               ),
             ),
           ],
@@ -92,9 +96,7 @@ class BlockedUsersPage extends ConsumerWidget {
         body: usersLoader.when(
           data: (users) {
             if (users.isEmpty) {
-              return Center(
-                child: Text(lang.hereYouCanSeeAllUsersYouBlocked),
-              );
+              return Center(child: Text(lang.hereYouCanSeeAllUsersYouBlocked));
             }
             return CustomScrollView(
               slivers: [
@@ -122,13 +124,9 @@ class BlockedUsersPage extends ConsumerWidget {
           },
           error: (e, s) {
             _log.severe('Failed to load the ignored users', e, s);
-            return Center(
-              child: Text(lang.loadingFailed(e)),
-            );
+            return Center(child: Text(lang.loadingFailed(e)));
           },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
         ),
       ),
     );

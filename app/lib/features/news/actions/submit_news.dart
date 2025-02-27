@@ -11,7 +11,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -32,9 +32,10 @@ Future<NewsSlideDraft> _makeTextSlide(
     throw lang.yourTextSlidesMustContainsSomeText;
   }
   final html = slidePost.html;
-  final textDraft = html != null
-      ? client.textHtmlDraft(html, text)
-      : client.textMarkdownDraft(text);
+  final textDraft =
+      html != null
+          ? client.textHtmlDraft(html, text)
+          : client.textMarkdownDraft(text);
   final textSlideDraft = textDraft.intoNewsSlideDraft();
 
   textSlideDraft.color(
@@ -124,11 +125,9 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
 
   final newsSlideList = ref.read(newsStateProvider).newsSlideList;
   final lang = L10n.of(context);
-  final spaceId = ref.read(newsStateProvider).newsPostSpaceId ??
-      await selectSpaceDrawer(
-        context: context,
-        canCheck: 'CanPostNews',
-      );
+  final spaceId =
+      ref.read(newsStateProvider).newsPostSpaceId ??
+      await selectSpaceDrawer(context: context, canCheck: 'CanPostNews');
 
   if (spaceId == null) {
     EasyLoading.showToast(lang.pleaseFirstSelectASpace);
@@ -152,11 +151,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
       };
       await draft.addSlide(slide);
     } catch (err, s) {
-      _log.severe(
-        'Failed to process ${slidePost.type} at $slideIdx ',
-        err,
-        s,
-      );
+      _log.severe('Failed to process ${slidePost.type} at $slideIdx ', err, s);
       EasyLoading.showError(
         lang.errorProcessingSlide(slideIdx, err),
         duration: const Duration(seconds: 3),

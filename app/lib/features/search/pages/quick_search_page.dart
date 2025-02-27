@@ -14,7 +14,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class QuickSearchPage extends ConsumerStatefulWidget {
@@ -31,17 +31,11 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   AppBar _buildAppBar() {
-    return AppBar(
-      centerTitle: false,
-      title: Text(L10n.of(context).search),
-    );
+    return AppBar(centerTitle: false, title: Text(L10n.of(context).search));
   }
 
   Widget _buildBody() {
@@ -77,52 +71,53 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 4,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Wrap(
           children: [
             FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.all,
               label: Text(lang.all),
-              onSelected: (value) =>
-                  quickSearchFilters.value = QuickSearchFilters.all,
+              onSelected:
+                  (value) => quickSearchFilters.value = QuickSearchFilters.all,
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.spaces,
               label: Text(lang.spaces),
-              onSelected: (value) =>
-                  quickSearchFilters.value = QuickSearchFilters.spaces,
+              onSelected:
+                  (value) =>
+                      quickSearchFilters.value = QuickSearchFilters.spaces,
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.chats,
               label: Text(lang.chats),
-              onSelected: (value) =>
-                  quickSearchFilters.value = QuickSearchFilters.chats,
+              onSelected:
+                  (value) =>
+                      quickSearchFilters.value = QuickSearchFilters.chats,
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.pins,
               label: Text(lang.pins),
-              onSelected: (value) =>
-                  quickSearchFilters.value = QuickSearchFilters.pins,
+              onSelected:
+                  (value) => quickSearchFilters.value = QuickSearchFilters.pins,
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.events,
               label: Text(lang.events),
-              onSelected: (value) =>
-                  quickSearchFilters.value = QuickSearchFilters.events,
+              onSelected:
+                  (value) =>
+                      quickSearchFilters.value = QuickSearchFilters.events,
             ),
             const SizedBox(width: 10),
             FilterChip(
               selected: quickSearchFilters.value == QuickSearchFilters.tasks,
               label: Text(lang.tasks),
-              onSelected: (value) =>
-                  quickSearchFilters.value = QuickSearchFilters.tasks,
+              onSelected:
+                  (value) =>
+                      quickSearchFilters.value = QuickSearchFilters.tasks,
             ),
           ],
         ),
@@ -141,10 +136,11 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               spaceListProvider: spaceListQuickSearchedProvider,
               limit: 3,
               showSectionHeader: true,
-              onClickSectionHeader: () => context.pushNamed(
-                Routes.spaces.name,
-                queryParameters: {'searchQuery': searchValue},
-              ),
+              onClickSectionHeader:
+                  () => context.pushNamed(
+                    Routes.spaces.name,
+                    queryParameters: {'searchQuery': searchValue},
+                  ),
             ),
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.chats)
@@ -161,10 +157,11 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               limit: 3,
               searchValue: searchValue,
               showSectionHeader: true,
-              onClickSectionHeader: () => context.pushNamed(
-                Routes.pins.name,
-                queryParameters: {'searchQuery': searchValue},
-              ),
+              onClickSectionHeader:
+                  () => context.pushNamed(
+                    Routes.pins.name,
+                    queryParameters: {'searchQuery': searchValue},
+                  ),
             ),
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.events)
@@ -172,10 +169,11 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               limit: 3,
               listProvider: eventListQuickSearchedProvider,
               showSectionHeader: true,
-              onClickSectionHeader: () => context.pushNamed(
-                Routes.calendarEvents.name,
-                queryParameters: {'searchQuery': searchValue},
-              ),
+              onClickSectionHeader:
+                  () => context.pushNamed(
+                    Routes.calendarEvents.name,
+                    queryParameters: {'searchQuery': searchValue},
+                  ),
             ),
           if (quickSearchFilters.value == QuickSearchFilters.all ||
               quickSearchFilters.value == QuickSearchFilters.tasks)
@@ -184,10 +182,11 @@ class _QuickSearchPageState extends ConsumerState<QuickSearchPage> {
               taskListProvider: taskListQuickSearchedProvider,
               initiallyExpanded: false,
               showSectionHeader: true,
-              onClickSectionHeader: () => context.pushNamed(
-                Routes.tasks.name,
-                queryParameters: {'searchQuery': searchValue},
-              ),
+              onClickSectionHeader:
+                  () => context.pushNamed(
+                    Routes.tasks.name,
+                    queryParameters: {'searchQuery': searchValue},
+                  ),
             ),
         ],
       ),

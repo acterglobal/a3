@@ -5,7 +5,7 @@ import 'package:acter/common/utils/validation_utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,9 +21,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: _buildBody(context, ref),
-    );
+    return Scaffold(body: _buildBody(context, ref));
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
@@ -64,15 +62,9 @@ class LinkEmailPage extends ConsumerWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
-        Text(
-          lang.protectPrivacyDescription1,
-          style: textTheme.bodyMedium,
-        ),
+        Text(lang.protectPrivacyDescription1, style: textTheme.bodyMedium),
         const SizedBox(height: 10),
-        Text(
-          lang.protectPrivacyDescription2,
-          style: textTheme.bodyMedium,
-        ),
+        Text(lang.protectPrivacyDescription2, style: textTheme.bodyMedium),
       ],
     );
   }
@@ -134,9 +126,7 @@ class LinkEmailPage extends ConsumerWidget {
           key: LinkEmailPage.linkEmailBtn,
           onPressed: isValidEmail ? () => linkEmail(context, ref) : null,
           style: OutlinedButton.styleFrom(
-            side: BorderSide(
-              color: isValidEmail ? whiteColor : disabledColor,
-            ),
+            side: BorderSide(color: isValidEmail ? whiteColor : disabledColor),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -153,10 +143,7 @@ class LinkEmailPage extends ConsumerWidget {
                   if (!isLinkedValue) return const SizedBox.shrink();
                   return const Padding(
                     padding: EdgeInsets.only(left: 10),
-                    child: Icon(
-                      Atlas.check_circle,
-                      size: 18,
-                    ),
+                    child: Icon(Atlas.check_circle, size: 18),
                   );
                 },
               ),

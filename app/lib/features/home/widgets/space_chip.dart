@@ -3,7 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -33,26 +33,22 @@ class SpaceChip extends ConsumerWidget {
       useCompactView ? loadingCompact() : loadingFull();
 
   static Widget loadingFull() => Skeletonizer(
-        child: Chip(
-          avatar: ActerAvatar(
-            options: const AvatarOptions(
-              AvatarInfo(uniqueId: 'unique Id'),
-              size: 24,
-            ),
-          ),
-          label: const Text('unique name'),
+    child: Chip(
+      avatar: ActerAvatar(
+        options: const AvatarOptions(
+          AvatarInfo(uniqueId: 'unique Id'),
+          size: 24,
         ),
-      );
+      ),
+      label: const Text('unique name'),
+    ),
+  );
 
   static Widget loadingCompact() => const Skeletonizer(
-        child: Wrap(
-          children: [
-            Text('In: '),
-            SizedBox(width: 4),
-            Text('displayName'),
-          ],
-        ),
-      );
+    child: Wrap(
+      children: [Text('In: '), SizedBox(width: 4), Text('displayName')],
+    ),
+  );
 
   Widget renderCompactView(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
@@ -79,10 +75,9 @@ class SpaceChip extends ConsumerWidget {
           },
           child: Text(
             displayName,
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge
-                ?.copyWith(decoration: TextDecoration.underline),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              decoration: TextDecoration.underline,
+            ),
           ),
         ),
       ],
@@ -97,12 +92,7 @@ class SpaceChip extends ConsumerWidget {
         if (onTapOpenSpaceDetail) goToSpace(context, spaceId);
       },
       child: Chip(
-        avatar: ActerAvatar(
-          options: AvatarOptions(
-            avatarInfo,
-            size: 24,
-          ),
-        ),
+        avatar: ActerAvatar(options: AvatarOptions(avatarInfo, size: 24)),
         label: Text(spaceName),
       ),
     );

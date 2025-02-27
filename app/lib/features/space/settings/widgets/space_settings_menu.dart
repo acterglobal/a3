@@ -8,7 +8,7 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -41,15 +41,16 @@ class SpaceSettingsMenu extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: isFullPage,
-        leading: !isFullPage
-            ? InkWell(
-                child: const Icon(Icons.close),
-                onTap: () {
-                  context.pop();
-                  context.pop();
-                },
-              )
-            : null,
+        leading:
+            !isFullPage
+                ? InkWell(
+                  child: const Icon(Icons.close),
+                  onTap: () {
+                    context.pop();
+                    context.pop();
+                  },
+                )
+                : null,
         title: FittedBox(
           fit: BoxFit.fitWidth,
           child: Row(
@@ -114,10 +115,12 @@ class SpaceSettingsMenu extends ConsumerWidget {
                       }
                     },
                   ),
-                  if (ref
-                      .watch(isActiveProvider(LabsFeature.deviceCalendarSync)))
+                  if (ref.watch(
+                    isActiveProvider(LabsFeature.deviceCalendarSync),
+                  ))
                     SettingsTile.switchTile(
-                      initialValue: ref
+                      initialValue:
+                          ref
                               .watch(shouldSyncRoomProvider(spaceId))
                               .valueOrNull ??
                           true,

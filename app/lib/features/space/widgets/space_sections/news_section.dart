@@ -7,7 +7,7 @@ import 'package:acter/features/news/widgets/news_item_slide/news_slide_item.dart
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
@@ -19,11 +19,7 @@ class NewsSection extends ConsumerWidget {
   final String spaceId;
   final int limit;
 
-  const NewsSection({
-    super.key,
-    required this.spaceId,
-    this.limit = 4,
-  });
+  const NewsSection({super.key, required this.spaceId, this.limit = 4});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,13 +29,9 @@ class NewsSection extends ConsumerWidget {
       data: (news) => buildNewsSectionUI(context, news),
       error: (e, s) {
         _log.severe('Failed to load boosts in space', e, s);
-        return Center(
-          child: Text(lang.loadingFailed(e)),
-        );
+        return Center(child: Text(lang.loadingFailed(e)));
       },
-      loading: () => Center(
-        child: Text(lang.loading),
-      ),
+      loading: () => Center(child: Text(lang.loading)),
     );
   }
 
@@ -53,10 +45,11 @@ class NewsSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).boosts,
           isShowSeeAllButton: hasMore,
-          onTapSeeAll: () => context.pushNamed(
-            Routes.spaceUpdates.name,
-            pathParameters: {'spaceId': spaceId},
-          ),
+          onTapSeeAll:
+              () => context.pushNamed(
+                Routes.spaceUpdates.name,
+                pathParameters: {'spaceId': spaceId},
+              ),
         ),
         _buildNewsListGridUI(context, news, count),
       ],
@@ -92,10 +85,11 @@ class NewsSection extends ConsumerWidget {
     final slide = newsSlides[0];
 
     return InkWell(
-      onTap: () => context.pushNamed(
-        Routes.spaceUpdates.name,
-        pathParameters: {'spaceId': spaceId},
-      ),
+      onTap:
+          () => context.pushNamed(
+            Routes.spaceUpdates.name,
+            pathParameters: {'spaceId': spaceId},
+          ),
       child: Container(
         height: 100,
         margin: const EdgeInsets.all(6),
