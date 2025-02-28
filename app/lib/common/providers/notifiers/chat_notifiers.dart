@@ -45,7 +45,9 @@ class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
 
   FutureOr<RoomMessage?> _refresh(String roomId) async {
     final convo = await ref.read(chatProvider(roomId).future);
-    return convo?.latestMessage();
+    if (convo == null) return null;
+    final msg = await convo.latestMessage();
+    return msg.data();
   }
 
   @override
@@ -89,7 +91,10 @@ class ChatRoomsListNotifier extends Notifier<List<Convo>> {
         _log.info('convo list stream ended');
       },
     );
-    ref.onDispose(() => _poller?.cancel());
+    ref.onDispose(() async {
+      _poller?.cancel();
+      await client.cancelConvosStream();
+    });
   }
 
   List<Convo> listCopy() => List.from(state, growable: true);

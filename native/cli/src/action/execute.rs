@@ -30,7 +30,7 @@ impl ExecuteOpts {
             .collect::<HashMap<&str, &str>>();
         let mut user = self.login.client().await?;
 
-        let sync_state = user.start_sync();
+        let sync_state = user.start_sync().await?;
 
         if !self.ignore_sync {
             let mut is_synced = sync_state.first_synced_rx();

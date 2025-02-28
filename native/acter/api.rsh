@@ -207,6 +207,11 @@ object OptionComposeDraft {
     fn draft() -> Option<ComposeDraft>;
 }
 
+object OptionRoomMessage {
+    /// get data
+    fn data() -> Option<RoomMessage>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;
@@ -989,6 +994,18 @@ object RoomEventItem {
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
+    /// original sender id, if this msg is reply to another msg
+    fn replied_to_sender() -> Option<string>;
+
+    /// original msg body, if this msg is reply to another msg
+    fn replied_to_body() -> Option<string>;
+
+    /// original msg type, if this msg is reply to another msg
+    fn replied_to_msgtype() -> Option<string>;
+
+    /// original msg content, if this msg is reply to another msg
+    fn replied_to_content() -> Option<MsgContent>;
+
     /// the list of users that read this message
     fn read_users() -> Vec<string>;
 
@@ -1009,7 +1026,7 @@ object RoomEventItem {
 }
 
 object RoomVirtualItem {
-    /// DayDivider or ReadMarker
+    /// DateDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
@@ -1324,6 +1341,9 @@ object TimelineStream {
     /// Fires whenever new diff found
     fn messages_stream() -> Stream<RoomMessageDiff>;
 
+    /// Cancel stream
+    fn cancel_stream() -> Future<Result<bool>>;
+
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
@@ -1405,7 +1425,7 @@ object Convo {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// Get the timeline for the room
-    fn timeline_stream() -> TimelineStream;
+    fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// how many unread notifications for this chat
     fn num_unread_notification_count() -> u64;
@@ -1417,10 +1437,10 @@ object Convo {
     fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<RoomMessage>;
+    fn latest_message() -> Future<Result<OptionRoomMessage>>;
 
     /// Latest message timestamp or 0
-    fn latest_message_ts() -> u64;
+    fn latest_message_ts() -> Future<Result<u64>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -2966,7 +2986,7 @@ object CreateSpaceSettings {}
 /// Main entry point for `acter`.
 object Client {
     /// start the sync
-    fn start_sync() -> SyncState;
+    fn start_sync() -> Future<Result<SyncState>>;
 
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;
@@ -3015,12 +3035,18 @@ object Client {
     /// fires immediately with the current state of convos
     fn convos_stream() -> Stream<ConvoDiff>;
 
+    /// Stop the convos stream on rust side
+    fn cancel_convos_stream() -> Future<Result<bool>>;
+
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
 
     /// Fires whenever the space list changes (in order or number)
     /// fires immediately with the current state of spaces
     fn spaces_stream() -> Stream<SpaceDiff>;
+
+    /// Stop the spaces stream on rust side
+    fn cancel_spaces_stream() -> Future<Result<bool>>;
 
     /// attempt to join a room
     fn join_room(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<Room>>;

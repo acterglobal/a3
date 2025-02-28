@@ -9,7 +9,7 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use chrono::DateTime;
 use futures::stream::StreamExt;
-use matrix_sdk::room::Room;
+use matrix_sdk::room::Room as SdkRoom;
 use matrix_sdk_base::{
     ruma::{
         events::{room::message::TextMessageEventContent, MessageLikeEventType},
@@ -28,7 +28,7 @@ use tracing::warn;
 
 use crate::MsgContent;
 
-use super::{client::Client, deep_linking::RefDetails, spaces::Space, RUNTIME};
+use super::{client::Client, deep_linking::RefDetails, room::Room, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn task_list(&self, key: String, timeout: Option<u8>) -> Result<TaskList> {
@@ -142,7 +142,7 @@ impl Space {
 #[derive(Clone, Debug)]
 pub struct TaskListDraft {
     client: Client,
-    room: Room,
+    room: SdkRoom,
     content: TaskListBuilder,
 }
 
@@ -235,7 +235,7 @@ impl TaskListDraft {
 #[derive(Clone, Debug)]
 pub struct TaskList {
     client: Client,
-    room: Room,
+    room: SdkRoom,
     content: models::TaskList,
 }
 
@@ -302,10 +302,12 @@ impl TaskList {
     }
 
     pub fn space(&self) -> Space {
-        Space::new(
-            self.client.clone(),
-            crate::Room::new(self.client.core.clone(), self.room.clone()),
-        )
+        let inner = Room::new(
+            self.client.core.clone(),
+            self.room.clone(),
+            self.client.sync_controller.clone(),
+        );
+        Space::new(self.client.clone(), inner)
     }
 
     pub fn space_id_str(&self) -> String {
@@ -477,7 +479,7 @@ impl TaskList {
 #[derive(Clone, Debug)]
 pub struct Task {
     client: Client,
-    room: Room,
+    room: SdkRoom,
     content: models::Task,
 }
 
@@ -707,7 +709,7 @@ impl Task {
 #[derive(Clone)]
 pub struct TaskDraft {
     client: Client,
-    room: Room,
+    room: SdkRoom,
     content: TaskBuilder,
 }
 
@@ -851,7 +853,7 @@ impl TaskDraft {
 #[derive(Clone)]
 pub struct TaskUpdateBuilder {
     client: Client,
-    room: Room,
+    room: SdkRoom,
     content: tasks::TaskUpdateBuilder,
 }
 
@@ -1054,7 +1056,7 @@ impl TaskUpdateBuilder {
 #[derive(Clone)]
 pub struct TaskListUpdateBuilder {
     client: Client,
-    room: Room,
+    room: SdkRoom,
     content: tasks::TaskListUpdateBuilder,
 }
 

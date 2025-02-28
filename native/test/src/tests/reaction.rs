@@ -76,28 +76,28 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let (mut sisko, mut kyra, mut worf, room_id) =
         random_users_with_random_convo("reaction").await?;
 
-    let sisko_sync = sisko.start_sync();
+    let sisko_sync = sisko.start_sync().await?;
     sisko_sync.await_has_synced_history().await?;
 
     let sisko_convo = wait_for_convo_joined(sisko.clone(), room_id.clone()).await?;
-    let sisko_timeline = sisko_convo.timeline_stream();
+    let sisko_timeline = sisko_convo.timeline_stream().await?;
     let sisko_stream = sisko_timeline.messages_stream();
     pin_mut!(sisko_stream);
 
-    let kyra_sync = kyra.start_sync();
+    let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
     accept_all_invites(&kyra).await?;
 
     let kyra_convo = wait_for_convo_joined(kyra.clone(), room_id.clone()).await?;
-    let kyra_timeline = kyra_convo.timeline_stream();
+    let kyra_timeline = kyra_convo.timeline_stream().await?;
     let kyra_stream = kyra_timeline.messages_stream();
 
-    let worf_sync = worf.start_sync();
+    let worf_sync = worf.start_sync().await?;
     worf_sync.await_has_synced_history().await?;
     accept_all_invites(&worf).await?;
     // wait for sync to catch up
     let worf_convo = wait_for_convo_joined(worf.clone(), room_id.clone()).await?;
-    let worf_timeline = worf_convo.timeline_stream();
+    let worf_timeline = worf_convo.timeline_stream().await?;
     let worf_stream = worf_timeline.messages_stream();
 
     let draft = sisko.text_plain_draft("Hi, everyone".to_string());

@@ -73,7 +73,10 @@ class SpaceListNotifier extends Notifier<List<Space>> {
         _log.info('space list stream ended');
       },
     );
-    ref.onDispose(() => _poller?.cancel());
+    ref.onDispose(() async {
+      _poller?.cancel();
+      await client.cancelSpacesStream();
+    });
   }
 
   List<Space> listCopy() => List.from(state, growable: true);
