@@ -156,7 +156,7 @@ dependencies:
   app_links: ^6.3.3
   pretty_qr_code: ^3.3.0
   qr_code_dart_scan: ^0.9.3
-  appcheck: ^1.5.2
+  appcheck: ^1.5.3
   screen_retriever: ^0.1.9
   android_intent_plus: ^5.2.2
   collection: ^1.18.0
