@@ -1,6 +1,6 @@
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ParticipantsList extends ConsumerWidget {
@@ -20,15 +20,10 @@ class ParticipantsList extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              Expanded(
-                child: Text(lang.eventParticipants),
-              ),
+              Expanded(child: Text(lang.eventParticipants)),
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(lang.close),

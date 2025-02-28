@@ -12,7 +12,7 @@ import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LinkRoomTrailing extends ConsumerWidget {
@@ -35,21 +35,22 @@ class LinkRoomTrailing extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 100,
-      child: isLinked
-          ? OutlinedButton(
-              onPressed: () => onTapUnlinkChildRoom(context, ref),
-              key: Key('room-list-unlink-$roomId'),
-              child: Text(lang.unlink),
-            )
-          : canLink
+      child:
+          isLinked
               ? OutlinedButton(
-                  onPressed: () => onTapLinkChildRoom(context, ref),
-                  key: Key('room-list-link-$roomId'),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: colorScheme.success),
-                  ),
-                  child: Text(lang.link),
-                )
+                onPressed: () => onTapUnlinkChildRoom(context, ref),
+                key: Key('room-list-unlink-$roomId'),
+                child: Text(lang.unlink),
+              )
+              : canLink
+              ? OutlinedButton(
+                onPressed: () => onTapLinkChildRoom(context, ref),
+                key: Key('room-list-link-$roomId'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: colorScheme.success),
+                ),
+                child: Text(lang.link),
+              )
               : null,
     );
   }
@@ -124,7 +125,7 @@ class LinkRoomTrailing extends ConsumerWidget {
     }
   }
 
-//Link child room
+  //Link child room
   Future<void> onTapLinkChildRoom(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
     final room = await ref.read(maybeRoomProvider(roomId).future);
@@ -133,8 +134,10 @@ class LinkRoomTrailing extends ConsumerWidget {
       return;
     }
 
-    final canLink = (await ref.read(roomMembershipProvider(roomId).future))
-            ?.canString('CanLinkSpaces') ==
+    final canLink =
+        (await ref.read(
+          roomMembershipProvider(roomId).future,
+        ))?.canString('CanLinkSpaces') ==
         true;
 
     //Fetch selected parent space data and add given roomId as child
@@ -154,14 +157,9 @@ class LinkRoomTrailing extends ConsumerWidget {
     invalidateProviders(ref);
   }
 
-//Unlink child room
+  //Unlink child room
   Future<void> onTapUnlinkChildRoom(BuildContext context, WidgetRef ref) async {
-    await unlinkChildRoom(
-      context,
-      ref,
-      parentId: parentId,
-      roomId: roomId,
-    );
+    await unlinkChildRoom(context, ref, parentId: parentId, roomId: roomId);
     //Invalidate providers
     invalidateProviders(ref);
   }

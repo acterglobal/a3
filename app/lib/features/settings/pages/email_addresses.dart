@@ -7,7 +7,7 @@ import 'package:acter/features/settings/widgets/email_address_card.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -22,8 +22,9 @@ class AddEmailAddr extends StatefulWidget {
 
 class _AddEmailAddrState extends State<AddEmailAddr> {
   final TextEditingController newEmailAddress = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'ask eamil addr form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'ask eamil addr form',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -104,13 +105,9 @@ class EmailAddressesPage extends ConsumerWidget {
           data: (addresses) => buildAddresses(context, addresses),
           error: (e, s) {
             _log.severe('Failed to load email addresses', e, s);
-            return Center(
-              child: Text(lang.errorLoadingEmailAddresses(e)),
-            );
+            return Center(child: Text(lang.errorLoadingEmailAddresses(e)));
           },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
         ),
       ),
     );
@@ -133,10 +130,7 @@ class EmailAddressesPage extends ConsumerWidget {
                   padding: EdgeInsets.only(right: 10),
                   child: Icon(Atlas.envelope_question_thin),
                 ),
-                Text(
-                  lang.awaitingConfirmation,
-                  style: textTheme.headlineSmall,
-                ),
+                Text(lang.awaitingConfirmation, style: textTheme.headlineSmall),
               ],
             ),
           ),
@@ -154,10 +148,11 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (context, index) => EmailAddressCard(
-            emailAddress: addresses.unconfirmed[index],
-            isConfirmed: false,
-          ),
+          itemBuilder:
+              (context, index) => EmailAddressCard(
+                emailAddress: addresses.unconfirmed[index],
+                isConfirmed: false,
+              ),
           itemCount: addresses.unconfirmed.length,
         ),
       ];
@@ -176,10 +171,11 @@ class EmailAddressesPage extends ConsumerWidget {
             ),
           ),
           SliverList.builder(
-            itemBuilder: (context, index) => EmailAddressCard(
-              emailAddress: addresses.confirmed[index],
-              isConfirmed: true,
-            ),
+            itemBuilder:
+                (context, index) => EmailAddressCard(
+                  emailAddress: addresses.confirmed[index],
+                  isConfirmed: true,
+                ),
             itemCount: addresses.confirmed.length,
           ),
         ]);
@@ -202,10 +198,11 @@ class EmailAddressesPage extends ConsumerWidget {
           ),
         ),
         SliverList.builder(
-          itemBuilder: (context, index) => EmailAddressCard(
-            emailAddress: addresses.confirmed[index],
-            isConfirmed: true,
-          ),
+          itemBuilder:
+              (context, index) => EmailAddressCard(
+                emailAddress: addresses.confirmed[index],
+                isConfirmed: true,
+              ),
           itemCount: addresses.confirmed.length,
         ),
       ],

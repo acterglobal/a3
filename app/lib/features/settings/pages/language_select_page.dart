@@ -4,7 +4,7 @@ import 'package:acter/features/settings/model/language_model.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LanguageSelectPage extends ConsumerWidget {
@@ -14,10 +14,7 @@ class LanguageSelectPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return WithSidebar(
       sidebar: const SettingsPage(),
-      child: Scaffold(
-        appBar: _buildAppbar(context),
-        body: _buildBody(ref),
-      ),
+      child: Scaffold(appBar: _buildAppbar(context), body: _buildBody(ref)),
     );
   }
 

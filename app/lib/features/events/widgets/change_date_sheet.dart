@@ -7,7 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -22,10 +22,11 @@ void showChangeDateBottomSheet({
     showDragHandle: true,
     useSafeArea: true,
     context: context,
-    builder: (context) => ChangeDateSheet(
-      bottomSheetTitle: bottomSheetTitle,
-      calendarId: calendarId,
-    ),
+    builder:
+        (context) => ChangeDateSheet(
+          bottomSheetTitle: bottomSheetTitle,
+          calendarId: calendarId,
+        ),
   );
 }
 
@@ -65,8 +66,9 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
 
   // Apply existing data to fields
   Future<void> _setEditEventData() async {
-    final calendarEvent =
-        await ref.read(calendarEventProvider(widget.calendarId).future);
+    final calendarEvent = await ref.read(
+      calendarEventProvider(widget.calendarId).future,
+    );
     if (!mounted) return;
 
     // Getting start and end date time
@@ -147,9 +149,11 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                       ),
                       onTap: () => _selectDate(isStartDate: true),
                       // required field, space not allowed
-                      validator: (val) => val == null || val.trim().isEmpty
-                          ? lang.startDateRequired
-                          : null,
+                      validator:
+                          (val) =>
+                              val == null || val.trim().isEmpty
+                                  ? lang.startDateRequired
+                                  : null,
                     ),
                   ],
                 ),
@@ -171,9 +175,11 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                       ),
                       onTap: () => _selectTime(isStartTime: true),
                       // required field, space not allowed
-                      validator: (val) => val == null || val.trim().isEmpty
-                          ? lang.startTimeRequired
-                          : null,
+                      validator:
+                          (val) =>
+                              val == null || val.trim().isEmpty
+                                  ? lang.startTimeRequired
+                                  : null,
                     ),
                   ],
                 ),
@@ -199,9 +205,11 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                       ),
                       onTap: () => _selectDate(isStartDate: false),
                       // required field, space not allowed
-                      validator: (val) => val == null || val.trim().isEmpty
-                          ? lang.endDateRequired
-                          : null,
+                      validator:
+                          (val) =>
+                              val == null || val.trim().isEmpty
+                                  ? lang.endDateRequired
+                                  : null,
                     ),
                   ],
                 ),
@@ -223,9 +231,11 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
                       ),
                       onTap: () => _selectTime(isStartTime: false),
                       // required field, space not allowed
-                      validator: (val) => val == null || val.trim().isEmpty
-                          ? lang.endTimeRequired
-                          : null,
+                      validator:
+                          (val) =>
+                              val == null || val.trim().isEmpty
+                                  ? lang.endTimeRequired
+                                  : null,
                     ),
                   ],
                 ),
@@ -307,16 +317,21 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
     EasyLoading.show(status: lang.updatingDate);
     try {
       // We always have calendar object at this stage.
-      final calendarEvent =
-          await ref.read(calendarEventProvider(widget.calendarId).future);
+      final calendarEvent = await ref.read(
+        calendarEventProvider(widget.calendarId).future,
+      );
 
       // Replacing hours and minutes from DateTime
       // Start Date
-      final startDateTime =
-          calculateDateTimeWithHours(_selectedStartDate, _selectedStartTime);
+      final startDateTime = calculateDateTimeWithHours(
+        _selectedStartDate,
+        _selectedStartTime,
+      );
       // End Date
-      final endDateTime =
-          calculateDateTimeWithHours(_selectedEndDate, _selectedEndTime);
+      final endDateTime = calculateDateTimeWithHours(
+        _selectedEndDate,
+        _selectedEndTime,
+      );
 
       // Convert UTC time zone
       final utcStartDateTime = startDateTime.toUtc().toIso8601String();
@@ -329,11 +344,7 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
       final eventId = await updateBuilder.send();
       _log.info('Calendar Event updated $eventId');
 
-      await autosubscribe(
-        ref: ref,
-        objectId: eventId.toString(),
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: eventId.toString(), lang: lang);
 
       EasyLoading.dismiss();
 

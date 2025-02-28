@@ -8,7 +8,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -26,9 +26,7 @@ class UploadAvatarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: _buildBody(context, ref),
-    );
+    return Scaffold(body: _buildBody(context, ref));
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
@@ -86,10 +84,7 @@ class UploadAvatarPage extends ConsumerWidget {
           width: 150,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            border: Border.all(
-              width: 2,
-              color: colorScheme.onSurface,
-            ),
+            border: Border.all(width: 2, color: colorScheme.onSurface),
           ),
           child: Stack(
             alignment: Alignment.center,
@@ -103,10 +98,7 @@ class UploadAvatarPage extends ConsumerWidget {
                           backgroundImage: FileImage(File(filePath)),
                         ),
                       ) ??
-                      const Icon(
-                        Atlas.account,
-                        size: 50,
-                      );
+                      const Icon(Atlas.account, size: 50);
                 },
               ),
               Positioned.fill(
@@ -124,10 +116,7 @@ class UploadAvatarPage extends ConsumerWidget {
                       ),
                       color: colorScheme.surface,
                     ),
-                    child: const Icon(
-                      Icons.add,
-                      size: 16,
-                    ),
+                    child: const Icon(Icons.add, size: 16),
                   ),
                 ),
               ),

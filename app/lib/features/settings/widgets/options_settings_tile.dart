@@ -1,7 +1,7 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 typedef OnOptionSelect<T> = void Function(T value);
@@ -40,10 +40,7 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
     );
     return SettingsTile(
       onPressed: (context) => menuController.open(),
-      title: Text(
-        widget.title,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
+      title: Text(widget.title, style: Theme.of(context).textTheme.bodySmall),
       description: widget.explainer.map((explainer) => Text(explainer)),
       leading: widget.icon,
       trailing: MenuAnchor(
@@ -65,17 +62,15 @@ class __OptionsSettingsTileState<T> extends State<_OptionsSettingsTile<T>> {
         widget.onSelect.call(key);
         menuController.close();
       },
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-      trailing: widget.selected == key
-          ? Icon(
-              Atlas.check_circle,
-              size: 18,
-              color: Theme.of(context).colorScheme.onSurface,
-            )
-          : null,
+      title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+      trailing:
+          widget.selected == key
+              ? Icon(
+                Atlas.check_circle,
+                size: 18,
+                color: Theme.of(context).colorScheme.onSurface,
+              )
+              : null,
     );
   }
 }

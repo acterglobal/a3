@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class NewsMediaErrorWidget extends StatelessWidget {
   final NewsMediaErrorState errorState;
@@ -21,29 +21,14 @@ class NewsMediaErrorWidget extends StatelessWidget {
     Widget errorText;
 
     if (mediaType == 'image') {
-      errorIcon = Icon(
-        PhosphorIcons.imageBroken(),
-        size: 100,
-      );
-      errorText = Text(
-        L10n.of(context).unableToLoadImage,
-      );
-    } else if(mediaType == 'video'){
-      errorIcon = Icon(
-        Icons.videocam_off_outlined,
-        size: 100,
-      );
-      errorText = Text(
-        L10n.of(context).unableToLoadVideo,
-      );
-    }else{
-      errorIcon = Icon(
-        Icons.file_download_off,
-        size: 100,
-      );
-      errorText = Text(
-        L10n.of(context).unableToLoadFile,
-      );
+      errorIcon = Icon(PhosphorIcons.imageBroken(), size: 100);
+      errorText = Text(L10n.of(context).unableToLoadImage);
+    } else if (mediaType == 'video') {
+      errorIcon = Icon(Icons.videocam_off_outlined, size: 100);
+      errorText = Text(L10n.of(context).unableToLoadVideo);
+    } else {
+      errorIcon = Icon(Icons.file_download_off, size: 100);
+      errorText = Text(L10n.of(context).unableToLoadFile);
     }
 
     // Try again button
@@ -65,11 +50,7 @@ class NewsMediaErrorWidget extends StatelessWidget {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              errorIcon,
-              SizedBox(height: 10),
-              errorText,
-            ],
+            children: [errorIcon, SizedBox(height: 10), errorText],
           ),
         );
       case NewsMediaErrorState.showErrorWithTryAgain:

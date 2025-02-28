@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class PostAttachmentOptions extends StatelessWidget {
   final VoidCallback? onTapAddText;
@@ -23,9 +23,7 @@ class PostAttachmentOptions extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        ListTile(
-          title: Text(lang.newUpdate),
-        ),
+        ListTile(title: Text(lang.newUpdate)),
         ListTile(
           key: NewsUpdateKeys.addTextSlide,
           onTap: () {
@@ -57,10 +55,7 @@ class PostAttachmentOptions extends StatelessWidget {
           key: NewsUpdateKeys.cancelButton,
           onTap: () => Navigator.pop(context),
           contentPadding: EdgeInsets.zero,
-          title: Text(
-            lang.cancel,
-            textAlign: TextAlign.center,
-          ),
+          title: Text(lang.cancel, textAlign: TextAlign.center),
         ),
       ],
     );

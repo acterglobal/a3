@@ -2,7 +2,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -47,18 +47,20 @@ class InviteListItem extends StatelessWidget {
               );
             }
           },
-          trailing: firstRoom != null && onSelectInviteCode == null
-              ? IconButton(
-                  onPressed: () => context.pushNamed(
-                    Routes.shareInviteCode.name,
-                    queryParameters: {
-                      'inviteCode': token,
-                      'roomId': firstRoom,
-                    },
-                  ),
-                  icon: Icon(PhosphorIcons.share()),
-                )
-              : null,
+          trailing:
+              firstRoom != null && onSelectInviteCode == null
+                  ? IconButton(
+                    onPressed:
+                        () => context.pushNamed(
+                          Routes.shareInviteCode.name,
+                          queryParameters: {
+                            'inviteCode': token,
+                            'roomId': firstRoom,
+                          },
+                        ),
+                    icon: Icon(PhosphorIcons.share()),
+                  )
+                  : null,
         ),
       ),
     );

@@ -7,7 +7,7 @@ import 'package:acter/features/super_invites/widgets/redeem_token_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class InviteListPage extends ConsumerStatefulWidget {
@@ -85,7 +85,11 @@ class _InviteListPageState extends ConsumerState<InviteListPage> {
             notifier.state = '';
           },
         ),
-        Expanded(child: InviteListWidget(onSelectInviteCode: widget.onSelectInviteCode)),
+        Expanded(
+          child: InviteListWidget(
+            onSelectInviteCode: widget.onSelectInviteCode,
+          ),
+        ),
       ],
     );
   }

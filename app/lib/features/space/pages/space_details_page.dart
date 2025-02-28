@@ -24,7 +24,7 @@ import 'package:acter/features/space/widgets/space_toolbar.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_list_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -37,10 +37,7 @@ class SpaceDetailsPage extends ConsumerStatefulWidget {
 
   final String spaceId;
 
-  const SpaceDetailsPage({
-    super.key,
-    required this.spaceId,
-  });
+  const SpaceDetailsPage({super.key, required this.spaceId});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -112,9 +109,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              colorScheme.primary.withValues(alpha:0.7),
-              colorScheme.surface.withValues(alpha:0.5),
-              colorScheme.surface.withValues(alpha:0.1),
+              colorScheme.primary.withValues(alpha: 0.7),
+              colorScheme.surface.withValues(alpha: 0.5),
+              colorScheme.surface.withValues(alpha: 0.1),
               colorScheme.secondaryContainer,
             ],
             begin: Alignment.topCenter,
@@ -139,12 +136,13 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
           itemPositionsListener: itemPositionsListener,
 
           //Space Details Header UI
-          headerContainerBuilder: (context, menuBarWidget) =>
-              spaceHeaderUI(menuBarWidget),
+          headerContainerBuilder:
+              (context, menuBarWidget) => spaceHeaderUI(menuBarWidget),
 
           //Space Details Tab Menu UI
-          tabBuilder: (context, index, active) =>
-              spaceTabMenuUI(context, tabs[index], active),
+          tabBuilder:
+              (context, index, active) =>
+                  spaceTabMenuUI(context, tabs[index], active),
 
           //Space Details Page UI
           itemBuilder: (context, index) => spacePageUI(tabs[index]),
@@ -185,25 +183,26 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
         //Header Content UI
         ValueListenableBuilder(
           valueListenable: showHeader,
-          builder: (context, showHeader, child) => Stack(
-            children: [
-              AnimatedContainer(
-                height: showHeader ? null : 0,
-                curve: Curves.easeIn,
-                duration: const Duration(seconds: 1),
-                child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+          builder:
+              (context, showHeader, child) => Stack(
+                children: [
+                  AnimatedContainer(
+                    height: showHeader ? null : 0,
+                    curve: Curves.easeIn,
+                    duration: const Duration(seconds: 1),
+                    child: SpaceHeader(spaceIdOrAlias: widget.spaceId),
+                  ),
+                  AnimatedContainer(
+                    height: !showHeader ? null : 0,
+                    curve: Curves.easeOut,
+                    duration: const Duration(seconds: 1),
+                    child: SpaceToolbar(
+                      spaceId: widget.spaceId,
+                      spaceTitle: Text(displayName ?? ''),
+                    ),
+                  ),
+                ],
               ),
-              AnimatedContainer(
-                height: !showHeader ? null : 0,
-                curve: Curves.easeOut,
-                duration: const Duration(seconds: 1),
-                child: SpaceToolbar(
-                  spaceId: widget.spaceId,
-                  spaceTitle: Text(displayName ?? ''),
-                ),
-              ),
-            ],
-          ),
         ),
         //Append menu bar widget
         menuBarWidget,
@@ -215,10 +214,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
     final avatarData =
         ref.watch(roomAvatarProvider(widget.spaceId)).valueOrNull;
     if (avatarData == null) {
-      return Container(
-        height: 200,
-        color: Colors.red,
-      );
+      return Container(height: 200, color: Colors.red);
     }
     return Image.memory(
       avatarData.bytes,
@@ -231,15 +227,8 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spaceTabMenuUI(BuildContext context, TabEntry tabItem, bool active) {
     return Container(
       key: Key(tabItem.name),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
-      margin: const EdgeInsets.only(
-        left: 12,
-        top: 12,
-        bottom: 12,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: const EdgeInsets.only(left: 12, top: 12, bottom: 12),
       decoration: BoxDecoration(
         color: active ? Theme.of(context).colorScheme.primary : null,
         borderRadius: BorderRadius.circular(100),
@@ -270,38 +259,42 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
       TabEntry.news => NewsSection(spaceId: widget.spaceId),
       TabEntry.pins => PinListWidget(
-          pinListProvider: pinsProvider(widget.spaceId),
-          spaceId: widget.spaceId,
-          showSectionHeader: true,
-          limit: 3,
-          onClickSectionHeader: () => context.pushNamed(
-            Routes.spacePins.name,
-            pathParameters: {'spaceId': widget.spaceId},
-          ),
-        ),
+        pinListProvider: pinsProvider(widget.spaceId),
+        spaceId: widget.spaceId,
+        showSectionHeader: true,
+        limit: 3,
+        onClickSectionHeader:
+            () => context.pushNamed(
+              Routes.spacePins.name,
+              pathParameters: {'spaceId': widget.spaceId},
+            ),
+      ),
       TabEntry.tasks => TaskListWidget(
-          taskListProvider: taskListsProvider(widget.spaceId),
-          spaceId: widget.spaceId,
-          showSectionHeader: true,
-          limit: 3,
-          onClickSectionHeader: () => context.pushNamed(
-            Routes.spaceTasks.name,
-            pathParameters: {'spaceId': widget.spaceId},
-          ),
-        ),
+        taskListProvider: taskListsProvider(widget.spaceId),
+        spaceId: widget.spaceId,
+        showSectionHeader: true,
+        limit: 3,
+        onClickSectionHeader:
+            () => context.pushNamed(
+              Routes.spaceTasks.name,
+              pathParameters: {'spaceId': widget.spaceId},
+            ),
+      ),
       TabEntry.events => EventListWidget(
-          isShowSpaceName: false,
-          showSectionHeader: true,
-          listProvider: allEventSorted(widget.spaceId),
-          limit: 3,
-          onClickSectionHeader: () => context.pushNamed(
-            Routes.spaceEvents.name,
-            pathParameters: {'spaceId': widget.spaceId},
-          ),
-        ),
+        isShowSpaceName: false,
+        showSectionHeader: true,
+        listProvider: allEventSorted(widget.spaceId),
+        limit: 3,
+        onClickSectionHeader:
+            () => context.pushNamed(
+              Routes.spaceEvents.name,
+              pathParameters: {'spaceId': widget.spaceId},
+            ),
+      ),
       TabEntry.suggestedChats => SuggestedChatsSection(spaceId: widget.spaceId),
-      TabEntry.suggestedSpaces =>
-        SuggestedSpacesSection(spaceId: widget.spaceId),
+      TabEntry.suggestedSpaces => SuggestedSpacesSection(
+        spaceId: widget.spaceId,
+      ),
       TabEntry.chats => OtherChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => OtherSubSpacesSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),

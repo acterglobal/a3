@@ -5,29 +5,23 @@ import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SearchPublicDirectory extends ConsumerWidget {
   final String? query;
 
-  const SearchPublicDirectory({
-    super.key,
-    this.query,
-  });
+  const SearchPublicDirectory({super.key, this.query});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PublicRoomSearch(
       initialQuery: query,
       autofocus: true,
-      onSelected: (searchResult, searchServerName) => onSelectedKnown(
-        context,
-        ref,
-        searchResult,
-        searchServerName,
-      ),
+      onSelected:
+          (searchResult, searchServerName) =>
+              onSelectedKnown(context, ref, searchResult, searchServerName),
     );
   }
 

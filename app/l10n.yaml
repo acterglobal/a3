@@ -4,3 +4,4 @@ output-localization-file: l10n.dart
 output-class: L10n
 preferred-supported-locales: ["en"]
 nullable-getter: false
+synthetic-package: false

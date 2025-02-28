@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomHierarchyJoinButton extends ConsumerWidget {
@@ -33,53 +33,49 @@ class RoomHierarchyJoinButton extends ConsumerWidget {
     }
     return switch (joinRule) {
       'private' || 'invite' => Tooltip(
-          message: lang.youNeedBeInvitedToJoinThisRoom,
-          child: Chip(
-            label: Text(lang.private),
-          ),
-        ),
+        message: lang.youNeedBeInvitedToJoinThisRoom,
+        child: Chip(label: Text(lang.private)),
+      ),
       'restricted' => Tooltip(
-          message: lang.youAreAbleToJoinThisRoom,
-          child: OutlinedButton(
-            onPressed: () async {
-              final newRoomId = await joinRoom(
-                context: context,
-                ref: ref,
-                roomIdOrAlias: roomId,
-                serverNames: viaServerName,
-                roomName: roomName,
-              );
-              if (newRoomId != null) {
-                forward(newRoomId);
-              }
-            },
-            child: Text(lang.join),
-          ),
+        message: lang.youAreAbleToJoinThisRoom,
+        child: OutlinedButton(
+          onPressed: () async {
+            final newRoomId = await joinRoom(
+              context: context,
+              ref: ref,
+              roomIdOrAlias: roomId,
+              serverNames: viaServerName,
+              roomName: roomName,
+            );
+            if (newRoomId != null) {
+              forward(newRoomId);
+            }
+          },
+          child: Text(lang.join),
         ),
+      ),
       'public' => Tooltip(
-          message: lang.youAreAbleToJoinThisRoom,
-          child: OutlinedButton(
-            onPressed: () async {
-              final newRoomId = await joinRoom(
-                context: context,
-                ref: ref,
-                roomIdOrAlias: roomId,
-                serverNames: viaServerName,
-                roomName: roomName,
-              );
-              if (newRoomId != null) {
-                forward(newRoomId);
-              }
-            },
-            child: Text(lang.join),
-          ),
+        message: lang.youAreAbleToJoinThisRoom,
+        child: OutlinedButton(
+          onPressed: () async {
+            final newRoomId = await joinRoom(
+              context: context,
+              ref: ref,
+              roomIdOrAlias: roomId,
+              serverNames: viaServerName,
+              roomName: roomName,
+            );
+            if (newRoomId != null) {
+              forward(newRoomId);
+            }
+          },
+          child: Text(lang.join),
         ),
+      ),
       _ => Tooltip(
-          message: lang.unclearJoinRule(joinRule),
-          child: Chip(
-            label: Text(lang.unknown),
-          ),
-        ),
+        message: lang.unclearJoinRule(joinRule),
+        child: Chip(label: Text(lang.unknown)),
+      ),
     };
   }
 }

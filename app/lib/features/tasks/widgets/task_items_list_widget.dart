@@ -6,7 +6,7 @@ import 'package:acter/features/tasks/widgets/skeleton/task_items_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -79,16 +79,11 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
     final taskListId = widget.taskList.eventIdStr();
     return Container(
       alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: ActerInlineTextButton(
         key: Key('task-list-$taskListId-add-task-inline'),
-        onPressed: () => showCreateTaskBottomSheet(
-          context,
-          taskList: widget.taskList,
-        ),
+        onPressed:
+            () => showCreateTaskBottomSheet(context, taskList: widget.taskList),
         child: Text(L10n.of(context).addTask),
       ),
     );
@@ -105,21 +100,11 @@ class TaskItemsListWidgetState extends ConsumerState<TaskItemsListWidget> {
         const SizedBox(height: 10),
         Row(
           children: [
-            const Expanded(
-              child: Divider(
-                indent: 20,
-                endIndent: 20,
-              ),
-            ),
+            const Expanded(child: Divider(indent: 20, endIndent: 20)),
             Text(
               L10n.of(context).countTasksCompleted(overview.doneTasks.length),
             ),
-            const Expanded(
-              child: Divider(
-                indent: 20,
-                endIndent: 20,
-              ),
-            ),
+            const Expanded(child: Divider(indent: 20, endIndent: 20)),
           ],
         ),
         for (final taskId in overview.doneTasks)

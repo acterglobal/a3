@@ -12,7 +12,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -77,10 +77,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        children: [
-          _buildAppBar(context),
-          _buildRegisterPage(context),
-        ],
+        children: [_buildAppBar(context), _buildRegisterPage(context)],
       ),
     );
   }
@@ -146,10 +143,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          lang.onboardText,
-          style: textTheme.bodyMedium,
-        ),
+        Text(lang.onboardText, style: textTheme.bodyMedium),
       ],
     );
   }
@@ -167,8 +161,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           decoration: InputDecoration(hintText: lang.hintMessageDisplayName),
           style: Theme.of(context).textTheme.labelLarge,
           // required field, space not allowed
-          validator: (val) =>
-              val == null || val.trim().isEmpty ? lang.missingName : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty ? lang.missingName : null,
         ),
       ],
     );
@@ -235,13 +230,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
           ),
           obscureText: !_passwordVisible,
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
+          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           style: Theme.of(context).textTheme.labelLarge,
           // required field, space allowed
-          validator: (val) =>
-              val == null || val.isEmpty ? lang.emptyPassword : null,
+          validator:
+              (val) => val == null || val.isEmpty ? lang.emptyPassword : null,
         ),
       ],
     );
@@ -254,15 +247,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       children: [
         Row(
           children: [
-            Expanded(
-              child: Text(lang.inviteCode),
-            ),
+            Expanded(child: Text(lang.inviteCode)),
             IconButton(
               onPressed: showInviteCodeDialog,
-              icon: const Icon(
-                Atlas.question_chat,
-                size: 20,
-              ),
+              icon: const Icon(Atlas.question_chat, size: 20),
             ),
           ],
         ),
@@ -271,13 +259,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           key: RegisterPage.tokenField,
           controller: token,
           decoration: InputDecoration(hintText: lang.hintMessageInviteCode),
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
+          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           style: Theme.of(context).textTheme.labelLarge,
           // required field, space not allowed
-          validator: (val) =>
-              val == null || val.trim().isEmpty ? lang.emptyToken : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty ? lang.emptyToken : null,
         ),
       ],
     );
@@ -321,10 +308,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           const ClipboardData(text: 'organize'),
                         );
                       },
-                      icon: const Icon(
-                        Icons.copy,
-                        size: 20,
-                      ),
+                      icon: const Icon(Icons.copy, size: 20),
                     ),
                   ],
                 ),
@@ -352,28 +336,24 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         // Note: Styles for TextSpans must be explicitly defined.
         // Child text spans will inherit styles from parent
         children: <TextSpan>[
+          TextSpan(text: '${lang.termsText1} '),
           TextSpan(
-            text: '${lang.termsText1} ',
-          ),
-          TextSpan(
-            style: const TextStyle(
-              decoration: TextDecoration.underline,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                _log.info(lang.termsOfService);
-              },
+            style: const TextStyle(decoration: TextDecoration.underline),
+            recognizer:
+                TapGestureRecognizer()
+                  ..onTap = () {
+                    _log.info(lang.termsOfService);
+                  },
             text: lang.termsOfService,
           ),
           TextSpan(text: ' ${lang.and} '),
           TextSpan(
-            style: const TextStyle(
-              decoration: TextDecoration.underline,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                _log.info(lang.privacyPolicy);
-              },
+            style: const TextStyle(decoration: TextDecoration.underline),
+            recognizer:
+                TapGestureRecognizer()
+                  ..onTap = () {
+                    _log.info(lang.privacyPolicy);
+                  },
             text: lang.privacyPolicy,
           ),
         ],
@@ -384,17 +364,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget _buildSignUpButton(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     return authState
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
+        ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
-            key: RegisterPage.submitBtn,
-            onPressed: () => handleSubmit(context),
-            child: Text(
-              L10n.of(context).createProfile,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          );
+          key: RegisterPage.submitBtn,
+          onPressed: () => handleSubmit(context),
+          child: Text(
+            L10n.of(context).createProfile,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        );
   }
 
   Widget _buildLoginAccountButton(BuildContext context) {
@@ -402,10 +380,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          lang.haveProfile,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        Text(lang.haveProfile, style: Theme.of(context).textTheme.bodyMedium),
         ActerInlineTextButton(
           key: Keys.loginBtn,
           onPressed: () => context.goNamed(Routes.authLogin.name),

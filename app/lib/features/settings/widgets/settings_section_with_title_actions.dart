@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsSectionWithTitleActions extends AbstractSettingsSection {

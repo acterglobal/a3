@@ -11,7 +11,7 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -25,15 +25,17 @@ class BackupStateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isBackupFeatureEnabled =
-        ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
+    final isBackupFeatureEnabled = ref.watch(
+      isActiveProvider(LabsFeature.encryptionBackup),
+    );
 
     if (!isBackupFeatureEnabled) return SizedBox.shrink();
 
     return switch (ref.watch(backupStateProvider)) {
-      RecoveryState.enabled => allowDisabling
-          ? renderCanResetAction(context, ref)
-          : const SizedBox.shrink(), // nothing to see here. all good.
+      RecoveryState.enabled =>
+        allowDisabling
+            ? renderCanResetAction(context, ref)
+            : const SizedBox.shrink(), // nothing to see here. all good.
       RecoveryState.incomplete => renderRecoverAction(context, ref),
       RecoveryState.disabled => renderStartAction(context, ref),
       _ => renderUnknown(context, ref),
@@ -48,12 +50,7 @@ class BackupStateWidget extends ConsumerWidget {
         iconColor: warningColor,
         title: lang.encryptionBackupMissing,
         subtitle: lang.encryptionBackupMissingExplainer,
-        actions: [
-          OutlinedButton(
-            onPressed: null,
-            child: Text(lang.loading),
-          ),
-        ],
+        actions: [OutlinedButton(onPressed: null, child: Text(lang.loading))],
       ),
     );
   }
@@ -149,9 +146,7 @@ class BackupStateWidget extends ConsumerWidget {
       child: Column(
         children: [
           const LinearProgressIndicator(semanticsLabel: 'in progress'),
-          ListTile(
-            title: Text(currentState.toString()),
-          ),
+          ListTile(title: Text(currentState.toString())),
         ],
       ),
     );

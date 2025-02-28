@@ -6,7 +6,7 @@ import 'package:acter/features/deep_linking/widgets/item_preview_card.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,9 +26,10 @@ class ReferenceDetailsItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ObjectType? type = typeFromRefDetails(refDetails);
     return ItemPreviewCard(
-      title: type == ObjectType.space || type == ObjectType.chat
-          ? refDetails.roomDisplayName()
-          : refDetails.title(),
+      title:
+          type == ObjectType.space || type == ObjectType.chat
+              ? refDetails.roomDisplayName()
+              : refDetails.title(),
       refType: type,
       onTap: tapEnabled ? () => onTap(context, ref, type) : null,
       margin: margin,
@@ -58,7 +59,10 @@ class ReferenceDetailsItem extends ConsumerWidget {
           uri: Uri.parse(refDetails.generateInternalLink(false)),
         );
       },
-      headerInfo: type != ObjectType.space && type != ObjectType.chat ? headerInfo(context) : null,
+      headerInfo:
+          type != ObjectType.space && type != ObjectType.chat
+              ? headerInfo(context)
+              : null,
     );
   }
 

@@ -12,7 +12,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -46,7 +46,9 @@ class TaskListItemCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskList = ref.watch(taskListProvider(taskListId)).valueOrNull;
-    final isBookmarked = ref.watch(isBookmarkedProvider(BookmarkType.forTaskList(taskListId)));
+    final isBookmarked = ref.watch(
+      isBookmarkedProvider(BookmarkType.forTaskList(taskListId)),
+    );
     if (taskList != null) {
       return Card(
         margin: cardMargin,
@@ -80,27 +82,23 @@ class TaskListItemCard extends ConsumerWidget {
       initiallyExpanded: initiallyExpanded,
       leading: ActerIconWidget(
         iconSize: 30,
-        color: convertColor(
-          taskList.display()?.color(),
-          iconPickerColors[0],
-        ),
+        color: convertColor(taskList.display()?.color(), iconPickerColors[0]),
         icon: ActerIcon.iconForTask(taskList.display()?.iconStr()),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       iconColor: Theme.of(context).colorScheme.onSurface,
       childrenPadding: const EdgeInsets.symmetric(horizontal: 10),
       title: title(context, taskList),
       subtitle: subtitle(ref, taskList),
-      children: showOnlyTaskList
-          ? []
-          : [
-              TaskItemsListWidget(
-                taskList: taskList,
-                showCompletedTask: showCompletedTask,
-              ),
-            ],
+      children:
+          showOnlyTaskList
+              ? []
+              : [
+                TaskItemsListWidget(
+                  taskList: taskList,
+                  showCompletedTask: showCompletedTask,
+                ),
+              ],
     );
   }
 
@@ -120,15 +118,10 @@ class TaskListItemCard extends ConsumerWidget {
       ListTile(
         leading: ActerIconWidget(
           iconSize: 30,
-          color: convertColor(
-            taskList.display()?.color(),
-            iconPickerColors[0],
-          ),
+          color: convertColor(taskList.display()?.color(), iconPickerColors[0]),
           icon: ActerIcon.iconForTask(taskList.display()?.iconStr()),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         iconColor: Theme.of(context).colorScheme.onSurface,
         title: title(context, taskList),
         subtitle: subtitle(ref, taskList),
@@ -136,7 +129,8 @@ class TaskListItemCard extends ConsumerWidget {
 
   Widget title(BuildContext context, TaskList taskList) {
     return InkWell(
-      onTap: onTitleTap ??
+      onTap:
+          onTitleTap ??
           () {
             context.pushNamed(
               Routes.taskListDetails.name,
@@ -148,10 +142,7 @@ class TaskListItemCard extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            key: Key('task-list-title-$taskListId'),
-            taskList.name(),
-          ),
+          Text(key: Key('task-list-title-$taskListId'), taskList.name()),
           if (showTaskListIndication)
             Row(
               children: [

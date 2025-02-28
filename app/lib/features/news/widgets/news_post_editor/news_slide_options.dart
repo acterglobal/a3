@@ -10,7 +10,7 @@ import 'package:acter/features/news/widgets/news_post_editor/post_attachment_opt
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -79,9 +79,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
                         decoration: BoxDecoration(
                           color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
-                          border: currentSlide == slidePost
-                              ? Border.all(color: colorScheme.textColor)
-                              : null,
+                          border:
+                              currentSlide == slidePost
+                                  ? Border.all(color: colorScheme.textColor)
+                                  : null,
                         ),
                         child: getIconAsPerSlideType(
                           slidePost.type,
@@ -123,54 +124,50 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
     return Padding(
       padding: const EdgeInsets.all(12),
-      child: (newsPostSpaceId != null)
-          ? InkWell(
-              key: NewsUpdateKeys.selectSpace,
-              onTap: () async {
-                final notifier = ref.read(newsStateProvider.notifier);
-                await notifier.changeNewsPostSpaceId(context);
-              },
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.topRight,
-                children: [
-                  RoomAvatarBuilder(
-                    roomId: newsPostSpaceId,
-                    avatarSize: 42,
-                  ),
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      padding: const EdgeInsets.all(5),
-                      child: const Icon(
-                        Atlas.pencil_box,
-                        size: 12,
+      child:
+          (newsPostSpaceId != null)
+              ? InkWell(
+                key: NewsUpdateKeys.selectSpace,
+                onTap: () async {
+                  final notifier = ref.read(newsStateProvider.notifier);
+                  await notifier.changeNewsPostSpaceId(context);
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topRight,
+                  children: [
+                    RoomAvatarBuilder(roomId: newsPostSpaceId, avatarSize: 42),
+                    Positioned(
+                      top: -5,
+                      right: -5,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(5),
+                        child: const Icon(Atlas.pencil_box, size: 12),
                       ),
                     ),
+                  ],
+                ),
+              )
+              : OutlinedButton(
+                key: NewsUpdateKeys.selectSpace,
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                ],
+                ),
+                onPressed: () async {
+                  final notifier = ref.read(newsStateProvider.notifier);
+                  await notifier.changeNewsPostSpaceId(context);
+                },
+                child: Text(
+                  L10n.of(context).selectSpace,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
-            )
-          : OutlinedButton(
-              key: NewsUpdateKeys.selectSpace,
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.onSurface),
-              ),
-              onPressed: () async {
-                final notifier = ref.read(newsStateProvider.notifier);
-                await notifier.changeNewsPostSpaceId(context);
-              },
-              child: Text(
-                L10n.of(context).selectSpace,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
     );
   }
 
@@ -192,11 +189,12 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (context) => PostAttachmentOptions(
-        onTapAddText: () => NewsUtils.addTextSlide(ref: ref),
-        onTapImage: () async => await NewsUtils.addImageSlide(ref: ref),
-        onTapVideo: () async => await NewsUtils.addVideoSlide(ref: ref),
-      ),
+      builder:
+          (context) => PostAttachmentOptions(
+            onTapAddText: () => NewsUtils.addTextSlide(ref: ref),
+            onTapImage: () async => await NewsUtils.addImageSlide(ref: ref),
+            onTapVideo: () async => await NewsUtils.addVideoSlide(ref: ref),
+          ),
     );
   }
 
@@ -204,42 +202,36 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     return switch (slidePostType) {
       NewsSlideType.text => const Icon(Atlas.size_text),
       NewsSlideType.image => ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Image(
-            image: XFileImage(mediaFile.expect('image slide needs media file')),
-            fit: BoxFit.cover,
-          ),
+        borderRadius: BorderRadius.circular(5),
+        child: Image(
+          image: XFileImage(mediaFile.expect('image slide needs media file')),
+          fit: BoxFit.cover,
         ),
+      ),
       NewsSlideType.video => Stack(
-          fit: StackFit.expand,
-          children: [
-            FutureBuilder(
-              future: NewsUtils.getThumbnailData(
-                mediaFile.expect('video slide needs media file'),
-              ),
-              builder: (context, snapshot) {
-                final data = snapshot.data;
-                if (data != null) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.file(
-                      data,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+        fit: StackFit.expand,
+        children: [
+          FutureBuilder(
+            future: NewsUtils.getThumbnailData(
+              mediaFile.expect('video slide needs media file'),
             ),
-            Container(
-              color: Colors.black38,
-              child: const Icon(
-                Icons.play_arrow_outlined,
-                size: 32,
-              ),
-            ),
-          ],
-        ),
+            builder: (context, snapshot) {
+              final data = snapshot.data;
+              if (data != null) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.file(data, fit: BoxFit.cover),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          Container(
+            color: Colors.black38,
+            child: const Icon(Icons.play_arrow_outlined, size: 32),
+          ),
+        ],
+      ),
     };
   }
 }

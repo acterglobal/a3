@@ -4,7 +4,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class SasKeysExchangedView extends StatelessWidget {
   final String sender;
@@ -27,9 +27,7 @@ class SasKeysExchangedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
@@ -95,28 +93,29 @@ class SasKeysExchangedView extends StatelessWidget {
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       padding: EdgeInsets.zero,
-      children: emojis
-          .map(
-            (emoji) => GridTile(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text(
-                    String.fromCharCode(emoji.symbol()),
-                    style: const TextStyle(fontSize: 32),
-                    textAlign: TextAlign.center,
+      children:
+          emojis
+              .map(
+                (emoji) => GridTile(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text(
+                        String.fromCharCode(emoji.symbol()),
+                        style: const TextStyle(fontSize: 32),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        emoji.description(),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                  Text(
-                    emoji.description(),
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
+                ),
+              )
+              .toList(),
     );
   }
 

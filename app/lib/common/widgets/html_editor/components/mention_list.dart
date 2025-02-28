@@ -5,7 +5,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_item.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:flutter/material.dart';
@@ -27,22 +27,22 @@ class UserMentionList extends ConsumerWidget {
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) => MentionList(
-        roomId: roomId,
-        editorState: editorState,
-        onDismiss: onDismiss,
-        onShow: onShow,
-        // the actual provider
-        mentionsProvider: userMentionSuggestionsProvider(roomId),
-        avatarBuilder: (matchId, ref) {
-          final avatarInfo = ref.watch(
-            memberAvatarInfoProvider((roomId: roomId, userId: matchId)),
-          );
-          return AvatarOptions.DM(avatarInfo, size: 18);
-        },
-        // the fields
-        headerTitle: L10n.of(context).users,
-        notFoundTitle: L10n.of(context).noUserFoundTitle,
+    roomId: roomId,
+    editorState: editorState,
+    onDismiss: onDismiss,
+    onShow: onShow,
+    // the actual provider
+    mentionsProvider: userMentionSuggestionsProvider(roomId),
+    avatarBuilder: (matchId, ref) {
+      final avatarInfo = ref.watch(
+        memberAvatarInfoProvider((roomId: roomId, userId: matchId)),
       );
+      return AvatarOptions.DM(avatarInfo, size: 18);
+    },
+    // the fields
+    headerTitle: L10n.of(context).users,
+    notFoundTitle: L10n.of(context).noUserFoundTitle,
+  );
 }
 
 class RoomMentionList extends StatelessWidget {
@@ -60,20 +60,20 @@ class RoomMentionList extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => MentionList(
-        roomId: roomId,
-        editorState: editorState,
-        onDismiss: onDismiss,
-        onShow: onShow,
-        // the actual provider
-        mentionsProvider: roomMentionsSuggestionsProvider(roomId),
-        avatarBuilder: (matchId, ref) {
-          final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
-          return AvatarOptions(avatarInfo, size: 28);
-        },
-        // the fields
-        headerTitle: L10n.of(context).chats,
-        notFoundTitle: L10n.of(context).noChatsFound,
-      );
+    roomId: roomId,
+    editorState: editorState,
+    onDismiss: onDismiss,
+    onShow: onShow,
+    // the actual provider
+    mentionsProvider: roomMentionsSuggestionsProvider(roomId),
+    avatarBuilder: (matchId, ref) {
+      final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
+      return AvatarOptions(avatarInfo, size: 28);
+    },
+    // the fields
+    headerTitle: L10n.of(context).chats,
+    notFoundTitle: L10n.of(context).noChatsFound,
+  );
 }
 
 class MentionList extends ConsumerStatefulWidget {
@@ -163,35 +163,36 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
   }
 
   Widget _buildMenuHeader() => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(widget.headerTitle),
-      );
+    padding: const EdgeInsets.all(8.0),
+    child: Text(widget.headerTitle),
+  );
 
   Widget _buildMenuList(Map<String, String?> suggestions) {
     final String notFoundTitle = widget.notFoundTitle;
     final options = widget.avatarBuilder;
     return Flexible(
-      child: suggestions.isEmpty
-          ? Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(notFoundTitle),
-            )
-          : ListView.builder(
-              shrinkWrap: true,
-              controller: _scrollController,
-              itemCount: suggestions.length,
-              itemBuilder: (context, index) {
-                final mentionId = suggestions.keys.elementAt(index);
-                final displayName = suggestions.values.elementAt(index);
+      child:
+          suggestions.isEmpty
+              ? Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(notFoundTitle),
+              )
+              : ListView.builder(
+                shrinkWrap: true,
+                controller: _scrollController,
+                itemCount: suggestions.length,
+                itemBuilder: (context, index) {
+                  final mentionId = suggestions.keys.elementAt(index);
+                  final displayName = suggestions.values.elementAt(index);
 
-                return MentionItem(
-                  mentionId: mentionId,
-                  displayName: displayName,
-                  avatarOptions: options(mentionId, ref),
-                  onTap: () => _selectItem(mentionId, displayName),
-                );
-              },
-            ),
+                  return MentionItem(
+                    mentionId: mentionId,
+                    displayName: displayName,
+                    avatarOptions: options(mentionId, ref),
+                    onTap: () => _selectItem(mentionId, displayName),
+                  );
+                },
+              ),
     );
   }
 

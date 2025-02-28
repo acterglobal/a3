@@ -1,10 +1,11 @@
 import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
 import 'package:acter/features/room/model/room_visibility.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
-const Key selectVisibilityDrawerKey =
-    Key('space-widgets-select-visibility-drawer');
+const Key selectVisibilityDrawerKey = Key(
+  'space-widgets-select-visibility-drawer',
+);
 
 Future<RoomVisibility?> selectVisibilityDrawer({
   required BuildContext context,

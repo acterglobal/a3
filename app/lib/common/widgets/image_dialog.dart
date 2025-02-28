@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:acter/features/files/widgets/share_file_button.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
@@ -9,11 +9,7 @@ class ImageDialog extends ConsumerWidget {
   final String title;
   final File imageFile;
 
-  const ImageDialog({
-    super.key,
-    required this.title,
-    required this.imageFile,
-  });
+  const ImageDialog({super.key, required this.title, required this.imageFile});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,9 +23,7 @@ class ImageDialog extends ConsumerWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          actions: [
-            ShareFileButton(file: imageFile),
-          ],
+          actions: [ShareFileButton(file: imageFile)],
         ),
         body: Center(
           child: PinchZoomReleaseUnzoomWidget(

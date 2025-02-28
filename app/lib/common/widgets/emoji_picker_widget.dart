@@ -4,7 +4,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EmojiPickerWidget extends StatelessWidget {
@@ -37,38 +37,44 @@ class EmojiPickerWidget extends StatelessWidget {
       emojiSizeMax: EmojiConfig.emojiSizeMax,
     );
     final catConfig = CategoryViewConfig(
-      customCategoryView: (config, state, tab, page) =>
-          actionBar(context, emojiConfig, state, tab, page),
+      customCategoryView:
+          (config, state, tab, page) =>
+              actionBar(context, emojiConfig, state, tab, page),
     );
 
     final searchConfig = SearchViewConfig(
-      customSearchView: (_, state, showEmojiView) => _CustomSearchView(
-        Config(
-          emojiViewConfig: emojiConfig,
-          searchViewConfig: SearchViewConfig(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            buttonIconColor: Theme.of(context).colorScheme.onPrimary,
-            hintText: L10n.of(context).search,
+      customSearchView:
+          (_, state, showEmojiView) => _CustomSearchView(
+            Config(
+              emojiViewConfig: emojiConfig,
+              searchViewConfig: SearchViewConfig(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                buttonIconColor: Theme.of(context).colorScheme.onPrimary,
+                hintText: L10n.of(context).search,
+              ),
+              checkPlatformCompatibility:
+                  EmojiConfig.checkPlatformCompatibility,
+              emojiTextStyle: EmojiConfig.emojiTextStyle,
+            ),
+            state,
+            showEmojiView,
+            onClosePicker,
           ),
-          checkPlatformCompatibility: EmojiConfig.checkPlatformCompatibility,
-          emojiTextStyle: EmojiConfig.emojiTextStyle,
-        ),
-        state,
-        showEmojiView,
-        onClosePicker,
-      ),
     );
     return Container(
-      padding: withBoarder
-          ? const EdgeInsets.only(top: 10, left: 15, right: 15)
-          : null,
-      decoration: withBoarder
-          ? BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
-            )
-          : null,
+      padding:
+          withBoarder
+              ? const EdgeInsets.only(top: 10, left: 15, right: 15)
+              : null,
+      decoration:
+          withBoarder
+              ? BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+              )
+              : null,
       height: height,
       child: Column(
         children: [
@@ -110,39 +116,35 @@ class EmojiPickerWidget extends StatelessWidget {
     EmojiViewState state,
     TabController tabController,
     PageController pageController,
-  ) =>
-      Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          IconButton(
-            onPressed: state.onShowSearchView,
-            icon: Icon(PhosphorIcons.magnifyingGlass()),
-          ),
-          Expanded(
-            child: DefaultCategoryView(
-              Config(
-                emojiViewConfig: emojiConfig,
-                categoryViewConfig: CategoryViewConfig(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  initCategory: Category.RECENT,
-                ),
-              ),
-              state,
-              tabController,
-              pageController,
+  ) => Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      IconButton(
+        onPressed: state.onShowSearchView,
+        icon: Icon(PhosphorIcons.magnifyingGlass()),
+      ),
+      Expanded(
+        child: DefaultCategoryView(
+          Config(
+            emojiViewConfig: emojiConfig,
+            categoryViewConfig: CategoryViewConfig(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              initCategory: Category.RECENT,
             ),
           ),
-          if (onBackspacePressed != null)
-            IconButton(
-              onPressed: onBackspacePressed,
-              icon: Icon(PhosphorIcons.backspace()),
-            ),
-          IconButton(
-            onPressed: onClosePicker,
-            icon: Icon(PhosphorIcons.xCircle()),
-          ),
-        ],
-      );
+          state,
+          tabController,
+          pageController,
+        ),
+      ),
+      if (onBackspacePressed != null)
+        IconButton(
+          onPressed: onBackspacePressed,
+          icon: Icon(PhosphorIcons.backspace()),
+        ),
+      IconButton(onPressed: onClosePicker, icon: Icon(PhosphorIcons.xCircle())),
+    ],
+  );
 }
 
 /// Default Search implementation
@@ -167,10 +169,12 @@ class _CustomSearchViewState extends SearchViewState<_CustomSearchView> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final emojiSize =
-            widget.config.emojiViewConfig.getEmojiSize(constraints.maxWidth);
-        final emojiBoxSize =
-            widget.config.emojiViewConfig.getEmojiBoxSize(constraints.maxWidth);
+        final emojiSize = widget.config.emojiViewConfig.getEmojiSize(
+          constraints.maxWidth,
+        );
+        final emojiBoxSize = widget.config.emojiViewConfig.getEmojiBoxSize(
+          constraints.maxWidth,
+        );
 
         return Container(
           color: widget.config.searchViewConfig.backgroundColor,
@@ -193,55 +197,49 @@ class _CustomSearchViewState extends SearchViewState<_CustomSearchView> {
   }
 
   Widget _renderResultRow(double emojiSize, double emojiBoxSize) => Row(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              scrollDirection: Axis.horizontal,
-              itemCount: results.length,
-              itemBuilder: (context, index) {
-                return buildEmoji(
-                  results[index],
-                  emojiSize,
-                  emojiBoxSize,
-                );
-              },
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              widget.closePicker();
-            },
-            color: widget.config.searchViewConfig.buttonIconColor,
-            icon: Icon(PhosphorIcons.xCircle()),
-          ),
-        ],
-      );
+    children: [
+      Expanded(
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          scrollDirection: Axis.horizontal,
+          itemCount: results.length,
+          itemBuilder: (context, index) {
+            return buildEmoji(results[index], emojiSize, emojiBoxSize);
+          },
+        ),
+      ),
+      IconButton(
+        onPressed: () {
+          widget.closePicker();
+        },
+        color: widget.config.searchViewConfig.buttonIconColor,
+        icon: Icon(PhosphorIcons.xCircle()),
+      ),
+    ],
+  );
 
   Widget _renderSearchBox() => Row(
-        children: [
-          IconButton(
-            onPressed: () {
-              widget.showEmojiView();
-            },
-            color: widget.config.searchViewConfig.buttonIconColor,
-            icon: const Icon(
-              Icons.arrow_back,
-            ),
+    children: [
+      IconButton(
+        onPressed: () {
+          widget.showEmojiView();
+        },
+        color: widget.config.searchViewConfig.buttonIconColor,
+        icon: const Icon(Icons.arrow_back),
+      ),
+      Expanded(
+        child: TextField(
+          onChanged: onTextInputChanged,
+          focusNode: focusNode,
+          style: widget.config.searchViewConfig.inputTextStyle,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: widget.config.searchViewConfig.hintText,
+            hintStyle: widget.config.searchViewConfig.hintTextStyle,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           ),
-          Expanded(
-            child: TextField(
-              onChanged: onTextInputChanged,
-              focusNode: focusNode,
-              style: widget.config.searchViewConfig.inputTextStyle,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: widget.config.searchViewConfig.hintText,
-                hintStyle: widget.config.searchViewConfig.hintTextStyle,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ),
-          ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 }

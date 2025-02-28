@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 void showEncryptionInfoBottomSheet({required BuildContext context}) {
@@ -41,10 +41,7 @@ class EncryptionInfoSheet extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Text(
-            lang.encryptedChatMessageInfo,
-            style: textTheme.bodySmall,
-          ),
+          Text(lang.encryptedChatMessageInfo, style: textTheme.bodySmall),
           const SizedBox(height: 20),
           OutlinedButton(
             onPressed: () => Navigator.pop(context),

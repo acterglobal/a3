@@ -3,7 +3,7 @@ import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 class InvitesPage extends ConsumerWidget {
   const InvitesPage({super.key});
@@ -11,8 +11,10 @@ class InvitesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar:
-          AppBar(centerTitle: false, title: Text(L10n.of(context).invitations)),
+      appBar: AppBar(
+        centerTitle: false,
+        title: Text(L10n.of(context).invitations),
+      ),
       body: _buildBody(context, ref),
     );
   }
@@ -29,9 +31,9 @@ class InvitesPage extends ConsumerWidget {
       );
     }
     return ListView.builder(
-      itemBuilder: (context, index) => InvitationItemWidget(
-        invitation: invitations[index],
-      ),
+      itemBuilder:
+          (context, index) =>
+              InvitationItemWidget(invitation: invitations[index]),
       itemCount: invitations.length,
     );
   }

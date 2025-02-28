@@ -7,7 +7,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -23,11 +23,12 @@ Future<bool> openCloseRoomDialog({
   final removedRoom = await showAdaptiveDialog(
     context: context,
     useRootNavigator: false,
-    builder: (context) => _CloseRoomConfirmation(
-      roomId: roomId,
-      cancelBtnKey: cancelBtnKey,
-      confirmBtnKey: confirmBtnKey,
-    ),
+    builder:
+        (context) => _CloseRoomConfirmation(
+          roomId: roomId,
+          cancelBtnKey: cancelBtnKey,
+          confirmBtnKey: confirmBtnKey,
+        ),
   );
   if (removedRoom && context.mounted) {
     // redirect the user after the process is done
@@ -109,10 +110,9 @@ class _CloseRoomConfirmationState
         const SizedBox(height: 10),
         Text(
           lang.closingRoomTitle,
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: Theme.of(context).colorScheme.error),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.error,
+          ),
         ),
         const SizedBox(height: 5),
         Text(
@@ -129,13 +129,15 @@ class _CloseRoomConfirmationState
     try {
       final myUserId = ref.read(myUserIdStrProvider);
       final room = await ref.read(maybeRoomProvider(widget.roomId).future);
-      final myMembership =
-          await ref.read(roomMembershipProvider(widget.roomId).future);
+      final myMembership = await ref.read(
+        roomMembershipProvider(widget.roomId).future,
+      );
       if (room == null || myMembership == null) throw RoomNotFound();
 
       final myPowerLevel = myMembership.powerLevel();
-      final memberIds =
-          await ref.read(membersIdsProvider(widget.roomId).future);
+      final memberIds = await ref.read(
+        membersIdsProvider(widget.roomId).future,
+      );
       final total = memberIds.length;
       var kicked = 0;
       var skipped = 0;
@@ -183,8 +185,9 @@ class _CloseRoomConfirmationState
             skippedParents += 1;
             continue;
           }
-          final myParentMembership =
-              await ref.read(roomMembershipProvider(parents[i]).future);
+          final myParentMembership = await ref.read(
+            roomMembershipProvider(parents[i]).future,
+          );
 
           if (myParentMembership?.canString('CanLinkSpaces') != true) {
             skippedParents += 1;

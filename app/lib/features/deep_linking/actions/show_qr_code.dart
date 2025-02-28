@@ -33,7 +33,7 @@ class _ShowQrCode extends StatelessWidget {
               shape: PrettyQrSmoothSymbol(
                 color: Theme.of(context).colorScheme.inversePrimary,
               ),
-              background: Theme.of(context).dialogBackgroundColor,
+              background: Theme.of(context).dialogTheme.backgroundColor,
               image: const PrettyQrDecorationImage(
                 image: AssetImage('assets/icon/logo.png'),
               ),

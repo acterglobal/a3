@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showAddEditLinkBottomSheet({
@@ -151,11 +151,13 @@ class _PinLinkBottomSheet extends ConsumerState<LinkBottomSheet> {
           minLines: 1,
           maxLines: 1,
           // required field, space not allowed, custom format
-          validator: (val) => val == null || val.trim().isEmpty
-              ? lang.pleaseEnterALink
-              : !isValidUrl(val)
-                  ? lang.pleaseEnterAValidLink
-                  : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty
+                      ? lang.pleaseEnterALink
+                      : !isValidUrl(val)
+                      ? lang.pleaseEnterAValidLink
+                      : null,
         ),
       ],
     );

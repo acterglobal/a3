@@ -9,15 +9,17 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::member::user');
 
-final userAvatarProvider =
-    FutureProvider.family<MemoryImage?, UserProfile>((ref, user) async {
+final userAvatarProvider = FutureProvider.family<MemoryImage?, UserProfile>((
+  ref,
+  user,
+) async {
   if (user.hasAvatar()) {
     try {
       final data = (await user.getAvatar(null)).data();
@@ -31,8 +33,10 @@ final userAvatarProvider =
   return null;
 });
 
-final userAvatarInfoProvider =
-    Provider.family<AvatarInfo, UserProfile>((ref, user) {
+final userAvatarInfoProvider = Provider.family<AvatarInfo, UserProfile>((
+  ref,
+  user,
+) {
   final displayName = user.displayName();
   final avatarData = ref.watch(userAvatarProvider(user)).valueOrNull;
 
@@ -103,12 +107,7 @@ class UserBuilder extends ConsumerWidget {
         onTap: onTap,
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
-        leading: ActerAvatar(
-          options: AvatarOptions.DM(
-            avatarInfo,
-            size: 18,
-          ),
-        ),
+        leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18)),
         trailing: _renderTrailing(context, ref),
       ),
     );
@@ -122,15 +121,8 @@ class UserBuilder extends ConsumerWidget {
     if (!includeUserJoinState) return null;
     return roomId.map((rId) {
       final room = ref.watch(maybeRoomProvider(rId)).valueOrNull;
-      return room.map(
-            (r) => UserStateButton(
-              userId: userId,
-              room: r,
-            ),
-          ) ??
-          const Skeletonizer(
-            child: Text('user'),
-          );
+      return room.map((r) => UserStateButton(userId: userId, room: r)) ??
+          const Skeletonizer(child: Text('user'));
     });
   }
 
@@ -144,65 +136,38 @@ class UserBuilder extends ConsumerWidget {
 
     Widget sharedRoomsRow = switch (sharedRooms.length) {
       1 => Wrap(
-          children: [
-            Text(
-              lang.youAreBothIn,
-              style: style,
-            ), //lang.youAreBothIn),
-            _RoomName(roomId: sharedRooms[0]),
-          ],
-        ),
+        children: [
+          Text(lang.youAreBothIn, style: style), //lang.youAreBothIn),
+          _RoomName(roomId: sharedRooms[0]),
+        ],
+      ),
       2 => Wrap(
-          children: [
-            Text(
-              lang.youAreBothIn,
-              style: style,
-            ), //lang.youAreBothIn),
-            _RoomName(roomId: sharedRooms[0]),
-            Text(
-              lang.andSeparator,
-              style: style,
-            ),
-            _RoomName(roomId: sharedRooms[1]),
-          ],
-        ),
+        children: [
+          Text(lang.youAreBothIn, style: style), //lang.youAreBothIn),
+          _RoomName(roomId: sharedRooms[0]),
+          Text(lang.andSeparator, style: style),
+          _RoomName(roomId: sharedRooms[1]),
+        ],
+      ),
       3 => Wrap(
-          children: [
-            Text(
-              lang.youAreBothIn,
-              style: style,
-            ), //lang.youAreBothIn),
-            _RoomName(roomId: sharedRooms[0]),
-            const Text(
-              ', ',
-              style: style,
-            ),
-            _RoomName(roomId: sharedRooms[1]),
-            Text(
-              lang.andSeparator,
-              style: style,
-            ),
-            _RoomName(roomId: sharedRooms[2]),
-          ],
-        ),
+        children: [
+          Text(lang.youAreBothIn, style: style), //lang.youAreBothIn),
+          _RoomName(roomId: sharedRooms[0]),
+          const Text(', ', style: style),
+          _RoomName(roomId: sharedRooms[1]),
+          Text(lang.andSeparator, style: style),
+          _RoomName(roomId: sharedRooms[2]),
+        ],
+      ),
       _ => Wrap(
-          children: [
-            Text(
-              lang.youAreBothIn,
-              style: style,
-            ), //lang.youAreBothIn),
-            _RoomName(roomId: sharedRooms[0]),
-            const Text(
-              ', ',
-              style: style,
-            ),
-            _RoomName(roomId: sharedRooms[1]),
-            Text(
-              lang.andNMore(sharedRooms.length - 2),
-              style: style,
-            ),
-          ],
-        ),
+        children: [
+          Text(lang.youAreBothIn, style: style), //lang.youAreBothIn),
+          _RoomName(roomId: sharedRooms[0]),
+          const Text(', ', style: style),
+          _RoomName(roomId: sharedRooms[1]),
+          Text(lang.andNMore(sharedRooms.length - 2), style: style),
+        ],
+      ),
     };
 
     return Column(
@@ -210,10 +175,7 @@ class UserBuilder extends ConsumerWidget {
       children: [
         tile,
         Padding(
-          padding: const EdgeInsets.only(
-            left: 25,
-            bottom: 10,
-          ),
+          padding: const EdgeInsets.only(left: 25, bottom: 10),
           child: sharedRoomsRow,
         ),
       ],
@@ -246,18 +208,11 @@ class UserStateButton extends ConsumerWidget {
   final String userId;
   final Room room;
 
-  const UserStateButton({
-    super.key,
-    required this.room,
-    required this.userId,
-  });
+  const UserStateButton({super.key, required this.room, required this.userId});
 
   Future<void> _handleInvite(BuildContext context) async {
     final lang = L10n.of(context);
-    EasyLoading.show(
-      status: lang.invitingLoading(userId),
-      dismissOnTap: false,
-    );
+    EasyLoading.show(status: lang.invitingLoading(userId), dismissOnTap: false);
     try {
       await room.inviteUser(userId);
       EasyLoading.dismiss();
@@ -274,9 +229,10 @@ class UserStateButton extends ConsumerWidget {
       dismissOnTap: false,
     );
     try {
-      final member = ref
-          .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
-          .valueOrNull;
+      final member =
+          ref
+              .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
+              .valueOrNull;
       if (member != null) {
         await member.kick('Cancel Invite');
       }

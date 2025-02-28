@@ -21,7 +21,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -79,39 +79,37 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     final size = MediaQuery.of(context).size;
     return context.isLargeScreen
         ? Container(
-            width: size.width * 0.5,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(12),
-            ),
+          width: size.width * 0.5,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: PageView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: (index) {
+              setState(() {
+                currIdx = index;
+              });
+            },
+            controller: controller,
+            itemBuilder: ((context, index) => pages[currIdx]),
+          ),
+        )
+        : GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanDown: (_) => FocusScope.of(context).requestFocus(FocusNode()),
+          child: DecoratedBox(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
             child: PageView.builder(
               physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (index) {
-                setState(() {
-                  currIdx = index;
-                });
+                setState(() => currIdx = index);
               },
               controller: controller,
               itemBuilder: ((context, index) => pages[currIdx]),
             ),
-          )
-        : GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onPanDown: (_) => FocusScope.of(context).requestFocus(FocusNode()),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: PageView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  setState(() => currIdx = index);
-                },
-                controller: controller,
-                itemBuilder: ((context, index) => pages[currIdx]),
-              ),
-            ),
-          );
+          ),
+        );
   }
 
   /// Create Room Method
@@ -132,8 +130,9 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     );
     if (roomIdStr != null) {
       try {
-        final convo = await (await ref.read(alwaysClientProvider.future))
-            .convoWithRetry(roomIdStr, 120);
+        final convo = await (await ref.read(
+          alwaysClientProvider.future,
+        )).convoWithRetry(roomIdStr, 120);
         EasyLoading.showToast(roomCreated);
         return convo;
       } catch (e, s) {
@@ -148,7 +147,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
 class _CreateChatWidget extends ConsumerStatefulWidget {
   final PageController controller;
   final Future<ffi.Convo?> Function(String?, String?, List<String>)
-      onCreateConvo;
+  onCreateConvo;
 
   const _CreateChatWidget({
     required this.controller,
@@ -165,9 +164,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(lang.newChat),
-      ),
+      appBar: AppBar(title: Text(lang.newChat)),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -188,9 +185,7 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
           renderSelectedUsers(context),
           renderPrimaryAction(context),
           const SizedBox(height: 15),
-          Expanded(
-            child: renderFoundUsers(context),
-          ),
+          Expanded(child: renderFoundUsers(context)),
         ],
       ),
     );
@@ -288,39 +283,35 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: ListTile(
-        onTap: selectedUsers.isEmpty
-            ? () => widget.controller.animateToPage(
+        onTap:
+            selectedUsers.isEmpty
+                ? () => widget.controller.animateToPage(
                   1,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.ease,
                 )
-            : () => onPrimaryAction(selectedUsers),
+                : () => onPrimaryAction(selectedUsers),
         contentPadding: EdgeInsets.zero,
-        leading: selectedUsers.isEmpty
-            ? ActerAvatar(
-                options: const AvatarOptions(
-                  AvatarInfo(
-                    uniqueId: '#',
-                    tooltip: TooltipStyle.None,
+        leading:
+            selectedUsers.isEmpty
+                ? ActerAvatar(
+                  options: const AvatarOptions(
+                    AvatarInfo(uniqueId: '#', tooltip: TooltipStyle.None),
+                    size: 48,
                   ),
-                  size: 48,
-                ),
-              )
-            : selectedUsers.length > 1
+                )
+                : selectedUsers.length > 1
                 ? CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    radius: 28,
-                    child: const Icon(Atlas.team_group),
-                  )
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  radius: 28,
+                  child: const Icon(Atlas.team_group),
+                )
                 : renderSingleAvatar(selectedUsers[0]),
         title: Text(
           _makeTitle(ref),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        trailing: const Icon(
-          Icons.chevron_right_outlined,
-          size: 24,
-        ),
+        trailing: const Icon(Icons.chevron_right_outlined, size: 24),
       ),
     );
   }
@@ -348,8 +339,9 @@ class _CreateChatWidgetConsumerState extends ConsumerState<_CreateChatWidget> {
           onTap: () {
             final users = ref.read(createChatSelectedUsersProvider);
             if (!users.contains(profile)) {
-              final notifier =
-                  ref.read(createChatSelectedUsersProvider.notifier);
+              final notifier = ref.read(
+                createChatSelectedUsersProvider.notifier,
+              );
               notifier.update((state) => [...state, profile]);
             }
           },
@@ -428,7 +420,7 @@ class _CreateRoomFormWidget extends ConsumerStatefulWidget {
   final String? initialSelectedSpaceId;
   final PageController controller;
   final Future<ffi.Convo?> Function(String?, String?, List<String>)
-      onCreateConvo;
+  onCreateConvo;
 
   const _CreateRoomFormWidget({
     required this.controller,
@@ -470,10 +462,7 @@ class _CreateRoomFormWidgetConsumerState
     final lang = L10n.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 18,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
       child: ListView(
         shrinkWrap: true,
         children: <Widget>[
@@ -484,10 +473,11 @@ class _CreateRoomFormWidgetConsumerState
               Visibility(
                 visible: widget.controller.initialPage == 0,
                 child: InkWell(
-                  onTap: () => widget.controller.previousPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.ease,
-                  ),
+                  onTap:
+                      () => widget.controller.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      ),
                   child: const Icon(Icons.chevron_left),
                 ),
               ),
@@ -519,12 +509,13 @@ class _CreateRoomFormWidgetConsumerState
                         color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: avatarUpload.isNotEmpty
-                          ? Image.file(
-                              File(avatarUpload),
-                              fit: BoxFit.cover,
-                            )
-                          : const Icon(Atlas.up_arrow_from_bracket_thin),
+                      child:
+                          avatarUpload.isNotEmpty
+                              ? Image.file(
+                                File(avatarUpload),
+                                fit: BoxFit.cover,
+                              )
+                              : const Icon(Atlas.up_arrow_from_bracket_thin),
                     ),
                   ),
                 ],

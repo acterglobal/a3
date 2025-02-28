@@ -10,7 +10,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -20,10 +20,7 @@ final _log = Logger('a3::pins::fake_link_attachment_item');
 class FakeLinkAttachmentItem extends ConsumerWidget {
   final String pinId;
 
-  const FakeLinkAttachmentItem({
-    super.key,
-    required this.pinId,
-  });
+  const FakeLinkAttachmentItem({super.key, required this.pinId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,14 +28,10 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
     final pinData = ref.watch(pinProvider(pinId));
     return pinData.when(
       data: (pin) => fakeLinkAttachmentItemUI(context, ref, pin),
-      loading: () => Skeletonizer(
-        child: Text(lang.loadingPin),
-      ),
+      loading: () => Skeletonizer(child: Text(lang.loadingPin)),
       error: (e, s) {
         _log.severe('Error loading pin', e, s);
-        return Text(
-          lang.errorLoadingPin(e),
-        );
+        return Text(lang.errorLoadingPin(e));
       },
     );
   }

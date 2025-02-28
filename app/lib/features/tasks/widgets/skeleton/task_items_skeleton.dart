@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class TaskItemsSkeleton extends StatelessWidget {
@@ -9,11 +9,7 @@ class TaskItemsSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeletonizer(
       child: Column(
-        children: [
-          taskItem(context),
-          taskItem(context),
-          taskItem(context),
-        ],
+        children: [taskItem(context), taskItem(context), taskItem(context)],
       ),
     );
   }

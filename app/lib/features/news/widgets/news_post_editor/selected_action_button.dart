@@ -12,7 +12,7 @@ import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -21,10 +21,7 @@ final _log = Logger('a3::news::add');
 class SelectedActionButton extends ConsumerWidget {
   final RefDetails? refDetails;
 
-  const SelectedActionButton({
-    super.key,
-    this.refDetails,
-  });
+  const SelectedActionButton({super.key, this.refDetails});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +46,9 @@ class SelectedActionButton extends ConsumerWidget {
   ) {
     final refObjectId = refDetails!.targetIdStr();
     if (refObjectId == null) return SizedBox();
-    return ref.watch(calendarEventProvider(refObjectId)).when(
+    return ref
+        .watch(calendarEventProvider(refObjectId))
+        .when(
           data: (calendarEvent) {
             return SizedBox(
               width: 300,
@@ -63,15 +62,10 @@ class SelectedActionButton extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const SizedBox(
-            width: 300,
-            child: EventItemSkeleton(),
-          ),
+          loading: () => const SizedBox(width: 300, child: EventItemSkeleton()),
           error: (e, s) {
             _log.severe('Failed to load cal event', e, s);
-            return Center(
-              child: Text(L10n.of(context).failedToLoadEvent(e)),
-            );
+            return Center(child: Text(L10n.of(context).failedToLoadEvent(e)));
           },
         );
   }
@@ -83,7 +77,9 @@ class SelectedActionButton extends ConsumerWidget {
   ) {
     final refObjectId = refDetails!.targetIdStr();
     if (refObjectId == null) return SizedBox();
-    return ref.watch(pinProvider(refObjectId)).when(
+    return ref
+        .watch(pinProvider(refObjectId))
+        .when(
           data: (pin) {
             return SizedBox(
               width: 300,
@@ -97,15 +93,10 @@ class SelectedActionButton extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const SizedBox(
-            width: 300,
-            child: EventItemSkeleton(),
-          ),
+          loading: () => const SizedBox(width: 300, child: EventItemSkeleton()),
           error: (e, s) {
             _log.severe('Failed to load cal event', e, s);
-            return Center(
-              child: Text(L10n.of(context).failedToLoadEvent(e)),
-            );
+            return Center(child: Text(L10n.of(context).failedToLoadEvent(e)));
           },
         );
   }
@@ -117,7 +108,9 @@ class SelectedActionButton extends ConsumerWidget {
   ) {
     final refObjectId = refDetails!.targetIdStr();
     if (refObjectId == null) return SizedBox();
-    return ref.watch(taskListProvider(refObjectId)).when(
+    return ref
+        .watch(taskListProvider(refObjectId))
+        .when(
           data: (taskList) {
             return SizedBox(
               width: 300,
@@ -133,21 +126,19 @@ class SelectedActionButton extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const SizedBox(
-            width: 300,
-            child: TasksListSkeleton(),
-          ),
+          loading: () => const SizedBox(width: 300, child: TasksListSkeleton()),
           error: (e, s) {
             _log.severe('Failed to load task list', e, s);
-            return Center(
-              child: Text(L10n.of(context).errorLoadingTasks(e)),
-            );
+            return Center(child: Text(L10n.of(context).errorLoadingTasks(e)));
           },
         );
   }
 
   Widget linkActionButton(
-      BuildContext context, WidgetRef ref, RefDetails refDetail,) {
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
     final uri = refDetail.uri();
     if (uri == null) return SizedBox.shrink();
     return SizedBox(
@@ -210,7 +201,11 @@ class SelectedActionButton extends ConsumerWidget {
     );
   }
 
-  Widget superInviteCodeActionButton(BuildContext context, WidgetRef ref, RefDetails refDetail) {
+  Widget superInviteCodeActionButton(
+    BuildContext context,
+    WidgetRef ref,
+    RefDetails refDetail,
+  ) {
     final superInvite = refDetail.title();
     if (superInvite == null) return SizedBox.shrink();
     return SizedBox(
@@ -237,5 +232,4 @@ class SelectedActionButton extends ConsumerWidget {
       ),
     );
   }
-
 }

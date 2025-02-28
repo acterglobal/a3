@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/widgets/visibility/visibility_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class RoomWithAvatarInfoCard extends StatelessWidget {
@@ -167,7 +167,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
   Widget buildRoomItemView(BuildContext context) {
     final title =
         avatarInfo.displayName.map((name) => name.isNotEmpty ? name : roomId) ??
-            roomId;
+        roomId;
 
     final avatar = ActerAvatar(
       options: AvatarOptions(
@@ -202,10 +202,7 @@ class RoomWithAvatarInfoCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  Text(title, overflow: TextOverflow.ellipsis),
                   buildSubtitle(context) ?? const SizedBox.shrink(),
                 ],
               ),

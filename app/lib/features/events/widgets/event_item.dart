@@ -12,7 +12,7 @@ import 'package:acter/features/events/widgets/event_date_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CalendarEvent, RefDetails, RsvpStatusTag;
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -57,40 +57,43 @@ class EventItem extends ConsumerWidget {
     WidgetRef ref,
     CalendarEvent event,
   ) {
-    final isBookmarked = ref.watch(isBookmarkedProvider(BookmarkType.forEvent(eventId)));
+    final isBookmarked = ref.watch(
+      isBookmarkedProvider(BookmarkType.forEvent(eventId)),
+    );
     return InkWell(
       key: eventItemClick,
       onTap: () {
         final eventId = event.eventId().toString();
         onTapEventItem.map(
           (cb) => cb(eventId),
-          orElse: () => context.pushNamed(
-            Routes.calendarEvent.name,
-            pathParameters: {'calendarId': eventId},
-          ),
+          orElse:
+              () => context.pushNamed(
+                Routes.calendarEvent.name,
+                pathParameters: {'calendarId': eventId},
+              ),
         );
       },
       child: Stack(
         children: [
           buildEventItemView(context, ref, event),
-          if (isBookmarked)
-            buildEventBookmarkView(context),
+          if (isBookmarked) buildEventBookmarkView(context),
         ],
       ),
     );
   }
 
-  Widget buildEventItemView(BuildContext context, WidgetRef ref, CalendarEvent event) {
+  Widget buildEventItemView(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarEvent event,
+  ) {
     final eventType = ref.watch(eventTypeProvider(event));
     return Card(
       margin: margin,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          EventDateWidget(
-            calendarEvent: event,
-            eventType: eventType,
-          ),
+          EventDateWidget(calendarEvent: event, eventType: eventType),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -141,7 +144,7 @@ class EventItem extends ConsumerWidget {
   ) {
     String eventSpaceName =
         ref.watch(roomDisplayNameProvider(event.roomIdStr())).valueOrNull ??
-            L10n.of(context).unknown;
+        L10n.of(context).unknown;
     String eventDateTime = '${formatDate(event)} (${formatTime(event)})';
     return Text(
       isShowSpaceName ? eventSpaceName : eventDateTime,
@@ -167,15 +170,10 @@ class EventItem extends ConsumerWidget {
       error: (e, s) {
         _log.severe('Failed to load RSVP status', e, s);
         return Chip(
-          label: Text(
-            lang.errorLoadingRsvpStatus(e),
-            softWrap: true,
-          ),
+          label: Text(lang.errorLoadingRsvpStatus(e), softWrap: true),
         );
       },
-      loading: () => Chip(
-        label: Text(lang.loadingRsvpStatus),
-      ),
+      loading: () => Chip(label: Text(lang.loadingRsvpStatus)),
     );
   }
 
@@ -183,13 +181,10 @@ class EventItem extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return switch (status) {
       RsvpStatusTag.Yes => Icon(
-          Icons.check_circle,
-          color: colorScheme.secondary,
-        ),
-      RsvpStatusTag.No => Icon(
-          Icons.cancel,
-          color: colorScheme.error,
-        ),
+        Icons.check_circle,
+        color: colorScheme.secondary,
+      ),
+      RsvpStatusTag.No => Icon(Icons.cancel, color: colorScheme.error),
       RsvpStatusTag.Maybe => const Icon(Icons.question_mark_rounded),
       _ => null,
     };
@@ -198,10 +193,7 @@ class EventItem extends ConsumerWidget {
   Widget _buildHappeningIndication(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 2,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: colorScheme.secondary,
         borderRadius: const BorderRadius.all(Radius.circular(100)),

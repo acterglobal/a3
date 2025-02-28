@@ -3,7 +3,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -25,8 +25,9 @@ class RoomAvatar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //Fetch room conversations details from roomId
-    final isDm =
-        ref.watch(chatProvider(roomId).select((c) => c.valueOrNull?.isDm()));
+    final isDm = ref.watch(
+      chatProvider(roomId).select((c) => c.valueOrNull?.isDm()),
+    );
     if (isDm == null) {
       // means we are still in loading
       return SizedBox(
@@ -38,19 +39,17 @@ class RoomAvatar extends ConsumerWidget {
     return SizedBox(
       width: avatarSize,
       height: avatarSize,
-      child: isDm == true
-          ? dmAvatar(ref, context)
-          : groupChatAvatarUI(ref, context),
+      child:
+          isDm == true
+              ? dmAvatar(ref, context)
+              : groupChatAvatarUI(ref, context),
     );
   }
 
   Widget errorAvatar(String error) {
     return ActerAvatar(
       options: AvatarOptions(
-        AvatarInfo(
-          uniqueId: 'error',
-          displayName: error,
-        ),
+        AvatarInfo(uniqueId: 'error', displayName: error),
         size: avatarSize,
         badgesSize: avatarSize / 2,
       ),
@@ -94,8 +93,9 @@ class RoomAvatar extends ConsumerWidget {
         // handle empty list first, in case.
         if (count == 0) {
           return errorAvatar(
-            L10n.of(context)
-                .loadingMembersCountFailed('failed to fetched room: null'),
+            L10n.of(
+              context,
+            ).loadingMembersCountFailed('failed to fetched room: null'),
           );
         }
         //Show member avatar
@@ -109,7 +109,6 @@ class RoomAvatar extends ConsumerWidget {
             return memberAvatar(members[1], ref);
           }
         }
-
         //Show multiple member avatars
         else {
           return groupAvatarDM(members, ref);

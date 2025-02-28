@@ -12,17 +12,14 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class NewsSlideActions extends ConsumerWidget {
   final NewsSlide newsSlide;
 
-  const NewsSlideActions({
-    super.key,
-    required this.newsSlide,
-  });
+  const NewsSlideActions({super.key, required this.newsSlide});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,36 +31,42 @@ class NewsSlideActions extends ConsumerWidget {
     final roomId = referenceDetails.roomIdStr() ?? '';
     return switch (evtType) {
       NewsReferencesType.calendarEvent => EventItem(
-          eventId: id,
-          refDetails: referenceDetails,
-        ),
+        eventId: id,
+        refDetails: referenceDetails,
+      ),
       NewsReferencesType.pin => PinListItemWidget(
-          pinId: id,
-          refDetails: referenceDetails,
-          showPinIndication: true,
-        ),
+        pinId: id,
+        refDetails: referenceDetails,
+        showPinIndication: true,
+      ),
       NewsReferencesType.taskList => TaskListItemCard(
-          taskListId: id,
-          refDetails: referenceDetails,
-          showOnlyTaskList: true,
-          canExpand: false,
-          showTaskListIndication: true,
-        ),
-      NewsReferencesType.link =>
-        renderLinkActionButton(context, ref, referenceDetails),
+        taskListId: id,
+        refDetails: referenceDetails,
+        showOnlyTaskList: true,
+        canExpand: false,
+        showTaskListIndication: true,
+      ),
+      NewsReferencesType.link => renderLinkActionButton(
+        context,
+        ref,
+        referenceDetails,
+      ),
       NewsReferencesType.space => RoomCard(
-          roomId: roomId,
-          refDetails: referenceDetails,
-        ),
+        roomId: roomId,
+        refDetails: referenceDetails,
+      ),
       NewsReferencesType.chat => RoomCard(
-          roomId: roomId,
-          refDetails: referenceDetails,
-          onTap: () {
-            goToChat(context, roomId);
-          },
-        ),
-      NewsReferencesType.superInvite =>
-        renderInvitationCodeActionButton(context, ref, referenceDetails),
+        roomId: roomId,
+        refDetails: referenceDetails,
+        onTap: () {
+          goToChat(context, roomId);
+        },
+      ),
+      NewsReferencesType.superInvite => renderInvitationCodeActionButton(
+        context,
+        ref,
+        referenceDetails,
+      ),
       _ => renderNotSupportedAction(context),
     };
   }
@@ -81,10 +84,7 @@ class NewsSlideActions extends ConsumerWidget {
     }
     if (referenceDetails.title() == 'shareEvent' && uri.startsWith('\$')) {
       // fallback support for older, badly formatted calendar events.
-      return EventItem(
-        eventId: uri,
-        refDetails: referenceDetails,
-      );
+      return EventItem(eventId: uri, refDetails: referenceDetails);
     }
 
     final title = referenceDetails.title();
@@ -93,11 +93,7 @@ class NewsSlideActions extends ConsumerWidget {
         child: ListTile(
           leading: const Icon(Atlas.link),
           onTap: () => openLink(ref, uri, context),
-          title: Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
           subtitle: Text(
             uri,
             maxLines: 2,
@@ -134,26 +130,16 @@ class NewsSlideActions extends ConsumerWidget {
         leading: const Icon(Atlas.ticket_coupon),
         onTap: () async {
           try {
-            final token =
-                await ref.read(superInviteTokenProvider(title).future);
+            final token = await ref.read(
+              superInviteTokenProvider(title).future,
+            );
             if (!context.mounted) return;
-            context.pushNamed(
-              Routes.createSuperInvite.name,
-              extra: token,
-            );
+            context.pushNamed(Routes.createSuperInvite.name, extra: token);
           } catch (e) {
-            await showReedemTokenDialog(
-              context,
-              ref,
-              title,
-            );
+            await showReedemTokenDialog(context, ref, title);
           }
         },
-        title: Text(
-          title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
+        title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
         subtitle: Text(
           L10n.of(context).inviteCode,
           maxLines: 2,

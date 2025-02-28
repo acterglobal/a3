@@ -7,7 +7,7 @@ import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -32,27 +32,15 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Card(
         child: ListTile(
-          onTap: () => onSelectedMatch(
-            context,
-            ref,
-            [server],
-            alias: alias,
-          ),
+          onTap: () => onSelectedMatch(context, ref, [server], alias: alias),
           title: Text(alias),
           subtitle: Text('${lang.on} $server'),
           trailing: OutlinedButton.icon(
-            onPressed: () => onSelectedMatch(
-              context,
-              ref,
-              [server],
-              alias: alias,
-            ),
+            onPressed:
+                () => onSelectedMatch(context, ref, [server], alias: alias),
             icon: const Icon(Atlas.entrance_thin),
             label: Text(lang.tryToJoin),
           ),
@@ -72,48 +60,43 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     if (roomWatch.valueOrNull == null) {
       return Card(
         child: ListTile(
-          onTap: () => onSelectedMatch(
-            context,
-            ref,
-            servers,
-            roomId: roomId,
-          ),
+          onTap: () => onSelectedMatch(context, ref, servers, roomId: roomId),
           title: Text(roomId),
-          subtitle: servers.isNotEmpty
-              ? Text('${lang.via} ${servers.join(', ')}')
-              : null,
+          subtitle:
+              servers.isNotEmpty
+                  ? Text('${lang.via} ${servers.join(', ')}')
+                  : null,
           trailing: OutlinedButton.icon(
-            onPressed: () => onSelectedMatch(
-              context,
-              ref,
-              servers,
-              roomId: roomId,
-            ),
+            onPressed:
+                () => onSelectedMatch(context, ref, servers, roomId: roomId),
             icon: const Icon(Atlas.entrance_thin),
             label: Text(lang.tryToJoin),
           ),
         ),
       );
     }
-    final room =
-        roomWatch.value.expect('could not get room from id without domain');
+    final room = roomWatch.value.expect(
+      'could not get room from id without domain',
+    );
 
     if (room.isJoined()) {
       return room.isSpace()
           ? renderRoomCard(
-              roomId,
-              onTap: () => context.pushNamed(
-                Routes.space.name,
-                pathParameters: {'spaceId': roomId},
-              ),
-            )
+            roomId,
+            onTap:
+                () => context.pushNamed(
+                  Routes.space.name,
+                  pathParameters: {'spaceId': roomId},
+                ),
+          )
           : renderRoomCard(
-              roomId,
-              onTap: () => context.pushNamed(
-                Routes.chatroom.name,
-                pathParameters: {'roomId': roomId},
-              ),
-            );
+            roomId,
+            onTap:
+                () => context.pushNamed(
+                  Routes.chatroom.name,
+                  pathParameters: {'roomId': roomId},
+                ),
+          );
     }
 
     return renderRoomCard(
@@ -132,22 +115,12 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     if (room.joinRuleStr() == 'Public') {
       return OutlinedButton(
-        onPressed: () => onSelectedMatch(
-          context,
-          ref,
-          servers,
-          roomId: roomId,
-        ),
+        onPressed: () => onSelectedMatch(context, ref, servers, roomId: roomId),
         child: Text(lang.join),
       );
     } else {
       return OutlinedButton(
-        onPressed: () => onSelectedMatch(
-          context,
-          ref,
-          servers,
-          roomId: roomId,
-        ),
+        onPressed: () => onSelectedMatch(context, ref, servers, roomId: roomId),
         child: Text(lang.requestToJoin),
       );
     }
@@ -177,7 +150,8 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final aliased = aliasedHttpRegexp.firstMatch(searchVal) ??
+    final aliased =
+        aliasedHttpRegexp.firstMatch(searchVal) ??
         idAliasRegexp.firstMatch(searchVal);
     if (canMatchAlias && aliased != null) {
       final alias = aliased
@@ -189,22 +163,22 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
       return renderAliased(context, ref, alias, server);
     }
 
-    final id = idHttpRegexp.firstMatch(searchVal) ??
+    final id =
+        idHttpRegexp.firstMatch(searchVal) ??
         idMatrixRegexp.firstMatch(searchVal);
 
     if (canMatchId && id != null) {
-      final roomId =
-          id.namedGroup('id').expect('could not extract id from search value');
-      final List<String> servers = [
-        id.namedGroup('server_name') ?? '',
-        id.namedGroup('server_name2') ?? '',
-        id.namedGroup('server_name3') ?? '',
-      ].where((e) => e.isNotEmpty).toList();
+      final roomId = id
+          .namedGroup('id')
+          .expect('could not extract id from search value');
+      final List<String> servers =
+          [
+            id.namedGroup('server_name') ?? '',
+            id.namedGroup('server_name2') ?? '',
+            id.namedGroup('server_name3') ?? '',
+          ].where((e) => e.isNotEmpty).toList();
       return Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: renderForRoomId(context, ref, '!$roomId', servers),
       );
     }

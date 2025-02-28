@@ -7,16 +7,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:breadcrumbs/breadcrumbs.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SessionCard extends ConsumerWidget {
   final DeviceRecord deviceRecord;
 
-  const SessionCard({
-    super.key,
-    required this.deviceRecord,
-  });
+  const SessionCard({super.key, required this.deviceRecord});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,62 +36,53 @@ class SessionCard extends ConsumerWidget {
     }
     crumbs.add(deviceRecord.deviceId().toString());
     return Card(
-      margin: const EdgeInsets.symmetric(
-        vertical: 2,
-        horizontal: 15,
-      ),
+      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 15),
       child: ListTile(
-        leading: isVerified
-            ? Icon(
-                Atlas.check_shield_thin,
-                color: colorScheme.success,
-              )
-            : Icon(
-                Atlas.xmark_shield_thin,
-                color: colorScheme.error,
-              ),
+        leading:
+            isVerified
+                ? Icon(Atlas.check_shield_thin, color: colorScheme.success)
+                : Icon(Atlas.xmark_shield_thin, color: colorScheme.error),
         title: Text(deviceRecord.displayName() ?? ''),
         subtitle: Breadcrumbs(
-          crumbs: [
-            for (final crumb in crumbs) TextSpan(text: crumb),
-          ],
+          crumbs: [for (final crumb in crumbs) TextSpan(text: crumb)],
           separator: ' - ',
         ),
         trailing: PopupMenuButton(
-          itemBuilder: (context) => <PopupMenuEntry>[
-            PopupMenuItem(
-              onTap: () async => await onLogout(context, ref),
-              child: Row(
-                children: [
-                  const Icon(Atlas.exit_thin),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                      lang.logOut,
-                      style: textTheme.labelSmall,
-                      softWrap: false,
-                    ),
+          itemBuilder:
+              (context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  onTap: () async => await onLogout(context, ref),
+                  child: Row(
+                    children: [
+                      const Icon(Atlas.exit_thin),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(
+                          lang.logOut,
+                          style: textTheme.labelSmall,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              onTap: () async => await onVerify(context, ref),
-              child: Row(
-                children: [
-                  const Icon(Atlas.shield_exclamation_thin),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Text(
-                      lang.verifySession,
-                      style: textTheme.labelSmall,
-                      softWrap: false,
-                    ),
+                ),
+                PopupMenuItem(
+                  onTap: () async => await onVerify(context, ref),
+                  child: Row(
+                    children: [
+                      const Icon(Atlas.shield_exclamation_thin),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(
+                          lang.verifySession,
+                          style: textTheme.labelSmall,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
+                ),
+              ],
         ),
       ),
     );

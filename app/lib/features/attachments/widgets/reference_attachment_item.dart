@@ -6,7 +6,7 @@ import 'package:acter/features/tasks/widgets/task_list_item_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Attachment;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 // Attachment item UI for References
 class ReferenceAttachmentItem extends ConsumerWidget {
@@ -35,26 +35,26 @@ class ReferenceAttachmentItem extends ConsumerWidget {
 
     final objectWidget = switch (refObjectType) {
       'pin' => PinListItemWidget(
-          pinId: refObjectId,
-          refDetails: refDetails,
-          showPinIndication: true,
-          cardMargin: EdgeInsets.zero,
-        ),
+        pinId: refObjectId,
+        refDetails: refDetails,
+        showPinIndication: true,
+        cardMargin: EdgeInsets.zero,
+      ),
       'calendar-event' => EventItem(
-          eventId: refObjectId,
-          refDetails: refDetails,
-          margin: EdgeInsets.zero,
-        ),
+        eventId: refObjectId,
+        refDetails: refDetails,
+        margin: EdgeInsets.zero,
+      ),
       'task-list' => TaskListItemCard(
-          taskListId: refObjectId,
-          refDetails: refDetails,
-          showOnlyTaskList: true,
-          canExpand: false,
-          showTaskListIndication: true,
-          cardMargin: EdgeInsets.zero,
-        ),
-      'space' => RoomCard(roomId: roomId,refDetails: refDetails,),
-      'chat' => RoomCard(roomId: roomId,refDetails: refDetails,),
+        taskListId: refObjectId,
+        refDetails: refDetails,
+        showOnlyTaskList: true,
+        canExpand: false,
+        showTaskListIndication: true,
+        cardMargin: EdgeInsets.zero,
+      ),
+      'space' => RoomCard(roomId: roomId, refDetails: refDetails),
+      'chat' => RoomCard(roomId: roomId, refDetails: refDetails),
       _ => defaultWidget,
     };
     return Container(
@@ -71,27 +71,28 @@ class ReferenceAttachmentItem extends ConsumerWidget {
             PopupMenuButton<String>(
               key: const Key('attachment-item-menu-options'),
               icon: const Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                PopupMenuItem<String>(
-                  key: const Key('attachment-delete'),
-                  onTap: () {
-                    openRedactContentDialog(
-                      context,
-                      eventId: eventId,
-                      roomId: roomId,
-                      title: lang.removeReference,
-                      description: lang.removeReferenceConfirmation,
-                      isSpace: true,
-                    );
-                  },
-                  child: Text(
-                    lang.remove,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+              itemBuilder:
+                  (context) => [
+                    PopupMenuItem<String>(
+                      key: const Key('attachment-delete'),
+                      onTap: () {
+                        openRedactContentDialog(
+                          context,
+                          eventId: eventId,
+                          roomId: roomId,
+                          title: lang.removeReference,
+                          description: lang.removeReferenceConfirmation,
+                          isSpace: true,
+                        );
+                      },
+                      child: Text(
+                        lang.remove,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
             ),
         ],
       ),

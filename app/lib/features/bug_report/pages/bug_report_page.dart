@@ -6,7 +6,7 @@ import 'package:acter/features/bug_report/actions/submit_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -82,9 +82,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       String? issueId = _getIssueId(reportUrl);
       loadingNotifier.update((state) => false);
       if (context.mounted) {
-        final status = issueId != null
-            ? lang.reportedBugSuccessful(issueId)
-            : lang.thanksForReport;
+        final status =
+            issueId != null
+                ? lang.reportedBugSuccessful(issueId)
+                : lang.thanksForReport;
         EasyLoading.showToast(status);
       }
       return true;
@@ -109,9 +110,7 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       child: Form(
         key: formKey,
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(lang.bugReportTitle),
-          ),
+          appBar: AppBar(title: Text(lang.bugReportTitle)),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -122,11 +121,15 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                 TextFormField(
                   key: BugReportPage.titleField,
                   controller: titleController,
-                  decoration:
-                      InputDecoration(hintText: lang.bugReportDescription),
+                  decoration: InputDecoration(
+                    hintText: lang.bugReportDescription,
+                  ),
                   // required field, space allowed
-                  validator: (val) =>
-                      val == null || val.isEmpty ? lang.emptyDescription : null,
+                  validator:
+                      (val) =>
+                          val == null || val.isEmpty
+                              ? lang.emptyDescription
+                              : null,
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -143,39 +146,32 @@ class _BugReportState extends ConsumerState<BugReportPage> {
                   key: BugReportPage.includeUserId,
                   title: Text(lang.includeUserId),
                   value: withUserId,
-                  onChanged: (bool? value) => setState(() {
-                    withUserId = value ?? true;
-                  }),
+                  onChanged:
+                      (bool? value) => setState(() {
+                        withUserId = value ?? true;
+                      }),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
-                const Divider(
-                  endIndent: 10,
-                  indent: 10,
-                ),
+                const Divider(endIndent: 10, indent: 10),
                 ...renderErrorOptions(),
                 ...renderLogOptions(),
                 ...renderForScreenShot(),
-                const Divider(
-                  endIndent: 10,
-                  indent: 10,
-                ),
+                const Divider(endIndent: 10, indent: 10),
                 const SizedBox(height: 10),
                 isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
+                    ? const Center(child: CircularProgressIndicator())
                     : ActerPrimaryActionButton(
-                        key: BugReportPage.submitBtn,
-                        onPressed: () async {
-                          if (!formKey.currentState!.validate()) return;
-                          if (!await reportBug(context)) return;
-                          if (!context.mounted) return;
-                          if (context.canPop()) {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(lang.submit),
-                      ),
+                      key: BugReportPage.submitBtn,
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) return;
+                        if (!await reportBug(context)) return;
+                        if (!context.mounted) return;
+                        if (context.canPop()) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Text(lang.submit),
+                    ),
               ],
             ),
           ),
@@ -190,9 +186,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
       CheckboxListTile(
         title: Text(L10n.of(context).includeErrorAndStackTrace),
         value: submitErrorAndStackTrace,
-        onChanged: (bool? value) => setState(() {
-          submitErrorAndStackTrace = value ?? true;
-        }),
+        onChanged:
+            (bool? value) => setState(() {
+              submitErrorAndStackTrace = value ?? true;
+            }),
         controlAffinity: ListTileControlAffinity.leading,
       ),
     ];
@@ -205,18 +202,20 @@ class _BugReportState extends ConsumerState<BugReportPage> {
         key: BugReportPage.includeLog,
         title: Text(lang.includeLog),
         value: withLogFile,
-        onChanged: (bool? value) => setState(() {
-          withLogFile = value ?? true;
-        }),
+        onChanged:
+            (bool? value) => setState(() {
+              withLogFile = value ?? true;
+            }),
         controlAffinity: ListTileControlAffinity.leading,
       ),
       CheckboxListTile(
         key: BugReportPage.includePrevLog,
         title: Text(lang.includePrevLog),
         value: withPrevLogFile,
-        onChanged: (bool? value) => setState(() {
-          withPrevLogFile = value ?? true;
-        }),
+        onChanged:
+            (bool? value) => setState(() {
+              withPrevLogFile = value ?? true;
+            }),
         controlAffinity: ListTileControlAffinity.leading,
       ),
     ];
@@ -231,9 +230,10 @@ class _BugReportState extends ConsumerState<BugReportPage> {
               key: BugReportPage.includeScreenshot,
               title: Text(lang.includeScreenshot),
               value: withScreenshot,
-              onChanged: (bool? value) => setState(() {
-                withScreenshot = value ?? true;
-              }),
+              onChanged:
+                  (bool? value) => setState(() {
+                    withScreenshot = value ?? true;
+                  }),
               controlAffinity: ListTileControlAffinity.leading,
             ),
             const SizedBox(height: 10),

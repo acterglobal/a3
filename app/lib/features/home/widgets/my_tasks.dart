@@ -4,7 +4,7 @@ import 'package:acter/features/space/widgets/space_sections/section_header.dart'
 import 'package:acter/features/tasks/widgets/task_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -14,10 +14,7 @@ final _log = Logger('a3::home::my_tasks');
 class MyTasksSection extends ConsumerWidget {
   final int limit;
 
-  const MyTasksSection({
-    super.key,
-    required this.limit,
-  });
+  const MyTasksSection({super.key, required this.limit});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,10 +36,9 @@ class MyTasksSection extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              separatorBuilder: (context, index) => const Divider(
-                color: Colors.white24,
-                indent: 30,
-              ),
+              separatorBuilder:
+                  (context, index) =>
+                      const Divider(color: Colors.white24, indent: 30),
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 return TaskItem(

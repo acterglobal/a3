@@ -4,7 +4,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
@@ -63,18 +63,23 @@ class _DueChipState extends State<DueChip> {
     final textStyle =
         widget.baseTextStyle ?? Theme.of(context).textTheme.bodySmall;
     return dueDate.map((date) {
-          final dateText =
-              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
-          final label = date.isToday
-              ? lang.dueToday
-              : date.isTomorrow
+          final dateText = DateFormat(
+            DateFormat.YEAR_MONTH_WEEKDAY_DAY,
+          ).format(date);
+          final label =
+              date.isToday
+                  ? lang.dueToday
+                  : date.isTomorrow
                   ? lang.dueTomorrow
                   : date.isPast
-                      ? date.timeago()
-                      : lang.due(dateText);
-          final dueTheme = date.isPast
-              ? textStyle?.copyWith(color: Theme.of(context).colorScheme.error)
-              : null;
+                  ? date.timeago()
+                  : lang.due(dateText);
+          final dueTheme =
+              date.isPast
+                  ? textStyle?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  )
+                  : null;
           return Chip(
             visualDensity: widget.visualDensity,
             label: Text(
@@ -101,7 +106,8 @@ class _DueChipState extends State<DueChip> {
       final updater = widget.task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
       if (newDue.includeTime) {
-        final seconds = newDue.due.hour * 60 * 60 +
+        final seconds =
+            newDue.due.hour * 60 * 60 +
             newDue.due.minute * 60 +
             newDue.due.second;
         // adapt the timezone value

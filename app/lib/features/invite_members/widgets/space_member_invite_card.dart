@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SpaceMemberInviteCard extends ConsumerWidget {
@@ -36,14 +36,9 @@ class SpaceMemberInviteCard extends ConsumerWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: ListTile(
-        title: Text(
-          title,
-          style: textTheme.titleSmall,
-        ),
+        title: Text(title, style: textTheme.titleSmall),
         subtitle: FutureBuilder(
           future: ref.watch(membersIdsProvider(roomId).future),
           builder: (context, snapshot) {
@@ -56,10 +51,7 @@ class SpaceMemberInviteCard extends ConsumerWidget {
         ),
         leading: avatar,
         onTap: () => onChanged(!isSelected),
-        trailing: Checkbox(
-          value: isSelected,
-          onChanged: onChanged,
-        ),
+        trailing: Checkbox(value: isSelected, onChanged: onChanged),
       ),
     );
   }

@@ -15,7 +15,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -45,7 +45,8 @@ class BubbleBuilder extends ConsumerWidget {
     final inputNotifier = ref.read(chatInputProvider.notifier);
     String? eventType = message.metadata?['eventType'];
     bool isMemberEvent = eventType == 'm.room.member';
-    bool redactedOrEncrypted = (message is types.CustomMessage) &&
+    bool redactedOrEncrypted =
+        (message is types.CustomMessage) &&
         (eventType == 'm.room.redaction' || eventType == 'm.room.encrypted');
 
     return Column(
@@ -55,28 +56,30 @@ class BubbleBuilder extends ConsumerWidget {
         isMemberEvent
             ? child
             : SwipeTo(
-                onRightSwipe: redactedOrEncrypted
-                    ? null
-                    : (DragUpdateDetails details) {
+              onRightSwipe:
+                  redactedOrEncrypted
+                      ? null
+                      : (DragUpdateDetails details) {
                         inputNotifier.setReplyToMessage(message);
                       },
-                iconOnRightSwipe: Icons.reply_rounded,
-                onLeftSwipe: redactedOrEncrypted
-                    ? null
-                    : isAuthor
-                        ? (DragUpdateDetails details) {
-                            inputNotifier.setEditMessage(message);
-                          }
-                        : null,
-                iconOnLeftSwipe: Atlas.pencil_edit_thin,
-                child: _ChatBubble(
-                  roomId: roomId,
-                  message: message,
-                  nextMessageInGroup: nextMessageInGroup,
-                  enlargeEmoji: enlargeEmoji,
-                  child: child,
-                ),
+              iconOnRightSwipe: Icons.reply_rounded,
+              onLeftSwipe:
+                  redactedOrEncrypted
+                      ? null
+                      : isAuthor
+                      ? (DragUpdateDetails details) {
+                        inputNotifier.setEditMessage(message);
+                      }
+                      : null,
+              iconOnLeftSwipe: Atlas.pencil_edit_thin,
+              child: _ChatBubble(
+                roomId: roomId,
+                message: message,
+                nextMessageInGroup: nextMessageInGroup,
+                enlargeEmoji: enlargeEmoji,
+                child: child,
               ),
+            ),
       ],
     );
   }
@@ -136,12 +139,7 @@ class _ChatBubble extends ConsumerWidget {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            MessageMetadataBuilder(
-              roomId: roomId,
-              message: message,
-            ),
-          ],
+          children: [MessageMetadataBuilder(roomId: roomId, message: message)],
         ),
       ];
     }
@@ -155,37 +153,31 @@ class _ChatBubble extends ConsumerWidget {
 
   Bubble renderBubble(BuildContext context, bool isAuthor) {
     final colorScheme = Theme.of(context).colorScheme;
-    Widget bubbleChild = message.repliedMessage.map(
+    Widget bubbleChild =
+        message.repliedMessage.map(
           (replied) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
                 decoration: BoxDecoration(
-                  color: isAuthor
-                      ? colorScheme.surface.withValues(alpha:0.3)
-                      : colorScheme.onSurface.withValues(alpha:0.2),
+                  color:
+                      isAuthor
+                          ? colorScheme.surface.withValues(alpha: 0.3)
+                          : colorScheme.onSurface.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        top: 15,
-                      ),
+                      padding: const EdgeInsets.only(left: 10, top: 15),
                       child: Consumer(
-                        builder: (context, ref, child) => replyProfileBuilder(
-                          context,
-                          ref,
-                          replied,
-                        ),
+                        builder:
+                            (context, ref, child) =>
+                                replyProfileBuilder(context, ref, replied),
                       ),
                     ),
-                    _OriginalMessageBuilder(
-                      roomId: roomId,
-                      message: message,
-                    ),
+                    _OriginalMessageBuilder(roomId: roomId, message: message),
                   ],
                 ),
               ),
@@ -200,17 +192,19 @@ class _ChatBubble extends ConsumerWidget {
       color: isAuthor ? colorScheme.primary : colorScheme.surface,
       borderColor: Colors.transparent,
       style: BubbleStyle(
-        margin: nextMessageInGroup
-            ? const BubbleEdges.symmetric(horizontal: 2)
-            : null,
+        margin:
+            nextMessageInGroup
+                ? const BubbleEdges.symmetric(horizontal: 2)
+                : null,
         radius: const Radius.circular(22),
         padding:
             (message is types.ImageMessage && message.repliedMessage == null)
                 ? const BubbleEdges.all(0)
                 : null,
-        nip: (nextMessageInGroup || message is types.ImageMessage)
-            ? BubbleNip.no
-            : !isAuthor
+        nip:
+            (nextMessageInGroup || message is types.ImageMessage)
+                ? BubbleNip.no
+                : !isAuthor
                 ? BubbleNip.leftBottom
                 : BubbleNip.rightBottom,
         nipHeight: 18,
@@ -231,19 +225,13 @@ class _ChatBubble extends ConsumerWidget {
     );
     return Row(
       children: [
-        ActerAvatar(
-          options: AvatarOptions.DM(
-            replyProfile,
-            size: 12,
-          ),
-        ),
+        ActerAvatar(options: AvatarOptions.DM(replyProfile, size: 12)),
         const SizedBox(width: 5),
         Text(
           replyProfile.displayName ?? '',
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
         ),
       ],
     );
@@ -268,10 +256,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
   final types.Message message;
   final String roomId;
 
-  const _OriginalMessageBuilder({
-    required this.roomId,
-    required this.message,
-  });
+  const _OriginalMessageBuilder({required this.roomId, required this.message});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -301,10 +286,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
               isReplyContent: true,
             ),
           ),
-          Text(
-            L10n.of(context).sentAnImage,
-            style: textTheme.labelLarge,
-          ),
+          Text(L10n.of(context).sentAnImage, style: textTheme.labelLarge),
         ],
       );
     }
@@ -318,10 +300,7 @@ class _OriginalMessageBuilder extends ConsumerWidget {
       );
     }
     if (repliedMessage is types.CustomMessage) {
-      return CustomMessageBuilder(
-        message: repliedMessage,
-        messageWidth: 100,
-      );
+      return CustomMessageBuilder(message: repliedMessage, messageWidth: 100);
     }
     return const SizedBox();
   }

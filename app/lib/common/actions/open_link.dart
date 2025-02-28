@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Future<bool> openLink(
@@ -18,10 +18,7 @@ Future<bool> openLink(
   };
 }
 
-Future<bool> _tryOpeningLink(
-  L10n lang,
-  String target,
-) async {
+Future<bool> _tryOpeningLink(L10n lang, String target) async {
   final Uri? url = Uri.tryParse(target);
   if (url == null) {
     EasyLoading.showError(lang.errorParsinLink);

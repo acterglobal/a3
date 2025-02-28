@@ -5,7 +5,7 @@ import 'package:acter/features/pins/widgets/pin_list_skeleton.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -70,16 +70,16 @@ class PinListWidget extends ConsumerWidget {
     final count = (limit ?? pinList.length).clamp(0, pinList.length);
     return showSectionHeader
         ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SectionHeader(
-                title: L10n.of(context).pins,
-                isShowSeeAllButton: count < pinList.length,
-                onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
-              ),
-              pinListUI(pinList, count),
-            ],
-          )
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SectionHeader(
+              title: L10n.of(context).pins,
+              isShowSeeAllButton: count < pinList.length,
+              onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
+            ),
+            pinListUI(pinList, count),
+          ],
+        )
         : pinListUI(pinList, count);
   }
 

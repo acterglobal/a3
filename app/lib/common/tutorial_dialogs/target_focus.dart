@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
@@ -40,17 +40,10 @@ TargetFocus targetFocus({
                   height: 150,
                   width: 150,
                 ),
-              if (iconData != null)
-                Icon(
-                  iconData,
-                  size: iconSize,
-                ),
+              if (iconData != null) Icon(iconData, size: iconSize),
               if (contentImageUrl != null || iconData != null)
                 const SizedBox(height: 50),
-              Text(
-                contentTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              Text(contentTitle, style: Theme.of(context).textTheme.titleLarge),
               Text(
                 contentDescription,
                 style: Theme.of(context).textTheme.labelLarge,

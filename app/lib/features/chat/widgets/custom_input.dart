@@ -27,7 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,11 +46,7 @@ class CustomChatInput extends ConsumerWidget {
   final String roomId;
   final void Function(bool)? onTyping;
 
-  const CustomChatInput({
-    required this.roomId,
-    this.onTyping,
-    super.key,
-  });
+  const CustomChatInput({required this.roomId, this.onTyping, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,10 +57,7 @@ class CustomChatInput extends ConsumerWidget {
       return loadingState(context);
     }
     if (canSend) {
-      return _ChatInput(
-        roomId: roomId,
-        onTyping: onTyping,
-      );
+      return _ChatInput(roomId: roomId, onTyping: onTyping);
     }
 
     return FrostEffect(
@@ -85,10 +78,9 @@ class CustomChatInput extends ConsumerWidget {
               Text(
                 key: noAccessKey,
                 L10n.of(context).chatMissingPermissionsToSend,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: unselectedWidgetColor),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: unselectedWidgetColor),
               ),
             ],
           ),
@@ -114,10 +106,7 @@ class CustomChatInput extends ConsumerWidget {
               children: <Widget>[
                 const Padding(
                   padding: EdgeInsets.only(right: 10),
-                  child: Icon(
-                    Atlas.paperclip_attachment_thin,
-                    size: 20,
-                  ),
+                  child: Icon(Atlas.paperclip_attachment_thin, size: 20),
                 ),
                 Flexible(
                   child: Padding(
@@ -132,7 +121,7 @@ class CustomChatInput extends ConsumerWidget {
                         prefixIcon: Icon(
                           Icons.shield,
                           size: 18,
-                          color: colorScheme.primary.withValues(alpha:0.8),
+                          color: colorScheme.primary.withValues(alpha: 0.8),
                         ),
                         suffixIcon: const Icon(Icons.emoji_emotions),
                         border: OutlineInputBorder(
@@ -181,10 +170,7 @@ class _ChatInput extends ConsumerStatefulWidget {
   final String roomId;
   final void Function(bool)? onTyping;
 
-  const _ChatInput({
-    required this.roomId,
-    this.onTyping,
-  });
+  const _ChatInput({required this.roomId, this.onTyping});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => __ChatInputState();
@@ -221,22 +207,25 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       '@': TextStyle(
         color: Colors.white,
         height: 0.5,
-        background: Paint()
-          ..color = const Color(0xFF74A64D)
-          ..strokeWidth = 10
-          ..strokeJoin = StrokeJoin.round
-          ..style = PaintingStyle.stroke,
+        background:
+            Paint()
+              ..color = const Color(0xFF74A64D)
+              ..strokeWidth = 10
+              ..strokeJoin = StrokeJoin.round
+              ..style = PaintingStyle.stroke,
       ),
     };
-    textController =
-        ActerTriggerAutoCompleteTextController(triggerStyles: triggerStyles);
+    textController = ActerTriggerAutoCompleteTextController(
+      triggerStyles: triggerStyles,
+    );
     textController.addListener(_updateInputState);
   }
 
   // composer draft load state handler
   Future<void> loadDraft() async {
-    final draft =
-        await ref.read(chatComposerDraftProvider(widget.roomId).future);
+    final draft = await ref.read(
+      chatComposerDraftProvider(widget.roomId).future,
+    );
 
     if (draft != null) {
       final inputNotifier = ref.read(chatInputProvider.notifier);
@@ -341,8 +330,7 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
       SelectedMessageState.replyTo => renderReplyView(context, selectedMessage),
       SelectedMessageState.edit => renderEditView(context, selectedMessage),
       SelectedMessageState.none ||
-      SelectedMessageState.actions =>
-        renderMain(context)
+      SelectedMessageState.actions => renderMain(context),
     };
   }
 
@@ -353,8 +341,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
   Widget renderChatInputArea(BuildContext context, Widget? child) {
     final roomId = widget.roomId;
     final isEncrypted = ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull;
-    final emojiPickerVisible = ref
-        .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
+    final emojiPickerVisible = ref.watch(
+      chatInputProvider.select((value) => value.emojiPickerVisible),
+    );
     final screenSize = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -362,8 +351,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
         FrostEffect(
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15),
-            decoration:
-                BoxDecoration(color: Theme.of(context).colorScheme.surface),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
@@ -398,8 +388,10 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             size: Size(screenSize.width, screenSize.height / 3),
             onEmojiSelected: handleEmojiSelected,
             onBackspacePressed: handleBackspacePressed,
-            onClosePicker: () =>
-                ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
+            onClosePicker:
+                () => ref
+                    .read(chatInputProvider.notifier)
+                    .emojiPickerVisible(false),
           ),
       ],
     );
@@ -409,14 +401,12 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: InkWell(
-        onTap: () => selectAttachment(
-          context: context,
-          onSelected: handleFileUpload,
-        ),
-        child: const Icon(
-          Atlas.paperclip_attachment_thin,
-          size: 20,
-        ),
+        onTap:
+            () => selectAttachment(
+              context: context,
+              onSelected: handleFileUpload,
+            ),
+        child: const Icon(Atlas.paperclip_attachment_thin, size: 20),
       ),
     );
   }
@@ -457,18 +447,15 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(
-              top: 12.0,
-              left: 16.0,
-              right: 16.0,
-            ),
+            padding: const EdgeInsets.only(top: 12.0, left: 16.0, right: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Consumer(
-                  builder: (context, ref, child) =>
-                      replyBuilder(widget.roomId, repliedToMessage),
+                  builder:
+                      (context, ref, child) =>
+                          replyBuilder(widget.roomId, repliedToMessage),
                 ),
                 _ReplyContentWidget(
                   roomId: widget.roomId,
@@ -539,8 +526,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         } else if (mimeType.startsWith('audio/') &&
             attachmentType == AttachmentType.audio) {
-          final audioDraft =
-              client.audioDraft(file.path, mimeType).size(file.lengthSync());
+          final audioDraft = client
+              .audioDraft(file.path, mimeType)
+              .size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -550,8 +538,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
           }
         } else if (mimeType.startsWith('video/') &&
             attachmentType == AttachmentType.video) {
-          final videoDraft =
-              client.videoDraft(file.path, mimeType).size(file.lengthSync());
+          final videoDraft = client
+              .videoDraft(file.path, mimeType)
+              .size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -560,8 +549,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
             await stream.sendMessage(videoDraft);
           }
         } else {
-          final fileDraft =
-              client.fileDraft(file.path, mimeType).size(file.lengthSync());
+          final fileDraft = client
+              .fileDraft(file.path, mimeType)
+              .size(file.lengthSync());
           if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
             final remoteId = inputState.selectedMessage?.remoteId;
             if (remoteId == null) throw 'remote id of sel msg not available';
@@ -580,31 +570,20 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
   Widget replyBuilder(String roomId, Message repliedToMessage) {
     final authorId = repliedToMessage.author.id;
-    final memberAvatar =
-        ref.watch(memberAvatarInfoProvider((userId: authorId, roomId: roomId)));
+    final memberAvatar = ref.watch(
+      memberAvatarInfoProvider((userId: authorId, roomId: roomId)),
+    );
     final inputNotifier = ref.watch(chatInputProvider.notifier);
     return Row(
       children: [
         const SizedBox(width: 1),
-        const Icon(
-          Icons.reply_rounded,
-          size: 12,
-          color: Colors.grey,
-        ),
+        const Icon(Icons.reply_rounded, size: 12, color: Colors.grey),
         const SizedBox(width: 4),
-        ActerAvatar(
-          options: AvatarOptions.DM(
-            memberAvatar,
-            size: 12,
-          ),
-        ),
+        ActerAvatar(options: AvatarOptions.DM(memberAvatar, size: 12)),
         const SizedBox(width: 5),
         Text(
           L10n.of(context).replyTo(toBeginningOfSentenceCase(authorId)),
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
         ),
         const Spacer(),
         GestureDetector(
@@ -627,18 +606,11 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
     return Row(
       children: [
         const SizedBox(width: 1),
-        const Icon(
-          Atlas.pencil_edit_thin,
-          size: 12,
-          color: Colors.grey,
-        ),
+        const Icon(Atlas.pencil_edit_thin, size: 12, color: Colors.grey),
         const SizedBox(width: 4),
         Text(
           L10n.of(context).editMessage,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-          ),
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
         ),
         const Spacer(),
         GestureDetector(
@@ -683,8 +655,9 @@ class __ChatInputState extends ConsumerState<_ChatInput> {
 
       // actually send it out
       final inputState = ref.read(chatInputProvider);
-      final stream =
-          await ref.read(timelineStreamProvider(widget.roomId).future);
+      final stream = await ref.read(
+        timelineStreamProvider(widget.roomId).future,
+      );
 
       if (inputState.selectedMessageState == SelectedMessageState.replyTo) {
         final remoteId = inputState.selectedMessage?.remoteId;
@@ -836,7 +809,7 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
                 context: context,
                 roomQuery: (
                   query: autocompleteQuery.query,
-                  roomId: widget.roomId
+                  roomId: widget.roomId,
                 ),
               );
             },
@@ -860,10 +833,9 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
       child: TextField(
         maxLines: 5,
         minLines: 1,
-        onTap: () => onTextTap(
-          ref.read(chatInputProvider).emojiPickerVisible,
-          ref,
-        ),
+        onTap:
+            () =>
+                onTextTap(ref.read(chatInputProvider).emojiPickerVisible, ref),
         controller: widget.controller,
         focusNode: chatFocus,
         textCapitalization: TextCapitalization.sentences,
@@ -875,15 +847,18 @@ class _TextInputWidgetConsumerState extends ConsumerState<_TextInputWidget> {
         onSubmitted: (_) => widget.onSendButtonPressed(),
         style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
-          fillColor: Theme.of(context).unselectedWidgetColor.withValues(alpha:0.5),
+          fillColor: Theme.of(
+            context,
+          ).unselectedWidgetColor.withValues(alpha: 0.5),
           contentPadding: const EdgeInsets.all(15),
           isCollapsed: true,
           prefixIcon: InkWell(
-            onTap: () => onSuffixTap(
-              ref.read(chatInputProvider).emojiPickerVisible,
-              context,
-              ref,
-            ),
+            onTap:
+                () => onSuffixTap(
+                  ref.read(chatInputProvider).emojiPickerVisible,
+                  context,
+                  ref,
+                ),
             child: const Icon(Icons.emoji_emotions),
           ),
           hintText:
@@ -911,10 +886,7 @@ class _ReplyContentWidget extends StatelessWidget {
   final String roomId;
   final Message msg;
 
-  const _ReplyContentWidget({
-    required this.roomId,
-    required this.msg,
-  });
+  const _ReplyContentWidget({required this.roomId, required this.msg});
 
   @override
   Widget build(BuildContext context) {
@@ -949,18 +921,16 @@ class _ReplyContentWidget extends StatelessWidget {
               roomId: roomId,
             );
           },
-          defaultTextStyle:
-              textTheme.bodySmall?.copyWith(overflow: TextOverflow.ellipsis),
+          defaultTextStyle: textTheme.bodySmall?.copyWith(
+            overflow: TextOverflow.ellipsis,
+          ),
           maxLines: 3,
         ),
       );
     } else if (msg is FileMessage) {
       return Padding(
         padding: const EdgeInsets.all(12),
-        child: Text(
-          msg.metadata?['content'],
-          style: textTheme.bodySmall,
-        ),
+        child: Text(msg.metadata?['content'], style: textTheme.bodySmall),
       );
     } else if (msg is CustomMessage) {
       return CustomMessageBuilder(
