@@ -10,7 +10,7 @@ use matrix_sdk_base::{
         },
         Event, Gap,
     },
-    linked_chunk::{ChunkIdentifier, ChunkIdentifierGenerator, RawChunk, Update},
+    linked_chunk::{RawChunk, Update},
     media::{MediaRequestParameters, UniqueKey},
     ruma::{MxcUri, RoomId},
     StateStore,
@@ -109,39 +109,12 @@ where
             .map_err(|e| e.into())
     }
 
-    async fn load_all_chunks(
+    async fn reload_linked_chunk(
         &self,
         room_id: &RoomId,
     ) -> Result<Vec<RawChunk<TimelineEvent, Gap>>, Self::Error> {
         self.inner
-            .load_all_chunks(room_id)
-            .await
-            .map_err(|e| e.into())
-    }
-
-    async fn load_last_chunk(
-        &self,
-        room_id: &RoomId,
-    ) -> Result<
-        (
-            Option<RawChunk<TimelineEvent, Gap>>,
-            ChunkIdentifierGenerator,
-        ),
-        Self::Error,
-    > {
-        self.inner
-            .load_last_chunk(room_id)
-            .await
-            .map_err(|e| e.into())
-    }
-
-    async fn load_previous_chunk(
-        &self,
-        room_id: &RoomId,
-        before_chunk_identifier: ChunkIdentifier,
-    ) -> Result<Option<RawChunk<TimelineEvent, Gap>>, Self::Error> {
-        self.inner
-            .load_previous_chunk(room_id, before_chunk_identifier)
+            .reload_linked_chunk(room_id)
             .await
             .map_err(|e| e.into())
     }
