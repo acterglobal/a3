@@ -159,6 +159,8 @@ impl RoomEventItem {
                     MessageType::Video(content) => Some(MsgContent::from(content)),
                     MessageType::File(content) => Some(MsgContent::from(content)),
                     MessageType::Location(content) => Some(MsgContent::from(content)),
+                    MessageType::Notice(content) => Some(MsgContent::from(content)),
+                    MessageType::ServerNotice(content) => Some(MsgContent::from(content)),
                     _ => None,
                 });
                 if let Some(in_reply_to) = msg.in_reply_to() {
@@ -291,6 +293,7 @@ impl RoomEventItem {
                     }
                 }
             }
+
             TimelineItemContent::OtherState(s) => {
                 info!("Edit event applies to a state event");
                 me.event_type(s.content().event_type().to_string());
