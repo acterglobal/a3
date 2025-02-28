@@ -56,7 +56,6 @@ class ActerTheme {
       selectedColor: brandColor,
     ),
     listTileTheme: listTileTheme,
-    dialogBackgroundColor: surfaceColor,
     dividerTheme: dividerTheme,
     dialogTheme: dialogTheme,
     bottomSheetTheme: bottomSheetTheme,
