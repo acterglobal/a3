@@ -3,9 +3,8 @@ import 'dart:io';
 
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/config/setup.dart';
+import 'package:acter/features/calendar_sync/providers/calendar_sync_active_provider.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
@@ -31,8 +30,7 @@ ProviderSubscription<AsyncValue<List<EventAndRsvp>>>? _subscription;
 
 Future<bool> _isEnabled() async {
   try {
-    return (await mainProviderContainer
-        .read(asyncIsActiveProvider(LabsFeature.deviceCalendarSync).future));
+    return mainProviderContainer.read(isCalendarSyncActiveProvider.future);
   } catch (e, s) {
     _log.severe('Reading current context failed', e, s);
     return false;

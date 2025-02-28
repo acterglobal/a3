@@ -1,6 +1,5 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
-import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
@@ -34,15 +33,13 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: Text(lang.encryptionBackupKeyBackup),
                   description: Text(lang.sharedCalendarAndEvents),
-                  initialValue: ref.watch(
-                    isActiveProvider(LabsFeature.encryptionBackup),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.encryptionBackup)),
+                  onToggle: (newVal) async => await updateFeatureState(
+                    ref,
+                    LabsFeature.encryptionBackup,
+                    newVal,
                   ),
-                  onToggle:
-                      (newVal) async => await updateFeatureState(
-                        ref,
-                        LabsFeature.encryptionBackup,
-                        newVal,
-                      ),
                 ),
               ],
             ),
@@ -64,15 +61,10 @@ class SettingsLabsPage extends ConsumerWidget {
                 SettingsTile.switchTile(
                   title: Text(lang.unreadMarkerFeatureTitle),
                   description: Text(lang.unreadMarkerFeatureDescription),
-                  initialValue: ref.watch(
-                    isActiveProvider(LabsFeature.chatUnread),
-                  ),
-                  onToggle:
-                      (newVal) => updateFeatureState(
-                        ref,
-                        LabsFeature.chatUnread,
-                        newVal,
-                      ),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.chatUnread)),
+                  onToggle: (newVal) =>
+                      updateFeatureState(ref, LabsFeature.chatUnread, newVal),
                 ),
                 SettingsTile.switchTile(
                   title: Text(L10n.of(context).chatNG),
@@ -88,55 +80,23 @@ class SettingsLabsPage extends ConsumerWidget {
               ],
             ),
             SettingsSection(
-              title: Text(lang.calendar),
-              tiles: [
-                SettingsTile.switchTile(
-                  enabled: isSupportedPlatform,
-                  title: Text(lang.calendarSyncFeatureTitle),
-                  description: Text(lang.calendarSyncFeatureDesc),
-                  initialValue:
-                      isSupportedPlatform &&
-                      ref.watch(
-                        isActiveProvider(LabsFeature.deviceCalendarSync),
-                      ),
-                  onToggle: (newVal) async {
-                    await updateFeatureState(
-                      ref,
-                      LabsFeature.deviceCalendarSync,
-                      newVal,
-                    );
-                    if (newVal) {
-                      await initCalendarSync(ignoreRejection: true);
-                      EasyLoading.showToast('Acter Calendars synced');
-                    } else {
-                      await clearActerCalendars();
-                      EasyLoading.showToast('Acter Calendars removes');
-                    }
-                  },
-                ),
-              ],
-            ),
-            SettingsSection(
               title: Text(lang.apps),
               tiles: [
                 SettingsTile.switchTile(
                   title: Text(lang.polls),
                   description: Text(lang.pollsAndSurveys),
                   initialValue: ref.watch(isActiveProvider(LabsFeature.polls)),
-                  onToggle:
-                      (newVal) =>
-                          updateFeatureState(ref, LabsFeature.polls, newVal),
+                  onToggle: (newVal) =>
+                      updateFeatureState(ref, LabsFeature.polls, newVal),
                   enabled: false,
                 ),
                 SettingsTile.switchTile(
                   title: Text(lang.coBudget),
                   description: Text(lang.manageBudgetsCooperatively),
-                  initialValue: ref.watch(
-                    isActiveProvider(LabsFeature.cobudget),
-                  ),
-                  onToggle:
-                      (newVal) =>
-                          updateFeatureState(ref, LabsFeature.cobudget, newVal),
+                  initialValue:
+                      ref.watch(isActiveProvider(LabsFeature.cobudget)),
+                  onToggle: (newVal) =>
+                      updateFeatureState(ref, LabsFeature.cobudget, newVal),
                   enabled: false,
                 ),
               ],

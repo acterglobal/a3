@@ -62,7 +62,19 @@ class PrefNotifier<T> extends Notifier<T> {
     deviceId = await ref.watch(deviceIdProvider.future);
     Future.delayed(Duration(milliseconds: 10), () {
       // make sure we do this _after_ the initial build function has passed
-      state = (prefs.get(prefKey) as T? ?? defaultValue);
+      if (T is bool) {
+        state = (prefs.getBool(prefKey) as T? ?? defaultValue);
+      } else if (T is String) {
+        state = (prefs.getString(prefKey) as T? ?? defaultValue);
+      } else if (T is int) {
+        state = (prefs.getInt(prefKey) as T? ?? defaultValue);
+      } else if (T is double) {
+        state = (prefs.getDouble(prefKey) as T? ?? defaultValue);
+      } else if (T is List<String>) {
+        state = (prefs.getStringList(prefKey) as T? ?? defaultValue);
+      } else {
+        state = (prefs.get(prefKey) as T? ?? defaultValue);
+      }
     });
   }
 }
@@ -112,6 +124,78 @@ NotifierProvider<PrefNotifier<T>, T> createPrefProvider<T>({
 }) =>
     NotifierProvider<PrefNotifier<T>, T>(
       () => PrefNotifier<T>(prefKey, defaultValue),
+    );
+
+/// The type parameter `T` is the type of value that will
+/// be persisted in [SharedPreferences].
+///
+/// To update the value, use the [set()] function.
+/// Direct assignment to state cannot be used.
+///
+/// ```dart
+/// await watch(booPrefProvider.notifier).set(v);
+/// ```
+///
+///
+class AsyncPrefNotifier<T> extends AsyncNotifier<T> {
+  AsyncPrefNotifier(this.prefKeySuffix, this.defaultValue);
+
+  final String prefKeySuffix;
+  late String deviceId;
+  late SharedPreferences prefs;
+
+  String get prefKey => '$deviceId-$prefKeySuffix';
+  T defaultValue;
+
+  /// Updates the value asynchronously.
+  Future<void> set(T value) async {
+    if (value is String) {
+      await prefs.setString(prefKey, value);
+    } else if (value is bool) {
+      await prefs.setBool(prefKey, value);
+    } else if (value is int) {
+      await prefs.setInt(prefKey, value);
+    } else if (value is double) {
+      await prefs.setDouble(prefKey, value);
+    } else if (value is List<String>) {
+      await prefs.setStringList(prefKey, value);
+    }
+    super.state = AsyncValue.data(value);
+  }
+
+  @override
+  Future<T> build() async {
+    prefs = await sharedPrefs();
+    deviceId = await ref.watch(deviceIdProvider.future);
+    // make sure we do this _after_ the initial build function has passed
+    if (T is bool) {
+      return (prefs.getBool(prefKey) as T? ?? defaultValue);
+    } else if (T is String) {
+      return (prefs.getString(prefKey) as T? ?? defaultValue);
+    } else if (T is int) {
+      return (prefs.getInt(prefKey) as T? ?? defaultValue);
+    } else if (T is double) {
+      return (prefs.getDouble(prefKey) as T? ?? defaultValue);
+    } else if (T is List<String>) {
+      return (prefs.getStringList(prefKey) as T? ?? defaultValue);
+    } else {
+      return (prefs.get(prefKey) as T? ?? defaultValue);
+    }
+  }
+}
+
+/// Returns the [Provider] that has access to the value of preferences.
+///
+/// Persist the value of the type parameter T type in SharedPreferences.
+/// The argument [prefs] specifies an instance of SharedPreferences.
+/// The arguments [prefKey] and [defaultValue] specify the key name and default
+/// value of the preference.
+AsyncNotifierProvider<AsyncPrefNotifier<T>, T> createAsyncPrefProvider<T>({
+  required String prefKey,
+  required T defaultValue,
+}) =>
+    AsyncNotifierProvider<AsyncPrefNotifier<T>, T>(
+      () => AsyncPrefNotifier<T>(prefKey, defaultValue),
     );
 
 /// Converts the value of type parameter `T` to a String and persists

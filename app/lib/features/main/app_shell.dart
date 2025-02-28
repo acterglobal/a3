@@ -16,11 +16,10 @@ import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/home/widgets/sidebar_widget.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,9 +46,8 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class AppShellState extends ConsumerState<AppShell> {
-  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>(
-    debugLabel: 'home shell scaffold',
-  );
+  final GlobalKey<ScaffoldState> _key =
+      GlobalKey<ScaffoldState>(debugLabel: 'home shell scaffold');
   late ShakeDetector detector;
 
   @override
@@ -127,9 +125,7 @@ class AppShellState extends ConsumerState<AppShell> {
   }
 
   Future<void> _initPushForClient(Client client) async {
-    final pushActive = ref.read(
-      isActiveProvider(LabsFeature.mobilePushNotifications),
-    );
+    final pushActive = await ref.read(isPushNotificationsActiveProvider.future);
     if (!pushActive) return;
     _log.info('Attempting to ask for push notifications');
     setupPushNotifications(client);
@@ -152,7 +148,11 @@ class AppShellState extends ConsumerState<AppShell> {
     if (ref.watch(clientProvider).valueOrNull == null) {
       // at the very startup we might not yet have a client loaded
       // show a loading spinner meanwhile.
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
     final errorMsg = ref.watch(syncStateProvider.select((v) => v.errorMsg));
     if (errorMsg != null) {
@@ -177,7 +177,12 @@ class AppShellState extends ConsumerState<AppShell> {
           body: Screenshot(
             controller: screenshotController,
             child: Column(
-              children: [CrossSigning(), Expanded(child: buildBody(context))],
+              children: [
+                CrossSigning(),
+                Expanded(
+                  child: buildBody(context),
+                ),
+              ],
             ),
           ),
         ),
@@ -210,9 +215,9 @@ class AppShellState extends ConsumerState<AppShell> {
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.mediumLargeAndUp: SlotLayout.from(
           key: const Key('primaryNavigation'),
-          builder:
-              (BuildContext context) =>
-                  SidebarWidget(navigationShell: widget.navigationShell),
+          builder: (BuildContext context) => SidebarWidget(
+            navigationShell: widget.navigationShell,
+          ),
         ),
       },
     );
@@ -236,19 +241,15 @@ class AppShellState extends ConsumerState<AppShell> {
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder:
-              (context) => BottomNavigationWidget(
-                navigationShell: widget.navigationShell,
-              ),
+          builder: (context) =>
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
         Breakpoints.medium: SlotLayout.from(
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder:
-              (context) => BottomNavigationWidget(
-                navigationShell: widget.navigationShell,
-              ),
+          builder: (context) =>
+              BottomNavigationWidget(navigationShell: widget.navigationShell),
         ),
       },
     );

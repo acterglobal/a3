@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -24,15 +23,13 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final canPush =
-        (isOnSupportedPlatform && pushServer.isNotEmpty) ||
+    final canPush = (isOnSupportedPlatform && pushServer.isNotEmpty) ||
         (!isOnSupportedPlatform && ntfyServer.isNotEmpty);
     return SettingsTile.switchTile(
       title: Text(title ?? lang.mobilePushNotifications),
       description: !canPush ? Text(lang.noPushServerConfigured) : null,
-      initialValue:
-          canPush &&
-          ref.watch(isActiveProvider(LabsFeature.mobilePushNotifications)),
+      initialValue: canPush &&
+          (ref.watch(isPushNotificationsActiveProvider).valueOrNull ?? true),
       enabled: canPush,
       onToggle: (newVal) => onToggle(context, ref, newVal),
     );
@@ -44,7 +41,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     bool newVal,
   ) async {
     final lang = L10n.of(context);
-    await updateFeatureState(ref, LabsFeature.mobilePushNotifications, newVal);
+    ref.read(isPushNotificationsActiveProvider.notifier).set(newVal);
     if (!newVal) return;
     final client = await ref.read(alwaysClientProvider.future);
     EasyLoading.show(status: lang.changingSettings);
@@ -62,7 +59,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
       }
       // second attempt, even sending the user to the settings, they do not
       // approve. Let’s kick it back off
-      await updateFeatureState(ref, LabsFeature.mobilePushNotifications, false);
+      ref.read(isPushNotificationsActiveProvider.notifier).set(false);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -85,7 +82,10 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
 class LabsNotificationsSettingsTile extends AbstractSettingsTile {
   final String? title;
 
-  const LabsNotificationsSettingsTile({this.title, super.key});
+  const LabsNotificationsSettingsTile({
+    this.title,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
