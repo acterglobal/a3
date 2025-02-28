@@ -5,6 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
+import 'package:markdown/markdown.dart' as md;
 
 enum TextMessageType {
   regular,
@@ -90,7 +91,7 @@ class TextMessageEvent extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final chatTheme = Theme.of(context).chatTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final body = content.formattedBody() ?? content.body();
+    final body = content.formattedBody() ?? md.markdownToHtml(content.body());
 
     // Handle emoji messages
     if (_type == TextMessageType.emoji) {
@@ -100,7 +101,7 @@ class TextMessageEvent extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Text(
-          content.body(),
+          body,
           style: emojiTextStyle.copyWith(
             fontFamily: emojiFont,
           ),
@@ -125,7 +126,7 @@ class TextMessageEvent extends StatelessWidget {
       maxLines: _type == TextMessageType.reply ? 2 : null,
       defaultTextStyle: textTheme.bodySmall?.copyWith(
         color: _type == TextMessageType.notice
-            ? colorScheme.onSurface.withValues(alpha:0.5)
+            ? colorScheme.onSurface.withValues(alpha: 0.5)
             : null,
         overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
       ),
