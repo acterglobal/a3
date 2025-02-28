@@ -437,12 +437,11 @@ class TaskItemDetailPage extends ConsumerWidget {
       children:
           assignees.map((userId) {
             final dispName =
-                ref
-                    .watch(
+                ref.watch(
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: userId,
-                      )),
+                      ),),
                     )
                     .valueOrNull;
             return Padding(

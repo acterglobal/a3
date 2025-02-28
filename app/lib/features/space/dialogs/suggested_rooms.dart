@@ -41,7 +41,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
           spacesFound = next.valueOrNull?.spaces ?? [];
         });
       }
-    }, fireImmediately: true);
+    }, fireImmediately: true,);
   }
 
   @override

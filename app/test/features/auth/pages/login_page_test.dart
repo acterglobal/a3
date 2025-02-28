@@ -35,7 +35,7 @@ void main() {
       expect(find.text(lang.noProfile), findsOneWidget);
       expect(find.byKey(LoginPageKeys.signUpBtn), findsOneWidget);
     });
-  }, skip: 'currently broken');
+  }, skip: 'currently broken',);
 
   testWidgets('text fields validation test', (tester) async {
     await tester.pumpWidget(
@@ -61,7 +61,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100)); // add delay
     expect(userNameError, findsOneWidget);
     expect(passwordError, findsOneWidget);
-  }, skip: true);
+  }, skip: true,);
 
   // // Not working for some reason.
   // testWidgets('Button triggers navigation to sign up', (tester) async {

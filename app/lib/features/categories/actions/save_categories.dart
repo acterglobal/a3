@@ -25,12 +25,7 @@ Future<void> saveCategories(
   EasyLoading.show(status: lang.updatingCategories);
   try {
     //Get category manager
-    final categoriesManager = await ref.read(
-      categoryManagerProvider((
-        spaceId: spaceId,
-        categoriesFor: categoriesFor,
-      )).future,
-    );
+    final categoriesManager = await ref.read(categoryManagerProvider((spaceId: spaceId, categoriesFor: categoriesFor)).future,);
     final sdk = await ref.watch(sdkProvider.future);
     final displayBuilder = sdk.api.newDisplayBuilder();
 

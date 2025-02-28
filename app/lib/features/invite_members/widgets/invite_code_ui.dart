@@ -216,7 +216,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
 
       await newSuperInviteForRooms(ref, [
         widget.roomId,
-      ], inviteCode: inviteCode);
+      ], inviteCode: inviteCode,);
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
     } catch (e, s) {

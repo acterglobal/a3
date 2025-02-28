@@ -96,12 +96,11 @@ class MemberUpdateEvent extends ConsumerWidget {
           (() {
             final inviteeId = msgContent;
             final inviteeName =
-                ref
-                    .watch(
+                ref.watch(
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: inviteeId,
-                      )),
+                      ),),
                     )
                     .valueOrNull;
             return isMe

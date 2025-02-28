@@ -22,12 +22,11 @@ class ObjectNotificationStatus extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final watched =
-        ref
-            .watch(
+        ref.watch(
               pushNotificationSubscribedStatusProvider((
                 objectId: objectId,
                 subType: subType,
-              )),
+              ),),
             )
             .valueOrNull;
     final iconBtn = switch (watched) {
@@ -86,7 +85,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
         SubscriptionStatus.parentSubscribed =>
           L10n.of(context).parentSubscribedAction,
         _ => L10n.of(context).subscribeAction,
-      }),
+      },),
     );
   }
 }

@@ -149,12 +149,11 @@ class NotificationsSettingsPage extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final curNotifStatus =
-        ref
-            .watch(
+        ref.watch(
               currentNotificationModeProvider((
                 encrypted: isEncrypted,
                 oneToOne: isOneToOne,
-              )),
+              ),),
             )
             .valueOrNull ??
         '';

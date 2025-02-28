@@ -60,7 +60,7 @@ class ImageMessageBuilder extends ConsumerWidget {
           mediaChatStateProvider((
             messageId: message.remoteId ?? message.id,
             roomId: roomId,
-          )).notifier,
+          ),).notifier,
         );
         await notifier.downloadMedia();
       },
