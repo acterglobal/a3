@@ -5872,6 +5872,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __timelineStreamCancelStreamFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _timelineStreamCancelStreamFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   RoomMessage? __timelineStreamGetMessageFuturePoll(
     int boxed,
     int postCobject,
@@ -12833,6 +12877,50 @@ class Api {
     return tmp7;
   }
 
+  bool? __clientCancelConvosStreamFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientCancelConvosStreamFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListSpace? __clientSpacesFuturePoll(
     int boxed,
     int postCobject,
@@ -12878,6 +12966,50 @@ class Api {
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp14 = FfiListSpace._(this, tmp13_1);
     final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  bool? __clientCancelSpacesStreamFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientCancelSpacesStreamFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -22297,6 +22429,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _timelineStreamCancelStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__TimelineStream_cancel_stream");
+
+  late final _timelineStreamCancelStream =
+      _timelineStreamCancelStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _timelineStreamGetMessagePtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -28839,6 +28982,17 @@ class Api {
       int Function(
         int,
       )>();
+  late final _clientCancelConvosStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Client_cancel_convos_stream");
+
+  late final _clientCancelConvosStream =
+      _clientCancelConvosStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientSpacesPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -28859,6 +29013,17 @@ class Api {
       int Function(
         int,
       )>();
+  late final _clientCancelSpacesStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Client_cancel_spaces_stream");
+
+  late final _clientCancelSpacesStream =
+      _clientCancelSpacesStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientJoinRoomPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -32311,6 +32476,21 @@ class Api {
             int,
             int,
           )>();
+  late final _timelineStreamCancelStreamFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamCancelStreamFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__TimelineStream_cancel_stream_future_poll");
+
+  late final _timelineStreamCancelStreamFuturePoll =
+      _timelineStreamCancelStreamFuturePollPtr.asFunction<
+          _TimelineStreamCancelStreamFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _timelineStreamGetMessageFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamGetMessageFuturePollReturn Function(
@@ -34536,6 +34716,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientCancelConvosStreamFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientCancelConvosStreamFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Client_cancel_convos_stream_future_poll");
+
+  late final _clientCancelConvosStreamFuturePoll =
+      _clientCancelConvosStreamFuturePollPtr.asFunction<
+          _ClientCancelConvosStreamFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientSpacesFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientSpacesFuturePollReturn Function(
@@ -34550,6 +34745,21 @@ class Api {
         int,
         int,
       )>();
+  late final _clientCancelSpacesStreamFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientCancelSpacesStreamFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Client_cancel_spaces_stream_future_poll");
+
+  late final _clientCancelSpacesStreamFuturePoll =
+      _clientCancelSpacesStreamFuturePollPtr.asFunction<
+          _ClientCancelSpacesStreamFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _clientJoinRoomFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientJoinRoomFuturePollReturn Function(
@@ -47193,6 +47403,23 @@ class TimelineStream {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeStream(tmp3_1, _api.__timelineStreamMessagesStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// Cancel stream
+  Future<bool> cancelStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineStreamCancelStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__TimelineStream_cancel_stream_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__timelineStreamCancelStreamFuturePoll);
     return tmp2;
   }
 
@@ -60145,6 +60372,23 @@ class Client {
     return tmp2;
   }
 
+  /// Stop the convos stream on rust side
+  Future<bool> cancelConvosStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientCancelConvosStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_cancel_convos_stream_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__clientCancelConvosStreamFuturePoll);
+    return tmp2;
+  }
+
   /// The spaces the user is part of
   Future<FfiListSpace> spaces() {
     var tmp0 = 0;
@@ -60173,6 +60417,23 @@ class Client {
     final tmp3_1 = _Box(_api, tmp3_0, "__Client_spaces_stream_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeStream(tmp3_1, _api.__clientSpacesStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// Stop the spaces stream on rust side
+  Future<bool> cancelSpacesStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientCancelSpacesStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_cancel_spaces_stream_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__clientCancelSpacesStreamFuturePoll);
     return tmp2;
   }
 
@@ -69759,6 +70020,21 @@ class _UserRoomSettingsSetIncludeCalSyncFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _TimelineStreamCancelStreamFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _TimelineStreamGetMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -72014,6 +72290,21 @@ class _ClientUploadMediaFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientCancelConvosStreamFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ClientSpacesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -72026,6 +72317,21 @@ class _ClientSpacesFuturePollReturn extends ffi.Struct {
   @ffi.UintPtr()
   external int arg4;
   @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ClientCancelSpacesStreamFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 

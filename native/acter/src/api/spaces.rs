@@ -411,6 +411,7 @@ impl Client {
 
     pub fn spaces_stream(&self) -> impl Stream<Item = SpaceDiff> {
         let spaces = self.spaces.clone();
+        let should_stop = self.should_stop_spaces.clone();
         async_stream::stream! {
             let (current_items, stream) = {
                 let locked = spaces.read().await;
@@ -422,10 +423,30 @@ impl Client {
             let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
+            {
+                let mut should_stop = should_stop.write().await;
+                *should_stop = false;
+            }
+
             while let Some(d) = remap.next().await {
+                let should_stop = should_stop.read().await;
+                if *should_stop {
+                    break;
+                }
                 yield d
             }
         }
+    }
+
+    pub async fn cancel_spaces_stream(&self) -> Result<bool> {
+        let should_stop = self.should_stop_spaces.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut should_stop = should_stop.write().await;
+                *should_stop = true;
+                Ok(true)
+            })
+            .await?
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one

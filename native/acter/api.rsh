@@ -1341,6 +1341,9 @@ object TimelineStream {
     /// Fires whenever new diff found
     fn messages_stream() -> Stream<RoomMessageDiff>;
 
+    /// Cancel stream
+    fn cancel_stream() -> Future<Result<bool>>;
+
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
@@ -3032,12 +3035,18 @@ object Client {
     /// fires immediately with the current state of convos
     fn convos_stream() -> Stream<ConvoDiff>;
 
+    /// Stop the convos stream on rust side
+    fn cancel_convos_stream() -> Future<Result<bool>>;
+
     /// The spaces the user is part of
     fn spaces() -> Future<Result<Vec<Space>>>;
 
     /// Fires whenever the space list changes (in order or number)
     /// fires immediately with the current state of spaces
     fn spaces_stream() -> Stream<SpaceDiff>;
+
+    /// Stop the spaces stream on rust side
+    fn cancel_spaces_stream() -> Future<Result<bool>>;
 
     /// attempt to join a room
     fn join_room(room_id_or_alias: string, server_names: VecStringBuilder) -> Future<Result<Room>>;

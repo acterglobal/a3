@@ -91,7 +91,10 @@ class ChatRoomsListNotifier extends Notifier<List<Convo>> {
         _log.info('convo list stream ended');
       },
     );
-    ref.onDispose(() => _poller?.cancel());
+    ref.onDispose(() async {
+      _poller?.cancel();
+      await client.cancelConvosStream();
+    });
   }
 
   List<Convo> listCopy() => List.from(state, growable: true);
