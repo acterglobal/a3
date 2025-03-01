@@ -56,11 +56,13 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     UpdateSlideItem textSlide = UpdateSlideItem(
       type: UpdateSlideType.text,
       text: '',
-      backgroundColor: clr,
+      backgroundColor: postColors.backgroundColor,
+      foregroundColor: postColors.foregroundColor,
+      linkColor: postColors.linkColor,
       refDetails: refDetails,
     );
     ref.read(newsStateProvider.notifier).addSlide(textSlide);
@@ -71,7 +73,7 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) async {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
     );
@@ -79,7 +81,9 @@ class NewsUtils {
       final slide = UpdateSlideItem(
         type: UpdateSlideType.image,
         mediaFile: imageFile,
-        backgroundColor: clr,
+        backgroundColor: postColors.backgroundColor,
+        foregroundColor: postColors.foregroundColor,
+        linkColor: postColors.linkColor,
         refDetails: refDetails,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
@@ -91,7 +95,7 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) async {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
     );
@@ -99,7 +103,9 @@ class NewsUtils {
       final slide = UpdateSlideItem(
         type: UpdateSlideType.video,
         mediaFile: videoFile,
-        backgroundColor: clr,
+        backgroundColor: postColors.backgroundColor,
+        foregroundColor: postColors.foregroundColor,
+        linkColor: postColors.linkColor,
         refDetails: refDetails,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
@@ -125,6 +131,17 @@ class NewsUtils {
     return convertColor(
       color?.color(),
       Theme.of(context).colorScheme.onPrimary,
+    );
+  }
+
+  static Color getLinkColor(
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
+    final color = updateSlide.colors();
+    return convertColor(
+      color?.link(),
+      Colors.lightBlueAccent,
     );
   }
 }

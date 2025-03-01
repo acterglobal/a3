@@ -27,20 +27,31 @@ class TextSlide extends StatelessWidget {
     final formattedText = slideContent.formattedBody();
     final bodyText = slideContent.body();
     final fgColor = NewsUtils.getForegroundColor(context, slide);
+    final linkColor = NewsUtils.getLinkColor(context, slide);
     final defaultTextStyle =
         Theme.of(context).textTheme.bodyLarge?.copyWith(color: fgColor);
 
+    final linkTextStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: linkColor,
+          decoration: TextDecoration.underline,
+        );
+
     return formattedText != null
-        ? renderHtmlText(formattedText, defaultTextStyle)
+        ? renderHtmlText(formattedText, defaultTextStyle, linkTextStyle)
         : renderNormalText(bodyText, defaultTextStyle);
   }
 
-  Widget renderHtmlText(String formattedText, TextStyle? defaultTextStyle) {
+  Widget renderHtmlText(
+    String formattedText,
+    TextStyle? defaultTextStyle,
+    TextStyle? linkTextStyle,
+  ) {
     return SelectionArea(
       child: RenderHtml(
         key: UpdateKeys.textUpdateContent,
         text: formattedText,
         defaultTextStyle: defaultTextStyle,
+        linkTextStyle: linkTextStyle,
       ),
     );
   }

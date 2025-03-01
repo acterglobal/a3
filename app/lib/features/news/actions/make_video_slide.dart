@@ -18,7 +18,11 @@ Future<NewsSlideDraft> makeVideoSlideForNews(
 
   final sdk = await ref.read(sdkProvider.future);
   videoSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {
@@ -38,7 +42,11 @@ Future<StorySlideDraft> makeVideoSlideForStory(
 
   final sdk = await ref.read(sdkProvider.future);
   videoSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
   final refDetails = slidePost.refDetails;
   if (refDetails != null) {

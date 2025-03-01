@@ -16,7 +16,11 @@ Future<NewsSlideDraft> makeTextSlideForNews(
 
   final sdk = await ref.read(sdkProvider.future);
   textSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
 
   final refDetails = slidePost.refDetails;
@@ -38,7 +42,11 @@ Future<StorySlideDraft> makeTextSlideForStory(
   final sdk = await ref.read(sdkProvider.future);
 
   textSlideDraft.color(
-    sdk.api.newColorizeBuilder(null, slidePost.backgroundColor?.toInt()),
+    sdk.api.newColorizeBuilder(
+      null,
+      slidePost.backgroundColor?.toInt(),
+      slidePost.linkColor?.toInt(),
+    ),
   );
 
   final refDetails = slidePost.refDetails;

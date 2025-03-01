@@ -53,7 +53,7 @@ fn duration_from_secs(secs: u64) -> EfkDuration;
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
 /// create a colorize builder
-fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+fn new_colorize_builder(color: Option<u32>, background: Option<u32>, link: Option<u32>) -> Result<ColorizeBuilder>;
 
 /// create a display builder
 fn new_display_builder() -> DisplayBuilder;
@@ -138,6 +138,8 @@ object Colorize {
     fn color() -> Option<u32>;
     /// Background color
     fn background() -> Option<u32>;
+    /// Link color
+    fn link() -> Option<u32>;
 }
 
 /// A builder for Colorize. Allowing you to set (foreground) color and background
@@ -151,6 +153,11 @@ object ColorizeBuilder {
     fn background(color: u32);
     /// unset the background color
     fn unset_background();
+
+    /// RGBA color representation as int for the link color
+    fn link(color: u32);
+    /// unset the link color
+    fn unset_link();
 }
 
 // enum LocationType {
