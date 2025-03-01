@@ -134,8 +134,11 @@ class NewsUtils {
     );
   }
 
-  static Color getLinkColor(BuildContext context, NewsSlide newsSlide) {
-    final color = newsSlide.colors();
+  static Color getLinkColor(
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
+    final color = updateSlide.colors();
     return convertColor(
       color?.link(),
       Colors.lightBlueAccent,
