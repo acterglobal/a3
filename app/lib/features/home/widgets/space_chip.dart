@@ -95,6 +95,10 @@ class SpaceChip extends ConsumerWidget {
     return InkWell(
       onTap: () {
         if (onTapOpenSpaceDetail) goToSpace(context, spaceId);
+        onTapSelectSpace.map(
+          (cb) => cb(),
+          orElse: () => goToSpace(context, spaceId),
+        );
       },
       child: Chip(
         avatar: ActerAvatar(
