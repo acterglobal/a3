@@ -154,7 +154,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
             final selectedSpaceId = await selectSpaceDrawer(
               context: context,
               currentSpaceId: null,
-              canCheck: 'CanInvite',
+              canCheck: (m) => m?.canString('CanInvite') == true,
               title: Text(lang.addSpace),
             );
             if (selectedSpaceId != null) {
@@ -172,7 +172,7 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
             final selectedChatId = await selectChatDrawer(
               context: context,
               currentChatId: null,
-              canCheck: 'CanInvite',
+              canCheck: (m) => m?.canString('CanInvite') == true,
               title: Text(lang.addChat),
             );
             if (selectedChatId != null) {

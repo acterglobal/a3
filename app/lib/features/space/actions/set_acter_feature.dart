@@ -8,6 +8,7 @@ final _log = Logger('a3::space::actions::set_acter');
 
 enum SpaceFeature {
   boosts,
+  stories,
   pins,
   events,
   tasks;
@@ -24,6 +25,11 @@ extension SpaceFeatureActivator on ActerAppSettings {
         final updated = news().updater();
         updated.active(newVal);
         builder.news(updated.build());
+        break;
+      case SpaceFeature.stories:
+        final updated = stories().updater();
+        updated.active(newVal);
+        builder.stories(updated.build());
         break;
       case SpaceFeature.pins:
         final updated = pins().updater();

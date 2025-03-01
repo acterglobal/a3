@@ -1,19 +1,19 @@
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_slide_actions.dart';
 import 'package:acter/features/news/widgets/news_item_slide/text_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-class NewsSlideItem extends StatelessWidget {
-  final NewsSlide slide;
+class UpdateSlideItem extends StatelessWidget {
+  final UpdateSlide slide;
   final bool showRichContent;
   final NewsMediaErrorState errorState;
 
-  const NewsSlideItem({
+  const UpdateSlideItem({
     super.key,
     required this.slide,
     this.showRichContent = true,
@@ -22,10 +22,10 @@ class NewsSlideItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return buildNewsSlideItem(context);
+    return buildUpdateSlideItem(context);
   }
 
-  Widget buildNewsSlideItem(BuildContext context) {
+  Widget buildUpdateSlideItem(BuildContext context) {
     final slideType = slide.typeStr();
     final slideBackgroundColor = NewsUtils.getBackgroundColor(context, slide);
     return Stack(
@@ -35,8 +35,14 @@ class NewsSlideItem extends StatelessWidget {
           child: Container(
             color: slideBackgroundColor,
             child: switch (slideType) {
-              'image' => ImageSlide(slide: slide,errorState: errorState,),
-              'video' => VideoSlide(slide: slide,errorState: errorState,),
+              'image' => ImageSlide(
+                  slide: slide,
+                  errorState: errorState,
+                ),
+              'video' => VideoSlide(
+                  slide: slide,
+                  errorState: errorState,
+                ),
               'text' =>
                 showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
               _ => notSupportedSlide(context, slideType),
@@ -53,7 +59,7 @@ class NewsSlideItem extends StatelessWidget {
                 right: 60,
                 bottom: 80,
               ),
-              child: NewsSlideActions(newsSlide: slide),
+              child: UpdateSlideActions(newsSlide: slide),
             ),
           ),
       ],

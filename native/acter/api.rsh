@@ -2095,8 +2095,13 @@ object SpaceRelations {
 object RoomPowerLevels {
     fn news() -> Option<i64>;
     fn news_key() -> string;
+
+    fn stories() -> Option<i64>;
+    fn stories_key() -> string;
+
     fn events() -> Option<i64>;
     fn events_key() -> string;
+
     fn pins() -> Option<i64>;
     fn pins_key() -> string;
 
@@ -2152,6 +2157,11 @@ object NewsSettings {
     fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
 
+object StoriesSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleOnOffSettingBuilder;
+}
+
 object TasksSettings {
     fn active() -> bool;
     fn updater() -> SimpleOnOffSettingBuilder;
@@ -2169,6 +2179,7 @@ object PinsSettings {
 
 object ActerAppSettings {
     fn news() -> NewsSettings;
+    fn stories() -> StoriesSettings;
     fn pins() -> PinsSettings;
     fn events() -> EventsSettings;
     fn tasks() -> TasksSettings;
@@ -2177,6 +2188,7 @@ object ActerAppSettings {
 
 object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn stories(tasks: Option<SimpleOnOffSetting>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<SimpleOnOffSetting>);
