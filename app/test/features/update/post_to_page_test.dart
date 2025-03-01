@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/news/model/news_post_state.dart';
 import 'package:acter/features/news/pages/add_news/add_news_post_to_page.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
@@ -45,6 +46,8 @@ void main() {
       overrides: [
         newsStateProvider.overrideWith((ref) => mockNewsStateNotifier),
         roomMembershipProvider.overrideWith((a, b) => mockMember),
+        selectedSpaceIdProvider
+            .overrideWith((ref) => mockNewsPostState.newsPostSpaceId),
       ],
     );
   }
@@ -53,26 +56,29 @@ void main() {
     testWidgets('shows select space button when no space is selected',
         (tester) async {
       mockNewsPostState.newsPostSpaceId = null;
+      selectedSpaceIdProvider.overrideWith((ref) => null);
       mockNewsStateNotifier.state = mockNewsPostState;
 
       await createWidgetUnderTest(tester);
       await tester.pumpAndSettle();
 
-      expect(find.text('Select Space'), findsOneWidget);
+      expect(find.text('Please select space'), findsOneWidget);
     });
 
     testWidgets('shows space info when space is selected', (tester) async {
+      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
 
       await createWidgetUnderTest(tester);
       await tester.pumpAndSettle();
 
-      expect(find.text('Select Space'), findsNothing);
+      expect(find.text('Please select space'), findsNothing);
     });
 
     testWidgets('shows both options disabled if member has no permission',
         (tester) async {
+      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
       when(() => mockMember.canString('CanPostNews')).thenReturn(false);
@@ -95,6 +101,7 @@ void main() {
 
     testWidgets('shows both options enabled if member has permission',
         (tester) async {
+      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
       when(() => mockMember.canString('CanPostNews')).thenReturn(true);
@@ -122,6 +129,7 @@ void main() {
     testWidgets(
         'shows story option enabled and news option disabled if member has permission',
         (tester) async {
+      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
       when(() => mockMember.canString('CanPostNews')).thenReturn(false);
@@ -148,6 +156,7 @@ void main() {
     testWidgets(
         'shows story option disabled and news option enabled if member has permission',
         (tester) async {
+      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
       when(() => mockMember.canString('CanPostNews')).thenReturn(true);
