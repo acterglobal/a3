@@ -18043,6 +18043,57 @@ class Api {
       _UrlPreviewImageSourceReturn Function(
         int,
       )>();
+  late final _localUrlPreviewUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewUrlReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_url");
+
+  late final _localUrlPreviewUrl = _localUrlPreviewUrlPtr.asFunction<
+      _LocalUrlPreviewUrlReturn Function(
+        int,
+      )>();
+  late final _localUrlPreviewTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewTitleReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_title");
+
+  late final _localUrlPreviewTitle = _localUrlPreviewTitlePtr.asFunction<
+      _LocalUrlPreviewTitleReturn Function(
+        int,
+      )>();
+  late final _localUrlPreviewDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewDescriptionReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_description");
+
+  late final _localUrlPreviewDescription =
+      _localUrlPreviewDescriptionPtr.asFunction<
+          _LocalUrlPreviewDescriptionReturn Function(
+            int,
+          )>();
+  late final _localUrlPreviewHasImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_has_image");
+
+  late final _localUrlPreviewHasImage = _localUrlPreviewHasImagePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _localUrlPreviewImageUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewImageUrlReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_image_url");
+
+  late final _localUrlPreviewImageUrl = _localUrlPreviewImageUrlPtr.asFunction<
+      _LocalUrlPreviewImageUrlReturn Function(
+        int,
+      )>();
   late final _objRefPositionStrPtr = _lookup<
       ffi.NativeFunction<
           _ObjRefPositionStrReturn Function(
@@ -38499,6 +38550,164 @@ class UrlPreview {
   }
 }
 
+/// A locally fetched Url Preview until
+/// it is submitted
+class LocalUrlPreview {
+  final Api _api;
+  final _Box _box;
+
+  LocalUrlPreview._(this._api, this._box);
+
+  /// the canonical url to use
+  String url() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// preview title if any
+  String? title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// description text if any
+  String? description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// whether this preview has an image
+  bool hasImage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewHasImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// The image url if any
+  String? imageUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewImageUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// An acter internal link to a different object
 class ObjRef {
   final Api _api;
@@ -46744,7 +46953,7 @@ class MsgDraft {
 
   /// add a url preview
   MsgDraft addUrlPreview(
-    UrlPreview details,
+    LocalUrlPreview details,
   ) {
     final tmp1 = details;
     var tmp0 = 0;
@@ -65606,6 +65815,48 @@ class _UrlPreviewImageSourceReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _LocalUrlPreviewUrlReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _LocalUrlPreviewTitleReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _LocalUrlPreviewDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _LocalUrlPreviewImageUrlReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _ObjRefPositionStrReturn extends ffi.Struct {
