@@ -23,8 +23,9 @@ impl BackupManager {
         let inner = self.inner.clone();
         RUNTIME
             .spawn(async move {
+                inner.wait_for_e2ee_initialization_tasks().await;
                 let recovery = inner.recovery();
-                Ok(recovery.enable().await?)
+                Ok(recovery.enable().wait_for_backups_to_upload().await?)
             })
             .await?
     }
