@@ -3292,6 +3292,9 @@ object Client {
 
     /// get the activities listener for a specific object
     fn activities_for_obj(key: string) -> Result<Activities>;
+
+    /// fetch a UrlPreview locally
+    fn url_preview(uri: string) -> Future<Result<LocalUrlPreview>>;
 }
 
 object NotificationSettings {
