@@ -47,7 +47,7 @@ final commentsListProvider = FutureProvider.family
   return commentList;
 });
 
-final newsCommentsCountProvider = FutureProvider.family
+final updateCommentsCountProvider = FutureProvider.family
     .autoDispose<int, CommentsManagerProvider>((ref, managerProvider) async {
   final commentManager =
       await ref.watch(commentsManagerProvider(managerProvider).future);

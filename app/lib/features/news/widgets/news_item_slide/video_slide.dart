@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_media_error_widget.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -13,7 +13,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 final _log = Logger('a3::news::video_slide');
 
 class VideoSlide extends StatefulWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
   final NewsMediaErrorState errorState; // Add the enum as a parameter
 
   const VideoSlide({
@@ -43,7 +43,7 @@ class _VideoSlideState extends State<VideoSlide> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: NewsUpdateKeys.videoNewsContent,
+      key: UpdateKeys.videoNewsContent,
       child: renderVideoContent(),
     );
   }

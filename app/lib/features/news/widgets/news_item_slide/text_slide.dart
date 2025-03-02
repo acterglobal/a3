@@ -1,11 +1,11 @@
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class TextSlide extends StatelessWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
 
   const TextSlide({super.key, required this.slide});
 
@@ -38,7 +38,7 @@ class TextSlide extends StatelessWidget {
   Widget renderHtmlText(String formattedText, TextStyle? defaultTextStyle) {
     return SelectionArea(
       child: RenderHtml(
-        key: NewsUpdateKeys.textUpdateContent,
+        key: UpdateKeys.textUpdateContent,
         text: formattedText,
         defaultTextStyle: defaultTextStyle,
       ),
@@ -47,7 +47,7 @@ class TextSlide extends StatelessWidget {
 
   Widget renderNormalText(String bodyText, TextStyle? defaultTextStyle) {
     return SelectableText(
-      key: NewsUpdateKeys.textUpdateContent,
+      key: UpdateKeys.textUpdateContent,
       bodyText,
       style: defaultTextStyle,
     );
