@@ -46,8 +46,9 @@ use super::{
 
 mod models;
 mod sync;
-
+mod url_preview;
 pub use sync::{HistoryLoadState, SyncState};
+pub use url_preview::LocalUrlPreview;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
