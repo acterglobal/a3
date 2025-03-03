@@ -12,41 +12,60 @@ class PostColorScheme {
   });
 }
 
-//https://www.google.com
 final List<PostColorScheme> postColorSchemes = [
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 107, 65, 50),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.pinkAccent, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.blue, // Blue 800
   ),
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 11, 72, 123),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.green, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.blue.shade700, // Blue 800
   ),
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 6, 60, 104),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.brown, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.lightBlueAccent, // Blue 800
   ),
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 2, 106, 96),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.blueGrey, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.lightBlueAccent, // Blue 800
   ),
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 69, 43, 114),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.amber, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.lightBlueAccent, // Blue 800
   ),
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 38, 48, 104),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.cyan, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.blue.shade800, // Blue 800
   ),
   PostColorScheme(
-    backgroundColor: const Color.fromARGB(255, 10, 10, 10),
-    foregroundColor: Colors.white,
-    linkColor: Colors.amberAccent,
+    backgroundColor: Colors.deepOrange, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.blue, // Blue 800
+  ),
+  PostColorScheme(
+    backgroundColor: Colors.deepPurple, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.blue, // Blue 800
+  ),
+  PostColorScheme(
+    backgroundColor: Colors.indigo, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.lightBlueAccent, // Blue 800
+  ),
+  PostColorScheme(
+    backgroundColor: Colors.pink, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.lightBlue, // Blue 800
+  ),
+  PostColorScheme(
+    backgroundColor: Colors.black, // Purple 200
+    foregroundColor: Colors.white, // Deep Purple 900
+    linkColor: Colors.lightBlue, // Blue 800
   ),
 ];
