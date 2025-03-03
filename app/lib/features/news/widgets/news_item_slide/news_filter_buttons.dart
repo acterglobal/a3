@@ -1,6 +1,6 @@
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NewsFilterButtons extends ConsumerWidget {

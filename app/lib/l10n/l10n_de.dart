@@ -236,13 +236,13 @@ class L10nDe extends L10n {
   String get systemLinksTitle => 'System Links';
 
   @override
-  String get systemLinksExplainer => 'What to do when a link is pressed';
+  String get systemLinksExplainer => 'Was passiert, wenn ich einen Link klicke';
 
   @override
-  String get systemLinksOpen => 'Open';
+  String get systemLinksOpen => 'Öffnen';
 
   @override
-  String get systemLinksCopy => 'Copy to Clipboard';
+  String get systemLinksCopy => 'In die Zwischenablage kopieren';
 
   @override
   String get camera => 'Kamera';
@@ -275,16 +275,16 @@ class L10nDe extends L10n {
   String get chatNGExplainer => 'Wechsle zum Chat der nächsten Generation. Features sind evtl. noch nicht stabil';
 
   @override
-  String get customizationsTitle => 'Customizations';
+  String get customizationsTitle => 'Anpassungen';
 
   @override
   String get chatMissingPermissionsToSend => 'Du hast keine Berechtigung hier Nachrichten zu schicken';
 
   @override
-  String get behaviorSettingsTitle => 'Behavior';
+  String get behaviorSettingsTitle => 'Verhalten';
 
   @override
-  String get behaviorSettingsExplainer => 'Configure the behavior of your App';
+  String get behaviorSettingsExplainer => 'Konfiguriere  das Verhalten der App';
 
   @override
   String get chatSettingsAutoDownload => 'Medien automatisch herunterladen';
@@ -1819,7 +1819,7 @@ class L10nDe extends L10n {
   String get server => 'Server';
 
   @override
-  String get sessions => 'Sitzungen';
+  String get sessions => 'Sitzung';
 
   @override
   String get sessionTokenName => 'Sitzungskode Name';
@@ -2142,7 +2142,7 @@ class L10nDe extends L10n {
 
   @override
   String unverifiedSessionsCount(int count) {
-    return 'There are $count unverified sessions logged in';
+    return 'Es sind $count unverifizierte Sitzung eingeloggt';
   }
 
   @override
@@ -2210,7 +2210,7 @@ class L10nDe extends L10n {
   String get username => 'Benutzername';
 
   @override
-  String get linkCopiedToClipboard => 'Link copied to clipboard';
+  String get linkCopiedToClipboard => 'Link zur Zwischenablage kopiert';
 
   @override
   String get usernameCopiedToClipboard => 'Benutzername zur Zwischenablage kopiert';
@@ -2444,7 +2444,7 @@ class L10nDe extends L10n {
   String get emailAddresses => 'E-Mail Adressen';
 
   @override
-  String get errorParsinLink => 'Parsing Link failed';
+  String get errorParsinLink => 'Link parsen gescheitert';
 
   @override
   String errorCreatingPin(Object error) {
@@ -2680,19 +2680,19 @@ class L10nDe extends L10n {
   String get createInviteCode => 'Einladungs-Code erstellen';
 
   @override
-  String get selectSpacesAndChats => 'Select spaces and chats';
+  String get selectSpacesAndChats => 'Räume und Chats auswählen';
 
   @override
-  String get autoJoinSpacesAndChatsInfo => 'While redeeming this code, selected spaces and chats are auto join.';
+  String get autoJoinSpacesAndChatsInfo => 'Beim Einlösen dieses Codes tritt die Person den ausgewählten Spaces und Chats automatisch bei.';
 
   @override
-  String get createDM => 'Create DM';
+  String get createDM => 'DM erstellen';
 
   @override
-  String get autoDMWhileRedeemCode => 'While redeeming code, DM will be created\'';
+  String get autoDMWhileRedeemCode => 'Beim Einlösen von Code wird eine DM mit dir erzeugt';
 
   @override
-  String get redeemInviteCode => 'Redeem Invite Code';
+  String get redeemInviteCode => 'Einladung einlösen';
 
   @override
   String saveInviteCodeFailed(Object error) {
@@ -2818,11 +2818,11 @@ class L10nDe extends L10n {
   String get chatYouJoined => 'Du bist beigetreten';
 
   @override
-  String get chatYouLeft => 'You left';
+  String get chatYouLeft => 'Du hast verlassen';
 
   @override
   String chatYouBanned(Object name) {
-    return 'You banned $name';
+    return 'Du hast $name verbannt';
   }
 
   @override
@@ -3945,6 +3945,9 @@ class L10nDe extends L10n {
   String get postSpaceWiseBoost => 'Space-weiten Boost posten';
 
   @override
+  String get postSpaceWiseStories => 'Post space-wide stories';
+
+  @override
   String get pinImportantInformation => 'Wichtige Informationen anpinnen';
 
   @override
@@ -4047,6 +4050,33 @@ class L10nDe extends L10n {
 
   @override
   String get unableToLoadImage => 'Image laden fehlgeschlagen';
+
+  @override
+  String get story => 'Story';
+
+  @override
+  String get storyInfo => 'Everyone can see, this is from you';
+
+  @override
+  String get boostInfo => 'Important News. Sends a push notification to space members';
+
+  @override
+  String get notHaveBoostStoryPermission => 'You do not have permission to post Boost or Story in selected space';
+
+  @override
+  String get pleaseSelectePostType => 'Please select post type';
+
+  @override
+  String get postTo => 'Post to';
+
+  @override
+  String get post => 'Post';
+
+  @override
+  String get stories => 'Stories';
+
+  @override
+  String get addStory => 'Add Story';
 
   @override
   String get unableToLoadFile => 'Unable to load file';

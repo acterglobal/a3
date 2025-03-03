@@ -7177,6 +7177,12 @@ abstract class L10n {
   /// **'Post space-wide boost'**
   String get postSpaceWiseBoost;
 
+  /// No description provided for @postSpaceWiseStories.
+  ///
+  /// In en, this message translates to:
+  /// **'Post space-wide stories'**
+  String get postSpaceWiseStories;
+
   /// No description provided for @pinImportantInformation.
   ///
   /// In en, this message translates to:
@@ -7380,6 +7386,60 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Unable to load image'**
   String get unableToLoadImage;
+
+  /// No description provided for @story.
+  ///
+  /// In en, this message translates to:
+  /// **'Story'**
+  String get story;
+
+  /// No description provided for @storyInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone can see, this is from you'**
+  String get storyInfo;
+
+  /// No description provided for @boostInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Important News. Sends a push notification to space members'**
+  String get boostInfo;
+
+  /// No description provided for @notHaveBoostStoryPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to post Boost or Story in selected space'**
+  String get notHaveBoostStoryPermission;
+
+  /// No description provided for @pleaseSelectePostType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select post type'**
+  String get pleaseSelectePostType;
+
+  /// No description provided for @postTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Post to'**
+  String get postTo;
+
+  /// No description provided for @post.
+  ///
+  /// In en, this message translates to:
+  /// **'Post'**
+  String get post;
+
+  /// No description provided for @stories.
+  ///
+  /// In en, this message translates to:
+  /// **'Stories'**
+  String get stories;
+
+  /// No description provided for @addStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Story'**
+  String get addStory;
 
   /// No description provided for @unableToLoadFile.
   ///

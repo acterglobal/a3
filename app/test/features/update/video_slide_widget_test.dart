@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 
 import 'image_slide_widget_test.dart';
 
@@ -34,7 +34,11 @@ void main() {
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: VideoSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorImageOnly,)),
+          home: Scaffold(
+              body: VideoSlide(
+            slide: mockSlide,
+            errorState: NewsMediaErrorState.showErrorImageOnly,
+          )),
         ),
       );
 
@@ -52,7 +56,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageOnly,)),
+          home: Scaffold(
+              body: VideoSlide(
+            slide: mockSlide,
+            errorState: NewsMediaErrorState.showErrorImageOnly,
+          )),
         ),
       );
 
@@ -65,7 +73,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageWithText,)),
+          home: Scaffold(
+              body: VideoSlide(
+            slide: mockSlide,
+            errorState: NewsMediaErrorState.showErrorImageWithText,
+          )),
         ),
       );
 
@@ -78,7 +90,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: VideoSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorWithTryAgain,)),
+          home: Scaffold(
+              body: VideoSlide(
+            slide: mockSlide,
+            errorState: NewsMediaErrorState.showErrorWithTryAgain,
+          )),
         ),
       );
 
@@ -92,7 +108,8 @@ void main() {
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle(); // Wait for the widget to rebuild
 
-      verify(() => mockSlide.sourceBinary(null)).called(4); // Called twice (1 for the initial error, 1 for retry)
+      verify(() => mockSlide.sourceBinary(null))
+          .called(4); // Called twice (1 for the initial error, 1 for retry)
     });
   });
 }

@@ -1240,7 +1240,7 @@ class L10nUr extends L10n {
   String get newMessage => 'نیا پیغام';
 
   @override
-  String get newUpdate => 'نیا اپ ڈیٹ';
+  String get newUpdate => '‬نیا اپ ڈیٹ';
 
   @override
   String get next => 'اگلا';
@@ -3071,7 +3071,7 @@ class L10nUr extends L10n {
   String get introPageDescriptionHl => ' تبدیلی سازوں کی جماعت۔';
 
   @override
-  String get introPageDescriptionPost => ' . ';
+  String get introPageDescriptionPost => ' ‫. ';
 
   @override
   String get introPageDescription2ndLine => 'ساتھی کارکنوں کے ساتھ جڑیں، بصیرت کا اشتراک کریں، اور بامعنی تبدیلی پیدا کرنے میں تعاون کریں۔';
@@ -3945,6 +3945,9 @@ class L10nUr extends L10n {
   String get postSpaceWiseBoost => 'پوسٹ سپیس وائیڈ بوسٹ';
 
   @override
+  String get postSpaceWiseStories => 'Post space-wide stories';
+
+  @override
   String get pinImportantInformation => 'اہم معلومات کو پن کریں';
 
   @override
@@ -4047,6 +4050,33 @@ class L10nUr extends L10n {
 
   @override
   String get unableToLoadImage => 'Unable to load image';
+
+  @override
+  String get story => 'Story';
+
+  @override
+  String get storyInfo => 'Everyone can see, this is from you';
+
+  @override
+  String get boostInfo => 'Important News. Sends a push notification to space members';
+
+  @override
+  String get notHaveBoostStoryPermission => 'You do not have permission to post Boost or Story in selected space';
+
+  @override
+  String get pleaseSelectePostType => 'Please select post type';
+
+  @override
+  String get postTo => 'Post to';
+
+  @override
+  String get post => 'Post';
+
+  @override
+  String get stories => 'Stories';
+
+  @override
+  String get addStory => 'Add Story';
 
   @override
   String get unableToLoadFile => 'Unable to load file';

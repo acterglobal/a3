@@ -3945,6 +3945,9 @@ class L10nEs extends L10n {
   String get postSpaceWiseBoost => 'Post space-wide boost';
 
   @override
+  String get postSpaceWiseStories => 'Post space-wide stories';
+
+  @override
   String get pinImportantInformation => 'Pin important information';
 
   @override
@@ -4047,6 +4050,33 @@ class L10nEs extends L10n {
 
   @override
   String get unableToLoadImage => 'Unable to load image';
+
+  @override
+  String get story => 'Story';
+
+  @override
+  String get storyInfo => 'Everyone can see, this is from you';
+
+  @override
+  String get boostInfo => 'Important News. Sends a push notification to space members';
+
+  @override
+  String get notHaveBoostStoryPermission => 'You do not have permission to post Boost or Story in selected space';
+
+  @override
+  String get pleaseSelectePostType => 'Please select post type';
+
+  @override
+  String get postTo => 'Post to';
+
+  @override
+  String get post => 'Post';
+
+  @override
+  String get stories => 'Stories';
+
+  @override
+  String get addStory => 'Add Story';
 
   @override
   String get unableToLoadFile => 'Unable to load file';

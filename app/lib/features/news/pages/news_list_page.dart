@@ -10,7 +10,7 @@ import 'package:acter/features/news/widgets/news_grid_view.dart';
 import 'package:acter/features/news/widgets/news_item_slide/news_filter_buttons.dart';
 import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/l10n.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
