@@ -1,8 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/message_content_widget.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
-import 'package:acter/common/widgets/user_display_name_widget.dart';
-import 'package:acter/common/widgets/user_id_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
