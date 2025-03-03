@@ -80,8 +80,11 @@ async fn ref_details_as_url_preview() -> Result<()> {
             let Some(msg) = convo.latest_message() else {
                 bail!("no latest message found");
             };
-            if msg.item_type() != "event" {
-                bail!("not the latest message {:?}", msg)
+            let Some(item) = msg.event_item() else {
+                bail!("Not the proper event");
+            };
+            if item.event_type() != "m.room.message" {
+                bail!(format!("Not the message we are looking for {item:?}"));
             }
             Ok(msg)
         }
@@ -154,8 +157,11 @@ async fn url_preview_on_message() -> Result<()> {
             let Some(msg) = convo.latest_message() else {
                 bail!("no latest message found");
             };
-            if msg.item_type() != "event" {
-                bail!("not the latest message {:?}", msg)
+            let Some(item) = msg.event_item() else {
+                bail!("Not the proper event");
+            };
+            if item.event_type() != "m.room.message" {
+                bail!(format!("Not the message we are looking for {item:?}"));
             }
             Ok(msg)
         }
