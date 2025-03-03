@@ -1,5 +1,6 @@
 mod activities;
 mod auth;
+mod backup;
 mod blurhash;
 mod bookmarks;
 mod calendar;
