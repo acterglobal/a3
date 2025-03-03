@@ -45,7 +45,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-app/android/.cxx
+app/android/app/.cxx
 
 # testing related
 coverage/
