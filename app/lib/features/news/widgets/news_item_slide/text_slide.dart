@@ -1,11 +1,11 @@
 import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class TextSlide extends StatelessWidget {
-  final NewsSlide slide;
+  final UpdateSlide slide;
 
   const TextSlide({super.key, required this.slide});
 
@@ -27,27 +27,38 @@ class TextSlide extends StatelessWidget {
     final formattedText = slideContent.formattedBody();
     final bodyText = slideContent.body();
     final fgColor = NewsUtils.getForegroundColor(context, slide);
+    final linkColor = NewsUtils.getLinkColor(context, slide);
     final defaultTextStyle =
         Theme.of(context).textTheme.bodyLarge?.copyWith(color: fgColor);
 
+    final linkTextStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: linkColor,
+          decoration: TextDecoration.underline,
+        );
+
     return formattedText != null
-        ? renderHtmlText(formattedText, defaultTextStyle)
+        ? renderHtmlText(formattedText, defaultTextStyle, linkTextStyle)
         : renderNormalText(bodyText, defaultTextStyle);
   }
 
-  Widget renderHtmlText(String formattedText, TextStyle? defaultTextStyle) {
+  Widget renderHtmlText(
+    String formattedText,
+    TextStyle? defaultTextStyle,
+    TextStyle? linkTextStyle,
+  ) {
     return SelectionArea(
       child: RenderHtml(
-        key: NewsUpdateKeys.textUpdateContent,
+        key: UpdateKeys.textUpdateContent,
         text: formattedText,
         defaultTextStyle: defaultTextStyle,
+        linkTextStyle: linkTextStyle,
       ),
     );
   }
 
   Widget renderNormalText(String bodyText, TextStyle? defaultTextStyle) {
     return SelectableText(
-      key: NewsUpdateKeys.textUpdateContent,
+      key: UpdateKeys.textUpdateContent,
       bodyText,
       style: defaultTextStyle,
     );

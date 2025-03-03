@@ -1,0 +1,1 @@
+- [Improvements] : Color contrast (Background and Foreground and Link Colors) in update slide is improved for better visualisation of content.

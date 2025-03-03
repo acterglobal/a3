@@ -1,12 +1,18 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::space::actions::set_acter');
 
-enum SpaceFeature { boosts, pins, events, tasks }
+enum SpaceFeature {
+  boosts,
+  stories,
+  pins,
+  events,
+  tasks;
+}
 
 extension SpaceFeatureActivator on ActerAppSettings {
   ActerAppSettingsBuilder setActivatedBuilder(
@@ -19,6 +25,11 @@ extension SpaceFeatureActivator on ActerAppSettings {
         final updated = news().updater();
         updated.active(newVal);
         builder.news(updated.build());
+        break;
+      case SpaceFeature.stories:
+        final updated = stories().updater();
+        updated.active(newVal);
+        builder.stories(updated.build());
         break;
       case SpaceFeature.pins:
         final updated = pins().updater();

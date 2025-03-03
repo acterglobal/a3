@@ -3,6 +3,7 @@ use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
     authentication::matrix::{MatrixSession, MatrixSessionTokens},
+    encryption::{BackupDownloadStrategy, EncryptionSettings},
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
     Client as SdkClient, ClientBuilder as SdkClientBuilder,
 };
@@ -87,7 +88,12 @@ pub async fn make_client_config(
         db_passphrase,
         reset_if_existing,
     )
-    .await?;
+    .await?
+    .with_encryption_settings(EncryptionSettings {
+        auto_enable_cross_signing: true,
+        backup_download_strategy: BackupDownloadStrategy::AfterDecryptionFailure,
+        auto_enable_backups: true,
+    });
 
     if let Some(proxy) = PROXY_URL.read().expect("Reading PROXY_URL failed").clone() {
         builder = builder.proxy(proxy);

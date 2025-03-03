@@ -708,6 +708,7 @@ pub fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize> {
 pub fn new_colorize_builder(
     color: Option<u32>,
     background: Option<u32>,
+    link: Option<u32>,
 ) -> Result<ColorizeBuilder> {
     let mut builder = ColorizeBuilder::default();
     if let Some(color) = color {
@@ -715,6 +716,9 @@ pub fn new_colorize_builder(
     }
     if let Some(background) = background {
         builder.background(background);
+    }
+    if let Some(link) = link {
+        builder.link(link);
     }
     Ok(builder)
 }

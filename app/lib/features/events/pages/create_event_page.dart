@@ -141,7 +141,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
-              const SelectSpaceFormField(canCheck: 'CanPostEvent'),
+              SelectSpaceFormField(
+                canCheck: (m) => m?.canString('CanPostEvent') == true,
+              ),
               const SizedBox(height: 20),
               _eventActionButtons(),
               const SizedBox(height: 30),
@@ -422,7 +424,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     spaceId ??= await selectSpace(
       context: context,
       ref: ref,
-      canCheck: 'CanPostEvent',
+      canCheck: (m) => m?.canString('CanPostEvent') == true,
     );
     if (!mounted) return;
 

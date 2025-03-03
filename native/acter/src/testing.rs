@@ -3,6 +3,7 @@
 use anyhow::Result;
 use core::{future::Future, time::Duration};
 use matrix_sdk::config::RequestConfig;
+use matrix_sdk::encryption::{BackupDownloadStrategy, EncryptionSettings};
 use matrix_sdk::{Client as SdkClient, ClientBuilder};
 use matrix_sdk_base::store::StoreConfig;
 use tokio::time::sleep;
@@ -58,7 +59,12 @@ pub async fn default_client_config(
         .user_agent(user_agent)
         .store_config(store_cfg)
         .homeserver_url(homeserver)
-        .request_config(config);
+        .request_config(config)
+        .with_encryption_settings(EncryptionSettings {
+            auto_enable_cross_signing: true,
+            backup_download_strategy: BackupDownloadStrategy::AfterDecryptionFailure,
+            auto_enable_backups: true,
+        });
     if let Some(http_proxy) = option_env!("HTTP_PROXY") {
         println!("Setting http proxy to {http_proxy}");
         builder = builder.proxy(http_proxy);

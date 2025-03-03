@@ -110,10 +110,10 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                       const SizedBox(height: 14),
                       _buildTitleField(),
                       const SizedBox(height: 14),
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
                         child: SelectSpaceFormField(
-                          canCheck: 'CanPostPin',
+                          canCheck: (m) => m?.canString('CanPostPin') == true,
                           useCompactView: true,
                         ),
                       ),
@@ -388,7 +388,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
     final newSelectedSpaceId = await selectSpaceDrawer(
       context: context,
       currentSpaceId: ref.read(selectedSpaceIdProvider),
-      canCheck: 'CanPostPin',
+      canCheck: (m) => m?.canString('CanPostPin') == true,
       title: Text(L10n.of(context).selectSpace),
     );
     ref.read(selectedSpaceIdProvider.notifier).state = newSelectedSpaceId;

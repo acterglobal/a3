@@ -53,7 +53,7 @@ fn duration_from_secs(secs: u64) -> EfkDuration;
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
 /// create a colorize builder
-fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+fn new_colorize_builder(color: Option<u32>, background: Option<u32>, link: Option<u32>) -> Result<ColorizeBuilder>;
 
 /// create a display builder
 fn new_display_builder() -> DisplayBuilder;
@@ -138,6 +138,8 @@ object Colorize {
     fn color() -> Option<u32>;
     /// Background color
     fn background() -> Option<u32>;
+    /// Link color
+    fn link() -> Option<u32>;
 }
 
 /// A builder for Colorize. Allowing you to set (foreground) color and background
@@ -151,6 +153,11 @@ object ColorizeBuilder {
     fn background(color: u32);
     /// unset the background color
     fn unset_background();
+
+    /// RGBA color representation as int for the link color
+    fn link(color: u32);
+    /// unset the link color
+    fn unset_link();
 }
 
 // enum LocationType {
@@ -2095,8 +2102,13 @@ object SpaceRelations {
 object RoomPowerLevels {
     fn news() -> Option<i64>;
     fn news_key() -> string;
+
+    fn stories() -> Option<i64>;
+    fn stories_key() -> string;
+
     fn events() -> Option<i64>;
     fn events_key() -> string;
+
     fn pins() -> Option<i64>;
     fn pins_key() -> string;
 
@@ -2152,6 +2164,11 @@ object NewsSettings {
     fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
 
+object StoriesSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleOnOffSettingBuilder;
+}
+
 object TasksSettings {
     fn active() -> bool;
     fn updater() -> SimpleOnOffSettingBuilder;
@@ -2169,6 +2186,7 @@ object PinsSettings {
 
 object ActerAppSettings {
     fn news() -> NewsSettings;
+    fn stories() -> StoriesSettings;
     fn pins() -> PinsSettings;
     fn events() -> EventsSettings;
     fn tasks() -> TasksSettings;
@@ -2177,6 +2195,7 @@ object ActerAppSettings {
 
 object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn stories(tasks: Option<SimpleOnOffSetting>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<SimpleOnOffSetting>);

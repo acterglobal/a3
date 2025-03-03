@@ -554,7 +554,7 @@ class _CreateRoomFormWidgetConsumerState
           ),
           const SizedBox(height: 15),
           SelectSpaceFormField(
-            canCheck: 'CanLinkSpaces',
+            canCheck: (m) => m?.canString('CanLinkSpaces') == true,
             mandatory: true,
             title: lang.parentSpace,
             emptyText: lang.optionalParentSpace,

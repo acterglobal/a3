@@ -47,7 +47,14 @@ class SpaceActionsSection extends ConsumerWidget {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
-        addPostUpdateButton(
+        addNewsButton(
+          context,
+          ref,
+          canChangeSetting,
+          membership,
+          settings,
+        ),
+        addStoryButton(
           context,
           ref,
           canChangeSetting,
@@ -142,7 +149,7 @@ class SpaceActionsSection extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  Widget addPostUpdateButton(
+  Widget addNewsButton(
     BuildContext context,
     WidgetRef ref,
     bool canChangeSetting,
@@ -164,6 +171,43 @@ class SpaceActionsSection extends ConsumerWidget {
               ref: ref,
               spaceId: spaceId,
               feature: SpaceFeature.boosts,
+            );
+            if (!result) return;
+          }
+          if (context.mounted) {
+            context.pushNamed(
+              Routes.actionAddUpdate.name,
+              queryParameters: {'spaceId': spaceId},
+            );
+          }
+        },
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget addStoryButton(
+    BuildContext context,
+    WidgetRef ref,
+    bool canChangeSetting,
+    Member? membership,
+    ActerAppSettings? settings,
+  ) {
+    final isActive = settings?.stories().active() == true;
+    final canPostUpdate =
+        isActive && membership?.canString('CanPostStories') == true;
+    if (canPostUpdate || canChangeSetting) {
+      return simpleActionButton(
+        context: context,
+        iconData: PhosphorIcons.newspaper(),
+        title: L10n.of(context).addStory,
+        onPressed: () async {
+          if (!isActive && canChangeSetting) {
+            final result = await offerToActivateFeature(
+              context: context,
+              ref: ref,
+              spaceId: spaceId,
+              feature: SpaceFeature.stories,
             );
             if (!result) return;
           }

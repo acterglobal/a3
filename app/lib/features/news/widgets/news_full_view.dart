@@ -1,19 +1,19 @@
 import 'package:acter/common/animations/like_animation.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_item/news_item.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
 class NewsFullView extends ConsumerStatefulWidget {
-  final List<NewsEntry> newsList;
+  final List<UpdateEntry> updateList;
   final int initialPageIndex;
 
   const NewsFullView({
     super.key,
-    required this.newsList,
+    required this.updateList,
     this.initialPageIndex = 0,
   });
 
@@ -27,7 +27,8 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
   @override
   void initState() {
     super.initState();
-    _pageController = PreloadPageController(initialPage: widget.initialPageIndex);
+    _pageController =
+        PreloadPageController(initialPage: widget.initialPageIndex);
   }
 
   @override
@@ -61,25 +62,27 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
         },
       ),
       child: PreloadPageView.builder(
-          controller: _pageController,
-          itemCount: widget.newsList.length,
-          scrollDirection: Axis.vertical,
-          preloadPagesCount: widget.newsList.length > 5 ? 5 : widget.newsList.length,
-          itemBuilder: (context, index) {
-            return InkWell(
-              onDoubleTap: () async {
-                LikeAnimation.run(index);
-                final news = widget.newsList[index];
-                final manager =
-                    await ref.read(newsReactionsProvider(news).future);
-                final status = manager.likedByMe();
-                if (!status) {
-                  await manager.sendLike();
-                }
-              },
-              child: NewsItem(news: widget.newsList[index]),
-            );
-          },),
+        controller: _pageController,
+        itemCount: widget.updateList.length,
+        scrollDirection: Axis.vertical,
+        preloadPagesCount:
+            widget.updateList.length > 5 ? 5 : widget.updateList.length,
+        itemBuilder: (context, index) {
+          return InkWell(
+            onDoubleTap: () async {
+              LikeAnimation.run(index);
+              final news = widget.updateList[index];
+              final manager =
+                  await ref.read(updateReactionsProvider(news).future);
+              final status = manager.likedByMe();
+              if (!status) {
+                await manager.sendLike();
+              }
+            },
+            child: NewsItem(updateEntry: widget.updateList[index]),
+          );
+        },
+      ),
     );
   }
 }

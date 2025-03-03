@@ -48,6 +48,8 @@ pub struct Colorize {
     color: Option<Color>,
     /// The background color to be used, as HEX
     background: Option<Color>,
+    /// The link color to be used, as HEX
+    link: Option<Color>,
 }
 
 impl Colorize {
@@ -56,6 +58,9 @@ impl Colorize {
     }
     pub fn background(&self) -> Option<Color> {
         self.background
+    }
+    pub fn link(&self) -> Option<Color> {
+        self.link
     }
 }
 
@@ -73,12 +78,20 @@ impl ColorizeBuilder {
         self.colorize.background = Some(color);
     }
 
+    pub fn link(&mut self, color: u32) {
+        self.colorize.link = Some(color);
+    }
+
     pub fn unset_color(&mut self) {
         self.colorize.color = None;
     }
 
     pub fn unset_background(&mut self) {
         self.colorize.background = None;
+    }
+
+    pub fn unset_link(&mut self) {
+        self.colorize.link = None;
     }
 
     pub fn build(self) -> Option<Colorize> {

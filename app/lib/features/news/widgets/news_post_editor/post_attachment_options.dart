@@ -25,7 +25,7 @@ class PostAttachmentOptions extends StatelessWidget {
       children: [
         ListTile(title: Text(lang.newUpdate)),
         ListTile(
-          key: NewsUpdateKeys.addTextSlide,
+          key: UpdateKeys.addTextSlide,
           onTap: () {
             Navigator.pop(context);
             onTapAddText.map((cb) => cb());
@@ -34,7 +34,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: Text(lang.addTextSlide),
         ),
         ListTile(
-          key: NewsUpdateKeys.addImageSlide,
+          key: UpdateKeys.addImageSlide,
           onTap: () {
             Navigator.pop(context);
             onTapImage.map((cb) => cb());
@@ -43,7 +43,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: Text(lang.selectPicture),
         ),
         ListTile(
-          key: NewsUpdateKeys.addVideoSlide,
+          key: UpdateKeys.addVideoSlide,
           onTap: () {
             Navigator.pop(context);
             onTapVideo.map((cb) => cb());
@@ -52,7 +52,7 @@ class PostAttachmentOptions extends StatelessWidget {
           title: Text(lang.selectVideo),
         ),
         ListTile(
-          key: NewsUpdateKeys.cancelButton,
+          key: UpdateKeys.cancelButton,
           onTap: () => Navigator.pop(context),
           contentPadding: EdgeInsets.zero,
           title: Text(lang.cancel, textAlign: TextAlign.center),

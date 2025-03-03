@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:acter/features/news/widgets/news_item_slide/image_slide.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -8,18 +9,18 @@ import 'package:mockingjay/mockingjay.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:acter/l10n/l10n.dart';
 
-class MockNewsSlide extends Mock implements NewsSlide {}
+class MockUpdateSlide extends Mock implements UpdateSlide {}
 
 // Mock class for FfiBufferUint8 to mock the return value of asTypedList
 class MockFfiBufferUint8 extends Mock implements FfiBufferUint8 {}
 
 void main() {
   group('ImageSlide Widget Test', () {
-    late MockNewsSlide mockSlide;
+    late MockUpdateSlide mockSlide;
     late MockFfiBufferUint8 mockFfiBuffer;
 
     setUp(() {
-      mockSlide = MockNewsSlide();
+      mockSlide = MockUpdateSlide();
       mockFfiBuffer = MockFfiBufferUint8();
     });
 

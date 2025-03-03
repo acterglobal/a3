@@ -119,7 +119,7 @@ pub use settings::{
     ActerAppSettings, ActerAppSettingsBuilder, ActerUserAppSettings, ActerUserAppSettingsBuilder,
     EventsSettings, NewsSettings, PinsSettings, RoomPowerLevels, SimpleOnOffSetting,
     SimpleOnOffSettingBuilder, SimpleSettingWithTurnOff, SimpleSettingWithTurnOffBuilder,
-    TasksSettings,
+    StoriesSettings, TasksSettings,
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,

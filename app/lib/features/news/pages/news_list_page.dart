@@ -3,14 +3,14 @@ import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/add_button_with_can_permission.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
-import 'package:acter/common/widgets/space_name_widget.dart';
+import 'package:acter/features/news/model/type/update_entry.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/news/widgets/news_full_view.dart';
 import 'package:acter/features/news/widgets/news_grid_view.dart';
+import 'package:acter/features/news/widgets/news_item_slide/news_filter_buttons.dart';
 import 'package:acter/features/news/widgets/news_skeleton_widget.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -40,7 +40,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   final ValueNotifier<bool> useGridMode = ValueNotifier(true);
   final ValueNotifier<bool> stillLoadingForSelectedItem = ValueNotifier(false);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
-  late ProviderSubscription<AsyncValue<List<NewsEntry>>>? listener;
+  late ProviderSubscription<AsyncValue<List<UpdateEntry>>>? listener;
 
   @override
   void initState() {
@@ -49,33 +49,34 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
     final targetEventId = widget.initialEventId;
     if (targetEventId != null) {
       stillLoadingForSelectedItem.value = true;
-      listener = ref.listenManual(newsListProvider(widget.spaceId), (
-        prev,
-        next,
-      ) {
-        final items = next.valueOrNull;
-        if (items == null) {
-          return;
-        }
-        int? itemIdx;
-
-        items.firstWhereIndexedOrNull((int idx, NewsEntry e) {
-          if (e.eventId().toString() == targetEventId) {
-            itemIdx = idx;
-            return true;
-          } else {
-            return false;
+      listener = ref.listenManual(
+        filteredUpdateListProvider(widget.spaceId),
+        (prev, next) {
+          final items = next.valueOrNull;
+          if (items == null) {
+            return;
           }
-        });
-        if (itemIdx == null) {
-          // not found, still loading
-          return;
-        }
-        stillLoadingForSelectedItem.value = false;
-        currentIndex.value = itemIdx!;
-        listener?.close();
-        listener = null;
-      }, fireImmediately: true,);
+          int? itemIdx;
+
+          items.firstWhereIndexedOrNull((int idx, UpdateEntry e) {
+            if (e.eventId().toString() == targetEventId) {
+              itemIdx = idx;
+              return true;
+            } else {
+              return false;
+            }
+          });
+          if (itemIdx == null) {
+            // not found, still loading
+            return;
+          }
+          stillLoadingForSelectedItem.value = false;
+          currentIndex.value = itemIdx!;
+          listener?.close();
+          listener = null;
+        },
+        fireImmediately: true,
+      );
     }
   }
 
@@ -89,9 +90,8 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
           appBar: _buildAppBar(value),
           body: ValueListenableBuilder(
             valueListenable: stillLoadingForSelectedItem,
-            builder:
-                (context, loading, child) =>
-                    loading ? const NewsSkeletonWidget() : _buildBody(value),
+            builder: (context, loading, child) =>
+                loading ? const NewsSkeletonWidget() : _buildBody(value),
           ),
         );
       },
@@ -99,69 +99,57 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   }
 
   AppBar _buildAppBar(bool useGridMode) {
-    final spaceId = widget.spaceId;
-    final canPop =
-        widget.newsViewMode == NewsViewMode.gridView &&
+    final canPop = widget.newsViewMode == NewsViewMode.gridView &&
         this.useGridMode.value == true;
     return AppBar(
       backgroundColor: Colors.transparent,
       centerTitle: false,
-      leading:
-          widget.newsViewMode == NewsViewMode.gridView
-              ? IconButton(
-                onPressed: () {
-                  if (canPop) {
-                    Navigator.pop(context);
-                  } else {
-                    this.useGridMode.value = true;
-                  }
-                },
-                icon: const Icon(Icons.arrow_back),
-              )
-              : const SizedBox.shrink(),
-      title:
-          widget.newsViewMode == NewsViewMode.gridView
-              ? Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(L10n.of(context).boosts),
-                  if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-                ],
-              )
-              : const SizedBox.shrink(),
+      leading: widget.newsViewMode == NewsViewMode.gridView
+          ? IconButton(
+              onPressed: () {
+                if (canPop) {
+                  Navigator.pop(context);
+                } else {
+                  this.useGridMode.value = true;
+                }
+              },
+              icon: const Icon(Icons.arrow_back),
+            )
+          : const SizedBox.shrink(),
+      title: NewsFilterButtons(),
       actions: [
         AddButtonWithCanPermission(
           canString: 'CanPostNews',
           spaceId: widget.spaceId,
-          onPressed:
-              () => context.pushNamed(
-                Routes.actionAddUpdate.name,
-                queryParameters: {'spaceId': widget.spaceId},
-              ),
+          onPressed: () => context.pushNamed(
+            Routes.actionAddUpdate.name,
+            queryParameters: {'spaceId': widget.spaceId},
+          ),
         ),
       ],
     );
   }
 
   Widget _buildBody(bool useGridMode) {
-    final newsListLoader = ref.watch(newsListProvider(widget.spaceId));
+    final updateListLoader =
+        ref.watch(filteredUpdateListProvider(widget.spaceId));
 
-    return newsListLoader.when(
-      data: (newsList) {
-        if (newsList.isEmpty) return newsEmptyStateUI(context);
+    return updateListLoader.when(
+      data: (updateList) {
+        if (updateList.isEmpty) return newsEmptyStateUI(context);
+
         return useGridMode
             ? NewsGridView(
-              newsList: newsList,
-              onTapNewItem: (index) {
-                this.useGridMode.value = false;
-                currentIndex.value = index;
-              },
-            )
+                updateList: updateList,
+                onTapNewItem: (index) {
+                  this.useGridMode.value = false;
+                  currentIndex.value = index;
+                },
+              )
             : NewsFullView(
-              newsList: newsList,
-              initialPageIndex: currentIndex.value,
-            );
+                updateList: updateList,
+                initialPageIndex: currentIndex.value,
+              );
       },
       error: (e, s) => newsErrorUI(context, e, s),
       loading: () => const NewsSkeletonWidget(),
@@ -178,7 +166,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
       stack: stack,
       textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
       onRetryTap: () {
-        ref.invalidate(newsListProvider(widget.spaceId));
+        ref.invalidate(filteredUpdateListProvider(widget.spaceId));
       },
     );
   }
@@ -192,7 +180,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         image: 'assets/images/empty_updates.svg',
         primaryButton: ActerPrimaryActionButton(
           onPressed: () => context.pushNamed(Routes.actionAddUpdate.name),
-          child: Text(lang.addBoost),
+          child: Text(lang.add),
         ),
       ),
     );

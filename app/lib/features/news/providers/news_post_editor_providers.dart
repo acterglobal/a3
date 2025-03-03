@@ -31,17 +31,18 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   NewsStateNotifier({required this.ref}) : super(const NewsPostState());
 
   void changeTextSlideBackgroundColor() {
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.backgroundColor = getRandomElement(newsPostColors);
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    PostColorScheme postColorScheme = getRandomElement(postColorSchemes);
+    selectedUpdateSlide?.backgroundColor = postColorScheme.backgroundColor;
+    selectedUpdateSlide?.foregroundColor = postColorScheme.foregroundColor;
+    selectedUpdateSlide?.linkColor = postColorScheme.linkColor;
+
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   Future<void> changeNewsPostSpaceId(BuildContext context) async {
-    final spaceId = await selectSpaceDrawer(
-      context: context,
-      canCheck: 'CanPostNews',
-    );
-    state = state.copyWith(newsPostSpaceId: spaceId);
+    final selecteSpaceId = ref.read(selectedSpaceIdProvider);
+    state = state.copyWith(newsPostSpaceId: selecteSpaceId);
   }
 
   void setSpaceId(String spaceId) {
@@ -65,9 +66,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       );
       refDetails = await selectedEvent.refDetails();
     }
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.refDetails = refDetails;
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   Future<void> selectPinToShare(BuildContext context) async {
@@ -77,9 +78,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       final selectedPin = await ref.watch(pinProvider(pinId).future);
       refDetails = await selectedPin.refDetails();
     }
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.refDetails = refDetails;
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   Future<void> selectTaskListToShare(BuildContext context) async {
@@ -91,9 +92,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       );
       refDetails = await selectedTaskList.refDetails();
     }
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.refDetails = refDetails;
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   Future<void> selectSpaceToShare(BuildContext context) async {
@@ -105,9 +106,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       );
       refDetails = await selectedSpace.refDetails();
     }
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.refDetails = refDetails;
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   Future<void> selectChatToShare(BuildContext context) async {
@@ -118,9 +119,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
       if (selectedChat == null) return;
       refDetails = await selectedChat.refDetails();
     }
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.refDetails = refDetails;
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   Future<void> enterLinkToShare(BuildContext context) async {
@@ -131,9 +132,9 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
         Navigator.pop(context);
         final client = await ref.read(alwaysClientProvider.future);
         RefDetails refDetails = client.newLinkRefDetails(title, link);
-        NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-        selectedNewsSlide?.refDetails = refDetails;
-        state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+        UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+        selectedUpdateSlide?.refDetails = refDetails;
+        state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
       },
     );
   }
@@ -144,48 +145,48 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
     if (selectedInviteCode != null) {
       refDetails = selectedInviteCode.refDetails();
     }
-    NewsSlideItem? selectedNewsSlide = state.currentNewsSlide;
-    selectedNewsSlide?.refDetails = refDetails;
-    state = state.copyWith(currentNewsSlide: selectedNewsSlide);
+    UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
+    selectedUpdateSlide?.refDetails = refDetails;
+    state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 
   void changeTextSlideValue(String body, String? html) {
-    state.currentNewsSlide?.text = body;
-    state.currentNewsSlide?.html = html;
+    state.currentUpdateSlide?.text = body;
+    state.currentUpdateSlide?.html = html;
   }
 
-  void changeSelectedSlide(NewsSlideItem newsSlideModel) {
-    state = state.copyWith(currentNewsSlide: newsSlideModel);
+  void changeSelectedSlide(UpdateSlideItem newsSlideModel) {
+    state = state.copyWith(currentUpdateSlide: newsSlideModel);
   }
 
-  void addSlide(NewsSlideItem newsSlideModel) {
-    List<NewsSlideItem> newsSlideList = [
+  void addSlide(UpdateSlideItem newsSlideModel) {
+    List<UpdateSlideItem> newsSlideList = [
       ...state.newsSlideList,
       newsSlideModel,
     ];
     state = state.copyWith(
       newsSlideList: newsSlideList,
-      currentNewsSlide: newsSlideModel,
+      currentUpdateSlide: newsSlideModel,
     );
   }
 
   void deleteSlide(int index) {
-    List<NewsSlideItem> newsSlideList = [...state.newsSlideList];
+    List<UpdateSlideItem> newsSlideList = [...state.newsSlideList];
     newsSlideList.removeAt(index);
     if (newsSlideList.isEmpty) {
       state = state.copyWith(
         newsSlideList: newsSlideList,
-        currentNewsSlide: null,
+        currentUpdateSlide: null,
       );
     } else if (index == newsSlideList.length) {
       state = state.copyWith(
         newsSlideList: newsSlideList,
-        currentNewsSlide: newsSlideList[index - 1],
+        currentUpdateSlide: newsSlideList[index - 1],
       );
     } else {
       state = state.copyWith(
         newsSlideList: newsSlideList,
-        currentNewsSlide: newsSlideList[index],
+        currentUpdateSlide: newsSlideList[index],
       );
     }
   }
