@@ -32,7 +32,11 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
 
   void changeTextSlideBackgroundColor() {
     UpdateSlideItem? selectedUpdateSlide = state.currentUpdateSlide;
-    selectedUpdateSlide?.backgroundColor = getRandomElement(newsPostColors);
+    PostColorScheme postColorScheme = getRandomElement(postColorSchemes);
+    selectedUpdateSlide?.backgroundColor = postColorScheme.backgroundColor;
+    selectedUpdateSlide?.foregroundColor = postColorScheme.foregroundColor;
+    selectedUpdateSlide?.linkColor = postColorScheme.linkColor;
+
     state = state.copyWith(currentUpdateSlide: selectedUpdateSlide);
   }
 

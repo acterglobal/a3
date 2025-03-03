@@ -6,11 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RenderHtml extends ConsumerWidget {
   final String text;
   final TextStyle? defaultTextStyle;
-
+  final TextStyle? linkTextStyle;
   const RenderHtml({
     super.key,
     required this.text,
     this.defaultTextStyle,
+    this.linkTextStyle,
   });
 
   @override
@@ -21,6 +22,7 @@ class RenderHtml extends ConsumerWidget {
       },
       data: text,
       defaultTextStyle: defaultTextStyle,
+      linkStyle: linkTextStyle,
     );
   }
 }
