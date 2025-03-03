@@ -21,7 +21,7 @@ final List<PostColorScheme> postColorSchemes = [
   PostColorScheme(
     backgroundColor: Colors.green, // Purple 200
     foregroundColor: Colors.white, // Deep Purple 900
-    linkColor: Colors.lightBlueAccent.shade100, // Blue 800
+    linkColor: Colors.lightBlue.shade900, // Blue 800
   ),
   PostColorScheme(
     backgroundColor: Colors.brown, // Purple 200
@@ -36,7 +36,7 @@ final List<PostColorScheme> postColorSchemes = [
   PostColorScheme(
     backgroundColor: Colors.amber.shade700, // Purple 200
     foregroundColor: Colors.white, // Deep Purple 900
-    linkColor: Colors.blue.shade600, // Blue 800
+    linkColor: Colors.blueAccent.shade700, // Blue 800
   ),
   PostColorScheme(
     backgroundColor: Colors.cyan.shade800, // Purple 200
