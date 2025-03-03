@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +21,8 @@ class ChatMessages extends ConsumerStatefulWidget {
 class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   final ScrollController _scrollController =
       ScrollController(keepScrollOffset: true);
+
+  Timer? markReadDebouce;
 
   bool get isLoading => ref.watch(
         chatMessagesStateProvider(widget.roomId)
@@ -56,6 +63,23 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       final notifier =
           ref.read(chatMessagesStateProvider(widget.roomId).notifier);
       await notifier.loadMore();
+    } else if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent) {
+      // Unread marking support
+      if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
+        final roomId = widget.roomId;
+        if (ref.read(hasUnreadMessages(roomId)).valueOrNull ?? false) {
+          // debounce
+          markReadDebouce?.cancel();
+          markReadDebouce = Timer(const Duration(milliseconds: 300), () async {
+            final timeline =
+                await ref.read(timelineStreamProvider(roomId).future);
+            await timeline.markAsRead(true);
+            markReadDebouce?.cancel();
+            markReadDebouce = null;
+          });
+        }
+      }
     }
   }
 

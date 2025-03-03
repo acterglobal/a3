@@ -20,6 +20,8 @@ import 'package:acter/features/chat/widgets/messages/topic.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/text_message_builder.dart';
 import 'package:acter/features/chat/widgets/video_message_builder.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -173,25 +175,20 @@ class _ChatRoomConsumerState extends ConsumerState<ChatRoom> {
   void initState() {
     super.initState();
     scrollController.addListener(() async {
-      // debounce
-      await Future.delayed(const Duration(milliseconds: 300), () async {
-        final roomId = widget.roomId;
-        // this might be a bit too simple ...
-        if (scrollController.offset == 0) {
-          final message = ref.read(latestTrackableMessageId(roomId));
-          if (message != null) {
-            final timeline =
-                await ref.read(timelineStreamProvider(roomId).future);
-            await timeline.sendSingleReceipt('Read', 'Main', message);
-          }
-
-          // FIXME: this is the proper API, but it doesn’t seem to
-          // properly be handled by the server yet
-          // final marked = await ref
-          //
-          //     .markAsRead(false);
+      if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
+        if (ref.read(hasUnreadMessages(widget.roomId)).valueOrNull ?? false) {
+          // debounce
+          await Future.delayed(const Duration(milliseconds: 300), () async {
+            final roomId = widget.roomId;
+            // this might be a bit too simple ...
+            if (scrollController.offset == 0) {
+              final timeline =
+                  await ref.read(timelineStreamProvider(roomId).future);
+              await timeline.markAsRead(true);
+            }
+          });
         }
-      });
+      }
     });
   }
 
