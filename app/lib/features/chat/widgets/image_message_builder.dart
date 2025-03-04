@@ -5,10 +5,10 @@ import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 

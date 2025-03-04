@@ -5,9 +5,9 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VideoMessageEvent extends ConsumerWidget {

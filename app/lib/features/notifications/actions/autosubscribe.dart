@@ -2,9 +2,9 @@ import 'package:acter/features/notifications/actions/subscribe_object_push.dart'
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:acter/features/notifications/providers/object_notifications_settings_provider.dart';
 import 'package:acter/features/notifications/types.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 
 final _log = Logger('a3::notifications::actions::autosubscribe');
 

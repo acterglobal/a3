@@ -7,9 +7,9 @@ import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/features/space/actions/has_seen_suggested.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 

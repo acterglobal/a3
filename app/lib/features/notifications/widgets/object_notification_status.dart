@@ -2,11 +2,11 @@ import 'package:acter/features/notifications/actions/subscribe_object_push.dart'
 import 'package:acter/features/notifications/actions/unsubscribe_object_push.dart';
 import 'package:acter/features/notifications/providers/object_notifications_settings_provider.dart';
 import 'package:acter/features/notifications/types.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 
 class ObjectNotificationStatus extends ConsumerWidget {
   final String objectId;
