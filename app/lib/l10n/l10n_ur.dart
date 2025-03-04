@@ -1240,7 +1240,7 @@ class L10nUr extends L10n {
   String get newMessage => 'نیا پیغام';
 
   @override
-  String get newUpdate => '‬نیا اپ ڈیٹ';
+  String get newUpdate => 'نیا اپ ڈیٹ';
 
   @override
   String get next => 'اگلا';
@@ -3071,7 +3071,7 @@ class L10nUr extends L10n {
   String get introPageDescriptionHl => ' تبدیلی سازوں کی جماعت۔';
 
   @override
-  String get introPageDescriptionPost => ' ‫. ';
+  String get introPageDescriptionPost => ' . ';
 
   @override
   String get introPageDescription2ndLine => 'ساتھی کارکنوں کے ساتھ جڑیں، بصیرت کا اشتراک کریں، اور بامعنی تبدیلی پیدا کرنے میں تعاون کریں۔';
