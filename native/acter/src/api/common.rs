@@ -16,7 +16,8 @@ use matrix_sdk_base::{
                 AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
                 FileMessageEventContent, ImageMessageEventContent, LocationInfo,
                 LocationMessageEventContent, TextMessageEventContent,
-                UnstableAudioDetailsContentBlock, VideoInfo, VideoMessageEventContent,
+                UnstableAudioDetailsContentBlock, UrlPreview as RumaUrlPreview, VideoInfo,
+                VideoMessageEventContent,
             },
             ImageInfo, MediaSource as SdkMediaSource, ThumbnailInfo as SdkThumbnailInfo,
         },
@@ -137,6 +138,7 @@ pub enum MsgContent {
     Text {
         body: String,
         formatted_body: Option<String>,
+        url_previews: Vec<RumaUrlPreview>,
     },
     Image {
         body: String,
@@ -197,6 +199,7 @@ impl From<&TextMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
+            url_previews: value.url_previews.clone().unwrap_or_default(),
         }
     }
 }
@@ -206,6 +209,7 @@ impl From<TextMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body,
             formatted_body: value.formatted.map(|x| x.body),
+            url_previews: value.url_previews.clone().unwrap_or_default(),
         }
     }
 }
@@ -267,6 +271,7 @@ impl From<&EmoteMessageEventContent> for MsgContent {
         MsgContent::Text {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
+            url_previews: Default::default(),
         }
     }
 }
@@ -326,11 +331,46 @@ impl TryFrom<&AttachmentContent> for MsgContent {
     }
 }
 
+pub struct UrlPreview(pub(crate) RumaUrlPreview);
+
+impl UrlPreview {
+    pub fn from(prev: &RumaUrlPreview) -> Self {
+        Self(prev.clone())
+    }
+    pub fn new(prev: RumaUrlPreview) -> Self {
+        Self(prev)
+    }
+    pub fn url(&self) -> Option<String> {
+        self.0.url.clone()
+    }
+    pub fn title(&self) -> Option<String> {
+        self.0.title.clone()
+    }
+    pub fn description(&self) -> Option<String> {
+        self.0.description.clone()
+    }
+
+    pub fn has_image(&self) -> bool {
+        false // not yet supported
+              // !self.0.image.is_none()
+    }
+    pub fn image_source(&self) -> Option<MediaSource> {
+        None // not yet support
+             // self.0.image.as_ref().map(|image| MediaSource {
+             //     inner: match image.source {
+             //         PreviewImageSource::EncryptedImage(e) => SdkMediaSource::Encrypted(e.clone()),
+             //         PreviewImageSource::Url(u) => SdkMediaSource::Plain(u.clone()),
+             //     },
+             // })
+    }
+}
+
 impl MsgContent {
     pub(crate) fn from_text(body: String) -> Self {
         MsgContent::Text {
             body,
             formatted_body: None,
+            url_previews: Default::default(),
         }
     }
 
@@ -509,6 +549,22 @@ impl MsgContent {
         match self {
             MsgContent::Link { link, .. } => Some(link.clone()),
             _ => None,
+        }
+    }
+
+    pub fn url_previews(&self) -> Vec<UrlPreview> {
+        match self {
+            MsgContent::Text { url_previews, .. } => {
+                url_previews.iter().map(UrlPreview::from).collect()
+            }
+            _ => vec![],
+        }
+    }
+
+    pub fn has_url_previews(&self) -> bool {
+        match self {
+            MsgContent::Text { url_previews, .. } => !url_previews.is_empty(),
+            _ => false,
         }
     }
 }
