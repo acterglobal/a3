@@ -74,7 +74,6 @@ class ChatEventItem extends StatelessWidget {
       'm.room.aliases' ||
       'm.room.avatar' ||
       'm.room.canonical_alias' ||
-      'm.room.create' ||
       'm.room.encryption' ||
       'm.room.guest_access' ||
       'm.room.history_visibility' ||
@@ -88,7 +87,7 @@ class ChatEventItem extends StatelessWidget {
       'm.room.topic' ||
       'm.space.child' ||
       'm.space.parent' =>
-        RoomUpdateEvent(item: item, roomId: roomId),
+        RoomUpdateEvent(isMe: isMe, item: item, roomId: roomId),
       _ => _buildUnsupportedMessage(eventType),
     };
   }

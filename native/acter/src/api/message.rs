@@ -1,15 +1,17 @@
 use anyhow::bail;
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
+use futures::stream::Any;
 use indexmap::IndexMap;
 use matrix_sdk::{room::Room, send_queue::SendHandle};
 use matrix_sdk_base::ruma::{
-    events::{receipt::Receipt, room::message::MessageType},
+    events::{receipt::Receipt, room::message::MessageType, FullStateEventContent},
     OwnedEventId, OwnedTransactionId, OwnedUserId,
 };
 use matrix_sdk_ui::timeline::{
-    EventSendState as SdkEventSendState, EventTimelineItem, MembershipChange, TimelineEventItemId,
-    TimelineItem, TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
+    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
+    MembershipChange, TimelineEventItemId, TimelineItem, TimelineItemContent, TimelineItemKind,
+    VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -296,8 +298,204 @@ impl RoomEventItem {
 
             TimelineItemContent::OtherState(s) => {
                 info!("Edit event applies to a state event");
-                me.event_type(s.content().event_type().to_string());
+                let event_type = s.content().event_type().to_string();
+                me.event_type(event_type.clone());
+                if let AnyOtherFullStateEventContent::RoomName(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.name, &prev_content) {
+                            (new, Some(prev)) => match &prev.name {
+                                Some(old) => MsgContent::from_text(format!("{old} -> {new}")),
+                                None => MsgContent::from_text(new.to_string()),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{new}")),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomTopic(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.topic, &prev_content) {
+                            (new, Some(prev)) => match &prev.topic {
+                                Some(old) => MsgContent::from_text(format!("{old} -> {new}")),
+                                None => MsgContent::from_text(new.to_string()),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{new}")),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomAvatar(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.url, &prev_content) {
+                            (Some(new), Some(prev)) => match &prev.url {
+                                Some(_old) => MsgContent::from_image(
+                                    "updated room avatar".to_string(),
+                                    new.clone(),
+                                ),
+                                None => MsgContent::from_image(
+                                    "added room avatar".to_string(),
+                                    new.clone(),
+                                ),
+                            },
+                            (None, Some(prev)) => match &prev.url {
+                                Some(_old) => {
+                                    MsgContent::from_text("removed room avatar".to_string())
+                                }
+                                None => MsgContent::from_text("kept room avatar unset".to_string()),
+                            },
+                            (Some(new), None) => {
+                                MsgContent::from_image("set room avatar".to_string(), new.clone())
+                            }
+                            (None, None) => {
+                                MsgContent::from_text("kept room avatar unset".to_string())
+                            }
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomJoinRules(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.join_rule, &prev_content) {
+                            (new, Some(prev)) => match &prev.join_rule {
+                                old => MsgContent::from_text(format!(
+                                    "{} → {}",
+                                    old.as_str(),
+                                    new.as_str()
+                                )),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{}", new.as_str())),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomHistoryVisibility(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.history_visibility, &prev_content) {
+                            (new, Some(prev)) => match &prev.history_visibility {
+                                old => MsgContent::from_text(format!(
+                                    "{} → {}",
+                                    old.as_str(),
+                                    new.as_str()
+                                )),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{}", new.as_str())),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomCanonicalAlias(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.alias, &prev_content) {
+                            (Some(new), Some(prev)) => match &prev.alias {
+                                Some(old) => MsgContent::from_text(format!("{} → {}", old, new)),
+                                None => MsgContent::from_text(format!("{}", new)),
+                            },
+                            (None, Some(prev)) => match &prev.alias {
+                                Some(old) => MsgContent::from_text(format!("{}", old)),
+                                None => MsgContent::from_text("canonical alias unset".to_string()),
+                            },
+                            (Some(new), None) => MsgContent::from_text(format!("{}", new)),
+                            (None, None) => {
+                                MsgContent::from_text("canonical alias unset".to_string())
+                            }
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+                if let AnyOtherFullStateEventContent::SpaceParent(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (content.canonical, &prev_content) {
+                            (new, Some(prev)) => match prev.canonical {
+                                old => MsgContent::from_text(format!("{:?} → {:?}", old, new)),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{}", new)),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::SpaceChild(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (content.suggested, &prev_content) {
+                            (new, Some(prev)) => match prev.suggested {
+                                old => MsgContent::from_text(format!("{} → {}", old, new)),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{}", new)),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomEncryption(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.algorithm, &prev_content) {
+                            (new, Some(prev)) => match &prev.algorithm {
+                                old => MsgContent::from_text(format!("{:?} → {:?}", old, new)),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{}", new)),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
+
+                if let AnyOtherFullStateEventContent::RoomGuestAccess(c) = s.content() {
+                    if let FullStateEventContent::Original {
+                        content,
+                        prev_content,
+                    } = c
+                    {
+                        let msg_content = match (&content.guest_access, &prev_content) {
+                            (new, Some(prev)) => match &prev.guest_access {
+                                old => MsgContent::from_text(format!("{:?} → {:?}", old, new)),
+                            },
+                            (new, None) => MsgContent::from_text(format!("{}", new)),
+                        };
+                        me.msg_content(Some(msg_content));
+                    }
+                }
             }
+
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn’t be parsed");
                 me.event_type(event_type.to_string());
