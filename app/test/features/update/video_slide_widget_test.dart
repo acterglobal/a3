@@ -27,18 +27,19 @@ void main() {
 
     testWidgets('shows loading UI when data is loading', (tester) async {
       // Mock the sourceBinary method to simulate loading
-      when(() => mockSlide.sourceBinary(null)).thenAnswer(
-        (_) async => mockFfiBuffer,
-      );
+      when(
+        () => mockSlide.sourceBinary(null),
+      ).thenAnswer((_) async => mockFfiBuffer);
 
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-              body: VideoSlide(
-            slide: mockSlide,
-            errorState: NewsMediaErrorState.showErrorImageOnly,
-          )),
+            body: VideoSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageOnly,
+            ),
+          ),
         ),
       );
 
@@ -46,10 +47,12 @@ void main() {
       expect(find.byIcon(PhosphorIcons.video()), findsOneWidget);
     });
 
-    testWidgets('shows error UI and retries loading on TextButton click',
-        (tester) async {
-      when(() => mockSlide.sourceBinary(null))
-          .thenAnswer((_) async => Future.error('Failed to load video'));
+    testWidgets('shows error UI and retries loading on TextButton click', (
+      tester,
+    ) async {
+      when(
+        () => mockSlide.sourceBinary(null),
+      ).thenAnswer((_) async => Future.error('Failed to load video'));
       // Mock the typeStr method to return a valid string
       when(() => mockSlide.typeStr()).thenReturn('video');
       // Build the widget
@@ -57,10 +60,11 @@ void main() {
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           home: Scaffold(
-              body: VideoSlide(
-            slide: mockSlide,
-            errorState: NewsMediaErrorState.showErrorImageOnly,
-          )),
+            body: VideoSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageOnly,
+            ),
+          ),
         ),
       );
 
@@ -74,10 +78,11 @@ void main() {
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           home: Scaffold(
-              body: VideoSlide(
-            slide: mockSlide,
-            errorState: NewsMediaErrorState.showErrorImageWithText,
-          )),
+            body: VideoSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageWithText,
+            ),
+          ),
         ),
       );
 
@@ -91,10 +96,11 @@ void main() {
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
           home: Scaffold(
-              body: VideoSlide(
-            slide: mockSlide,
-            errorState: NewsMediaErrorState.showErrorWithTryAgain,
-          )),
+            body: VideoSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorWithTryAgain,
+            ),
+          ),
         ),
       );
 
@@ -108,8 +114,9 @@ void main() {
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle(); // Wait for the widget to rebuild
 
-      verify(() => mockSlide.sourceBinary(null))
-          .called(4); // Called twice (1 for the initial error, 1 for retry)
+      verify(
+        () => mockSlide.sourceBinary(null),
+      ).called(4); // Called twice (1 for the initial error, 1 for retry)
     });
   });
 }
