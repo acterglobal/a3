@@ -423,7 +423,6 @@ impl Client {
                         spaces.push_front(Space::new(self.clone(), inner))
                     }
                     // also clear from convos if it was in there...
-                    let mut convos = self.convos.write().await;
                     remove_from_convo(&mut convos, &r_id);
                     updated.push(r_id);
                 } else {
