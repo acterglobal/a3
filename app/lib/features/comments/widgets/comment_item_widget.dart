@@ -1,8 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/message_content_widget.dart';
-import 'package:acter/common/widgets/time_ago_widget.dart';
-import 'package:acter/common/widgets/user_display_name_widget.dart';
-import 'package:acter/common/widgets/user_id_widget.dart';
+import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -58,11 +56,20 @@ class CommentItemWidget extends ConsumerWidget {
   Widget userNameUI(BuildContext context, AvatarInfo avatarInfo) {
     final userId = avatarInfo.uniqueId;
     final displayName = avatarInfo.displayName;
+    final displayNameTextStyle = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(fontWeight: FontWeight.bold);
     return Wrap(
       children: [
-        UserDisplayNameWidget(displayName: displayName ?? userId),
+        // display name
+        Text(displayName ?? userId, style: displayNameTextStyle),
         const SizedBox(width: 8),
-        if (displayName != null) UserIdWidget(userId: userId),
+        if (displayName != null)
+          Text(
+            userId, // and username if we have a display name
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
       ],
     );
   }
