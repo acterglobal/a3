@@ -80,8 +80,6 @@ pub struct Client {
     pub(crate) sync_controller: SyncController,
     pub spaces: Arc<RwLock<ObservableVector<Space>>>,
     pub convos: Arc<RwLock<ObservableVector<Convo>>>,
-    pub(crate) should_stop_spaces: Arc<RwLock<bool>>,
-    pub(crate) should_stop_convos: Arc<RwLock<bool>>,
 }
 
 impl Deref for Client {
@@ -193,8 +191,6 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            should_stop_spaces: Arc::new(RwLock::new(false)),
-            should_stop_convos: Arc::new(RwLock::new(false)),
             invitation_controller: InvitationController::new(core, sync_controller.clone()),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),

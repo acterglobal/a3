@@ -45,10 +45,7 @@ class ChatRoomMessagesNotifier extends StateNotifier<ChatRoomState> {
           _log.info('msg stream ended');
         },
       );
-      ref.onDispose(() async {
-        _poller.cancel();
-        await timeline.cancelStream();
-      });
+      ref.onDispose(() => _poller.cancel());
       do {
         await loadMore(failOnError: true);
         await Future.delayed(const Duration(milliseconds: 200), () => null);
@@ -153,10 +150,7 @@ ChatRoomState handleDiff(
         return state.copyWith(messageList: [uniqueId], messages: {uniqueId: m});
       }
       return state.copyWithNewMessageAt(
-        state.messageList.length,
-        m,
-        animatedList,
-      );
+          state.messageList.length, m, animatedList,);
     case 'PushFront':
       RoomMessage m = diff.value().expect('push front diff must contain value');
       return state.copyWithNewMessageAt(0, m, animatedList);

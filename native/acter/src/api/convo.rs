@@ -502,7 +502,6 @@ impl Client {
 
     pub fn convos_stream(&self) -> impl Stream<Item = ConvoDiff> {
         let convos = self.convos.clone();
-        let should_stop = self.should_stop_convos.clone();
         async_stream::stream! {
             let (current_items, stream) = {
                 let locked = convos.read().await;
@@ -514,29 +513,9 @@ impl Client {
             let mut remap = stream.into_stream().map(move |diff| remap_for_diff(diff, |x| x));
             yield current_items;
 
-            {
-                let mut should_stop = should_stop.write().await;
-                *should_stop = false;
-            }
-
             while let Some(d) = remap.next().await {
-                let should_stop = should_stop.read().await;
-                if *should_stop {
-                    break;
-                }
                 yield d
             }
         }
-    }
-
-    pub async fn cancel_convos_stream(&self) -> Result<bool> {
-        let should_stop = self.should_stop_convos.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut should_stop = should_stop.write().await;
-                *should_stop = true;
-                Ok(true)
-            })
-            .await?
     }
 }

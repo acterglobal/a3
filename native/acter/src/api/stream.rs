@@ -19,7 +19,6 @@ use matrix_sdk_base::{
 };
 use matrix_sdk_ui::timeline::{TimelineEventItemId, TimelineItem};
 use std::{ops::Deref, sync::Arc};
-use tokio::sync::RwLock;
 use tracing::{error, info};
 
 use crate::{Client, Room, RoomMessage, RUNTIME};
@@ -39,16 +38,11 @@ pub type RoomMessageDiff = ApiVectorDiff<RoomMessage>;
 pub struct TimelineStream {
     room: Room,
     timeline: Arc<Timeline>,
-    should_stop: Arc<RwLock<bool>>,
 }
 
 impl TimelineStream {
     pub(crate) fn new(room: Room, timeline: Arc<Timeline>) -> Self {
-        TimelineStream {
-            room,
-            timeline,
-            should_stop: Arc::new(RwLock::new(false)),
-        }
+        TimelineStream { room, timeline }
     }
 
     pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
@@ -60,7 +54,6 @@ impl TimelineStream {
             .user_id()
             .expect("User must be logged in")
             .to_owned();
-        let should_stop = self.should_stop.clone();
 
         async_stream::stream! {
             let (current_items, stream) = {
@@ -81,30 +74,10 @@ impl TimelineStream {
             ));
             yield current_items;
 
-            {
-                let mut should_stop = should_stop.write().await;
-                *should_stop = false;
-            }
-
             while let Some(d) = remap.next().await {
-                let should_stop = should_stop.read().await;
-                if *should_stop {
-                    break;
-                }
                 yield d
             }
         }
-    }
-
-    pub async fn cancel_stream(&self) -> Result<bool> {
-        let should_stop = self.should_stop.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut should_stop = should_stop.write().await;
-                *should_stop = true;
-                Ok(true)
-            })
-            .await?
     }
 
     /// Get the next count messages backwards, and return whether it reached the end
