@@ -8,35 +8,35 @@ members = [
 default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
-git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "7a06bdb6950f74167e697e795babc8e12e1a5aa3"
 default-features = false
 features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
-git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "7a06bdb6950f74167e697e795babc8e12e1a5aa3"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
-git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "7a06bdb6950f74167e697e795babc8e12e1a5aa3"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
-git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "7a06bdb6950f74167e697e795babc8e12e1a5aa3"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
-git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "7a06bdb6950f74167e697e795babc8e12e1a5aa3"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
-git = "https://github.com/acterglobal/matrix-rust-sdk"
-rev = "a95632aba2f1c6a0e74c05fd4574b32a6a449fcf"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "7a06bdb6950f74167e697e795babc8e12e1a5aa3"
 default-features = false
 
 
@@ -46,6 +46,7 @@ default-features = false
 # version = "0.12.1"
 git = "https://github.com/ruma/ruma"
 rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
+features = ["unstable-msc4095"]
 
 # - see comment above
 [workspace.dependencies.ruma-common]

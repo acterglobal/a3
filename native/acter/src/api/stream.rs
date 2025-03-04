@@ -239,7 +239,7 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let msg = draft.into_room_msg(&room).await?;
-                timeline.send(msg.with_relation(None).into()).await;
+                timeline.send(msg.with_relation(None).into()).await?;
                 Ok(true)
             })
             .await?
@@ -319,99 +319,18 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn send_single_receipt(
-        &self,
-        receipt_type: String,
-        thread: String,
-        event_id: String,
-    ) -> Result<bool> {
+    pub async fn mark_as_read(&self, publicly: bool) -> Result<bool> {
         let timeline = self.timeline.clone();
-        let receipt_type = match receipt_type.as_str() {
-            "FullyRead" => create_receipt::v3::ReceiptType::FullyRead,
-            "Read" => create_receipt::v3::ReceiptType::Read,
-            "ReadPrivate" => create_receipt::v3::ReceiptType::ReadPrivate,
-            _ => {
-                bail!("Wrong receipt type")
-            }
-        };
-        let thread = match thread.as_str() {
-            "Main" => ReceiptThread::Main,
-            "Unthreaded" => ReceiptThread::Unthreaded,
-            _ => {
-                bail!("Wrong receipt thread")
-            }
-        };
-        let event_id = EventId::parse(event_id)?;
-
-        RUNTIME
-            .spawn(async move {
-                let result = timeline
-                    .send_single_receipt(receipt_type, thread, event_id)
-                    .await?;
-                Ok(result)
-            })
-            .await?
-    }
-
-    pub async fn mark_as_read(&self, user_triggered: bool) -> Result<bool> {
-        let timeline = self.timeline.clone();
-        let receipt = if user_triggered {
+        let receipt = if publicly {
             create_receipt::v3::ReceiptType::Read
         } else {
-            create_receipt::v3::ReceiptType::FullyRead
+            create_receipt::v3::ReceiptType::ReadPrivate
         };
 
         RUNTIME
             .spawn(async move {
                 let result = timeline.mark_as_read(receipt).await?;
                 Ok(result)
-            })
-            .await?
-    }
-
-    pub async fn send_multiple_receipts(
-        &self,
-        fully_read: Option<String>,
-        public_read_receipt: Option<String>,
-        private_read_receipt: Option<String>,
-    ) -> Result<bool> {
-        let timeline = self.timeline.clone();
-        let fully_read = match fully_read {
-            Some(x) => match EventId::parse(x) {
-                Ok(event_id) => Some(event_id),
-                Err(_) => {
-                    bail!("full read param should be event id")
-                }
-            },
-            None => None,
-        };
-        let public_read_receipt = match public_read_receipt {
-            Some(x) => match EventId::parse(x) {
-                Ok(event_id) => Some(event_id),
-                Err(_) => {
-                    bail!("public read receipt param should be event id")
-                }
-            },
-            None => None,
-        };
-        let private_read_receipt = match private_read_receipt {
-            Some(x) => match EventId::parse(x) {
-                Ok(event_id) => Some(event_id),
-                Err(_) => {
-                    bail!("private read receipt param should be event id")
-                }
-            },
-            None => None,
-        };
-
-        RUNTIME
-            .spawn(async move {
-                let receipts = Receipts::new()
-                    .fully_read_marker(fully_read)
-                    .public_read_receipt(public_read_receipt)
-                    .private_read_receipt(private_read_receipt);
-                timeline.send_multiple_receipts(receipts).await?;
-                Ok(true)
             })
             .await?
     }
@@ -446,15 +365,25 @@ impl TimelineStream {
 
 impl Client {
     pub fn text_plain_draft(&self, body: String) -> MsgDraft {
-        MsgDraft::new(MsgContentDraft::TextPlain { body })
+        MsgDraft::new(MsgContentDraft::TextPlain {
+            body,
+            url_previews: Default::default(),
+        })
     }
 
     pub fn text_markdown_draft(&self, body: String) -> MsgDraft {
-        MsgDraft::new(MsgContentDraft::TextMarkdown { body })
+        MsgDraft::new(MsgContentDraft::TextMarkdown {
+            body,
+            url_previews: Default::default(),
+        })
     }
 
     pub fn text_html_draft(&self, html: String, plain: String) -> MsgDraft {
-        MsgDraft::new(MsgContentDraft::TextHtml { html, plain })
+        MsgDraft::new(MsgContentDraft::TextHtml {
+            html,
+            plain,
+            url_previews: Default::default(),
+        })
     }
 
     pub fn image_draft(&self, source: String, mimetype: String) -> MsgDraft {

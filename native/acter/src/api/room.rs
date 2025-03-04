@@ -210,7 +210,7 @@ impl Member {
                         <NewsEntryEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
-                    // Not an acter space or news Posts are not activated..
+                    // Not an acter space or News are not activated..
                     return false;
                 }
             }
@@ -227,7 +227,7 @@ impl Member {
                         <StoryEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
-                    // Not an acter space or story Posts are not activated..
+                    // Not an acter space or Stories are not activated..
                     return false;
                 }
             }
@@ -257,7 +257,7 @@ impl Member {
                         <CalendarEventEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
-                    // Not an acter space or Pins are not activated..
+                    // Not an acter space or Events are not activated..
                     return false;
                 }
             }
@@ -287,7 +287,7 @@ impl Member {
                         <TaskEventContent as StaticEventContent>::TYPE,
                     ))
                 } else {
-                    // Not an acter space or Pins are not activated..
+                    // Not an acter space or Tasks are not activated..
                     return false;
                 }
             }

@@ -5,6 +5,8 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -118,10 +120,14 @@ class ConvoCard extends ConsumerWidget {
   }
 
   Widget avatarWithIndicator(BuildContext context, WidgetRef ref) {
+    final child = RoomAvatar(roomId: roomId, showParents: showParents);
+    if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
+      // only when the user has activated this feature
+      return child;
+    }
     final unreadCounters =
         ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
-    final child = RoomAvatar(roomId: roomId, showParents: showParents);
     if (unreadCounters == null) return child;
 
     final (notifications, mentions, messages) = unreadCounters;

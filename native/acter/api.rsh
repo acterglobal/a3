@@ -53,7 +53,7 @@ fn duration_from_secs(secs: u64) -> EfkDuration;
 fn new_thumb_size(width: u64, height: u64) -> Result<ThumbnailSize>;
 
 /// create a colorize builder
-fn new_colorize_builder(color: Option<u32>, background: Option<u32>) -> Result<ColorizeBuilder>;
+fn new_colorize_builder(color: Option<u32>, background: Option<u32>, link: Option<u32>) -> Result<ColorizeBuilder>;
 
 /// create a display builder
 fn new_display_builder() -> DisplayBuilder;
@@ -113,6 +113,38 @@ object RefDetails {
     fn generate_external_link() -> Future<Result<string>>;
 }
 
+object UrlPreview {
+    /// the canonical url to use
+    fn url() -> Option<string>;
+    /// preview title if any
+    fn title() -> Option<string>;
+    /// description text if any
+    fn description() -> Option<string>;
+
+    /// whether this preview has an image
+    fn has_image() -> bool;
+
+    /// The media image source if any
+    fn image_source() -> Option<MediaSource>;
+}
+
+/// A locally fetched Url Preview until 
+/// it is submitted
+object LocalUrlPreview {
+    /// the canonical url to use
+    fn url() -> string;
+    /// preview title if any
+    fn title() -> Option<string>;
+    /// description text if any
+    fn description() -> Option<string>;
+
+    /// whether this preview has an image
+    fn has_image() -> bool;
+
+    /// The image url if any
+    fn image_url() -> Option<string>;
+}
+
 /// An acter internal link to a different object
 object ObjRef {
     /// where to position the element (if given)
@@ -138,6 +170,8 @@ object Colorize {
     fn color() -> Option<u32>;
     /// Background color
     fn background() -> Option<u32>;
+    /// Link color
+    fn link() -> Option<u32>;
 }
 
 /// A builder for Colorize. Allowing you to set (foreground) color and background
@@ -151,6 +185,11 @@ object ColorizeBuilder {
     fn background(color: u32);
     /// unset the background color
     fn unset_background();
+
+    /// RGBA color representation as int for the link color
+    fn link(color: u32);
+    /// unset the link color
+    fn unset_link();
 }
 
 // enum LocationType {
@@ -1087,6 +1126,12 @@ object MsgContent {
 
     /// available for location msg
     fn geo_uri() -> Option<string>;
+
+    /// whether or not this has url previews attached
+    fn has_url_previews() -> bool;
+
+    /// the list of url previews 
+    fn url_previews() -> Vec<UrlPreview>;
 }
 
 object ReactionRecord {
@@ -1293,6 +1338,12 @@ object MsgDraft {
     /// add a user mention
     fn add_mention(user_id: string) -> Result<MsgDraft>;
 
+    /// add a ref details
+    fn add_ref_details(details: RefDetails) -> Result<MsgDraft>;
+
+    /// add a url preview
+    fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
+
     /// whether to mention the entire room
     fn add_room_mention(mention: bool) -> Result<MsgDraft>;
 
@@ -1356,22 +1407,9 @@ object TimelineStream {
     /// send reply to event
     fn reply_message(event_id: string, draft: MsgDraft) -> Future<Result<bool>>;
 
-    /// send single receipt
-    /// receipt_type: FullyRead | Read | ReadPrivate
-    /// thread: Main | Unthreaded
-    fn send_single_receipt(receipt_type: string, thread: string, event_id: string) -> Future<Result<bool>>;
-
-    /// send 3 types of receipts at once
-    /// full_read: optional event id
-    /// public_read_receipt: optional event id
-    /// private_read_receipt: optional event id
-    fn send_multiple_receipts(full_read: Option<string>, public_read_receipt: Option<string>, private_read_receipt: Option<string>) -> Future<Result<bool>>;
-
     /// Mark this room as read.
-    /// user_triggered indicate whether that was issued by the user actively
-    /// (e.g. by pushing a button) or implicitly upon smart read tracking
-    /// Returns a boolean indicating if we sent the request or not.
-    fn mark_as_read(user_triggered: bool) -> Future<Result<bool>>;
+    /// public indicate whether the marking should be shared with other users.
+    fn mark_as_read(public: bool) -> Future<Result<bool>>;
 
     /// send reaction to event
     /// if sent twice, reaction is redacted
@@ -2112,8 +2150,13 @@ object SpaceRelations {
 object RoomPowerLevels {
     fn news() -> Option<i64>;
     fn news_key() -> string;
+
+    fn stories() -> Option<i64>;
+    fn stories_key() -> string;
+
     fn events() -> Option<i64>;
     fn events_key() -> string;
+
     fn pins() -> Option<i64>;
     fn pins_key() -> string;
 
@@ -2169,6 +2212,11 @@ object NewsSettings {
     fn updater() -> SimpleSettingWithTurnOffBuilder;
 }
 
+object StoriesSettings {
+    fn active() -> bool;
+    fn updater() -> SimpleOnOffSettingBuilder;
+}
+
 object TasksSettings {
     fn active() -> bool;
     fn updater() -> SimpleOnOffSettingBuilder;
@@ -2186,6 +2234,7 @@ object PinsSettings {
 
 object ActerAppSettings {
     fn news() -> NewsSettings;
+    fn stories() -> StoriesSettings;
     fn pins() -> PinsSettings;
     fn events() -> EventsSettings;
     fn tasks() -> TasksSettings;
@@ -2194,6 +2243,7 @@ object ActerAppSettings {
 
 object ActerAppSettingsBuilder {
     fn news(news: Option<SimpleSettingWithTurnOff>);
+    fn stories(tasks: Option<SimpleOnOffSetting>);
     fn pins(pins: Option<SimpleSettingWithTurnOff>);
     fn events(events: Option<SimpleSettingWithTurnOff>);
     fn tasks(tasks: Option<SimpleOnOffSetting>);
@@ -3253,6 +3303,9 @@ object Client {
 
     /// get the activities listener for a specific object
     fn activities_for_obj(key: string) -> Result<Activities>;
+
+    /// fetch a UrlPreview locally
+    fn url_preview(uri: string) -> Future<Result<LocalUrlPreview>>;
 }
 
 object NotificationSettings {

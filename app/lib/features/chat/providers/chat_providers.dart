@@ -69,17 +69,6 @@ final renderableChatMessagesProvider =
       .toList();
 });
 
-final latestTrackableMessageId =
-    StateProvider.autoDispose.family<String?, String>((ref, roomId) {
-  return ref.watch(
-    chatStateProvider(roomId).select(
-      (value) =>
-          // find the last remote item we can use for tracking
-          value.messages.lastOrNull?.remoteId,
-    ),
-  );
-});
-
 final chatMessagesProvider =
     StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
   final moreMessages = [];
@@ -214,6 +203,16 @@ final unreadCountersProvider =
     convo.numUnreadMessages()
   );
   return ret;
+});
+
+final hasUnreadMessages =
+    FutureProvider.family<bool, String>((ref, roomId) async {
+  final unreadCounters = ref.watch(unreadCountersProvider(roomId)).valueOrNull;
+
+  if (unreadCounters == null) return false;
+
+  final (notifications, mentions, messages) = unreadCounters;
+  return notifications > 0 || mentions > 0 || messages > 0;
 });
 
 final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {

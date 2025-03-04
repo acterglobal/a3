@@ -1,7 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -10,20 +9,19 @@ import 'package:acter/features/news/widgets/news_post_editor/post_attachment_opt
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cross_file_image/cross_file_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class NewsSlideOptions extends ConsumerStatefulWidget {
-  const NewsSlideOptions({super.key});
+class UpdateSlideOptions extends ConsumerStatefulWidget {
+  const UpdateSlideOptions({super.key});
 
   @override
-  ConsumerState<NewsSlideOptions> createState() => _NewsSlideOptionsState();
+  ConsumerState<UpdateSlideOptions> createState() => _UpdateSlideOptionsState();
 }
 
-class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
-  List<NewsSlideItem> newsSlideList = <NewsSlideItem>[];
+class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
+  List<UpdateSlideItem> newsSlideList = <UpdateSlideItem>[];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
   }
 
   Widget newsSlideOptionsUI(BuildContext context) {
-    final curSlide = ref.watch(newsStateProvider).currentNewsSlide;
+    final curSlide = ref.watch(newsStateProvider).currentUpdateSlide;
     final keyboardVisibility = ref.watch(keyboardVisibleProvider);
     return Visibility(
       visible: curSlide != null && keyboardVisibility.value != true,
@@ -45,12 +43,10 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
 
   Widget newsSlideListUI(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final currentSlide = ref.watch(newsStateProvider).currentNewsSlide;
+    final currentSlide = ref.watch(newsStateProvider).currentUpdateSlide;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        parentSpaceSelector(),
-        verticalDivider(context),
         Expanded(
           child: Container(
             height: 80,
@@ -111,75 +107,11 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
           ),
         ),
         IconButton(
-          key: NewsUpdateKeys.addNewsSlide,
+          key: UpdateKeys.addUpdateSlide,
           onPressed: () => showPostAttachmentOptions(context),
           icon: Icon(PhosphorIcons.stackPlus()),
         ),
       ],
-    );
-  }
-
-  Widget parentSpaceSelector() {
-    final newsPostSpaceId = ref.watch(newsStateProvider).newsPostSpaceId;
-    return Padding(
-      padding: const EdgeInsets.all(12),
-      child: (newsPostSpaceId != null)
-          ? InkWell(
-              key: NewsUpdateKeys.selectSpace,
-              onTap: () async {
-                final notifier = ref.read(newsStateProvider.notifier);
-                await notifier.changeNewsPostSpaceId(context);
-              },
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.topRight,
-                children: [
-                  RoomAvatarBuilder(
-                    roomId: newsPostSpaceId,
-                    avatarSize: 42,
-                  ),
-                  Positioned(
-                    top: -5,
-                    right: -5,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        shape: BoxShape.circle,
-                      ),
-                      padding: const EdgeInsets.all(5),
-                      child: const Icon(
-                        Atlas.pencil_box,
-                        size: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : OutlinedButton(
-              key: NewsUpdateKeys.selectSpace,
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: Theme.of(context).colorScheme.onSurface),
-              ),
-              onPressed: () async {
-                final notifier = ref.read(newsStateProvider.notifier);
-                await notifier.changeNewsPostSpaceId(context);
-              },
-              child: Text(
-                L10n.of(context).selectSpace,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-    );
-  }
-
-  Widget verticalDivider(BuildContext context) {
-    return Container(
-      height: 50,
-      width: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      color: Theme.of(context).colorScheme.onPrimary,
     );
   }
 
@@ -200,17 +132,20 @@ class _NewsSlideOptionsState extends ConsumerState<NewsSlideOptions> {
     );
   }
 
-  Widget getIconAsPerSlideType(NewsSlideType slidePostType, XFile? mediaFile) {
+  Widget getIconAsPerSlideType(
+    UpdateSlideType slidePostType,
+    XFile? mediaFile,
+  ) {
     return switch (slidePostType) {
-      NewsSlideType.text => const Icon(Atlas.size_text),
-      NewsSlideType.image => ClipRRect(
+      UpdateSlideType.text => const Icon(Atlas.size_text),
+      UpdateSlideType.image => ClipRRect(
           borderRadius: BorderRadius.circular(5),
           child: Image(
             image: XFileImage(mediaFile.expect('image slide needs media file')),
             fit: BoxFit.cover,
           ),
         ),
-      NewsSlideType.video => Stack(
+      UpdateSlideType.video => Stack(
           fit: StackFit.expand,
           children: [
             FutureBuilder(

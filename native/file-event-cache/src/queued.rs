@@ -6,7 +6,7 @@ use matrix_sdk_base::{
         store::media::{IgnoreMediaRetentionPolicy, MediaRetentionPolicy},
         Event, Gap,
     },
-    linked_chunk::{RawChunk, Update},
+    linked_chunk::{ChunkIdentifier, ChunkIdentifierGenerator, RawChunk, Update},
     media::MediaRequestParameters,
     ruma::{MxcUri, RoomId},
 };
@@ -73,7 +73,7 @@ where
             .await
     }
 
-    async fn reload_linked_chunk(
+    async fn load_all_chunks(
         &self,
         room_id: &RoomId,
     ) -> Result<Vec<RawChunk<TimelineEvent, Gap>>, Self::Error> {
@@ -82,7 +82,40 @@ where
             .acquire()
             .await
             .expect("We never close the semaphore");
-        self.inner.reload_linked_chunk(room_id).await
+        self.inner.load_all_chunks(room_id).await
+    }
+
+    async fn load_last_chunk(
+        &self,
+        room_id: &RoomId,
+    ) -> Result<
+        (
+            Option<RawChunk<TimelineEvent, Gap>>,
+            ChunkIdentifierGenerator,
+        ),
+        Self::Error,
+    > {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner.load_last_chunk(room_id).await
+    }
+
+    async fn load_previous_chunk(
+        &self,
+        room_id: &RoomId,
+        before_chunk_identifier: ChunkIdentifier,
+    ) -> Result<Option<RawChunk<TimelineEvent, Gap>>, Self::Error> {
+        let _handle = self
+            .queue
+            .acquire()
+            .await
+            .expect("We never close the semaphore");
+        self.inner
+            .load_previous_chunk(room_id, before_chunk_identifier)
+            .await
     }
 
     #[instrument(skip_all)]

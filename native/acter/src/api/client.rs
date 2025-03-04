@@ -47,9 +47,11 @@ use super::{
 mod models;
 mod sliding_sync;
 mod sync;
+mod url_preview;
 
 pub(crate) use sliding_sync::{SyncController, Timeline};
 pub use sync::{HistoryLoadState, SyncState};
+pub use url_preview::LocalUrlPreview;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {

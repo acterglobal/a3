@@ -5,8 +5,11 @@ use crate::{Client, RUNTIME};
 use acter_core::events::{ObjRef as CoreObjRef, RefDetails as CoreRefDetails};
 use acter_core::share_link::api;
 use anyhow::{bail, Context, Result};
-use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId, OwnedServerName};
+use matrix_sdk::ruma::{
+    events::room::message::UrlPreview, OwnedEventId, OwnedRoomId, OwnedServerName,
+};
 use matrix_sdk::Client as SdkClient;
+use ruma::assign;
 use urlencoding::encode;
 
 #[derive(Clone)]
@@ -43,6 +46,18 @@ impl Deref for RefDetails {
     type Target = CoreRefDetails;
     fn deref(&self) -> &Self::Target {
         &self.inner
+    }
+}
+
+impl TryInto<UrlPreview> for RefDetails {
+    type Error = anyhow::Error;
+
+    fn try_into(self) -> anyhow::Result<UrlPreview, Self::Error> {
+        Ok(
+            assign!(UrlPreview::canonical_url(self.generate_internal_link(true)?), {
+                title: self.inner.title(),
+            } ),
+        )
     }
 }
 
