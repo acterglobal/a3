@@ -49,3 +49,6 @@ app.*.map.json
 
 # testing related
 coverage/
+
+# Localisation class files
+/lib/l10n/generated/
