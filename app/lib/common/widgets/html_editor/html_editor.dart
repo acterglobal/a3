@@ -102,7 +102,6 @@ extension ActerEditorStateHelpers on EditorState {
   void clear() async {
     if (!document.isEmpty) {
       final transaction = this.transaction;
-      final selection = this.selection;
 
       // Delete all existing nodes
       int nodeIndex = 0;
@@ -115,11 +114,14 @@ extension ActerEditorStateHelpers on EditorState {
 
       transaction.insertNode([0], paragraphNode(text: ''));
 
-      updateSelectionWithReason(
-        selection,
-        reason: SelectionUpdateReason.transaction,
-      );
       apply(transaction);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        updateSelectionWithReason(
+          Selection.single(path: [0], startOffset: 0, endOffset: 0),
+          reason: SelectionUpdateReason.uiEvent,
+        );
+      });
     }
   }
 }
@@ -370,7 +372,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           // widget pass through
           editable: widget.editable,
           shrinkWrap: widget.shrinkWrap,
-          autoFocus: widget.autoFocus,
+          autoFocus: true,
           header: widget.header,
           // local states
           editorScrollController:
