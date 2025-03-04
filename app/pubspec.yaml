@@ -147,6 +147,7 @@ dependencies:
   open_filex:
     git:
      url: https://github.com/mufassalhussain/open_filex
+     ref: 7ec56421afc37bb2cc3cb751b9775999cd2d9a61
   phosphor_flutter: ^2.1.0
   device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
