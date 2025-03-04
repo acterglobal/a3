@@ -45,7 +45,7 @@ class MentionProfileBuilder extends ConsumerWidget {
               memberDisplayNameProvider((
                 roomId: roomQuery.roomId,
                 userId: uId,
-              )),
+              ),),
             );
 
             final normalizedId = uId.toLowerCase();
@@ -84,7 +84,7 @@ class MentionProfileBuilder extends ConsumerWidget {
                         memberAvatarInfoProvider((
                           roomId: roomQuery.roomId,
                           userId: userId,
-                        )),
+                        ),),
                       );
                       return ActerAvatar(
                         options: AvatarOptions.DM(avatarInfo, size: 18),

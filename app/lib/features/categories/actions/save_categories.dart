@@ -29,7 +29,7 @@ Future<void> saveCategories(
       categoryManagerProvider((
         spaceId: spaceId,
         categoriesFor: categoriesFor,
-      )).future,
+      ),).future,
     );
     final sdk = await ref.watch(sdkProvider.future);
     final displayBuilder = sdk.api.newDisplayBuilder();

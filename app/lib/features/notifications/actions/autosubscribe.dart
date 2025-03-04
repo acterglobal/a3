@@ -28,7 +28,7 @@ Future<bool> autosubscribe({
       pushNotificationSubscribedStatusProvider((
         objectId: objectId,
         subType: subType,
-      )).future,
+      ),).future,
     );
     return switch (currentStatus) {
       SubscriptionStatus.subscribed => true, // nothing to do,

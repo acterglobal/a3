@@ -94,7 +94,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             memberAvatarInfoProvider((
                               userId: userId,
                               roomId: roomId,
-                            )),
+                            ),),
                           );
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
@@ -120,7 +120,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                             memberAvatarInfoProvider((
                               userId: userId,
                               roomId: roomId,
-                            )),
+                            ),),
                           );
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
@@ -167,7 +167,7 @@ class _UserReceiptsWidget extends ConsumerWidget {
                           memberAvatarInfoProvider((
                             userId: userId,
                             roomId: roomId,
-                          )),
+                          ),),
                         );
                         return ListTile(
                           leading: Padding(

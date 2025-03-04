@@ -135,7 +135,7 @@ class SubChatsPage extends ConsumerWidget {
       localCategoryListProvider((
         spaceId: spaceId,
         categoriesFor: CategoriesFor.chats,
-      )),
+      ),),
     );
 
     return localCategoryList.when(
