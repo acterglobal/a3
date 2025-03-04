@@ -11,6 +11,7 @@ class LanguageModel {
     return switch (locale) {
       'ar' => const LanguageModel.arabic(),
       'de' => const LanguageModel.german(),
+      'dk' => const LanguageModel.danish(),
       'en' => const LanguageModel.english(),
       'es' => const LanguageModel.spanish(),
       'pl' => const LanguageModel.polish(),
@@ -22,13 +23,21 @@ class LanguageModel {
   }
 
   // We show each language in their native tongue
-  const LanguageModel.english()
-      : languageName = 'English',
-        languageCode = 'en';
+  const LanguageModel.danish()
+      : languageName = 'Dansk',
+        languageCode = 'da';
 
   const LanguageModel.german()
       : languageName = 'Deutsch',
         languageCode = 'de';
+
+  const LanguageModel.english()
+      : languageName = 'English',
+        languageCode = 'en';
+
+  const LanguageModel.spanish()
+      : languageName = 'Espanol',
+        languageCode = 'es';
 
   const LanguageModel.french()
       : languageName = 'Français',
@@ -37,10 +46,6 @@ class LanguageModel {
   const LanguageModel.polish()
       : languageName = 'Polski',
         languageCode = 'pl';
-
-  const LanguageModel.spanish()
-      : languageName = 'Espanol',
-        languageCode = 'es';
 
   const LanguageModel.arabic()
       : languageName = 'اَلْعَرَبِيَّةُ',
@@ -56,6 +61,7 @@ class LanguageModel {
 
   static const allLanguagesList = [
     // we show them in ehm... alphabetical order of the name in their own language
+    LanguageModel.danish(),
     LanguageModel.german(),
     LanguageModel.english(),
     LanguageModel.spanish(),

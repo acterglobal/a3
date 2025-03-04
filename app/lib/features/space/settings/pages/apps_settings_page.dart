@@ -85,6 +85,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
               true;
 
           final news = appSettings.news();
+          final stories = appSettings.stories();
           final events = appSettings.events();
           final pins = appSettings.pins();
           final tasks = appSettings.tasks();
@@ -111,6 +112,20 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                         space,
                         SpaceFeature.boosts,
                         lang.boosts,
+                      ),
+                    ),
+                    SettingsTile.switchTile(
+                      title: Text(lang.stories),
+                      enabled: canEdit,
+                      description: Text(lang.postSpaceWiseStories),
+                      initialValue: stories.active(),
+                      onToggle: (newVal) => setActerFeature(
+                        context,
+                        newVal,
+                        appSettings,
+                        space,
+                        SpaceFeature.stories,
+                        lang.stories,
                       ),
                     ),
                     SettingsTile.switchTile(
@@ -168,6 +183,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                 ),
                 if (news.active())
                   buildNewsSection(
+                    context,
+                    powerLevels,
+                    space,
+                    maxPowerLevel,
+                    canEdit,
+                    defaultDesc,
+                  ),
+                if (stories.active())
+                  buildStoriesSection(
                     context,
                     powerLevels,
                     space,
@@ -584,6 +608,42 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
             powerLevels,
             powerLevels.newsKey(),
             lang.boosts,
+          ),
+        ),
+      ],
+    );
+  }
+
+  SettingsSection buildStoriesSection(
+    BuildContext context,
+    RoomPowerLevels powerLevels,
+    Space space,
+    int maxPowerLevel,
+    bool canEdit,
+    String defaultDesc,
+  ) {
+    final lang = L10n.of(context);
+
+    final currentPw = powerLevels.news();
+    final pwText = maxPowerLevel == 100
+        ? powerLevelName(currentPw)
+        : 'Custom ($currentPw)';
+    return SettingsSection(
+      title: Text(lang.stories),
+      tiles: [
+        SettingsTile(
+          enabled: canEdit,
+          title: Text(lang.requiredPowerLevel),
+          description: Text(lang.minPowerLevelDesc(lang.stories)),
+          trailing: Text(currentPw != null ? pwText : defaultDesc),
+          onPressed: (context) => updateFeatureLevelChangeDialog(
+            context,
+            maxPowerLevel,
+            currentPw,
+            space,
+            powerLevels,
+            powerLevels.storiesKey(),
+            lang.stories,
           ),
         ),
       ],

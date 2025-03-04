@@ -47,14 +47,12 @@ dependencies:
   image_picker: ^1.0.0
   cross_file_image: ^1.0.0
   flutter_keyboard_visibility: ^6.0.0
-  expandable_text: ^2.3.0
   cached_network_image: ^3.4.1
   fc_native_video_thumbnail: ^0.16.1
   flutter_matrix_html:
     # path: "../../flutter_matrix_html"
     git:
       url: https://github.com/acterglobal/flutter_matrix_html.git
-  flutter_slidable: ^3.0.0
   quds_popup_menu: ^0.0.1+1
   acter_avatar:
 #    path: "../../acter-avatar"
@@ -99,19 +97,16 @@ dependencies:
   mime: ^2.0.0
   freezed_annotation: ^2.4.1
   http_parser: ^4.0.2
-  flutter_custom_selector: ^0.0.3
   jiffy: ^6.2.1
   screenshot: ^3.0.0
   http: ^1.0.0
   crypto: ^3.0.2
-  flutter_math_fork: ^0.7.3
   shared_preferences: ^2.2.0
   image_picker_for_web: ^3.0.1
   riverpod_infinite_scroll:
     git: 
       url: https://github.com/acterglobal/riverpod_infinite_scroll.git
   infinite_scroll_pagination: ^4.0.0
-  convert: ^3.1.1
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/news/model/news_post_color_data.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
+import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -55,11 +56,13 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) {
-    final clr = getRandomElement(newsPostColors);
-    NewsSlideItem textSlide = NewsSlideItem(
-      type: NewsSlideType.text,
+    final postColors = getRandomElement(postColorSchemes);
+    UpdateSlideItem textSlide = UpdateSlideItem(
+      type: UpdateSlideType.text,
       text: '',
-      backgroundColor: clr,
+      backgroundColor: postColors.backgroundColor,
+      foregroundColor: postColors.foregroundColor,
+      linkColor: postColors.linkColor,
       refDetails: refDetails,
     );
     ref.read(newsStateProvider.notifier).addSlide(textSlide);
@@ -70,15 +73,17 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) async {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     XFile? imageFile = await imagePicker.pickImage(
       source: ImageSource.gallery,
     );
     if (imageFile != null) {
-      final slide = NewsSlideItem(
-        type: NewsSlideType.image,
+      final slide = UpdateSlideItem(
+        type: UpdateSlideType.image,
         mediaFile: imageFile,
-        backgroundColor: clr,
+        backgroundColor: postColors.backgroundColor,
+        foregroundColor: postColors.foregroundColor,
+        linkColor: postColors.linkColor,
         refDetails: refDetails,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
@@ -90,34 +95,53 @@ class NewsUtils {
     required WidgetRef ref,
     RefDetails? refDetails,
   }) async {
-    final clr = getRandomElement(newsPostColors);
+    final postColors = getRandomElement(postColorSchemes);
     XFile? videoFile = await imagePicker.pickVideo(
       source: ImageSource.gallery,
     );
     if (videoFile != null) {
-      final slide = NewsSlideItem(
-        type: NewsSlideType.video,
+      final slide = UpdateSlideItem(
+        type: UpdateSlideType.video,
         mediaFile: videoFile,
-        backgroundColor: clr,
+        backgroundColor: postColors.backgroundColor,
+        foregroundColor: postColors.foregroundColor,
+        linkColor: postColors.linkColor,
         refDetails: refDetails,
       );
       ref.read(newsStateProvider.notifier).addSlide(slide);
     }
   }
 
-  static Color getBackgroundColor(BuildContext context, NewsSlide newsSlide) {
-    final color = newsSlide.colors();
+  static Color getBackgroundColor(
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
+    final color = updateSlide.colors();
     return convertColor(
       color?.background(),
       Theme.of(context).colorScheme.surface,
     );
   }
 
-  static Color getForegroundColor(BuildContext context, NewsSlide newsSlide) {
-    final color = newsSlide.colors();
+  static Color getForegroundColor(
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
+    final color = updateSlide.colors();
     return convertColor(
       color?.color(),
       Theme.of(context).colorScheme.onPrimary,
+    );
+  }
+
+  static Color getLinkColor(
+    BuildContext context,
+    UpdateSlide updateSlide,
+  ) {
+    final color = updateSlide.colors();
+    return convertColor(
+      color?.link(),
+      Colors.lightBlueAccent,
     );
   }
 }

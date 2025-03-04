@@ -232,3 +232,34 @@ pub async fn random_users_with_random_space_under_template(
 
     Ok((clients, sync_states, room_id, tmpl_engine))
 }
+
+pub async fn random_users_with_random_chat_and_space_under_template(
+    prefix: &str,
+    user_count: u8,
+    template: &str,
+) -> Result<(
+    Vec<Client>,
+    Vec<SyncState>,
+    OwnedRoomId,
+    OwnedRoomId,
+    Engine,
+)> {
+    let (clients, sync_states, space_id, engine) =
+        random_users_with_random_space_under_template(prefix, user_count, template).await?;
+
+    let main_user = clients.first().expect("more than one user generated");
+    let user_ids = clients
+        .iter()
+        .skip(1)
+        .map(|u| u.user_id().expect("has user id"))
+        .collect();
+
+    let uuid = Uuid::new_v4().to_string();
+    let settings = CreateConvoSettingsBuilder::default()
+        .name(format!("it-room-{prefix}-{uuid}"))
+        .invites(user_ids)
+        .build()?;
+    let room_id = main_user.create_convo(Box::new(settings)).await?;
+
+    Ok((clients, sync_states, space_id, room_id, engine))
+}
