@@ -69,6 +69,9 @@ class RoomUpdateEvent extends ConsumerWidget {
       'm.room.aliases' => isMe
           ? lang.chatYouUpdateRoomAliases
           : lang.chatUpdateRoomAliases(firstName ?? senderId),
+      'm.room.canonical_alias' => isMe
+          ? '${lang.chatYouUpdateRoomCanonicalAlias}: $msgContent'
+          : '${lang.chatUpdateRoomCanonicalAlias(firstName ?? senderId)}: $msgContent',
       'm.room.history_visibility' => isMe
           ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
           : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
