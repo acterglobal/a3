@@ -2402,6 +2402,7 @@
   "post": "Post",
   "stories": "Stories",
   "addStory": "Add Story",
+  "spaceActivities": "Space Activities",
   "unableToLoadFile": "Unable to load file",
   "@addComment": {}
 }

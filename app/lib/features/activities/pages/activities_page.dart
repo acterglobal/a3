@@ -1,6 +1,7 @@
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/widgets/invitation_section/invitation_section_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/security_and_privacy_section_widget.dart';
+import 'package:acter/features/activities/widgets/space_activities/space_activities_widget.dart';
 import 'package:acter/features/activities/widgets/sync_section/sync_state_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -24,6 +25,12 @@ class ActivitiesPage extends ConsumerWidget {
     // Security and Privacy Section
     final securityWidget = buildSecurityAndPrivacySectionWidget(context, ref);
     if (securityWidget != null) sectionWidgetList.add(securityWidget);
+
+    // Space Activities Section
+    final spaceActivitiesWidget = buildSpaceActivitiesWidget(context, ref);
+    if (spaceActivitiesWidget != null) {
+      sectionWidgetList.add(spaceActivitiesWidget);
+    }
 
     return Scaffold(
       appBar: buildActivityAppBar(context),
