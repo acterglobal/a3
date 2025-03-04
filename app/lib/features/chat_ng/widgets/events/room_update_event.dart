@@ -84,7 +84,7 @@ class RoomUpdateEvent extends ConsumerWidget {
       'm.space.child' => isMe
           ? lang.chatYouUpdateSpaceChildren
           : lang.chatUpdateSpaceChildren(firstName ?? senderId),
-      _ => eventType,
+      _ => msgContent,
     };
   }
 }
