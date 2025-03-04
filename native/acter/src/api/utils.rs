@@ -1,10 +1,10 @@
 use matrix_sdk_ui::eyeball_im::VectorDiff;
 
 pub struct ApiVectorDiff<T> {
-    action: String,
-    values: Option<Vec<T>>,
-    index: Option<usize>,
-    value: Option<T>,
+    pub(super) action: String,
+    pub(super) values: Option<Vec<T>>,
+    pub(super) index: Option<usize>,
+    pub(super) value: Option<T>,
 }
 
 impl<T> ApiVectorDiff<T>

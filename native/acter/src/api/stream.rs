@@ -17,16 +17,16 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use matrix_sdk_ui::timeline::{TimelineEventItemId, TimelineItem};
+use matrix_sdk_ui::{
+    eyeball_im::VectorDiff,
+    timeline::{Timeline, TimelineEventItemId, TimelineItem},
+};
 use std::{ops::Deref, sync::Arc};
 use tracing::{error, info};
 
 use crate::{Client, Room, RoomMessage, RUNTIME};
 
-use super::{
-    client::Timeline,
-    utils::{remap_for_diff, ApiVectorDiff},
-};
+use super::utils::{remap_for_diff, ApiVectorDiff};
 
 pub mod msg_draft;
 use msg_draft::MsgContentDraft;
@@ -56,26 +56,136 @@ impl TimelineStream {
             .to_owned();
 
         async_stream::stream! {
-            let (current_items, stream) = {
-                let locked = timeline.items.read().await;
-                let values: Vec<RoomMessage> = locked
-                    .clone()
-                    .into_iter()
-                    .map(|inner| RoomMessage::from((inner, my_id.clone())))
-                    .collect();
-                (
-                    RoomMessageDiff::current_items(values),
-                    locked.subscribe(),
-                )
-            };
-            let mut remap = stream.into_stream().map(move |diff| remap_for_diff(
-                diff,
-                |x: Arc<TimelineItem>| RoomMessage::from((x, my_id.clone())),
-            ));
-            yield current_items;
+            let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
+            let values = timeline_items
+                .into_iter()
+                .map(|x| RoomMessage::from((x, my_id.clone())))
+                .collect::<Vec<RoomMessage>>();
+            yield RoomMessageDiff::current_items(values);
 
-            while let Some(d) = remap.next().await {
-                yield d
+            while let Some(diffs) = timeline_stream.next().await {
+                for diff in diffs {
+                    let d = match diff {
+                        VectorDiff::Append { values } => {
+                            info!("items append");
+                            for value in values.clone() {
+                                fetch_details_for_event(value, timeline.clone()).await;
+                            }
+                            let items = values
+                                .into_iter()
+                                .map(|x| RoomMessage::from((x, my_id.clone())))
+                                .collect::<Vec<RoomMessage>>();
+                            ApiVectorDiff {
+                                action: "Append".to_string(),
+                                values: Some(items),
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Clear => {
+                            info!("items clear");
+                            ApiVectorDiff {
+                                action: "Clear".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Insert { index, value } => {
+                            info!("items insert");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "Insert".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::PopBack => {
+                            info!("items pop back");
+                            ApiVectorDiff {
+                                action: "PopBack".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::PopFront => {
+                            info!("items pop front");
+                            ApiVectorDiff {
+                                action: "PopFront".to_string(),
+                                values: None,
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::PushBack { value } => {
+                            info!("items push back");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "PushBack".to_string(),
+                                values: None,
+                                index: None,
+                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::PushFront { value } => {
+                            info!("items push front");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "PushFront".to_string(),
+                                values: None,
+                                index: None,
+                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::Remove { index } => {
+                            info!("items remove");
+                            ApiVectorDiff {
+                                action: "Remove".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Reset { values } => {
+                            info!("items reset");
+                            for value in values.clone() {
+                                fetch_details_for_event(value, timeline.clone()).await;
+                            }
+                            let items = values
+                                .into_iter()
+                                .map(|x| RoomMessage::from((x, my_id.clone())))
+                                .collect::<Vec<RoomMessage>>();
+                            ApiVectorDiff {
+                                action: "Reset".to_string(),
+                                values: Some(items),
+                                index: None,
+                                value: None,
+                            }
+                        }
+                        VectorDiff::Set { index, value } => {
+                            info!("items set");
+                            fetch_details_for_event(value.clone(), timeline.clone()).await;
+                            ApiVectorDiff {
+                                action: "Set".to_string(),
+                                values: None,
+                                index: Some(index),
+                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                            }
+                        }
+                        VectorDiff::Truncate { length } => {
+                            info!("items truncate");
+                            ApiVectorDiff {
+                                action: "Truncate".to_string(),
+                                values: None,
+                                index: Some(length),
+                                value: None,
+                            }
+                        }
+                    };
+                    yield d;
+                }
             }
         }
     }
@@ -86,7 +196,7 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let result = timeline.inner.paginate_backwards(count).await?;
+                let result = timeline.paginate_backwards(count).await?;
                 Ok(result)
             })
             .await?
@@ -100,7 +210,6 @@ impl TimelineStream {
         RUNTIME
             .spawn(async move {
                 let tl = timeline
-                    .inner
                     .item_by_event_id(&event_id)
                     .await
                     .context("Event not found")?;
@@ -130,7 +239,7 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let msg = draft.into_room_msg(&room).await?;
-                timeline.inner.send(msg.with_relation(None).into()).await;
+                timeline.send(msg.with_relation(None).into()).await;
                 Ok(true)
             })
             .await?
@@ -155,7 +264,6 @@ impl TimelineStream {
                 }
 
                 let item = timeline
-                    .inner
                     .item_by_event_id(&event_id)
                     .await
                     .context("Unable to find event")?;
@@ -166,13 +274,12 @@ impl TimelineStream {
                 }
 
                 let item = timeline
-                    .inner
                     .item_by_event_id(&event_id)
                     .await
                     .context("Not found which item would be edited")?;
                 let event_content = draft.into_room_msg(&room).await?;
                 let new_content = EditedContent::RoomMessage(event_content);
-                timeline.inner.edit(&item.identifier(), new_content).await?;
+                timeline.edit(&item.identifier(), new_content).await?;
                 Ok(true)
             })
             .await?
@@ -196,13 +303,11 @@ impl TimelineStream {
                     bail!("No permissions to send message in this room");
                 }
                 let reply_item = timeline
-                    .inner
                     .replied_to_info_from_event_id(&event_id)
                     .await
                     .context("Not found which item would be replied to")?;
                 let content = draft.into_room_msg(&room).await?;
                 timeline
-                    .inner
                     .send_reply(
                         content.with_relation(None).into(),
                         reply_item,
@@ -241,7 +346,6 @@ impl TimelineStream {
         RUNTIME
             .spawn(async move {
                 let result = timeline
-                    .inner
                     .send_single_receipt(receipt_type, thread, event_id)
                     .await?;
                 Ok(result)
@@ -259,7 +363,7 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let result = timeline.inner.mark_as_read(receipt).await?;
+                let result = timeline.mark_as_read(receipt).await?;
                 Ok(result)
             })
             .await?
@@ -306,7 +410,7 @@ impl TimelineStream {
                     .fully_read_marker(fully_read)
                     .public_read_receipt(public_read_receipt)
                     .private_read_receipt(private_read_receipt);
-                timeline.inner.send_multiple_receipts(receipts).await?;
+                timeline.send_multiple_receipts(receipts).await?;
                 Ok(true)
             })
             .await?
@@ -333,7 +437,7 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send reaction in this room");
                 }
-                timeline.inner.toggle_reaction(&unique_id, &key).await?;
+                timeline.toggle_reaction(&unique_id, &key).await?;
                 Ok(true)
             })
             .await?
@@ -404,4 +508,23 @@ impl Client {
             info: None,
         })
     }
+}
+
+async fn fetch_details_for_event(item: Arc<TimelineItem>, timeline: Arc<Timeline>) -> Result<bool> {
+    RUNTIME
+        .spawn(async move {
+            if let Some(event) = item.as_event() {
+                if let Ok(info) = event.replied_to_info() {
+                    let replied_to = info.event_id();
+                    info!("fetching replied_to: {}", replied_to);
+                    if let Err(err) = timeline.fetch_details_for_event(replied_to).await {
+                        error!("error when fetching replied_to_info via timeline: {err}");
+                        return Ok(false);
+                    }
+                    info!("fetching replied_to: ended");
+                }
+            }
+            Ok(true)
+        })
+        .await?
 }

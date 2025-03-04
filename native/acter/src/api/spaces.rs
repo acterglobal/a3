@@ -171,7 +171,7 @@ impl Space {
                 let timeline = timelines
                     .get(room.room.room_id())
                     .context("timeline not started yet")?;
-                Ok(TimelineStream::new(room, Arc::new(timeline.clone())))
+                Ok(TimelineStream::new(room, timeline.inner.clone()))
             })
             .await?
     }

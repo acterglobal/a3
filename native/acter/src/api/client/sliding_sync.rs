@@ -47,7 +47,6 @@ use super::{
 #[derive(Debug, Clone)]
 pub(crate) struct Timeline {
     pub(crate) inner: Arc<SdkTimeline>,
-    pub(crate) items: Arc<RwLock<ObservableVector<Arc<TimelineItem>>>>,
     task: Arc<JoinHandle<()>>,
 }
 
@@ -293,101 +292,22 @@ impl Client {
                     };
                     let (items, stream) = sdk_timeline.subscribe().await;
                     let my_id = user_id.clone();
-                    let mut fetched_latest_msg = false;
-                    for item in items.clone().into_iter().rev() {
-                        if me.set_latest_message(ui_room.room_id(), item).await {
-                            fetched_latest_msg = true;
-                            break;
-                        }
+                    for item in items {
+                        me.set_latest_message(ui_room.room_id(), item).await;
                     }
-                    if !fetched_latest_msg && !loaded_latest_msg {
-                        if let Err(err) = sdk_timeline.paginate_backwards(10).await {
-                            error!(?err, room_id=?ui_room.room_id(), "backpagination failed");
-                        }
-                    }
-                    let items = Arc::new(RwLock::new(ObservableVector::from(items)));
 
                     // Spawn a timeline task that will listen to all the timeline item changes.
-                    let i = items.clone();
-                    let ri = room_infos.clone();
                     let room_id = ui_room.room_id().to_owned();
-                    let tl = sdk_timeline.clone();
                     let client = me.clone();
                     let timeline_task = tokio::spawn(async move {
                         pin_mut!(stream);
-                        let items = i;
-                        let room_infos = ri;
                         while let Some(diffs) = stream.next().await {
-                            // Apply the diffs to the list of timeline items.
-                            let mut items = items.write().await;
-                            for diff in diffs.clone() {
-                                match diff {
-                                    VectorDiff::Append { values } => {
-                                        info!("items append");
-                                        items.append(values.clone());
-                                        for value in values {
-                                            fetch_details_for_event(value, tl.clone()).await;
-                                        }
-                                    }
-                                    VectorDiff::Clear => {
-                                        info!("items clear");
-                                        items.clear();
-                                    }
-                                    VectorDiff::Insert { index, value } => {
-                                        info!("items insert");
-                                        items.insert(index, value.clone());
-                                        fetch_details_for_event(value, tl.clone()).await;
-                                    }
-                                    VectorDiff::PopBack => {
-                                        info!("items pop back");
-                                        items.pop_back();
-                                    }
-                                    VectorDiff::PopFront => {
-                                        info!("items pop front");
-                                        items.pop_front();
-                                    }
-                                    VectorDiff::PushBack { value } => {
-                                        info!("items push back");
-                                        items.push_back(value.clone());
-                                        fetch_details_for_event(value, tl.clone()).await;
-                                    }
-                                    VectorDiff::PushFront { value } => {
-                                        info!("items push front");
-                                        items.push_front(value.clone());
-                                        fetch_details_for_event(value, tl.clone()).await;
-                                    }
-                                    VectorDiff::Remove { index } => {
-                                        info!("items remove");
-                                        items.remove(index);
-                                    }
-                                    VectorDiff::Reset { values } => {
-                                        info!("items reset");
-                                        items.clear();
-                                        items.append(values.clone());
-                                        for value in values {
-                                            fetch_details_for_event(value, tl.clone()).await;
-                                        }
-                                    }
-                                    VectorDiff::Set { index, value } => {
-                                        info!("items set");
-                                        items.set(index, value.clone());
-                                        fetch_details_for_event(value, tl.clone()).await;
-                                    }
-                                    VectorDiff::Truncate { length } => {
-                                        info!("items truncate");
-                                        items.truncate(length);
-                                    }
-                                }
-                            }
-
                             // Update the latest message of room.
                             for diff in diffs.clone() {
                                 match diff {
                                     VectorDiff::Append { values } => {
                                         for value in values {
-                                            if client.set_latest_message(&room_id, value).await {
-                                                break;
-                                            }
+                                            client.set_latest_message(&room_id, value).await;
                                         }
                                     }
                                     VectorDiff::Clear => {}
@@ -405,9 +325,7 @@ impl Client {
                                     VectorDiff::Remove { index } => {}
                                     VectorDiff::Reset { values } => {
                                         for value in values {
-                                            if client.set_latest_message(&room_id, value).await {
-                                                break;
-                                            }
+                                            client.set_latest_message(&room_id, value).await;
                                         }
                                     }
                                     VectorDiff::Set { index, value } => {
@@ -419,11 +337,26 @@ impl Client {
                         }
                     });
 
+                    // Paginate backwards, if the latest message is missed
+                    {
+                        let ri = room_infos.read().await;
+                        if let Some(room_info) = ri.get(ui_room.room_id()) {
+                            if room_info.latest_msg.is_none() && !loaded_latest_msg {
+                                // paginate_backwards passes execution flow to timeline_task
+                                if let Err(err) = sdk_timeline.paginate_backwards(10).await {
+                                    error!(?err, room_id=?ui_room.room_id(), "backpagination failed");
+                                }
+                            }
+                        } else {
+                            error!("Empty room info");
+                            continue;
+                        }
+                    }
+
                     new_timelines.push((
                         ui_room.room_id().to_owned(),
                         Timeline {
                             inner: sdk_timeline,
-                            items,
                             task: Arc::new(timeline_task),
                         },
                     ));
@@ -524,24 +457,24 @@ impl Client {
         );
     }
 
-    async fn set_latest_message(&self, room_id: &RoomId, item: Arc<TimelineItem>) -> bool {
+    async fn set_latest_message(&self, room_id: &RoomId, item: Arc<TimelineItem>) {
         if item.as_event().is_none() {
-            return false;
+            return;
         }
         let Ok(my_id) = self.user_id() else {
-            return false;
+            return;
         };
         let new_msg = RoomMessage::from((item, my_id.clone()));
         let mut ri = self.sync_controller.room_infos.write().await;
         let Some(room_info) = ri.get_mut(room_id) else {
-            return false;
+            return;
         };
         if let Some(prev_msg) = room_info.clone().latest_msg {
             if prev_msg.event_id() == new_msg.event_id()
                 && prev_msg.event_type() == new_msg.event_type()
             {
                 trace!("Nothing to update, room message stayed the same");
-                return false;
+                return;
             }
             // if prev_ts was None, replace prev msg with new msg unconditionally
             if let Some(prev_ts) = prev_msg.origin_server_ts() {
@@ -549,12 +482,12 @@ impl Client {
                     Some(new_ts) => {
                         if new_ts <= prev_ts {
                             // new msg is not the latest
-                            return false;
+                            return;
                         }
                     }
                     None => {
                         error!("new latest message should have timestamp");
-                        return false;
+                        return;
                     }
                 }
             }
@@ -566,8 +499,6 @@ impl Client {
         self.store().set_raw(&key.as_storage_key(), &new_msg).await;
         info!("******************** changed latest msg: {:?}", key.clone());
         self.executor().notify(vec![key]);
-
-        true
     }
 
     pub(crate) async fn load_from_cache(&self) {
