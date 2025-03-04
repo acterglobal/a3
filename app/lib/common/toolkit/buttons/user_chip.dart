@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -20,18 +19,25 @@ class UserChip extends ConsumerWidget {
     final memberInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomId, userId: memberId)),
     );
-    final avatarSize = Theme.of(context).textTheme.bodySmall?.fontSize ?? 12.0;
+    final fontSize = Theme.of(context).textTheme.bodySmall?.fontSize ?? 12.0;
     return Tooltip(
       message: memberId,
-      child: ActerInlineTextButton.icon(
-        icon: ActerAvatar(
-          options: AvatarOptions.DM(
-            memberInfo,
-            size: avatarSize,
-          ),
+      child: InkWell(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ActerAvatar(
+              options: AvatarOptions.DM(
+                memberInfo,
+                size: fontSize / 2,
+              ),
+            ),
+            SizedBox(width: 4),
+            Text(memberInfo.displayName ?? memberId),
+            SizedBox(width: 4),
+          ],
         ),
-        label: Text(memberInfo.displayName ?? memberId),
-        onPressed: () async {
+        onTap: () async {
           await showMemberInfoDrawer(
             context: context,
             roomId: roomId,
