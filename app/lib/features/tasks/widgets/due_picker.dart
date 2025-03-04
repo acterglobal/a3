@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class PickedDue {
   final DateTime due;

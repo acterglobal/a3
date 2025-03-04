@@ -10,7 +10,7 @@ import 'package:acter/features/attachments/widgets/attachment_container.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 

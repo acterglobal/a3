@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 void showEncryptionInfoBottomSheet({required BuildContext context}) {

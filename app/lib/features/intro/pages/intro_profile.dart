@@ -4,7 +4,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class IntroProfile extends StatelessWidget {

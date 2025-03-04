@@ -11,7 +11,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -49,8 +49,9 @@ class PinListItemWidget extends ConsumerWidget {
   }
 
   Widget buildPinItemUI(BuildContext context, WidgetRef ref, ActerPin pin) {
-    final isBookmarked =
-        ref.watch(isBookmarkedProvider(BookmarkType.forPins(pinId)));
+    final isBookmarked = ref.watch(
+      isBookmarkedProvider(BookmarkType.forPins(pinId)),
+    );
     return Card(
       margin: cardMargin,
       child: Stack(
@@ -68,20 +69,14 @@ class PinListItemWidget extends ConsumerWidget {
       onTap: () {
         final pinId = pin.eventIdStr();
         if (onTaPinItem == null) {
-          context.pushNamed(
-            Routes.pin.name,
-            pathParameters: {'pinId': pinId},
-          );
+          context.pushNamed(Routes.pin.name, pathParameters: {'pinId': pinId});
         } else {
           onTaPinItem!(pinId);
         }
       },
       leading: ActerIconWidget(
         iconSize: 30,
-        color: convertColor(
-          pin.display()?.color(),
-          iconPickerColors[0],
-        ),
+        color: convertColor(pin.display()?.color(), iconPickerColors[0]),
         icon: ActerIcon.iconForPin(pin.display()?.iconStr()),
       ),
       title: Column(
@@ -104,9 +99,10 @@ class PinListItemWidget extends ConsumerWidget {
             ),
         ],
       ),
-      subtitle: showSpace
-          ? SpaceNameWidget(spaceId: pin.roomIdStr(), brackets: false)
-          : null,
+      subtitle:
+          showSpace
+              ? SpaceNameWidget(spaceId: pin.roomIdStr(), brackets: false)
+              : null,
     );
   }
 

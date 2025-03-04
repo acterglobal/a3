@@ -4,7 +4,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 void showAddPinLinkBottomSheet({
   required BuildContext context,

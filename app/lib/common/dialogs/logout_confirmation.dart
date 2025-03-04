@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Can be extended to be reusable dialog as riverpod states get added.

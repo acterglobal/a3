@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 const Key selectChatDrawerKey = Key('chat-widgets-select-chat-drawer');
 
@@ -16,13 +16,14 @@ Future<String?> selectChatDrawer({
     enableDrag: true,
     context: context,
     isDismissible: true,
-    builder: (context) => SelectRoomDrawer(
-      key: key,
-      title: title ?? Text(L10n.of(context).selectChat),
-      keyPrefix: 'select-chat',
-      roomType: RoomType.groupChat,
-      canCheck: canCheck,
-    ),
+    builder:
+        (context) => SelectRoomDrawer(
+          key: key,
+          title: title ?? Text(L10n.of(context).selectChat),
+          keyPrefix: 'select-chat',
+          roomType: RoomType.groupChat,
+          canCheck: canCheck,
+        ),
   );
   if (selected == null) {
     // in case of being dismissed, we return the previously selected item

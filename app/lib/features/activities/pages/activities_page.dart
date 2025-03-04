@@ -2,8 +2,8 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/widgets/invitation_section/invitation_section_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/security_and_privacy_section_widget.dart';
 import 'package:acter/features/activities/widgets/sync_section/sync_state_section_widget.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ActivitiesPage extends ConsumerWidget {

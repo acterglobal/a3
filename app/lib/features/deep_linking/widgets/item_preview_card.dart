@@ -1,6 +1,6 @@
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 

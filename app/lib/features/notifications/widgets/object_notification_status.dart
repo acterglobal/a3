@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class ObjectNotificationStatus extends ConsumerWidget {
   final String objectId;
@@ -22,11 +22,12 @@ class ObjectNotificationStatus extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final watched =
-        ref.watch(
+        ref
+            .watch(
               pushNotificationSubscribedStatusProvider((
                 objectId: objectId,
                 subType: subType,
-              ),),
+              )),
             )
             .valueOrNull;
     final iconBtn = switch (watched) {
@@ -85,7 +86,7 @@ class ObjectNotificationStatus extends ConsumerWidget {
         SubscriptionStatus.parentSubscribed =>
           L10n.of(context).parentSubscribedAction,
         _ => L10n.of(context).subscribeAction,
-      },),
+      }),
     );
   }
 }

@@ -12,7 +12,7 @@ import 'package:acter/features/categories/widgets/add_edit_category.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -48,7 +48,7 @@ class _DraggableCategoriesListState
       localCategoryListProvider((
         spaceId: widget.spaceId,
         categoriesFor: widget.categoriesFor,
-      ),).future,
+      )).future,
     );
 
     //SET DRAG AND DROP LIST DATA BASED ON THE LOCAL CATEGORY LIST

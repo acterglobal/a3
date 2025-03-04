@@ -24,7 +24,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,8 +46,9 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class AppShellState extends ConsumerState<AppShell> {
-  final GlobalKey<ScaffoldState> _key =
-      GlobalKey<ScaffoldState>(debugLabel: 'home shell scaffold');
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>(
+    debugLabel: 'home shell scaffold',
+  );
   late ShakeDetector detector;
 
   @override
@@ -148,11 +149,7 @@ class AppShellState extends ConsumerState<AppShell> {
     if (ref.watch(clientProvider).valueOrNull == null) {
       // at the very startup we might not yet have a client loaded
       // show a loading spinner meanwhile.
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final errorMsg = ref.watch(syncStateProvider.select((v) => v.errorMsg));
     if (errorMsg != null) {
@@ -177,12 +174,7 @@ class AppShellState extends ConsumerState<AppShell> {
           body: Screenshot(
             controller: screenshotController,
             child: Column(
-              children: [
-                CrossSigning(),
-                Expanded(
-                  child: buildBody(context),
-                ),
-              ],
+              children: [CrossSigning(), Expanded(child: buildBody(context))],
             ),
           ),
         ),
@@ -215,9 +207,9 @@ class AppShellState extends ConsumerState<AppShell> {
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.mediumLargeAndUp: SlotLayout.from(
           key: const Key('primaryNavigation'),
-          builder: (BuildContext context) => SidebarWidget(
-            navigationShell: widget.navigationShell,
-          ),
+          builder:
+              (BuildContext context) =>
+                  SidebarWidget(navigationShell: widget.navigationShell),
         ),
       },
     );
@@ -241,15 +233,19 @@ class AppShellState extends ConsumerState<AppShell> {
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder: (context) =>
-              BottomNavigationWidget(navigationShell: widget.navigationShell),
+          builder:
+              (context) => BottomNavigationWidget(
+                navigationShell: widget.navigationShell,
+              ),
         ),
         Breakpoints.medium: SlotLayout.from(
           key: Keys.mainNav,
           inAnimation: AdaptiveScaffold.bottomToTop,
           outAnimation: AdaptiveScaffold.topToBottom,
-          builder: (context) =>
-              BottomNavigationWidget(navigationShell: widget.navigationShell),
+          builder:
+              (context) => BottomNavigationWidget(
+                navigationShell: widget.navigationShell,
+              ),
         ),
       },
     );

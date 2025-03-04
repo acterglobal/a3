@@ -8,7 +8,7 @@ import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/link_room/widgets/link_space_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 

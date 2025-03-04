@@ -3,7 +3,7 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class InvitePending extends ConsumerWidget {
   final String roomId;

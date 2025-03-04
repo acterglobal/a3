@@ -1,7 +1,7 @@
 import 'package:acter/features/chat/dialogs/encryption_info_drawer.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class EncryptedMessageWidget extends StatelessWidget {
   const EncryptedMessageWidget({super.key});

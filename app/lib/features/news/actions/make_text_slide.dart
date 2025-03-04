@@ -3,7 +3,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/news/model/news_slide_model.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<NewsSlideDraft> makeTextSlideForNews(
@@ -70,8 +70,9 @@ Future<MsgDraft> createTextMsgDraftDraft(
     throw lang.yourTextSlidesMustContainsSomeText;
   }
   final html = slidePost.html;
-  final textDraft = html != null
-      ? client.textHtmlDraft(html, text)
-      : client.textMarkdownDraft(text);
+  final textDraft =
+      html != null
+          ? client.textHtmlDraft(html, text)
+          : client.textMarkdownDraft(text);
   return textDraft;
 }

@@ -1,7 +1,7 @@
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 void showEditPinDescriptionBottomSheet({
   required BuildContext context,

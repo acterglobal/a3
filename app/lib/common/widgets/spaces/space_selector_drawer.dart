@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
 

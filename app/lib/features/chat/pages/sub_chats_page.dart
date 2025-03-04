@@ -14,7 +14,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -135,7 +135,7 @@ class SubChatsPage extends ConsumerWidget {
       localCategoryListProvider((
         spaceId: spaceId,
         categoriesFor: CategoriesFor.chats,
-      ),),
+      )),
     );
 
     return localCategoryList.when(

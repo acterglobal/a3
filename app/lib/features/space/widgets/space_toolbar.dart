@@ -6,7 +6,7 @@ import 'package:acter/features/space/actions/set_space_title.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
 import 'package:acter/features/space/dialogs/leave_space.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 

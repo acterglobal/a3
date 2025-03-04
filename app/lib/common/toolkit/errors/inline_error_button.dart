@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 /// InlineErrorButton for text inlined actions
 ///

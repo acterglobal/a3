@@ -31,7 +31,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -437,11 +437,12 @@ class TaskItemDetailPage extends ConsumerWidget {
       children:
           assignees.map((userId) {
             final dispName =
-                ref.watch(
+                ref
+                    .watch(
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: userId,
-                      ),),
+                      )),
                     )
                     .valueOrNull;
             return Padding(

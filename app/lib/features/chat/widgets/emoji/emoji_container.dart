@@ -4,7 +4,7 @@ import 'package:acter/features/chat/widgets/emoji/emoji_reaction_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class EmojiContainer extends StatefulWidget {
   final String roomId;

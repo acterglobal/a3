@@ -3,7 +3,7 @@ import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class InvitesPage extends ConsumerWidget {
   const InvitesPage({super.key});

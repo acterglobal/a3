@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:acter/features/files/actions/download_file.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';

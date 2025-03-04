@@ -2,7 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MemberUpdateEvent extends ConsumerWidget {
@@ -96,11 +96,12 @@ class MemberUpdateEvent extends ConsumerWidget {
           (() {
             final inviteeId = msgContent;
             final inviteeName =
-                ref.watch(
+                ref
+                    .watch(
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: inviteeId,
-                      ),),
+                      )),
                     )
                     .valueOrNull;
             return isMe

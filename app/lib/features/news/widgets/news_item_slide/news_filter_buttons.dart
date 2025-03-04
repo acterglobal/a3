@@ -1,6 +1,6 @@
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NewsFilterButtons extends ConsumerWidget {
@@ -13,9 +13,7 @@ class NewsFilterButtons extends ConsumerWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildFilterToggleButtons(context, ref, updateFilter, lang),
-      ],
+      children: [_buildFilterToggleButtons(context, ref, updateFilter, lang)],
     );
   }
 
@@ -38,9 +36,10 @@ class NewsFilterButtons extends ConsumerWidget {
         ref.read(updateFilterProvider.notifier).state =
             UpdateFilters.values[index];
       },
-      children: UpdateFilters.values
-          .map((filter) => _buildFilterButton(ref, filter, lang))
-          .toList(),
+      children:
+          UpdateFilters.values
+              .map((filter) => _buildFilterButton(ref, filter, lang))
+              .toList(),
     );
   }
 
@@ -84,11 +83,7 @@ class NewsFilterButtons extends ConsumerWidget {
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: Container(
-        height: 15,
-        width: 1,
-        color: Colors.grey,
-      ),
+      child: Container(height: 15, width: 1, color: Colors.grey),
     );
   }
 }

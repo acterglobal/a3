@@ -2,7 +2,7 @@ import 'package:acter/features/chat/models/room_list_filter_state/room_list_filt
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomsListNGWidget extends RoomsListWidget {

@@ -1,7 +1,7 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,7 +35,7 @@ void main() {
       expect(find.text(lang.noProfile), findsOneWidget);
       expect(find.byKey(LoginPageKeys.signUpBtn), findsOneWidget);
     });
-  }, skip: 'currently broken',);
+  }, skip: 'currently broken');
 
   testWidgets('text fields validation test', (tester) async {
     await tester.pumpWidget(
@@ -61,7 +61,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100)); // add delay
     expect(userNameError, findsOneWidget);
     expect(passwordError, findsOneWidget);
-  }, skip: true,);
+  }, skip: true);
 
   // // Not working for some reason.
   // testWidgets('Button triggers navigation to sign up', (tester) async {

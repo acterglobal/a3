@@ -6,7 +6,7 @@ import 'package:acter/features/deep_linking/widgets/item_preview_card.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

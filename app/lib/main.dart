@@ -18,7 +18,7 @@ import 'package:acter/router/router.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -85,7 +85,7 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
       options.beforeSend = sentryBeforeSend;
-    }, appRunner: () => runApp(wrappedApp),);
+    }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
   }

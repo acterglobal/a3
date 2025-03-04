@@ -8,7 +8,7 @@ import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/space_name_widget.dart';
 import 'package:acter/features/member/widgets/member_list_entry.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -34,7 +34,7 @@ class _SpaceMembersPageState extends ConsumerState<SpaceMembersPage> {
       membersIdWithSearchProvider((
         roomId: widget.spaceIdOrAlias,
         searchValue: searchValue,
-      ),),
+      )),
     );
     final membership =
         ref.watch(roomMembershipProvider(widget.spaceIdOrAlias)).valueOrNull;

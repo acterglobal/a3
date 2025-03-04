@@ -5,7 +5,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -45,7 +45,7 @@ class MentionProfileBuilder extends ConsumerWidget {
               memberDisplayNameProvider((
                 roomId: roomQuery.roomId,
                 userId: uId,
-              ),),
+              )),
             );
 
             final normalizedId = uId.toLowerCase();
@@ -84,7 +84,7 @@ class MentionProfileBuilder extends ConsumerWidget {
                         memberAvatarInfoProvider((
                           roomId: roomQuery.roomId,
                           userId: userId,
-                        ),),
+                        )),
                       );
                       return ActerAvatar(
                         options: AvatarOptions.DM(avatarInfo, size: 18),

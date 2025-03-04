@@ -7,7 +7,7 @@ import 'package:acter/features/space/actions/update_feature_power_level.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -119,14 +119,15 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
                       enabled: canEdit,
                       description: Text(lang.postSpaceWiseStories),
                       initialValue: stories.active(),
-                      onToggle: (newVal) => setActerFeature(
-                        context,
-                        newVal,
-                        appSettings,
-                        space,
-                        SpaceFeature.stories,
-                        lang.stories,
-                      ),
+                      onToggle:
+                          (newVal) => setActerFeature(
+                            context,
+                            newVal,
+                            appSettings,
+                            space,
+                            SpaceFeature.stories,
+                            lang.stories,
+                          ),
                     ),
                     SettingsTile.switchTile(
                       title: Text(lang.pin),
@@ -636,9 +637,10 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
     final lang = L10n.of(context);
 
     final currentPw = powerLevels.news();
-    final pwText = maxPowerLevel == 100
-        ? powerLevelName(currentPw)
-        : 'Custom ($currentPw)';
+    final pwText =
+        maxPowerLevel == 100
+            ? powerLevelName(currentPw)
+            : 'Custom ($currentPw)';
     return SettingsSection(
       title: Text(lang.stories),
       tiles: [
@@ -647,15 +649,16 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
           title: Text(lang.requiredPowerLevel),
           description: Text(lang.minPowerLevelDesc(lang.stories)),
           trailing: Text(currentPw != null ? pwText : defaultDesc),
-          onPressed: (context) => updateFeatureLevelChangeDialog(
-            context,
-            maxPowerLevel,
-            currentPw,
-            space,
-            powerLevels,
-            powerLevels.storiesKey(),
-            lang.stories,
-          ),
+          onPressed:
+              (context) => updateFeatureLevelChangeDialog(
+                context,
+                maxPowerLevel,
+                currentPw,
+                space,
+                powerLevels,
+                powerLevels.storiesKey(),
+                lang.stories,
+              ),
         ),
       ],
     );

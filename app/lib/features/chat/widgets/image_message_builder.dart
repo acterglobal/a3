@@ -8,7 +8,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -60,7 +60,7 @@ class ImageMessageBuilder extends ConsumerWidget {
           mediaChatStateProvider((
             messageId: message.remoteId ?? message.id,
             roomId: roomId,
-          ),).notifier,
+          )).notifier,
         );
         await notifier.downloadMedia();
       },

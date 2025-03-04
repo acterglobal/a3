@@ -7,7 +7,7 @@ import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:skeletonizer/skeletonizer.dart';

@@ -7,7 +7,7 @@ import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dar
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class VideoMessageEvent extends ConsumerWidget {
@@ -55,7 +55,7 @@ class VideoMessageEvent extends ConsumerWidget {
           mediaChatStateProvider((
             messageId: messageId,
             roomId: roomId,
-          ),).notifier,
+          )).notifier,
         );
         await notifier.downloadMedia();
       },

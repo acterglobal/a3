@@ -4,7 +4,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EmojiPickerWidget extends StatelessWidget {
