@@ -135,7 +135,7 @@ final timelineStreamProvider =
   if (chat == null) {
     throw RoomNotFound();
   }
-  return chat.timelineStream();
+  return await chat.timelineStream();
 });
 
 final filteredChatsProvider =
