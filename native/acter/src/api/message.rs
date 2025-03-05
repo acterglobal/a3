@@ -574,7 +574,7 @@ impl RoomEventItemBuilder {
                         if let Some(prev) = prev_content {
                             let mut result = vec![];
                             if let Some(old) = &prev.aliases {
-                                if !do_vecs_match::<OwnedRoomAliasId>(&old, &content.aliases) {
+                                if !do_vecs_match::<OwnedRoomAliasId>(old, &content.aliases) {
                                     result.push("changed aliases".to_owned());
                                 }
                                 if result.is_empty() {
@@ -1354,7 +1354,7 @@ impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
     }
 }
 
-fn do_vecs_match<T: PartialEq>(a: &Vec<T>, b: &Vec<T>) -> bool {
+fn do_vecs_match<T: PartialEq>(a: &[T], b: &[T]) -> bool {
     let matching = a.iter().zip(b.iter()).filter(|&(a, b)| a == b).count();
     matching == a.len() && matching == b.len()
 }
