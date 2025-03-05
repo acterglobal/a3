@@ -16,7 +16,9 @@ Widget? buildSecurityAndPrivacySectionWidget(
   //Add Backup State Widget if feature is enabled
   final isBackupFeatureEnabled =
       ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
-  if (isBackupFeatureEnabled) securityWidgetList.add(BackupStateWidget());
+  if (isBackupFeatureEnabled) {
+    securityWidgetList.add(BackupStateWidget(allowDisabling: true));
+  }
 
   //Add Unconfirmed Emails Widget if there are unconfirmed emails
   final unconfirmedEmailWidget = buildUnconfirmedEmailWidget(context, ref);

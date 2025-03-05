@@ -1,7 +1,6 @@
-import 'package:acter/common/widgets/time_ago_widget.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/activities/widgets/space_activities/activity_item_widget.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,11 +29,7 @@ Widget? buildSpaceActivitiesWidget(
           final activityId = activities[index];
           final activity = ref.watch(activityProvider(activityId)).valueOrNull;
           if (activity == null) return const SizedBox.shrink();
-          return ListTile(
-            leading: Icon(Atlas.bell),
-            title: Text(activity.typeStr()),
-            subtitle: TimeAgoWidget(originServerTs: activity.originServerTs()),
-          );
+          return ActivityItemWidget(activity: activity);
         },
       ),
     ],
