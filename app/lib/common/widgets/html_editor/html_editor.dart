@@ -181,7 +181,6 @@ class HtmlEditor extends StatefulWidget {
   final String? hintText;
   final Widget? header;
   final Widget? footer;
-  final bool autoFocus;
   final bool editable;
   final bool shrinkWrap;
   final EditorState? editorState;
@@ -201,7 +200,6 @@ class HtmlEditor extends StatefulWidget {
     this.onChanged,
     this.onCancel,
     this.textStyleConfiguration,
-    this.autoFocus = true,
     this.editable = false,
     this.shrinkWrap = false,
     this.editorPadding = const EdgeInsets.all(10),
@@ -230,16 +228,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   void updateEditorState(EditorState newEditorState) {
     setState(() {
       editorState = newEditorState;
-
-      if (widget.editable && widget.autoFocus) {
-        editorState.updateSelectionWithReason(
-          Selection.single(
-            path: [0],
-            startOffset: 0,
-          ),
-          reason: SelectionUpdateReason.uiEvent,
-        );
-      }
 
       editorScrollController = EditorScrollController(
         editorState: editorState,
@@ -442,7 +430,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                 // widget pass through
                 editable: widget.editable,
                 shrinkWrap: widget.shrinkWrap,
-                autoFocus: widget.autoFocus,
+                autoFocus: false,
                 header: widget.header,
                 // local states
                 editorState: editorState,
