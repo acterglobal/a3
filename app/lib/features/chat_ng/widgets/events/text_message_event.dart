@@ -1,10 +1,9 @@
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 
 enum TextMessageType {
   regular,
@@ -109,12 +108,12 @@ class TextMessageEvent extends StatelessWidget {
       );
     }
 
-    return Html(
+    return RenderHtml(
       shrinkToFit: true,
       pillBuilder: ({
         required String identifier,
         required String url,
-        OnPillTap? onTap,
+        void Function(String)? onTap,
       }) =>
           ActerPillBuilder(
         identifier: identifier,
@@ -125,11 +124,11 @@ class TextMessageEvent extends StatelessWidget {
       maxLines: _type == TextMessageType.reply ? 2 : null,
       defaultTextStyle: textTheme.bodySmall?.copyWith(
         color: _type == TextMessageType.notice
-            ? colorScheme.onSurface.withValues(alpha:0.5)
+            ? colorScheme.onSurface.withValues(alpha: 0.5)
             : null,
         overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
       ),
-      data: body,
+      text: body,
     );
   }
 }
