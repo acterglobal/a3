@@ -12,14 +12,16 @@ class ActivityReferencesItemWidget extends StatelessWidget {
     final activityObject = activity.object();
     final objectEmoji = activityObject?.emoji();
     final objectTitle = activityObject?.title();
+    final refDetails = activity.refDetails();
+    final refTitle = refDetails?.title();
 
     return ActivityItemContainerWidget(
       actionTitle: '${PushStyles.references.emoji} Added references on',
-      objectInfo: '$objectEmoji $objectTitle}',
+      objectInfo: '$objectEmoji $objectTitle',
       userInfoWidget: ActivityUserInfoContainerWidget(
         userId: activity.senderIdStr(),
         roomId: activity.roomIdStr(),
-        subtitle: '',
+        subtitle: refTitle,
       ),
       originServerTs: activity.originServerTs(),
     );
