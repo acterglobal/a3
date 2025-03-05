@@ -58,17 +58,10 @@ class ChatEvent extends ConsumerWidget {
     required RoomEventItem item,
     required WidgetRef ref,
   }) {
-    final isNextMessageInGroup = ref
-        .watch(isNextMessageGroupProvider((roomId: roomId, uniqueId: eventId)));
-    final avatarInfo = ref.watch(
-      memberAvatarInfoProvider(
-        (
-          roomId: roomId,
-          userId: item.sender(),
-        ),
-      ),
-    );
-    final options = AvatarOptions.DM(avatarInfo, size: 14);
+    final isLastMessageBySender = ref.watch(
+        isLastMessageBySenderProvider((roomId: roomId, uniqueId: eventId)));
+    final isFirstMessageBySender = ref.watch(
+        isFirstMessageBySenderProvider((roomId: roomId, uniqueId: eventId)));
     final myId = ref.watch(myUserIdStrProvider);
     final messageId = msg.uniqueId();
     // FIXME: should check canRedact permission from the room
@@ -76,43 +69,60 @@ class ChatEvent extends ConsumerWidget {
 
     final isMe = myId == item.sender();
 
-    final bool shouldShowAvatar =
-        _shouldShowAvatar(item.eventType(), isNextMessageInGroup, isMe);
-    // TODO: render a regular timeline event
-    return Row(
-      mainAxisAlignment:
-          !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        shouldShowAvatar
-            ? Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: ActerAvatar(options: options),
-              )
-            : const SizedBox(width: 40),
-        Flexible(
-          child: ChatEventItem(
-            roomId: roomId,
-            messageId: messageId,
-            item: item,
-            isMe: isMe,
-            canRedact: canRedact,
-            isNextMessageInGroup: isNextMessageInGroup,
-          ),
-        ),
-      ],
+    final bool shouldShowAvatar = _shouldShowAvatar(
+      eventType: item.eventType(),
+      isLastMessageBySender: isLastMessageBySender,
+      isMe: isMe,
     );
+    return Padding(
+        padding: EdgeInsets.only(
+            top: isFirstMessageBySender ? 12 : 2,
+            bottom: isLastMessageBySender ? 12 : 2),
+        child: Row(
+          mainAxisAlignment:
+              !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            shouldShowAvatar
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: ActerAvatar(
+                        options: AvatarOptions.DM(
+                            ref.watch(
+                              memberAvatarInfoProvider(
+                                (
+                                  roomId: roomId,
+                                  userId: item.sender(),
+                                ),
+                              ),
+                            ),
+                            size: 14)),
+                  )
+                : const SizedBox(width: 40),
+            Flexible(
+              child: ChatEventItem(
+                roomId: roomId,
+                messageId: messageId,
+                item: item,
+                isMe: isMe,
+                canRedact: canRedact,
+                isFirstMessageBySender: isFirstMessageBySender,
+                isLastMessageBySender: isLastMessageBySender,
+              ),
+            ),
+          ],
+        ));
   }
 
-  bool _shouldShowAvatar(
-    String eventType,
-    bool isNextMessageInGroup,
-    bool isMe,
-  ) {
+  bool _shouldShowAvatar({
+    required String eventType,
+    required bool isLastMessageBySender,
+    required bool isMe,
+  }) {
     if (isStateEvent(eventType) || isMemberEvent(eventType)) {
       return !isMe; // Show avatar only for state messages
     }
     // For regular messages, follow the grouping
-    return !isNextMessageInGroup && !isMe;
+    return isLastMessageBySender && !isMe;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
@@ -11,14 +12,16 @@ import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MessageEventItem extends StatelessWidget {
+class MessageEventItem extends ConsumerWidget {
   final String roomId;
   final String messageId;
   final RoomEventItem item;
   final bool isMe;
   final bool canRedact;
-  final bool isNextMessageInGroup;
+  final bool isFirstMessageBySender;
+  final bool isLastMessageBySender;
 
   const MessageEventItem({
     super.key,
@@ -27,17 +30,18 @@ class MessageEventItem extends StatelessWidget {
     required this.item,
     required this.isMe,
     required this.canRedact,
-    required this.isNextMessageInGroup,
+    required this.isFirstMessageBySender,
+    required this.isLastMessageBySender,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment:
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildMessageUI(context, roomId, messageId, item, isMe),
+        _buildMessageUI(context, ref, roomId, messageId, item, isMe),
         _buildReactionsList(roomId, messageId, item, isMe),
       ],
     );
@@ -45,6 +49,7 @@ class MessageEventItem extends StatelessWidget {
 
   Widget _buildMessageUI(
     BuildContext context,
+    WidgetRef ref,
     String roomId,
     String messageId,
     RoomEventItem item,
@@ -52,6 +57,7 @@ class MessageEventItem extends StatelessWidget {
   ) {
     final messageWidget = buildMsgEventItem(
       context,
+      ref,
       roomId,
       messageId,
       item,
@@ -98,6 +104,7 @@ class MessageEventItem extends StatelessWidget {
 
   Widget buildMsgEventItem(
     BuildContext context,
+    WidgetRef ref,
     String roomId,
     String messageId,
     RoomEventItem item,
@@ -112,7 +119,7 @@ class MessageEventItem extends StatelessWidget {
       'm.notice' ||
       'm.server_notice' ||
       'm.text' =>
-        buildTextMsgEvent(context, item),
+        buildTextMsgEvent(context, ref, item),
       'm.image' => ImageMessageEvent(
           messageId: messageId,
           roomId: roomId,
@@ -132,12 +139,30 @@ class MessageEventItem extends StatelessWidget {
     };
   }
 
-  Widget buildTextMsgEvent(BuildContext context, RoomEventItem item) {
+  Widget buildTextMsgEvent(
+    BuildContext context,
+    WidgetRef ref,
+    RoomEventItem item,
+  ) {
     final msgType = item.msgType();
     final repliedTo = item.inReplyTo();
     final wasEdited = item.wasEdited();
     final content = item.msgContent().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
+    String? displayName;
+
+    if (isFirstMessageBySender && !isMe) {
+      // FIXME: also ignore in 1-on-1 dm rooms
+      final senderId = item.sender();
+      final letRoomId = roomId;
+      displayName = ref
+              .watch(
+                memberDisplayNameProvider(
+                    (userId: senderId, roomId: letRoomId)),
+              )
+              .valueOrNull ??
+          senderId;
+    }
     Widget? repliedToBuilder;
 
     // whether it contains `replied to` event.
@@ -157,22 +182,30 @@ class MessageEventItem extends StatelessWidget {
 
     late Widget child;
     isNotice
-        ? child = TextMessageEvent.notice(content: content, roomId: roomId)
-        : child = TextMessageEvent(content: content, roomId: roomId);
+        ? child = TextMessageEvent.notice(
+            content: content,
+            roomId: roomId,
+            displayName: displayName,
+            repliedTo: repliedToBuilder,
+          )
+        : child = TextMessageEvent(
+            content: content,
+            roomId: roomId,
+            displayName: displayName,
+            repliedTo: repliedToBuilder,
+          );
 
     if (isMe) {
       return ChatBubble.me(
         context: context,
-        repliedToBuilder: repliedToBuilder,
-        isNextMessageInGroup: isNextMessageInGroup,
+        isLastMessageBySender: isLastMessageBySender,
         isEdited: wasEdited,
         child: child,
       );
     }
     return ChatBubble(
       context: context,
-      repliedToBuilder: repliedToBuilder,
-      isNextMessageInGroup: isNextMessageInGroup,
+      isLastMessageBySender: isLastMessageBySender,
       isEdited: wasEdited,
       child: child,
     );

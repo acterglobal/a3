@@ -15,7 +15,8 @@ class ChatEventItem extends StatelessWidget {
   final RoomEventItem item;
   final bool isMe;
   final bool canRedact;
-  final bool isNextMessageInGroup;
+  final bool isFirstMessageBySender;
+  final bool isLastMessageBySender;
   const ChatEventItem({
     super.key,
     required this.roomId,
@@ -23,7 +24,8 @@ class ChatEventItem extends StatelessWidget {
     required this.item,
     required this.isMe,
     required this.canRedact,
-    required this.isNextMessageInGroup,
+    required this.isFirstMessageBySender,
+    required this.isLastMessageBySender,
   });
 
   @override
@@ -38,28 +40,29 @@ class ChatEventItem extends StatelessWidget {
           item: item,
           isMe: isMe,
           canRedact: canRedact,
-          isNextMessageInGroup: isNextMessageInGroup,
+          isFirstMessageBySender: isFirstMessageBySender,
+          isLastMessageBySender: isLastMessageBySender,
         ),
       'm.room.redaction' => isMe
           ? ChatBubble.me(
               context: context,
-              isNextMessageInGroup: isNextMessageInGroup,
+              isLastMessageBySender: isLastMessageBySender,
               child: RedactedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              isNextMessageInGroup: isNextMessageInGroup,
+              isLastMessageBySender: isLastMessageBySender,
               child: RedactedMessageWidget(),
             ),
       'm.room.encrypted' => isMe
           ? ChatBubble.me(
               context: context,
-              isNextMessageInGroup: isNextMessageInGroup,
+              isLastMessageBySender: isLastMessageBySender,
               child: EncryptedMessageWidget(),
             )
           : ChatBubble(
               context: context,
-              isNextMessageInGroup: isNextMessageInGroup,
+              isLastMessageBySender: isLastMessageBySender,
               child: EncryptedMessageWidget(),
             ),
       'm.room.member' || 'ProfileChange' => MemberUpdateEvent(
