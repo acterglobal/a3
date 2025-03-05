@@ -14,21 +14,6 @@ class ActivityItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activityType = activity.typeStr();
-    final pushStyle = PushStyles.values.asNameMap()[activityType];
-
-    switch (pushStyle) {
-      case PushStyles.comment:
-      case PushStyles.reaction:
-      case PushStyles.attachment:
-      case PushStyles.references:
-        return buildActivityItemWidget(context, ref);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget buildActivityItemWidget(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Padding(

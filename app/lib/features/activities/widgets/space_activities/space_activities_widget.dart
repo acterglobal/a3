@@ -3,14 +3,12 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities/activity_item_widget.dart';
-import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 Widget? buildSpaceActivitiesWidget(
   BuildContext context,

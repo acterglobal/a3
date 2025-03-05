@@ -21,7 +21,7 @@ class AsyncSpaceActivitiesNotifier
 
     // Get new activities for the space
     _activities = client.activitiesForRoom(arg);
-    final activitiesIds = await _activities?.getIds(0, 1000);
+    final activitiesIds = await _activities?.getIds(0, 100);
     if (activitiesIds == null) return [];
     return asDartStringList(activitiesIds);
   }

@@ -8,6 +8,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:riverpod/riverpod.dart';
 
+final supportedActivityTypes = [
+  PushStyles.comment,
+  PushStyles.reaction,
+  PushStyles.attachment,
+  PushStyles.references,
+];
+
 final hasActivitiesProvider = StateProvider((ref) {
   final invitations = ref.watch(invitationListProvider);
   if (invitations.isNotEmpty) {
@@ -52,14 +59,10 @@ final spaceActivitiesProvider = FutureProvider.family<List<Activity>, String>(
     //Remove null activities
     final acitivitiesList = activities.whereType<Activity>().toList();
 
-    //FIXME : Remove this once we have support for all activity types
-    //Filter by activity types
+    // Filter by supported activity types
     acitivitiesList.removeWhere((activity) {
       final activityType = PushStyles.values.asNameMap()[activity.typeStr()];
-      return activityType != PushStyles.comment &&
-          activityType != PushStyles.reaction &&
-          activityType != PushStyles.attachment &&
-          activityType != PushStyles.references;
+      return !supportedActivityTypes.contains(activityType);
     });
 
     //Sort by originServerTs
