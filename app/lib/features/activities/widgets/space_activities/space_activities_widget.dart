@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities/activity_item_widget.dart';
@@ -50,8 +51,13 @@ Widget buildActivitiesTimeLineItem(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+      Container(
+        margin: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+        decoration: BoxDecoration(
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.3)),
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Text(
           jiffyDateForActvity(context, date.timestamp),
           style: Theme.of(context).textTheme.labelMedium,
