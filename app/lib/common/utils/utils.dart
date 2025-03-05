@@ -48,6 +48,21 @@ String jiffyTime(BuildContext context, int timeInterval) {
   }
 }
 
+String jiffyDateForActvity(BuildContext context, int timeInterval) {
+  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final now = Jiffy.now().startOf(Unit.day);
+  if (now.isSame(jiffyTime, unit: Unit.day)) {
+    return 'Today';
+  } else {
+    final yesterday = now.subtract(days: 1);
+    if (jiffyTime.isBetween(yesterday, now)) {
+      return 'Yesterday';
+    } else {
+      return jiffyTime.yMd;
+    }
+  }
+}
+
 extension TimeOfDayExtension on TimeOfDay {
   /// note: 'hour' is in 24-hour format
   double toDouble() => hour + (minute / 60.0);
