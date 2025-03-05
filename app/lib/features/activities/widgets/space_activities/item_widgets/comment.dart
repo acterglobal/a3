@@ -17,7 +17,8 @@ class ActivityCommentItemWidget extends StatelessWidget {
       actionTitle: '${PushStyles.comment.emoji} Commented on',
       objectInfo: '$objectEmoji $objectTitle}',
       userInfoWidget: ActivityUserInfoContainerWidget(
-        activity: activity,
+        userId: activity.senderIdStr(),
+        roomId: activity.roomIdStr(),
         subtitle: activity.msgContent()?.body() ?? '',
       ),
       originServerTs: activity.originServerTs(),

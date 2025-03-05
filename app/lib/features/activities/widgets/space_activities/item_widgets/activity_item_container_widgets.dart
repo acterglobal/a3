@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/time_ago_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -55,19 +54,19 @@ class ActivityItemContainerWidget extends StatelessWidget {
 
 //Container for the user info and subtitle
 class ActivityUserInfoContainerWidget extends ConsumerWidget {
-  final Activity activity;
-  final String subtitle;
+  final String userId;
+  final String roomId;
+  final String? subtitle;
 
   const ActivityUserInfoContainerWidget({
     super.key,
-    required this.activity,
-    required this.subtitle,
+    required this.userId,
+    required this.roomId,
+    this.subtitle,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = activity.senderIdStr();
-    final roomId = activity.roomIdStr();
     final memberInfo =
         ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
     return ListTile(
@@ -75,12 +74,14 @@ class ActivityUserInfoContainerWidget extends ConsumerWidget {
       contentPadding: EdgeInsets.zero,
       leading: ActerAvatar(options: AvatarOptions.DM(memberInfo, size: 32)),
       title: Text(memberInfo.displayName ?? userId),
-      subtitle: Text(
-        subtitle,
-        style: Theme.of(context).textTheme.labelMedium,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: Theme.of(context).textTheme.labelMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

@@ -21,7 +21,8 @@ class ActivityReactionItemWidget extends StatelessWidget {
       actionTitle: '${PushStyles.reaction.emoji} Reacted on',
       objectInfo: objectInfo,
       userInfoWidget: ActivityUserInfoContainerWidget(
-        activity: activity,
+        userId: activity.senderIdStr(),
+        roomId: activity.roomIdStr(),
         subtitle: '',
       ),
       originServerTs: activity.originServerTs(),

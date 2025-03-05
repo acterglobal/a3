@@ -17,7 +17,8 @@ class ActivityReferencesItemWidget extends StatelessWidget {
       actionTitle: '${PushStyles.references.emoji} Added references on',
       objectInfo: '$objectEmoji $objectTitle}',
       userInfoWidget: ActivityUserInfoContainerWidget(
-        activity: activity,
+        userId: activity.senderIdStr(),
+        roomId: activity.roomIdStr(),
         subtitle: '',
       ),
       originServerTs: activity.originServerTs(),
