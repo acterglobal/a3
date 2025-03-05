@@ -105,6 +105,21 @@ impl Activity {
         &self.inner
     }
 
+    // attachment and other might have internal subtypes
+    pub fn sub_type_str(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::Attachment { content, .. } => Some(content.type_str()),
+            _ => None,
+        }
+    }
+
+    pub fn name(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::Attachment { content, .. } => content.name(),
+            _ => None,
+        }
+    }
+
     pub fn type_str(&self) -> String {
         match &self.inner {
             ActivityContent::MembershipChange(c) => c.as_str(),
@@ -152,6 +167,13 @@ impl Activity {
 
     pub fn event_meta(&self) -> &EventMeta {
         &self.meta
+    }
+
+    pub fn title(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::Attachment { content, .. } => content.name(),
+            _ => None,
+        }
     }
 
     pub fn object(&self) -> Option<ActivityObject> {
