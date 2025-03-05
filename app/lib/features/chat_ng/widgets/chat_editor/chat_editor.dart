@@ -317,7 +317,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         // if provided, will activate mentions
         roomId: widget.roomId,
         hintText: hintText,
-        autoFocus: false,
         editable: true,
         shrinkWrap: true,
         editorState: textEditorState,
