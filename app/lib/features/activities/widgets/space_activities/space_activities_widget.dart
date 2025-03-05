@@ -25,12 +25,8 @@ Widget? buildSpaceActivitiesWidget(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          final activityId = activities[index];
-          final activity = ref.watch(activityProvider(activityId)).valueOrNull;
-          if (activity == null) return const SizedBox.shrink();
-          return ActivityItemWidget(activity: activity);
-        },
+        itemBuilder: (context, index) =>
+            ActivityItemWidget(activity: activities[index]),
       ),
     ],
   );

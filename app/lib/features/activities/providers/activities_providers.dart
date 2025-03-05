@@ -28,12 +28,31 @@ final hasUnconfirmedEmailAddresses = StateProvider(
       true,
 );
 
-final spaceActivitiesProvider = AsyncNotifierProviderFamily<
+final _spaceActivitiesProvider = AsyncNotifierProviderFamily<
     AsyncSpaceActivitiesNotifier, List<String>, String>(
   () => AsyncSpaceActivitiesNotifier(),
 );
 
-final allActivitiesProvider = FutureProvider<List<String>>(
+final spaceActivitiesProvider = FutureProvider.family<List<Activity>, String>(
+  (ref, spaceId) async {
+    final spaceActivities =
+        await ref.watch(_spaceActivitiesProvider(spaceId).future);
+    final activities = await Future.wait(
+      spaceActivities.map(
+        (activityId) async =>
+            await ref.watch(activityProvider(activityId).future),
+      ),
+    );
+    //Remove null activities
+    final acitivitiesList = activities.whereType<Activity>().toList();
+    //Sort by originServerTs
+    acitivitiesList
+        .sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
+    return acitivitiesList;
+  },
+);
+
+final allActivitiesProvider = FutureProvider<List<Activity>>(
   (ref) async {
     final allSpacesList = ref.watch(spacesProvider);
     final activities = await Future.wait(
