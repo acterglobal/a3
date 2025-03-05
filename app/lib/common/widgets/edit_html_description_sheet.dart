@@ -84,7 +84,6 @@ class _EditHtmlDescriptionSheetState
             child: HtmlEditor(
               editorState: textEditorState,
               editable: true,
-              autoFocus: true,
             ),
           ),
           const SizedBox(height: 20),
