@@ -37,7 +37,11 @@ class TextSlide extends StatelessWidget {
         );
 
     return formattedText != null
-        ? renderHtmlText(formattedText, defaultTextStyle, linkTextStyle)
+        ? renderHtmlText(
+            formattedText,
+            defaultTextStyle,
+            linkTextStyle,
+          )
         : renderNormalText(bodyText, defaultTextStyle);
   }
 

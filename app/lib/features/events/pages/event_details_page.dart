@@ -676,6 +676,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   ? RenderHtml(
                       text: formattedText,
                       defaultTextStyle: textTheme.labelMedium,
+                      roomId: ev.roomIdStr(),
                     )
                   : Text(
                       bodyText,

@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 
 class MessageContentWidget extends StatelessWidget {
   final MsgContent msgContent;
+  final String roomId;
 
   const MessageContentWidget({
     super.key,
     required this.msgContent,
+    required this.roomId,
   });
 
   @override
@@ -16,7 +18,11 @@ class MessageContentWidget extends StatelessWidget {
     final messageTextStyle = Theme.of(context).textTheme.bodyMedium;
 
     return formatted != null
-        ? RenderHtml(text: formatted, defaultTextStyle: messageTextStyle)
+        ? RenderHtml(
+            text: formatted,
+            defaultTextStyle: messageTextStyle,
+            roomId: roomId,
+          )
         : Text(msgContent.body(), style: messageTextStyle);
   }
 }

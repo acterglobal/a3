@@ -110,6 +110,7 @@ class TextMessageEvent extends StatelessWidget {
 
     return RenderHtml(
       shrinkToFit: true,
+      roomId: roomId,
       pillBuilder: ({
         required String identifier,
         required String url,
