@@ -42,5 +42,7 @@ jobs:
         run: dart run enven
 
       - working-directory: ${{ matrix.path }}
-        run: flutter analyze 
+        run: |
+          flutter pub get
+          flutter analyze 
         name: lint ${{ matrix.path }}
