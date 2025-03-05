@@ -450,7 +450,6 @@ async fn fetch_details_for_event(item: Arc<TimelineItem>, timeline: Arc<Timeline
                         error!("error when fetching replied_to_info via timeline: {err}");
                         return Ok(false);
                     }
-                    info!("fetching replied_to: ended");
                 }
             }
             Ok(true)

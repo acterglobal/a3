@@ -613,15 +613,3 @@ fn insert_to_convo(
 fn latest_message_storage_key(room_id: &RoomId) -> ExecuteReference {
     ExecuteReference::RoomParam(room_id.to_owned(), RoomParam::LatestMessage)
 }
-
-async fn fetch_details_for_event(item: Arc<TimelineItem>, timeline: Arc<SdkTimeline>) {
-    if let Some(event) = item.as_event() {
-        if let Ok(info) = event.replied_to_info() {
-            let replied_to = info.event_id();
-            info!("fetching replied_to: {}", replied_to);
-            if let Err(err) = timeline.fetch_details_for_event(replied_to).await {
-                error!("error when fetching replied_to_info via timeline: {err}");
-            }
-        }
-    }
-}
