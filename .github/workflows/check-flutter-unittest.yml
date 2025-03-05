@@ -35,7 +35,9 @@ jobs:
         run: dart run enven
       - name: Run flutter unit tests
         working-directory: ${{ matrix.path }}
-        run: flutter test --coverage
+        run: |
+          flutter pub get
+          flutter test --coverage
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
