@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 void main() {
   // Helper function to create the widget under test
@@ -41,8 +41,9 @@ void main() {
     );
   }
 
-  testWidgets('ActerIconPicker displays initial color and icon correctly',
-      (WidgetTester tester) async {
+  testWidgets('ActerIconPicker displays initial color and icon correctly', (
+    WidgetTester tester,
+  ) async {
     await createWidgetUnderTest(
       tester,
       initialColor: Colors.red,
@@ -72,20 +73,23 @@ void main() {
     expect(iconWidget.color, equals(Colors.red));
   });
 
-  testWidgets('Color selection updates the preview',
-      (WidgetTester tester) async {
+  testWidgets('Color selection updates the preview', (
+    WidgetTester tester,
+  ) async {
     // Prepare initial color and icon
     final initialColor = Colors.blue;
     final initialIcon = ActerIcon.list;
     final newColor = Colors.grey;
 
     // Build the widget
-    await createWidgetUnderTest(tester,
-        initialColor: initialColor,
-        initialIcon: initialIcon,
-        onIconSelection: (color, icon) {
-          color = newColor;
-        },);
+    await createWidgetUnderTest(
+      tester,
+      initialColor: initialColor,
+      initialIcon: initialIcon,
+      onIconSelection: (color, icon) {
+        color = newColor;
+      },
+    );
 
     // Tap the button to open the picker
     await tester.tap(find.text('Open Picker'));
@@ -100,7 +104,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify if the selected color has been updated in the preview
-    final iconPreview = find.byKey(Key('icon-preview')); // Find the icon preview
+    final iconPreview = find.byKey(
+      Key('icon-preview'),
+    ); // Find the icon preview
     expect(iconPreview, findsOneWidget);
 
     // Get the actual Icon widget and verify its color
@@ -109,53 +115,13 @@ void main() {
     expect(iconWidget.color, equals(newColor));
   });
 
-  testWidgets('Icon selection updates the preview',
-          (WidgetTester tester) async {
-        // Prepare initial color and icon
-        final initialColor = Colors.blue;
-        final initialIcon = ActerIcon.list;
-        final newIcon = ActerIcon.pin;
-
-        // Build the widget
-        await createWidgetUnderTest(tester,
-          initialColor: initialColor,
-          initialIcon: initialIcon,
-          onIconSelection: (color, icon) {
-            icon = newIcon;
-          },);
-
-        // Tap the button to open the picker
-        await tester.tap(find.text('Open Picker'));
-        await tester.pumpAndSettle();
-
-        // Check if the bottom sheet is displayed
-        expect(find.byType(ActerIconPicker), findsOneWidget);
-
-        // Ensure widget tree is fully rendered
-        await tester.pumpAndSettle();
-
-        final iconPicker = find.byKey(Key('icon-picker-1'));
-        await tester.tap(iconPicker); // Select a new icon
-        await tester.pumpAndSettle();
-
-        // Verify if the selected color has been updated in the preview
-        final iconPreview = find.byKey(Key('icon-preview')); // Find the icon preview
-        expect(iconPreview, findsOneWidget);
-
-        // Get the actual Icon widget and verify its color
-        final iconWidget = tester.widget<Icon>(iconPreview);
-        expect(iconWidget.icon, equals(newIcon.data));
-      });
-
-  testWidgets(
-      'Action button triggers the onIconSelection callback with correct values',
-      (WidgetTester tester) async {
-    // Prepare initial color, icon, and the callback
+  testWidgets('Icon selection updates the preview', (
+    WidgetTester tester,
+  ) async {
+    // Prepare initial color and icon
     final initialColor = Colors.blue;
     final initialIcon = ActerIcon.list;
     final newIcon = ActerIcon.pin;
-
-    ActerIcon? callbackIcon;
 
     // Build the widget
     await createWidgetUnderTest(
@@ -163,7 +129,7 @@ void main() {
       initialColor: initialColor,
       initialIcon: initialIcon,
       onIconSelection: (color, icon) {
-        callbackIcon = icon;
+        icon = newIcon;
       },
     );
 
@@ -177,17 +143,63 @@ void main() {
     // Ensure widget tree is fully rendered
     await tester.pumpAndSettle();
 
-    // Simulate selecting an icon
-    await tester.tap(find.byKey(Key('icon-picker-1'))); // Calendar
+    final iconPicker = find.byKey(Key('icon-picker-1'));
+    await tester.tap(iconPicker); // Select a new icon
     await tester.pumpAndSettle();
 
-    // Tap the action button to confirm the selection
-    await tester.tap(find.byKey(Key('acter-primary-action-button')));
-    await tester.pumpAndSettle();
+    // Verify if the selected color has been updated in the preview
+    final iconPreview = find.byKey(
+      Key('icon-preview'),
+    ); // Find the icon preview
+    expect(iconPreview, findsOneWidget);
 
-    expect(
-      callbackIcon,
-      equals(newIcon),
-    ); // The callback should have the new icon
+    // Get the actual Icon widget and verify its color
+    final iconWidget = tester.widget<Icon>(iconPreview);
+    expect(iconWidget.icon, equals(newIcon.data));
   });
+
+  testWidgets(
+    'Action button triggers the onIconSelection callback with correct values',
+    (WidgetTester tester) async {
+      // Prepare initial color, icon, and the callback
+      final initialColor = Colors.blue;
+      final initialIcon = ActerIcon.list;
+      final newIcon = ActerIcon.pin;
+
+      ActerIcon? callbackIcon;
+
+      // Build the widget
+      await createWidgetUnderTest(
+        tester,
+        initialColor: initialColor,
+        initialIcon: initialIcon,
+        onIconSelection: (color, icon) {
+          callbackIcon = icon;
+        },
+      );
+
+      // Tap the button to open the picker
+      await tester.tap(find.text('Open Picker'));
+      await tester.pumpAndSettle();
+
+      // Check if the bottom sheet is displayed
+      expect(find.byType(ActerIconPicker), findsOneWidget);
+
+      // Ensure widget tree is fully rendered
+      await tester.pumpAndSettle();
+
+      // Simulate selecting an icon
+      await tester.tap(find.byKey(Key('icon-picker-1'))); // Calendar
+      await tester.pumpAndSettle();
+
+      // Tap the action button to confirm the selection
+      await tester.tap(find.byKey(Key('acter-primary-action-button')));
+      await tester.pumpAndSettle();
+
+      expect(
+        callbackIcon,
+        equals(newIcon),
+      ); // The callback should have the new icon
+    },
+  );
 }

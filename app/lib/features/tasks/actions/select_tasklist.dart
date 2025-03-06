@@ -5,7 +5,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Allows the user to select a tasklist. If no space is
@@ -33,8 +33,10 @@ Future<TaskList?> selectTaskList({
     return null;
   }
 
-  final taskListId =
-      await selectTaskListDrawer(context: context, spaceId: spaceId);
+  final taskListId = await selectTaskListDrawer(
+    context: context,
+    spaceId: spaceId,
+  );
   if (!context.mounted) return null;
   if (taskListId == null) {
     return null;

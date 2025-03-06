@@ -16,7 +16,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -66,22 +66,17 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             SettingsSection(
               title: Text(
                 lang.appDefaults,
-                style:
-                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.primary,
+                ),
               ),
               tiles: <SettingsTile>[
                 SettingsTile(
-                  title: Text(
-                    lang.homeServerName,
-                    style: textTheme.bodyMedium,
-                  ),
+                  title: Text(lang.homeServerName, style: textTheme.bodyMedium),
                   value: const Text(Env.defaultHomeserverName),
                 ),
                 SettingsTile(
-                  title: Text(
-                    lang.homeServerURL,
-                    style: textTheme.bodyMedium,
-                  ),
+                  title: Text(lang.homeServerURL, style: textTheme.bodyMedium),
                   value: const Text(Env.defaultHomeserverUrl),
                 ),
                 SettingsTile(
@@ -96,8 +91,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             SettingsSection(
               title: Text(
                 lang.debugInfo,
-                style:
-                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.primary,
+                ),
               ),
               tiles: <SettingsTile>[
                 SettingsTile.switchTile(
@@ -110,70 +106,58 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                   description: Text(lang.sendCrashReportsInfo),
                 ),
                 SettingsTile(
-                  title: Text(
-                    lang.version,
-                    style: textTheme.bodyMedium,
-                  ),
+                  title: Text(lang.version, style: textTheme.bodyMedium),
                   value: const Text(Env.rageshakeAppVersion),
                 ),
                 isDevBuild
                     ? SettingsTile(
-                        title: Text(
-                          lang.rageShakeAppName,
-                          style: textTheme.bodyMedium,
-                        ),
-                        value: const Text(Env.rageshakeAppName),
-                      )
-                    : SettingsTile(
-                        title: Text(
-                          lang.rageShakeAppNameDigest,
-                          style: textTheme.bodyMedium,
-                        ),
-                        value: Text(appNameDigest.toString()),
+                      title: Text(
+                        lang.rageShakeAppName,
+                        style: textTheme.bodyMedium,
                       ),
+                      value: const Text(Env.rageshakeAppName),
+                    )
+                    : SettingsTile(
+                      title: Text(
+                        lang.rageShakeAppNameDigest,
+                        style: textTheme.bodyMedium,
+                      ),
+                      value: Text(appNameDigest.toString()),
+                    ),
                 isDevBuild
                     ? SettingsTile(
-                        title: Text(
-                          lang.rageShakeTargetUrl,
-                          style: textTheme.bodyMedium,
-                        ),
-                        value: const Text(Env.rageshakeUrl),
-                      )
-                    : SettingsTile(
-                        title: Text(
-                          lang.rageShakeTargetUrlDigest,
-                          style: textTheme.bodyMedium,
-                        ),
-                        value: Text(urlDigest.toString()),
+                      title: Text(
+                        lang.rageShakeTargetUrl,
+                        style: textTheme.bodyMedium,
                       ),
+                      value: const Text(Env.rageshakeUrl),
+                    )
+                    : SettingsTile(
+                      title: Text(
+                        lang.rageShakeTargetUrlDigest,
+                        style: textTheme.bodyMedium,
+                      ),
+                      value: Text(urlDigest.toString()),
+                    ),
                 isDevBuild
                     ? SettingsTile(
-                        title: Text(
-                          lang.deviceId,
-                          style: textTheme.bodyMedium,
-                        ),
-                        value: Text(deviceId ?? 'none'),
-                      )
+                      title: Text(lang.deviceId, style: textTheme.bodyMedium),
+                      value: Text(deviceId ?? 'none'),
+                    )
                     : SettingsTile(
-                        title: Text(
-                          lang.deviceIdDigest,
-                          style: textTheme.bodyMedium,
-                        ),
-                        value: Text(devIdDigest.toString()),
+                      title: Text(
+                        lang.deviceIdDigest,
+                        style: textTheme.bodyMedium,
                       ),
+                      value: Text(devIdDigest.toString()),
+                    ),
                 SettingsTile(
-                  title: Text(
-                    lang.httpProxy,
-                    style: textTheme.bodyMedium,
-                  ),
+                  title: Text(lang.httpProxy, style: textTheme.bodyMedium),
                   onPressed: _displayHttpProxyEditor,
                   value: Text(httpProxySetting),
                 ),
                 SettingsTile(
-                  title: Text(
-                    lang.logSettings,
-                    style: textTheme.bodyMedium,
-                  ),
+                  title: Text(lang.logSettings, style: textTheme.bodyMedium),
                   onPressed: _displayDebugLevelEditor,
                   value: Text(rustLogSetting),
                 ),
@@ -182,8 +166,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
             SettingsSection(
               title: Text(
                 lang.thirdParty,
-                style:
-                    textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
+                style: textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.primary,
+                ),
               ),
               tiles: [
                 SettingsTile.navigation(
@@ -253,8 +238,9 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     String title,
     String fieldName,
   ) async {
-    TextEditingController textFieldController =
-        TextEditingController(text: currentValue);
+    TextEditingController textFieldController = TextEditingController(
+      text: currentValue,
+    );
     return showDialog(
       context: context,
       builder: (context) {

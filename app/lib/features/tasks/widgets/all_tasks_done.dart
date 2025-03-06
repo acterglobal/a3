@@ -1,7 +1,7 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class AllTasksDone extends StatelessWidget {
   const AllTasksDone({super.key});
@@ -16,10 +16,7 @@ class AllTasksDone extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            Text(
-              lang.congrats,
-              style: textTheme.titleMedium,
-            ),
+            Text(lang.congrats, style: textTheme.titleMedium),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Icon(
@@ -28,16 +25,10 @@ class AllTasksDone extends StatelessWidget {
                 color: colorScheme.success,
               ),
             ),
-            Text(
-              lang.youAreDoneWithAllYourTasks,
-              style: textTheme.bodyMedium,
-            ),
+            Text(lang.youAreDoneWithAllYourTasks, style: textTheme.bodyMedium),
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Text(
-                lang.seeOpenTasks,
-                style: textTheme.bodySmall,
-              ),
+              child: Text(lang.seeOpenTasks, style: textTheme.bodySmall),
             ),
           ],
         ),

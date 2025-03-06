@@ -3,7 +3,7 @@ import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SpaceListWidget extends ConsumerWidget {
@@ -40,18 +40,18 @@ class SpaceListWidget extends ConsumerWidget {
     final count = (limit ?? spaceList.length).clamp(0, spaceList.length);
     return showSectionHeader
         ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SectionHeader(
-                showSectionBg: showSectionBg,
-                title: sectionHeaderTitle ?? L10n.of(context).spaces,
-                isShowSeeAllButton:
-                    isShowSeeAllButton ?? count < spaceList.length,
-                onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
-              ),
-              spaceListUI(spaceList, count),
-            ],
-          )
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SectionHeader(
+              showSectionBg: showSectionBg,
+              title: sectionHeaderTitle ?? L10n.of(context).spaces,
+              isShowSeeAllButton:
+                  isShowSeeAllButton ?? count < spaceList.length,
+              onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
+            ),
+            spaceListUI(spaceList, count),
+          ],
+        )
         : spaceListUI(spaceList, count);
   }
 

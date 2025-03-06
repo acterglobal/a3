@@ -1,6 +1,6 @@
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class TaskItemDetailPageSkeleton extends StatelessWidget {
@@ -13,10 +13,7 @@ class TaskItemDetailPageSkeleton extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 5,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: Text(lang.thisIsAMultilineDescription),
           ),
           ListTile(

@@ -14,8 +14,9 @@ use matrix_sdk_base::{
         events::room::{
             message::{
                 AudioInfo, AudioMessageEventContent, EmoteMessageEventContent, FileInfo,
-                FileMessageEventContent, ImageMessageEventContent, LocationInfo,
-                LocationMessageEventContent, TextMessageEventContent,
+                FileMessageEventContent, ImageMessageEventContent, LimitType, LocationInfo,
+                LocationMessageEventContent, NoticeMessageEventContent,
+                ServerNoticeMessageEventContent, ServerNoticeType, TextMessageEventContent,
                 UnstableAudioDetailsContentBlock, UrlPreview as RumaUrlPreview, VideoInfo,
                 VideoMessageEventContent,
             },
@@ -171,6 +172,16 @@ pub enum MsgContent {
         name: Option<String>,
         link: String,
     },
+    Notice {
+        body: String,
+        formatted_body: Option<String>,
+    },
+    ServerNotice {
+        body: String,
+        server_notice_type: ServerNoticeType,
+        admin_contact: Option<String>,
+        limit_type: Option<LimitType>,
+    },
 }
 
 impl TryFrom<&NewsContent> for MsgContent {
@@ -189,6 +200,7 @@ impl TryFrom<&NewsContent> for MsgContent {
             | NewsContent::File(msg_content) => Ok(MsgContent::from(msg_content)),
             NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
             | NewsContent::Location(msg_content) => Ok(MsgContent::from(msg_content)),
+
             _ => Err(()),
         }
     }
@@ -272,6 +284,26 @@ impl From<&EmoteMessageEventContent> for MsgContent {
             body: value.body.clone(),
             formatted_body: value.formatted.clone().map(|x| x.body),
             url_previews: Default::default(),
+        }
+    }
+}
+
+impl From<&NoticeMessageEventContent> for MsgContent {
+    fn from(value: &NoticeMessageEventContent) -> Self {
+        MsgContent::Notice {
+            body: value.body.clone(),
+            formatted_body: value.formatted.clone().map(|x| x.body),
+        }
+    }
+}
+
+impl From<&ServerNoticeMessageEventContent> for MsgContent {
+    fn from(value: &ServerNoticeMessageEventContent) -> Self {
+        MsgContent::ServerNotice {
+            body: value.body.clone(),
+            server_notice_type: value.server_notice_type.clone(),
+            admin_contact: value.admin_contact.clone(),
+            limit_type: value.limit_type.clone(),
         }
     }
 }
@@ -391,6 +423,8 @@ impl MsgContent {
             MsgContent::File { body, .. } => body.clone(),
             MsgContent::Location { body, .. } => body.clone(),
             MsgContent::Link { link, .. } => link.clone(),
+            MsgContent::Notice { body, .. } => body.clone(),
+            MsgContent::ServerNotice { body, .. } => body.clone(),
         }
     }
 

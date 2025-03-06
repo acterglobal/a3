@@ -3,7 +3,7 @@ import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/member_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
-import 'package:acter/features/chat_ng/widgets/events/state_update_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
@@ -31,7 +31,6 @@ class ChatEventItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final eventType = item.eventType();
-
     return switch (eventType) {
       // handle message inner types separately
       'm.room.message' => MessageEventItem(
@@ -73,10 +72,11 @@ class ChatEventItem extends StatelessWidget {
       'm.policy.rule.room' ||
       'm.policy.rule.server' ||
       'm.policy.rule.user' ||
+      'm.poll.start' ||
+      'm.room.create' ||
       'm.room.aliases' ||
       'm.room.avatar' ||
       'm.room.canonical_alias' ||
-      'm.room.create' ||
       'm.room.encryption' ||
       'm.room.guest_access' ||
       'm.room.history_visibility' ||
@@ -90,7 +90,7 @@ class ChatEventItem extends StatelessWidget {
       'm.room.topic' ||
       'm.space.child' ||
       'm.space.parent' =>
-        StateUpdateEvent(item: item),
+        RoomUpdateEvent(isMe: isMe, item: item, roomId: roomId),
       _ => _buildUnsupportedMessage(eventType),
     };
   }

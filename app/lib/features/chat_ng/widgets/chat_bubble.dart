@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class ChatBubble extends StatelessWidget {
   final Widget child;
@@ -72,8 +72,9 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
       child: DefaultTextStyle.merge(
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: theme.colorScheme.onPrimary),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onPrimary,
+        ),
         child: child,
       ),
     );
@@ -95,16 +96,11 @@ class ChatBubble extends StatelessWidget {
         children: [
           const SizedBox(width: 5),
           Container(
-            constraints: BoxConstraints(
-              maxWidth: msgWidth ?? defaultWidth,
-            ),
+            constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
             width: msgWidth,
             decoration: decoration,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -115,8 +111,9 @@ class ChatBubble extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       child: Text(
                         L10n.of(context).edited,
-                        style: chatTheme.emptyChatPlaceholderTextStyle
-                            .copyWith(fontSize: 12),
+                        style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],

@@ -3,7 +3,7 @@ import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/features/link_room/providers/link_room_providers.dart';
 import 'package:acter/features/link_room/widgets/link_room_trailing.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LinkRoomListItem extends ConsumerWidget {
@@ -30,7 +30,8 @@ class LinkRoomListItem extends ConsumerWidget {
       );
     }
 
-    final canUpgradeChild = ref
+    final canUpgradeChild =
+        ref
             .watch(roomMembershipProvider(roomId))
             .valueOrNull
             ?.canString('CanLinkSpaces') ==
@@ -39,9 +40,7 @@ class LinkRoomListItem extends ConsumerWidget {
     if (canUpgradeChild) {
       return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(L10n.of(context).canLink),
-        ],
+        children: [Text(L10n.of(context).canLink)],
       );
     }
     return Wrap(
@@ -67,10 +66,7 @@ class LinkRoomListItem extends ConsumerWidget {
 
     return ListTile(
       key: Key('space-list-link-$roomId'),
-      leading: RoomAvatarBuilder(
-        roomId: roomId,
-        avatarSize: 24,
-      ),
+      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
       title: Text(roomName),
       subtitle: renderSubtitle(context, ref, isLinked),
       trailing: LinkRoomTrailing(

@@ -22,7 +22,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -32,10 +32,7 @@ final _log = Logger('a3::news::sidebar');
 class NewsSideBar extends ConsumerWidget {
   final UpdateEntry updateEntry;
 
-  const NewsSideBar({
-    super.key,
-    required this.updateEntry,
-  });
+  const NewsSideBar({super.key, required this.updateEntry});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,7 +43,8 @@ class NewsSideBar extends ConsumerWidget {
     final likesCount = ref.watch(totalLikesForNewsProvider(updateEntry));
     final space = ref.watch(briefSpaceItemProvider(roomId));
     final style = Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 13);
-    final commentCount = ref
+    final commentCount =
+        ref
             .watch(
               updateCommentsCountProvider(
                 updateEntry.asCommentsManagerProvider(),
@@ -75,8 +73,9 @@ class NewsSideBar extends ConsumerWidget {
               style: bodyLarge?.copyWith(fontSize: 13),
               color: Theme.of(context).colorScheme.textColor,
               onTap: () async {
-                final manager =
-                    await ref.read(updateReactionsProvider(updateEntry).future);
+                final manager = await ref.read(
+                  updateReactionsProvider(updateEntry).future,
+                );
                 final status = manager.likedByMe();
                 _log.info('my like status: $status');
                 if (!status) {
@@ -93,27 +92,28 @@ class NewsSideBar extends ConsumerWidget {
                   context: context,
                   showDragHandle: true,
                   useSafeArea: true,
-                  builder: (context) => CommentsSectionWidget(
-                    managerProvider: updateEntry.asCommentsManagerProvider(),
-                    shrinkWrap: false,
-                    centerTitle: true,
-                    useCompactEmptyState: false,
-                    autoSubscribeSection: SubscriptionSubType
-                        .comments, // we want to be using the comments only on boosts
-                    actions: [
-                      ObjectNotificationStatus(
-                        objectId: objectId,
-                        subType: SubscriptionSubType.comments,
+                  builder:
+                      (context) => CommentsSectionWidget(
+                        managerProvider:
+                            updateEntry.asCommentsManagerProvider(),
+                        shrinkWrap: false,
+                        centerTitle: true,
+                        useCompactEmptyState: false,
+                        autoSubscribeSection:
+                            SubscriptionSubType
+                                .comments, // we want to be using the comments only on boosts
+                        actions: [
+                          ObjectNotificationStatus(
+                            objectId: objectId,
+                            subType: SubscriptionSubType.comments,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
                 );
               },
               icon: Column(
                 children: [
-                  ShadowEffectWidget(
-                    child: Icon(Atlas.comment_blank),
-                  ),
+                  ShadowEffectWidget(child: Icon(Atlas.comment_blank)),
                   const SizedBox(height: 4),
                   ShadowEffectWidget(
                     child: Text(commentCount.toString(), style: style),
@@ -124,22 +124,25 @@ class NewsSideBar extends ConsumerWidget {
             const SizedBox(height: 10),
             InkWell(
               key: UpdateKeys.newsSidebarActionBottomSheet,
-              onTap: () => showModalBottomSheet(
-                showDragHandle: true,
-                useSafeArea: true,
-                context: context,
-                isScrollControlled: true,
-                isDismissible: true,
-                constraints: BoxConstraints(maxHeight: 300),
-                builder: (context) => ActionBox(
-                  news: updateEntry,
-                  userId: userId,
-                  roomId: roomId,
-                ),
-              ),
+              onTap:
+                  () => showModalBottomSheet(
+                    showDragHandle: true,
+                    useSafeArea: true,
+                    context: context,
+                    isScrollControlled: true,
+                    isDismissible: true,
+                    constraints: BoxConstraints(maxHeight: 300),
+                    builder:
+                        (context) => ActionBox(
+                          news: updateEntry,
+                          userId: userId,
+                          roomId: roomId,
+                        ),
+                  ),
               child: _SideBarItem(
-                icon:
-                    ShadowEffectWidget(child: Icon(Atlas.dots_horizontal_thin)),
+                icon: ShadowEffectWidget(
+                  child: Icon(Atlas.dots_horizontal_thin),
+                ),
                 label: '',
                 style: bodyLarge?.copyWith(fontSize: 13),
               ),
@@ -148,16 +151,16 @@ class NewsSideBar extends ConsumerWidget {
             isStory(updateEntry)
                 ? buildUserAvatar(context, ref)
                 : ActerAvatar(
-                    options: AvatarOptions(
-                      AvatarInfo(
-                        uniqueId: roomId,
-                        displayName: space.avatarInfo.displayName,
-                        avatar: space.avatarInfo.avatar,
-                        onAvatarTap: () => goToSpace(context, roomId),
-                      ),
-                      size: 42,
+                  options: AvatarOptions(
+                    AvatarInfo(
+                      uniqueId: roomId,
+                      displayName: space.avatarInfo.displayName,
+                      avatar: space.avatarInfo.avatar,
+                      onAvatarTap: () => goToSpace(context, roomId),
                     ),
+                    size: 42,
                   ),
+                ),
             const SizedBox(height: 15),
           ],
         ),
@@ -168,14 +171,10 @@ class NewsSideBar extends ConsumerWidget {
   Widget buildUserAvatar(BuildContext context, WidgetRef ref) {
     final roomId = updateEntry.roomId().toString();
     final userId = updateEntry.sender().toString();
-    final memberInfo =
-        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
-    return ActerAvatar(
-      options: AvatarOptions.DM(
-        memberInfo,
-        size: 24,
-      ),
+    final memberInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
+    return ActerAvatar(options: AvatarOptions.DM(memberInfo, size: 24));
   }
 }
 
@@ -193,14 +192,7 @@ class _SideBarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
-        icon,
-        const SizedBox(height: 5),
-        Text(
-          label,
-          style: style,
-        ),
-      ],
+      children: [icon, const SizedBox(height: 5), Text(label, style: style)],
     );
   }
 }
@@ -264,61 +256,54 @@ class ActionBox extends ConsumerWidget {
               ),
               if (canRedact.valueOrNull == true)
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 8.0,
-                    horizontal: 5,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
                   child: TextButton.icon(
                     key: UpdateKeys.newsSidebarActionRemoveBtn,
-                    onPressed: () => openRedactContentDialog(
-                      context,
-                      title: lang.removeThisPost,
-                      eventId: eventId,
-                      onSuccess: () async {
-                        if (!await Navigator.maybePop(context)) {
-                          if (context.mounted) {
-                            // fallback to go to home
-                            Navigator.pushReplacementNamed(
-                              context,
-                              Routes.main.name,
-                            );
-                          }
-                        }
-                      },
-                      roomId: roomId,
-                      isSpace: true,
-                      removeBtnKey: UpdateKeys.removeButton,
-                    ),
+                    onPressed:
+                        () => openRedactContentDialog(
+                          context,
+                          title: lang.removeThisPost,
+                          eventId: eventId,
+                          onSuccess: () async {
+                            if (!await Navigator.maybePop(context)) {
+                              if (context.mounted) {
+                                // fallback to go to home
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  Routes.main.name,
+                                );
+                              }
+                            }
+                          },
+                          roomId: roomId,
+                          isSpace: true,
+                          removeBtnKey: UpdateKeys.removeButton,
+                        ),
                     icon: const Icon(Atlas.trash_thin),
                     label: Text(lang.remove),
                   ),
                 )
               else if (!isAuthor)
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 8.0,
-                    horizontal: 5,
-                  ),
+                  padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
                   child: TextButton.icon(
                     key: UpdateKeys.newsSidebarActionReportBtn,
-                    onPressed: () => openReportContentDialog(
-                      context,
-                      title: lang.reportThisPost,
-                      eventId: eventId,
-                      description: lang.reportPostContent,
-                      senderId: senderId,
-                      roomId: roomId,
-                      isSpace: true,
-                    ),
+                    onPressed:
+                        () => openReportContentDialog(
+                          context,
+                          title: lang.reportThisPost,
+                          eventId: eventId,
+                          description: lang.reportPostContent,
+                          senderId: senderId,
+                          roomId: roomId,
+                          isSpace: true,
+                        ),
                     icon: const Icon(Atlas.exclamation_chat_thin),
                     label: Text(lang.reportThis),
                   ),
                 ),
               Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 5,
-                ),
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
                 child: ObjectNotificationStatus(
                   objectId: eventId,
                   includeText: true,

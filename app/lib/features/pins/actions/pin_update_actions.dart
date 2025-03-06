@@ -8,7 +8,7 @@ import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -27,11 +27,7 @@ Future<void> updatePinTitle(
     updateBuilder.title(newTitle);
     await updateBuilder.send();
 
-    await autosubscribe(
-      ref: ref,
-      objectId: pin.eventIdStr(),
-      lang: lang,
-    );
+    await autosubscribe(ref: ref, objectId: pin.eventIdStr(), lang: lang);
     EasyLoading.dismiss();
     if (!context.mounted) return;
     Navigator.pop(context);
@@ -88,11 +84,7 @@ Future<void> updatePinDescription(
     updateBuilder.contentHtml(plainDescription, htmlBodyDescription);
     await updateBuilder.send();
 
-    await autosubscribe(
-      ref: ref,
-      objectId: pin.eventIdStr(),
-      lang: lang,
-    );
+    await autosubscribe(ref: ref, objectId: pin.eventIdStr(), lang: lang);
     EasyLoading.dismiss();
     if (!context.mounted) return;
     Navigator.pop(context);

@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class IntroPage extends StatelessWidget {
@@ -11,10 +11,7 @@ class IntroPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: _buildBody(context),
-    );
+    return Scaffold(resizeToAvoidBottomInset: true, body: _buildBody(context));
   }
 
   Widget _buildBody(BuildContext context) {
@@ -49,9 +46,7 @@ class IntroPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.textHighlight,
             ),
-            children: <TextSpan>[
-              TextSpan(text: lang.acter),
-            ],
+            children: <TextSpan>[TextSpan(text: lang.acter)],
           ),
         ),
         const SizedBox(height: 10),
@@ -99,10 +94,7 @@ class IntroPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              lang.introPageDescription2ndLine,
-              style: textTheme.bodyMedium,
-            ),
+            Text(lang.introPageDescription2ndLine, style: textTheme.bodyMedium),
           ],
         ),
       ),
@@ -116,10 +108,7 @@ class IntroPage extends StatelessWidget {
         child: ActerPrimaryActionButton.icon(
           key: Keys.exploreBtn,
           onPressed: () => context.goNamed(Routes.introProfile.name),
-          icon: const Icon(
-            Icons.arrow_forward_ios,
-            size: 18,
-          ),
+          icon: const Icon(Icons.arrow_forward_ios, size: 18),
           label: Text(
             L10n.of(context).letsGetStarted,
             style: Theme.of(context).textTheme.titleSmall,

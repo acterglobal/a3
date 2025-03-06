@@ -2,7 +2,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class RequestDoneView extends StatelessWidget {
   final bool isVerifier;
@@ -20,9 +20,7 @@ class RequestDoneView extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -42,9 +40,7 @@ class RequestDoneView extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          const Center(
-            child: Icon(Atlas.lock_keyhole),
-          ),
+          const Center(child: Icon(Atlas.lock_keyhole)),
           const Spacer(),
           Center(
             child: SizedBox(

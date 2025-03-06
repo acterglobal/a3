@@ -8,7 +8,7 @@ import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
@@ -53,22 +53,21 @@ class _TextMessageBuilderConsumerState
 
     //will return empty if link is other than mention
     return LinkPreview(
-      metadataTitleStyle: isAuthor
-          ? chatTheme.sentMessageLinkTitleTextStyle
-          : chatTheme.receivedMessageLinkTitleTextStyle,
-      metadataTextStyle: isAuthor
-          ? chatTheme.sentMessageLinkDescriptionTextStyle
-          : chatTheme.receivedMessageLinkDescriptionTextStyle,
+      metadataTitleStyle:
+          isAuthor
+              ? chatTheme.sentMessageLinkTitleTextStyle
+              : chatTheme.receivedMessageLinkTitleTextStyle,
+      metadataTextStyle:
+          isAuthor
+              ? chatTheme.sentMessageLinkDescriptionTextStyle
+              : chatTheme.receivedMessageLinkDescriptionTextStyle,
       enableAnimation: true,
       imageBuilder: (image) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: CachedNetworkImage(
-              imageUrl: image,
-              maxHeightDiskCache: 256,
-            ),
+            child: CachedNetworkImage(imageUrl: image, maxHeightDiskCache: 256),
           ),
         );
       },
@@ -85,10 +84,7 @@ class _TextMessageBuilderConsumerState
         roomId: widget.roomId,
       ),
       width: widget.messageWidth.toDouble(),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
     );
   }
 
@@ -123,53 +119,57 @@ class _TextWidget extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final chatTheme = Theme.of(context).chatTheme;
     final myId = ref.watch(myUserIdStrProvider);
-    final emojiTextStyle = myId == message.author.id
-        ? chatTheme.sentEmojiMessageTextStyle
-        : chatTheme.receivedEmojiMessageTextStyle;
+    final emojiTextStyle =
+        myId == message.author.id
+            ? chatTheme.sentEmojiMessageTextStyle
+            : chatTheme.receivedEmojiMessageTextStyle;
     return Column(
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: messageWidth.toDouble()),
-          child: enlargeEmoji
-              ? Text(
-                  message.text,
-                  style: emojiTextStyle.copyWith(
-                    overflow: isReply ? TextOverflow.ellipsis : null,
-                    fontFamily: emojiFont,
+          child:
+              enlargeEmoji
+                  ? Text(
+                    message.text,
+                    style: emojiTextStyle.copyWith(
+                      overflow: isReply ? TextOverflow.ellipsis : null,
+                      fontFamily: emojiFont,
+                    ),
+                    maxLines: isReply ? 3 : null,
+                  )
+                  : Html(
+                    onLinkTap: (url) => onMessageLinkTap(url, ref, context),
+                    backgroundColor: Colors.transparent,
+                    data: message.text,
+                    renderNewlines: true,
+                    pillBuilder:
+                        ({
+                          required String identifier,
+                          required String url,
+                          OnPillTap? onTap,
+                        }) => ActerPillBuilder(
+                          identifier: identifier,
+                          uri: url,
+                          roomId: roomId,
+                        ),
+                    shrinkToFit: true,
+                    defaultTextStyle: textTheme.bodySmall?.copyWith(
+                      overflow: isReply ? TextOverflow.ellipsis : null,
+                      color:
+                          isNotice
+                              ? colorScheme.onSurface.withValues(alpha: 0.5)
+                              : null,
+                    ),
+                    maxLines: isReply ? 3 : null,
                   ),
-                  maxLines: isReply ? 3 : null,
-                )
-              : Html(
-                  onLinkTap: (url) => onMessageLinkTap(url, ref, context),
-                  backgroundColor: Colors.transparent,
-                  data: message.text,
-                  renderNewlines: true,
-                  pillBuilder: ({
-                    required String identifier,
-                    required String url,
-                    OnPillTap? onTap,
-                  }) =>
-                      ActerPillBuilder(
-                    identifier: identifier,
-                    uri: url,
-                    roomId: roomId,
-                  ),
-                  shrinkToFit: true,
-                  defaultTextStyle: textTheme.bodySmall?.copyWith(
-                    overflow: isReply ? TextOverflow.ellipsis : null,
-                    color: isNotice
-                        ? colorScheme.onSurface.withValues(alpha:0.5)
-                        : null,
-                  ),
-                  maxLines: isReply ? 3 : null,
-                ),
         ),
         Visibility(
           visible: wasEdited,
           child: Text(
             L10n.of(context).edited,
-            style:
-                chatTheme.emptyChatPlaceholderTextStyle.copyWith(fontSize: 12),
+            style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(
+              fontSize: 12,
+            ),
           ),
         ),
       ],

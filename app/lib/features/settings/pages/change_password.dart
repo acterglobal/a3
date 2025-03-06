@@ -6,7 +6,7 @@ import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -33,10 +33,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
   Widget build(BuildContext context) {
     return WithSidebar(
       sidebar: const SettingsPage(),
-      child: Scaffold(
-        appBar: _buildAppbar(),
-        body: _buildBody(),
-      ),
+      child: Scaffold(appBar: _buildAppbar(), body: _buildBody()),
     );
   }
 
@@ -97,8 +94,9 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
             ),
           ),
           // required field, space allowed
-          validator: (val) =>
-              val == null || val.isEmpty ? lang.emptyOldPassword : null,
+          validator:
+              (val) =>
+                  val == null || val.isEmpty ? lang.emptyOldPassword : null,
         ),
       ],
     );
@@ -125,12 +123,11 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
               },
             ),
           ),
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
+          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           // required field, space allowed
-          validator: (val) =>
-              val == null || val.isEmpty ? lang.emptyNewPassword : null,
+          validator:
+              (val) =>
+                  val == null || val.isEmpty ? lang.emptyNewPassword : null,
         ),
       ],
     );
@@ -161,9 +158,7 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
               },
             ),
           ),
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
+          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           // required field, space allowed
           validator: (val) {
             if (val == null || val.isEmpty) {

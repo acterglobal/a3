@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class MockUpdateSlide extends Mock implements UpdateSlide {}
 
@@ -26,14 +26,19 @@ void main() {
 
     testWidgets('shows loading UI when data is loading', (tester) async {
       // Mock the sourceBinary method to simulate loading
-      when(() => mockSlide.sourceBinary(null)).thenAnswer(
-        (_) async => mockFfiBuffer,
-      );
+      when(
+        () => mockSlide.sourceBinary(null),
+      ).thenAnswer((_) async => mockFfiBuffer);
 
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: ImageSlide(slide: mockSlide,errorState: NewsMediaErrorState.showErrorImageOnly,)),
+          home: Scaffold(
+            body: ImageSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageOnly,
+            ),
+          ),
         ),
       );
 
@@ -41,17 +46,24 @@ void main() {
       expect(find.byIcon(PhosphorIcons.image()), findsOneWidget);
     });
 
-    testWidgets('shows error UI and retries loading on TextButton click',
-        (tester) async {
-      when(() => mockSlide.sourceBinary(null))
-          .thenAnswer((_) async => Future.error('Failed to load image'));
+    testWidgets('shows error UI and retries loading on TextButton click', (
+      tester,
+    ) async {
+      when(
+        () => mockSlide.sourceBinary(null),
+      ).thenAnswer((_) async => Future.error('Failed to load image'));
       // Mock the typeStr method to return a valid string
       when(() => mockSlide.typeStr()).thenReturn('image');
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorImageOnly,)),
+          home: Scaffold(
+            body: ImageSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageOnly,
+            ),
+          ),
         ),
       );
 
@@ -64,7 +76,12 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorImageWithText,)),
+          home: Scaffold(
+            body: ImageSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageWithText,
+            ),
+          ),
         ),
       );
 
@@ -77,7 +94,12 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: L10n.localizationsDelegates,
-          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorWithTryAgain,)),
+          home: Scaffold(
+            body: ImageSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorWithTryAgain,
+            ),
+          ),
         ),
       );
 
@@ -94,23 +116,29 @@ void main() {
       verify(() => mockSlide.sourceBinary(null)).called(4);
     });
 
-    testWidgets('shows image UI when data loading is successful',
-        (tester) async {
+    testWidgets('shows image UI when data loading is successful', (
+      tester,
+    ) async {
       const validImageBase64 =
           'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/yy7K8EAAAAASUVORK5CYII=';
 
       final validImageBytes = base64Decode(validImageBase64);
 
       // Mock the sourceBinary method to return the image data
-      when(() => mockSlide.sourceBinary(null)).thenAnswer(
-        (_) async => mockFfiBuffer,
-      );
+      when(
+        () => mockSlide.sourceBinary(null),
+      ).thenAnswer((_) async => mockFfiBuffer);
       when(() => mockFfiBuffer.asTypedList()).thenReturn(validImageBytes);
 
       // Build the widget
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(body: ImageSlide(slide: mockSlide, errorState: NewsMediaErrorState.showErrorImageOnly,)),
+          home: Scaffold(
+            body: ImageSlide(
+              slide: mockSlide,
+              errorState: NewsMediaErrorState.showErrorImageOnly,
+            ),
+          ),
         ),
       );
 

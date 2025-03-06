@@ -7,7 +7,7 @@ import 'package:acter/features/space/widgets/member_avatar.dart';
 import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -20,10 +20,7 @@ class SpaceHeaderProfile extends ConsumerWidget {
 
   final String spaceId;
 
-  const SpaceHeaderProfile(
-    this.spaceId, {
-    super.key = headerKey,
-  });
+  const SpaceHeaderProfile(this.spaceId, {super.key = headerKey});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,10 +101,11 @@ class SpaceHeaderProfile extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(left: 10),
           child: GestureDetector(
-            onTap: () => context.pushNamed(
-              Routes.spaceMembers.name,
-              pathParameters: {'spaceId': spaceId},
-            ),
+            onTap:
+                () => context.pushNamed(
+                  Routes.spaceMembers.name,
+                  pathParameters: {'spaceId': spaceId},
+                ),
             child: Wrap(
               direction: Axis.horizontal,
               spacing: -8,
@@ -138,20 +136,21 @@ class SpaceHeaderProfile extends ConsumerWidget {
         _log.severe('Failed to load members in space', e, s);
         return Text(L10n.of(context).loadingMembersFailed(e));
       },
-      loading: () => const Skeletonizer(
-        child: Wrap(
-          direction: Axis.horizontal,
-          spacing: -12,
-          children: [
-            CircleAvatar(child: Text('0')),
-            CircleAvatar(child: Text('1')),
-            CircleAvatar(child: Text('2')),
-            CircleAvatar(child: Text('3')),
-            CircleAvatar(child: Text('4')),
-            CircleAvatar(child: Text('5')),
-          ],
-        ),
-      ),
+      loading:
+          () => const Skeletonizer(
+            child: Wrap(
+              direction: Axis.horizontal,
+              spacing: -12,
+              children: [
+                CircleAvatar(child: Text('0')),
+                CircleAvatar(child: Text('1')),
+                CircleAvatar(child: Text('2')),
+                CircleAvatar(child: Text('3')),
+                CircleAvatar(child: Text('4')),
+                CircleAvatar(child: Text('5')),
+              ],
+            ),
+          ),
     );
   }
 }

@@ -3,14 +3,15 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef ReactionData = ({
-  List<String> allUsers,
-  Map<String, List<String>> userReactions,
-  Map<String, List<String>> reactionUsers,
-});
+typedef ReactionData =
+    ({
+      List<String> allUsers,
+      Map<String, List<String>> userReactions,
+      Map<String, List<String>> reactionUsers,
+    });
 
 class ReactionDetailsSheet extends ConsumerStatefulWidget {
   final String roomId;
@@ -50,7 +51,8 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
     super.didUpdateWidget(oldWidget);
 
     // Check if reactions have changed
-    final hasChanged = widget.reactions.length != oldWidget.reactions.length ||
+    final hasChanged =
+        widget.reactions.length != oldWidget.reactions.length ||
         widget.reactions.any((reaction) {
           final oldReaction = oldWidget.reactions.firstWhere(
             (old) => old.$1 == reaction.$1,
@@ -101,10 +103,7 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildTabBar(),
-        _buildTabBarView(),
-      ],
+      children: [_buildTabBar(), _buildTabBarView()],
     );
   }
 
@@ -165,11 +164,12 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
       }
     }
 
-    final allUsers = userReactions.keys.toList()
-      ..sort(
-        (a, b) => (userReactions[b]?.length ?? 0)
-            .compareTo(userReactions[a]?.length ?? 0),
-      );
+    final allUsers =
+        userReactions.keys.toList()..sort(
+          (a, b) => (userReactions[b]?.length ?? 0).compareTo(
+            userReactions[a]?.length ?? 0,
+          ),
+        );
 
     return (
       allUsers: allUsers,
@@ -225,8 +225,9 @@ class ReactionUserItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final memberInfo =
-        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+    final memberInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+    );
     return ListTile(
       leading: ActerAvatar(
         options: AvatarOptions.DM(
@@ -238,18 +239,20 @@ class ReactionUserItem extends ConsumerWidget {
         ),
       ),
       title: Text(memberInfo.displayName ?? userId),
-      subtitle: memberInfo.displayName != null
-          ? Text(userId, style: theme.textTheme.labelLarge)
-          : null,
+      subtitle:
+          memberInfo.displayName != null
+              ? Text(userId, style: theme.textTheme.labelLarge)
+              : null,
       trailing: Wrap(
-        children: emojis
-            .map(
-              (emoji) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Text(emoji, style: EmojiConfig.emojiTextStyle),
-              ),
-            )
-            .toList(),
+        children:
+            emojis
+                .map(
+                  (emoji) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Text(emoji, style: EmojiConfig.emojiTextStyle),
+                  ),
+                )
+                .toList(),
       ),
     );
   }

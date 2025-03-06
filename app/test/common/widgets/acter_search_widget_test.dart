@@ -3,7 +3,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class MockOnChanged extends Mock {
   void call(String value);
@@ -58,10 +58,12 @@ void main() {
     verify(() => mockOnChanged(inputText)).called(1);
   });
 
-  testWidgets('calls onClear and clears text when clear button is pressed',
-      (tester) async {
-    await tester
-        .pumpWidget(createWidgetUnderTest(initialText: 'text to clear'));
+  testWidgets('calls onClear and clears text when clear button is pressed', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      createWidgetUnderTest(initialText: 'text to clear'),
+    );
 
     await tester.enterText(
       find.byKey(ActerSearchWidget.searchBarKey),
@@ -70,8 +72,9 @@ void main() {
     await tester.pump();
 
     // Ensure the clear button is displayed
-    final clearButton =
-        find.byKey(ActerSearchWidget.clearSearchActionButtonKey);
+    final clearButton = find.byKey(
+      ActerSearchWidget.clearSearchActionButtonKey,
+    );
     expect(clearButton, findsOneWidget);
 
     // Tap the clear button and verify behaviors
@@ -82,8 +85,9 @@ void main() {
     expect(find.text('text to clear'), findsNothing);
   });
 
-  testWidgets('displays hint text when there is no initial text',
-      (tester) async {
+  testWidgets('displays hint text when there is no initial text', (
+    tester,
+  ) async {
     const hintText = 'Search here...';
 
     await tester.pumpWidget(createWidgetUnderTest(hintText: hintText));
@@ -91,8 +95,9 @@ void main() {
     expect(find.text(hintText), findsOneWidget);
   });
 
-  testWidgets('displays default leading icon if none is provided',
-      (tester) async {
+  testWidgets('displays default leading icon if none is provided', (
+    tester,
+  ) async {
     await tester.pumpWidget(createWidgetUnderTest());
 
     final leadingIcon = find.byIcon(Atlas.magnifying_glass);
