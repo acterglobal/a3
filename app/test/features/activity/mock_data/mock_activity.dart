@@ -3,6 +3,8 @@ import 'package:mocktail/mocktail.dart';
 
 class MockActivity extends Mock implements Activity {
   final String mockType;
+  final String? mockName;
+  final String? mockSubType;
   final String? mockSenderId;
   final String? mockRoomId;
   final ActivityObject? mockObject;
@@ -12,6 +14,8 @@ class MockActivity extends Mock implements Activity {
 
   MockActivity({
     required this.mockType,
+    this.mockName,
+    this.mockSubType,
     this.mockSenderId,
     this.mockRoomId,
     this.mockObject,
@@ -22,6 +26,12 @@ class MockActivity extends Mock implements Activity {
 
   @override
   String typeStr() => mockType;
+
+  @override
+  String? name() => mockName;
+
+  @override
+  String? subTypeStr() => mockSubType;
 
   @override
   String senderIdStr() => mockSenderId ?? 'sender-id';

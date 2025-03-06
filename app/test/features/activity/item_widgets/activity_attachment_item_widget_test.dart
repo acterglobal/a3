@@ -34,6 +34,8 @@ void main() {
   testWidgets('Add attachment on Pin Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.attachment.name,
+      mockName: 'budget.mp4',
+      mockSubType: 'video',
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.pin.name,
         mockEmoji: SpaceObjectTypes.pin.emoji,
@@ -53,10 +55,15 @@ void main() {
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
+
+    // Verify attachment content
+    expect(find.text('video : budget.mp4'), findsOneWidget);
   });
 
   testWidgets('Add attachment on Event Object', (tester) async {
     MockActivity mockActivity = MockActivity(
+      mockName: 'budget.mp4',
+      mockSubType: 'video',
       mockType: PushStyles.attachment.name,
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.event.name,
@@ -80,10 +87,15 @@ void main() {
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
+
+    // Verify attachment content
+    expect(find.text('video : budget.mp4'), findsOneWidget);
   });
 
   testWidgets('Add attachment on TaskList Object', (tester) async {
     MockActivity mockActivity = MockActivity(
+      mockName: 'budget.mp4',
+      mockSubType: 'video',
       mockType: PushStyles.attachment.name,
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.taskList.name,
@@ -107,10 +119,15 @@ void main() {
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
+
+    // Verify attachment content
+    expect(find.text('video : budget.mp4'), findsOneWidget);
   });
 
   testWidgets('Add attachment on TaskItem Object', (tester) async {
     MockActivity mockActivity = MockActivity(
+      mockName: 'budget.mp4',
+      mockSubType: 'video',
       mockType: PushStyles.attachment.name,
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.taskItem.name,
@@ -134,5 +151,8 @@ void main() {
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
+
+    // Verify attachment content
+    expect(find.text('video : budget.mp4'), findsOneWidget);
   });
 }
