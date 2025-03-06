@@ -2281,6 +2281,10 @@ object Activity {
     /// e.g. invited, invitationAccepted
     fn type_str() -> string;
 
+    /// the sub type of this activity as a string, in particular for attachments
+    /// e.g. image, video, audio, file, link, location, etc.
+    fn sub_type_str() -> Option<string>;
+
     /// the details of this membership change activity
     fn membership_change() -> Option<MembershipChange>;
 
@@ -2293,7 +2297,11 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
-    /// content of this activity, if any
+    /// The name of the object (e.g. Attachment filename) if given
+    fn name() -> Option<string>;
+
+
+    /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
 
     /// reaction specific: the reaction key used
