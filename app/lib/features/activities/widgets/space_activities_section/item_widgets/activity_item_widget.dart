@@ -16,17 +16,12 @@ class ActivityItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activityType = activity.typeStr();
     final pushStyle = PushStyles.values.asNameMap()[activityType];
-    switch (pushStyle) {
-      case PushStyles.comment:
-        return ActivityCommentItemWidget(activity: activity);
-      case PushStyles.reaction:
-        return ActivityReactionItemWidget(activity: activity);
-      case PushStyles.attachment:
-        return ActivityAttachmentItemWidget(activity: activity);
-      case PushStyles.references:
-        return ActivityReferencesItemWidget(activity: activity);
-      default:
-        return const SizedBox.shrink();
-    }
+    return switch (pushStyle) {
+      PushStyles.comment => ActivityCommentItemWidget(activity: activity),
+      PushStyles.reaction => ActivityReactionItemWidget(activity: activity),
+      PushStyles.attachment => ActivityAttachmentItemWidget(activity: activity),
+      PushStyles.references => ActivityReferencesItemWidget(activity: activity),
+      _ => const SizedBox.shrink(),
+    };
   }
 }
