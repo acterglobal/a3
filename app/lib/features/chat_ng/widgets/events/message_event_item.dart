@@ -64,19 +64,17 @@ class MessageEventItem extends ConsumerWidget {
     );
 
     return GestureDetector(
-      onLongPressStart: (_) => messageActions(
-        context: context,
-        messageWidget: messageWidget,
-        isMe: isMe,
-        canRedact: canRedact,
-        item: item,
-        messageId: messageId,
-        roomId: roomId,
-      ),
-      child: Hero(
-        tag: messageId,
-        child: messageWidget,
-      ),
+      onLongPressStart:
+          (_) => messageActions(
+            context: context,
+            messageWidget: messageWidget,
+            isMe: isMe,
+            canRedact: canRedact,
+            item: item,
+            messageId: messageId,
+            roomId: roomId,
+          ),
+      child: Hero(tag: messageId, child: messageWidget),
     );
   }
 
@@ -87,17 +85,10 @@ class MessageEventItem extends ConsumerWidget {
     bool isMe,
   ) {
     return Padding(
-      padding: EdgeInsets.only(
-        right: isMe ? 12 : 0,
-        left: isMe ? 0 : 12,
-      ),
+      padding: EdgeInsets.only(right: isMe ? 12 : 0, left: isMe ? 0 : 12),
       child: FractionalTranslation(
         translation: Offset(0, -0.1),
-        child: ReactionsList(
-          roomId: roomId,
-          messageId: messageId,
-          item: item,
-        ),
+        child: ReactionsList(roomId: roomId, messageId: messageId, item: item),
       ),
     );
   }
@@ -118,23 +109,22 @@ class MessageEventItem extends ConsumerWidget {
       'm.emote' ||
       'm.notice' ||
       'm.server_notice' ||
-      'm.text' =>
-        buildTextMsgEvent(context, ref, item),
+      'm.text' => buildTextMsgEvent(context, ref, item),
       'm.image' => ImageMessageEvent(
-          messageId: messageId,
-          roomId: roomId,
-          content: content,
-        ),
+        messageId: messageId,
+        roomId: roomId,
+        content: content,
+      ),
       'm.video' => VideoMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       'm.file' => FileMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
@@ -155,10 +145,13 @@ class MessageEventItem extends ConsumerWidget {
       // FIXME: also ignore in 1-on-1 dm rooms
       final senderId = item.sender();
       final letRoomId = roomId;
-      displayName = ref
+      displayName =
+          ref
               .watch(
-                memberDisplayNameProvider(
-                    (userId: senderId, roomId: letRoomId)),
+                memberDisplayNameProvider((
+                  userId: senderId,
+                  roomId: letRoomId,
+                )),
               )
               .valueOrNull ??
           senderId;
@@ -167,8 +160,11 @@ class MessageEventItem extends ConsumerWidget {
 
     // whether it contains `replied to` event.
     if (repliedTo != null) {
-      repliedToBuilder =
-          RepliedToPreview(roomId: roomId, originalId: repliedTo, isMe: isMe);
+      repliedToBuilder = RepliedToPreview(
+        roomId: roomId,
+        originalId: repliedTo,
+        isMe: isMe,
+      );
     }
 
     // if only consists of emojis
@@ -183,17 +179,17 @@ class MessageEventItem extends ConsumerWidget {
     late Widget child;
     isNotice
         ? child = TextMessageEvent.notice(
-            content: content,
-            roomId: roomId,
-            displayName: displayName,
-            repliedTo: repliedToBuilder,
-          )
+          content: content,
+          roomId: roomId,
+          displayName: displayName,
+          repliedTo: repliedToBuilder,
+        )
         : child = TextMessageEvent(
-            content: content,
-            roomId: roomId,
-            displayName: displayName,
-            repliedTo: repliedToBuilder,
-          );
+          content: content,
+          roomId: roomId,
+          displayName: displayName,
+          repliedTo: repliedToBuilder,
+        );
 
     if (isMe) {
       return ChatBubble.me(
@@ -212,8 +208,6 @@ class MessageEventItem extends ConsumerWidget {
   }
 
   Widget _buildUnsupportedMessage(String? msgtype) {
-    return Text(
-      'Unsupported event type: $msgtype',
-    );
+    return Text('Unsupported event type: $msgtype');
   }
 }

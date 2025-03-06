@@ -16,16 +16,13 @@ class ChatEvent extends ConsumerWidget {
   final String roomId;
   final String eventId;
 
-  const ChatEvent({
-    super.key,
-    required this.roomId,
-    required this.eventId,
-  });
+  const ChatEvent({super.key, required this.roomId, required this.eventId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final msg =
-        ref.watch(chatRoomMessageProvider((roomId: roomId, uniqueId: eventId)));
+    final msg = ref.watch(
+      chatRoomMessageProvider((roomId: roomId, uniqueId: eventId)),
+    );
 
     if (msg == null) {
       _log.severe('Msg not found $roomId $eventId');
@@ -59,9 +56,11 @@ class ChatEvent extends ConsumerWidget {
     required WidgetRef ref,
   }) {
     final isLastMessageBySender = ref.watch(
-        isLastMessageBySenderProvider((roomId: roomId, uniqueId: eventId)));
+      isLastMessageBySenderProvider((roomId: roomId, uniqueId: eventId)),
+    );
     final isFirstMessageBySender = ref.watch(
-        isFirstMessageBySenderProvider((roomId: roomId, uniqueId: eventId)));
+      isFirstMessageBySenderProvider((roomId: roomId, uniqueId: eventId)),
+    );
     final myId = ref.watch(myUserIdStrProvider);
     final messageId = msg.uniqueId();
     // FIXME: should check canRedact permission from the room
@@ -75,43 +74,45 @@ class ChatEvent extends ConsumerWidget {
       isMe: isMe,
     );
     return Padding(
-        padding: EdgeInsets.only(
-            top: isFirstMessageBySender ? 12 : 2,
-            bottom: isLastMessageBySender ? 12 : 2),
-        child: Row(
-          mainAxisAlignment:
-              !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            shouldShowAvatar
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: ActerAvatar(
-                        options: AvatarOptions.DM(
-                            ref.watch(
-                              memberAvatarInfoProvider(
-                                (
-                                  roomId: roomId,
-                                  userId: item.sender(),
-                                ),
-                              ),
-                            ),
-                            size: 14)),
-                  )
-                : const SizedBox(width: 40),
-            Flexible(
-              child: ChatEventItem(
-                roomId: roomId,
-                messageId: messageId,
-                item: item,
-                isMe: isMe,
-                canRedact: canRedact,
-                isFirstMessageBySender: isFirstMessageBySender,
-                isLastMessageBySender: isLastMessageBySender,
-              ),
+      padding: EdgeInsets.only(
+        top: isFirstMessageBySender ? 12 : 2,
+        bottom: isLastMessageBySender ? 12 : 2,
+      ),
+      child: Row(
+        mainAxisAlignment:
+            !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          shouldShowAvatar
+              ? Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: ActerAvatar(
+                  options: AvatarOptions.DM(
+                    ref.watch(
+                      memberAvatarInfoProvider((
+                        roomId: roomId,
+                        userId: item.sender(),
+                      )),
+                    ),
+                    size: 14,
+                  ),
+                ),
+              )
+              : const SizedBox(width: 40),
+          Flexible(
+            child: ChatEventItem(
+              roomId: roomId,
+              messageId: messageId,
+              item: item,
+              isMe: isMe,
+              canRedact: canRedact,
+              isFirstMessageBySender: isFirstMessageBySender,
+              isLastMessageBySender: isLastMessageBySender,
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 
   bool _shouldShowAvatar({
