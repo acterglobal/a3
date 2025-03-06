@@ -10,6 +10,8 @@ class ActivityAttachmentItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activityObject = activity.object();
+    final name = activity.name();
+    final subType = activity.subTypeStr();
     final objectEmoji = activityObject?.emoji();
     final objectTitle = activityObject?.title();
 
@@ -18,7 +20,7 @@ class ActivityAttachmentItemWidget extends StatelessWidget {
       actionObjectInfo: '$objectEmoji $objectTitle',
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
-      subtitle: '',
+      subtitle: '$subType : $name',
       originServerTs: activity.originServerTs(),
     );
   }
