@@ -8,8 +8,16 @@ class MockAvatarInfo extends Mock implements AvatarInfo {
 
   String get userId => uniqueId;
 
+  final String? mockDisplayName;
+
+  @override
+  String get displayName => mockDisplayName ?? 'Test User';
+
   @override
   TooltipStyle get tooltip => TooltipStyle.Combined;
 
-  MockAvatarInfo({required this.uniqueId});
+  MockAvatarInfo({
+    required this.uniqueId,
+    this.mockDisplayName,
+  });
 }
