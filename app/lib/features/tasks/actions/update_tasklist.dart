@@ -6,7 +6,7 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -34,11 +34,7 @@ Future<void> updateTaskListIcon(
   try {
     await updateBuilder.send();
 
-    await autosubscribe(
-      ref: ref,
-      objectId: taskList.eventIdStr(),
-      lang: lang,
-    );
+    await autosubscribe(ref: ref, objectId: taskList.eventIdStr(), lang: lang);
     EasyLoading.dismiss();
     ref.invalidate(taskListsProvider);
     if (!context.mounted) return;
@@ -67,11 +63,7 @@ Future<void> updateTaskListTitle(
   updater.name(newName);
   try {
     await updater.send();
-    await autosubscribe(
-      ref: ref,
-      objectId: taskList.eventIdStr(),
-      lang: lang,
-    );
+    await autosubscribe(ref: ref, objectId: taskList.eventIdStr(), lang: lang);
     EasyLoading.dismiss();
     if (!context.mounted) return;
     Navigator.pop(context);

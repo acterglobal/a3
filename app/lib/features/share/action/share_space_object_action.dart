@@ -13,12 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
-typedef FileDetails = ({
-  File file,
-  String? mimeType,
-});
+typedef FileDetails = ({File file, String? mimeType});
 
 Future<void> openShareSpaceObjectDialog({
   required BuildContext context,
@@ -34,13 +31,14 @@ Future<void> openShareSpaceObjectDialog({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => ShareSpaceObjectActionUI(
-      refDetails: refDetails,
-      showInternalActions: showInternalActions,
-      internalLink: internalLink,
-      shareContentBuilder: shareContentBuilder,
-      fileDetailContentBuilder: fileDetailContentBuilder,
-    ),
+    builder:
+        (context) => ShareSpaceObjectActionUI(
+          refDetails: refDetails,
+          showInternalActions: showInternalActions,
+          internalLink: internalLink,
+          shareContentBuilder: shareContentBuilder,
+          fileDetailContentBuilder: fileDetailContentBuilder,
+        ),
   );
 }
 
@@ -146,10 +144,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(L10n.of(context).share),
-        ReferenceDetailsItem(
-          refDetails: refDetails!,
-          margin: EdgeInsets.zero,
-        ),
+        ReferenceDetailsItem(refDetails: refDetails!, margin: EdgeInsets.zero),
       ],
     );
   }
@@ -170,26 +165,27 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
           }
         }
       },
-      onTapSave: !Platform.isAndroid
-          ? () async {
-              final fileDetails = await fileDetailContentBuilder();
-              File file = fileDetails.file;
-              if (!context.mounted) return;
-              if (await downloadFile(context, file)) {
-                // done, close this dialog
-                if (context.mounted) {
-                  Navigator.pop(context);
+      onTapSave:
+          !Platform.isAndroid
+              ? () async {
+                final fileDetails = await fileDetailContentBuilder();
+                File file = fileDetails.file;
+                if (!context.mounted) return;
+                if (await downloadFile(context, file)) {
+                  // done, close this dialog
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
                 }
               }
-            }
-          : null,
+              : null,
       onTapShare: () async {
         final fileDetails = await fileDetailContentBuilder();
         File file = fileDetails.file;
         String? mimeType = fileDetails.mimeType;
-        final result = await Share.shareXFiles(
-          [XFile(file.path, mimeType: mimeType)],
-        );
+        final result = await Share.shareXFiles([
+          XFile(file.path, mimeType: mimeType),
+        ]);
         if (result.status == ShareResultStatus.success) {
           // done, close this dialog
           if (context.mounted) {

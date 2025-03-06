@@ -3,16 +3,13 @@ import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class PickedDue {
   final DateTime due;
   final bool includeTime;
 
-  const PickedDue(
-    this.due,
-    this.includeTime,
-  );
+  const PickedDue(this.due, this.includeTime);
 }
 
 const quickSelectToday = Key('due-action-today');
@@ -21,10 +18,7 @@ const quickSelectTomorrow = Key('due-action-tomorrow');
 class _DueQuickPickerDrawer extends StatelessWidget {
   final DateTime? currentDue;
 
-  const _DueQuickPickerDrawer({
-    super.key,
-    this.currentDue,
-  });
+  const _DueQuickPickerDrawer({super.key, this.currentDue});
 
   @override
   Widget build(BuildContext context) {
@@ -141,9 +135,7 @@ Future<PickedDue?> showDuePicker({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => _DueQuickPickerDrawer(
-      key: key,
-      currentDue: initialDate,
-    ),
+    builder:
+        (context) => _DueQuickPickerDrawer(key: key, currentDue: initialDate),
   );
 }

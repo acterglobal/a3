@@ -2,13 +2,11 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-typedef UserItemBuilder = Widget Function({
-  required UserProfile profile,
-  required bool isSuggestion,
-});
+typedef UserItemBuilder =
+    Widget Function({required UserProfile profile, required bool isSuggestion});
 
 class UserSearchResults extends ConsumerWidget {
   final UserItemBuilder userItemBuilder;
@@ -62,10 +60,7 @@ class UserSearchResults extends ConsumerWidget {
                   horizontal: 10,
                   vertical: 5,
                 ),
-                child: Text(
-                  lang.suggestedUsers,
-                  style: textTheme.titleSmall,
-                ),
+                child: Text(lang.suggestedUsers, style: textTheme.titleSmall),
               ),
               userWidget,
             ],

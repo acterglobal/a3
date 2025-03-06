@@ -5,9 +5,9 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/categories/model/CategoryModelLocal.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -26,9 +26,10 @@ Future<void> saveCategories(
   try {
     //Get category manager
     final categoriesManager = await ref.read(
-      categoryManagerProvider(
-        (spaceId: spaceId, categoriesFor: categoriesFor),
-      ).future,
+      categoryManagerProvider((
+        spaceId: spaceId,
+        categoriesFor: categoriesFor,
+      ),).future,
     );
     final sdk = await ref.watch(sdkProvider.future);
     final displayBuilder = sdk.api.newDisplayBuilder();

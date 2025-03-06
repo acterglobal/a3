@@ -10,7 +10,7 @@ import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -24,10 +24,7 @@ class ChatRoomNgPage extends ConsumerWidget {
 
   final String roomId;
 
-  const ChatRoomNgPage({
-    super.key = roomPageKey,
-    required this.roomId,
-  });
+  const ChatRoomNgPage({super.key = roomPageKey, required this.roomId});
 
   Widget appBar(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
@@ -40,14 +37,13 @@ class ChatRoomNgPage extends ConsumerWidget {
       automaticallyImplyLeading: !context.isLargeScreen,
       centerTitle: true,
       toolbarHeight: 70,
-      flexibleSpace: FrostEffect(
-        child: Container(),
-      ),
+      flexibleSpace: FrostEffect(child: Container()),
       title: GestureDetector(
-        onTap: () => context.pushNamed(
-          Routes.chatProfile.name,
-          pathParameters: {'roomId': roomId},
-        ),
+        onTap:
+            () => context.pushNamed(
+              Routes.chatProfile.name,
+              pathParameters: {'roomId': roomId},
+            ),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -59,18 +55,17 @@ class ChatRoomNgPage extends ConsumerWidget {
             ),
             const SizedBox(height: 5),
             membersLoader.when(
-              data: (members) => Text(
-                lang.membersCount(members.length),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              data:
+                  (members) => Text(
+                    lang.membersCount(members.length),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
               skipLoadingOnReload: true,
               error: (e, s) {
                 _log.severe('Failed to load active members', e, s);
                 return Text(lang.errorLoadingMembersCount(e));
               },
-              loading: () => Skeletonizer(
-                child: Text(lang.membersCount(100)),
-              ),
+              loading: () => Skeletonizer(child: Text(lang.membersCount(100))),
             ),
           ],
         ),
@@ -85,16 +80,14 @@ class ChatRoomNgPage extends ConsumerWidget {
             ),
           ),
         GestureDetector(
-          onTap: () => context.pushNamed(
-            Routes.chatProfile.name,
-            pathParameters: {'roomId': roomId},
-          ),
+          onTap:
+              () => context.pushNamed(
+                Routes.chatProfile.name,
+                pathParameters: {'roomId': roomId},
+              ),
           child: Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: RoomAvatar(
-              roomId: roomId,
-              showParents: true,
-            ),
+            child: RoomAvatar(roomId: roomId, showParents: true),
           ),
         ),
       ],
@@ -104,16 +97,17 @@ class ChatRoomNgPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return OrientationBuilder(
-      builder: (context, orientation) => Scaffold(
-        resizeToAvoidBottomInset: orientation == Orientation.portrait,
-        body: Column(
-          children: [
-            appBar(context, ref),
-            Expanded(child: ChatMessages(roomId: roomId)),
-            chatInput(context, ref),
-          ],
-        ),
-      ),
+      builder:
+          (context, orientation) => Scaffold(
+            resizeToAvoidBottomInset: orientation == Orientation.portrait,
+            body: Column(
+              children: [
+                appBar(context, ref),
+                Expanded(child: ChatMessages(roomId: roomId)),
+                chatInput(context, ref),
+              ],
+            ),
+          ),
     );
   }
 

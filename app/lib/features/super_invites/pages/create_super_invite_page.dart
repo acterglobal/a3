@@ -17,7 +17,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -35,10 +35,7 @@ class CreateSuperInvitePage extends ConsumerStatefulWidget {
 
   final SuperInviteToken? token;
 
-  const CreateSuperInvitePage({
-    super.key,
-    this.token,
-  });
+  const CreateSuperInvitePage({super.key, this.token});
 
   @override
   ConsumerState<CreateSuperInvitePage> createState() =>
@@ -78,17 +75,12 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    return Scaffold(
-      appBar: _buildAppBarView(lang),
-      body: _buildBodyView(lang),
-    );
+    return Scaffold(appBar: _buildAppBarView(lang), body: _buildBodyView(lang));
   }
 
   AppBar _buildAppBarView(L10n lang) {
     return AppBar(
-      title: Text(
-        isEdit ? lang.editInviteCode : lang.createInviteCode,
-      ),
+      title: Text(isEdit ? lang.editInviteCode : lang.createInviteCode),
     );
   }
 
@@ -266,8 +258,9 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
             child: OutlinedButton(
               key: CreateSuperInvitePage.deleteBtn,
               onPressed: _deleteInvite,
-              style:
-                  OutlinedButton.styleFrom(side: BorderSide(color: redColor)),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: redColor),
+              ),
               child: Text(lang.delete, style: TextStyle(color: redColor)),
             ),
           ),
@@ -293,8 +286,9 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
       if (tokenTxt.isNotEmpty) {
         tokenUpdater.token(tokenTxt);
       } else if (_roomIds.isNotEmpty) {
-        final displayName =
-            await ref.read(roomDisplayNameProvider(_roomIds[0]).future);
+        final displayName = await ref.read(
+          roomDisplayNameProvider(_roomIds[0]).future,
+        );
         final inviteCode = generateInviteCodeName(displayName);
         tokenUpdater.token(inviteCode);
       }
@@ -315,13 +309,11 @@ class _CreateSuperInvitePageState extends ConsumerState<CreateSuperInvitePage>
         EasyLoading.dismiss();
         return;
       }
-      final status = isEdit
-          ? lang.saveInviteCodeFailed(e)
-          : lang.createInviteCodeFailed(e);
-      EasyLoading.showError(
-        status,
-        duration: const Duration(seconds: 3),
-      );
+      final status =
+          isEdit
+              ? lang.saveInviteCodeFailed(e)
+              : lang.createInviteCodeFailed(e);
+      EasyLoading.showError(status, duration: const Duration(seconds: 3));
     }
   }
 

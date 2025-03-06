@@ -5,7 +5,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class _ChangePowerLevelDialog extends StatefulWidget {
   final Member member;
@@ -23,8 +23,9 @@ class _ChangePowerLevelDialog extends StatefulWidget {
 
 class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
   final TextEditingController dropDownMenuCtrl = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'change power level form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'change power level form',
+  );
 
   String? currentMemberStatus;
   int? customValue;
@@ -76,24 +77,15 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                 onChanged: _updateMembershipStatus,
                 items: [
                   if (widget.maxPowerLevel >= 100)
-                    DropdownMenuItem(
-                      value: 'Admin',
-                      child: Text(lang.admin),
-                    ),
+                    DropdownMenuItem(value: 'Admin', child: Text(lang.admin)),
                   if (widget.maxPowerLevel >= 50)
-                    DropdownMenuItem(
-                      value: 'Mod',
-                      child: Text(lang.moderator),
-                    ),
+                    DropdownMenuItem(value: 'Mod', child: Text(lang.moderator)),
                   if (widget.maxPowerLevel >= 0)
                     DropdownMenuItem(
                       value: 'Regular',
                       child: Text(lang.regular),
                     ),
-                  DropdownMenuItem(
-                    value: 'Custom',
-                    child: Text(lang.custom),
-                  ),
+                  DropdownMenuItem(value: 'Custom', child: Text(lang.custom)),
                 ],
               ),
             ),
@@ -108,8 +100,9 @@ class __ChangePowerLevelDialogState extends State<_ChangePowerLevelDialog> {
                   ),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(signed: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: true,
+                  ),
                   // Only numbers
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   // required field under custom
@@ -184,9 +177,10 @@ Future<int?> showChangePowerLevelDialog(
 ) async {
   return await showDialog(
     context: context,
-    builder: (BuildContext context) => _ChangePowerLevelDialog(
-      member: member,
-      maxPowerLevel: maxPowerLevel,
-    ),
+    builder:
+        (BuildContext context) => _ChangePowerLevelDialog(
+          member: member,
+          maxPowerLevel: maxPowerLevel,
+        ),
   );
 }

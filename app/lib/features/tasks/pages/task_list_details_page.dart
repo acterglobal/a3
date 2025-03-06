@@ -25,7 +25,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -39,10 +39,8 @@ class TaskListDetailPage extends ConsumerStatefulWidget {
 
   final String taskListId;
 
-  const TaskListDetailPage({
-    Key key = pageKey,
-    required this.taskListId,
-  }) : super(key: key);
+  const TaskListDetailPage({Key key = pageKey, required this.taskListId})
+    : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskListPageState();
@@ -53,10 +51,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(context),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppbar(context), body: _buildBody());
   }
 
   AppBar _buildAppbar(BuildContext context) {
@@ -86,39 +81,28 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       ObjectNotificationStatus(objectId: widget.taskListId),
     ];
     if (tasklist != null) {
-      actions.addAll(
-        [
-          PopupMenuButton(
-            icon: const Icon(Icons.more_vert),
-            itemBuilder: (context) {
-              return [
-                // FIXME: check permissions for all theses
-                PopupMenuItem(
-                  onTap: () => showEditDescriptionSheet(tasklist),
-                  child: Text(
-                    lang.editDescription,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showRedactDialog(taskList: tasklist),
-                  child: Text(
-                    lang.delete,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-                PopupMenuItem(
-                  onTap: () => showReportDialog(tasklist),
-                  child: Text(
-                    lang.report,
-                    style: textTheme.bodyMedium,
-                  ),
-                ),
-              ];
-            },
-          ),
-        ],
-      );
+      actions.addAll([
+        PopupMenuButton(
+          icon: const Icon(Icons.more_vert),
+          itemBuilder: (context) {
+            return [
+              // FIXME: check permissions for all theses
+              PopupMenuItem(
+                onTap: () => showEditDescriptionSheet(tasklist),
+                child: Text(lang.editDescription, style: textTheme.bodyMedium),
+              ),
+              PopupMenuItem(
+                onTap: () => showRedactDialog(taskList: tasklist),
+                child: Text(lang.delete, style: textTheme.bodyMedium),
+              ),
+              PopupMenuItem(
+                onTap: () => showReportDialog(tasklist),
+                child: Text(lang.report, style: textTheme.bodyMedium),
+              ),
+            ];
+          },
+        ),
+      ]);
     }
     return AppBar(actions: actions);
   }
@@ -202,10 +186,11 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
           _widgetTasksListHeader(),
           ValueListenableBuilder(
             valueListenable: showCompletedTask,
-            builder: (context, value, child) => TaskItemsListWidget(
-              taskList: taskListData,
-              showCompletedTask: value,
-            ),
+            builder:
+                (context, value, child) => TaskItemsListWidget(
+                  taskList: taskListData,
+                  showCompletedTask: value,
+                ),
           ),
         ],
       ),
@@ -214,7 +199,8 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
 
   Widget _taskListHeader(TaskList tasklist) {
     final textTheme = Theme.of(context).textTheme;
-    final canPost = ref
+    final canPost =
+        ref
             .watch(roomMembershipProvider(tasklist.spaceIdStr()))
             .valueOrNull
             ?.canString('CanPostTaskList') ==
@@ -223,32 +209,23 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       contentPadding: EdgeInsets.zero,
       leading: ActerIconWidget(
         iconSize: 40,
-        color: convertColor(
-          tasklist.display()?.color(),
-          iconPickerColors[0],
-        ),
-        icon: ActerIcon.iconForTask(
-          tasklist.display()?.iconStr(),
-        ),
-        onIconSelection: canPost
-            ? (color, acterIcon) {
-                updateTaskListIcon(
-                  context,
-                  ref,
-                  tasklist,
-                  color,
-                  acterIcon,
-                );
-              }
-            : null,
+        color: convertColor(tasklist.display()?.color(), iconPickerColors[0]),
+        icon: ActerIcon.iconForTask(tasklist.display()?.iconStr()),
+        onIconSelection:
+            canPost
+                ? (color, acterIcon) {
+                  updateTaskListIcon(context, ref, tasklist, color, acterIcon);
+                }
+                : null,
       ),
       title: SelectionArea(
         child: GestureDetector(
-          onTap: () => showEditTaskListNameBottomSheet(
-            context: context,
-            taskList: tasklist,
-            titleValue: tasklist.name(),
-          ),
+          onTap:
+              () => showEditTaskListNameBottomSheet(
+                context: context,
+                taskList: tasklist,
+                titleValue: tasklist.name(),
+              ),
           child: Text(
             key: TaskListDetailPage.taskListTitleKey,
             tasklist.name(),
@@ -271,15 +248,13 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
         onTap: () {
           showEditDescriptionSheet(taskListData);
         },
-        child: formattedBody != null
-            ? RenderHtml(
-                text: formattedBody,
-                defaultTextStyle: textTheme.labelLarge,
-              )
-            : Text(
-                description.body(),
-                style: textTheme.labelLarge,
-              ),
+        child:
+            formattedBody != null
+                ? RenderHtml(
+                  text: formattedBody,
+                  defaultTextStyle: textTheme.labelLarge,
+                )
+                : Text(description.body(), style: textTheme.labelLarge),
       ),
     );
   }
@@ -332,10 +307,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          lang.tasks,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        Text(lang.tasks, style: Theme.of(context).textTheme.titleSmall),
         ValueListenableBuilder(
           valueListenable: showCompletedTask,
           builder: (context, value, child) {
@@ -367,60 +339,59 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
       context: context,
       bottomSheetTitle: L10n.of(context).editName,
       titleValue: titleValue,
-      onSave: (ref, newName) =>
-          updateTaskListTitle(context, ref, taskList, newName),
+      onSave:
+          (ref, newName) =>
+              updateTaskListTitle(context, ref, taskList, newName),
     );
   }
 
   Widget _loadingSkeleton() => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Skeletonizer.zone(
-            child: Column(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Skeletonizer.zone(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
-                Row(
+                const Bone.icon(size: 40),
+                const SizedBox(width: 10),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Bone.icon(size: 40),
-                    const SizedBox(width: 10),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Task List Title',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        SpaceChip.loadingCompact(),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const Text('Task description'),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      L10n.of(context).tasks,
-                      style: Theme.of(context).textTheme.titleSmall,
+                      'Task List Title',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    const Bone.iconButton(
-                      size: 18,
-                    ),
+                    SpaceChip.loadingCompact(),
                   ],
                 ),
-                TaskItemsListWidget.loading(),
-                const SizedBox(height: 20),
-                AttachmentSectionWidget.loading(),
-                const SizedBox(height: 20),
-                CommentsSectionWidget.loading(),
-                const SizedBox(height: 20),
               ],
             ),
-          ),
+            const SizedBox(height: 20),
+            const Text('Task description'),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  L10n.of(context).tasks,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                const Bone.iconButton(size: 18),
+              ],
+            ),
+            TaskItemsListWidget.loading(),
+            const SizedBox(height: 20),
+            AttachmentSectionWidget.loading(),
+            const SizedBox(height: 20),
+            CommentsSectionWidget.loading(),
+            const SizedBox(height: 20),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }

@@ -6,7 +6,7 @@ import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -22,8 +22,9 @@ Future<bool> offerToActivateFeature({
   EasyLoading.showInfo(lang.loading);
   try {
     final space = await ref.read(spaceProvider(spaceId).future);
-    final appSettingsAndMembership =
-        await ref.read(spaceAppSettingsProvider(spaceId).future);
+    final appSettingsAndMembership = await ref.read(
+      spaceAppSettingsProvider(spaceId).future,
+    );
     EasyLoading.dismiss();
     if (!context.mounted) {
       return false;
@@ -81,13 +82,16 @@ Future<bool> offerToActivateFeature({
     EasyLoading.dismiss();
     final shouldActivate = await showDialog<bool?>(
       context: context,
-      builder: (BuildContext context) => _ActivateFeatureDialog(
-        featureName: featureTitle,
-        currentPowerLevelName:
-            maxPowerLevel == 100 ? powerLevelName(currentPowerLevel) : 'Custom',
-        currentPowerLevel: currentPowerLevel,
-        onPowerLevelChange: (newValue) => setPowerLevel = newValue,
-      ),
+      builder:
+          (BuildContext context) => _ActivateFeatureDialog(
+            featureName: featureTitle,
+            currentPowerLevelName:
+                maxPowerLevel == 100
+                    ? powerLevelName(currentPowerLevel)
+                    : 'Custom',
+            currentPowerLevel: currentPowerLevel,
+            onPowerLevelChange: (newValue) => setPowerLevel = newValue,
+          ),
     );
 
     if (shouldActivate != true || !context.mounted) {
@@ -141,8 +145,9 @@ class _ActivateFeatureDialog extends StatefulWidget {
 
 class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
   final TextEditingController dropDownMenuCtrl = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'activate feature form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'activate feature form',
+  );
 
   String? currentMemberStatus;
   int? customValue;
@@ -217,13 +222,12 @@ class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: lang.powerLevelCustom,
-                  ),
+                  decoration: InputDecoration(labelText: lang.powerLevelCustom),
                   onChanged: _newCustomLevel,
                   initialValue: currentPowerLevel.toString(),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(signed: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    signed: true,
+                  ),
                   // Only numbers
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly,
@@ -248,10 +252,7 @@ class __ActivateFeatureDialogState extends State<_ActivateFeatureDialog> {
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: <Widget>[
-        OutlinedButton(
-          onPressed: onCancel,
-          child: Text(lang.cancel),
-        ),
+        OutlinedButton(onPressed: onCancel, child: Text(lang.cancel)),
         ActerPrimaryActionButton(
           onPressed: onSubmit,
           child: Text(lang.activate),

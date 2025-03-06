@@ -10,7 +10,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -36,10 +36,7 @@ class _VisibilityAccessibilityPageState
     extends ConsumerState<VisibilityAccessibilityPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppbar(), body: _buildBody());
   }
 
   AppBar _buildAppbar() {
@@ -47,12 +44,13 @@ class _VisibilityAccessibilityPageState
       title: Text(L10n.of(context).visibilityAndAccessibility),
       centerTitle: true,
       automaticallyImplyLeading: !context.isLargeScreen,
-      leading: widget.impliedClose
-          ? IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Atlas.xmark_circle_thin),
-            )
-          : null,
+      leading:
+          widget.impliedClose
+              ? IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Atlas.xmark_circle_thin),
+              )
+              : null,
     );
   }
 
@@ -90,42 +88,45 @@ class _VisibilityAccessibilityPageState
     final visibilityLoader = ref.watch(roomVisibilityProvider(spaceId));
     final allowedSpaces = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
     return visibilityLoader.when(
-      data: (visibility) => RoomVisibilityType(
-        selectedVisibilityEnum: visibility,
-        canChange: hasPermission,
-        onVisibilityChange: (value) {
-          if (!hasPermission) {
-            EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
-            return;
-          }
-          if (value == RoomVisibility.SpaceVisible &&
-              allowedSpaces.valueOrNull?.isEmpty == true) {
-            selectSpace(spaceId);
-          } else {
-            updateSpaceVisibility(
-              value ?? RoomVisibility.Private,
-              spaceIds: (allowedSpaces.valueOrNull ?? []),
-            );
-          }
-        },
-      ),
+      data:
+          (visibility) => RoomVisibilityType(
+            selectedVisibilityEnum: visibility,
+            canChange: hasPermission,
+            onVisibilityChange: (value) {
+              if (!hasPermission) {
+                EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
+                return;
+              }
+              if (value == RoomVisibility.SpaceVisible &&
+                  allowedSpaces.valueOrNull?.isEmpty == true) {
+                selectSpace(spaceId);
+              } else {
+                updateSpaceVisibility(
+                  value ?? RoomVisibility.Private,
+                  spaceIds: (allowedSpaces.valueOrNull ?? []),
+                );
+              }
+            },
+          ),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return const RoomVisibilityType(
           selectedVisibilityEnum: RoomVisibility.Private,
         );
       },
-      loading: () => const Skeletonizer(
-        child: RoomVisibilityType(
-          selectedVisibilityEnum: RoomVisibility.Private,
-        ),
-      ),
+      loading:
+          () => const Skeletonizer(
+            child: RoomVisibilityType(
+              selectedVisibilityEnum: RoomVisibility.Private,
+            ),
+          ),
     );
   }
 
   Widget _buildSpaceWithAccess({bool hasPermission = true}) {
-    final allowedSpacesLoader =
-        ref.watch(joinRulesAllowedRoomsProvider(widget.roomId));
+    final allowedSpacesLoader = ref.watch(
+      joinRulesAllowedRoomsProvider(widget.roomId),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -145,14 +146,15 @@ class _VisibilityAccessibilityPageState
             ],
           ),
           allowedSpacesLoader.when(
-            data: (allowedSpaces) => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: allowedSpaces.length,
-              itemBuilder: (context, index) {
-                return _spaceItemUI(allowedSpaces[index], hasPermission);
-              },
-            ),
+            data:
+                (allowedSpaces) => ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: allowedSpaces.length,
+                  itemBuilder: (context, index) {
+                    return _spaceItemUI(allowedSpaces[index], hasPermission);
+                  },
+                ),
             error: (e, s) {
               _log.severe('Failed to load the allowed rooms', e, s);
               return _spaceItemCard(
@@ -168,9 +170,7 @@ class _VisibilityAccessibilityPageState
   }
 
   Widget _loadingSpaceItem() {
-    return Skeletonizer(
-      child: _spaceItemCard('loading'),
-    );
+    return Skeletonizer(child: _spaceItemCard('loading'));
   }
 
   Widget _spaceItemCard(
@@ -183,15 +183,13 @@ class _VisibilityAccessibilityPageState
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 5),
       shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: colorScheme.primary,
-          width: 1.5,
-        ),
+        side: BorderSide(color: colorScheme.primary, width: 1.5),
         borderRadius: BorderRadius.circular(6),
       ),
       child: ListTile(
         title: Text(title),
-        leading: avatar ??
+        leading:
+            avatar ??
             ActerAvatar(
               options: const AvatarOptions(
                 AvatarInfo(uniqueId: 'unknown'),
@@ -202,10 +200,7 @@ class _VisibilityAccessibilityPageState
         subtitle: subtitle,
         trailing: IconButton(
           onPressed: removeAction,
-          icon: Icon(
-            Atlas.trash,
-            color: colorScheme.error,
-          ),
+          icon: Icon(Atlas.trash, color: colorScheme.error),
         ),
       ),
     );
@@ -237,8 +232,9 @@ class _VisibilityAccessibilityPageState
   }
 
   Future<void> removeSpace(String spaceId) async {
-    final allowedRooms =
-        await ref.read(joinRulesAllowedRoomsProvider(widget.roomId).future);
+    final allowedRooms = await ref.read(
+      joinRulesAllowedRoomsProvider(widget.roomId).future,
+    );
     final newList = allowedRooms.where((id) => id != spaceId).toList();
     final visibility =
         newList.isEmpty ? RoomVisibility.Private : RoomVisibility.SpaceVisible;
@@ -249,8 +245,9 @@ class _VisibilityAccessibilityPageState
     try {
       final spaceId = await selectSpaceDrawer(context: context);
       if (spaceId != null) {
-        final spaceList =
-            await ref.read(joinRulesAllowedRoomsProvider(roomId).future);
+        final spaceList = await ref.read(
+          joinRulesAllowedRoomsProvider(roomId).future,
+        );
         final isAlreadyAdded = spaceList.any((roomId) => roomId == spaceId);
         if (!isAlreadyAdded) {
           spaceList.add(spaceId);
@@ -275,10 +272,7 @@ class _VisibilityAccessibilityPageState
     List<String>? spaceIds,
   }) async {
     try {
-      EasyLoading.show(
-        status: 'Updating space settings',
-        dismissOnTap: false,
-      );
+      EasyLoading.show(status: 'Updating space settings', dismissOnTap: false);
       final sdk = await ref.read(sdkProvider.future);
       final update = sdk.api.newJoinRuleBuilder();
       final room = await ref.read(maybeRoomProvider(widget.roomId).future);

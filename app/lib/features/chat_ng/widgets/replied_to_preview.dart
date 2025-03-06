@@ -5,7 +5,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 // Reply State UI widget
 class RepliedToPreview extends ConsumerWidget {
@@ -27,28 +27,28 @@ class RepliedToPreview extends ConsumerWidget {
 
     return switch (roomMsgState) {
       RepliedToMsgLoading() => replyBuilder(
-          context,
-          Skeletonizer(
-            child: ListTile(
-              leading: ActerAvatar(
-                options: AvatarOptions.DM(AvatarInfo(uniqueId: '#')),
-              ),
-              isThreeLine: true,
+        context,
+        Skeletonizer(
+          child: ListTile(
+            leading: ActerAvatar(
+              options: AvatarOptions.DM(AvatarInfo(uniqueId: '#')),
             ),
+            isThreeLine: true,
           ),
         ),
+      ),
       RepliedToMsgError() => replyBuilder(
-          context,
-          replyErrorUI(context, ref, replyInfo),
-        ),
+        context,
+        replyErrorUI(context, ref, replyInfo),
+      ),
       RepliedToMsgData(repliedToItem: final repliedToItem) => replyBuilder(
-          context,
-          RepliedToEvent(
-            roomId: roomId,
-            messageId: originalId,
-            replyEventItem: repliedToItem,
-          ),
+        context,
+        RepliedToEvent(
+          roomId: roomId,
+          messageId: originalId,
+          replyEventItem: repliedToItem,
         ),
+      ),
       _ => const SizedBox.shrink(),
     };
   }
@@ -61,10 +61,9 @@ class RepliedToPreview extends ConsumerWidget {
     final originalId = replyInfo.uniqueId;
     return Text(
       L10n.of(context).repliedToMsgFailed(originalId),
-      style: Theme.of(context)
-          .textTheme
-          .bodySmall
-          ?.copyWith(color: Theme.of(context).colorScheme.error),
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.error,
+      ),
     );
   }
 
@@ -73,9 +72,10 @@ class RepliedToPreview extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color: isMe
-            ? colorScheme.surface.withValues(alpha:0.3)
-            : colorScheme.onSurface.withValues(alpha:0.2),
+        color:
+            isMe
+                ? colorScheme.surface.withValues(alpha: 0.3)
+                : colorScheme.onSurface.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(22),
       ),
       child: child,

@@ -6,9 +6,9 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/image_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -45,25 +45,20 @@ class ImageMessageEvent extends ConsumerWidget {
     return const SizedBox(
       width: 150,
       height: 150,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 
-  Widget imagePlaceholder(
-    BuildContext context,
-    String roomId,
-    WidgetRef ref,
-  ) {
+  Widget imagePlaceholder(BuildContext context, String roomId, WidgetRef ref) {
     final msgSize = content.size();
     if (msgSize == null) return const SizedBox.shrink();
     return InkWell(
       onTap: () async {
         final notifier = ref.read(
-          mediaChatStateProvider(
-            (messageId: messageId, roomId: roomId),
-          ).notifier,
+          mediaChatStateProvider((
+            messageId: messageId,
+            roomId: roomId,
+          ),).notifier,
         );
         await notifier.downloadMedia();
       },
@@ -73,27 +68,18 @@ class ImageMessageEvent extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.download,
-              size: 28,
-            ),
+            const Icon(Icons.download, size: 28),
             const SizedBox(height: 8),
             Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.image,
-                    size: 18,
-                  ),
+                  const Icon(Icons.image, size: 18),
                   const SizedBox(width: 5),
                   Text(
                     formatBytes(msgSize.truncate()),
@@ -117,19 +103,15 @@ class ImageMessageEvent extends ConsumerWidget {
             context: context,
             barrierDismissible: false,
             useRootNavigator: false,
-            builder: (context) => ImageDialog(
-              title: content.body(),
-              imageFile: mediaFile,
-            ),
+            builder:
+                (context) =>
+                    ImageDialog(title: content.body(), imageFile: mediaFile),
           );
         },
         child: ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 300,
-              maxHeight: 300,
-            ),
+            constraints: BoxConstraints(maxWidth: 300, maxHeight: 300),
             child: imageFileView(context, ref, mediaFile),
           ),
         ),
@@ -151,17 +133,20 @@ class ImageMessageEvent extends ConsumerWidget {
           child: child,
         );
       },
-      errorBuilder: (context, error, stack) => ActerInlineErrorButton.icon(
-        icon: Icon(PhosphorIcons.imageBroken()),
-        error: error,
-        stack: stack,
-        textBuilder: (err, code) => L10n.of(context).couldNotLoadImage(err),
-        onRetryTap: () {
-          final ChatMessageInfo messageInfo =
-              (messageId: messageId, roomId: roomId);
-          ref.invalidate(mediaChatStateProvider(messageInfo));
-        },
-      ),
+      errorBuilder:
+          (context, error, stack) => ActerInlineErrorButton.icon(
+            icon: Icon(PhosphorIcons.imageBroken()),
+            error: error,
+            stack: stack,
+            textBuilder: (err, code) => L10n.of(context).couldNotLoadImage(err),
+            onRetryTap: () {
+              final ChatMessageInfo messageInfo = (
+                messageId: messageId,
+                roomId: roomId,
+              );
+              ref.invalidate(mediaChatStateProvider(messageInfo));
+            },
+          ),
       fit: BoxFit.cover,
     );
   }

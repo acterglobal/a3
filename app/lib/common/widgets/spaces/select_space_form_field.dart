@@ -4,7 +4,7 @@ import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SelectSpaceFormField extends ConsumerWidget {
@@ -54,49 +54,59 @@ class SelectSpaceFormField extends ConsumerWidget {
     );
 
     return FormField(
-      builder: (state) => currentSpaceId != null
-          ? InkWell(
-              key: openKey,
-              onTap: () => selectSpace(context, ref),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!useCompactView)
-                    Text(
-                      title ?? lang.space,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      return spaceBuilder(context, ref, child, currentSpaceId);
-                    },
-                  ),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: state.errorText.map(
-                    (err) => Column(
+      builder:
+          (state) =>
+              currentSpaceId != null
+                  ? InkWell(
+                    key: openKey,
+                    onTap: () => selectSpace(context, ref),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        emptyButton,
-                        Text(
-                          err,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
+                        if (!useCompactView)
+                          Text(
+                            title ?? lang.space,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            return spaceBuilder(
+                              context,
+                              ref,
+                              child,
+                              currentSpaceId,
+                            );
+                          },
                         ),
                       ],
                     ),
-                  ) ??
-                  emptyButton,
-            ),
-      validator: (val) =>
-          !mandatory || ref.read(selectedSpaceIdProvider) != null
-              ? null
-              : lang.youMustSelectSpace,
+                  )
+                  : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child:
+                        state.errorText.map(
+                          (err) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              emptyButton,
+                              Text(
+                                err,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ) ??
+                        emptyButton,
+                  ),
+      validator:
+          (val) =>
+              !mandatory || ref.read(selectedSpaceIdProvider) != null
+                  ? null
+                  : lang.youMustSelectSpace,
     );
   }
 
