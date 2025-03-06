@@ -17,7 +17,7 @@ class RenderHtmlNg extends ConsumerWidget {
   final int? maxLines;
   final bool renderNewlines;
   final String roomId;
-  const RenderHtmlNg({
+  const RenderHtmlNg({super.key, 
     required this.text,
     this.defaultTextStyle,
     this.linkTextStyle,

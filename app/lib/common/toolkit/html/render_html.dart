@@ -1,16 +1,8 @@
 import 'package:acter/common/actions/open_link.dart';
-import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/html/render_html_ng.dart';
-import 'package:acter/features/chat/widgets/pill_builder.dart';
-import 'package:acter/features/deep_linking/parse_acter_uri.dart';
-import 'package:acter/features/deep_linking/types.dart';
-import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart' as matrixHtml;
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
-    as html;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/dom.dart' as dom;
 
 typedef PillBuilder =
     Widget Function({
@@ -29,12 +21,6 @@ class _MatrixRenderHtml extends ConsumerWidget {
   final PillBuilder? pillBuilder;
   const _MatrixRenderHtml({
     required this.text,
-    this.defaultTextStyle,
-    this.linkTextStyle,
-    this.shrinkToFit = false,
-    this.maxLines,
-    this.renderNewlines = false,
-    this.pillBuilder,
   });
 
   @override
