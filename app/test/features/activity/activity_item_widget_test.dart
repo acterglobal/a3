@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../helpers/test_util.dart';
 import 'mock_data/mock_activity.dart';
-import 'mock_data/mock_activity_object.dart';
-import 'mock_data/mock_msg_content.dart';
 
 void main() {
   Future<void> createWidgetUnderTest({
