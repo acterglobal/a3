@@ -28,7 +28,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -77,9 +77,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
   }
 
   AppBar _buildAppBar() {
-    return AppBar(
-      title: Text(L10n.of(context).createPin),
-    );
+    return AppBar(title: Text(L10n.of(context).createPin));
   }
 
   Widget _buildBody() {
@@ -87,11 +85,7 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          bottom: 24,
-        ),
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -161,8 +155,11 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
             notifier.setPinTitleValue(text ?? '');
           },
           // required field, space not allowed
-          validator: (val) =>
-              val == null || val.trim().isEmpty ? lang.pleaseEnterATitle : null,
+          validator:
+              (val) =>
+                  val == null || val.trim().isEmpty
+                      ? lang.pleaseEnterATitle
+                      : null,
         ),
       ],
     );
@@ -179,8 +176,9 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               showModalBottomSheet<void>(
                 context: context,
                 showDragHandle: true,
-                builder: (context) =>
-                    const PinAttachmentOptions(isBottomSheetOpen: true),
+                builder:
+                    (context) =>
+                        const PinAttachmentOptions(isBottomSheetOpen: true),
               );
             },
             child: Text(lang.add),
@@ -220,30 +218,28 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
               Text(attachmentData.link ?? ''),
           ],
         ),
-        subtitle: attachmentData.attachmentType == AttachmentType.link
-            ? null
-            : Row(
-                children: [
-                  Text(attachmentData.size ?? ''),
-                  const SizedBox(width: 10),
-                  const Text('.'),
-                  const SizedBox(width: 10),
-                  Text(
-                    documentTypeFromFileExtension(
-                      attachmentData.fileExtension ?? '',
+        subtitle:
+            attachmentData.attachmentType == AttachmentType.link
+                ? null
+                : Row(
+                  children: [
+                    Text(attachmentData.size ?? ''),
+                    const SizedBox(width: 10),
+                    const Text('.'),
+                    const SizedBox(width: 10),
+                    Text(
+                      documentTypeFromFileExtension(
+                        attachmentData.fileExtension ?? '',
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
         trailing: IconButton(
           onPressed: () {
             final notifier = ref.read(createPinStateProvider.notifier);
             notifier.removeAttachment(index);
           },
-          icon: const Icon(
-            Atlas.xmark_circle,
-            color: Colors.red,
-          ),
+          icon: const Icon(Atlas.xmark_circle, color: Colors.red),
         ),
       ),
     );
@@ -293,15 +289,16 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                 plainDescription: params.plainDescription,
               );
             },
-            child: params.htmlBodyDescription.isNotEmpty
-                ? RenderHtml(
-                    text: params.htmlBodyDescription,
-                    defaultTextStyle: textTheme.labelLarge,
-                  )
-                : Text(
-                    params.plainDescription,
-                    style: textTheme.labelLarge,
-                  ),
+            child:
+                params.htmlBodyDescription.isNotEmpty
+                    ? RenderHtml(
+                      text: params.htmlBodyDescription,
+                      defaultTextStyle: textTheme.labelLarge,
+                    )
+                    : Text(
+                      params.plainDescription,
+                      style: textTheme.labelLarge,
+                    ),
           ),
         ),
         const SizedBox(height: 20),
@@ -329,8 +326,9 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
 
     EasyLoading.show(status: lang.creatingPin);
     try {
-      final space = await ref
-          .read(spaceProvider(spaceId.expect('space not selected')).future);
+      final space = await ref.read(
+        spaceProvider(spaceId.expect('space not selected')).future,
+      );
       final pinDraft = space.pinDraft();
       final pinState = ref.read(createPinStateProvider);
 

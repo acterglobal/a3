@@ -7,7 +7,7 @@ import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -34,23 +34,22 @@ class _RoomChipState extends ConsumerState<RoomChip> {
   }
 
   RoomPreviewQuery get query => (
-        roomIdOrAlias: widget.roomId,
-        serverNames: AllHashed(uri?.queryParametersAll['via'] ?? []),
-      );
+    roomIdOrAlias: widget.roomId,
+    serverNames: AllHashed(uri?.queryParametersAll['via'] ?? []),
+  );
 
   @override
   Widget build(BuildContext context) {
     final foundRoom = ref.watch(maybeRoomProvider(widget.roomId)).valueOrNull;
     if (foundRoom != null) {
-      return Tooltip(
-        message: widget.roomId,
-        child: buildForRoom(context),
-      );
+      return Tooltip(message: widget.roomId, child: buildForRoom(context));
     }
 
     return Tooltip(
       message: widget.roomId,
-      child: ref.watch(roomPreviewProvider(query)).when(
+      child: ref
+          .watch(roomPreviewProvider(query))
+          .when(
             data: (p) => buildPreview(context),
             error: (error, stack) => renderError(context, error, stack),
             loading: () => loading(context),
@@ -59,29 +58,27 @@ class _RoomChipState extends ConsumerState<RoomChip> {
   }
 
   Widget loading(BuildContext context) => Skeletonizer(
-        child: ActerInlineTextButton.icon(
-          icon: Bone.circle(
-            size: Theme.of(context).textTheme.bodyMedium?.fontSize ??
-                defaultAvatarSize,
-          ),
-          label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
-          onPressed: () async {
-            await showRoomPreview(
-              context: context,
-              roomIdOrAlias: query.roomIdOrAlias,
-              serverNames: query.serverNames.items,
-            );
-          },
-        ),
-      );
-  Widget renderError(
-    BuildContext context,
-    Object error,
-    StackTrace stack,
-  ) =>
+    child: ActerInlineTextButton.icon(
+      icon: Bone.circle(
+        size:
+            Theme.of(context).textTheme.bodyMedium?.fontSize ??
+            defaultAvatarSize,
+      ),
+      label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
+      onPressed: () async {
+        await showRoomPreview(
+          context: context,
+          roomIdOrAlias: query.roomIdOrAlias,
+          serverNames: query.serverNames.items,
+        );
+      },
+    ),
+  );
+  Widget renderError(BuildContext context, Object error, StackTrace stack) =>
       ActerInlineTextButton.icon(
         icon: Bone.circle(
-          size: Theme.of(context).textTheme.bodyMedium?.fontSize ??
+          size:
+              Theme.of(context).textTheme.bodyMedium?.fontSize ??
               defaultAvatarSize,
         ),
         label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
@@ -102,17 +99,12 @@ class _RoomChipState extends ConsumerState<RoomChip> {
   Widget buildForRoom(BuildContext context) {
     final displayName =
         ref.watch(roomDisplayNameProvider(widget.roomId)).valueOrNull ??
-            L10n.of(context).unknown;
+        L10n.of(context).unknown;
     final avatarInfo = ref.watch(roomAvatarInfoProvider(widget.roomId));
     final avatarSize =
         Theme.of(context).textTheme.bodyMedium?.fontSize ?? defaultAvatarSize;
     return ActerInlineTextButton.icon(
-      icon: ActerAvatar(
-        options: AvatarOptions(
-          avatarInfo,
-          size: avatarSize,
-        ),
-      ),
+      icon: ActerAvatar(options: AvatarOptions(avatarInfo, size: avatarSize)),
       label: Text(displayName, overflow: TextOverflow.ellipsis),
       onPressed: () async {
         await navigateToRoomOrAskToJoin(context, ref, widget.roomId);
@@ -128,12 +120,7 @@ class _RoomChipState extends ConsumerState<RoomChip> {
     final avatarSize =
         Theme.of(context).textTheme.bodyMedium?.fontSize ?? defaultAvatarSize;
     return ActerInlineTextButton.icon(
-      icon: ActerAvatar(
-        options: AvatarOptions(
-          avatarInfo,
-          size: avatarSize,
-        ),
-      ),
+      icon: ActerAvatar(options: AvatarOptions(avatarInfo, size: avatarSize)),
       label: Text(displayName, overflow: TextOverflow.ellipsis),
       onPressed: () async {
         await showRoomPreview(

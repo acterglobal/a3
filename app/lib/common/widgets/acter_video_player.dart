@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:video_player/video_player.dart';
 
 class ActerVideoPlayer extends StatefulWidget {
@@ -66,10 +66,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
       aspectRatio: _controller.value.aspectRatio,
       child: Stack(
         alignment: Alignment.center,
-        children: [
-          VideoPlayer(_controller),
-          controlsOverlay(),
-        ],
+        children: [VideoPlayer(_controller), controlsOverlay()],
       ),
     );
   }
@@ -86,10 +83,7 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
             alignment: Alignment.bottomRight,
             child: IconButton(
               onPressed: () => onTapFullScreen(),
-              icon: const Icon(
-                Icons.square_outlined,
-                size: 22.0,
-              ),
+              icon: const Icon(Icons.square_outlined, size: 22.0),
             ),
           ),
       ],
@@ -100,18 +94,19 @@ class _ActerVideoPlayerState extends State<ActerVideoPlayer> {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 50),
       reverseDuration: const Duration(milliseconds: 200),
-      child: _controller.value.isPlaying
-          ? const SizedBox.shrink()
-          : Container(
-              color: Colors.black26,
-              child: Center(
-                child: Icon(
-                  Icons.play_arrow,
-                  size: 50.0,
-                  semanticLabel: L10n.of(context).play,
+      child:
+          _controller.value.isPlaying
+              ? const SizedBox.shrink()
+              : Container(
+                color: Colors.black26,
+                child: Center(
+                  child: Icon(
+                    Icons.play_arrow,
+                    size: 50.0,
+                    semanticLabel: L10n.of(context).play,
+                  ),
                 ),
               ),
-            ),
     );
   }
 

@@ -5,7 +5,7 @@ import 'package:acter/features/invite_members/widgets/space_member_invite_card.d
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -15,10 +15,7 @@ final _log = Logger('a3::invite::space_members');
 class InviteSpaceMembers extends ConsumerStatefulWidget {
   final String roomId;
 
-  const InviteSpaceMembers({
-    super.key,
-    required this.roomId,
-  });
+  const InviteSpaceMembers({super.key, required this.roomId});
 
   @override
   ConsumerState<InviteSpaceMembers> createState() =>
@@ -31,10 +28,7 @@ class _InviteSpaceMembersConsumerState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   AppBar _buildAppBar() {
@@ -111,15 +105,14 @@ class _InviteSpaceMembersConsumerState
   }
 
   Widget _buildOtherSpace() {
-    final spacesLoader =
-        ref.watch(otherSpacesForInviteMembersProvider(widget.roomId));
+    final spacesLoader = ref.watch(
+      otherSpacesForInviteMembersProvider(widget.roomId),
+    );
     return spacesLoader.when(
       data: _buildOtherSpaceData,
       error: (e, s) {
         _log.severe('Failed to load other spaces', e, s);
-        return ListTile(
-          title: Text(L10n.of(context).loadingFailed(e)),
-        );
+        return ListTile(title: Text(L10n.of(context).loadingFailed(e)));
       },
       loading: () => _buildSkeletonizerLoading(),
     );
@@ -192,8 +185,9 @@ class _InviteSpaceMembersConsumerState
         );
         return;
       }
-      final invitedMemebers =
-          await ref.read(roomInvitedMembersProvider(widget.roomId).future);
+      final invitedMemebers = await ref.read(
+        roomInvitedMembersProvider(widget.roomId).future,
+      );
       final invited =
           invitedMemebers.map((e) => e.userId().toString()).toList();
       final joined = await ref.read(membersIdsProvider(widget.roomId).future);

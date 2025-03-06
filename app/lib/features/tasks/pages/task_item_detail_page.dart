@@ -14,8 +14,8 @@ import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/render_html.dart';
-import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/types.dart';
 import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
@@ -26,12 +26,12 @@ import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter/features/tasks/widgets/skeleton/task_item_detail_page_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_status_widget.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -56,13 +56,11 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  AppBar _buildAppBar(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final task = ref
-        .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
-        .valueOrNull;
+  AppBar _buildAppBar(BuildContext context, WidgetRef ref) {
+    final task =
+        ref
+            .watch(taskItemProvider((taskListId: taskListId, taskId: taskId)))
+            .valueOrNull;
     if (task == null) {
       return AppBar();
     }
@@ -82,42 +80,29 @@ class TaskItemDetailPage extends ConsumerWidget {
                     context: context,
                     bottomSheetTitle: lang.editName,
                     titleValue: task.title(),
-                    onSave: (ref, newName) =>
-                        saveTitle(context, ref, task, newName),
+                    onSave:
+                        (ref, newName) =>
+                            saveTitle(context, ref, task, newName),
                   );
                 },
-                child: Text(
-                  lang.editTitle,
-                  style: textTheme.bodyMedium,
-                ),
+                child: Text(lang.editTitle, style: textTheme.bodyMedium),
               ),
               PopupMenuItem(
                 onTap: () => showEditDescriptionSheet(context, task),
-                child: Text(
-                  lang.editDescription,
-                  style: textTheme.bodyMedium,
-                ),
+                child: Text(lang.editDescription, style: textTheme.bodyMedium),
               ),
               PopupMenuItem(
-                onTap: () => showRedactDialog(
-                  context: context,
-                  ref: ref,
-                  task: task,
-                ),
-                child: Text(
-                  lang.delete,
-                  style: textTheme.bodyMedium,
-                ),
+                onTap:
+                    () => showRedactDialog(
+                      context: context,
+                      ref: ref,
+                      task: task,
+                    ),
+                child: Text(lang.delete, style: textTheme.bodyMedium),
               ),
               PopupMenuItem(
-                onTap: () => showReportDialog(
-                  context: context,
-                  task: task,
-                ),
-                child: Text(
-                  lang.report,
-                  style: textTheme.bodyMedium,
-                ),
+                onTap: () => showReportDialog(context: context, task: task),
+                child: Text(lang.report, style: textTheme.bodyMedium),
               ),
             ];
           },
@@ -159,12 +144,10 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
-    final taskLoader =
-        ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
+    final taskLoader = ref.watch(
+      taskItemProvider((taskListId: taskListId, taskId: taskId)),
+    );
     final errored = taskLoader.asError;
     if (errored != null) {
       _log.severe('Failed to load task', errored.error, errored.stackTrace);
@@ -225,15 +208,13 @@ class TaskItemDetailPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
-            onTap: () => showEditTaskItemNameBottomSheet(
-              context: context,
-              task: task,
-              titleValue: task.title(),
-            ),
-            child: Text(
-              task.title(),
-              style: textTheme.titleMedium,
-            ),
+            onTap:
+                () => showEditTaskItemNameBottomSheet(
+                  context: context,
+                  task: task,
+                  titleValue: task.title(),
+                ),
+            child: Text(task.title(), style: textTheme.titleMedium),
           ),
           if (taskList != null)
             Wrap(
@@ -242,10 +223,11 @@ class TaskItemDetailPage extends ConsumerWidget {
                 SpaceChip(spaceId: taskList.spaceIdStr(), useCompactView: true),
                 const SizedBox(width: 5),
                 InkWell(
-                  onTap: () => context.pushNamed(
-                    Routes.taskListDetails.name,
-                    pathParameters: {'taskListId': taskListId},
-                  ),
+                  onTap:
+                      () => context.pushNamed(
+                        Routes.taskListDetails.name,
+                        pathParameters: {'taskListId': taskListId},
+                      ),
                   child: Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
@@ -259,10 +241,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                           taskList.display()?.iconStr(),
                         ),
                       ),
-                      Text(
-                        taskList.name(),
-                        style: textTheme.labelMedium,
-                      ),
+                      Text(taskList.name(), style: textTheme.labelMedium),
                     ],
                   ),
                 ),
@@ -273,10 +252,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     );
   }
 
-  List<Widget> _widgetDescription(
-    BuildContext context,
-    Task task,
-  ) {
+  List<Widget> _widgetDescription(BuildContext context, Task task) {
     final description = task.description();
     if (description == null) return [];
     final formattedBody = description.formattedBody();
@@ -291,25 +267,20 @@ class TaskItemDetailPage extends ConsumerWidget {
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: formattedBody != null
-                ? RenderHtml(
-                    text: formattedBody,
-                    defaultTextStyle: textTheme.labelLarge,
-                  )
-                : Text(
-                    description.body(),
-                    style: textTheme.labelLarge,
-                  ),
+            child:
+                formattedBody != null
+                    ? RenderHtml(
+                      text: formattedBody,
+                      defaultTextStyle: textTheme.labelLarge,
+                    )
+                    : Text(description.body(), style: textTheme.labelLarge),
           ),
         ),
       ),
     ];
   }
 
-  void showEditDescriptionSheet(
-    BuildContext context,
-    Task task,
-  ) {
+  void showEditDescriptionSheet(BuildContext context, Task task) {
     showEditHtmlDescriptionBottomSheet(
       context: context,
       descriptionHtmlValue: task.description()?.formattedBody(),
@@ -339,11 +310,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       final updater = task.updateBuilder();
       updater.descriptionHtml(plainDescription, htmlBodyDescription);
       await updater.send();
-      await autosubscribe(
-        ref: ref,
-        objectId: task.eventIdStr(),
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       EasyLoading.dismiss();
       if (context.mounted) Navigator.pop(context);
     } catch (e, s) {
@@ -364,23 +331,17 @@ class TaskItemDetailPage extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final dateText =
         task.dueDate().map((date) => taskDueDateFormat(DateTime.parse(date))) ??
-            lang.noDueDate;
+        lang.noDueDate;
     return ListTile(
       dense: true,
       leading: const Padding(
         padding: EdgeInsets.only(left: 15),
         child: Icon(Atlas.calendar_date_thin),
       ),
-      title: Text(
-        lang.dueDate,
-        style: textTheme.bodyMedium,
-      ),
+      title: Text(lang.dueDate, style: textTheme.bodyMedium),
       trailing: Padding(
         padding: const EdgeInsets.only(right: 12),
-        child: Text(
-          dateText,
-          style: textTheme.bodyMedium,
-        ),
+        child: Text(dateText, style: textTheme.bodyMedium),
       ),
       onTap: () => duePickerAction(context, ref, task),
     );
@@ -404,7 +365,8 @@ class TaskItemDetailPage extends ConsumerWidget {
       final updater = task.updateBuilder();
       updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
       if (newDue.includeTime) {
-        final seconds = newDue.due.hour * 60 * 60 +
+        final seconds =
+            newDue.due.hour * 60 * 60 +
             newDue.due.minute * 60 +
             newDue.due.second;
         // adapt the timezone value
@@ -415,11 +377,7 @@ class TaskItemDetailPage extends ConsumerWidget {
       }
       await updater.send();
 
-      await autosubscribe(
-        ref: ref,
-        objectId: task.eventIdStr(),
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;
@@ -449,27 +407,24 @@ class TaskItemDetailPage extends ConsumerWidget {
       ),
       title: Row(
         children: [
-          Text(
-            lang.assignment,
-            style: textTheme.bodyMedium,
-          ),
+          Text(lang.assignment, style: textTheme.bodyMedium),
           const Spacer(),
           ActerInlineTextButton(
-            onPressed: () => task.isAssignedToMe()
-                ? onUnAssign(context, ref, task)
-                : onAssign(context, ref, task),
+            onPressed:
+                () =>
+                    task.isAssignedToMe()
+                        ? onUnAssign(context, ref, task)
+                        : onAssign(context, ref, task),
             child: Text(
               task.isAssignedToMe() ? lang.removeMyself : lang.assignMyself,
             ),
           ),
         ],
       ),
-      subtitle: task.isAssignedToMe()
-          ? assigneeName(context, task, ref)
-          : Text(
-              lang.noAssignment,
-              style: textTheme.bodyMedium,
-            ),
+      subtitle:
+          task.isAssignedToMe()
+              ? assigneeName(context, task, ref)
+              : Text(lang.noAssignment, style: textTheme.bodyMedium),
     );
   }
 
@@ -479,21 +434,28 @@ class TaskItemDetailPage extends ConsumerWidget {
 
     return Wrap(
       direction: Axis.horizontal,
-      children: assignees.map((userId) {
-        final dispName = ref
-            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
-            .valueOrNull;
-        return Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: Chip(
-            labelPadding: EdgeInsets.zero,
-            label: Text(
-              dispName ?? userId,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        );
-      }).toList(),
+      children:
+          assignees.map((userId) {
+            final dispName =
+                ref
+                    .watch(
+                      memberDisplayNameProvider((
+                        roomId: roomId,
+                        userId: userId,
+                      ),),
+                    )
+                    .valueOrNull;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Chip(
+                labelPadding: EdgeInsets.zero,
+                label: Text(
+                  dispName ?? userId,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 
@@ -503,11 +465,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     try {
       await task.assignSelf();
 
-      await autosubscribe(
-        ref: ref,
-        objectId: task.eventIdStr(),
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) return;
       EasyLoading.showToast(lang.assignedYourself);
     } catch (e, s) {
@@ -533,11 +491,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     try {
       await task.unassignSelf();
 
-      await autosubscribe(
-        ref: ref,
-        objectId: task.eventIdStr(),
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) return;
       EasyLoading.showToast(lang.assignmentWithdrawn);
     } catch (e, s) {
@@ -579,11 +533,7 @@ class TaskItemDetailPage extends ConsumerWidget {
     try {
       await updater.send();
 
-      await autosubscribe(
-        ref: ref,
-        objectId: task.eventIdStr(),
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       EasyLoading.dismiss();
       if (!context.mounted) return;
       Navigator.pop(context);

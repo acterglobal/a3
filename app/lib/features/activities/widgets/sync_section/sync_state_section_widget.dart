@@ -4,7 +4,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget? buildSyncingStateSectionWidget(BuildContext context, WidgetRef ref) {
@@ -12,8 +12,9 @@ Widget? buildSyncingStateSectionWidget(BuildContext context, WidgetRef ref) {
   final subTitleTextStyle = Theme.of(context).textTheme.labelMedium;
   final syncState = ref.watch(syncStateProvider);
   final String? errorMsg = syncState.errorMsg;
-  final Duration? retryDuration =
-      syncState.countDown.map((countDown) => Duration(seconds: countDown));
+  final Duration? retryDuration = syncState.countDown.map(
+    (countDown) => Duration(seconds: countDown),
+  );
 
   if (!ref.watch(hasFirstSyncedProvider)) {
     return buildSyncingStateCard(lang, subTitleTextStyle);
@@ -53,15 +54,9 @@ Widget buildSyncingErrorStateCard(
         retryDuration == null
             ? lang.retrying
             : lang.retryIn(
-                retryDuration.inMinutes
-                    .remainder(60)
-                    .toString()
-                    .padLeft(2, '0'),
-                retryDuration.inSeconds
-                    .remainder(60)
-                    .toString()
-                    .padLeft(2, '0'),
-              ),
+              retryDuration.inMinutes.remainder(60).toString().padLeft(2, '0'),
+              retryDuration.inSeconds.remainder(60).toString().padLeft(2, '0'),
+            ),
         style: subTitleTextStyle,
       ),
     ),

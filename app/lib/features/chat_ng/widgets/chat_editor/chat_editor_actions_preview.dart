@@ -14,7 +14,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:intl/intl.dart';
 
 class ChatEditorActionsPreview extends ConsumerWidget {
@@ -48,8 +48,9 @@ class ChatEditorActionsPreview extends ConsumerWidget {
       );
       children.add(_buildRepliedToItem(context, msgItem));
     } else if (chatEditorState.isEditing) {
-      children
-          .add(_buildPreviewView(context, ref, editPreviewItems(context, ref)));
+      children.add(
+        _buildPreviewView(context, ref, editPreviewItems(context, ref)),
+      );
       // add a bit space for clean UI
       children.add(const SizedBox(height: 12));
     }
@@ -66,11 +67,7 @@ class ChatEditorActionsPreview extends ConsumerWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(
-          top: 12.0,
-          left: 16.0,
-          right: 16.0,
-        ),
+        padding: const EdgeInsets.only(top: 12.0, left: 16.0, right: 16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,18 +100,13 @@ class ChatEditorActionsPreview extends ConsumerWidget {
 
               await saveMsgDraft(body, bodyHtml, roomId, ref);
               textEditorState.updateSelectionWithReason(
-                Selection.single(
-                  path: [0],
-                  startOffset: body.length - 1,
-                ),
+                Selection.single(path: [0], startOffset: body.length - 1),
                 reason: SelectionUpdateReason.uiEvent,
               );
             }
             if (isEdit) textEditorState.clear();
           },
-          child: const Icon(
-            Atlas.xmark_circle,
-          ),
+          child: const Icon(Atlas.xmark_circle),
         ),
       ],
     );
@@ -123,49 +115,29 @@ class ChatEditorActionsPreview extends ConsumerWidget {
   List<Widget> replyPreviewItems(
     BuildContext context,
     AvatarInfo memberAvatar,
-  ) =>
-      [
-        const SizedBox(width: 1),
-        const Icon(
-          Icons.reply_rounded,
-          size: 12,
-          color: Colors.grey,
-        ),
-        const SizedBox(width: 4),
-        ActerAvatar(
-          options: AvatarOptions.DM(
-            memberAvatar,
-            size: 12,
-          ),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          L10n.of(context).replyTo(toBeginningOfSentenceCase(msgItem.sender())),
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-          ),
-        ),
-        const Spacer(),
-      ];
+  ) => [
+    const SizedBox(width: 1),
+    const Icon(Icons.reply_rounded, size: 12, color: Colors.grey),
+    const SizedBox(width: 4),
+    ActerAvatar(options: AvatarOptions.DM(memberAvatar, size: 12)),
+    const SizedBox(width: 5),
+    Text(
+      L10n.of(context).replyTo(toBeginningOfSentenceCase(msgItem.sender())),
+      style: const TextStyle(color: Colors.grey, fontSize: 12),
+    ),
+    const Spacer(),
+  ];
 
   List<Widget> editPreviewItems(BuildContext context, WidgetRef ref) => [
-        const SizedBox(width: 1),
-        const Icon(
-          Atlas.pencil_edit_thin,
-          size: 12,
-          color: Colors.grey,
-        ),
-        const SizedBox(width: 4),
-        Text(
-          L10n.of(context).editMessage,
-          style: const TextStyle(
-            color: Colors.grey,
-            fontSize: 12,
-          ),
-        ),
-        const Spacer(),
-      ];
+    const SizedBox(width: 1),
+    const Icon(Atlas.pencil_edit_thin, size: 12, color: Colors.grey),
+    const SizedBox(width: 4),
+    Text(
+      L10n.of(context).editMessage,
+      style: const TextStyle(color: Colors.grey, fontSize: 12),
+    ),
+    const Spacer(),
+  ];
 
   Widget _buildRepliedToItem(BuildContext context, RoomEventItem item) {
     final messageId = item.eventId();
@@ -179,26 +151,22 @@ class ChatEditorActionsPreview extends ConsumerWidget {
       'm.emote' ||
       'm.notice' ||
       'm.server_notice' ||
-      'm.text' =>
-        TextMessageEvent(
-          content: content,
-          roomId: roomId,
-        ),
+      'm.text' => TextMessageEvent(content: content, roomId: roomId),
       'm.image' => ImageMessageEvent(
-          messageId: messageId,
-          roomId: roomId,
-          content: content,
-        ),
+        messageId: messageId,
+        roomId: roomId,
+        content: content,
+      ),
       'm.video' => VideoMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       'm.file' => FileMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       _ => const SizedBox.shrink(),
     };
 
