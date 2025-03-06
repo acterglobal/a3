@@ -1,2 +1,0 @@
-- [Labs] Chat-NG:
-  - [fix]: Chat editor field now keeps focus retained initially when entering chat room and after sending message.
