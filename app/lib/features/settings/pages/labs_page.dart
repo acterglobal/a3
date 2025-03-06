@@ -43,6 +43,16 @@ class SettingsLabsPage extends ConsumerWidget {
                         newVal,
                       ),
                 ),
+                SettingsTile.switchTile(
+                  title: Text(lang.htmlNextFeatureTitle),
+                  description: Text(lang.htmlNextFeatureDescription),
+                  initialValue: ref.watch(
+                    isActiveProvider(LabsFeature.htmlNext),
+                  ),
+                  onToggle:
+                      (newVal) =>
+                          updateFeatureState(ref, LabsFeature.htmlNext, newVal),
+                ),
               ],
             ),
             SettingsSection(

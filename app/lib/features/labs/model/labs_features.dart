@@ -11,6 +11,7 @@ enum LabsFeature {
   // specific features
   chatUnread,
   chatNG,
+  htmlNext,
 
   // system features
   encryptionBackup,
@@ -33,7 +34,8 @@ enum LabsFeature {
   static List<LabsFeature> get releaseDefaults => [];
 
   static List<LabsFeature> get nightlyDefaults => [
-        LabsFeature.encryptionBackup,
-        // LabsFeature.chatNG,
-      ];
+    LabsFeature.encryptionBackup,
+    LabsFeature.htmlNext,
+    // LabsFeature.chatNG,
+  ];
 }
