@@ -28,7 +28,6 @@ class _MatrixRenderHtml extends ConsumerWidget {
     this.renderNewlines = false,
     this.pillBuilder,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return matrixHtml.Html(

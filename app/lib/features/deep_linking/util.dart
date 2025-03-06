@@ -17,6 +17,7 @@ ObjectType? typeFromRefDetails(RefDetails refDetails) => switch (refDetails
   'attachment' => ObjectType.attachment,
   'space' => ObjectType.space,
   'chat' => ObjectType.chat,
+  'story' => ObjectType.story,
   _ => null,
 };
 
@@ -31,6 +32,7 @@ IconData getIconByType(ObjectType? refType) => switch (refType) {
   ObjectType.attachment => Atlas.paperclip_thin,
   ObjectType.space => Atlas.team_group,
   ObjectType.chat => Atlas.chats,
+  ObjectType.story => Atlas.newspaper,
 };
 
 String subtitleForType(BuildContext context, ObjectType? refType) =>
@@ -45,4 +47,5 @@ String subtitleForType(BuildContext context, ObjectType? refType) =>
       ObjectType.attachment => L10n.of(context).attachments,
       ObjectType.space => L10n.of(context).space,
       ObjectType.chat => L10n.of(context).chat,
+      ObjectType.story => L10n.of(context).story,
     };

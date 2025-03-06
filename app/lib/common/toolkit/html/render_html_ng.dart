@@ -46,7 +46,12 @@ class RenderHtmlNg extends ConsumerWidget {
             return null;
           }
           try {
-            return _buildPill(parseActerUri(uri));
+            final parsed = parseActerUri(uri);
+            if (parsed.titleMatches(element.text)) {
+              return _buildPill(parsed);
+            } else {
+              return null;
+            }
           } on SchemeNotSupported {
             return null;
           } on IncorrectHashError {
