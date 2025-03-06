@@ -6727,8 +6727,7 @@ dependencies = [
 [[package]]
 name = "url-preview"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae49fe5fc7d8ce9116e72fcf7e04b6388a8b68114811ab507dcc27709511beb7"
+source = "git+https://github.com/acterglobal/url-preview?branch=android-support#45a7d020d1dd0d67adc5cf0634f863196ea7febc"
 dependencies = [
  "async-trait",
  "dashmap 6.1.0",
