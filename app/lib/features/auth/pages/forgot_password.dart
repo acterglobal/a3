@@ -9,7 +9,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -45,8 +45,9 @@ class _ForgotPasswordState extends ConsumerState<ForgotPassword> {
         ),
       );
     }
-    return tokenResponse
-            .map((resp) => _NewPassword(tokenResponse: resp, sdk: sdk)) ??
+    return tokenResponse.map(
+          (resp) => _NewPassword(tokenResponse: resp, sdk: sdk),
+        ) ??
         _AskForEmail(
           sdk: sdk,
           onSubmit: (resp) => setState(() => tokenResponse = resp),
@@ -58,20 +59,14 @@ class _AskForEmail extends StatelessWidget {
   final void Function(PasswordChangeEmailTokenResponse) onSubmit;
   final ActerSdk sdk;
 
-  _AskForEmail({
-    required this.onSubmit,
-    required this.sdk,
-  });
+  _AskForEmail({required this.onSubmit, required this.sdk});
 
   final formKey = GlobalKey<FormState>(debugLabel: 'ask for email form');
   final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildBody(context),
-    );
+    return Scaffold(appBar: _buildAppbar(), body: _buildBody(context));
   }
 
   AppBar _buildAppbar() {
@@ -114,10 +109,9 @@ class _AskForEmail extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             lang.passwordResetTitle,
-            style: Theme.of(context)
-                .textTheme
-                .displaySmall
-                ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+              color: Theme.of(context).colorScheme.textHighlight,
+            ),
           ),
         ),
         const SizedBox(height: 20),
@@ -202,20 +196,14 @@ class _NewPassword extends StatelessWidget {
   final PasswordChangeEmailTokenResponse tokenResponse;
   final ActerSdk sdk;
 
-  _NewPassword({
-    required this.tokenResponse,
-    required this.sdk,
-  });
+  _NewPassword({required this.tokenResponse, required this.sdk});
 
   final formKey = GlobalKey<FormState>(debugLabel: 'new password form');
   final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppbar(),
-      body: _buildBody(context),
-    );
+    return Scaffold(appBar: _buildAppbar(), body: _buildBody(context));
   }
 
   AppBar _buildAppbar() {
@@ -255,10 +243,9 @@ class _NewPassword extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             L10n.of(context).passwordResetTitle,
-            style: Theme.of(context)
-                .textTheme
-                .displaySmall
-                ?.copyWith(color: Theme.of(context).colorScheme.textHighlight),
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+              color: Theme.of(context).colorScheme.textHighlight,
+            ),
           ),
         ),
       ],
@@ -281,13 +268,14 @@ class _NewPassword extends StatelessWidget {
           TextFormField(
             key: ForgotPassword.passwordKey,
             controller: passwordController,
-            decoration: InputDecoration(
-              hintText: lang.hintMessagePassword,
-            ),
+            decoration: InputDecoration(hintText: lang.hintMessagePassword),
             style: Theme.of(context).textTheme.labelLarge,
             // required field, space allowed
-            validator: (val) =>
-                val == null || val.length < 6 ? lang.hintMessagePassword : null,
+            validator:
+                (val) =>
+                    val == null || val.length < 6
+                        ? lang.hintMessagePassword
+                        : null,
           ),
         ],
       ),

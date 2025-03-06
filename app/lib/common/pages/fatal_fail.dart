@@ -5,7 +5,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -15,11 +15,7 @@ class FatalFailPage extends ConsumerStatefulWidget {
   final String error;
   final String trace;
 
-  const FatalFailPage({
-    super.key,
-    required this.error,
-    required this.trace,
-  });
+  const FatalFailPage({super.key, required this.error, required this.trace});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FatalFailPageState();
@@ -40,9 +36,7 @@ class _FatalFailPageState extends ConsumerState<FatalFailPage> {
     final height = MediaQuery.of(context).size.height / 4;
     final lang = L10n.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(lang.fatalError),
-      ),
+      appBar: AppBar(title: Text(lang.fatalError)),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(

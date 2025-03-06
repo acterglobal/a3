@@ -1188,6 +1188,11 @@
     "needToBeMemberOf": "you need to be member of",
     "@needToBeMemberOf": {},
     "@to": {},
+    "yesterday": "Yesterday",
+    "commentedOn": "Commented on",
+    "reactedOn": "Reacted on",
+    "addedAttachmentOn": "Added attachment on",
+    "addedReferencesOn": "Added references on",
     "today": "Today",
     "@today": {},
     "token": "token",
@@ -2292,6 +2297,7 @@
     "post": "Post",
     "stories": "Stories",
     "addStory": "Add Story",
+    "spaceActivities": "Space Activities",
     "unableToLoadFile": "Unable to load file",
     "@addComment": {}
 }

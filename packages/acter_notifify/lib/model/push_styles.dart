@@ -33,3 +33,17 @@ enum PushStyles {
 
   final String emoji;
 }
+
+//LIST OF PUSH STYLE EMOJIS
+enum SpaceObjectTypes {
+  //LIST OF OBJECT EMOJIS
+  news('🚀'),
+  pin('📌'),
+  event('🗓️'),
+  taskList('📋'),
+  taskItem('☑️');
+
+  const SpaceObjectTypes(this.emoji);
+
+  final String emoji;
+}

@@ -4,7 +4,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 class IntroProfile extends StatelessWidget {
@@ -12,10 +12,7 @@ class IntroProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: _buildBody(context),
-    );
+    return Scaffold(resizeToAvoidBottomInset: true, body: _buildBody(context));
   }
 
   Widget _buildBody(BuildContext context) {
@@ -29,10 +26,7 @@ class IntroProfile extends StatelessWidget {
             child: Column(
               children: [
                 const Spacer(),
-                LogoWidget(
-                  height: imageSize,
-                  width: imageSize,
-                ),
+                LogoWidget(height: imageSize, width: imageSize),
                 const SizedBox(height: 30),
                 _buildHeadlineText(context),
                 const SizedBox(height: 10),
@@ -116,10 +110,7 @@ class IntroProfile extends StatelessWidget {
             ActerPrimaryActionButton(
               key: LoginPageKeys.signUpBtn,
               onPressed: () => context.pushNamed(Routes.authRegister.name),
-              child: Text(
-                lang.signUp,
-                style: textTheme.bodyMedium,
-              ),
+              child: Text(lang.signUp, style: textTheme.bodyMedium),
             ),
             const SizedBox(height: 16),
             Text(
@@ -131,10 +122,7 @@ class IntroProfile extends StatelessWidget {
             OutlinedButton(
               key: Keys.loginBtn,
               onPressed: () => context.pushNamed(Routes.authLogin.name),
-              child: Text(
-                lang.logIn,
-                style: textTheme.bodyMedium,
-              ),
+              child: Text(lang.logIn, style: textTheme.bodyMedium),
             ),
           ],
         ),

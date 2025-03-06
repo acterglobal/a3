@@ -29,7 +29,6 @@ void main() {
 
     // Mock the values expected by the widget
     when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');
-    when(() => mockAvatarInfo.displayName).thenReturn('Test User');
   });
 
   testWidgets(

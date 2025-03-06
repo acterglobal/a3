@@ -8,6 +8,9 @@ pub enum ActivityObject {
     News {
         object_id: OwnedEventId,
     },
+    Story {
+        object_id: OwnedEventId,
+    },
     Pin {
         object_id: OwnedEventId,
         title: String,
@@ -38,6 +41,7 @@ impl ActivityObject {
             ActivityObject::CalendarEvent { .. } => "event",
             ActivityObject::TaskList { .. } => "task-list",
             ActivityObject::Task { .. } => "task",
+            ActivityObject::Story { .. } => "story",
             ActivityObject::Unknown { .. } => "unknown",
         }
         .to_owned()
@@ -49,12 +53,15 @@ impl ActivityObject {
             | ActivityObject::TaskList { object_id, .. }
             | ActivityObject::Task { object_id, .. }
             | ActivityObject::Unknown { object_id, .. }
-            | ActivityObject::CalendarEvent { object_id, .. } => object_id.to_string(),
+            | ActivityObject::CalendarEvent { object_id, .. }
+            | ActivityObject::Story { object_id, .. } => object_id.to_string(),
         }
     }
     pub fn title(&self) -> Option<String> {
         match self {
-            ActivityObject::News { .. } | ActivityObject::Unknown { .. } => None,
+            ActivityObject::News { .. }
+            | ActivityObject::Unknown { .. }
+            | ActivityObject::Story { .. } => None,
             ActivityObject::Pin { title, .. }
             | ActivityObject::TaskList { title, .. }
             | ActivityObject::Task { title, .. }
@@ -65,6 +72,7 @@ impl ActivityObject {
     pub fn target_url(&self) -> String {
         match self {
             ActivityObject::News { object_id } => format!("/updates/{}", object_id),
+            ActivityObject::Story { object_id } => format!("/updates/{}", object_id),
             ActivityObject::Pin { object_id, .. } => format!("/pins/{}", object_id),
             ActivityObject::TaskList { object_id, .. } => format!("/tasks/{}", object_id),
             ActivityObject::Task {
@@ -87,6 +95,7 @@ impl ActivityObject {
             ActivityObject::CalendarEvent { .. } => "🗓️", // calendar
             ActivityObject::Task { .. } => "☑️",          // task -> checkoff
             ActivityObject::Unknown { .. } => "🧩",       // puzzle piece if unknown
+            ActivityObject::Story { .. } => "📰",         //  for story
         }
         .to_owned()
     }
@@ -98,6 +107,9 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
     fn try_from(value: &AnyActerModel) -> std::result::Result<Self, Self::Error> {
         match value {
             AnyActerModel::NewsEntry(e) => Ok(ActivityObject::News {
+                object_id: e.event_id().to_owned(),
+            }),
+            AnyActerModel::Story(e) => Ok(ActivityObject::Story {
                 object_id: e.event_id().to_owned(),
             }),
             AnyActerModel::CalendarEvent(e) => Ok(ActivityObject::CalendarEvent {
@@ -125,7 +137,6 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
             | AnyActerModel::TaskSelfUnassign(_)
             | AnyActerModel::PinUpdate(_)
             | AnyActerModel::NewsEntryUpdate(_)
-            | AnyActerModel::Story(_)
             | AnyActerModel::StoryUpdate(_)
             | AnyActerModel::Comment(_)
             | AnyActerModel::CommentUpdate(_)

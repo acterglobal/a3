@@ -7,7 +7,7 @@ import 'package:acter/features/news/providers/news_post_editor_providers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum PostTypeSelection { story, boost, none }
@@ -20,8 +20,9 @@ class AddNewsPostToPage extends ConsumerStatefulWidget {
 }
 
 class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
-  ValueNotifier<PostTypeSelection> selectedPostType =
-      ValueNotifier(PostTypeSelection.none);
+  ValueNotifier<PostTypeSelection> selectedPostType = ValueNotifier(
+    PostTypeSelection.none,
+  );
   ValueNotifier<bool> canPostBoost = ValueNotifier(false);
   ValueNotifier<bool> canPostStories = ValueNotifier(false);
 
@@ -42,10 +43,7 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
     }
 
     //Start build UI
-    return Scaffold(
-      appBar: appBarUI(),
-      body: postToBodyUI(selectedSpaceId),
-    );
+    return Scaffold(appBar: appBarUI(), body: postToBodyUI(selectedSpaceId));
   }
 
   AppBar appBarUI() {
@@ -101,9 +99,10 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: SelectSpaceFormField(
-        canCheck: (m) =>
-            m?.canString('CanPostNews') == true ||
-            m?.canString('CanPostStories') == true,
+        canCheck:
+            (m) =>
+                m?.canString('CanPostNews') == true ||
+                m?.canString('CanPostStories') == true,
         onSpaceSelected: (spaceId) {
           ref.read(newsStateProvider.notifier).changeNewsPostSpaceId(context);
         },
@@ -132,9 +131,10 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
     required IconData iconData,
     required PostTypeSelection postTypeSelection,
   }) {
-    final color = !isEnable
-        ? Theme.of(context).disabledColor
-        : Theme.of(context).colorScheme.onSurface;
+    final color =
+        !isEnable
+            ? Theme.of(context).disabledColor
+            : Theme.of(context).colorScheme.onSurface;
     return InkWell(
       onTap: isEnable ? () => selectedPostType.value = postTypeSelection : null,
       child: Padding(
@@ -151,10 +151,9 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
                   Text(title, style: TextStyle(color: color)),
                   Text(
                     description,
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(color: color),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelMedium?.copyWith(color: color),
                   ),
                 ],
               ),
@@ -165,9 +164,10 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
                 return Radio(
                   value: postTypeSelection,
                   groupValue: postType,
-                  onChanged: isEnable
-                      ? (value) => selectedPostType.value = postType
-                      : null,
+                  onChanged:
+                      isEnable
+                          ? (value) => selectedPostType.value = postType
+                          : null,
                   toggleable: isEnable,
                 );
               },

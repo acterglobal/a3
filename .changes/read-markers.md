@@ -1,2 +1,0 @@
-- [Labs] Only show read markers when activated
-- [Labs] Send Read Marker (if activated) upon end scroll in chat

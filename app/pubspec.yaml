@@ -18,8 +18,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.0.1+1
 
 environment:
-  sdk: ">=3.6.2"
-  flutter: ^3.27.4
+  sdk: ">=3.7.0"
+  flutter: ^3.29.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   # UI
   flutter_adaptive_scaffold: ^0.3.1
   atlas_icons: ^0.0.12
@@ -48,11 +47,12 @@ dependencies:
   cross_file_image: ^1.0.0
   flutter_keyboard_visibility: ^6.0.0
   cached_network_image: ^3.4.1
-  fc_native_video_thumbnail: ^0.16.1
+  fc_native_video_thumbnail: ^0.17.2
   flutter_matrix_html:
     # path: "../../flutter_matrix_html"
     git:
       url: https://github.com/acterglobal/flutter_matrix_html.git
+  flutter_slidable: ^4.0.0
   quds_popup_menu: ^0.0.1+1
   acter_avatar:
 #    path: "../../acter-avatar"
@@ -92,7 +92,7 @@ dependencies:
   path: ^1.8.3
   url_launcher: ^6.1.10
   file_picker: ^8.1.2
-  emoji_picker_flutter: ^3.0.0
+  emoji_picker_flutter: ^4.3.0
   connectivity_plus: ^6.0.3
   mime: ^2.0.0
   freezed_annotation: ^2.4.1
@@ -124,9 +124,9 @@ dependencies:
   stack_trace: ^1.11.1
   tutorial_coach_mark: ^1.2.11
   flutter_typeahead: ^5.2.0
-  pinch_zoom_release_unzoom: ^1.0.3
+  pinch_zoom_release_unzoom: ^2.0.0
   dotted_border: ^2.1.0
-  firebase_core: ^3.4.0
+  firebase_core: ^3.12.0
   scrolls_to_top: ^2.1.1
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
@@ -140,7 +140,11 @@ dependencies:
 
   shake_detector:
     path: ../packages/shake_detector
-  open_filex: ^4.5.0
+#  open_filex: ^4.6.0
+  open_filex:
+    git:
+     url: https://github.com/mufassalhussain/open_filex
+     ref: 7ec56421afc37bb2cc3cb751b9775999cd2d9a61
   phosphor_flutter: ^2.1.0
   device_calendar: ^4.3.3-20240801
   quickalert: ^1.1.0
@@ -153,9 +157,9 @@ dependencies:
   app_links: ^6.3.3
   pretty_qr_code: ^3.3.0
   qr_code_dart_scan: ^0.9.3
-  appcheck: ^1.5.2
+  appcheck: ^1.5.3
   screen_retriever: ^0.1.9
-  android_intent_plus: ^5.2.1
+  android_intent_plus: ^5.2.2
   collection: ^1.18.0
   preload_page_view: ^0.2.0
 
@@ -227,7 +231,7 @@ icons_launcher:
 # The following section is specific to Flutter.
 flutter:
   # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
+  # included with your application, so that you can use the icon
   # the material Icons class.
   uses-material-design: true
   generate: true

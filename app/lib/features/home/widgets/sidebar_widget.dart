@@ -18,7 +18,7 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,10 +42,7 @@ class _SidebarItemIndicator extends ConsumerStatefulWidget {
   final List<Routes> routes;
   final bool reversed;
 
-  const _SidebarItemIndicator({
-    required this.routes,
-    this.reversed = false,
-  });
+  const _SidebarItemIndicator({required this.routes, this.reversed = false});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -116,26 +113,15 @@ class _SidebarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget inner = InkWell(
-      onTap: onTap,
-      child: icon,
-    );
+    Widget inner = InkWell(onTap: onTap, child: icon);
     indicator.map((ind) {
-      inner = Stack(
-        children: [
-          Center(child: ind),
-          Center(child: inner),
-        ],
-      );
+      inner = Stack(children: [Center(child: ind), Center(child: inner)]);
     });
     return Container(
       height: 40,
       width: 40,
       key: tutorialGlobalKey,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 8,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: inner,
     );
   }
@@ -184,26 +170,15 @@ class SidebarWidget extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const _MyUserAvatar(),
-          const Divider(
-            indent: 18,
-            endIndent: 18,
-          ),
+          const Divider(indent: 18, endIndent: 18),
           ..._menuItems(context, ref),
-          const Divider(
-            indent: 18,
-            endIndent: 18,
-          ),
+          const Divider(indent: 18, endIndent: 18),
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                children: _spacesList(context, ref),
-              ),
+              child: Column(children: _spacesList(context, ref)),
             ),
           ),
-          const Divider(
-            indent: 18,
-            endIndent: 18,
-          ),
+          const Divider(indent: 18, endIndent: 18),
           quickActions(context, ref),
           if (isBugReportingEnabled) ..._bugReporter(context),
           const SizedBox(height: 12),
@@ -212,10 +187,7 @@ class SidebarWidget extends ConsumerWidget {
     );
   }
 
-  PopupMenuButton quickActions(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  PopupMenuButton quickActions(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     List<PopupMenuEntry> actions = [];
 
@@ -249,16 +221,16 @@ class SidebarWidget extends ConsumerWidget {
 
     final canAddPin =
         ref.watch(hasSpaceWithPermissionProvider('CanPostPin')).valueOrNull ??
-            false;
+        false;
     final canAddEvent =
         ref.watch(hasSpaceWithPermissionProvider('CanPostEvent')).valueOrNull ??
-            false;
+        false;
     final canAddTask =
         ref.watch(hasSpaceWithPermissionProvider('CanPostTask')).valueOrNull ??
-            false;
+        false;
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
-            false;
+        false;
     if (canAddPin) {
       actions.add(
         PopupMenuItem(
@@ -330,10 +302,7 @@ class SidebarWidget extends ConsumerWidget {
 
   List<Widget> _bugReporter(BuildContext context) {
     return [
-      const Divider(
-        indent: 18,
-        endIndent: 18,
-      ),
+      const Divider(indent: 18, endIndent: 18),
       InkWell(
         onTap: () => openBugReport(context),
         child: Padding(
@@ -369,11 +338,7 @@ class SidebarWidget extends ConsumerWidget {
           key: MainNavKeys.quickJump,
           size: 18,
         ),
-        label: Text(
-          'Jump',
-          style: textTheme.labelSmall,
-          softWrap: false,
-        ),
+        label: Text('Jump', style: textTheme.labelSmall, softWrap: false),
         onTap: () => goToBranch(ShellBranch.searchShell),
         tutorialGlobalKey: sidebarJumpToKey,
         indicator: const _SidebarItemIndicator(routes: [Routes.search]),
@@ -384,29 +349,17 @@ class SidebarWidget extends ConsumerWidget {
           key: MainNavKeys.dashboardHome,
           size: 18,
         ),
-        label: Text(
-          'Home',
-          style: textTheme.labelSmall,
-          softWrap: false,
-        ),
+        label: Text('Home', style: textTheme.labelSmall, softWrap: false),
         onTap: () => goToBranch(ShellBranch.homeShell),
         tutorialGlobalKey: sidebarDashboardKey,
         indicator: const _SidebarItemIndicator(
           reversed: true,
-          routes: [
-            Routes.search,
-            Routes.chat,
-            Routes.activities,
-          ],
+          routes: [Routes.search, Routes.chat, Routes.activities],
         ),
       ),
       _SidebarItem(
         icon: const ChatsIcon(),
-        label: Text(
-          'Chat',
-          style: textTheme.labelSmall,
-          softWrap: false,
-        ),
+        label: Text('Chat', style: textTheme.labelSmall, softWrap: false),
         onTap: () => goToBranch(ShellBranch.chatsShell),
         indicator: const _SidebarItemIndicator(routes: [Routes.chat]),
         tutorialGlobalKey: sidebarChatsKey,
@@ -415,16 +368,9 @@ class SidebarWidget extends ConsumerWidget {
         icon: const ActivitiesIcon(),
         label: Column(
           children: [
-            Text(
-              'Activities',
-              style: textTheme.labelSmall,
-              softWrap: false,
-            ),
+            Text('Activities', style: textTheme.labelSmall, softWrap: false),
             const SizedBox(height: 10),
-            const Divider(
-              indent: 10,
-              endIndent: 10,
-            ),
+            const Divider(indent: 10, endIndent: 10),
           ],
         ),
         onTap: () => goToBranch(ShellBranch.activitiesShell),

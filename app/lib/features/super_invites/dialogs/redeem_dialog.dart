@@ -4,7 +4,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -46,19 +46,20 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
                 }
                 return Text(lang.loadingFailed(e));
               },
-              loading: () => Skeletonizer(
-                child: Card(
-                  child: ListTile(
-                    leading: ActerAvatar(
-                      options: const AvatarOptions.DM(
-                        AvatarInfo(uniqueId: 'nothing'),
-                        size: 18,
+              loading:
+                  () => Skeletonizer(
+                    child: Card(
+                      child: ListTile(
+                        leading: ActerAvatar(
+                          options: const AvatarOptions.DM(
+                            AvatarInfo(uniqueId: 'nothing'),
+                            size: 18,
+                          ),
+                        ),
+                        title: const Text('some random name'),
                       ),
                     ),
-                    title: const Text('some random name'),
                   ),
-                ),
-              ),
             ),
           ],
         ),
@@ -92,10 +93,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
           subtitle: Text(lang.superInvitedTo(info.roomsCount())),
           leading: ActerAvatar(
             options: AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: userId,
-                displayName: displayName,
-              ),
+              AvatarInfo(uniqueId: userId, displayName: displayName),
               size: 18,
             ),
           ),
@@ -116,10 +114,7 @@ class _ShowRedeemTokenDialog extends ConsumerWidget {
         return;
       }
       EasyLoading.showToast(lang.addedToSpacesAndChats(rooms.length));
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).pop(true);
+      Navigator.of(context, rootNavigator: true).pop(true);
     } catch (e, s) {
       _log.severe('Failed to redeem', e, s);
       if (!context.mounted) {
@@ -141,7 +136,8 @@ Future<bool> showReedemTokenDialog(
 ) async {
   return await showDialog(
     context: context,
-    builder: (BuildContext context) =>
-        _ShowRedeemTokenDialog(token: superInviteToken),
+    builder:
+        (BuildContext context) =>
+            _ShowRedeemTokenDialog(token: superInviteToken),
   );
 }

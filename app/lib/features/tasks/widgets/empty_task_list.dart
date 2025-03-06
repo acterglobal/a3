@@ -1,15 +1,12 @@
 import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class EmptyTaskList extends StatelessWidget {
   final String? initialSelectedSpace;
 
-  const EmptyTaskList({
-    super.key,
-    this.initialSelectedSpace,
-  });
+  const EmptyTaskList({super.key, this.initialSelectedSpace});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +17,7 @@ class EmptyTaskList extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 40),
-            const Icon(
-              Atlas.list,
-              size: 50,
-            ),
+            const Icon(Atlas.list, size: 50),
             const SizedBox(height: 20),
             Text(
               lang.emptyTaskList,
@@ -31,10 +25,11 @@ class EmptyTaskList extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => showCreateUpdateTaskListBottomSheet(
-                context,
-                initialSelectedSpace: initialSelectedSpace,
-              ),
+              onPressed:
+                  () => showCreateUpdateTaskListBottomSheet(
+                    context,
+                    initialSelectedSpace: initialSelectedSpace,
+                  ),
               child: Text(lang.createTaskList),
             ),
           ],

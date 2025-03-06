@@ -4,7 +4,7 @@ import 'package:acter/features/events/widgets/skeletons/event_list_skeleton_widg
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -80,20 +80,22 @@ class EventListWidget extends ConsumerWidget {
     final count = (limit ?? eventList.length).clamp(0, eventList.length);
     return showSectionHeader
         ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SectionHeader(
-                title: sectionHeaderTitle ?? L10n.of(context).events,
-                isShowSeeAllButton:
-                    isShowSeeAllButton ?? count < eventList.length,
-                showSectionBg: showSectionBg,
-                onTapSeeAll: () => onClickSectionHeader == null
-                    ? null
-                    : onClickSectionHeader!(),
-              ),
-              eventListUI(eventList, count),
-            ],
-          )
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SectionHeader(
+              title: sectionHeaderTitle ?? L10n.of(context).events,
+              isShowSeeAllButton:
+                  isShowSeeAllButton ?? count < eventList.length,
+              showSectionBg: showSectionBg,
+              onTapSeeAll:
+                  () =>
+                      onClickSectionHeader == null
+                          ? null
+                          : onClickSectionHeader!(),
+            ),
+            eventListUI(eventList, count),
+          ],
+        )
         : eventListUI(eventList, count);
   }
 

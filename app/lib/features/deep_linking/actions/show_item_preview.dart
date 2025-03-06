@@ -3,7 +3,7 @@ import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/widgets/item_preview_card.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> showItemPreview({

@@ -16,7 +16,7 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -118,21 +118,21 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
       const SizedBox(height: 30),
       member.isIgnored()
           ? MenuItemWidget(
-              iconData: Atlas.block_thin,
-              title: lang.unblockUser,
-              withMenu: false,
-              onTap: () async {
-                await showUnblockUserDialog(context, member);
-              },
-            )
+            iconData: Atlas.block_thin,
+            title: lang.unblockUser,
+            withMenu: false,
+            onTap: () async {
+              await showUnblockUserDialog(context, member);
+            },
+          )
           : MenuItemWidget(
-              iconData: Atlas.block_thin,
-              title: lang.blockUser,
-              withMenu: false,
-              onTap: () async {
-                await showBlockUserDialog(context, member);
-              },
-            ),
+            iconData: Atlas.block_thin,
+            title: lang.blockUser,
+            withMenu: false,
+            onTap: () async {
+              await showBlockUserDialog(context, member);
+            },
+          ),
       if (isShowActions) ..._roomMenu(context, ref),
     ];
   }
@@ -233,17 +233,18 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           ),
         ];
       },
-      loading: () => [
-        _roomTitle(context, ref),
-        Skeletonizer(
-          child: MenuItemWidget(
-            iconData: Atlas.medal_badge_award_thin,
-            title: lang.changePowerLevel,
-            withMenu: false,
-            onTap: () {},
-          ),
-        ),
-      ],
+      loading:
+          () => [
+            _roomTitle(context, ref),
+            Skeletonizer(
+              child: MenuItemWidget(
+                iconData: Atlas.medal_badge_award_thin,
+                title: lang.changePowerLevel,
+                withMenu: false,
+                onTap: () {},
+              ),
+            ),
+          ],
     );
   }
 
@@ -252,10 +253,7 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
     final roomName =
         ref.watch(roomDisplayNameProvider(roomId)).valueOrNull ?? roomId;
     return ListTile(
-      leading: RoomAvatarBuilder(
-        roomId: roomId,
-        avatarSize: 24,
-      ),
+      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
       title: Text(roomName),
     );
   }
@@ -302,18 +300,13 @@ class _MemberInfoDrawerInner extends ConsumerWidget {
           QrCodeButton(
             qrCodeData: 'matrix:u/${memberId.substring(1)}?action=chat',
             qrTitle: ListTile(
-              leading: ActerAvatar(
-                options: AvatarOptions.DM(memberAvatarInfo),
-              ),
+              leading: ActerAvatar(options: AvatarOptions.DM(memberAvatarInfo)),
               title: Text(
                 memberAvatarInfo.displayName ?? '',
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              subtitle: Text(
-                memberId,
-                overflow: TextOverflow.ellipsis,
-              ),
+              subtitle: Text(memberId, overflow: TextOverflow.ellipsis),
             ),
           ),
         ],
@@ -336,14 +329,16 @@ class MemberInfoDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberLoader =
-        ref.watch(memberProvider((roomId: roomId, userId: memberId)));
+    final memberLoader = ref.watch(
+      memberProvider((roomId: roomId, userId: memberId)),
+    );
     return memberLoader.when(
-      data: (member) => _MemberInfoDrawerInner(
-        member: member,
-        memberId: memberId,
-        isShowActions: isShowActions,
-      ),
+      data:
+          (member) => _MemberInfoDrawerInner(
+            member: member,
+            memberId: memberId,
+            isShowActions: isShowActions,
+          ),
       error: (e, s) {
         _log.severe('Failed to load room member', e, s);
         return Padding(

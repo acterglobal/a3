@@ -8,7 +8,7 @@ import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -19,10 +19,7 @@ class SpaceActionsSection extends ConsumerWidget {
 
   final String spaceId;
 
-  const SpaceActionsSection({
-    super.key,
-    required this.spaceId,
-  });
+  const SpaceActionsSection({super.key, required this.spaceId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,34 +47,10 @@ class SpaceActionsSection extends ConsumerWidget {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
       children: [
-        addNewsButton(
-          context,
-          ref,
-          canChangeSetting,
-          membership,
-          settings,
-        ),
-        addStoryButton(
-          context,
-          ref,
-          canChangeSetting,
-          membership,
-          settings,
-        ),
-        addPinButton(
-          context,
-          ref,
-          canChangeSetting,
-          membership,
-          settings,
-        ),
-        addEventButton(
-          context,
-          ref,
-          canChangeSetting,
-          membership,
-          settings,
-        ),
+        addNewsButton(context, ref, canChangeSetting, membership, settings),
+        addStoryButton(context, ref, canChangeSetting, membership, settings),
+        addPinButton(context, ref, canChangeSetting, membership, settings),
+        addEventButton(context, ref, canChangeSetting, membership, settings),
         addTaskActionButton(
           context,
           ref,
@@ -277,46 +250,50 @@ class SpaceActionsSection extends ConsumerWidget {
   }
 
   List<Widget> addLinkSpaceActions(BuildContext context) => [
-        simpleActionButton(
-          key: createChatAction,
-          context: context,
-          iconData: Atlas.chats,
-          title: L10n.of(context).addChat,
-          onPressed: () => context.pushNamed(
+    simpleActionButton(
+      key: createChatAction,
+      context: context,
+      iconData: Atlas.chats,
+      title: L10n.of(context).addChat,
+      onPressed:
+          () => context.pushNamed(
             Routes.createChat.name,
             queryParameters: {'spaceId': spaceId},
             extra: 1,
           ),
-        ),
-        simpleActionButton(
-          key: createSpaceAction,
-          context: context,
-          iconData: Icons.people,
-          title: L10n.of(context).addSpace,
-          onPressed: () => context.pushNamed(
+    ),
+    simpleActionButton(
+      key: createSpaceAction,
+      context: context,
+      iconData: Icons.people,
+      title: L10n.of(context).addSpace,
+      onPressed:
+          () => context.pushNamed(
             Routes.createSpace.name,
             queryParameters: {'parentSpaceId': spaceId},
           ),
-        ),
-        simpleActionButton(
-          context: context,
-          iconData: Icons.link,
-          title: L10n.of(context).linkChat,
-          onPressed: () => context.pushNamed(
+    ),
+    simpleActionButton(
+      context: context,
+      iconData: Icons.link,
+      title: L10n.of(context).linkChat,
+      onPressed:
+          () => context.pushNamed(
             Routes.linkChat.name,
             pathParameters: {'spaceId': spaceId},
           ),
-        ),
-        simpleActionButton(
-          context: context,
-          iconData: Icons.link,
-          title: L10n.of(context).linkSpace,
-          onPressed: () => context.pushNamed(
+    ),
+    simpleActionButton(
+      context: context,
+      iconData: Icons.link,
+      title: L10n.of(context).linkSpace,
+      onPressed:
+          () => context.pushNamed(
             Routes.linkSpace.name,
             pathParameters: {'spaceId': spaceId},
           ),
-        ),
-      ];
+    ),
+  ];
 
   Widget simpleActionButton({
     required BuildContext context,
@@ -329,10 +306,7 @@ class SpaceActionsSection extends ConsumerWidget {
       key: key,
       onPressed: onPressed,
       icon: Icon(iconData),
-      label: Text(
-        title,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      label: Text(title, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 }

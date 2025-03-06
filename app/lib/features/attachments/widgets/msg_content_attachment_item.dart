@@ -13,7 +13,7 @@ import 'package:acter/features/pins/actions/attachment_leading_icon.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Attachment, MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
@@ -50,13 +50,14 @@ class MsgContentAttachmentItem extends ConsumerWidget {
       ),
       child: ListTile(
         leading: attachmentLeadingIcon(attachmentType),
-        onTap: () => attachmentOnTap(
-          ref,
-          context,
-          attachmentType,
-          mediaState.mediaFile,
-          msgContent,
-        ),
+        onTap:
+            () => attachmentOnTap(
+              ref,
+              context,
+              attachmentType,
+              mediaState.mediaFile,
+              msgContent,
+            ),
         title: title(context, attachmentType, msgContent),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -66,43 +67,44 @@ class MsgContentAttachmentItem extends ConsumerWidget {
               mediaState.mediaLoadingState.isLoading || mediaState.isDownloading
                   ? loadingIndication()
                   : IconButton(
-                      onPressed: () async {
-                        final notifier = ref.read(
-                          attachmentMediaStateProvider(attachment).notifier,
-                        );
-                        await notifier.downloadMedia();
-                      },
-                      icon: Icon(
-                        Icons.download,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                    onPressed: () async {
+                      final notifier = ref.read(
+                        attachmentMediaStateProvider(attachment).notifier,
+                      );
+                      await notifier.downloadMedia();
+                    },
+                    icon: Icon(
+                      Icons.download,
+                      color: Theme.of(context).primaryColor,
                     ),
+                  ),
             if (canEdit)
               PopupMenuButton<String>(
                 key: const Key('attachment-item-menu-options'),
                 icon: const Icon(Icons.more_vert),
-                itemBuilder: (context) => [
-                  PopupMenuItem<String>(
-                    key: const Key('attachment-delete'),
-                    onTap: () {
-                      openRedactContentDialog(
-                        context,
-                        eventId: eventId,
-                        roomId: roomId,
-                        title: lang.deleteAttachment,
-                        description:
-                            lang.areYouSureYouWantToRemoveAttachmentFromPin,
-                        isSpace: true,
-                      );
-                    },
-                    child: Text(
-                      lang.delete,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+                itemBuilder:
+                    (context) => [
+                      PopupMenuItem<String>(
+                        key: const Key('attachment-delete'),
+                        onTap: () {
+                          openRedactContentDialog(
+                            context,
+                            eventId: eventId,
+                            roomId: roomId,
+                            title: lang.deleteAttachment,
+                            description:
+                                lang.areYouSureYouWantToRemoveAttachmentFromPin,
+                            isSpace: true,
+                          );
+                        },
+                        child: Text(
+                          lang.delete,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
               ),
           ],
         ),
@@ -124,11 +126,7 @@ class MsgContentAttachmentItem extends ConsumerWidget {
       children: [
         if (attachmentType == AttachmentType.link) ...[
           if (title.isNotEmpty)
-            Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
+            Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
           Text(
             attachment.link() ?? '',
             maxLines: 2,
@@ -136,22 +134,12 @@ class MsgContentAttachmentItem extends ConsumerWidget {
             style: Theme.of(context).textTheme.labelMedium,
           ),
         ] else ...[
-          Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
           Row(
             children: [
-              Text(
-                fileSize,
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              Text(fileSize, style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(width: 10),
-              Text(
-                '.',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              Text('.', style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(width: 10),
               Text(
                 documentTypeFromFileExtension(fileExtension),
@@ -177,8 +165,9 @@ class MsgContentAttachmentItem extends ConsumerWidget {
     } else if (mediaFile == null) {
       // If attachment is media then check media is downloaded
       // If attachment not downloaded
-      final notifier =
-          ref.read(attachmentMediaStateProvider(attachment).notifier);
+      final notifier = ref.read(
+        attachmentMediaStateProvider(attachment).notifier,
+      );
       await notifier.downloadMedia();
     } else {
       // If attachment is downloaded and image or video
@@ -205,10 +194,7 @@ class MsgContentAttachmentItem extends ConsumerWidget {
       }
       // If attachment is downloaded and file or others
       else {
-        await openFileShareDialog(
-          context: context,
-          file: mediaFile,
-        );
+        await openFileShareDialog(context: context, file: mediaFile);
       }
     }
   }
@@ -217,9 +203,7 @@ class MsgContentAttachmentItem extends ConsumerWidget {
     return const SizedBox(
       width: 20,
       height: 20,
-      child: Center(
-        child: CircularProgressIndicator(),
-      ),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }

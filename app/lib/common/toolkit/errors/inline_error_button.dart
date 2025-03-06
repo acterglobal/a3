@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/common/toolkit/errors/util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 /// InlineErrorButton for text inlined actions
 ///
@@ -37,21 +37,22 @@ class ActerInlineErrorButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return icon.map((icn) => _buildWithIcon(context, icn)) ??
         TextButton(
-          onPressed: () => ActerErrorDialog.show(
-            context: context,
-            error: error,
-            stack: stack,
-            title: dialogTitle,
-            text: text,
-            textBuilder: textBuilder,
-            onRetryTap: onRetryTap.map(
-              (cb) => () {
-                cb();
-                Navigator.pop(context);
-              },
-            ),
-            includeBugReportButton: includeBugReportButton,
-          ),
+          onPressed:
+              () => ActerErrorDialog.show(
+                context: context,
+                error: error,
+                stack: stack,
+                title: dialogTitle,
+                text: text,
+                textBuilder: textBuilder,
+                onRetryTap: onRetryTap.map(
+                  (cb) => () {
+                    cb();
+                    Navigator.pop(context);
+                  },
+                ),
+                includeBugReportButton: includeBugReportButton,
+              ),
           child: Text(L10n.of(context).fatalError),
         );
   }
@@ -71,21 +72,22 @@ class ActerInlineErrorButton extends StatelessWidget {
   Widget _buildWithIcon(BuildContext context, Icon icn) {
     return IconButton(
       icon: icn,
-      onPressed: () => ActerErrorDialog.show(
-        context: context,
-        error: error,
-        stack: stack,
-        title: dialogTitle,
-        text: text,
-        textBuilder: textBuilder,
-        onRetryTap: onRetryTap.map(
-          (cb) => () {
-            cb();
-            Navigator.pop(context);
-          },
-        ),
-        includeBugReportButton: includeBugReportButton,
-      ),
+      onPressed:
+          () => ActerErrorDialog.show(
+            context: context,
+            error: error,
+            stack: stack,
+            title: dialogTitle,
+            text: text,
+            textBuilder: textBuilder,
+            onRetryTap: onRetryTap.map(
+              (cb) => () {
+                cb();
+                Navigator.pop(context);
+              },
+            ),
+            includeBugReportButton: includeBugReportButton,
+          ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class FileShareOptions extends StatelessWidget {
   final String? sectionTitle;
@@ -80,11 +80,7 @@ class FileShareOptions extends StatelessWidget {
         margin: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(iconData),
-            SizedBox(height: 6),
-            Text(name),
-          ],
+          children: [Icon(iconData), SizedBox(height: 6), Text(name)],
         ),
       ),
     );

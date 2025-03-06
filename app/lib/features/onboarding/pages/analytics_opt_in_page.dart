@@ -5,7 +5,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,15 +38,9 @@ class AnalyticsOptInPage extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-              Text(
-                lang.analyticsDescription1,
-                style: textTheme.bodyMedium,
-              ),
+              Text(lang.analyticsDescription1, style: textTheme.bodyMedium),
               const SizedBox(height: 10),
-              Text(
-                lang.analyticsDescription2,
-                style: textTheme.bodyMedium,
-              ),
+              Text(lang.analyticsDescription2, style: textTheme.bodyMedium),
               _buildCrashAnalytics(context, ref),
               const SizedBox(height: 40),
               _buildSkipActionButton(context),

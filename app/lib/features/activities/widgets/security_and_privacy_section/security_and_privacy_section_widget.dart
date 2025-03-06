@@ -1,10 +1,12 @@
 import 'package:acter/features/activities/widgets/security_and_privacy_section/uncomfirmed_email_widget.dart';
+import 'package:acter/features/backups/providers/backup_state_providers.dart';
+import 'package:acter/features/backups/types.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget? buildSecurityAndPrivacySectionWidget(
@@ -16,7 +18,10 @@ Widget? buildSecurityAndPrivacySectionWidget(
   //Add Backup State Widget if feature is enabled
   final isBackupFeatureEnabled =
       ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
-  if (isBackupFeatureEnabled) securityWidgetList.add(BackupStateWidget());
+  final stateEnabled = ref.watch(backupStateProvider) == RecoveryState.enabled;
+  if (isBackupFeatureEnabled && !stateEnabled) {
+    securityWidgetList.add(BackupStateWidget());
+  }
 
   //Add Unconfirmed Emails Widget if there are unconfirmed emails
   final unconfirmedEmailWidget = buildUnconfirmedEmailWidget(context, ref);

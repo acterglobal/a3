@@ -3,7 +3,7 @@ import 'package:acter/features/super_invites/dialogs/redeem_dialog.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RedeemToken extends ConsumerStatefulWidget {
@@ -12,10 +12,7 @@ class RedeemToken extends ConsumerStatefulWidget {
 
   final SuperInvitesTokenUpdateBuilder? tokenUpdater;
 
-  const RedeemToken({
-    super.key,
-    this.tokenUpdater,
-  });
+  const RedeemToken({super.key, this.tokenUpdater});
 
   @override
   ConsumerState<RedeemToken> createState() => _RedeemTokenConsumerState();
@@ -23,8 +20,9 @@ class RedeemToken extends ConsumerStatefulWidget {
 
 class _RedeemTokenConsumerState extends ConsumerState<RedeemToken> {
   final TextEditingController _tokenController = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'redeem super invites form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'redeem super invites form',
+  );
   late SuperInvitesTokenUpdateBuilder tokenUpdater;
 
   @override
