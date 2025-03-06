@@ -841,7 +841,11 @@ impl RoomEventItemBuilder {
                         if let Some(prev) = prev_content {
                             let mut result = vec![];
                             if prev.history_visibility.ne(&content.history_visibility) {
-                                result.push("changed room history visibility".to_owned());
+                                result.push(format!(
+                                    "changed '{}' -> '{}'",
+                                    prev.history_visibility.as_str(),
+                                    &content.history_visibility.as_str()
+                                ));
                             }
                             if result.is_empty() {
                                 MsgContent::from_text("empty content".to_owned())
@@ -849,7 +853,7 @@ impl RoomEventItemBuilder {
                                 MsgContent::from_text(result.join(", "))
                             }
                         } else {
-                            MsgContent::from_text("added room history visibility".to_owned())
+                            MsgContent::from_text(content.history_visibility.as_str().to_owned())
                         }
                     }
                     FullStateEventContent::Redacted(r) => {
@@ -868,7 +872,11 @@ impl RoomEventItemBuilder {
                         if let Some(old) = prev_content {
                             let mut result = vec![];
                             if old.join_rule.ne(&content.join_rule) {
-                                result.push("changed room join rule".to_owned());
+                                result.push(format!(
+                                    "changed '{}' -> '{}'",
+                                    old.join_rule.as_str(),
+                                    &content.join_rule.as_str()
+                                ));
                             }
                             if result.is_empty() {
                                 MsgContent::from_text("empty content".to_owned())
@@ -876,7 +884,7 @@ impl RoomEventItemBuilder {
                                 MsgContent::from_text(result.join(", "))
                             }
                         } else {
-                            MsgContent::from_text("added room join rule".to_owned())
+                            MsgContent::from_text(content.join_rule.as_str().to_owned())
                         }
                     }
                     FullStateEventContent::Redacted(r) => {
@@ -897,10 +905,10 @@ impl RoomEventItemBuilder {
                             let mut result = vec![];
                             if let Some(old) = prev.name.clone() {
                                 if old != content.name {
-                                    result.push("changed room name".to_owned());
+                                    result.push(format!("changed '{}' -> '{}'", old, content.name));
                                 }
                             } else {
-                                result.push("added room name".to_owned())
+                                result.push(format!("set name to '{}'", content.name));
                             }
                             if result.is_empty() {
                                 MsgContent::from_text("empty content".to_owned())
@@ -908,7 +916,7 @@ impl RoomEventItemBuilder {
                                 MsgContent::from_text(result.join(", "))
                             }
                         } else {
-                            MsgContent::from_text("added room name".to_owned())
+                            MsgContent::from_text(content.name.to_owned())
                         }
                     }
                     FullStateEventContent::Redacted(r) => {
@@ -993,11 +1001,11 @@ impl RoomEventItemBuilder {
                                 MsgContent::from_text(result.join(", "))
                             }
                         } else {
-                            MsgContent::from_text("added room history visibility".to_owned())
+                            MsgContent::from_text("added room power levels".to_owned())
                         }
                     }
                     FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room history visibility".to_owned())
+                        MsgContent::from_text("deleted room power levels".to_owned())
                     }
                 };
                 self.msg_content(Some(msg_content));
@@ -1091,10 +1099,11 @@ impl RoomEventItemBuilder {
                             let mut result = vec![];
                             if let Some(body) = prev.body.clone() {
                                 if body != content.body {
-                                    result.push("changed tombstone body".to_owned());
+                                    result
+                                        .push(format!("changed '{}' -> '{}'", body, content.body));
                                 }
                             } else {
-                                result.push("added tombstone body".to_owned());
+                                result.push(content.body.to_owned());
                             }
                             if let Some(replacement_room) = prev.replacement_room.clone() {
                                 if replacement_room != content.replacement_room {
@@ -1109,7 +1118,7 @@ impl RoomEventItemBuilder {
                                 MsgContent::from_text(result.join(", "))
                             }
                         } else {
-                            MsgContent::from_text("added room tombstone".to_owned())
+                            MsgContent::from_text(content.body.to_owned())
                         }
                     }
                     FullStateEventContent::Redacted(r) => {
@@ -1129,10 +1138,13 @@ impl RoomEventItemBuilder {
                             let mut result = vec![];
                             if let Some(topic) = prev.topic.clone() {
                                 if topic != content.topic {
-                                    result.push("changed room topic".to_owned());
+                                    result.push(format!(
+                                        "changed '{}' -> '{}'",
+                                        topic, content.topic
+                                    ));
                                 }
                             } else {
-                                result.push("added room topic".to_owned());
+                                result.push(content.topic.to_owned());
                             }
                             if result.is_empty() {
                                 MsgContent::from_text("empty content".to_owned())
@@ -1140,7 +1152,7 @@ impl RoomEventItemBuilder {
                                 MsgContent::from_text(result.join(", "))
                             }
                         } else {
-                            MsgContent::from_text("added room topic".to_owned())
+                            MsgContent::from_text(content.topic.to_owned())
                         }
                     }
                     FullStateEventContent::Redacted(r) => {

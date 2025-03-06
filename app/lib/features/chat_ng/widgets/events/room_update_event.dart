@@ -64,14 +64,14 @@ class RoomUpdateEvent extends ConsumerWidget {
           ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
           : '${lang.chatUpdateRoomTopic(firstName ?? senderId)}: $msgContent',
       'm.room.avatar' => isMe
-          ? '${lang.chatYouUpdateRoomAvatar}: $msgContent'
-          : '${lang.chatUpdateRoomAvatar(firstName ?? senderId)}: $msgContent',
+          ? lang.chatYouUpdateRoomAvatar
+          : lang.chatUpdateRoomAvatar(firstName ?? senderId),
       'm.room.aliases' => isMe
           ? lang.chatYouUpdateRoomAliases
           : lang.chatUpdateRoomAliases(firstName ?? senderId),
       'm.room.canonical_alias' => isMe
-          ? '${lang.chatYouUpdateRoomCanonicalAlias}: $msgContent'
-          : '${lang.chatUpdateRoomCanonicalAlias(firstName ?? senderId)}: $msgContent',
+          ? lang.chatYouUpdateRoomCanonicalAlias
+          : lang.chatUpdateRoomCanonicalAlias(firstName ?? senderId),
       'm.room.history_visibility' => isMe
           ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
           : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
@@ -79,8 +79,16 @@ class RoomUpdateEvent extends ConsumerWidget {
           ? lang.chatYouUpdateRoomEncryption
           : lang.chatUpdateRoomEncryption(firstName ?? senderId),
       'm.room.guest_access' => isMe
-          ? '${lang.chatYouUpdateRoomGuestAccess}: $msgContent'
-          : '${lang.chatUpdateRoomGuestAccess(firstName ?? senderId)}: $msgContent',
+          ? lang.chatYouUpdateRoomGuestAccess
+          : lang.chatUpdateRoomGuestAccess(firstName ?? senderId),
+      'm.room.third_party_invite' => isMe
+          ? lang.chatYouUpdateRoomThirdPartyInvite
+          : lang.chatUpdateRoomThirdPartyInvite(firstName ?? senderId),
+      'm.room.server_acl' => lang.chatUpdateRoomServerAcl,
+      'm.room.tombstone' => '${lang.chatUpdateRoomTombstone}: $msgContent',
+      'm.room.pinned_events' => isMe
+          ? lang.chatYouUpdateRoomPinnedEvents
+          : lang.chatUpdateRoomPinnedEvents(firstName ?? senderId),
       'm.space.parent' => isMe
           ? lang.chatYouUpdateSpaceParent
           : lang.chatUpdateSpaceParent(firstName ?? senderId),

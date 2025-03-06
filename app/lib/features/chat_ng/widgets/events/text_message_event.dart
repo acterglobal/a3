@@ -100,9 +100,9 @@ class TextMessageEvent extends StatelessWidget {
           : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(
-          body,
-          style: emojiTextStyle.copyWith(
+        child: Html(
+          data: body,
+          defaultTextStyle: emojiTextStyle.copyWith(
             fontFamily: emojiFont,
           ),
           maxLines: _type == TextMessageType.reply ? 3 : null,
