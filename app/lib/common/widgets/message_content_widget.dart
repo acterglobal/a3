@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -19,10 +19,10 @@ class MessageContentWidget extends StatelessWidget {
 
     return formatted != null
         ? RenderHtml(
-            text: formatted,
-            defaultTextStyle: messageTextStyle,
-            roomId: roomId,
-          )
+          text: formatted,
+          defaultTextStyle: messageTextStyle,
+          roomId: roomId,
+        )
         : Text(msgContent.body(), style: messageTextStyle);
   }
 }

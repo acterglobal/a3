@@ -12,7 +12,7 @@ import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/attachments/actions/handle_selected_attachments.dart';

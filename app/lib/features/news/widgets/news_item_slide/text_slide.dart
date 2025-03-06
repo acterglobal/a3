@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/news/model/keys.dart';
 import 'package:acter/features/news/model/type/update_slide.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
@@ -28,20 +28,17 @@ class TextSlide extends StatelessWidget {
     final bodyText = slideContent.body();
     final fgColor = NewsUtils.getForegroundColor(context, slide);
     final linkColor = NewsUtils.getLinkColor(context, slide);
-    final defaultTextStyle =
-        Theme.of(context).textTheme.bodyLarge?.copyWith(color: fgColor);
+    final defaultTextStyle = Theme.of(
+      context,
+    ).textTheme.bodyLarge?.copyWith(color: fgColor);
 
     final linkTextStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: linkColor,
-          decoration: TextDecoration.underline,
-        );
+      color: linkColor,
+      decoration: TextDecoration.underline,
+    );
 
     return formattedText != null
-        ? renderHtmlText(
-            formattedText,
-            defaultTextStyle,
-            linkTextStyle,
-          )
+        ? renderHtmlText(formattedText, defaultTextStyle, linkTextStyle)
         : renderNormalText(bodyText, defaultTextStyle);
   }
 

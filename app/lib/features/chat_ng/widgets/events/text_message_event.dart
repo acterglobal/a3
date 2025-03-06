@@ -1,16 +1,11 @@
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 
-enum TextMessageType {
-  regular,
-  reply,
-  emoji,
-  notice,
-}
+enum TextMessageType { regular, reply, emoji, notice }
 
 class TextMessageEvent extends StatelessWidget {
   final String roomId;
@@ -24,8 +19,8 @@ class TextMessageEvent extends StatelessWidget {
     required this.roomId,
     required TextMessageType type,
     bool isMe = false,
-  })  : _type = type,
-        _isUser = isMe;
+  }) : _type = type,
+       _isUser = isMe;
 
   factory TextMessageEvent.emoji({
     Key? key,
@@ -93,16 +88,15 @@ class TextMessageEvent extends StatelessWidget {
 
     // Handle emoji messages
     if (_type == TextMessageType.emoji) {
-      final emojiTextStyle = _isUser
-          ? chatTheme.sentEmojiMessageTextStyle
-          : chatTheme.receivedEmojiMessageTextStyle;
+      final emojiTextStyle =
+          _isUser
+              ? chatTheme.sentEmojiMessageTextStyle
+              : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Text(
           content.body(),
-          style: emojiTextStyle.copyWith(
-            fontFamily: emojiFont,
-          ),
+          style: emojiTextStyle.copyWith(fontFamily: emojiFont),
           maxLines: _type == TextMessageType.reply ? 3 : null,
         ),
       );
@@ -111,22 +105,23 @@ class TextMessageEvent extends StatelessWidget {
     return RenderHtml(
       shrinkToFit: true,
       roomId: roomId,
-      pillBuilder: ({
-        required String identifier,
-        required String url,
-        void Function(String)? onTap,
-      }) =>
-          ActerPillBuilder(
-        identifier: identifier,
-        uri: url,
-        roomId: roomId,
-      ),
+      pillBuilder:
+          ({
+            required String identifier,
+            required String url,
+            void Function(String)? onTap,
+          }) => ActerPillBuilder(
+            identifier: identifier,
+            uri: url,
+            roomId: roomId,
+          ),
       renderNewlines: true,
       maxLines: _type == TextMessageType.reply ? 2 : null,
       defaultTextStyle: textTheme.bodySmall?.copyWith(
-        color: _type == TextMessageType.notice
-            ? colorScheme.onSurface.withValues(alpha: 0.5)
-            : null,
+        color:
+            _type == TextMessageType.notice
+                ? colorScheme.onSurface.withValues(alpha: 0.5)
+                : null,
         overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
       ),
       text: body,

@@ -8,7 +8,7 @@ import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';

@@ -13,7 +13,7 @@ import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/comments/types.dart';
@@ -442,7 +442,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: userId,
-                      ),),
+                      )),
                     )
                     .valueOrNull;
             return Padding(
