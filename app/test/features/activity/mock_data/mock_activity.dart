@@ -8,6 +8,7 @@ class MockActivity extends Mock implements Activity {
   final ActivityObject? mockObject;
   final MsgContent? mockMsgContent;
   final int? mockOriginServerTs;
+  final RefDetails? mockRefDetails;
 
   MockActivity({
     required this.mockType,
@@ -16,6 +17,7 @@ class MockActivity extends Mock implements Activity {
     this.mockObject,
     this.mockMsgContent,
     this.mockOriginServerTs,
+    this.mockRefDetails,
   });
 
   @override
@@ -35,4 +37,7 @@ class MockActivity extends Mock implements Activity {
 
   @override
   int originServerTs() => mockOriginServerTs ?? 1234567890;
+
+  @override
+  RefDetails? refDetails() => mockRefDetails;
 }
