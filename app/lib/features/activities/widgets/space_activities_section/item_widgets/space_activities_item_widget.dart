@@ -2,8 +2,11 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SpaceActivitiesItemWidget extends ConsumerWidget {
   const SpaceActivitiesItemWidget({
@@ -17,16 +20,24 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activities = ref
-        .watch(spaceActivitiesProviderByDate((roomId: roomId, date: date)))
-        .valueOrNull;
-    if (activities == null || activities.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    final spaceActivitiesLoader =
+        ref.watch(spaceActivitiesProviderByDate((roomId: roomId, date: date)));
 
+    return spaceActivitiesLoader.when(
+      data: (spaceActivities) =>
+          buildSpaceActivitiesItemUI(context, ref, spaceActivities),
+      error: (error, stack) => const SizedBox.shrink(),
+      loading: () => const SpaceActivitiesSkeleton(),
+    );
+  }
+
+  Widget buildSpaceActivitiesItemUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<Activity> activities,
+  ) {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final spaceName = avatarInfo.displayName ?? roomId;
-
     return ExpansionTile(
       initiallyExpanded: true,
       collapsedBackgroundColor: Colors.transparent,
@@ -36,6 +47,37 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
       children: activities
           .map((activity) => ActivityItemWidget(activity: activity))
           .toList(),
+    );
+  }
+}
+
+class SpaceActivitiesSkeleton extends StatelessWidget {
+  const SpaceActivitiesSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer(
+      child: ListView(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        children: [
+          listItem(),
+          listItem(),
+          listItem(),
+          listItem(),
+          listItem(),
+        ],
+      ),
+    );
+  }
+
+  Widget listItem() {
+    return const ListTile(
+      leading: Icon(Atlas.bell, size: 60),
+      title: Text('Title Title Title Title Title'),
+      subtitle: Text(
+        'Sub-title Sub-title Sub-title Sub-title Sub-title Sub-title Sub-title',
+      ),
     );
   }
 }
