@@ -1,0 +1,1 @@
+- Chat: fix alignment of mentions to be properly inline and not break the reading flow

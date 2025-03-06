@@ -6108,94 +6108,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __timelineStreamSendSingleReceiptFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _timelineStreamSendSingleReceiptFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __timelineStreamSendMultipleReceiptsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _timelineStreamSendMultipleReceiptsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   bool? __timelineStreamMarkAsReadFuturePoll(
     int boxed,
     int postCobject,
@@ -14672,6 +14584,53 @@ class Api {
     return tmp7;
   }
 
+  LocalUrlPreview? __clientUrlPreviewFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientUrlPreviewFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_LocalUrlPreview");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = LocalUrlPreview._(this, tmp13_1);
+    return tmp7;
+  }
+
   String? __notificationSettingsDefaultNotificationModeFuturePoll(
     int boxed,
     int postCobject,
@@ -18010,6 +17969,107 @@ class Api {
           int Function(
             int,
           )>();
+  late final _urlPreviewUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _UrlPreviewUrlReturn Function(
+            ffi.IntPtr,
+          )>>("__UrlPreview_url");
+
+  late final _urlPreviewUrl = _urlPreviewUrlPtr.asFunction<
+      _UrlPreviewUrlReturn Function(
+        int,
+      )>();
+  late final _urlPreviewTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _UrlPreviewTitleReturn Function(
+            ffi.IntPtr,
+          )>>("__UrlPreview_title");
+
+  late final _urlPreviewTitle = _urlPreviewTitlePtr.asFunction<
+      _UrlPreviewTitleReturn Function(
+        int,
+      )>();
+  late final _urlPreviewDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _UrlPreviewDescriptionReturn Function(
+            ffi.IntPtr,
+          )>>("__UrlPreview_description");
+
+  late final _urlPreviewDescription = _urlPreviewDescriptionPtr.asFunction<
+      _UrlPreviewDescriptionReturn Function(
+        int,
+      )>();
+  late final _urlPreviewHasImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__UrlPreview_has_image");
+
+  late final _urlPreviewHasImage = _urlPreviewHasImagePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _urlPreviewImageSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _UrlPreviewImageSourceReturn Function(
+            ffi.IntPtr,
+          )>>("__UrlPreview_image_source");
+
+  late final _urlPreviewImageSource = _urlPreviewImageSourcePtr.asFunction<
+      _UrlPreviewImageSourceReturn Function(
+        int,
+      )>();
+  late final _localUrlPreviewUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewUrlReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_url");
+
+  late final _localUrlPreviewUrl = _localUrlPreviewUrlPtr.asFunction<
+      _LocalUrlPreviewUrlReturn Function(
+        int,
+      )>();
+  late final _localUrlPreviewTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewTitleReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_title");
+
+  late final _localUrlPreviewTitle = _localUrlPreviewTitlePtr.asFunction<
+      _LocalUrlPreviewTitleReturn Function(
+        int,
+      )>();
+  late final _localUrlPreviewDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewDescriptionReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_description");
+
+  late final _localUrlPreviewDescription =
+      _localUrlPreviewDescriptionPtr.asFunction<
+          _LocalUrlPreviewDescriptionReturn Function(
+            int,
+          )>();
+  late final _localUrlPreviewHasImagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_has_image");
+
+  late final _localUrlPreviewHasImage = _localUrlPreviewHasImagePtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _localUrlPreviewImageUrlPtr = _lookup<
+      ffi.NativeFunction<
+          _LocalUrlPreviewImageUrlReturn Function(
+            ffi.IntPtr,
+          )>>("__LocalUrlPreview_image_url");
+
+  late final _localUrlPreviewImageUrl = _localUrlPreviewImageUrlPtr.asFunction<
+      _LocalUrlPreviewImageUrlReturn Function(
+        int,
+      )>();
   late final _objRefPositionStrPtr = _lookup<
       ffi.NativeFunction<
           _ObjRefPositionStrReturn Function(
@@ -21251,6 +21311,27 @@ class Api {
       _MsgContentGeoUriReturn Function(
         int,
       )>();
+  late final _msgContentHasUrlPreviewsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__MsgContent_has_url_previews");
+
+  late final _msgContentHasUrlPreviews =
+      _msgContentHasUrlPreviewsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _msgContentUrlPreviewsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__MsgContent_url_previews");
+
+  late final _msgContentUrlPreviews = _msgContentUrlPreviewsPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _reactionRecordSenderIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -21904,6 +21985,30 @@ class Api {
         int,
         int,
       )>();
+  late final _msgDraftAddRefDetailsPtr = _lookup<
+      ffi.NativeFunction<
+          _MsgDraftAddRefDetailsReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__MsgDraft_add_ref_details");
+
+  late final _msgDraftAddRefDetails = _msgDraftAddRefDetailsPtr.asFunction<
+      _MsgDraftAddRefDetailsReturn Function(
+        int,
+        int,
+      )>();
+  late final _msgDraftAddUrlPreviewPtr = _lookup<
+      ffi.NativeFunction<
+          _MsgDraftAddUrlPreviewReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__MsgDraft_add_url_preview");
+
+  late final _msgDraftAddUrlPreview = _msgDraftAddUrlPreviewPtr.asFunction<
+      _MsgDraftAddUrlPreviewReturn Function(
+        int,
+        int,
+      )>();
   late final _msgDraftAddRoomMentionPtr = _lookup<
       ffi.NativeFunction<
           _MsgDraftAddRoomMentionReturn Function(
@@ -22183,70 +22288,6 @@ class Api {
   late final _timelineStreamReplyMessage =
       _timelineStreamReplyMessagePtr.asFunction<
           int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _timelineStreamSendSingleReceiptPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TimelineStream_send_single_receipt");
-
-  late final _timelineStreamSendSingleReceipt =
-      _timelineStreamSendSingleReceiptPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _timelineStreamSendMultipleReceiptsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-            ffi.Uint8,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TimelineStream_send_multiple_receipts");
-
-  late final _timelineStreamSendMultipleReceipts =
-      _timelineStreamSendMultipleReceiptsPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
-            int,
             int,
             int,
             int,
@@ -29980,6 +30021,22 @@ class Api {
         int,
         int,
       )>();
+  late final _clientUrlPreviewPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__Client_url_preview");
+
+  late final _clientUrlPreview = _clientUrlPreviewPtr.asFunction<
+      int Function(
+        int,
+        int,
+        int,
+        int,
+      )>();
   late final _notificationSettingsChangesStreamPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -32259,36 +32316,6 @@ class Api {
   late final _timelineStreamReplyMessageFuturePoll =
       _timelineStreamReplyMessageFuturePollPtr.asFunction<
           _TimelineStreamReplyMessageFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _timelineStreamSendSingleReceiptFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamSendSingleReceiptFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_send_single_receipt_future_poll");
-
-  late final _timelineStreamSendSingleReceiptFuturePoll =
-      _timelineStreamSendSingleReceiptFuturePollPtr.asFunction<
-          _TimelineStreamSendSingleReceiptFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
-  late final _timelineStreamSendMultipleReceiptsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_send_multiple_receipts_future_poll");
-
-  late final _timelineStreamSendMultipleReceiptsFuturePoll =
-      _timelineStreamSendMultipleReceiptsFuturePollPtr.asFunction<
-          _TimelineStreamSendMultipleReceiptsFuturePollReturn Function(
             int,
             int,
             int,
@@ -34992,6 +35019,21 @@ class Api {
             int,
             int,
           )>();
+  late final _clientUrlPreviewFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientUrlPreviewFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Client_url_preview_future_poll");
+
+  late final _clientUrlPreviewFuturePoll =
+      _clientUrlPreviewFuturePollPtr.asFunction<
+          _ClientUrlPreviewFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _notificationSettingsDefaultNotificationModeFuturePollPtr =
       _lookup<
               ffi.NativeFunction<
@@ -37584,6 +37626,55 @@ class Api {
 
   late final _ffiListTaskListInsert =
       _ffiListTaskListInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListUrlPreview createFfiListUrlPreview() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListUrlPreviewCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListUrlPreview");
+    return FfiListUrlPreview._(this, list_box);
+  }
+
+  late final _ffiListUrlPreviewCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListUrlPreviewCreate");
+
+  late final _ffiListUrlPreviewCreate =
+      _ffiListUrlPreviewCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListUrlPreviewLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListUrlPreviewLen");
+
+  late final _ffiListUrlPreviewLen =
+      _ffiListUrlPreviewLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListUrlPreviewElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUrlPreviewElementAt");
+
+  late final _ffiListUrlPreviewElementAt =
+      _ffiListUrlPreviewElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUrlPreviewRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUrlPreviewRemove");
+
+  late final _ffiListUrlPreviewRemove =
+      _ffiListUrlPreviewRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUrlPreviewAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListUrlPreviewAdd");
+
+  late final _ffiListUrlPreviewAdd =
+      _ffiListUrlPreviewAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListUrlPreviewInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListUrlPreviewInsert");
+
+  late final _ffiListUrlPreviewInsert =
+      _ffiListUrlPreviewInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListUserId createFfiListUserId() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListUserIdCreate());
@@ -38251,6 +38342,309 @@ class RefDetails {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__refDetailsGenerateExternalLinkFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class UrlPreview {
+  final Api _api;
+  final _Box _box;
+
+  UrlPreview._(this._api, this._box);
+
+  /// the canonical url to use
+  String? url() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._urlPreviewUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// preview title if any
+  String? title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._urlPreviewTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// description text if any
+  String? description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._urlPreviewDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// whether this preview has an image
+  bool hasImage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._urlPreviewHasImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// The media image source if any
+  MediaSource? imageSource() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._urlPreviewImageSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A locally fetched Url Preview until
+/// it is submitted
+class LocalUrlPreview {
+  final Api _api;
+  final _Box _box;
+
+  LocalUrlPreview._(this._api, this._box);
+
+  /// the canonical url to use
+  String url() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// preview title if any
+  String? title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// description text if any
+  String? description() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// whether this preview has an image
+  bool hasImage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewHasImage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// The image url if any
+  String? imageUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._localUrlPreviewImageUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -45155,6 +45549,34 @@ class MsgContent {
     return tmp2;
   }
 
+  /// whether or not this has url previews attached
+  bool hasUrlPreviews() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._msgContentHasUrlPreviews(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// the list of url previews
+  FfiListUrlPreview urlPreviews() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._msgContentUrlPreviews(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUrlPreview");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListUrlPreview._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -46480,6 +46902,80 @@ class MsgDraft {
     return tmp6;
   }
 
+  /// add a ref details
+  MsgDraft addRefDetails(
+    RefDetails details,
+  ) {
+    final tmp1 = details;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._msgDraftAddRefDetails(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    final tmp9 = tmp3.arg4;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp4 = MsgDraft._(_api, tmp9_1);
+    return tmp4;
+  }
+
+  /// add a url preview
+  MsgDraft addUrlPreview(
+    LocalUrlPreview details,
+  ) {
+    final tmp1 = details;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._msgDraftAddUrlPreview(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    final tmp7 = tmp3.arg2;
+    final tmp8 = tmp3.arg3;
+    final tmp9 = tmp3.arg4;
+    if (tmp5 == 0) {
+      debugAllocation("handle error", tmp6, tmp7);
+      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      final tmp5_0 =
+          utf8.decode(tmp6_0.asTypedList(tmp7), allowMalformed: true);
+      if (tmp7 > 0) {
+        final ffi.Pointer<ffi.Void> tmp6_0;
+        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+        _api.__deallocate(tmp6_0, tmp8, 1);
+      }
+      throw tmp5_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp4 = MsgDraft._(_api, tmp9_1);
+    return tmp4;
+  }
+
   /// whether to mention the entire room
   MsgDraft addRoomMention(
     bool mention,
@@ -47061,175 +47557,12 @@ class TimelineStream {
     return tmp8;
   }
 
-  /// send single receipt
-  /// receipt_type: FullyRead | Read | ReadPrivate
-  /// thread: Main | Unthreaded
-  Future<bool> sendSingleReceipt(
-    String receiptType,
-    String thread,
-    String eventId,
-  ) {
-    final tmp1 = receiptType;
-    final tmp5 = thread;
-    final tmp9 = eventId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5_0 = utf8.encode(tmp5);
-    tmp7 = tmp5_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
-    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
-    tmp6_1.setAll(0, tmp5_0);
-    tmp6 = tmp6_0.address;
-    tmp8 = tmp7;
-    final tmp9_0 = utf8.encode(tmp9);
-    tmp11 = tmp9_0.length;
-
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-    final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-    tmp10_1.setAll(0, tmp9_0);
-    tmp10 = tmp10_0.address;
-    tmp12 = tmp11;
-    final tmp13 = _api._timelineStreamSendSingleReceipt(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-      tmp6,
-      tmp7,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-    );
-    final tmp15 = tmp13;
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 =
-        _Box(_api, tmp15_0, "__TimelineStream_send_single_receipt_future_drop");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp14 = _nativeFuture(
-        tmp15_1, _api.__timelineStreamSendSingleReceiptFuturePoll);
-    return tmp14;
-  }
-
-  /// send 3 types of receipts at once
-  /// full_read: optional event id
-  /// public_read_receipt: optional event id
-  /// private_read_receipt: optional event id
-  Future<bool> sendMultipleReceipts(
-    String? fullRead,
-    String? publicReadReceipt,
-    String? privateReadReceipt,
-  ) {
-    final tmp1 = fullRead;
-    final tmp7 = publicReadReceipt;
-    final tmp13 = privateReadReceipt;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp4 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp8 = 0;
-    var tmp10 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp14 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp18 = 0;
-    tmp0 = _box.borrow();
-    if (tmp1 == null) {
-      tmp2 = 0;
-    } else {
-      tmp2 = 1;
-      final tmp3 = tmp1;
-      final tmp3_0 = utf8.encode(tmp3);
-      tmp5 = tmp3_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
-      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
-      tmp4_1.setAll(0, tmp3_0);
-      tmp4 = tmp4_0.address;
-      tmp6 = tmp5;
-    }
-    if (tmp7 == null) {
-      tmp8 = 0;
-    } else {
-      tmp8 = 1;
-      final tmp9 = tmp7;
-      final tmp9_0 = utf8.encode(tmp9);
-      tmp11 = tmp9_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
-      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
-      tmp10_1.setAll(0, tmp9_0);
-      tmp10 = tmp10_0.address;
-      tmp12 = tmp11;
-    }
-    if (tmp13 == null) {
-      tmp14 = 0;
-    } else {
-      tmp14 = 1;
-      final tmp15 = tmp13;
-      final tmp15_0 = utf8.encode(tmp15);
-      tmp17 = tmp15_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
-      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
-      tmp16_1.setAll(0, tmp15_0);
-      tmp16 = tmp16_0.address;
-      tmp18 = tmp17;
-    }
-    final tmp19 = _api._timelineStreamSendMultipleReceipts(
-      tmp0,
-      tmp2,
-      tmp4,
-      tmp5,
-      tmp6,
-      tmp8,
-      tmp10,
-      tmp11,
-      tmp12,
-      tmp14,
-      tmp16,
-      tmp17,
-      tmp18,
-    );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 = _Box(
-        _api, tmp21_0, "__TimelineStream_send_multiple_receipts_future_drop");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 = _nativeFuture(
-        tmp21_1, _api.__timelineStreamSendMultipleReceiptsFuturePoll);
-    return tmp20;
-  }
-
   /// Mark this room as read.
-  /// user_triggered indicate whether that was issued by the user actively
-  /// (e.g. by pushing a button) or implicitly upon smart read tracking
-  /// Returns a boolean indicating if we sent the request or not.
+  /// public indicate whether the marking should be shared with other users.
   Future<bool> markAsRead(
-    bool userTriggered,
+    bool public,
   ) {
-    final tmp1 = userTriggered;
+    final tmp1 = public;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
@@ -62801,6 +63134,38 @@ class Client {
     return tmp6;
   }
 
+  /// fetch a UrlPreview locally
+  Future<LocalUrlPreview> urlPreview(
+    String uri,
+  ) {
+    final tmp1 = uri;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientUrlPreview(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_url_preview_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientUrlPreviewFuturePoll);
+    return tmp6;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -65269,6 +65634,88 @@ class _RefDetailsGenerateInternalLinkReturn extends ffi.Struct {
   external int arg6;
 }
 
+class _UrlPreviewUrlReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _UrlPreviewTitleReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _UrlPreviewDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _UrlPreviewImageSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _LocalUrlPreviewUrlReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _LocalUrlPreviewTitleReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _LocalUrlPreviewDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _LocalUrlPreviewImageUrlReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
 class _ObjRefPositionStrReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -66375,6 +66822,32 @@ class _SpaceDiffValueReturn extends ffi.Struct {
 }
 
 class _MsgDraftAddMentionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _MsgDraftAddRefDetailsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _MsgDraftAddUrlPreviewReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -69643,36 +70116,6 @@ class _TimelineStreamReplyMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _TimelineStreamSendSingleReceiptFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _TimelineStreamSendMultipleReceiptsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _TimelineStreamMarkAsReadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -72408,6 +72851,21 @@ class _ClientActivityFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientUrlPreviewFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _NotificationSettingsDefaultNotificationModeFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -75016,6 +75474,66 @@ class FfiListTaskList extends Iterable<TaskList>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, TaskList element) {
     _api._ffiListTaskListInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListUrlPreview extends Iterable<UrlPreview>
+    implements CustomIterable<UrlPreview> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListUrlPreview._(this._api, this._box);
+
+  @override
+  Iterator<UrlPreview> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListUrlPreviewLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  UrlPreview elementAt(int index) {
+    final address = _api._ffiListUrlPreviewElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return UrlPreview._(_api, reference);
+  }
+
+  UrlPreview operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  UrlPreview remove(int index) {
+    final address = _api._ffiListUrlPreviewRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_UrlPreview");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return UrlPreview._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(UrlPreview element) {
+    _api._ffiListUrlPreviewAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, UrlPreview element) {
+    _api._ffiListUrlPreviewInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

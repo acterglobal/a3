@@ -166,7 +166,6 @@ class _CreateUpdateTaskListConsumerState
               child: HtmlEditor(
                 editorState: textEditorState,
                 editable: true,
-                autoFocus: false,
                 onChanged: (body, html) {
                   textEditorState = EditorState(
                     document: ActerDocumentHelpers.parse(
