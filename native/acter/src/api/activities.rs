@@ -12,7 +12,7 @@ use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
 
-use super::{Client, MsgContent, RUNTIME};
+use super::{Client, MsgContent, RefDetails, RUNTIME};
 
 use acter_core::activities::ActivityContent;
 #[derive(Clone, Debug)]
@@ -62,6 +62,10 @@ impl Activity {
 
     pub fn event_id_str(&self) -> String {
         self.inner.event_meta().event_id.to_string()
+    }
+
+    pub fn ref_details(&self) -> Option<RefDetails> {
+        self.inner.ref_details().map(|r| RefDetails::new(self.client.core.client().clone(), r))
     }
 
     pub fn msg_content(&self) -> Option<MsgContent> {
