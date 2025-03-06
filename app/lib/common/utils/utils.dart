@@ -49,18 +49,17 @@ String jiffyTime(BuildContext context, int timeInterval) {
 }
 
 String jiffyDateForActvity(BuildContext context, int timeInterval) {
-  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
-  final now = Jiffy.now().startOf(Unit.day);
-  if (now.isSame(jiffyTime, unit: Unit.day)) {
+  final activityDate = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final today = Jiffy.now().startOf(Unit.day);
+  final yesterday = today.subtract(days: 1);
+
+  if (activityDate.isSame(today, unit: Unit.day)) {
     return 'Today';
-  } else {
-    final yesterday = now.subtract(days: 1);
-    if (jiffyTime.isBetween(yesterday, now)) {
-      return 'Yesterday';
-    } else {
-      return jiffyTime.yMd;
-    }
+  } else if (activityDate.isSame(yesterday, unit: Unit.day)) {
+    return 'Yesterday';
   }
+
+  return activityDate.yMd;
 }
 
 extension TimeOfDayExtension on TimeOfDay {
