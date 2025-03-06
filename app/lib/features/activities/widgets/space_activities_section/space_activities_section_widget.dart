@@ -2,7 +2,8 @@ import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_date_item_widget.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget? buildSpaceActivitiesSectionWidget(
