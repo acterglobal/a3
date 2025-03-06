@@ -3,7 +3,6 @@ import 'package:acter/features/activities/widgets/space_activities_section/item_
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget? buildSpaceActivitiesSectionWidget(
