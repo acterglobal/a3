@@ -15,7 +15,7 @@ class ActivityAttachmentItemWidget extends StatelessWidget {
 
     return ActivityItemContainerWidget(
       actionTitle: '${PushStyles.attachment.emoji} Added attachment on',
-      objectInfo: '$objectEmoji $objectTitle}',
+      objectInfo: '$objectEmoji $objectTitle',
       userInfoWidget: ActivityUserInfoContainerWidget(
         userId: activity.senderIdStr(),
         roomId: activity.roomIdStr(),

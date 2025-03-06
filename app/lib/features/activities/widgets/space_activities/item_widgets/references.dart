@@ -12,8 +12,6 @@ class ActivityReferencesItemWidget extends StatelessWidget {
     final activityObject = activity.object();
     final objectEmoji = activityObject?.emoji();
     final objectTitle = activityObject?.title();
-    final refDetails = activity.refDetails();
-    final refTitle = refDetails?.title();
 
     return ActivityItemContainerWidget(
       actionTitle: '${PushStyles.references.emoji} Added references on',
@@ -21,9 +19,30 @@ class ActivityReferencesItemWidget extends StatelessWidget {
       userInfoWidget: ActivityUserInfoContainerWidget(
         userId: activity.senderIdStr(),
         roomId: activity.roomIdStr(),
-        subtitle: refTitle,
+        subtitle: getRefPreview(),
       ),
       originServerTs: activity.originServerTs(),
     );
+  }
+
+  String getRefPreview() {
+    final refDetails = activity.refDetails();
+    final refTitle = refDetails?.title();
+    final refType = refDetails?.typeStr();
+    final objectType = SpaceObjectTypes.values.asNameMap()[refType];
+    switch (objectType) {
+      case SpaceObjectTypes.news:
+        return '${SpaceObjectTypes.news.emoji} $refTitle';
+      case SpaceObjectTypes.pin:
+        return '${SpaceObjectTypes.pin.emoji} $refTitle';
+      case SpaceObjectTypes.event:
+        return '${SpaceObjectTypes.event.emoji} $refTitle';
+      case SpaceObjectTypes.taskList:
+        return '${SpaceObjectTypes.taskList.emoji} $refTitle';
+      case SpaceObjectTypes.taskItem:
+        return '${SpaceObjectTypes.taskItem.emoji} $refTitle';
+      default:
+        return '${PushStyles.references.emoji} $refTitle';
+    }
   }
 }
