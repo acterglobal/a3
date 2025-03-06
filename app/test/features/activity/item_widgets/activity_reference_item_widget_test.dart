@@ -65,4 +65,115 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('Add reference on Event Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.event.name,
+        mockEmoji: SpaceObjectTypes.event.emoji,
+        mockTitle: 'Team Meeting',
+      ),
+      mockRefDetails: MockRefDetails(
+        mockTitle: 'Task List Name',
+        mockType: SpaceObjectTypes.taskList.name,
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.references.emoji} Added references on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.event.emoji} Team Meeting'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+
+    // Verify reference content
+    expect(
+      find.text('${SpaceObjectTypes.taskList.emoji} Task List Name'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Add reference on TaskList Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.taskList.name,
+        mockEmoji: SpaceObjectTypes.taskList.emoji,
+        mockTitle: 'Project Tasks',
+      ),
+      mockRefDetails: MockRefDetails(
+        mockTitle: 'Task Name',
+        mockType: SpaceObjectTypes.taskItem.name,
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.references.emoji} Added references on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.taskList.emoji} Project Tasks'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+
+    // Verify reference content
+    expect(
+      find.text('${SpaceObjectTypes.taskItem.emoji} Task Name'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Add reference on TaskItem Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.taskItem.name,
+        mockEmoji: SpaceObjectTypes.taskItem.emoji,
+        mockTitle: 'Complete Documentation',
+      ),
+      mockRefDetails: MockRefDetails(
+        mockTitle: 'Pin Name',
+        mockType: SpaceObjectTypes.pin.name,
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.references.emoji} Added references on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.taskItem.emoji} Complete Documentation'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+
+    // Verify reference content
+    expect(
+      find.text('${SpaceObjectTypes.pin.emoji} Pin Name'),
+      findsOneWidget,
+    );
+  });
 }
