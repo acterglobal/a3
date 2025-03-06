@@ -1,14 +1,14 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../common/mock_data/mock_avatar_info.dart';
 import '../../../helpers/test_util.dart';
+import '../../comments/mock_data/mock_message_content.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
-import '../mock_data/mock_ref_details.dart';
 
 void main() {
   Future<void> createWidgetUnderTest({
@@ -25,31 +25,27 @@ void main() {
         ),
       ],
       child: Material(
-        child: ActivityReferencesItemWidget(activity: mockActivity!),
+        child: ActivityReactionItemWidget(activity: mockActivity!),
       ),
     );
     // Wait for the async provider to load
     await tester.pump();
   }
 
-  testWidgets('Add reference on Pin Object', (tester) async {
+  testWidgets('Add reaction on Pin Object', (tester) async {
     MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.references.name,
+      mockType: PushStyles.reaction.name,
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.pin.name,
         mockEmoji: SpaceObjectTypes.pin.emoji,
         mockTitle: 'Pin Name',
-      ),
-      mockRefDetails: MockRefDetails(
-        mockTitle: 'Event Name',
-        mockType: SpaceObjectTypes.event.name,
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify action title
     expect(
-      find.text('${PushStyles.references.emoji} Added references on'),
+      find.text('${PushStyles.reaction.emoji} Reacted on'),
       findsOneWidget,
     );
 
@@ -58,11 +54,5 @@ void main() {
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
-
-    // Verify comment content
-    expect(
-      find.text('${SpaceObjectTypes.event.emoji} Event Name'),
-      findsOneWidget,
-    );
   });
 }
