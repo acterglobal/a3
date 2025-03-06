@@ -55,8 +55,6 @@ class AsyncSpaceActivitiesNotifier
 }
 
 class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
-  late Stream<bool> _listener;
-  late StreamSubscription<bool> _poller;
   Activity? _activity;
 
   Future<Activity?> _getActivity(Client client) async {
@@ -71,24 +69,8 @@ class AsyncActivityNotifier extends FamilyAsyncNotifier<Activity?, String> {
   @override
   Future<Activity?> build(String arg) async {
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener = client.subscribeEventTypeStream(arg);
-    _poller = _listener.listen(
-      (data) async {
-        _log.info('activity id : $arg');
-        state = await AsyncValue.guard(
-          () async => await _getActivity(client),
-        );
-      },
-      onError: (e, s) {
-        _log.severe('activity stream errored', e, s);
-      },
-      onDone: () {
-        _log.info('activity stream ended');
-      },
-    );
 
     ref.onDispose(() {
-      _poller.cancel();
       _activity?.drop();
     });
 
