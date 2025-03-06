@@ -1,7 +1,7 @@
-import 'package:acter/features/activities/widgets/space_activities/item_widgets/attachment.dart';
-import 'package:acter/features/activities/widgets/space_activities/item_widgets/comment.dart';
-import 'package:acter/features/activities/widgets/space_activities/item_widgets/reaction.dart';
-import 'package:acter/features/activities/widgets/space_activities/item_widgets/references.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
