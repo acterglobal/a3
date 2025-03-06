@@ -21,6 +21,12 @@ class _MatrixRenderHtml extends ConsumerWidget {
   final PillBuilder? pillBuilder;
   const _MatrixRenderHtml({
     required this.text,
+    this.defaultTextStyle,
+    this.linkTextStyle,
+    this.shrinkToFit = false,
+    this.maxLines,
+    this.renderNewlines = false,
+    this.pillBuilder,
   });
 
   @override

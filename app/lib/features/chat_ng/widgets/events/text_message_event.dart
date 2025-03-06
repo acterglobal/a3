@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
+import 'package:markdown/markdown.dart' as md;
 
 enum TextMessageType { regular, reply, emoji, notice }
 
@@ -84,7 +85,7 @@ class TextMessageEvent extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final chatTheme = Theme.of(context).chatTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final body = content.formattedBody() ?? content.body();
+    final body = content.formattedBody() ?? md.markdownToHtml(content.body());
 
     // Handle emoji messages
     if (_type == TextMessageType.emoji) {
@@ -94,9 +95,9 @@ class TextMessageEvent extends StatelessWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(
-          content.body(),
-          style: emojiTextStyle.copyWith(fontFamily: emojiFont),
+        child: RenderHtml(
+          text: body,
+          defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
           maxLines: _type == TextMessageType.reply ? 3 : null,
         ),
       );
