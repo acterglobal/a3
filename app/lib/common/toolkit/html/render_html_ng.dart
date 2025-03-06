@@ -2,6 +2,7 @@ import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
+import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
@@ -17,7 +18,8 @@ class RenderHtmlNg extends ConsumerWidget {
   final int? maxLines;
   final bool renderNewlines;
   final String roomId;
-  const RenderHtmlNg({super.key, 
+  const RenderHtmlNg({
+    super.key,
     required this.text,
     this.defaultTextStyle,
     this.linkTextStyle,
@@ -72,6 +74,9 @@ class RenderHtmlNg extends ConsumerWidget {
         // uri: parsed.uri,
       ),
     ),
-    _ => null,
+    (LinkType.spaceObject) => html.InlineCustomWidget(
+      child: InlineItemPreview(roomId: roomId, uriResult: parsed),
+    ),
+    _ => null, // not yet supported
   };
 }
