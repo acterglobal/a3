@@ -13,6 +13,7 @@ class ActivityReactionItemWidget extends StatelessWidget {
     final objectEmoji = activityObject?.emoji();
     final objectTitle = switch (activityObject?.typeStr()) {
       'news' => 'Boost',
+      'stories' => 'Story',
       _ => activityObject?.title(),
     };
     final objectInfo = '$objectEmoji $objectTitle';
