@@ -1,13 +1,15 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
-final aliasedHttpRegexp =
-    RegExp(r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)');
+final aliasedHttpRegexp = RegExp(
+  r'https://matrix.to/#/(?<alias>#.+):(?<server>.+)',
+);
 
 final idAliasRegexp = RegExp(
   r'matrix:r/(?<id>[^?]+)(\?via=(?<server_name>[^&]+))?(&via=(?<server_name2>[^&]+))?(&via=(?<server_name3>[^&]+))?',
@@ -22,7 +24,7 @@ final idMatrixRegexp = RegExp(
 );
 
 bool isValidUrl(String url) {
-// Regular expression to validate URLs
+  // Regular expression to validate URLs
   final RegExp urlPattern = RegExp(
     r"^([a-zA-Z][a-zA-Z\d+\-.]*):\/\/([\w\-])+\.{1}([a-zA-Z]{2,63})([\w\-\._~:/?#[\]@!\$&'()*+,;=.]+)?$",
     caseSensitive: false,
@@ -54,9 +56,9 @@ String jiffyDateForActvity(BuildContext context, int timeInterval) {
   final yesterday = today.subtract(days: 1);
 
   if (activityDate.isSame(today, unit: Unit.day)) {
-    return 'Today';
+    return L10n.of(context).today;
   } else if (activityDate.isSame(yesterday, unit: Unit.day)) {
-    return 'Yesterday';
+    return L10n.of(context).yesterday;
   }
 
   return activityDate.yMd;

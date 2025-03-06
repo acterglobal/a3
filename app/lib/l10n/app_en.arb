@@ -1188,6 +1188,7 @@
     "needToBeMemberOf": "you need to be member of",
     "@needToBeMemberOf": {},
     "@to": {},
+    "yesterday": "Yesterday",
     "today": "Today",
     "@today": {},
     "token": "token",
