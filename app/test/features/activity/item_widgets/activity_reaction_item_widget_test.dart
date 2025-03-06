@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../common/mock_data/mock_avatar_info.dart';
 import '../../../helpers/test_util.dart';
-import '../../comments/mock_data/mock_message_content.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
 
