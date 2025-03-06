@@ -1,8 +1,6 @@
 import 'package:acter/features/activities/providers/activities_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import '../mock_data/mock_activity.dart';
 
 void main() {
