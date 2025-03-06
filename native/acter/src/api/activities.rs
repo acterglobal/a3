@@ -65,7 +65,9 @@ impl Activity {
     }
 
     pub fn ref_details(&self) -> Option<RefDetails> {
-        self.inner.ref_details().map(|r| RefDetails::new(self.client.core.client().clone(), r))
+        self.inner
+            .ref_details()
+            .map(|r| RefDetails::new(self.client.core.client().clone(), r))
     }
 
     pub fn msg_content(&self) -> Option<MsgContent> {
