@@ -28,19 +28,7 @@ void main() {
 
   testWidgets('Activity item widget displays ActivityCommentItemWidget',
       (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.comment.name,
-      mockSenderId: 'sender-id',
-      mockRoomId: 'room-id',
-      mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.pin.name,
-        mockObjectId: 'object-id',
-        mockTitle: 'Pin Name',
-        mockEmoji: SpaceObjectTypes.pin.emoji,
-      ),
-      mockMsgContent: MockMsgContent(mockBody: 'This is a comment'),
-      mockOriginServerTs: 1234567890,
-    );
+    MockActivity mockActivity = MockActivity(mockType: PushStyles.comment.name);
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed
@@ -49,19 +37,8 @@ void main() {
 
   testWidgets('Activity item widget displays ActivityReactionItemWidget',
       (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.reaction.name,
-      mockSenderId: 'sender-id',
-      mockRoomId: 'room-id',
-      mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.pin.name,
-        mockObjectId: 'object-id',
-        mockTitle: 'Pin Name',
-        mockEmoji: SpaceObjectTypes.pin.emoji,
-      ),
-      mockMsgContent: MockMsgContent(mockBody: ''),
-      mockOriginServerTs: 1234567890,
-    );
+    MockActivity mockActivity =
+        MockActivity(mockType: PushStyles.reaction.name);
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed
@@ -70,19 +47,8 @@ void main() {
 
   testWidgets('Activity item widget displays ActivityAttachmentItemWidget',
       (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.attachment.name,
-      mockSenderId: 'sender-id',
-      mockRoomId: 'room-id',
-      mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.pin.name,
-        mockObjectId: 'object-id',
-        mockTitle: 'Pin Name',
-        mockEmoji: SpaceObjectTypes.pin.emoji,
-      ),
-      mockMsgContent: MockMsgContent(mockBody: ''),
-      mockOriginServerTs: 1234567890,
-    );
+    MockActivity mockActivity =
+        MockActivity(mockType: PushStyles.attachment.name);
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed
@@ -91,19 +57,8 @@ void main() {
 
   testWidgets('Activity item widget displays ActivityReferencesItemWidget',
       (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.references.name,
-      mockSenderId: 'sender-id',
-      mockRoomId: 'room-id',
-      mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.pin.name,
-        mockObjectId: 'object-id',
-        mockTitle: 'Pin Name',
-        mockEmoji: SpaceObjectTypes.pin.emoji,
-      ),
-      mockMsgContent: MockMsgContent(mockBody: ''),
-      mockOriginServerTs: 1234567890,
-    );
+    MockActivity mockActivity =
+        MockActivity(mockType: PushStyles.references.name);
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed

@@ -3,26 +3,26 @@ import 'package:mocktail/mocktail.dart';
 
 class MockActivityObject extends Mock implements ActivityObject {
   final String mockType;
-  final String mockObjectId;
+  final String? mockObjectId;
   final String? mockTitle;
-  final String mockEmoji;
+  final String? mockEmoji;
 
   MockActivityObject({
     required this.mockType,
-    required this.mockObjectId,
-    required this.mockTitle,
-    required this.mockEmoji,
+    this.mockObjectId,
+    this.mockTitle,
+    this.mockEmoji,
   });
 
   @override
   String typeStr() => mockType;
 
   @override
-  String objectIdStr() => mockObjectId;
+  String objectIdStr() => mockObjectId ?? 'object-id';
 
   @override
-  String? title() => mockTitle;
+  String? title() => mockTitle ?? '';
 
   @override
-  String emoji() => mockEmoji;
+  String emoji() => mockEmoji ?? '🚀';
 }

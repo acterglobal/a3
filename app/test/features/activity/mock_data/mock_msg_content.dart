@@ -2,7 +2,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMsgContent extends Mock implements MsgContent {
-  final String mockBody;
+  final String? mockBody;
   final String? mockFormattedBody;
 
   MockMsgContent({
@@ -11,7 +11,7 @@ class MockMsgContent extends Mock implements MsgContent {
   });
 
   @override
-  String body() => mockBody;
+  String body() => mockBody ?? 'message body';
 
   @override
   String? formattedBody() => mockFormattedBody;

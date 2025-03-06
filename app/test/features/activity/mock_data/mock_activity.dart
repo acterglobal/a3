@@ -3,29 +3,29 @@ import 'package:mocktail/mocktail.dart';
 
 class MockActivity extends Mock implements Activity {
   final String mockType;
-  final String mockSenderId;
-  final String mockRoomId;
+  final String? mockSenderId;
+  final String? mockRoomId;
   final ActivityObject? mockObject;
   final MsgContent? mockMsgContent;
-  final int mockOriginServerTs;
+  final int? mockOriginServerTs;
 
   MockActivity({
     required this.mockType,
-    required this.mockSenderId,
-    required this.mockRoomId,
-    required this.mockObject,
-    required this.mockMsgContent,
-    required this.mockOriginServerTs,
+    this.mockSenderId,
+    this.mockRoomId,
+    this.mockObject,
+    this.mockMsgContent,
+    this.mockOriginServerTs,
   });
 
   @override
   String typeStr() => mockType;
 
   @override
-  String senderIdStr() => mockSenderId;
+  String senderIdStr() => mockSenderId ?? 'sender-id';
 
   @override
-  String roomIdStr() => mockRoomId;
+  String roomIdStr() => mockRoomId ?? 'room-id';
 
   @override
   ActivityObject? object() => mockObject;
@@ -34,5 +34,5 @@ class MockActivity extends Mock implements Activity {
   MsgContent? msgContent() => mockMsgContent;
 
   @override
-  int originServerTs() => mockOriginServerTs;
+  int originServerTs() => mockOriginServerTs ?? 1234567890;
 }
