@@ -388,7 +388,6 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             key: EventsKeys.eventDescriptionTextField,
             editorState: textEditorState,
             editable: true,
-            autoFocus: false,
             onChanged: (body, html) {
               textEditorState = EditorState(
                 document: ActerDocumentHelpers.parse(body, htmlContent: html),

@@ -367,8 +367,6 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
                 ),
               ),
               editable: true,
-              autoFocus: false,
-              // we manage the auto focus manually
               shrinkWrap: true,
               onChanged: (body, html) {
                 final notifier = ref.read(newsStateProvider.notifier);
