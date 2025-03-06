@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/room/select_room_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 const Key selectSpaceDrawerKey = Key('space-widgets-select-space-drawer');
 
@@ -17,17 +17,18 @@ Future<String?> selectSpaceDrawer({
     context: context,
     isDismissible: true,
     isScrollControlled: true,
-    builder: (context) => Container(
-      constraints: BoxConstraints(maxHeight: 700),
-      child: SelectRoomDrawer(
-        key: key,
-        canCheck: canCheck,
-        currentSpaceId: currentSpaceId,
-        title: title ?? Text(L10n.of(context).selectSpace),
-        keyPrefix: 'select-space',
-        roomType: RoomType.space,
-      ),
-    ),
+    builder:
+        (context) => Container(
+          constraints: BoxConstraints(maxHeight: 700),
+          child: SelectRoomDrawer(
+            key: key,
+            canCheck: canCheck,
+            currentSpaceId: currentSpaceId,
+            title: title ?? Text(L10n.of(context).selectSpace),
+            keyPrefix: 'select-space',
+            roomType: RoomType.space,
+          ),
+        ),
   );
   if (selected == null) {
     // in case of being dismissed, we return the previously selected item

@@ -6,7 +6,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MessageActionsWidget extends ConsumerWidget {
@@ -45,71 +45,61 @@ class MessageActionsWidget extends ConsumerWidget {
     );
   }
 
-  List<Widget> menuItems(
-    BuildContext context,
-    WidgetRef ref,
-    L10n lang,
-  ) =>
-      [
-        makeMenuItem(
-          pressed: () async {
-            ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
-            Navigator.pop(context);
-          },
-          text: Text(lang.reply),
-          icon: const Icon(Icons.reply_rounded, size: 18),
+  List<Widget> menuItems(BuildContext context, WidgetRef ref, L10n lang) => [
+    makeMenuItem(
+      pressed: () async {
+        ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
+        Navigator.pop(context);
+      },
+      text: Text(lang.reply),
+      icon: const Icon(Icons.reply_rounded, size: 18),
+    ),
+    if (item.msgType() == 'm.text')
+      makeMenuItem(
+        pressed: () {
+          final messageBody = item.msgContent()?.body();
+          if (messageBody == null) return;
+          copyMessageAction(context, messageBody);
+        },
+        text: Text(lang.copyMessage),
+        icon: const Icon(Icons.copy_all_outlined, size: 14),
+      ),
+    if (isMe && item.msgType() == 'm.text')
+      makeMenuItem(
+        pressed: () {
+          ref.read(chatEditorStateProvider.notifier).setEditMessage(item);
+          Navigator.pop(context);
+        },
+        text: Text(lang.edit),
+        icon: const Icon(Atlas.pencil_box_bold, size: 14),
+      ),
+    if (!isMe)
+      makeMenuItem(
+        pressed: () => reportMessageAction(context, item, messageId, roomId),
+        text: Text(
+          lang.report,
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
         ),
-        if (item.msgType() == 'm.text')
-          makeMenuItem(
-            pressed: () {
-              final messageBody = item.msgContent()?.body();
-              if (messageBody == null) return;
-              copyMessageAction(context, messageBody);
-            },
-            text: Text(lang.copyMessage),
-            icon: const Icon(
-              Icons.copy_all_outlined,
-              size: 14,
-            ),
-          ),
-        if (isMe && item.msgType() == 'm.text')
-          makeMenuItem(
-            pressed: () {
-              ref.read(chatEditorStateProvider.notifier).setEditMessage(item);
-              Navigator.pop(context);
-            },
-            text: Text(lang.edit),
-            icon: const Icon(Atlas.pencil_box_bold, size: 14),
-          ),
-        if (!isMe)
-          makeMenuItem(
-            pressed: () =>
-                reportMessageAction(context, item, messageId, roomId),
-            text: Text(
-              lang.report,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-            icon: Icon(
-              Icons.flag_outlined,
-              size: 14,
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-        if (canRedact)
-          makeMenuItem(
-            pressed: () =>
-                redactMessageAction(context, item, messageId, roomId),
-            text: Text(
-              lang.delete,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-            icon: Icon(
-              Atlas.trash_can_thin,
-              size: 14,
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-      ];
+        icon: Icon(
+          Icons.flag_outlined,
+          size: 14,
+          color: Theme.of(context).colorScheme.error,
+        ),
+      ),
+    if (canRedact)
+      makeMenuItem(
+        pressed: () => redactMessageAction(context, item, messageId, roomId),
+        text: Text(
+          lang.delete,
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+        icon: Icon(
+          Atlas.trash_can_thin,
+          size: 14,
+          color: Theme.of(context).colorScheme.error,
+        ),
+      ),
+  ];
 
   Widget makeMenuItem({
     required Widget text,
@@ -119,16 +109,10 @@ class MessageActionsWidget extends ConsumerWidget {
     return InkWell(
       onTap: pressed,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 3,
-          vertical: 5,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            text,
-            if (icon != null) icon,
-          ],
+          children: [text, if (icon != null) icon],
         ),
       ),
     );

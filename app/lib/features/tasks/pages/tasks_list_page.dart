@@ -7,7 +7,7 @@ import 'package:acter/features/tasks/sheets/create_update_task_list.dart';
 import 'package:acter/features/tasks/widgets/task_list_widget.dart';
 import 'package:acter/features/tasks/widgets/task_lists_empty.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TasksListPage extends ConsumerStatefulWidget {
@@ -47,10 +47,7 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   AppBar _buildAppBar() {
@@ -58,16 +55,17 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
     final spaceId = widget.spaceId;
     return AppBar(
       centerTitle: false,
-      title: widget.onSelectTaskListItem != null
-          ? Text(L10n.of(context).selectTaskList)
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(lang.tasks),
-                if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
-              ],
-            ),
+      title:
+          widget.onSelectTaskListItem != null
+              ? Text(L10n.of(context).selectTaskList)
+              : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(lang.tasks),
+                  if (spaceId != null) SpaceNameWidget(spaceId: spaceId),
+                ],
+              ),
       actions: [
         if (!widget.showOnlyTaskList)
           ValueListenableBuilder(
@@ -92,10 +90,11 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
           key: TasksListPage.createNewTaskListKey,
           spaceId: spaceId,
           canString: 'CanPostTaskList',
-          onPressed: () => showCreateUpdateTaskListBottomSheet(
-            context,
-            initialSelectedSpace: spaceId,
-          ),
+          onPressed:
+              () => showCreateUpdateTaskListBottomSheet(
+                context,
+                initialSelectedSpace: spaceId,
+              ),
         ),
       ],
     );
@@ -119,15 +118,16 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
         Expanded(
           child: ValueListenableBuilder(
             valueListenable: showCompletedTask,
-            builder: (context, value, child) => TaskListWidget(
-              taskListProvider: tasksListSearchProvider(widget.spaceId),
-              spaceId: widget.spaceId,
-              shrinkWrap: false,
-              showOnlyTaskList: widget.showOnlyTaskList,
-              showCompletedTask: showCompletedTask.value,
-              onSelectTaskListItem: widget.onSelectTaskListItem,
-              emptyState: _taskListsEmptyState(),
-            ),
+            builder:
+                (context, value, child) => TaskListWidget(
+                  taskListProvider: tasksListSearchProvider(widget.spaceId),
+                  spaceId: widget.spaceId,
+                  shrinkWrap: false,
+                  showOnlyTaskList: widget.showOnlyTaskList,
+                  showCompletedTask: showCompletedTask.value,
+                  onSelectTaskListItem: widget.onSelectTaskListItem,
+                  emptyState: _taskListsEmptyState(),
+                ),
           ),
         ),
       ],
@@ -137,8 +137,9 @@ class _TasksListPageConsumerState extends ConsumerState<TasksListPage> {
   Widget _taskListsEmptyState() {
     var canAdd = false;
     if (searchValue.isEmpty) {
-      final canPostLoader =
-          ref.watch(hasSpaceWithPermissionProvider('CanPostTaskList'));
+      final canPostLoader = ref.watch(
+        hasSpaceWithPermissionProvider('CanPostTaskList'),
+      );
       if (canPostLoader.valueOrNull == true) canAdd = true;
     }
     return TaskListsEmptyState(

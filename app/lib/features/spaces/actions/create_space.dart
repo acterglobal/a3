@@ -8,7 +8,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -20,6 +20,7 @@ final _log = Logger('a3::spaces::actions::create_space');
 Future<String?> createSpace(
   BuildContext context,
   WidgetRef ref, {
+
   /// The name of the new new space
   required String name,
 

@@ -4,7 +4,7 @@ import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter/common/extensions/options.dart';
 
 class ChatListWidget extends ConsumerWidget {
@@ -41,18 +41,17 @@ class ChatListWidget extends ConsumerWidget {
     final count = (limit ?? chatList.length).clamp(0, chatList.length);
     return showSectionHeader
         ? Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SectionHeader(
-                showSectionBg: showSectionBg,
-                title: sectionHeaderTitle ?? L10n.of(context).chats,
-                isShowSeeAllButton:
-                    isShowSeeAllButton ?? count < chatList.length,
-                onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
-              ),
-              chatListUI(chatList, count),
-            ],
-          )
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SectionHeader(
+              showSectionBg: showSectionBg,
+              title: sectionHeaderTitle ?? L10n.of(context).chats,
+              isShowSeeAllButton: isShowSeeAllButton ?? count < chatList.length,
+              onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
+            ),
+            chatListUI(chatList, count),
+          ],
+        )
         : chatListUI(chatList, count);
   }
 

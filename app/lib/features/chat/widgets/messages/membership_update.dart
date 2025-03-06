@@ -1,16 +1,13 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MembershipUpdateWidget extends ConsumerWidget {
   final CustomMessage message;
 
-  const MembershipUpdateWidget({
-    super.key,
-    required this.message,
-  });
+  const MembershipUpdateWidget({super.key, required this.message});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,10 +44,7 @@ class MembershipUpdateWidget extends ConsumerWidget {
       textMsg = message.metadata?['body'] ?? '';
     }
     return Container(
-      padding: const EdgeInsets.only(
-        left: 10,
-        bottom: 5,
-      ),
+      padding: const EdgeInsets.only(left: 10, bottom: 5),
       child: RichText(
         text: TextSpan(
           text: textMsg,

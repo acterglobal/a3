@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -18,10 +18,7 @@ final _log = Logger('a3::profile::my_profile');
 class ChangeDisplayName extends StatefulWidget {
   final String? currentName;
 
-  const ChangeDisplayName({
-    super.key,
-    required this.currentName,
-  });
+  const ChangeDisplayName({super.key, required this.currentName});
 
   @override
   State<ChangeDisplayName> createState() => _ChangeDisplayNameState();
@@ -29,8 +26,9 @@ class ChangeDisplayName extends StatefulWidget {
 
 class _ChangeDisplayNameState extends State<ChangeDisplayName> {
   final TextEditingController newUsername = TextEditingController();
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'display name form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'display name form',
+  );
 
   @override
   void initState() {
@@ -137,10 +135,7 @@ class MyProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return WithSidebar(
       sidebar: const SettingsPage(),
-      child: Scaffold(
-        appBar: _buildAppbar(context),
-        body: _buildBody(context),
-      ),
+      child: Scaffold(appBar: _buildAppbar(context), body: _buildBody(context)),
     );
   }
 
@@ -205,19 +200,11 @@ class MyProfilePage extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            border: Border.all(
-              width: 2,
-              color: colorScheme.onSurface,
-            ),
+            border: Border.all(width: 2, color: colorScheme.onSurface),
           ),
           child: Stack(
             children: [
-              ActerAvatar(
-                options: AvatarOptions.DM(
-                  avatarInfo,
-                  size: 50,
-                ),
-              ),
+              ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 50)),
               Positioned.fill(
                 child: Align(
                   alignment: Alignment.bottomRight,
@@ -231,10 +218,7 @@ class MyProfilePage extends StatelessWidget {
                       ),
                       color: colorScheme.surface,
                     ),
-                    child: const Icon(
-                      Icons.edit,
-                      size: 16,
-                    ),
+                    child: const Icon(Icons.edit, size: 16),
                   ),
                 ),
               ),
@@ -257,25 +241,12 @@ class MyProfilePage extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
-        title: Text(
-          title,
-          key: key,
-          style: textTheme.labelMedium,
-        ),
+        title: Text(title, key: key, style: textTheme.labelMedium),
         subtitle: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 5,
-            vertical: 10,
-          ),
-          child: Text(
-            subTitle,
-            style: textTheme.titleSmall,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+          child: Text(subTitle, style: textTheme.titleSmall),
         ),
-        trailing: IconButton(
-          onPressed: onPressed,
-          icon: Icon(trailingIcon),
-        ),
+        trailing: IconButton(onPressed: onPressed, icon: Icon(trailingIcon)),
       ),
     );
   }

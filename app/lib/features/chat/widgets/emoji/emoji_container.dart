@@ -4,7 +4,7 @@ import 'package:acter/features/chat/widgets/emoji/emoji_reaction_item.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class EmojiContainer extends StatefulWidget {
   final String roomId;
@@ -34,10 +34,7 @@ class _EmojiContainerState extends State<EmojiContainer>
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(
-      length: reactionTabs.length,
-      vsync: this,
-    );
+    tabBarController = TabController(length: reactionTabs.length, vsync: this);
   }
 
   @override
@@ -45,44 +42,46 @@ class _EmojiContainerState extends State<EmojiContainer>
     final colorScheme = Theme.of(context).colorScheme;
     Map<String, dynamic>? reactions = widget.message.metadata?['reactions'];
     if (reactions == null) return const SizedBox();
-    final children = reactions.keys.map((key) {
-      final records = reactions[key] as List<ReactionRecord>;
-      final sentByMe = records.any((x) => x.sentByMe());
-      final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
-      final moreThanOne = records.length > 1;
-      return InkWell(
-        onLongPress: () {
-          showEmojiReactionsSheet(reactions, widget.roomId);
-        },
-        onTap: () {
-          widget.onToggle(widget.message.id, key);
-        },
-        child: Chip(
-          padding: moreThanOne
-              ? const EdgeInsets.only(right: 4)
-              : const EdgeInsets.symmetric(horizontal: 2),
-          backgroundColor:
-              sentByMe ? colorScheme.secondaryContainer : colorScheme.surface,
-          visualDensity: VisualDensity.compact,
-          labelPadding: const EdgeInsets.all(0),
-          shape: const StadiumBorder(
-            side: BorderSide(color: Colors.transparent),
-          ),
-          avatar: moreThanOne ? emoji : null,
-          label: moreThanOne
-              ? Text(
-                  records.length.toString(),
-                  style: Theme.of(context).textTheme.labelSmall,
-                )
-              : emoji,
-        ),
-      );
-    }).toList();
+    final children =
+        reactions.keys.map((key) {
+          final records = reactions[key] as List<ReactionRecord>;
+          final sentByMe = records.any((x) => x.sentByMe());
+          final emoji = Text(key, style: EmojiConfig.emojiTextStyle);
+          final moreThanOne = records.length > 1;
+          return InkWell(
+            onLongPress: () {
+              showEmojiReactionsSheet(reactions, widget.roomId);
+            },
+            onTap: () {
+              widget.onToggle(widget.message.id, key);
+            },
+            child: Chip(
+              padding:
+                  moreThanOne
+                      ? const EdgeInsets.only(right: 4)
+                      : const EdgeInsets.symmetric(horizontal: 2),
+              backgroundColor:
+                  sentByMe
+                      ? colorScheme.secondaryContainer
+                      : colorScheme.surface,
+              visualDensity: VisualDensity.compact,
+              labelPadding: const EdgeInsets.all(0),
+              shape: const StadiumBorder(
+                side: BorderSide(color: Colors.transparent),
+              ),
+              avatar: moreThanOne ? emoji : null,
+              label:
+                  moreThanOne
+                      ? Text(
+                        records.length.toString(),
+                        style: Theme.of(context).textTheme.labelSmall,
+                      )
+                      : emoji,
+            ),
+          );
+        }).toList();
     return Card(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 5,
-        vertical: 2,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       color: colorScheme.surface,
       child: Wrap(
         direction: Axis.horizontal,
@@ -119,19 +118,23 @@ class _EmojiContainerState extends State<EmojiContainer>
     // sort the users per item on the number of emojis sent - highest first
     usersByReaction.forEach((key, users) {
       users.sort((userIdA, userIdB) {
-        final reactionsA = reactionsByUsers[userIdA]
-            .expect('reactions from $userIdA not available');
-        final reactionsB = reactionsByUsers[userIdB]
-            .expect('reactions from $userIdB not available');
+        final reactionsA = reactionsByUsers[userIdA].expect(
+          'reactions from $userIdA not available',
+        );
+        final reactionsB = reactionsByUsers[userIdB].expect(
+          'reactions from $userIdB not available',
+        );
         return reactionsB.length.compareTo(reactionsA.length);
       });
     });
     final allUsers = reactionsByUsers.keys.toList();
     allUsers.sort((userIdA, userIdB) {
-      final reactionsA = reactionsByUsers[userIdA]
-          .expect('reactions from $userIdA not available');
-      final reactionsB = reactionsByUsers[userIdB]
-          .expect('reactions from $userIdB not available');
+      final reactionsA = reactionsByUsers[userIdA].expect(
+        'reactions from $userIdA not available',
+      );
+      final reactionsB = reactionsByUsers[userIdB].expect(
+        'reactions from $userIdB not available',
+      );
       return reactionsB.length.compareTo(reactionsA.length);
     });
 
@@ -143,10 +146,7 @@ class _EmojiContainerState extends State<EmojiContainer>
           reactionTabs.add(
             Tab(
               child: Chip(
-                avatar: Text(
-                  key,
-                  style: EmojiConfig.emojiTextStyle,
-                ),
+                avatar: Text(key, style: EmojiConfig.emojiTextStyle),
                 label: Text('${value.length}'),
               ),
             ),
@@ -154,11 +154,7 @@ class _EmojiContainerState extends State<EmojiContainer>
         });
         reactionTabs.insert(
           0,
-          Tab(
-            child: Chip(
-              label: Text('${L10n.of(context).all} $total'),
-            ),
-          ),
+          Tab(child: Chip(label: Text('${L10n.of(context).all} $total'))),
         );
         tabBarController = TabController(
           length: reactionTabs.length,
@@ -169,9 +165,7 @@ class _EmojiContainerState extends State<EmojiContainer>
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       isDismissible: true,
       builder: (BuildContext context) {
@@ -183,8 +177,9 @@ class _EmojiContainerState extends State<EmojiContainer>
                 isScrollable: true,
                 padding: const EdgeInsets.all(24),
                 controller: tabBarController,
-                overlayColor:
-                    WidgetStateProperty.all<Color>(Colors.transparent),
+                overlayColor: WidgetStateProperty.all<Color>(
+                  Colors.transparent,
+                ),
                 indicator: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
@@ -211,8 +206,9 @@ class _EmojiContainerState extends State<EmojiContainer>
                     for (final key in keys)
                       _ReactionListing(
                         roomId: roomId,
-                        users: usersByReaction[key]
-                            .expect('reactors of $key not available'),
+                        users: usersByReaction[key].expect(
+                          'reactors of $key not available',
+                        ),
                         usersMap: reactionsByUsers,
                       ),
                   ],

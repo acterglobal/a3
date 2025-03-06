@@ -7,7 +7,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -28,17 +28,18 @@ Future<bool> openRedactContentDialog(
   return await showAdaptiveDialog(
     context: context,
     useRootNavigator: false,
-    builder: (context) => _RedactContentWidget(
-      title: title,
-      description: description,
-      eventId: eventId,
-      roomId: roomId,
-      isSpace: isSpace ?? false,
-      onRemove: onRemove,
-      onSuccess: onSuccess,
-      cancelBtnKey: cancelBtnKey,
-      removeBtnKey: removeBtnKey,
-    ),
+    builder:
+        (context) => _RedactContentWidget(
+          title: title,
+          description: description,
+          eventId: eventId,
+          roomId: roomId,
+          isSpace: isSpace ?? false,
+          onRemove: onRemove,
+          onSuccess: onSuccess,
+          cancelBtnKey: cancelBtnKey,
+          removeBtnKey: removeBtnKey,
+        ),
   );
 }
 
@@ -105,7 +106,8 @@ class _RedactContentWidget extends ConsumerWidget {
         ),
         ActerPrimaryActionButton(
           key: removeBtnKey,
-          onPressed: onRemove ??
+          onPressed:
+              onRemove ??
               () => redactContent(context, ref, reasonController.text),
           child: Text(lang.remove),
         ),

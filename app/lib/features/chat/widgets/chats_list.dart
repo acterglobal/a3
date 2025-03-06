@@ -9,7 +9,7 @@ import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -19,10 +19,7 @@ final _log = Logger('a3::chat::chats_list');
 class ChatsList extends ConsumerWidget {
   final Function(String)? onSelected;
 
-  const ChatsList({
-    super.key,
-    this.onSelected,
-  });
+  const ChatsList({super.key, this.onSelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,16 +50,11 @@ class ChatsList extends ConsumerWidget {
         }
         return _renderList(context, chatsIds);
       },
-      loading: () => Center(
-        heightFactor: 10,
-        child: CircularProgressIndicator(),
-      ),
+      loading:
+          () => Center(heightFactor: 10, child: CircularProgressIndicator()),
       error: (e, s) {
         _log.severe('Failed to filter convos', e, s);
-        return Center(
-          heightFactor: 10,
-          child: Text(lang.searchingFailed(e)),
-        );
+        return Center(heightFactor: 10, child: Text(lang.searchingFailed(e)));
       },
       skipLoadingOnReload: true,
       skipLoadingOnRefresh: true,
@@ -98,10 +90,7 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderList(BuildContext context, List<String> chats) {
-    return _AnimatedChatsList(
-      entries: chats,
-      onSelected: onSelected,
-    );
+    return _AnimatedChatsList(entries: chats, onSelected: onSelected);
   }
 }
 
@@ -109,10 +98,7 @@ class _AnimatedChatsList extends StatefulWidget {
   final Function(String)? onSelected;
   final List<String> entries;
 
-  const _AnimatedChatsList({
-    required this.entries,
-    this.onSelected,
-  });
+  const _AnimatedChatsList({required this.entries, this.onSelected});
 
   @override
   __AnimatedChatsListState createState() => __AnimatedChatsListState();

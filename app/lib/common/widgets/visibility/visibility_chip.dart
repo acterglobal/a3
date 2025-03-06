@@ -3,7 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/room/model/room_visibility.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -24,18 +24,17 @@ class VisibilityChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final visibilityLoader = ref.watch(roomVisibilityProvider(roomId));
     return visibilityLoader.when(
-      data: (visibility) => GestureDetector(
-        onTap: () {
-          if (visibility != RoomVisibility.SpaceVisible) return;
-          showLimitedSpaceList(context, roomId);
-        },
-        child: renderSpaceChip(context, visibility),
-      ),
+      data:
+          (visibility) => GestureDetector(
+            onTap: () {
+              if (visibility != RoomVisibility.SpaceVisible) return;
+              showLimitedSpaceList(context, roomId);
+            },
+            child: renderSpaceChip(context, visibility),
+          ),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
-        return Chip(
-          label: Text(L10n.of(context).loadingFailed(e)),
-        );
+        return Chip(label: Text(L10n.of(context).loadingFailed(e)));
       },
       loading: () => renderLoading(),
     );
@@ -45,10 +44,7 @@ class VisibilityChip extends ConsumerWidget {
     return Skeletonizer(
       child: SizedBox(
         width: 100,
-        child: Chip(
-          avatar: const Icon(Icons.language),
-          label: Text(roomId),
-        ),
+        child: Chip(avatar: const Icon(Icons.language), label: Text(roomId)),
       ),
     );
   }
@@ -68,15 +64,9 @@ class VisibilityChip extends ConsumerWidget {
     return useCompactView
         ? Text(label, style: Theme.of(context).textTheme.labelSmall)
         : Chip(
-            visualDensity: VisualDensity.compact,
-            avatar: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            label: Text(
-              label,
-              style: Theme.of(context).textTheme.labelSmall,
-            ),
-          );
+          visualDensity: VisualDensity.compact,
+          avatar: Icon(icon, color: Theme.of(context).colorScheme.onSurface),
+          label: Text(label, style: Theme.of(context).textTheme.labelSmall),
+        );
   }
 }

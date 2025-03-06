@@ -25970,6 +25970,16 @@ class Api {
       _ActivityTypeStrReturn Function(
         int,
       )>();
+  late final _activitySubTypeStrPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivitySubTypeStrReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_sub_type_str");
+
+  late final _activitySubTypeStr = _activitySubTypeStrPtr.asFunction<
+      _ActivitySubTypeStrReturn Function(
+        int,
+      )>();
   late final _activityMembershipChangePtr = _lookup<
       ffi.NativeFunction<
           _ActivityMembershipChangeReturn Function(
@@ -26009,6 +26019,16 @@ class Api {
 
   late final _activityObject = _activityObjectPtr.asFunction<
       _ActivityObjectReturn Function(
+        int,
+      )>();
+  late final _activityNamePtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityNameReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_name");
+
+  late final _activityName = _activityNamePtr.asFunction<
+      _ActivityNameReturn Function(
         int,
       )>();
   late final _activityMsgContentPtr = _lookup<
@@ -54399,6 +54419,41 @@ class Activity {
     return tmp2;
   }
 
+  /// the sub type of this activity as a string, in particular for attachments
+  /// e.g. image, video, audio, file, link, location, etc.
+  String? subTypeStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activitySubTypeStr(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the details of this membership change activity
   MembershipChange? membershipChange() {
     var tmp0 = 0;
@@ -54486,7 +54541,41 @@ class Activity {
     return tmp2;
   }
 
-  /// content of this activity, if any
+  /// The name of the object (e.g. Attachment filename) if given
+  String? name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// content of this activity (e.g. comment), if any
   MsgContent? msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -67649,6 +67738,17 @@ class _ActivityTypeStrReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ActivitySubTypeStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
 class _ActivityMembershipChangeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -67677,6 +67777,17 @@ class _ActivityObjectReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _ActivityNameReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _ActivityMsgContentReturn extends ffi.Struct {

@@ -6,17 +6,14 @@ import 'package:acter/features/spaces/widgets/space_list_empty_state.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SpaceListPage extends ConsumerStatefulWidget {
   final String? searchQuery;
 
-  const SpaceListPage({
-    super.key,
-    this.searchQuery,
-  });
+  const SpaceListPage({super.key, this.searchQuery});
 
   @override
   ConsumerState<SpaceListPage> createState() => _AllPinsPageConsumerState();
@@ -36,10 +33,7 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-    );
+    return Scaffold(appBar: _buildAppBar(), body: _buildBody());
   }
 
   AppBar _buildAppBar() {
@@ -53,31 +47,32 @@ class _AllPinsPageConsumerState extends ConsumerState<SpaceListPage> {
           icon: const Icon(Atlas.plus_circle),
           iconSize: 28,
           color: Theme.of(context).colorScheme.surface,
-          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            PopupMenuItem(
-              key: SpacesKeys.actionCreate,
-              onTap: () => context.pushNamed(Routes.createSpace.name),
-              child: Row(
-                children: <Widget>[
-                  Text(lang.createSpace),
-                  const Spacer(),
-                  const Icon(Atlas.connection),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              onTap: () {
-                context.pushNamed(Routes.searchPublicDirectory.name);
-              },
-              child: Row(
-                children: <Widget>[
-                  Text(lang.joinSpace),
-                  const Spacer(),
-                  const Icon(Atlas.calendar_dots),
-                ],
-              ),
-            ),
-          ],
+          itemBuilder:
+              (BuildContext context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  key: SpacesKeys.actionCreate,
+                  onTap: () => context.pushNamed(Routes.createSpace.name),
+                  child: Row(
+                    children: <Widget>[
+                      Text(lang.createSpace),
+                      const Spacer(),
+                      const Icon(Atlas.connection),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    context.pushNamed(Routes.searchPublicDirectory.name);
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Text(lang.joinSpace),
+                      const Spacer(),
+                      const Icon(Atlas.calendar_dots),
+                    ],
+                  ),
+                ),
+              ],
         ),
       ],
     );

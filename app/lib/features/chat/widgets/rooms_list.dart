@@ -7,7 +7,7 @@ import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/chats_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -18,10 +18,12 @@ typedef RoomSelectAction = Function(String);
 
 class RoomsListWidget extends ConsumerStatefulWidget {
   static const roomListMenuKey = Key('chat-room-list');
-  static const openSearchActionButtonKey =
-      Key('chat-rooms-list-open-search-action-btn');
-  static const closeSearchActionButtonKey =
-      Key('chat-rooms-list-close-search-action-btn');
+  static const openSearchActionButtonKey = Key(
+    'chat-rooms-list-open-search-action-btn',
+  );
+  static const closeSearchActionButtonKey = Key(
+    'chat-rooms-list-close-search-action-btn',
+  );
 
   final RoomSelectAction onSelected;
 
@@ -62,8 +64,9 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     String? title;
 
     if (ref.watch(hasRoomFilters)) {
-      final selection =
-          ref.watch(roomListFilterProvider.select((value) => value.selection));
+      final selection = ref.watch(
+        roomListFilterProvider.select((value) => value.selection),
+      );
       title = switch (selection) {
         FilterSelection.dmsOnly => lang.dms,
         FilterSelection.favorites => lang.bookmarked,
@@ -78,8 +81,9 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget searchTerms(BuildContext context) {
-    final searchTerm =
-        ref.watch(roomListFilterProvider.select((value) => value.searchTerm));
+    final searchTerm = ref.watch(
+      roomListFilterProvider.select((value) => value.searchTerm),
+    );
     if (searchTerm != null && searchTerm.isNotEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -115,8 +119,9 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
 
   Widget filterChipsButtons() {
     final lang = L10n.of(context);
-    final selected =
-        ref.watch(roomListFilterProvider.select((value) => value.selection));
+    final selected = ref.watch(
+      roomListFilterProvider.select((value) => value.selection),
+    );
     return Container(
       padding: const EdgeInsets.all(10),
       child: Wrap(
@@ -174,12 +179,13 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               opacity: !_isSearchVisible ? 0 : 1,
               curve: Curves.easeInOut,
               duration: const Duration(milliseconds: 400),
-              child: _isSearchVisible
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: filterBox(context),
-                    )
-                  : const SizedBox.shrink(),
+              child:
+                  _isSearchVisible
+                      ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: filterBox(context),
+                      )
+                      : const SizedBox.shrink(),
             ),
             searchTerms(context),
             Expanded(
@@ -230,10 +236,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
               searchFocus.requestFocus();
             });
           },
-          padding: const EdgeInsets.only(
-            right: 10,
-            left: 5,
-          ),
+          padding: const EdgeInsets.only(right: 10, left: 5),
           icon: const Icon(Atlas.magnifying_glass),
         ),
       if (hasFilters)
@@ -242,10 +245,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
           onPressed: () {
             setState(() => _isSearchVisible = true);
           },
-          padding: const EdgeInsets.only(
-            right: 10,
-            left: 5,
-          ),
+          padding: const EdgeInsets.only(right: 10, left: 5),
           icon: Badge(
             backgroundColor: Theme.of(context).colorScheme.badgeImportant,
             child: const Icon(Atlas.filter_thin),
@@ -258,8 +258,6 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
   }
 
   Widget get empty {
-    return Center(
-      child: SvgPicture.asset('assets/images/empty_messages.svg'),
-    );
+    return Center(child: SvgPicture.asset('assets/images/empty_messages.svg'));
   }
 }

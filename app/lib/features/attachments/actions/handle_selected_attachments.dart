@@ -8,7 +8,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show AttachmentDraft, AttachmentsManager, RefDetails;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mime/mime.dart';
@@ -114,11 +114,7 @@ Future<void> addRefDetailAttachment({
       _log.info('attachment sent: $res');
     }
 
-    await autosubscribe(
-      ref: ref,
-      objectId: manager.objectIdStr(),
-      lang: lang,
-    );
+    await autosubscribe(ref: ref, objectId: manager.objectIdStr(), lang: lang);
     EasyLoading.dismiss();
   } catch (e, s) {
     _log.severe('Failed to create attachments', e, s);

@@ -2,7 +2,7 @@ import 'package:acter/common/tutorial_dialogs/show_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 final createNewSpaceKey = GlobalKey(debugLabel: 'create new space');

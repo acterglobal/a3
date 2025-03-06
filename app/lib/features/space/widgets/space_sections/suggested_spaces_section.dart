@@ -4,7 +4,7 @@ import 'package:acter/features/space/widgets/related/spaces_helpers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,10 +49,11 @@ class SuggestedSpacesSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).suggestedSpaces,
           isShowSeeAllButton: true,
-          onTapSeeAll: () => context.pushNamed(
-            Routes.subSpaces.name,
-            pathParameters: {'spaceId': spaceId},
-          ),
+          onTapSeeAll:
+              () => context.pushNamed(
+                Routes.subSpaces.name,
+                pathParameters: {'spaceId': spaceId},
+              ),
         ),
         localSpacesListUI(suggestedLocalSpaces),
         remoteSubSpacesListUI(ref, spaceId, suggestedRemoteSpaces),

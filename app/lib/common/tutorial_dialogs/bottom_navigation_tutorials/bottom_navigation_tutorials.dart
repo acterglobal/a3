@@ -4,7 +4,7 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or
 import 'package:acter/common/tutorial_dialogs/target_focus.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 // Keys for Sidebar navigation
