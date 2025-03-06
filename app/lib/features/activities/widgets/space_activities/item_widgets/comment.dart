@@ -13,14 +13,12 @@ class ActivityCommentItemWidget extends StatelessWidget {
     final objectEmoji = activityObject?.emoji();
     final objectTitle = activityObject?.title();
 
-    return ActivityItemContainerWidget(
+    return ActivityUserCentricItemContainerWidget(
       actionTitle: '${PushStyles.comment.emoji} Commented on',
-      objectInfo: '$objectEmoji $objectTitle',
-      userInfoWidget: ActivityUserInfoContainerWidget(
-        userId: activity.senderIdStr(),
-        roomId: activity.roomIdStr(),
-        subtitle: activity.msgContent()?.body() ?? '',
-      ),
+      actionObjectInfo: '$objectEmoji $objectTitle',
+      userId: activity.senderIdStr(),
+      roomId: activity.roomIdStr(),
+      subtitle: activity.msgContent()?.body() ?? '',
       originServerTs: activity.originServerTs(),
     );
   }

@@ -9,24 +9,23 @@ class ActivityReactionItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activityObject = activity.object();
-    final objectEmoji = activityObject?.emoji();
-    final objectTitle = switch (activityObject?.typeStr()) {
-      'news' => 'Boost',
-      'stories' => 'Story',
-      _ => activityObject?.title(),
-    };
-    final objectInfo = '$objectEmoji $objectTitle';
-
-    return ActivityItemContainerWidget(
+    return ActivityUserCentricItemContainerWidget(
       actionTitle: '${PushStyles.reaction.emoji} Reacted on',
-      objectInfo: objectInfo,
-      userInfoWidget: ActivityUserInfoContainerWidget(
-        userId: activity.senderIdStr(),
-        roomId: activity.roomIdStr(),
-        subtitle: '',
-      ),
+      actionObjectInfo: getObjectInfo(),
+      userId: activity.senderIdStr(),
+      roomId: activity.roomIdStr(),
+      subtitle: '',
       originServerTs: activity.originServerTs(),
     );
+  }
+
+  String getObjectInfo() {
+    final objectEmoji = activity.object()?.emoji();
+    final objectTitle = switch (activity.object()?.typeStr()) {
+      'news' => 'Boost',
+      'stories' => 'Story',
+      _ => activity.object()?.title(),
+    };
+    return '$objectEmoji $objectTitle';
   }
 }

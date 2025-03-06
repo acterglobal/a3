@@ -5,23 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //Main container for all activity item widgets
-class ActivityItemContainerWidget extends StatelessWidget {
+class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
   final String actionTitle;
-  final String? objectInfo;
-  final Widget userInfoWidget;
+  final String? actionObjectInfo;
+  final String userId;
+  final String roomId;
+  final String? subtitle;
   final int originServerTs;
 
-  const ActivityItemContainerWidget({
+  const ActivityUserCentricItemContainerWidget({
     super.key,
     required this.actionTitle,
-    this.objectInfo,
-    required this.userInfoWidget,
+    this.actionObjectInfo,
+    required this.userId,
+    required this.roomId,
+    this.subtitle,
     required this.originServerTs,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Padding(
@@ -31,42 +34,32 @@ class ActivityItemContainerWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(actionTitle, style: actionTitleStyle),
-                if (objectInfo != null) ...[
-                  const SizedBox(width: 6),
-                  Text(objectInfo!, style: actionTitleStyle),
-                ],
-              ],
-            ),
+            buildActionInfoUI(context),
             const SizedBox(height: 6),
-            userInfoWidget,
+            buildUserInfoUI(context, ref),
             TimeAgoWidget(originServerTs: originServerTs),
           ],
         ),
       ),
     );
   }
-}
 
-//Container for the user info and subtitle
-class ActivityUserInfoContainerWidget extends ConsumerWidget {
-  final String userId;
-  final String roomId;
-  final String? subtitle;
+  Widget buildActionInfoUI(BuildContext context) {
+    final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(actionTitle, style: actionTitleStyle),
+        if (actionObjectInfo != null) ...[
+          const SizedBox(width: 6),
+          Text(actionObjectInfo!, style: actionTitleStyle),
+        ],
+      ],
+    );
+  }
 
-  const ActivityUserInfoContainerWidget({
-    super.key,
-    required this.userId,
-    required this.roomId,
-    this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget buildUserInfoUI(BuildContext context, WidgetRef ref) {
     final memberInfo =
         ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
     return ListTile(
