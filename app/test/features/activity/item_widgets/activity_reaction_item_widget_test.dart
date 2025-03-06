@@ -54,4 +54,112 @@ void main() {
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
   });
+
+  testWidgets('Add reaction on Event Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.reaction.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.event.name,
+        mockEmoji: SpaceObjectTypes.event.emoji,
+        mockTitle: 'Team Meeting',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.reaction.emoji} Reacted on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.event.emoji} Team Meeting'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+  });
+
+  testWidgets('Add reaction on TaskList Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.reaction.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.taskList.name,
+        mockEmoji: SpaceObjectTypes.taskList.emoji,
+        mockTitle: 'Project Tasks',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.reaction.emoji} Reacted on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.taskList.emoji} Project Tasks'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+  });
+
+  testWidgets('Add reaction on TaskItem Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.reaction.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.taskItem.name,
+        mockEmoji: SpaceObjectTypes.taskItem.emoji,
+        mockTitle: 'Complete Documentation',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.reaction.emoji} Reacted on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.taskItem.emoji} Complete Documentation'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+  });
+
+  testWidgets('Add reaction on News Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.reaction.name,
+      mockObject: MockActivityObject(
+        mockType: SpaceObjectTypes.news.name,
+        mockEmoji: SpaceObjectTypes.news.emoji,
+        mockTitle: 'Product Launch',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Verify action title
+    expect(
+      find.text('${PushStyles.reaction.emoji} Reacted on'),
+      findsOneWidget,
+    );
+
+    // Verify object info
+    expect(
+      find.text('${SpaceObjectTypes.news.emoji} Boost'),
+      findsOneWidget,
+    );
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+  });
 }
