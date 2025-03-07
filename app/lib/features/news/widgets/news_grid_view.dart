@@ -14,11 +14,7 @@ class NewsGridView extends StatelessWidget {
   final List<UpdateEntry> updateList;
   final Function(int)? onTapNewItem;
 
-  const NewsGridView({
-    super.key,
-    required this.updateList,
-    this.onTapNewItem,
-  });
+  const NewsGridView({super.key, required this.updateList, this.onTapNewItem});
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +54,11 @@ class NewsGridView extends StatelessWidget {
       margin: const EdgeInsets.all(6),
       child: Stack(
         children: [
-          UpdateSlideItem(
+          UpdateSlideItemWidget(
             slide: slide,
             showRichContent: false,
             errorState: NewsMediaErrorState.showErrorImageWithText,
+            roomId: updateEntry.roomId().toString(),
           ),
           if (slideCount > 1) slideStackCountView(slideCount),
           newsPostTime(updateEntry.originServerTs()),
