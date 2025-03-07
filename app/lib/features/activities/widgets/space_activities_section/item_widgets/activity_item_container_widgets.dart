@@ -1,6 +1,12 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
+import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
+import 'package:acter/features/pins/providers/pins_provider.dart';
+import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +46,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildActionInfoUI(context),
+            buildActionInfoUI(context, ref),
             const SizedBox(height: 6),
             buildUserInfoUI(context, ref),
             TimeAgoWidget(originServerTs: originServerTs),
@@ -50,10 +56,10 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     );
   }
 
-  Widget buildActionInfoUI(BuildContext context) {
+  Widget buildActionInfoUI(BuildContext context, WidgetRef ref) {
     final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Icon(actionIcon, size: 16, color: actionIconColor),
@@ -69,6 +75,8 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
             ],
           ),
         ],
+        Spacer(),
+        getActerIconWidget(ref),
       ],
     );
   }
@@ -112,5 +120,31 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
       'story' => 'Story',
       _ => activityObject?.title() ?? '',
     };
+  }
+
+  Widget getActerIconWidget(WidgetRef ref) {
+    final objectId = activityObject?.objectIdStr();
+    if (objectId == null) return const SizedBox.shrink();
+    switch (activityObject?.typeStr()) {
+      case 'pin':
+        final pin = ref.watch(pinProvider(objectId)).valueOrNull;
+        return ActerIconWidget(
+          iconSize: 24,
+          color: convertColor(pin?.display()?.color(), iconPickerColors[0]),
+          icon: ActerIcon.iconForPin(pin?.display()?.iconStr()),
+        );
+      case 'task-list':
+        final taskList = ref.watch(taskListProvider(objectId)).valueOrNull;
+        return ActerIconWidget(
+          iconSize: 24,
+          color: convertColor(
+            taskList?.display()?.color(),
+            iconPickerColors[0],
+          ),
+          icon: ActerIcon.list,
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }
