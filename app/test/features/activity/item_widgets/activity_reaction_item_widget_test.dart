@@ -139,7 +139,7 @@ void main() {
     expect(find.text('Reacted on'), findsOneWidget);
 
     // Verify object icon
-    expect(find.byIcon(PhosphorIconsRegular.check), findsAtLeast(1));
+    expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsAtLeast(1));
 
     // Verify Activity Object icon
     expect(find.byType(ActerIconWidget), findsNothing);
