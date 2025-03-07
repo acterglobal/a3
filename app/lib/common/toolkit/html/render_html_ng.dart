@@ -31,13 +31,25 @@ class RenderHtmlNg extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return html.HtmlWidget(
+    final htmlWidget = html.HtmlWidget(
       text,
       onTapUrl: (url) => openLink(ref, url, context),
       textStyle: defaultTextStyle,
       customWidgetBuilder:
           (dom.Element element) => customWidgetBuilder(context, ref, element),
     );
+    if (maxLines != null) {
+      final height =
+          maxLines! *
+          (defaultTextStyle?.fontSize ??
+              Theme.of(context).textTheme.bodyMedium?.fontSize ??
+              12);
+      return SizedBox(
+        height: height.toDouble(),
+        child: ClipRect(child: htmlWidget),
+      );
+    }
+    return htmlWidget;
   }
 
   Widget? customWidgetBuilder(
