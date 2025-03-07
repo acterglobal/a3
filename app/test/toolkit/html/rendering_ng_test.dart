@@ -124,7 +124,7 @@ void main() {
     testWidgets('renders many', (tester) async {
       final html = '''
       dfg
-      <a href="matrix:u/peter:example.com">@peter:example.com</a>, <a href="matrix:u/test:example.com">@test:example.com</a>
+      <a href="https://matrix.to/#/@peter:example.com">@peter:example.com</a>, <a href="matrix:u/test:example.com">@test:example.com</a>
       abcd <a href="matrix:roomid/test:example.com">!test:example.com</a>
       <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=First+Meeting">🗓️ First Meeting</a>
       <a href="https://app.m-1.acter.global/p/575a56765ae0ee8630c62eb15e463c60a0978c1f?roomDisplayName=Kigis+Climate+Action+Group&title=Code+of+Conduct&via=%5B%27m-1.acter.global%27%5D&userId=jackie%3Am-1.acter.global#o/PIcnDNIUnpLcoFXnHf:m-1.acter.global/pin/AyCnLZVXNFC8rZDxsjy8RFlDcRmlgtT_ehkClxOyUYA">Code of Conduct</a>
