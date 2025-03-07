@@ -130,12 +130,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
           padding: const EdgeInsets.only(
             top: 40,
           ),
-          itemBuilder: (_, index, animation) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: ChatEvent(
-              roomId: widget.roomId,
-              eventId: messages[index],
-            ),
+          itemBuilder: (_, index, animation) => ChatEvent(
+            roomId: widget.roomId,
+            eventId: messages[index],
           ),
         ),
       );

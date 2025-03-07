@@ -55,8 +55,9 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          renderableChatMessagesProvider
-              .overrideWith((ref, roomId) => ['A1', 'A2', 'B1']),
+          renderableChatMessagesProvider.overrideWith(
+            (ref, roomId) => ['A1', 'A2', 'B1'],
+          ),
           chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
             final uniqueId = roomMsgId.uniqueId;
             return switch (uniqueId) {
@@ -71,20 +72,20 @@ void main() {
 
       test('shows avatar for last message in the list', () {
         final RoomMsgId query = (roomId: 'test-room', uniqueId: 'B1');
-        final result = container.read(isNextMessageGroupProvider(query));
-        expect(result, false);
+        final result = container.read(isLastMessageBySenderProvider(query));
+        expect(result, true);
       });
 
       test('shows avatar when next message is from different user', () {
         final RoomMsgId query = (roomId: 'test-room', uniqueId: 'A2');
-        final result = container.read(isNextMessageGroupProvider(query));
-        expect(result, false);
+        final result = container.read(isLastMessageBySenderProvider(query));
+        expect(result, true);
       });
 
       test('hides avatar when next message is from same user', () {
         final RoomMsgId query = (roomId: 'test-room', uniqueId: 'A1');
-        final result = container.read(isNextMessageGroupProvider(query));
-        expect(result, true);
+        final result = container.read(isLastMessageBySenderProvider(query));
+        expect(result, false);
       });
     });
 

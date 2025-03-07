@@ -12,7 +12,9 @@ class TextMessageEvent extends StatelessWidget {
   final String roomId;
   final MsgContent content;
   final TextMessageType _type;
-  final bool _isUser; // Only needed for emoji messages to determine style
+  final bool _isMe; // Only needed for emoji messages to determine style
+  final String? displayName;
+  final Widget? repliedTo;
 
   const TextMessageEvent.inner({
     super.key,
@@ -20,8 +22,10 @@ class TextMessageEvent extends StatelessWidget {
     required this.roomId,
     required TextMessageType type,
     bool isMe = false,
+    this.displayName,
+    this.repliedTo,
   }) : _type = type,
-       _isUser = isMe;
+       _isMe = isMe;
 
   factory TextMessageEvent.emoji({
     Key? key,
@@ -57,12 +61,16 @@ class TextMessageEvent extends StatelessWidget {
     Key? key,
     required MsgContent content,
     required String roomId,
+    String? displayName,
+    Widget? repliedTo,
   }) {
     return TextMessageEvent.inner(
       key: key,
       content: content,
       roomId: roomId,
       type: TextMessageType.notice,
+      displayName: displayName,
+      repliedTo: repliedTo,
     );
   }
 
@@ -71,12 +79,16 @@ class TextMessageEvent extends StatelessWidget {
     Key? key,
     required MsgContent content,
     required String roomId,
+    String? displayName,
+    Widget? repliedTo,
   }) {
     return TextMessageEvent.inner(
       key: key,
       content: content,
       roomId: roomId,
       type: TextMessageType.regular,
+      displayName: displayName,
+      repliedTo: repliedTo,
     );
   }
 
@@ -90,7 +102,7 @@ class TextMessageEvent extends StatelessWidget {
     // Handle emoji messages
     if (_type == TextMessageType.emoji) {
       final emojiTextStyle =
-          _isUser
+          _isMe
               ? chatTheme.sentEmojiMessageTextStyle
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
@@ -103,30 +115,48 @@ class TextMessageEvent extends StatelessWidget {
         ),
       );
     }
+    final dp = displayName;
+    final replied = repliedTo;
 
-    return RenderHtml(
-      shrinkToFit: true,
-      roomId: roomId,
-      pillBuilder:
-          ({
-            required String identifier,
-            required String url,
-            void Function(String)? onTap,
-          }) => ActerPillBuilder(
-            identifier: identifier,
-            uri: url,
-            roomId: roomId,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (dp != null) ...[
+          Text(
+            dp,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
           ),
-      renderNewlines: true,
-      maxLines: _type == TextMessageType.reply ? 2 : null,
-      defaultTextStyle: textTheme.bodySmall?.copyWith(
-        color:
-            _type == TextMessageType.notice
-                ? colorScheme.onSurface.withValues(alpha: 0.5)
-                : null,
-        overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
-      ),
-      text: body,
+          const SizedBox(height: 4),
+        ],
+        if (replied != null) ...[replied, const SizedBox(height: 10)],
+        RenderHtml(
+          shrinkToFit: true,
+          roomId: roomId,
+          pillBuilder:
+              ({
+                required String identifier,
+                required String url,
+                void Function(String)? onTap,
+              }) => ActerPillBuilder(
+                identifier: identifier,
+                uri: url,
+                roomId: roomId,
+              ),
+          renderNewlines: true,
+          maxLines: _type == TextMessageType.reply ? 2 : null,
+          defaultTextStyle: textTheme.bodySmall?.copyWith(
+            color:
+                _type == TextMessageType.notice
+                    ? colorScheme.onSurface.withValues(alpha: 0.5)
+                    : null,
+            overflow:
+                _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
+          ),
+          text: body,
+        ),
+      ],
     );
   }
 }

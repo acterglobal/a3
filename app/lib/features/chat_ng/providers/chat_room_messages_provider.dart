@@ -67,32 +67,49 @@ final renderableChatMessagesProvider =
   }).toList();
 });
 
-// Provider to check if we should show avatar by comparing with the next message
-final isNextMessageGroupProvider = Provider.family<bool, RoomMsgId>(
+final _getNextMessageProvider = Provider.family<RoomMessage?, RoomMsgId>(
   (ref, roomMsgId) {
     final roomId = roomMsgId.roomId;
     final eventId = roomMsgId.uniqueId;
     final messages = ref.watch(renderableChatMessagesProvider(roomId));
-    final currentIndex = messages.indexOf(eventId);
-
-    // Always show avatar for the first message (last in the list), so not affecting group state
-    if (currentIndex == messages.length - 1) return false;
-
-    // Get current and next message
-    final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
-    final nextMsg = ref.watch(
-      chatRoomMessageProvider(
-        (roomId: roomId, uniqueId: messages[currentIndex + 1]),
-      ),
+    final index = messages.indexOf(eventId);
+    if (index == -1) return null;
+    if (index == messages.length - 1) return null;
+    return ref.watch(
+      chatRoomMessageProvider((roomId: roomId, uniqueId: messages[index + 1])),
     );
+  },
+);
 
-    if (currentMsg == null || nextMsg == null) return true;
+final _getPreviousMessageProvider = Provider.family<RoomMessage?, RoomMsgId>(
+  (ref, roomMsgId) {
+    final roomId = roomMsgId.roomId;
+    final eventId = roomMsgId.uniqueId;
+    final messages = ref.watch(renderableChatMessagesProvider(roomId));
+    final index = messages.indexOf(eventId);
+    if (index == -1) return null;
+    if (index == 0) return null;
+    return ref.watch(
+      chatRoomMessageProvider((roomId: roomId, uniqueId: messages[index - 1])),
+    );
+  },
+);
 
-    final currentSender = currentMsg.eventItem()?.sender();
-    final nextSender = nextMsg.eventItem()?.sender();
+final isLastMessageBySenderProvider = Provider.family<bool, RoomMsgId>(
+  (ref, roomMsgId) {
+    final nextMsg = ref.watch(_getNextMessageProvider(roomMsgId));
+    if (nextMsg == null) return true;
+    final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
+    return currentMsg?.eventItem()?.sender() != nextMsg.eventItem()?.sender();
+  },
+);
 
-    // is next message in group from same sender
-    return currentSender == nextSender;
+final isFirstMessageBySenderProvider = Provider.family<bool, RoomMsgId>(
+  (ref, roomMsgId) {
+    final prevMsg = ref.watch(_getPreviousMessageProvider(roomMsgId));
+    if (prevMsg == null) return true;
+    final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
+    return currentMsg?.eventItem()?.sender() != prevMsg.eventItem()?.sender();
   },
 );
 

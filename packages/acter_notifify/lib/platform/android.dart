@@ -312,7 +312,7 @@ Future<void> showNotificationOnAndroid(NotificationItem notification) async {
     'news' => _showNews(notification),
     'chat' => _showChat(notification),
     'dm' => _showDM(notification),
-    'comment' || 'reaction' => _showObjNotif(notification),
-    _ => _showFallback(notification),
+    'unknown' || '' || 'fallback' => _showFallback(notification),
+    _ => _showObjNotif(notification),
   });
 }
