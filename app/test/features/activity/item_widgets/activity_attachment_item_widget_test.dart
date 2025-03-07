@@ -156,7 +156,7 @@ void main() {
     expect(find.text('Added attachment on'), findsOneWidget);
 
     // Verify object icon
-    expect(find.byIcon(PhosphorIconsRegular.check), findsAtLeast(1));
+    expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsAtLeast(1));
 
     // Verify Activity Object icon
     expect(find.byType(ActerIconWidget), findsNothing);
