@@ -1,5 +1,7 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/html/render_html_ng.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart' as matrixHtml;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,15 +70,27 @@ class RenderHtml extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return RenderHtmlNg(
-      text: text,
-      defaultTextStyle: defaultTextStyle,
-      linkTextStyle: linkTextStyle,
-      shrinkToFit: shrinkToFit,
-      maxLines: maxLines,
-      renderNewlines: renderNewlines,
-      // pillBuilder: pillBuilder,
-      roomId: roomId,
-    );
+    final nextHtml = ref.watch(isActiveProvider(LabsFeature.htmlNext));
+    if (nextHtml) {
+      return RenderHtmlNg(
+        text: text,
+        defaultTextStyle: defaultTextStyle,
+        linkTextStyle: linkTextStyle,
+        shrinkToFit: shrinkToFit,
+        maxLines: maxLines,
+        renderNewlines: renderNewlines,
+        roomId: roomId,
+      );
+    } else {
+      return _MatrixRenderHtml(
+        text: text,
+        defaultTextStyle: defaultTextStyle,
+        linkTextStyle: linkTextStyle,
+        shrinkToFit: shrinkToFit,
+        maxLines: maxLines,
+        renderNewlines: renderNewlines,
+        pillBuilder: pillBuilder,
+      );
+    }
   }
 }
