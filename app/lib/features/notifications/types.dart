@@ -11,7 +11,7 @@ enum SubscriptionSubType {
   attachments;
 
   String asType() => switch (this) {
-        SubscriptionSubType.comments => 'global.acter.dev.comment',
-        SubscriptionSubType.attachments => throw UnimplementedError(),
-      };
+    SubscriptionSubType.comments => 'global.acter.dev.comment',
+    SubscriptionSubType.attachments => throw UnimplementedError(),
+  };
 }

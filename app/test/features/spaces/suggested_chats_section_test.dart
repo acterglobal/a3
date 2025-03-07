@@ -17,10 +17,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         suggestedChatsProvider.overrideWith(
-          (a, b) => (
-            suggestedLocalChats,
-            suggestedRemoteChats,
-          ),
+          (a, b) => (suggestedLocalChats, suggestedRemoteChats),
         ),
       ],
       child: const SuggestedChatsSection(spaceId: '!spaceId', limit: 3),

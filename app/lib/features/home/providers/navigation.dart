@@ -13,10 +13,7 @@ const fallbackBottomBarIdx = 0;
 
 final bottomBarItems = [
   BottomBarNavigationItem(
-    icon: const Icon(
-      Atlas.home_thin,
-      key: MainNavKeys.dashboardHome,
-    ),
+    icon: const Icon(Atlas.home_thin, key: MainNavKeys.dashboardHome),
     activeIcon: const CustomSelectedIcon(
       icon: Icon(Atlas.home_bold),
       key: MainNavKeys.dashboardHome,
@@ -26,10 +23,7 @@ final bottomBarItems = [
     tutorialGlobalKey: bottomDashboardKey,
   ),
   BottomBarNavigationItem(
-    icon: const Icon(
-      key: MainNavKeys.updates,
-      Atlas.megaphone_thin,
-    ),
+    icon: const Icon(key: MainNavKeys.updates, Atlas.megaphone_thin),
     activeIcon: CustomSelectedIcon(
       icon: const Icon(Atlas.megaphone_thin),
       key: MainNavKeys.updates,
@@ -50,23 +44,16 @@ final bottomBarItems = [
   ),
   BottomBarNavigationItem(
     icon: const ActivitiesIcon(),
-    activeIcon: const CustomSelectedIcon(
-      icon: ActivitiesIcon(),
-    ),
+    activeIcon: const CustomSelectedIcon(icon: ActivitiesIcon()),
     label: 'Activities',
     initialLocation: Routes.activities.route,
     tutorialGlobalKey: bottomActivityKey,
   ),
   BottomBarNavigationItem(
-    icon: const Icon(
-      Atlas.magnifying_glass_thin,
-      key: MainNavKeys.quickJump,
-    ),
+    icon: const Icon(Atlas.magnifying_glass_thin, key: MainNavKeys.quickJump),
     activeIcon: const CustomSelectedIcon(
       key: MainNavKeys.quickJump,
-      icon: Icon(
-        Atlas.magnifying_glass_thin,
-      ),
+      icon: Icon(Atlas.magnifying_glass_thin),
     ),
     label: 'Search',
     initialLocation: Routes.search.route,

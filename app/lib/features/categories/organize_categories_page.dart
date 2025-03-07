@@ -48,7 +48,7 @@ class _DraggableCategoriesListState
       localCategoryListProvider((
         spaceId: widget.spaceId,
         categoriesFor: widget.categoriesFor,
-      ),).future,
+      )).future,
     );
 
     //SET DRAG AND DROP LIST DATA BASED ON THE LOCAL CATEGORY LIST

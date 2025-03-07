@@ -11,12 +11,9 @@ class SharedPrefFeaturesNotifier extends StateNotifier<Features<LabsFeature>> {
   final Ref ref;
 
   SharedPrefFeaturesNotifier(this.instanceKey, this.ref)
-      : super(
-          Features<LabsFeature>(
-            flags: const [],
-            defaultOn: LabsFeature.defaults,
-          ),
-        ) {
+    : super(
+        Features<LabsFeature>(flags: const [], defaultOn: LabsFeature.defaults),
+      ) {
     _init();
   }
 

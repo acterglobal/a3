@@ -27,8 +27,9 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
   @override
   void initState() {
     super.initState();
-    _pageController =
-        PreloadPageController(initialPage: widget.initialPageIndex);
+    _pageController = PreloadPageController(
+      initialPage: widget.initialPageIndex,
+    );
   }
 
   @override
@@ -72,8 +73,9 @@ class NewsVerticalViewState extends ConsumerState<NewsFullView> {
             onDoubleTap: () async {
               LikeAnimation.run(index);
               final news = widget.updateList[index];
-              final manager =
-                  await ref.read(updateReactionsProvider(news).future);
+              final manager = await ref.read(
+                updateReactionsProvider(news).future,
+              );
               final status = manager.likedByMe();
               if (!status) {
                 await manager.sendLike();

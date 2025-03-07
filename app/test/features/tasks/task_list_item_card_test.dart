@@ -55,92 +55,94 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('TaskListItemCard expands when canExpand is true',
-      (tester) async {
+  testWidgets('TaskListItemCard expands when canExpand is true', (
+    tester,
+  ) async {
     // Setup
-    await createWidgetUnderTest(
-      tester: tester,
-    );
+    await createWidgetUnderTest(tester: tester);
 
     expect(find.byType(ExpansionTile), findsOneWidget);
-    expect(find.byType(TaskItemsListWidget), findsOneWidget,); // Expect that TaskItemsListWidget is shown when expandable
+    expect(
+      find.byType(TaskItemsListWidget),
+      findsOneWidget,
+    ); // Expect that TaskItemsListWidget is shown when expandable
   });
 
-  testWidgets('TaskListItemCard shows ListTile when canExpand is false',
-      (tester) async {
+  testWidgets('TaskListItemCard shows ListTile when canExpand is false', (
+    tester,
+  ) async {
     // Setup
-    await createWidgetUnderTest(
-      tester: tester,
-      canExpand: false,
-    );
+    await createWidgetUnderTest(tester: tester, canExpand: false);
 
     expect(find.byType(ListTile), findsOneWidget);
-    expect(find.byType(TaskItemsListWidget), findsNothing,); // TaskItemsListWidget should not be shown
-  });
-  testWidgets(
-      'TaskListItemCard shows task list indication when showTaskListIndication is true',
-      (tester) async {
-    // Setup
-    await createWidgetUnderTest(
-      tester: tester,
-      isShowTaskListIndication: true,
-    );
     expect(
-      find.byIcon(Atlas.list),
-      findsOneWidget,
-    ); // Expect the list icon to be present
-    expect(find.text('Task List'), findsOneWidget,); // Expect task list indication text
+      find.byType(TaskItemsListWidget),
+      findsNothing,
+    ); // TaskItemsListWidget should not be shown
   });
   testWidgets(
-      'TaskListItemCard shows no task items when showOnlyTaskList is true',
-      (tester) async {
-    // Setup
-    await createWidgetUnderTest(
-      tester: tester,
-      isShowOnlyTaskList: true,
-    );
-    expect(find.byType(TaskItemsListWidget), findsNothing);
-  });
-  testWidgets('TaskListItemCard shows space chip when showSpace is true',
-      (tester) async {
-    await createWidgetUnderTest(
-      tester: tester,
-      isShowSpaceName: true,
-    );
+    'TaskListItemCard shows task list indication when showTaskListIndication is true',
+    (tester) async {
+      // Setup
+      await createWidgetUnderTest(
+        tester: tester,
+        isShowTaskListIndication: true,
+      );
+      expect(
+        find.byIcon(Atlas.list),
+        findsOneWidget,
+      ); // Expect the list icon to be present
+      expect(
+        find.text('Task List'),
+        findsOneWidget,
+      ); // Expect task list indication text
+    },
+  );
+  testWidgets(
+    'TaskListItemCard shows no task items when showOnlyTaskList is true',
+    (tester) async {
+      // Setup
+      await createWidgetUnderTest(tester: tester, isShowOnlyTaskList: true);
+      expect(find.byType(TaskItemsListWidget), findsNothing);
+    },
+  );
+  testWidgets('TaskListItemCard shows space chip when showSpace is true', (
+    tester,
+  ) async {
+    await createWidgetUnderTest(tester: tester, isShowSpaceName: true);
     expect(find.text('space name'), findsOneWidget);
   });
-  testWidgets('TaskListItemCard navigates to task list details when title is tapped',
-      (tester) async {
-    // Setup: Provide a mock callback for title tap
-    await createWidgetUnderTest(
-      tester: tester,
-      onTitleTap: () {
-        mockOnTapTaskItem.call(mockTask.eventId);
-      },
-    );
-    await tester.tap(find.byKey(Key('task-list-title-${mockTask.eventId}')));
-  });
+  testWidgets(
+    'TaskListItemCard navigates to task list details when title is tapped',
+    (tester) async {
+      // Setup: Provide a mock callback for title tap
+      await createWidgetUnderTest(
+        tester: tester,
+        onTitleTap: () {
+          mockOnTapTaskItem.call(mockTask.eventId);
+        },
+      );
+      await tester.tap(find.byKey(Key('task-list-title-${mockTask.eventId}')));
+    },
+  );
 
   testWidgets(
-      'TaskListItemCard does not show task items when showOnlyTaskList is true',
-      (tester) async {
-    // Setup: Ensure showOnlyTaskList is true to hide task items
-    await createWidgetUnderTest(
-      tester: tester,
-      isShowOnlyTaskList: true,
-    );
-    expect(find.byType(TaskItemsListWidget), findsNothing);
-  });
+    'TaskListItemCard does not show task items when showOnlyTaskList is true',
+    (tester) async {
+      // Setup: Ensure showOnlyTaskList is true to hide task items
+      await createWidgetUnderTest(tester: tester, isShowOnlyTaskList: true);
+      expect(find.byType(TaskItemsListWidget), findsNothing);
+    },
+  );
 
   testWidgets(
-      'TaskListItemCard shows task items when showOnlyTaskList is false',
-      (tester) async {
-    // Setup: Ensure showOnlyTaskList is false to show task items
-    await createWidgetUnderTest(
-      tester: tester,
-    );
-    expect(find.byType(TaskItemsListWidget), findsOneWidget);
-  });
+    'TaskListItemCard shows task items when showOnlyTaskList is false',
+    (tester) async {
+      // Setup: Ensure showOnlyTaskList is false to show task items
+      await createWidgetUnderTest(tester: tester);
+      expect(find.byType(TaskItemsListWidget), findsOneWidget);
+    },
+  );
 
   testWidgets('TaskListItemCard uses correct icon', (tester) async {
     // Setup: Create the widget and check the icon

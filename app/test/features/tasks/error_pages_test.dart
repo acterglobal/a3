@@ -71,9 +71,7 @@ void main() {
           bookmarkByTypeProvider.overrideWith((a, ref) => []),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
-        child: const TasksListPage(
-          spaceId: '!test',
-        ),
+        child: const TasksListPage(spaceId: '!test'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });

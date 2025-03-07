@@ -22,14 +22,14 @@ Widget _chatLayoutBuilder({Widget? centerChild, Widget? expandedChild}) {
       mainProviderContainer.read(isActiveProvider(LabsFeature.chatNG)) == true;
   return isChatNg
       ? ChatLayoutBuilder(
-          roomListWidgetBuilder: (s) => RoomsListNGWidget(onSelected: s),
-          centerChild: centerChild,
-          expandedChild: expandedChild,
-        )
+        roomListWidgetBuilder: (s) => RoomsListNGWidget(onSelected: s),
+        centerChild: centerChild,
+        expandedChild: expandedChild,
+      )
       : ChatLayoutBuilder(
-          centerChild: centerChild,
-          expandedChild: expandedChild,
-        );
+        centerChild: centerChild,
+        expandedChild: expandedChild,
+      );
 }
 
 final chatShellRoutes = [
@@ -53,7 +53,7 @@ final chatShellRoutes = [
     pageBuilder: (context, state) {
       final isChatNg =
           mainProviderContainer.read(isActiveProvider(LabsFeature.chatNG)) ==
-              true;
+          true;
       final roomId = state.pathParameters['roomId']!;
 
       mainProviderContainer
@@ -63,13 +63,10 @@ final chatShellRoutes = [
         context: context,
         state: state,
         child: _chatLayoutBuilder(
-          centerChild: isChatNg
-              ? ChatRoomNgPage(
-                  roomId: roomId,
-                )
-              : RoomPage(
-                  roomId: roomId,
-                ),
+          centerChild:
+              isChatNg
+                  ? ChatRoomNgPage(roomId: roomId)
+                  : RoomPage(roomId: roomId),
         ),
       );
     },
@@ -79,8 +76,9 @@ final chatShellRoutes = [
     path: Routes.chatProfile.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']
-          .expect('chatProfile route needs roomId as path param');
+      final roomId = state.pathParameters['roomId'].expect(
+        'chatProfile route needs roomId as path param',
+      );
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
@@ -99,8 +97,9 @@ final chatShellRoutes = [
     path: Routes.chatSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']
-          .expect('chatSettingsVisibility route needs roomId as path param');
+      final roomId = state.pathParameters['roomId'].expect(
+        'chatSettingsVisibility route needs roomId as path param',
+      );
       mainProviderContainer
           .read(selectedChatIdProvider.notifier)
           .select(roomId);
@@ -122,8 +121,9 @@ final chatShellRoutes = [
     path: Routes.chatInvite.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.pathParameters['roomId']
-          .expect('chatInvite route needs roomId as path param');
+      final roomId = state.pathParameters['roomId'].expect(
+        'chatInvite route needs roomId as path param',
+      );
       return defaultPageBuilder(
         context: context,
         state: state,

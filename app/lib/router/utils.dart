@@ -15,12 +15,12 @@ enum ShellBranch {
   searchShell;
 
   GlobalKey<NavigatorState> get key => switch (this) {
-        ShellBranch.homeShell => homeTabNavKey,
-        ShellBranch.updatesShell => updateTabNavKey,
-        ShellBranch.chatsShell => chatTabNavKey,
-        ShellBranch.activitiesShell => activitiesTabNavKey,
-        ShellBranch.searchShell => searchTabNavKey,
-      };
+    ShellBranch.homeShell => homeTabNavKey,
+    ShellBranch.updatesShell => updateTabNavKey,
+    ShellBranch.chatsShell => chatTabNavKey,
+    ShellBranch.activitiesShell => activitiesTabNavKey,
+    ShellBranch.searchShell => searchTabNavKey,
+  };
 }
 
 /// Make sure we are on the right navigation branch
@@ -61,8 +61,10 @@ void goToChat(BuildContext localContext, String roomId) {
     navigateOnRightBranch(
       localContext,
       ShellBranch.chatsShell,
-      (navContext) => navContext
-          .pushNamed(Routes.chatroom.name, pathParameters: {'roomId': roomId}),
+      (navContext) => navContext.pushNamed(
+        Routes.chatroom.name,
+        pathParameters: {'roomId': roomId},
+      ),
     );
     return;
   }
@@ -85,7 +87,9 @@ void goToSpace(BuildContext localContext, String spaceId) {
   navigateOnRightBranch(
     localContext,
     ShellBranch.homeShell,
-    (navContext) => navContext
-        .pushNamed(Routes.space.name, pathParameters: {'spaceId': spaceId}),
+    (navContext) => navContext.pushNamed(
+      Routes.space.name,
+      pathParameters: {'spaceId': spaceId},
+    ),
   );
 }

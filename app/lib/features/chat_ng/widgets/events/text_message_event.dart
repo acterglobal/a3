@@ -7,12 +7,7 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:markdown/markdown.dart' as md;
 
-enum TextMessageType {
-  regular,
-  reply,
-  emoji,
-  notice,
-}
+enum TextMessageType { regular, reply, emoji, notice }
 
 class TextMessageEvent extends StatelessWidget {
   final String roomId;
@@ -26,8 +21,8 @@ class TextMessageEvent extends StatelessWidget {
     required this.roomId,
     required TextMessageType type,
     bool isMe = false,
-  })  : _type = type,
-        _isUser = isMe;
+  }) : _type = type,
+       _isUser = isMe;
 
   factory TextMessageEvent.emoji({
     Key? key,
@@ -95,16 +90,15 @@ class TextMessageEvent extends StatelessWidget {
 
     // Handle emoji messages
     if (_type == TextMessageType.emoji) {
-      final emojiTextStyle = _isUser
-          ? chatTheme.sentEmojiMessageTextStyle
-          : chatTheme.receivedEmojiMessageTextStyle;
+      final emojiTextStyle =
+          _isUser
+              ? chatTheme.sentEmojiMessageTextStyle
+              : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Html(
           data: body,
-          defaultTextStyle: emojiTextStyle.copyWith(
-            fontFamily: emojiFont,
-          ),
+          defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
           maxLines: _type == TextMessageType.reply ? 3 : null,
         ),
       );
@@ -112,22 +106,23 @@ class TextMessageEvent extends StatelessWidget {
 
     return Html(
       shrinkToFit: true,
-      pillBuilder: ({
-        required String identifier,
-        required String url,
-        OnPillTap? onTap,
-      }) =>
-          ActerPillBuilder(
-        identifier: identifier,
-        uri: url,
-        roomId: roomId,
-      ),
+      pillBuilder:
+          ({
+            required String identifier,
+            required String url,
+            OnPillTap? onTap,
+          }) => ActerPillBuilder(
+            identifier: identifier,
+            uri: url,
+            roomId: roomId,
+          ),
       renderNewlines: true,
       maxLines: _type == TextMessageType.reply ? 2 : null,
       defaultTextStyle: textTheme.bodySmall?.copyWith(
-        color: _type == TextMessageType.notice
-            ? colorScheme.onSurface.withValues(alpha: 0.5)
-            : null,
+        color:
+            _type == TextMessageType.notice
+                ? colorScheme.onSurface.withValues(alpha: 0.5)
+                : null,
         overflow: _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
       ),
       data: body,

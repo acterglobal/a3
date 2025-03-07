@@ -23,9 +23,10 @@ class MemberListEntry extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-    final memberStatus = ref
-        .watch(membershipStatusStr((roomId: roomId, userId: memberId)))
-        .valueOrNull;
+    final memberStatus =
+        ref
+            .watch(membershipStatusStr((roomId: roomId, userId: memberId)))
+            .valueOrNull;
     Widget? trailing;
     if (memberStatus == 'Admin') {
       trailing = const Tooltip(
@@ -39,8 +40,9 @@ class MemberListEntry extends ConsumerWidget {
       );
     }
 
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: memberId, roomId: roomId)));
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: roomId)),
+    );
 
     return ListTile(
       onTap: () async {
@@ -53,24 +55,20 @@ class MemberListEntry extends ConsumerWidget {
           );
         }
       },
-      leading: ActerAvatar(
-        options: AvatarOptions.DM(
-          avatarInfo,
-          size: 18,
-        ),
-      ),
+      leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18)),
       title: Text(
         avatarInfo.displayName ?? memberId,
         style: textTheme.bodyMedium,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: avatarInfo.displayName != null
-          ? Text(
-              memberId,
-              style: textTheme.labelLarge,
-              overflow: TextOverflow.ellipsis,
-            )
-          : null,
+      subtitle:
+          avatarInfo.displayName != null
+              ? Text(
+                memberId,
+                style: textTheme.labelLarge,
+                overflow: TextOverflow.ellipsis,
+              )
+              : null,
       trailing: trailing,
     );
   }

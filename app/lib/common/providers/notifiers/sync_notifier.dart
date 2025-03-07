@@ -36,10 +36,7 @@ class SyncNotifier extends Notifier<SyncState> {
         // hack unfortunately means we have two wait a bit but that means
         // we get past the threshold where it is okay to schedule...
         client = newClient;
-        Future.delayed(
-          const Duration(milliseconds: 1500),
-          () => restartSync(),
-        );
+        Future.delayed(const Duration(milliseconds: 1500), () => restartSync());
       },
       fireImmediately: true,
     );
@@ -48,17 +45,14 @@ class SyncNotifier extends Notifier<SyncState> {
   }
 
   void _tickSyncState() {
-    state.countDown.map(
-      (countDown) {
-        if (countDown == 0) {
-          restartSync();
-        } else {
-          // just count down.
-          state = state.copyWith(countDown: countDown - 1);
-        }
-      },
-      orElse: () => restartSync(),
-    );
+    state.countDown.map((countDown) {
+      if (countDown == 0) {
+        restartSync();
+      } else {
+        // just count down.
+        state = state.copyWith(countDown: countDown - 1);
+      }
+    }, orElse: () => restartSync());
   }
 
   void restartSync() {

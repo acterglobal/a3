@@ -18,13 +18,15 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('displays invite token and accepted count correctly',
-        (tester) async {
+    testWidgets('displays invite token and accepted count correctly', (
+      tester,
+    ) async {
       // Mock the methods of SuperInviteToken
       final mockFfiList = MockFfiListFfiString();
       mockFfiList.add(MockFfiString('room1')); // Add a room string to the list
-      final inviteToken =
-          MockSuperInviteToken(mockFfiListFfiString: mockFfiList);
+      final inviteToken = MockSuperInviteToken(
+        mockFfiListFfiString: mockFfiList,
+      );
 
       await createWidgetUnderTest(tester: tester, inviteToken: inviteToken);
       await tester.pumpAndSettle();
@@ -43,8 +45,9 @@ void main() {
       // Mock the methods of SuperInviteToken
       final mockFfiList = MockFfiListFfiString();
       mockFfiList.add(MockFfiString('room1')); // Add a room string to the list
-      final inviteToken =
-          MockSuperInviteToken(mockFfiListFfiString: mockFfiList);
+      final inviteToken = MockSuperInviteToken(
+        mockFfiListFfiString: mockFfiList,
+      );
 
       await createWidgetUnderTest(tester: tester, inviteToken: inviteToken);
       await tester.pumpAndSettle();
@@ -53,12 +56,14 @@ void main() {
       expect(find.byIcon(PhosphorIcons.share()), findsOne);
     });
 
-    testWidgets('does not display share button when room is unavailable',
-        (tester) async {
+    testWidgets('does not display share button when room is unavailable', (
+      tester,
+    ) async {
       // Mock the methods of SuperInviteToken
       final mockFfiList = MockFfiListFfiString();
-      final inviteToken =
-          MockSuperInviteToken(mockFfiListFfiString: mockFfiList);
+      final inviteToken = MockSuperInviteToken(
+        mockFfiListFfiString: mockFfiList,
+      );
 
       await createWidgetUnderTest(tester: tester, inviteToken: inviteToken);
       await tester.pumpAndSettle();

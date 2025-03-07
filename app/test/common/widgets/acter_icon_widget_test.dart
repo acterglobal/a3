@@ -22,8 +22,9 @@ void main() {
     );
   }
 
-  testWidgets('ActerIconWidget renders icon and color correctly',
-      (WidgetTester tester) async {
+  testWidgets('ActerIconWidget renders icon and color correctly', (
+    WidgetTester tester,
+  ) async {
     // Build the widget using the helper function
     await tester.pumpWidget(
       createWidgetUnderTest(
@@ -34,48 +35,32 @@ void main() {
     );
 
     // Verify if the icon and color are rendered correctly
-    expect(
-      find.byType(Icon),
-      findsOneWidget,
-    );
-    expect(
-      (tester.widget(find.byType(Icon)) as Icon).size,
-      50,
-    );
-    expect(
-      (tester.widget(find.byType(Icon)) as Icon).color,
-      Colors.red,
-    );
-    expect(
-      (tester.widget(find.byType(Icon)) as Icon).icon,
-      ActerIcon.car.data,
-    );
+    expect(find.byType(Icon), findsOneWidget);
+    expect((tester.widget(find.byType(Icon)) as Icon).size, 50);
+    expect((tester.widget(find.byType(Icon)) as Icon).color, Colors.red);
+    expect((tester.widget(find.byType(Icon)) as Icon).icon, ActerIcon.car.data);
   });
 
   testWidgets(
-      'ActerIconWidget renders default values when no values are passed',
-      (WidgetTester tester) async {
-    // Build the widget using the helper function without iconSize and color
-    await tester.pumpWidget(
-      createWidgetUnderTest(),
-    );
+    'ActerIconWidget renders default values when no values are passed',
+    (WidgetTester tester) async {
+      // Build the widget using the helper function without iconSize and color
+      await tester.pumpWidget(createWidgetUnderTest());
 
-    // Verify if the icon and color are rendered with default values
-    expect(
-      find.byType(Icon),
-      findsOneWidget,
-    );
-    expect(
-      (tester.widget(find.byType(Icon)) as Icon).size,
-      70,
-    ); // Default size
-    expect(
-      (tester.widget(find.byType(Icon)) as Icon).color,
-      Colors.grey,
-    ); // Default color
-    expect(
-      (tester.widget(find.byType(Icon)) as Icon).icon,
-      ActerIcon.list.data,
-    ); // Default icon
-  });
+      // Verify if the icon and color are rendered with default values
+      expect(find.byType(Icon), findsOneWidget);
+      expect(
+        (tester.widget(find.byType(Icon)) as Icon).size,
+        70,
+      ); // Default size
+      expect(
+        (tester.widget(find.byType(Icon)) as Icon).color,
+        Colors.grey,
+      ); // Default color
+      expect(
+        (tester.widget(find.byType(Icon)) as Icon).icon,
+        ActerIcon.list.data,
+      ); // Default icon
+    },
+  );
 }

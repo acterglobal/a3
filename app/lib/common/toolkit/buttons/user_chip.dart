@@ -8,11 +8,7 @@ class UserChip extends ConsumerWidget {
   final String roomId;
   final String memberId;
 
-  const UserChip({
-    super.key,
-    required this.roomId,
-    required this.memberId,
-  });
+  const UserChip({super.key, required this.roomId, required this.memberId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,10 +23,7 @@ class UserChip extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ActerAvatar(
-              options: AvatarOptions.DM(
-                memberInfo,
-                size: fontSize / 2,
-              ),
+              options: AvatarOptions.DM(memberInfo, size: fontSize / 2),
             ),
             SizedBox(width: 4),
             Text(memberInfo.displayName ?? memberId),

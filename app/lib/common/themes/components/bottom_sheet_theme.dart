@@ -3,7 +3,5 @@ import 'package:flutter/material.dart';
 
 var bottomSheetTheme = BottomSheetThemeData(
   backgroundColor: surfaceColor,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
-  ),
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
 );

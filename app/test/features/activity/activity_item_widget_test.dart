@@ -16,16 +16,15 @@ void main() {
   }) async {
     await tester.pumpProviderWidget(
       overrides: [],
-      child: Material(
-        child: ActivityItemWidget(activity: mockActivity!),
-      ),
+      child: Material(child: ActivityItemWidget(activity: mockActivity!)),
     );
     // Wait for the async provider to load
     await tester.pump();
   }
 
-  testWidgets('Activity item widget displays ActivityCommentItemWidget',
-      (tester) async {
+  testWidgets('Activity item widget displays ActivityCommentItemWidget', (
+    tester,
+  ) async {
     MockActivity mockActivity = MockActivity(mockType: PushStyles.comment.name);
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
@@ -33,30 +32,36 @@ void main() {
     expect(find.byType(ActivityCommentItemWidget), findsOneWidget);
   });
 
-  testWidgets('Activity item widget displays ActivityReactionItemWidget',
-      (tester) async {
-    MockActivity mockActivity =
-        MockActivity(mockType: PushStyles.reaction.name);
+  testWidgets('Activity item widget displays ActivityReactionItemWidget', (
+    tester,
+  ) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.reaction.name,
+    );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed
     expect(find.byType(ActivityReactionItemWidget), findsOneWidget);
   });
 
-  testWidgets('Activity item widget displays ActivityAttachmentItemWidget',
-      (tester) async {
-    MockActivity mockActivity =
-        MockActivity(mockType: PushStyles.attachment.name);
+  testWidgets('Activity item widget displays ActivityAttachmentItemWidget', (
+    tester,
+  ) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.attachment.name,
+    );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed
     expect(find.byType(ActivityAttachmentItemWidget), findsOneWidget);
   });
 
-  testWidgets('Activity item widget displays ActivityReferencesItemWidget',
-      (tester) async {
-    MockActivity mockActivity =
-        MockActivity(mockType: PushStyles.references.name);
+  testWidgets('Activity item widget displays ActivityReferencesItemWidget', (
+    tester,
+  ) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+    );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
     // Verify the comment widget is displayed

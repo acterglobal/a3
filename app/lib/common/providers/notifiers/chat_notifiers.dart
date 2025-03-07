@@ -20,8 +20,9 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   FutureOr<Convo?> build(String arg) async {
     final roomId = arg;
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener =
-        client.subscribeRoomStream(roomId); // keep it resident in memory
+    _listener = client.subscribeRoomStream(
+      roomId,
+    ); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         state = await AsyncValue.guard(() async => await client.convo(roomId));

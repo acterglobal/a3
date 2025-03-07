@@ -30,13 +30,11 @@ class FileMessageEvent extends ConsumerWidget {
         final mediaFile =
             ref.read(mediaChatStateProvider(messageInfo)).mediaFile;
         if (mediaFile != null) {
-          await openFileShareDialog(
-            context: context,
-            file: mediaFile,
-          );
+          await openFileShareDialog(context: context, file: mediaFile);
         } else {
-          final notifier =
-              ref.read(mediaChatStateProvider(messageInfo).notifier);
+          final notifier = ref.read(
+            mediaChatStateProvider(messageInfo).notifier,
+          );
           await notifier.downloadMedia();
         }
       },

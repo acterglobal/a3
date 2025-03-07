@@ -38,10 +38,7 @@ void main() {
   group('Image Fails to Load Error', () {
     testWidgets('shows error and retries', (tester) async {
       const imageMessage = ImageMessage(
-        author: User(
-          id: 'sender',
-          firstName: 'userName',
-        ),
+        author: User(id: 'sender', firstName: 'userName'),
         remoteId: 'eventItem.uniqueId()',
         createdAt: 1234567,
         height: 20,

@@ -130,7 +130,7 @@ class FakeUtcDateTime extends Fake implements UtcDateTime {
 class MockUtcNowNotifier extends StateNotifier<DateTime>
     implements UtcNowNotifier {
   MockUtcNowNotifier({DateTime? state})
-      : super(state ?? DateTime.now().toUtc());
+    : super(state ?? DateTime.now().toUtc());
 }
 
 class MockEventId extends Mock implements EventId {

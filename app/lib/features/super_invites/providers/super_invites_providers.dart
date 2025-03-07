@@ -12,8 +12,9 @@ final hasSuperTokensAccess = FutureProvider<bool>((ref) async {
   return !asyncVal.hasError;
 });
 
-final superInvitesTokensProvider =
-    FutureProvider<List<SuperInviteToken>>((ref) async {
+final superInvitesTokensProvider = FutureProvider<List<SuperInviteToken>>((
+  ref,
+) async {
   final superInvites = await ref.watch(superInvitesProvider.future);
   final tokenList = (await superInvites.tokens()).toList();
 
@@ -28,12 +29,12 @@ final superInvitesTokensProvider =
 
 final superInviteTokenProvider = FutureProvider.autoDispose
     .family<SuperInviteToken, String>((ref, tokenCode) async {
-  final tokens = await ref.watch(superInvitesTokensProvider.future);
-  for (final token in tokens) {
-    if (token.token() == tokenCode) return token;
-  }
-  throw 'SuperInvite $tokenCode not found';
-});
+      final tokens = await ref.watch(superInvitesTokensProvider.future);
+      for (final token in tokens) {
+        if (token.token() == tokenCode) return token;
+      }
+      throw 'SuperInvite $tokenCode not found';
+    });
 
 final superInvitesProvider = FutureProvider<SuperInvites>(
   (ref) => ref.watch(
@@ -44,11 +45,11 @@ final superInvitesProvider = FutureProvider<SuperInvites>(
 /// List of SuperInviteTokens that have the given roomId in their to-invite list
 final superInvitesForRoom = FutureProvider.autoDispose
     .family<List<SuperInviteToken>, String>((ref, roomId) async {
-  final allInvites = await ref.watch(superInvitesTokensProvider.future);
-  return allInvites
-      .where((invite) => asDartStringList(invite.rooms()).contains(roomId))
-      .toList();
-});
+      final allInvites = await ref.watch(superInvitesTokensProvider.future);
+      return allInvites
+          .where((invite) => asDartStringList(invite.rooms()).contains(roomId))
+          .toList();
+    });
 
 /// Given the list of rooms this creates a new token with a random key
 Future<String> newSuperInviteForRooms(
@@ -71,6 +72,6 @@ Future<String> newSuperInviteForRooms(
 
 final superInviteInfoProvider = FutureProvider.autoDispose
     .family<SuperInviteInfo, String>((ref, token) async {
-  final superInvites = await ref.watch(superInvitesProvider.future);
-  return await superInvites.info(token);
-});
+      final superInvites = await ref.watch(superInvitesProvider.future);
+      return await superInvites.info(token);
+    });

@@ -4,5 +4,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final roomUserSettingsProvider = AsyncNotifierProvider.autoDispose
     .family<AsyncUserRoomSettingsNotifier, UserRoomSettings, String>(
-  () => AsyncUserRoomSettingsNotifier(),
-);
+      () => AsyncUserRoomSettingsNotifier(),
+    );

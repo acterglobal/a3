@@ -28,8 +28,8 @@ class SpaceNameWidget extends ConsumerWidget {
       overflow: TextOverflow.ellipsis,
       maxLines: 3,
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            decoration: underline ? TextDecoration.underline : null,
-          ),
+        decoration: underline ? TextDecoration.underline : null,
+      ),
     );
   }
 }

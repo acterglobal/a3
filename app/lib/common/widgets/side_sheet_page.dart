@@ -40,10 +40,7 @@ class SideSheetPage<T> extends CustomTransitionPage<T> {
           width = 450;
         }
 
-        Widget dialogChild = IntrinsicWidth(
-          stepWidth: 56,
-          child: child,
-        );
+        Widget dialogChild = IntrinsicWidth(stepWidth: 56, child: child);
         if (label != null) {
           dialogChild = Semantics(
             scopesRoute: true,

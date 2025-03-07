@@ -27,8 +27,10 @@ class ActivitiesPage extends ConsumerWidget {
     if (securityWidget != null) sectionWidgetList.add(securityWidget);
 
     // Space Activities Section
-    final spaceActivitiesWidget =
-        buildSpaceActivitiesSectionWidget(context, ref);
+    final spaceActivitiesWidget = buildSpaceActivitiesSectionWidget(
+      context,
+      ref,
+    );
     if (spaceActivitiesWidget != null) {
       sectionWidgetList.add(spaceActivitiesWidget);
     }

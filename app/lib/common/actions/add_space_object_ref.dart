@@ -20,9 +20,8 @@ Future<void> addSpaceObjectRefDialog({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => AddSpaceObjectRef(
-      attachmentManager: attachmentManager,
-    ),
+    builder:
+        (context) => AddSpaceObjectRef(attachmentManager: attachmentManager),
   );
 }
 
@@ -61,8 +60,9 @@ class AddSpaceObjectRef extends ConsumerWidget {
   Future<void> addEventRefObject(BuildContext context, WidgetRef ref) async {
     final sourceEventId = await selectEventDrawer(context: context);
     if (sourceEventId == null) return;
-    final sourceEvent =
-        await ref.watch(calendarEventProvider(sourceEventId).future);
+    final sourceEvent = await ref.watch(
+      calendarEventProvider(sourceEventId).future,
+    );
     final sourceRefDetails = await sourceEvent.refDetails();
     if (!context.mounted) return;
     Navigator.pop(context);
@@ -77,8 +77,9 @@ class AddSpaceObjectRef extends ConsumerWidget {
   Future<void> addTaskListRefObject(BuildContext context, WidgetRef ref) async {
     final sourceTaskListId = await selectTaskListDrawer(context: context);
     if (sourceTaskListId == null) return;
-    final sourceTaskList =
-        await ref.watch(taskListProvider(sourceTaskListId).future);
+    final sourceTaskList = await ref.watch(
+      taskListProvider(sourceTaskListId).future,
+    );
     final sourceRefDetails = await sourceTaskList.refDetails();
     if (!context.mounted) return;
     Navigator.pop(context);

@@ -5,21 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
 
-typedef IndexedActiveStatusWidgetBuilder = Widget Function(
-  BuildContext context,
-  int index,
-  bool active,
-);
+typedef IndexedActiveStatusWidgetBuilder =
+    Widget Function(BuildContext context, int index, bool active);
 typedef IndexedVoidCallback = void Function(int index);
 
-typedef HeaderContainerBuilder = Widget Function(
-  BuildContext context,
-  Widget child,
-);
-typedef BodyContainerBuilder = Widget Function(
-  BuildContext context,
-  Widget child,
-);
+typedef HeaderContainerBuilder =
+    Widget Function(BuildContext context, Widget child);
+typedef BodyContainerBuilder =
+    Widget Function(BuildContext context, Widget child);
 
 class ScrollableListTabScroller extends StatefulWidget {
   final Key headerKey;
@@ -218,8 +211,8 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
     if (value.isEmpty) {
       return null;
     }
-    final orderedListByPositionIndex = value.toList()
-      ..sort((a, b) => a.index.compareTo(b.index));
+    final orderedListByPositionIndex =
+        value.toList()..sort((a, b) => a.index.compareTo(b.index));
 
     final renderedMostTopItem = orderedListByPositionIndex.first;
 
@@ -246,10 +239,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
     required Widget child,
   }) {
     return widget.headerContainerBuilder?.call(context, child) ??
-        SizedBox(
-          height: 30,
-          child: child,
-        );
+        SizedBox(height: 30, child: child);
   }
 
   Widget buildCustomBodyContainerOrDefault({
@@ -257,9 +247,7 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
     required Widget child,
   }) {
     return widget.bodyContainerBuilder?.call(context, child) ??
-        Expanded(
-          child: child,
-        );
+        Expanded(child: child);
   }
 
   Future<void> _onScrollsToTop(ScrollsToTopEvent event) async {
@@ -298,7 +286,8 @@ class ScrollableListTabScrollerState extends State<ScrollableListTabScroller> {
               });
               return ScrollsToTop(
                 onScrollsToTop: _onScrollsToTop,
-                child: widget.onRefresh.map(
+                child:
+                    widget.onRefresh.map(
                       (cb) => RefreshIndicator(
                         onRefresh: cb,
                         child: buildScrollabelPositionedList(),
@@ -379,10 +368,7 @@ class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
   void _setController() {
     _tabController?.dispose();
     widget.selectedTabIndex.removeListener(externalTabChangeListener);
-    final controller = TabController(
-      length: widget.itemCount,
-      vsync: this,
-    );
+    final controller = TabController(length: widget.itemCount, vsync: this);
     controller.addListener(tabChangeListener);
     _tabController = controller;
     widget.selectedTabIndex.addListener(externalTabChangeListener);
@@ -426,8 +412,9 @@ class _DefaultHeaderWidgetState extends State<DefaultHeaderWidget>
       widget.itemCount,
       (i) => ValueListenableBuilder(
         valueListenable: widget.selectedTabIndex,
-        builder: (context, selectedIndex, child) =>
-            widget.tabBuilder(context, i, i == selectedIndex),
+        builder:
+            (context, selectedIndex, child) =>
+                widget.tabBuilder(context, i, i == selectedIndex),
       ),
     );
     return Theme(

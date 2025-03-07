@@ -41,8 +41,9 @@ class _ReadCounterWidgetState extends ConsumerState<ReadCounterWidget> {
     final seconds = widget.triggerAfterSecs;
     if (seconds != null && seconds != 0) {
       _timer = Timer(Duration(seconds: seconds), () async {
-        final manager =
-            await ref.read(readReceiptsManagerProvider(widget.manager).future);
+        final manager = await ref.read(
+          readReceiptsManagerProvider(widget.manager).future,
+        );
         if (!manager.readByMe()) {
           await manager.announceRead();
         }
@@ -67,24 +68,27 @@ class _ReadCounterWidgetState extends ConsumerState<ReadCounterWidget> {
         final count = manager.readCount();
         return Column(
           children: [
-            ShadowEffectWidget(child: Icon(PhosphorIcons.eye()),),
-            ShadowEffectWidget(child:Text('$count'),),
+            ShadowEffectWidget(child: Icon(PhosphorIcons.eye())),
+            ShadowEffectWidget(child: Text('$count')),
           ],
         );
       },
       loading: () => const _ReadCounterWidgetLoading(),
-      error: (error, stackTrace) => Column(
-        children: [
-          ActerInlineErrorButton.icon(
-            error: error,
-            stack: stackTrace,
-            icon: Icon(PhosphorIcons.eye()),
-            onRetryTap: () =>
-                ref.invalidate(readReceiptsManagerProvider(widget.manager)),
+      error:
+          (error, stackTrace) => Column(
+            children: [
+              ActerInlineErrorButton.icon(
+                error: error,
+                stack: stackTrace,
+                icon: Icon(PhosphorIcons.eye()),
+                onRetryTap:
+                    () => ref.invalidate(
+                      readReceiptsManagerProvider(widget.manager),
+                    ),
+              ),
+              const Text('error'),
+            ],
           ),
-          const Text('error'),
-        ],
-      ),
       skipLoadingOnReload: true,
       skipLoadingOnRefresh: true,
     );

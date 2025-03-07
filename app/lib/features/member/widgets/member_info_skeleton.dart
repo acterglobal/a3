@@ -35,11 +35,7 @@ class MemberInfoSkeleton extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Skeletonizer(
-              child: Center(
-                child: Text('Joe Kasiznky'),
-              ),
-            ),
+            const Skeletonizer(child: Center(child: Text('Joe Kasiznky'))),
             const SizedBox(height: 20),
             const Skeletonizer(
               child: Row(
@@ -61,11 +57,7 @@ class MemberInfoSkeleton extends StatelessWidget {
                 ),
               ),
             ),
-            const Skeletonizer(
-              child: Center(
-                child: Text('This is you'),
-              ),
-            ),
+            const Skeletonizer(child: Center(child: Text('This is you'))),
             const SizedBox(height: 30),
           ],
         ),

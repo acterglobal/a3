@@ -60,9 +60,7 @@ extension ActerProviderTesting on WidgetTester {
     await pumpWidget(
       ProviderScope(
         overrides: overrides ?? [],
-        child: InActerContextTestWrapper(
-          child: child,
-        ),
+        child: InActerContextTestWrapper(child: child),
       ),
     );
   }

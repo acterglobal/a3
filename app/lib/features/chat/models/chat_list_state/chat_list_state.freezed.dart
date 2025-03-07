@@ -12,7 +12,8 @@ part of 'chat_list_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$ChatListState {
@@ -22,16 +23,14 @@ mixin _$ChatListState {
     required TResult Function() loading,
     required TResult Function(List<Convo> chats) data,
     required TResult Function(String? error) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
     TResult? Function(List<Convo> chats)? data,
     TResult? Function(String? error)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
@@ -39,24 +38,21 @@ mixin _$ChatListState {
     TResult Function(List<Convo> chats)? data,
     TResult Function(String? error)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_ChatListStateInitial value) initial,
     required TResult Function(_ChatListStateLoading value) loading,
     required TResult Function(_ChatListStateData value) data,
     required TResult Function(_ChatListStateError value) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ChatListStateInitial value)? initial,
     TResult? Function(_ChatListStateLoading value)? loading,
     TResult? Function(_ChatListStateData value)? data,
     TResult? Function(_ChatListStateError value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ChatListStateInitial value)? initial,
@@ -64,15 +60,15 @@ mixin _$ChatListState {
     TResult Function(_ChatListStateData value)? data,
     TResult Function(_ChatListStateError value)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ChatListStateCopyWith<$Res> {
   factory $ChatListStateCopyWith(
-          ChatListState value, $Res Function(ChatListState) then) =
-      _$ChatListStateCopyWithImpl<$Res, ChatListState>;
+    ChatListState value,
+    $Res Function(ChatListState) then,
+  ) = _$ChatListStateCopyWithImpl<$Res, ChatListState>;
 }
 
 /// @nodoc
@@ -91,18 +87,20 @@ class _$ChatListStateCopyWithImpl<$Res, $Val extends ChatListState>
 
 /// @nodoc
 abstract class _$$ChatListStateInitialImplCopyWith<$Res> {
-  factory _$$ChatListStateInitialImplCopyWith(_$ChatListStateInitialImpl value,
-          $Res Function(_$ChatListStateInitialImpl) then) =
-      __$$ChatListStateInitialImplCopyWithImpl<$Res>;
+  factory _$$ChatListStateInitialImplCopyWith(
+    _$ChatListStateInitialImpl value,
+    $Res Function(_$ChatListStateInitialImpl) then,
+  ) = __$$ChatListStateInitialImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$ChatListStateInitialImplCopyWithImpl<$Res>
     extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateInitialImpl>
     implements _$$ChatListStateInitialImplCopyWith<$Res> {
-  __$$ChatListStateInitialImplCopyWithImpl(_$ChatListStateInitialImpl _value,
-      $Res Function(_$ChatListStateInitialImpl) _then)
-      : super(_value, _then);
+  __$$ChatListStateInitialImplCopyWithImpl(
+    _$ChatListStateInitialImpl _value,
+    $Res Function(_$ChatListStateInitialImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ChatListState
   /// with the given fields replaced by the non-null parameter values.
@@ -209,18 +207,20 @@ abstract class _ChatListStateInitial implements ChatListState {
 
 /// @nodoc
 abstract class _$$ChatListStateLoadingImplCopyWith<$Res> {
-  factory _$$ChatListStateLoadingImplCopyWith(_$ChatListStateLoadingImpl value,
-          $Res Function(_$ChatListStateLoadingImpl) then) =
-      __$$ChatListStateLoadingImplCopyWithImpl<$Res>;
+  factory _$$ChatListStateLoadingImplCopyWith(
+    _$ChatListStateLoadingImpl value,
+    $Res Function(_$ChatListStateLoadingImpl) then,
+  ) = __$$ChatListStateLoadingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$ChatListStateLoadingImplCopyWithImpl<$Res>
     extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateLoadingImpl>
     implements _$$ChatListStateLoadingImplCopyWith<$Res> {
-  __$$ChatListStateLoadingImplCopyWithImpl(_$ChatListStateLoadingImpl _value,
-      $Res Function(_$ChatListStateLoadingImpl) _then)
-      : super(_value, _then);
+  __$$ChatListStateLoadingImplCopyWithImpl(
+    _$ChatListStateLoadingImpl _value,
+    $Res Function(_$ChatListStateLoadingImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ChatListState
   /// with the given fields replaced by the non-null parameter values.
@@ -327,9 +327,10 @@ abstract class _ChatListStateLoading implements ChatListState {
 
 /// @nodoc
 abstract class _$$ChatListStateDataImplCopyWith<$Res> {
-  factory _$$ChatListStateDataImplCopyWith(_$ChatListStateDataImpl value,
-          $Res Function(_$ChatListStateDataImpl) then) =
-      __$$ChatListStateDataImplCopyWithImpl<$Res>;
+  factory _$$ChatListStateDataImplCopyWith(
+    _$ChatListStateDataImpl value,
+    $Res Function(_$ChatListStateDataImpl) then,
+  ) = __$$ChatListStateDataImplCopyWithImpl<$Res>;
   @useResult
   $Res call({List<Convo> chats});
 }
@@ -338,23 +339,25 @@ abstract class _$$ChatListStateDataImplCopyWith<$Res> {
 class __$$ChatListStateDataImplCopyWithImpl<$Res>
     extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateDataImpl>
     implements _$$ChatListStateDataImplCopyWith<$Res> {
-  __$$ChatListStateDataImplCopyWithImpl(_$ChatListStateDataImpl _value,
-      $Res Function(_$ChatListStateDataImpl) _then)
-      : super(_value, _then);
+  __$$ChatListStateDataImplCopyWithImpl(
+    _$ChatListStateDataImpl _value,
+    $Res Function(_$ChatListStateDataImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ChatListState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? chats = null,
-  }) {
-    return _then(_$ChatListStateDataImpl(
-      chats: null == chats
-          ? _value._chats
-          : chats // ignore: cast_nullable_to_non_nullable
-              as List<Convo>,
-    ));
+  $Res call({Object? chats = null}) {
+    return _then(
+      _$ChatListStateDataImpl(
+        chats:
+            null == chats
+                ? _value._chats
+                : chats // ignore: cast_nullable_to_non_nullable
+                    as List<Convo>,
+      ),
+    );
   }
 }
 
@@ -362,7 +365,7 @@ class __$$ChatListStateDataImplCopyWithImpl<$Res>
 
 class _$ChatListStateDataImpl implements _ChatListStateData {
   const _$ChatListStateDataImpl({required final List<Convo> chats})
-      : _chats = chats;
+    : _chats = chats;
 
   final List<Convo> _chats;
   @override
@@ -396,7 +399,9 @@ class _$ChatListStateDataImpl implements _ChatListStateData {
   @pragma('vm:prefer-inline')
   _$$ChatListStateDataImplCopyWith<_$ChatListStateDataImpl> get copyWith =>
       __$$ChatListStateDataImplCopyWithImpl<_$ChatListStateDataImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   @optionalTypeArgs
@@ -488,9 +493,10 @@ abstract class _ChatListStateData implements ChatListState {
 
 /// @nodoc
 abstract class _$$ChatListStateErrorImplCopyWith<$Res> {
-  factory _$$ChatListStateErrorImplCopyWith(_$ChatListStateErrorImpl value,
-          $Res Function(_$ChatListStateErrorImpl) then) =
-      __$$ChatListStateErrorImplCopyWithImpl<$Res>;
+  factory _$$ChatListStateErrorImplCopyWith(
+    _$ChatListStateErrorImpl value,
+    $Res Function(_$ChatListStateErrorImpl) then,
+  ) = __$$ChatListStateErrorImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String? error});
 }
@@ -499,23 +505,24 @@ abstract class _$$ChatListStateErrorImplCopyWith<$Res> {
 class __$$ChatListStateErrorImplCopyWithImpl<$Res>
     extends _$ChatListStateCopyWithImpl<$Res, _$ChatListStateErrorImpl>
     implements _$$ChatListStateErrorImplCopyWith<$Res> {
-  __$$ChatListStateErrorImplCopyWithImpl(_$ChatListStateErrorImpl _value,
-      $Res Function(_$ChatListStateErrorImpl) _then)
-      : super(_value, _then);
+  __$$ChatListStateErrorImplCopyWithImpl(
+    _$ChatListStateErrorImpl _value,
+    $Res Function(_$ChatListStateErrorImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ChatListState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? error = freezed,
-  }) {
-    return _then(_$ChatListStateErrorImpl(
-      freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+  $Res call({Object? error = freezed}) {
+    return _then(
+      _$ChatListStateErrorImpl(
+        freezed == error
+            ? _value.error
+            : error // ignore: cast_nullable_to_non_nullable
+                as String?,
+      ),
+    );
   }
 }
 
@@ -550,7 +557,9 @@ class _$ChatListStateErrorImpl implements _ChatListStateError {
   @pragma('vm:prefer-inline')
   _$$ChatListStateErrorImplCopyWith<_$ChatListStateErrorImpl> get copyWith =>
       __$$ChatListStateErrorImplCopyWithImpl<_$ChatListStateErrorImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 
   @override
   @optionalTypeArgs

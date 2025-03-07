@@ -43,10 +43,7 @@ class FullScreenAvatarPage extends ConsumerWidget {
             child: PinchZoomReleaseUnzoomWidget(
               child: Container(
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.fitWidth,
-                    image: data,
-                  ),
+                  image: DecorationImage(fit: BoxFit.fitWidth, image: data),
                 ),
               ),
             ),

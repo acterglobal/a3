@@ -18,10 +18,8 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-          (ref, param) => MockAvatarInfo(
-            uniqueId: param.userId,
-            mockDisplayName: 'User-1',
-          ),
+          (ref, param) =>
+              MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
       child: Material(
@@ -171,9 +169,6 @@ void main() {
     expect(find.text('User-1'), findsOneWidget);
 
     // Verify reference content
-    expect(
-      find.text('${SpaceObjectTypes.pin.emoji} Pin Name'),
-      findsOneWidget,
-    );
+    expect(find.text('${SpaceObjectTypes.pin.emoji} Pin Name'), findsOneWidget);
   });
 }

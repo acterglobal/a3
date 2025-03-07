@@ -19,29 +19,32 @@ class ChatMessages extends ConsumerStatefulWidget {
 }
 
 class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
-  final ScrollController _scrollController =
-      ScrollController(keepScrollOffset: true);
+  final ScrollController _scrollController = ScrollController(
+    keepScrollOffset: true,
+  );
 
   Timer? markReadDebouce;
 
   bool get isLoading => ref.watch(
-        chatMessagesStateProvider(widget.roomId)
-            .select((v) => v.loading.isLoading),
-      );
+    chatMessagesStateProvider(widget.roomId).select((v) => v.loading.isLoading),
+  );
 
   @override
   void initState() {
     super.initState();
     // for first time messages load, should scroll at the latest (bottom)
     ref.listenManual(
-        chatMessagesStateProvider(widget.roomId)
-            .select((value) => value.messageList.length), (_, __) {
-      if (_scrollController.hasClients &&
-          _scrollController.position.pixels >
-              _scrollController.position.maxScrollExtent - 150) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => scrollToEnd());
-      }
-    });
+      chatMessagesStateProvider(
+        widget.roomId,
+      ).select((value) => value.messageList.length),
+      (_, __) {
+        if (_scrollController.hasClients &&
+            _scrollController.position.pixels >
+                _scrollController.position.maxScrollExtent - 150) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => scrollToEnd());
+        }
+      },
+    );
     _scrollController.addListener(onScroll);
   }
 
@@ -60,8 +63,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       if (isLoading) return;
 
       // Get the notifier to load more messages
-      final notifier =
-          ref.read(chatMessagesStateProvider(widget.roomId).notifier);
+      final notifier = ref.read(
+        chatMessagesStateProvider(widget.roomId).notifier,
+      );
       await notifier.loadMore();
     } else if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent) {
@@ -72,8 +76,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
           // debounce
           markReadDebouce?.cancel();
           markReadDebouce = Timer(const Duration(milliseconds: 300), () async {
-            final timeline =
-                await ref.read(timelineStreamProvider(roomId).future);
+            final timeline = await ref.read(
+              timelineStreamProvider(roomId).future,
+            );
             await timeline.markAsRead(true);
             markReadDebouce?.cancel();
             markReadDebouce = null;
@@ -96,8 +101,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(
-      chatMessagesStateProvider(widget.roomId)
-          .select((value) => value.messageList),
+      chatMessagesStateProvider(
+        widget.roomId,
+      ).select((value) => value.messageList),
     );
 
     return PageStorage(
@@ -106,10 +112,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         children: [
           Expanded(
             child: Stack(
-              children: [
-                _buildMessagesList(messages),
-                _buildScrollIndicator(),
-              ],
+              children: [_buildMessagesList(messages), _buildScrollIndicator()],
             ),
           ),
         ],
@@ -117,42 +120,35 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     );
   }
 
-  Widget _buildMessagesList(
-    List<String> messages,
-  ) =>
-      KeyedSubtree(
-        key: PageStorageKey('chat_list_${widget.roomId}'),
-        child: AnimatedList(
-          initialItemCount: messages.length,
-          key: ref.watch(animatedListChatMessagesProvider(widget.roomId)),
-          controller: _scrollController,
-          reverse: false,
-          padding: const EdgeInsets.only(
-            top: 40,
-          ),
-          itemBuilder: (_, index, animation) => Padding(
+  Widget _buildMessagesList(List<String> messages) => KeyedSubtree(
+    key: PageStorageKey('chat_list_${widget.roomId}'),
+    child: AnimatedList(
+      initialItemCount: messages.length,
+      key: ref.watch(animatedListChatMessagesProvider(widget.roomId)),
+      controller: _scrollController,
+      reverse: false,
+      padding: const EdgeInsets.only(top: 40),
+      itemBuilder:
+          (_, index, animation) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: ChatEvent(
-              roomId: widget.roomId,
-              eventId: messages[index],
-            ),
+            child: ChatEvent(roomId: widget.roomId, eventId: messages[index]),
           ),
-        ),
-      );
+    ),
+  );
 
   Widget _buildScrollIndicator() => Positioned(
-        top: 12,
-        left: 0,
-        right: 0,
+    top: 12,
+    left: 0,
+    right: 0,
+    child: Center(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: isLoading ? 14 : 0,
+        width: isLoading ? 14 : 0,
         child: Center(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            height: isLoading ? 14 : 0,
-            width: isLoading ? 14 : 0,
-            child: Center(
-              child: isLoading ? const CircularProgressIndicator() : null,
-            ),
-          ),
+          child: isLoading ? const CircularProgressIndicator() : null,
         ),
-      );
+      ),
+    ),
+  );
 }

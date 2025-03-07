@@ -5,10 +5,7 @@ class MockRefDetails extends Mock implements RefDetails {
   final String mockTitle;
   final String mockType;
 
-  MockRefDetails({
-    required this.mockTitle,
-    required this.mockType,
-  });
+  MockRefDetails({required this.mockTitle, required this.mockType});
 
   @override
   String title() => mockTitle;

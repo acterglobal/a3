@@ -17,10 +17,8 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-          (ref, param) => MockAvatarInfo(
-            uniqueId: param.userId,
-            mockDisplayName: 'User-1',
-          ),
+          (ref, param) =>
+              MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
       child: Material(

@@ -12,7 +12,8 @@ part of 'chat_input_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$ChatInputState {
@@ -34,16 +35,18 @@ mixin _$ChatInputState {
 /// @nodoc
 abstract class $ChatInputStateCopyWith<$Res> {
   factory $ChatInputStateCopyWith(
-          ChatInputState value, $Res Function(ChatInputState) then) =
-      _$ChatInputStateCopyWithImpl<$Res, ChatInputState>;
+    ChatInputState value,
+    $Res Function(ChatInputState) then,
+  ) = _$ChatInputStateCopyWithImpl<$Res, ChatInputState>;
   @useResult
-  $Res call(
-      {SelectedMessageState selectedMessageState,
-      SendingState sendingState,
-      bool emojiPickerVisible,
-      types.Message? selectedMessage,
-      Map<String, String> mentions,
-      bool editBtnVisible});
+  $Res call({
+    SelectedMessageState selectedMessageState,
+    SendingState sendingState,
+    bool emojiPickerVisible,
+    types.Message? selectedMessage,
+    Map<String, String> mentions,
+    bool editBtnVisible,
+  });
 }
 
 /// @nodoc
@@ -68,50 +71,61 @@ class _$ChatInputStateCopyWithImpl<$Res, $Val extends ChatInputState>
     Object? mentions = null,
     Object? editBtnVisible = null,
   }) {
-    return _then(_value.copyWith(
-      selectedMessageState: null == selectedMessageState
-          ? _value.selectedMessageState
-          : selectedMessageState // ignore: cast_nullable_to_non_nullable
-              as SelectedMessageState,
-      sendingState: null == sendingState
-          ? _value.sendingState
-          : sendingState // ignore: cast_nullable_to_non_nullable
-              as SendingState,
-      emojiPickerVisible: null == emojiPickerVisible
-          ? _value.emojiPickerVisible
-          : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-      selectedMessage: freezed == selectedMessage
-          ? _value.selectedMessage
-          : selectedMessage // ignore: cast_nullable_to_non_nullable
-              as types.Message?,
-      mentions: null == mentions
-          ? _value.mentions
-          : mentions // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>,
-      editBtnVisible: null == editBtnVisible
-          ? _value.editBtnVisible
-          : editBtnVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            selectedMessageState:
+                null == selectedMessageState
+                    ? _value.selectedMessageState
+                    : selectedMessageState // ignore: cast_nullable_to_non_nullable
+                        as SelectedMessageState,
+            sendingState:
+                null == sendingState
+                    ? _value.sendingState
+                    : sendingState // ignore: cast_nullable_to_non_nullable
+                        as SendingState,
+            emojiPickerVisible:
+                null == emojiPickerVisible
+                    ? _value.emojiPickerVisible
+                    : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            selectedMessage:
+                freezed == selectedMessage
+                    ? _value.selectedMessage
+                    : selectedMessage // ignore: cast_nullable_to_non_nullable
+                        as types.Message?,
+            mentions:
+                null == mentions
+                    ? _value.mentions
+                    : mentions // ignore: cast_nullable_to_non_nullable
+                        as Map<String, String>,
+            editBtnVisible:
+                null == editBtnVisible
+                    ? _value.editBtnVisible
+                    : editBtnVisible // ignore: cast_nullable_to_non_nullable
+                        as bool,
+          )
+          as $Val,
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$ChatInputStateImplCopyWith<$Res>
     implements $ChatInputStateCopyWith<$Res> {
-  factory _$$ChatInputStateImplCopyWith(_$ChatInputStateImpl value,
-          $Res Function(_$ChatInputStateImpl) then) =
-      __$$ChatInputStateImplCopyWithImpl<$Res>;
+  factory _$$ChatInputStateImplCopyWith(
+    _$ChatInputStateImpl value,
+    $Res Function(_$ChatInputStateImpl) then,
+  ) = __$$ChatInputStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {SelectedMessageState selectedMessageState,
-      SendingState sendingState,
-      bool emojiPickerVisible,
-      types.Message? selectedMessage,
-      Map<String, String> mentions,
-      bool editBtnVisible});
+  $Res call({
+    SelectedMessageState selectedMessageState,
+    SendingState sendingState,
+    bool emojiPickerVisible,
+    types.Message? selectedMessage,
+    Map<String, String> mentions,
+    bool editBtnVisible,
+  });
 }
 
 /// @nodoc
@@ -119,8 +133,9 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
     extends _$ChatInputStateCopyWithImpl<$Res, _$ChatInputStateImpl>
     implements _$$ChatInputStateImplCopyWith<$Res> {
   __$$ChatInputStateImplCopyWithImpl(
-      _$ChatInputStateImpl _value, $Res Function(_$ChatInputStateImpl) _then)
-      : super(_value, _then);
+    _$ChatInputStateImpl _value,
+    $Res Function(_$ChatInputStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of ChatInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -134,46 +149,54 @@ class __$$ChatInputStateImplCopyWithImpl<$Res>
     Object? mentions = null,
     Object? editBtnVisible = null,
   }) {
-    return _then(_$ChatInputStateImpl(
-      selectedMessageState: null == selectedMessageState
-          ? _value.selectedMessageState
-          : selectedMessageState // ignore: cast_nullable_to_non_nullable
-              as SelectedMessageState,
-      sendingState: null == sendingState
-          ? _value.sendingState
-          : sendingState // ignore: cast_nullable_to_non_nullable
-              as SendingState,
-      emojiPickerVisible: null == emojiPickerVisible
-          ? _value.emojiPickerVisible
-          : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-      selectedMessage: freezed == selectedMessage
-          ? _value.selectedMessage
-          : selectedMessage // ignore: cast_nullable_to_non_nullable
-              as types.Message?,
-      mentions: null == mentions
-          ? _value._mentions
-          : mentions // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>,
-      editBtnVisible: null == editBtnVisible
-          ? _value.editBtnVisible
-          : editBtnVisible // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+    return _then(
+      _$ChatInputStateImpl(
+        selectedMessageState:
+            null == selectedMessageState
+                ? _value.selectedMessageState
+                : selectedMessageState // ignore: cast_nullable_to_non_nullable
+                    as SelectedMessageState,
+        sendingState:
+            null == sendingState
+                ? _value.sendingState
+                : sendingState // ignore: cast_nullable_to_non_nullable
+                    as SendingState,
+        emojiPickerVisible:
+            null == emojiPickerVisible
+                ? _value.emojiPickerVisible
+                : emojiPickerVisible // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        selectedMessage:
+            freezed == selectedMessage
+                ? _value.selectedMessage
+                : selectedMessage // ignore: cast_nullable_to_non_nullable
+                    as types.Message?,
+        mentions:
+            null == mentions
+                ? _value._mentions
+                : mentions // ignore: cast_nullable_to_non_nullable
+                    as Map<String, String>,
+        editBtnVisible:
+            null == editBtnVisible
+                ? _value.editBtnVisible
+                : editBtnVisible // ignore: cast_nullable_to_non_nullable
+                    as bool,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$ChatInputStateImpl implements _ChatInputState {
-  const _$ChatInputStateImpl(
-      {this.selectedMessageState = SelectedMessageState.none,
-      this.sendingState = SendingState.preparing,
-      this.emojiPickerVisible = false,
-      this.selectedMessage = null,
-      final Map<String, String> mentions = const {},
-      this.editBtnVisible = false})
-      : _mentions = mentions;
+  const _$ChatInputStateImpl({
+    this.selectedMessageState = SelectedMessageState.none,
+    this.sendingState = SendingState.preparing,
+    this.emojiPickerVisible = false,
+    this.selectedMessage = null,
+    final Map<String, String> mentions = const {},
+    this.editBtnVisible = false,
+  }) : _mentions = mentions;
 
   @override
   @JsonKey()
@@ -225,13 +248,14 @@ class _$ChatInputStateImpl implements _ChatInputState {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      selectedMessageState,
-      sendingState,
-      emojiPickerVisible,
-      selectedMessage,
-      const DeepCollectionEquality().hash(_mentions),
-      editBtnVisible);
+    runtimeType,
+    selectedMessageState,
+    sendingState,
+    emojiPickerVisible,
+    selectedMessage,
+    const DeepCollectionEquality().hash(_mentions),
+    editBtnVisible,
+  );
 
   /// Create a copy of ChatInputState
   /// with the given fields replaced by the non-null parameter values.
@@ -240,17 +264,20 @@ class _$ChatInputStateImpl implements _ChatInputState {
   @pragma('vm:prefer-inline')
   _$$ChatInputStateImplCopyWith<_$ChatInputStateImpl> get copyWith =>
       __$$ChatInputStateImplCopyWithImpl<_$ChatInputStateImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 }
 
 abstract class _ChatInputState implements ChatInputState {
-  const factory _ChatInputState(
-      {final SelectedMessageState selectedMessageState,
-      final SendingState sendingState,
-      final bool emojiPickerVisible,
-      final types.Message? selectedMessage,
-      final Map<String, String> mentions,
-      final bool editBtnVisible}) = _$ChatInputStateImpl;
+  const factory _ChatInputState({
+    final SelectedMessageState selectedMessageState,
+    final SendingState sendingState,
+    final bool emojiPickerVisible,
+    final types.Message? selectedMessage,
+    final Map<String, String> mentions,
+    final bool editBtnVisible,
+  }) = _$ChatInputStateImpl;
 
   @override
   SelectedMessageState get selectedMessageState;

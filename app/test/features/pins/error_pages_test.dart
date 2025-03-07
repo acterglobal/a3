@@ -37,8 +37,9 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          pinListSearchTermProvider
-              .overrideWith((_) => 'some string'), // set a search string
+          pinListSearchTermProvider.overrideWith(
+            (_) => 'some string',
+          ), // set a search string
           pinListSearchedProvider.overrideWith((_, params) async {
             if (shouldFail) {
               shouldFail = false;
@@ -71,9 +72,7 @@ void main() {
           roomMembershipProvider.overrideWith((a, b) => null),
           hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
         ],
-        child: const PinsListPage(
-          spaceId: '!test',
-        ),
+        child: const PinsListPage(spaceId: '!test'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });
@@ -84,8 +83,9 @@ void main() {
         overrides: [
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
           roomMembershipProvider.overrideWith((a, b) => null),
-          pinListSearchTermProvider
-              .overrideWith((_) => 'some other string'), // set a search string
+          pinListSearchTermProvider.overrideWith(
+            (_) => 'some other string',
+          ), // set a search string
           pinListSearchedProvider.overrideWith((_, params) async {
             if (shouldFail) {
               shouldFail = false;

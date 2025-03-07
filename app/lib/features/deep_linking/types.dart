@@ -1,11 +1,4 @@
-enum LinkType {
-  roomId,
-  roomAlias,
-  userId,
-  chatEvent,
-  spaceObject,
-  superInvite,
-}
+enum LinkType { roomId, roomAlias, userId, chatEvent, spaceObject, superInvite }
 
 enum ObjectType {
   pin,

@@ -6,10 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BookmarkAction extends ConsumerWidget {
   final Bookmarker bookmarker;
-  const BookmarkAction({
-    super.key,
-    required this.bookmarker,
-  });
+  const BookmarkAction({super.key, required this.bookmarker});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -63,8 +63,9 @@ void main() {
     expect(find.text('Fake Event'), findsOneWidget);
   });
 
-  testWidgets('displays "Happening Now" indication for ongoing events',
-      (tester) async {
+  testWidgets('displays "Happening Now" indication for ongoing events', (
+    tester,
+  ) async {
     await createWidgetUnderTest(
       tester: tester,
       eventFilter: EventFilters.ongoing,
@@ -84,15 +85,17 @@ void main() {
     verify(() => mockOnTapEventItem.call('1234')).called(1);
   });
 
-  testWidgets('displays space name when isShowSpaceName is true',
-      (tester) async {
+  testWidgets('displays space name when isShowSpaceName is true', (
+    tester,
+  ) async {
     await createWidgetUnderTest(tester: tester, isShowSpaceName: true);
 
     expect(find.text('test'), findsOneWidget);
   });
 
-  testWidgets('displays event date and time when isShowSpaceName is false',
-      (tester) async {
+  testWidgets('displays event date and time when isShowSpaceName is false', (
+    tester,
+  ) async {
     await createWidgetUnderTest(tester: tester, isShowSpaceName: false);
 
     final expectedDateTime =
@@ -142,8 +145,9 @@ void main() {
     expect(find.byIcon(Icons.question_mark_rounded), findsOneWidget);
   });
 
-  testWidgets('does not show RSVP status when isShowRsvp is false',
-      (tester) async {
+  testWidgets('does not show RSVP status when isShowRsvp is false', (
+    tester,
+  ) async {
     // Arrange: Prepare the widget with isShowRsvp set to false
     await createWidgetUnderTest(tester: tester, isShowRsvp: false);
 

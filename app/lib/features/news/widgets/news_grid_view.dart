@@ -14,11 +14,7 @@ class NewsGridView extends StatelessWidget {
   final List<UpdateEntry> updateList;
   final Function(int)? onTapNewItem;
 
-  const NewsGridView({
-    super.key,
-    required this.updateList,
-    this.onTapNewItem,
-  });
+  const NewsGridView({super.key, required this.updateList, this.onTapNewItem});
 
   @override
   Widget build(BuildContext context) {

@@ -48,8 +48,9 @@ void main() {
 
       int updateCountId = 0;
       // we start fresh
-      when(() => deviceCalendar.createOrUpdateEvent(any()))
-          .thenAnswer((a) async {
+      when(() => deviceCalendar.createOrUpdateEvent(any())).thenAnswer((
+        a,
+      ) async {
         final r = Result<String>();
         r.data = 'resultKey-$updateCountId';
         updateCountId += 1;
@@ -75,8 +76,9 @@ void main() {
       // ensure this was only called created them once
       verify(() => deviceCalendar.createOrUpdateEvent(any())).called(10);
       // let's read and ensure the mapping:
-      final mappedKeys =
-          (await sharedPrefs()).getStringList(calendarSyncIdsKey);
+      final mappedKeys = (await sharedPrefs()).getStringList(
+        calendarSyncIdsKey,
+      );
       expect(
         mappedKeys,
         List.generate(10, (idx) => 'null-event-$idx-id=resultKey-$idx'),
@@ -137,10 +139,12 @@ void main() {
       final client = MockClient();
       final mockRoom = MockRoom();
       final Stream<bool> updateSteam = Stream.empty();
-      when(() => client.subscribeModelObjectsStream(any(), any()))
-          .thenAnswer((a) => updateSteam);
-      when(() => mockRoom.userSettings())
-          .thenAnswer((_) async => MockRoomUserSettings());
+      when(
+        () => client.subscribeModelObjectsStream(any(), any()),
+      ).thenAnswer((a) => updateSteam);
+      when(
+        () => mockRoom.userSettings(),
+      ).thenAnswer((_) async => MockRoomUserSettings());
       events.addAll(roomAEvents);
       events.addAll(roomBEvents);
       events.addAll(roomCEvents);
@@ -151,9 +155,7 @@ void main() {
           allEventListProvider.overrideWith((r, a) => events),
           clientProvider.overrideWith(() => MockClientNotifier(client: client)),
           maybeRoomProvider.overrideWith(
-            () => MockAlwaysTheSameRoomNotifier(
-              room: mockRoom,
-            ),
+            () => MockAlwaysTheSameRoomNotifier(room: mockRoom),
           ),
           calendarEventProvider.overrideWith(
             () => MockFindAsyncCalendarEventNotifier(events: events),
@@ -167,10 +169,7 @@ void main() {
       final subscription = container.listen(eventsToSyncProvider, (a, b) {});
 
       final state = await container.read(eventsToSyncProvider.future);
-      expect(
-        state.length,
-        events.length,
-      );
+      expect(state.length, events.length);
     });
     testWidgets('excluded rooms are excluded', (tester) async {
       SharedPreferences.setMockInitialValues({}); // no values set yet.
@@ -182,18 +181,21 @@ void main() {
       final roomA = MockRoom();
       final roomB = MockRoom();
       final roomC = MockRoom();
-      when(() => roomA.userSettings())
-          .thenAnswer((_) async => MockRoomUserSettings());
+      when(
+        () => roomA.userSettings(),
+      ).thenAnswer((_) async => MockRoomUserSettings());
       when(() => roomB.userSettings()).thenAnswer(
         // b will be ignored
         (_) async => MockRoomUserSettings(include_cal_sync: false),
       );
-      when(() => roomC.userSettings())
-          .thenAnswer((_) async => MockRoomUserSettings());
+      when(
+        () => roomC.userSettings(),
+      ).thenAnswer((_) async => MockRoomUserSettings());
       final client = MockClient();
       final Stream<bool> updateSteam = Stream.empty();
-      when(() => client.subscribeModelObjectsStream(any(), any()))
-          .thenAnswer((a) => updateSteam);
+      when(
+        () => client.subscribeModelObjectsStream(any(), any()),
+      ).thenAnswer((a) => updateSteam);
       events.addAll(roomAEvents);
       events.addAll(roomBEvents);
       events.addAll(roomCEvents);
@@ -219,14 +221,8 @@ void main() {
       final subscription = container.listen(eventsToSyncProvider, (a, b) {});
 
       final state = await container.read(eventsToSyncProvider.future);
-      expect(
-        state.length,
-        10,
-      );
-      expect(
-        state.map((e) => e.event.roomIdStr()).toSet(),
-        {'roomA', 'roomC'},
-      );
+      expect(state.length, 10);
+      expect(state.map((e) => e.event.roomIdStr()).toSet(), {'roomA', 'roomC'});
     });
   });
 }

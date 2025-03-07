@@ -23,10 +23,8 @@ class MockChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState>
     with Mock
     implements ChatEditorNotifier {
   @override
-  ChatEditorState build() => ChatEditorState(
-        selectedMsgItem: null,
-        actionType: MessageAction.none,
-      );
+  ChatEditorState build() =>
+      ChatEditorState(selectedMsgItem: null, actionType: MessageAction.none);
 }
 
 void main() {
@@ -37,18 +35,23 @@ void main() {
       mockMsgContent: mockMsgContent,
       mockMsgType: 'm.text',
     );
-    final roomMsg1 =
-        MockRoomMessage(id: 'test-messageId-1', mockEventItem: mockEventItem);
+    final roomMsg1 = MockRoomMessage(
+      id: 'test-messageId-1',
+      mockEventItem: mockEventItem,
+    );
 
     final overrides = [
       sdkProvider.overrideWith((ref) => MockActerSdk()),
-      clientProvider
-          .overrideWith(() => MockClientNotifier(client: MockClient())),
+      clientProvider.overrideWith(
+        () => MockClientNotifier(client: MockClient()),
+      ),
       chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
-      chatComposerDraftProvider
-          .overrideWith((ref, roomId) => MockComposeDraft()),
-      renderableChatMessagesProvider
-          .overrideWith((ref, roomId) => ['test-messageId-1']),
+      chatComposerDraftProvider.overrideWith(
+        (ref, roomId) => MockComposeDraft(),
+      ),
+      renderableChatMessagesProvider.overrideWith(
+        (ref, roomId) => ['test-messageId-1'],
+      ),
       chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
         final uniqueId = roomMsgId.uniqueId;
         return switch (uniqueId) {
@@ -57,8 +60,9 @@ void main() {
         };
       }),
     ];
-    testWidgets('verify chat editor correctly sets reply preview',
-        (tester) async {
+    testWidgets('verify chat editor correctly sets reply preview', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: overrides,
@@ -108,68 +112,66 @@ void main() {
       expect(previewWidget.msgItem, equals(mockEventItem));
     });
 
-    testWidgets(
-      'verify chat editor correctly sets edit preview',
-      (tester) async {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: overrides,
-            child: InActerContextTestWrapper(
-              child: Column(
-                children: [
-                  MessageActionsWidget(
-                    isMe: true,
-                    canRedact: false,
-                    item: mockEventItem,
-                    messageId: 'test-messageId-1',
-                    roomId: 'test-roomId-1',
-                  ),
-                  ChatEditor(roomId: 'test-roomId-1'),
-                ],
-              ),
+    testWidgets('verify chat editor correctly sets edit preview', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: overrides,
+          child: InActerContextTestWrapper(
+            child: Column(
+              children: [
+                MessageActionsWidget(
+                  isMe: true,
+                  canRedact: false,
+                  item: mockEventItem,
+                  messageId: 'test-messageId-1',
+                  roomId: 'test-roomId-1',
+                ),
+                ChatEditor(roomId: 'test-roomId-1'),
+              ],
             ),
           ),
-        );
+        ),
+      );
 
-        // initial state
-        final element = tester.element(find.byType(ChatEditor));
-        final container = ProviderScope.containerOf(element);
-        final initialState = container.read(chatEditorStateProvider);
-        expect(initialState.actionType, equals(MessageAction.none));
-        expect(initialState.selectedMsgItem, isNull);
-        expect(find.byType(ChatEditorActionsPreview), findsNothing);
+      // initial state
+      final element = tester.element(find.byType(ChatEditor));
+      final container = ProviderScope.containerOf(element);
+      final initialState = container.read(chatEditorStateProvider);
+      expect(initialState.actionType, equals(MessageAction.none));
+      expect(initialState.selectedMsgItem, isNull);
+      expect(find.byType(ChatEditorActionsPreview), findsNothing);
 
-        // Tap edit
-        await tester.tap(find.text('Edit'));
-        await tester.pump();
+      // Tap edit
+      await tester.tap(find.text('Edit'));
+      await tester.pump();
 
-        expect(find.text('Edit'), findsOneWidget);
+      expect(find.text('Edit'), findsOneWidget);
 
-        // verify edit preview
-        final updatedState = container.read(chatEditorStateProvider);
-        expect(updatedState.actionType, equals(MessageAction.edit));
-        expect(updatedState.selectedMsgItem, equals(mockEventItem));
+      // verify edit preview
+      final updatedState = container.read(chatEditorStateProvider);
+      expect(updatedState.actionType, equals(MessageAction.edit));
+      expect(updatedState.selectedMsgItem, equals(mockEventItem));
 
-        expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
+      expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
 
-        final previewWidget = tester.widget<ChatEditorActionsPreview>(
-          find.byType(ChatEditorActionsPreview),
-        );
-        final textEditorState = previewWidget.textEditorState;
+      final previewWidget = tester.widget<ChatEditorActionsPreview>(
+        find.byType(ChatEditorActionsPreview),
+      );
+      final textEditorState = previewWidget.textEditorState;
 
-        final messageContent =
-            updatedState.selectedMsgItem?.msgContent()?.body();
-        final editorText =
-            textEditorState.getNodeAtPath([0])?.delta?.toPlainText();
+      final messageContent = updatedState.selectedMsgItem?.msgContent()?.body();
+      final editorText =
+          textEditorState.getNodeAtPath([0])?.delta?.toPlainText();
 
-        // This test is timing out due to a pending timer (compose draft).
-        // put 300ms delay as (debounceTimerDuration)
-        await tester.pumpAndSettle(Durations.medium2);
+      // This test is timing out due to a pending timer (compose draft).
+      // put 300ms delay as (debounceTimerDuration)
+      await tester.pumpAndSettle(Durations.medium2);
 
-        expect(previewWidget.msgItem, equals(mockEventItem));
-        expect(messageContent, editorText);
-      },
-    );
+      expect(previewWidget.msgItem, equals(mockEventItem));
+      expect(messageContent, editorText);
+    });
 
     // testWidgets('closing edit preview resets chat editor state',
     //     (tester) async {
@@ -253,64 +255,66 @@ void main() {
     // });
 
     testWidgets(
-        'switching between reply and edit states correctly sets editor state',
-        (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: overrides,
-          child: InActerContextTestWrapper(
-            child: Column(
-              children: [
-                MessageActionsWidget(
-                  isMe: true,
-                  canRedact: false,
-                  item: mockEventItem,
-                  messageId: 'test-messageId-1',
-                  roomId: 'test-roomId-1',
-                ),
-                ChatEditor(roomId: 'test-roomId-1'),
-              ],
+      'switching between reply and edit states correctly sets editor state',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: overrides,
+            child: InActerContextTestWrapper(
+              child: Column(
+                children: [
+                  MessageActionsWidget(
+                    isMe: true,
+                    canRedact: false,
+                    item: mockEventItem,
+                    messageId: 'test-messageId-1',
+                    roomId: 'test-roomId-1',
+                  ),
+                  ChatEditor(roomId: 'test-roomId-1'),
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      final element = tester.element(find.byType(ChatEditor));
-      final container = ProviderScope.containerOf(element);
-      final notifier = container.read(chatEditorStateProvider.notifier);
+        final element = tester.element(find.byType(ChatEditor));
+        final container = ProviderScope.containerOf(element);
+        final notifier = container.read(chatEditorStateProvider.notifier);
 
-      // set reply preview
-      notifier.setReplyToMessage(mockEventItem);
-      await tester.pump();
+        // set reply preview
+        notifier.setReplyToMessage(mockEventItem);
+        await tester.pump();
 
-      // verify reply preview
-      var state = container.read(chatEditorStateProvider);
-      expect(state.actionType, equals(MessageAction.reply));
-      expect(state.selectedMsgItem, equals(mockEventItem));
-      expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
+        // verify reply preview
+        var state = container.read(chatEditorStateProvider);
+        expect(state.actionType, equals(MessageAction.reply));
+        expect(state.selectedMsgItem, equals(mockEventItem));
+        expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
 
-      // set edit preview
-      notifier.setEditMessage(mockEventItem);
-      await tester.pump();
+        // set edit preview
+        notifier.setEditMessage(mockEventItem);
+        await tester.pump();
 
-      // verify edit preview
-      var updatedState = container.read(chatEditorStateProvider);
-      expect(updatedState.actionType, equals(MessageAction.edit));
-      expect(updatedState.selectedMsgItem, equals(mockEventItem));
-      expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
+        // verify edit preview
+        var updatedState = container.read(chatEditorStateProvider);
+        expect(updatedState.actionType, equals(MessageAction.edit));
+        expect(updatedState.selectedMsgItem, equals(mockEventItem));
+        expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
 
-      // verify editor field has edit preview content
-      final messageContent = updatedState.selectedMsgItem?.msgContent()?.body();
-      final previewWidget = tester.widget<ChatEditorActionsPreview>(
-        find.byType(ChatEditorActionsPreview),
-      );
-      final textEditorState = previewWidget.textEditorState;
-      final editorText =
-          textEditorState.getNodeAtPath([0])?.delta?.toPlainText();
-      // This test is timing out due to a pending timer (compose draft).
-      // put 300ms delay as (debounceTimerDuration)
-      await tester.pumpAndSettle(Durations.medium2);
-      expect(messageContent, editorText);
-    });
+        // verify editor field has edit preview content
+        final messageContent =
+            updatedState.selectedMsgItem?.msgContent()?.body();
+        final previewWidget = tester.widget<ChatEditorActionsPreview>(
+          find.byType(ChatEditorActionsPreview),
+        );
+        final textEditorState = previewWidget.textEditorState;
+        final editorText =
+            textEditorState.getNodeAtPath([0])?.delta?.toPlainText();
+        // This test is timing out due to a pending timer (compose draft).
+        // put 300ms delay as (debounceTimerDuration)
+        await tester.pumpAndSettle(Durations.medium2);
+        expect(messageContent, editorText);
+      },
+    );
   });
 }

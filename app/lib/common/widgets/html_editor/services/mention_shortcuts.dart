@@ -10,22 +10,24 @@ List<CharacterShortcutEvent> mentionShortcuts(
   return [
     CharacterShortcutEvent(
       character: userMentionChar,
-      handler: (editorState) => _handleMentionTrigger(
-        context: context,
-        mentionTrigger: userMentionChar,
-        editorState: editorState,
-        roomId: roomId,
-      ),
+      handler:
+          (editorState) => _handleMentionTrigger(
+            context: context,
+            mentionTrigger: userMentionChar,
+            editorState: editorState,
+            roomId: roomId,
+          ),
       key: userMentionChar,
     ),
     CharacterShortcutEvent(
       character: roomMentionChar,
-      handler: (editorState) => _handleMentionTrigger(
-        context: context,
-        mentionTrigger: roomMentionChar,
-        editorState: editorState,
-        roomId: roomId,
-      ),
+      handler:
+          (editorState) => _handleMentionTrigger(
+            context: context,
+            mentionTrigger: roomMentionChar,
+            editorState: editorState,
+            roomId: roomId,
+          ),
       key: roomMentionChar,
     ),
   ];

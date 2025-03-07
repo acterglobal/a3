@@ -21,8 +21,10 @@ void acterObjectLinksTests(UriMaker makeUri) {
     expect(result.via, []);
   });
   test('pin', () async {
-    final sourceUri =
-        makeUri('o/room:acter.global/pin/pinId', 'via=elsewhere.ca');
+    final sourceUri = makeUri(
+      'o/room:acter.global/pin/pinId',
+      'via=elsewhere.ca',
+    );
     final result = parseActerUri(sourceUri);
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.pin);
@@ -31,8 +33,9 @@ void acterObjectLinksTests(UriMaker makeUri) {
     expect(result.via, ['elsewhere.ca']);
   });
   test('boost', () async {
-    final result =
-        parseActerUri(makeUri('o/another:acter.global/boost/boostId', null));
+    final result = parseActerUri(
+      makeUri('o/another:acter.global/boost/boostId', null),
+    );
     expect(result.type, LinkType.spaceObject);
     expect(result.objectPath!.objectType, ObjectType.boost);
     expect(result.target, '\$boostId');
@@ -93,9 +96,7 @@ void acterObjectLinksTests(UriMaker makeUri) {
 
 void acterInviteLinkTests(UriMaker makeUri) {
   test('simple invite', () async {
-    final result = parseActerUri(
-      makeUri('i/acter.global/inviteCode', null),
-    );
+    final result = parseActerUri(makeUri('i/acter.global/inviteCode', null));
     expect(result.type, LinkType.superInvite);
     expect(result.target, 'inviteCode');
     expect(result.roomId, null);
@@ -173,8 +174,9 @@ void newSpecLinksTests(UriMaker makeUri) {
     expect(result.via, ['elsewhere.ca']);
   });
   test('userId', () async {
-    final result =
-        parseActerUri(makeUri('u/alice:acter.global', 'action=chat'));
+    final result = parseActerUri(
+      makeUri('u/alice:acter.global', 'action=chat'),
+    );
     expect(result.type, LinkType.userId);
     expect(result.target, '@alice:acter.global');
   });
@@ -197,9 +199,10 @@ UriMaker makeUriMakerForPublicPrefix(
   String? userId = 'test:example.org',
 }) {
   Uri makeDomainLink(String path, String? query) {
-    final finalQuery = query != null
-        ? (userId != null ? '?$query&userId=$userId' : '?$query')
-        : userId != null
+    final finalQuery =
+        query != null
+            ? (userId != null ? '?$query&userId=$userId' : '?$query')
+            : userId != null
             ? '?userId=$userId'
             : null;
     final hash =

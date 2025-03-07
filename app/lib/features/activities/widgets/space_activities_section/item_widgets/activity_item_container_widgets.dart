@@ -60,21 +60,23 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
   }
 
   Widget buildUserInfoUI(BuildContext context, WidgetRef ref) {
-    final memberInfo =
-        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+    final memberInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+    );
     return ListTile(
       horizontalTitleGap: 6,
       contentPadding: EdgeInsets.zero,
       leading: ActerAvatar(options: AvatarOptions.DM(memberInfo, size: 32)),
       title: Text(memberInfo.displayName ?? userId),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: Theme.of(context).textTheme.labelMedium,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            )
-          : const SizedBox.shrink(),
+      subtitle:
+          subtitle != null
+              ? Text(
+                subtitle!,
+                style: Theme.of(context).textTheme.labelMedium,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              )
+              : const SizedBox.shrink(),
     );
   }
 }

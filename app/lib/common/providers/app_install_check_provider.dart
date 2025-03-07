@@ -10,17 +10,17 @@ final isAppInstalledProvider = FutureProvider.family<bool, ExternalApps>(
     final appCheck = AppCheck();
     return switch (externalApp) {
       ExternalApps.whatsApp => await appCheck.isAppInstalled(
-          Platform.isAndroid ? 'com.whatsapp' : 'whatsapp://',
-        ),
+        Platform.isAndroid ? 'com.whatsapp' : 'whatsapp://',
+      ),
       ExternalApps.whatsBusiness => await appCheck.isAppInstalled(
-          Platform.isAndroid ? 'com.whatsapp.w4b' : 'whatsapp://',
-        ),
+        Platform.isAndroid ? 'com.whatsapp.w4b' : 'whatsapp://',
+      ),
       ExternalApps.telegram => await appCheck.isAppInstalled(
-          Platform.isAndroid ? 'org.telegram.messenger' : 'tg://',
-        ),
+        Platform.isAndroid ? 'org.telegram.messenger' : 'tg://',
+      ),
       ExternalApps.signal => await appCheck.isAppInstalled(
-          Platform.isAndroid ? 'org.thoughtcrime.securesms' : 'sgnl://',
-        ),
+        Platform.isAndroid ? 'org.thoughtcrime.securesms' : 'sgnl://',
+      ),
     };
   }, // this means we are running
 );

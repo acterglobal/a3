@@ -59,11 +59,12 @@ class MockConvo extends Mock implements Convo {
     String draftType,
     String? eventId,
   ) async {
-    _drafts[roomId] = MockComposeDraft()
-      ..setPlainText(plainText)
-      ..setHtmlText(htmlText)
-      ..setDraftType(draftType)
-      ..setEventId(eventId);
+    _drafts[roomId] =
+        MockComposeDraft()
+          ..setPlainText(plainText)
+          ..setHtmlText(htmlText)
+          ..setDraftType(draftType)
+          ..setEventId(eventId);
     return true;
   }
 }
@@ -170,24 +171,24 @@ List<MockCalendarEvent> generateMockCalendarEvents({
   int count = 1,
   String? roomId,
   RsvpStatus? rsvpStatus,
-}) =>
-    List.generate(count, (idx) {
-      final eventA = MockCalendarEvent(rsvpStatus: rsvpStatus);
-      when(eventA.title).thenReturn('Event $idx');
-      when(eventA.eventId).thenReturn(MockEventId(id: '$roomId-event-$idx-id'));
-      when(eventA.description)
-          .thenReturn(MockTextMessageContent(textBody: 'event $idx body'));
-      final millisecondsBase = DateTime.now().millisecondsSinceEpoch +
-          (idx * 2 * hourInMilliSeconds); // put it 2 * idx hours from now
+}) => List.generate(count, (idx) {
+  final eventA = MockCalendarEvent(rsvpStatus: rsvpStatus);
+  when(eventA.title).thenReturn('Event $idx');
+  when(eventA.eventId).thenReturn(MockEventId(id: '$roomId-event-$idx-id'));
+  when(
+    eventA.description,
+  ).thenReturn(MockTextMessageContent(textBody: 'event $idx body'));
+  final millisecondsBase =
+      DateTime.now().millisecondsSinceEpoch +
+      (idx * 2 * hourInMilliSeconds); // put it 2 * idx hours from now
 
-      when(eventA.utcStart)
-          .thenReturn(MockUtcDateTime(millis: millisecondsBase));
-      when(eventA.utcEnd).thenReturn(
-        MockUtcDateTime(millis: millisecondsBase + hourInMilliSeconds),
-        // event takes one hour
-      );
-      if (roomId != null) {
-        when(eventA.roomIdStr).thenReturn(roomId);
-      }
-      return eventA;
-    });
+  when(eventA.utcStart).thenReturn(MockUtcDateTime(millis: millisecondsBase));
+  when(eventA.utcEnd).thenReturn(
+    MockUtcDateTime(millis: millisecondsBase + hourInMilliSeconds),
+    // event takes one hour
+  );
+  if (roomId != null) {
+    when(eventA.roomIdStr).thenReturn(roomId);
+  }
+  return eventA;
+});

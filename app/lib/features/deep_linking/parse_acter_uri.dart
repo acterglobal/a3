@@ -18,25 +18,27 @@ class ObjectNotSupported extends UriParseError {
 }
 
 class ParsingFailed extends UriParseError {}
+
 class IncorrectHashError extends ParsingFailed {}
+
 class MissingUserError extends ParsingFailed {
   final UriParseResult result;
   MissingUserError({required this.result});
 }
 
 UriParseResult parseActerUri(Uri uri) => switch (uri.scheme) {
-      'acter' => _parseActerUri(uri),
-      'matrix' => _parseMatrixUri(uri),
-      'https' || 'http' => _parseHttpsUri(uri),
-      _ => throw SchemeNotSupported(scheme: uri.scheme),
-    };
+  'acter' => _parseActerUri(uri),
+  'matrix' => _parseMatrixUri(uri),
+  'https' || 'http' => _parseHttpsUri(uri),
+  _ => throw SchemeNotSupported(scheme: uri.scheme),
+};
 
 UriParseResult _parseActerUri(Uri uri) {
   final path = uri.pathSegments.first;
   return switch (path) {
     'o' => _parseActerEvent(uri),
     'i' => _parseSuperInvite(uri),
-    _ => _parseMatrixUri(uri)
+    _ => _parseMatrixUri(uri),
   };
 }
 
@@ -49,7 +51,10 @@ UriParseResult _parseHttpsUri(Uri uri) {
     throw IncorrectHashError();
   }
 
-  final pathWithoutHash = uri.path.substring(0, uri.path.length - hash.length -1);
+  final pathWithoutHash = uri.path.substring(
+    0,
+    uri.path.length - hash.length - 1,
+  );
   final strippedUri = uri.replace(path: pathWithoutHash);
   final hashableUri = strippedUri.toString();
   final calculatedHash = sha1.convert(utf8.encode(hashableUri)).toString();
@@ -58,7 +63,10 @@ UriParseResult _parseHttpsUri(Uri uri) {
   }
 
   // put the query as the path
-  final extractableUri = strippedUri.replace(path: strippedUri.fragment, fragment: null);
+  final extractableUri = strippedUri.replace(
+    path: strippedUri.fragment,
+    fragment: null,
+  );
   final result = _parseActerUri(extractableUri);
   if (result.preview.userId == null || result.preview.userId?.isEmpty == true) {
     throw MissingUserError(result: result);
@@ -143,17 +151,17 @@ UriParseResult _parseMatrixUri(Uri uri) {
   final path = uri.pathSegments.first;
   return switch (path) {
     'r' => UriParseResult(
-        type: LinkType.roomAlias,
-        via: uri.queryParametersAll['via'] ?? [],
-        target: '#${uri.pathSegments.last}',
-        preview: ObjectPreview.fromUri(uri),
-      ),
+      type: LinkType.roomAlias,
+      via: uri.queryParametersAll['via'] ?? [],
+      target: '#${uri.pathSegments.last}',
+      preview: ObjectPreview.fromUri(uri),
+    ),
     'u' => UriParseResult(
-        type: LinkType.userId,
-        via: uri.queryParametersAll['via'] ?? [],
-        target: '@${uri.pathSegments.last}',
-        preview: ObjectPreview.fromUri(uri),
-      ),
+      type: LinkType.userId,
+      via: uri.queryParametersAll['via'] ?? [],
+      target: '@${uri.pathSegments.last}',
+      preview: ObjectPreview.fromUri(uri),
+    ),
     'roomid' => _parseMatrixUriRoomId(uri),
     _ => throw ParsingFailed(),
   };

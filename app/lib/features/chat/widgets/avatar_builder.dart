@@ -8,16 +8,13 @@ class AvatarBuilder extends ConsumerWidget {
   final String roomId;
   final String userId;
 
-  const AvatarBuilder({
-    super.key,
-    required this.userId,
-    required this.roomId,
-  });
+  const AvatarBuilder({super.key, required this.userId, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId)));
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+    );
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: ActerAvatar(

@@ -9,12 +9,15 @@ import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     with
-        PagedNotifierMixin<Next?, PublicSearchResultItem,
-            PublicSearchResultState> {
+        PagedNotifierMixin<
+          Next?,
+          PublicSearchResultItem,
+          PublicSearchResultState
+        > {
   final Ref ref;
 
   PublicSearchNotifier(this.ref)
-      : super(PublicSearchResultState(filter: ref.read(searchFilterProvider))) {
+    : super(PublicSearchResultState(filter: ref.read(searchFilterProvider))) {
     setup();
   }
 
@@ -61,9 +64,7 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
     final server = state.filter.server;
     final roomFilter = state.filter.filterBy.name;
     try {
-      state = state.copyWith(
-        loading: true,
-      );
+      state = state.copyWith(loading: true);
       final res = await client.searchPublicRoom(
         searchValue,
         server,
@@ -78,9 +79,10 @@ class PublicSearchNotifier extends StateNotifier<PublicSearchResultState>
         finalPageKey = Next(next: next);
       }
       state = state.copyWith(
-        records: page.isStart
-            ? [...entries]
-            : [...(state.records ?? []), ...entries],
+        records:
+            page.isStart
+                ? [...entries]
+                : [...(state.records ?? []), ...entries],
         nextPageKey: finalPageKey,
         loading: false,
       );

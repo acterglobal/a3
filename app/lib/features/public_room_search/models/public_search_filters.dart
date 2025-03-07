@@ -3,11 +3,7 @@ import 'package:flutter/foundation.dart';
 
 part 'public_search_filters.freezed.dart';
 
-enum FilterBy {
-  spaces,
-  chats,
-  both,
-}
+enum FilterBy { spaces, chats, both }
 
 @freezed
 class PublicSearchFilters with _$PublicSearchFilters {

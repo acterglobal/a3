@@ -39,43 +39,44 @@ class MentionMenu {
     // render based on mention type
     final Widget listWidget = switch (mentionTrigger) {
       userMentionChar => UserMentionList(
-          editorState: editorState,
-          onDismiss: dismiss,
-          onShow: show,
-          roomId: roomId,
-        ),
+        editorState: editorState,
+        onDismiss: dismiss,
+        onShow: show,
+        roomId: roomId,
+      ),
       roomMentionChar => RoomMentionList(
-          editorState: editorState,
-          onDismiss: dismiss,
-          onShow: show,
-          roomId: roomId,
-        ),
+        editorState: editorState,
+        onDismiss: dismiss,
+        onShow: show,
+        roomId: roomId,
+      ),
       _ => const SizedBox.shrink(),
     };
 
     _menuEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        // Position relative to input field
-        left: position.dx + 20, // Align with left edge of input
-        // Position above input with some padding
-        bottom: 70,
-        width: size.width * 0.75,
-        child: Material(
-          elevation: 8, // Add some elevation for better visibility
-          borderRadius: BorderRadius.circular(8),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: dismiss,
-            child: Container(
-              constraints: BoxConstraints(
-                maxHeight: 200, // Limit maximum height
-                maxWidth: size.width, // Match input width
+      builder:
+          (context) => Positioned(
+            // Position relative to input field
+            left: position.dx + 20, // Align with left edge of input
+            // Position above input with some padding
+            bottom: 70,
+            width: size.width * 0.75,
+            child: Material(
+              elevation: 8, // Add some elevation for better visibility
+              borderRadius: BorderRadius.circular(8),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: dismiss,
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: 200, // Limit maximum height
+                    maxWidth: size.width, // Match input width
+                  ),
+                  child: listWidget,
+                ),
               ),
-              child: listWidget,
             ),
           ),
-        ),
-      ),
     );
 
     Overlay.of(context).insert(_menuEntry!);

@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class MessageContentWidget extends StatelessWidget {
   final MsgContent msgContent;
 
-  const MessageContentWidget({
-    super.key,
-    required this.msgContent,
-  });
+  const MessageContentWidget({super.key, required this.msgContent});
 
   @override
   Widget build(BuildContext context) {

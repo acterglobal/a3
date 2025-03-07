@@ -12,7 +12,8 @@ part of 'news_post_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$NewsPostState {
@@ -30,13 +31,15 @@ mixin _$NewsPostState {
 /// @nodoc
 abstract class $NewsPostStateCopyWith<$Res> {
   factory $NewsPostStateCopyWith(
-          NewsPostState value, $Res Function(NewsPostState) then) =
-      _$NewsPostStateCopyWithImpl<$Res, NewsPostState>;
+    NewsPostState value,
+    $Res Function(NewsPostState) then,
+  ) = _$NewsPostStateCopyWithImpl<$Res, NewsPostState>;
   @useResult
-  $Res call(
-      {UpdateSlideItem? currentUpdateSlide,
-      List<UpdateSlideItem> newsSlideList,
-      String? newsPostSpaceId});
+  $Res call({
+    UpdateSlideItem? currentUpdateSlide,
+    List<UpdateSlideItem> newsSlideList,
+    String? newsPostSpaceId,
+  });
 }
 
 /// @nodoc
@@ -58,20 +61,26 @@ class _$NewsPostStateCopyWithImpl<$Res, $Val extends NewsPostState>
     Object? newsSlideList = null,
     Object? newsPostSpaceId = freezed,
   }) {
-    return _then(_value.copyWith(
-      currentUpdateSlide: freezed == currentUpdateSlide
-          ? _value.currentUpdateSlide
-          : currentUpdateSlide // ignore: cast_nullable_to_non_nullable
-              as UpdateSlideItem?,
-      newsSlideList: null == newsSlideList
-          ? _value.newsSlideList
-          : newsSlideList // ignore: cast_nullable_to_non_nullable
-              as List<UpdateSlideItem>,
-      newsPostSpaceId: freezed == newsPostSpaceId
-          ? _value.newsPostSpaceId
-          : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            currentUpdateSlide:
+                freezed == currentUpdateSlide
+                    ? _value.currentUpdateSlide
+                    : currentUpdateSlide // ignore: cast_nullable_to_non_nullable
+                        as UpdateSlideItem?,
+            newsSlideList:
+                null == newsSlideList
+                    ? _value.newsSlideList
+                    : newsSlideList // ignore: cast_nullable_to_non_nullable
+                        as List<UpdateSlideItem>,
+            newsPostSpaceId:
+                freezed == newsPostSpaceId
+                    ? _value.newsPostSpaceId
+                    : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -79,14 +88,16 @@ class _$NewsPostStateCopyWithImpl<$Res, $Val extends NewsPostState>
 abstract class _$$NewsPostStateImplCopyWith<$Res>
     implements $NewsPostStateCopyWith<$Res> {
   factory _$$NewsPostStateImplCopyWith(
-          _$NewsPostStateImpl value, $Res Function(_$NewsPostStateImpl) then) =
-      __$$NewsPostStateImplCopyWithImpl<$Res>;
+    _$NewsPostStateImpl value,
+    $Res Function(_$NewsPostStateImpl) then,
+  ) = __$$NewsPostStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {UpdateSlideItem? currentUpdateSlide,
-      List<UpdateSlideItem> newsSlideList,
-      String? newsPostSpaceId});
+  $Res call({
+    UpdateSlideItem? currentUpdateSlide,
+    List<UpdateSlideItem> newsSlideList,
+    String? newsPostSpaceId,
+  });
 }
 
 /// @nodoc
@@ -94,8 +105,9 @@ class __$$NewsPostStateImplCopyWithImpl<$Res>
     extends _$NewsPostStateCopyWithImpl<$Res, _$NewsPostStateImpl>
     implements _$$NewsPostStateImplCopyWith<$Res> {
   __$$NewsPostStateImplCopyWithImpl(
-      _$NewsPostStateImpl _value, $Res Function(_$NewsPostStateImpl) _then)
-      : super(_value, _then);
+    _$NewsPostStateImpl _value,
+    $Res Function(_$NewsPostStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of NewsPostState
   /// with the given fields replaced by the non-null parameter values.
@@ -106,31 +118,36 @@ class __$$NewsPostStateImplCopyWithImpl<$Res>
     Object? newsSlideList = null,
     Object? newsPostSpaceId = freezed,
   }) {
-    return _then(_$NewsPostStateImpl(
-      currentUpdateSlide: freezed == currentUpdateSlide
-          ? _value.currentUpdateSlide
-          : currentUpdateSlide // ignore: cast_nullable_to_non_nullable
-              as UpdateSlideItem?,
-      newsSlideList: null == newsSlideList
-          ? _value._newsSlideList
-          : newsSlideList // ignore: cast_nullable_to_non_nullable
-              as List<UpdateSlideItem>,
-      newsPostSpaceId: freezed == newsPostSpaceId
-          ? _value.newsPostSpaceId
-          : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    return _then(
+      _$NewsPostStateImpl(
+        currentUpdateSlide:
+            freezed == currentUpdateSlide
+                ? _value.currentUpdateSlide
+                : currentUpdateSlide // ignore: cast_nullable_to_non_nullable
+                    as UpdateSlideItem?,
+        newsSlideList:
+            null == newsSlideList
+                ? _value._newsSlideList
+                : newsSlideList // ignore: cast_nullable_to_non_nullable
+                    as List<UpdateSlideItem>,
+        newsPostSpaceId:
+            freezed == newsPostSpaceId
+                ? _value.newsPostSpaceId
+                : newsPostSpaceId // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$NewsPostStateImpl implements _NewsPostState {
-  const _$NewsPostStateImpl(
-      {this.currentUpdateSlide,
-      final List<UpdateSlideItem> newsSlideList = const [],
-      this.newsPostSpaceId})
-      : _newsSlideList = newsSlideList;
+  const _$NewsPostStateImpl({
+    this.currentUpdateSlide,
+    final List<UpdateSlideItem> newsSlideList = const [],
+    this.newsPostSpaceId,
+  }) : _newsSlideList = newsSlideList;
 
   @override
   final UpdateSlideItem? currentUpdateSlide;
@@ -158,15 +175,21 @@ class _$NewsPostStateImpl implements _NewsPostState {
             other is _$NewsPostStateImpl &&
             (identical(other.currentUpdateSlide, currentUpdateSlide) ||
                 other.currentUpdateSlide == currentUpdateSlide) &&
-            const DeepCollectionEquality()
-                .equals(other._newsSlideList, _newsSlideList) &&
+            const DeepCollectionEquality().equals(
+              other._newsSlideList,
+              _newsSlideList,
+            ) &&
             (identical(other.newsPostSpaceId, newsPostSpaceId) ||
                 other.newsPostSpaceId == newsPostSpaceId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, currentUpdateSlide,
-      const DeepCollectionEquality().hash(_newsSlideList), newsPostSpaceId);
+  int get hashCode => Object.hash(
+    runtimeType,
+    currentUpdateSlide,
+    const DeepCollectionEquality().hash(_newsSlideList),
+    newsPostSpaceId,
+  );
 
   /// Create a copy of NewsPostState
   /// with the given fields replaced by the non-null parameter values.
@@ -178,10 +201,11 @@ class _$NewsPostStateImpl implements _NewsPostState {
 }
 
 abstract class _NewsPostState implements NewsPostState {
-  const factory _NewsPostState(
-      {final UpdateSlideItem? currentUpdateSlide,
-      final List<UpdateSlideItem> newsSlideList,
-      final String? newsPostSpaceId}) = _$NewsPostStateImpl;
+  const factory _NewsPostState({
+    final UpdateSlideItem? currentUpdateSlide,
+    final List<UpdateSlideItem> newsSlideList,
+    final String? newsPostSpaceId,
+  }) = _$NewsPostStateImpl;
 
   @override
   UpdateSlideItem? get currentUpdateSlide;

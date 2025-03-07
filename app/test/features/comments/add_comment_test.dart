@@ -17,8 +17,9 @@ void main() {
     mockAvatarInfo = MockAvatarInfo(uniqueId: 'user-1');
   });
   group('Add Comment', () {
-    testWidgets('should display avatar and comment input',
-        (WidgetTester tester) async {
+    testWidgets('should display avatar and comment input', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpProviderWidget(
         overrides: [
           accountAvatarInfoProvider.overrideWith((ref) => mockAvatarInfo),
@@ -33,8 +34,9 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
     });
 
-    testWidgets('send button appears when text is entered',
-        (WidgetTester tester) async {
+    testWidgets('send button appears when text is entered', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpProviderWidget(
         overrides: [
           accountAvatarInfoProvider.overrideWith((ref) => mockAvatarInfo),

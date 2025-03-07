@@ -4,11 +4,7 @@ class CustomSelectedIcon extends StatelessWidget {
   final Widget icon;
   final VoidCallback? onTap;
 
-  const CustomSelectedIcon({
-    super.key,
-    required this.icon,
-    this.onTap,
-  });
+  const CustomSelectedIcon({super.key, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {

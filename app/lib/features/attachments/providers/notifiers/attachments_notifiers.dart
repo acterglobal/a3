@@ -11,8 +11,12 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::attachments::notifiers');
 
-class AttachmentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
-    AttachmentsManager, AttachmentsManagerProvider> {
+class AttachmentsManagerNotifier
+    extends
+        AutoDisposeFamilyAsyncNotifier<
+          AttachmentsManager,
+          AttachmentsManagerProvider
+        > {
   late Stream<void> _listener;
   late StreamSubscription<void> _poller;
 
@@ -46,10 +50,8 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
   final Ref ref;
   final Attachment attachment;
 
-  AttachmentMediaNotifier({
-    required this.attachment,
-    required this.ref,
-  }) : super(const AttachmentMediaState()) {
+  AttachmentMediaNotifier({required this.attachment, required this.ref})
+    : super(const AttachmentMediaState()) {
     _init();
   }
 
@@ -89,10 +91,7 @@ class AttachmentMediaNotifier extends StateNotifier<AttachmentMediaState> {
     final mediaPath =
         (await attachment.downloadMedia(null, tempDir.path)).text();
     if (mediaPath != null) {
-      state = state.copyWith(
-        mediaFile: File(mediaPath),
-        isDownloading: false,
-      );
+      state = state.copyWith(mediaFile: File(mediaPath), isDownloading: false);
     }
   }
 }

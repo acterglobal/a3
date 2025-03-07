@@ -17,11 +17,12 @@ Future<void> showMemberInfoDrawer({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => MemberInfoDrawer(
-      key: key,
-      roomId: roomId,
-      memberId: memberId,
-      isShowActions: isShowActions,
-    ),
+    builder:
+        (context) => MemberInfoDrawer(
+          key: key,
+          roomId: roomId,
+          memberId: memberId,
+          isShowActions: isShowActions,
+        ),
   );
 }

@@ -38,7 +38,8 @@ class _InputTextFieldState extends State<InputTextField> {
       keyboardType: widget.textInputType,
       textInputAction: widget.textInputAction,
       // required field, space allowed
-      validator: widget.validator ??
+      validator:
+          widget.validator ??
           (val) => val == null || val.isEmpty ? 'Field can’t be empty' : null,
       onChanged: widget.onInputChanged ?? (value) {},
       onFieldSubmitted: (value) {
@@ -46,10 +47,7 @@ class _InputTextFieldState extends State<InputTextField> {
       },
       cursorColor: Theme.of(context).colorScheme.secondary,
       style: Theme.of(context).textTheme.labelLarge,
-      decoration: InputDecoration(
-        filled: true,
-        hintText: widget.hintText,
-      ),
+      decoration: InputDecoration(filled: true, hintText: widget.hintText),
     );
   }
 }

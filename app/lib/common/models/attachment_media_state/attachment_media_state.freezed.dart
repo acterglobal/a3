@@ -12,7 +12,8 @@ part of 'attachment_media_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$AttachmentMediaLoadingState {
@@ -21,60 +22,59 @@ mixin _$AttachmentMediaLoadingState {
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loading,
     TResult Function()? loaded,
     TResult Function(String? error)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_AttachmentMediaLoadingStateLoading value)
-        loading,
+    loading,
     required TResult Function(_AttachmentMediaLoadingStateLoaded value) loaded,
     required TResult Function(_AttachmentMediaLoadingStateError value) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_AttachmentMediaLoadingStateLoading value)? loading,
     TResult? Function(_AttachmentMediaLoadingStateLoaded value)? loaded,
     TResult? Function(_AttachmentMediaLoadingStateError value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_AttachmentMediaLoadingStateLoading value)? loading,
     TResult Function(_AttachmentMediaLoadingStateLoaded value)? loaded,
     TResult Function(_AttachmentMediaLoadingStateError value)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $AttachmentMediaLoadingStateCopyWith<$Res> {
   factory $AttachmentMediaLoadingStateCopyWith(
-          AttachmentMediaLoadingState value,
-          $Res Function(AttachmentMediaLoadingState) then) =
-      _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
-          AttachmentMediaLoadingState>;
+    AttachmentMediaLoadingState value,
+    $Res Function(AttachmentMediaLoadingState) then,
+  ) =
+      _$AttachmentMediaLoadingStateCopyWithImpl<
+        $Res,
+        AttachmentMediaLoadingState
+      >;
 }
 
 /// @nodoc
-class _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
-        $Val extends AttachmentMediaLoadingState>
+class _$AttachmentMediaLoadingStateCopyWithImpl<
+  $Res,
+  $Val extends AttachmentMediaLoadingState
+>
     implements $AttachmentMediaLoadingStateCopyWith<$Res> {
   _$AttachmentMediaLoadingStateCopyWithImpl(this._value, this._then);
 
@@ -90,20 +90,23 @@ class _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
 /// @nodoc
 abstract class _$$AttachmentMediaLoadingStateLoadingImplCopyWith<$Res> {
   factory _$$AttachmentMediaLoadingStateLoadingImplCopyWith(
-          _$AttachmentMediaLoadingStateLoadingImpl value,
-          $Res Function(_$AttachmentMediaLoadingStateLoadingImpl) then) =
-      __$$AttachmentMediaLoadingStateLoadingImplCopyWithImpl<$Res>;
+    _$AttachmentMediaLoadingStateLoadingImpl value,
+    $Res Function(_$AttachmentMediaLoadingStateLoadingImpl) then,
+  ) = __$$AttachmentMediaLoadingStateLoadingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$AttachmentMediaLoadingStateLoadingImplCopyWithImpl<$Res>
-    extends _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
-        _$AttachmentMediaLoadingStateLoadingImpl>
+    extends
+        _$AttachmentMediaLoadingStateCopyWithImpl<
+          $Res,
+          _$AttachmentMediaLoadingStateLoadingImpl
+        >
     implements _$$AttachmentMediaLoadingStateLoadingImplCopyWith<$Res> {
   __$$AttachmentMediaLoadingStateLoadingImplCopyWithImpl(
-      _$AttachmentMediaLoadingStateLoadingImpl _value,
-      $Res Function(_$AttachmentMediaLoadingStateLoadingImpl) _then)
-      : super(_value, _then);
+    _$AttachmentMediaLoadingStateLoadingImpl _value,
+    $Res Function(_$AttachmentMediaLoadingStateLoadingImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of AttachmentMediaLoadingState
   /// with the given fields replaced by the non-null parameter values.
@@ -168,7 +171,7 @@ class _$AttachmentMediaLoadingStateLoadingImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_AttachmentMediaLoadingStateLoading value)
-        loading,
+    loading,
     required TResult Function(_AttachmentMediaLoadingStateLoaded value) loaded,
     required TResult Function(_AttachmentMediaLoadingStateError value) error,
   }) {
@@ -209,20 +212,23 @@ abstract class _AttachmentMediaLoadingStateLoading
 /// @nodoc
 abstract class _$$AttachmentMediaLoadingStateLoadedImplCopyWith<$Res> {
   factory _$$AttachmentMediaLoadingStateLoadedImplCopyWith(
-          _$AttachmentMediaLoadingStateLoadedImpl value,
-          $Res Function(_$AttachmentMediaLoadingStateLoadedImpl) then) =
-      __$$AttachmentMediaLoadingStateLoadedImplCopyWithImpl<$Res>;
+    _$AttachmentMediaLoadingStateLoadedImpl value,
+    $Res Function(_$AttachmentMediaLoadingStateLoadedImpl) then,
+  ) = __$$AttachmentMediaLoadingStateLoadedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$AttachmentMediaLoadingStateLoadedImplCopyWithImpl<$Res>
-    extends _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
-        _$AttachmentMediaLoadingStateLoadedImpl>
+    extends
+        _$AttachmentMediaLoadingStateCopyWithImpl<
+          $Res,
+          _$AttachmentMediaLoadingStateLoadedImpl
+        >
     implements _$$AttachmentMediaLoadingStateLoadedImplCopyWith<$Res> {
   __$$AttachmentMediaLoadingStateLoadedImplCopyWithImpl(
-      _$AttachmentMediaLoadingStateLoadedImpl _value,
-      $Res Function(_$AttachmentMediaLoadingStateLoadedImpl) _then)
-      : super(_value, _then);
+    _$AttachmentMediaLoadingStateLoadedImpl _value,
+    $Res Function(_$AttachmentMediaLoadingStateLoadedImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of AttachmentMediaLoadingState
   /// with the given fields replaced by the non-null parameter values.
@@ -287,7 +293,7 @@ class _$AttachmentMediaLoadingStateLoadedImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_AttachmentMediaLoadingStateLoading value)
-        loading,
+    loading,
     required TResult Function(_AttachmentMediaLoadingStateLoaded value) loaded,
     required TResult Function(_AttachmentMediaLoadingStateError value) error,
   }) {
@@ -328,36 +334,39 @@ abstract class _AttachmentMediaLoadingStateLoaded
 /// @nodoc
 abstract class _$$AttachmentMediaLoadingStateErrorImplCopyWith<$Res> {
   factory _$$AttachmentMediaLoadingStateErrorImplCopyWith(
-          _$AttachmentMediaLoadingStateErrorImpl value,
-          $Res Function(_$AttachmentMediaLoadingStateErrorImpl) then) =
-      __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl<$Res>;
+    _$AttachmentMediaLoadingStateErrorImpl value,
+    $Res Function(_$AttachmentMediaLoadingStateErrorImpl) then,
+  ) = __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String? error});
 }
 
 /// @nodoc
 class __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl<$Res>
-    extends _$AttachmentMediaLoadingStateCopyWithImpl<$Res,
-        _$AttachmentMediaLoadingStateErrorImpl>
+    extends
+        _$AttachmentMediaLoadingStateCopyWithImpl<
+          $Res,
+          _$AttachmentMediaLoadingStateErrorImpl
+        >
     implements _$$AttachmentMediaLoadingStateErrorImplCopyWith<$Res> {
   __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl(
-      _$AttachmentMediaLoadingStateErrorImpl _value,
-      $Res Function(_$AttachmentMediaLoadingStateErrorImpl) _then)
-      : super(_value, _then);
+    _$AttachmentMediaLoadingStateErrorImpl _value,
+    $Res Function(_$AttachmentMediaLoadingStateErrorImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of AttachmentMediaLoadingState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? error = freezed,
-  }) {
-    return _then(_$AttachmentMediaLoadingStateErrorImpl(
-      freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+  $Res call({Object? error = freezed}) {
+    return _then(
+      _$AttachmentMediaLoadingStateErrorImpl(
+        freezed == error
+            ? _value.error
+            : error // ignore: cast_nullable_to_non_nullable
+                as String?,
+      ),
+    );
   }
 }
 
@@ -392,9 +401,11 @@ class _$AttachmentMediaLoadingStateErrorImpl
   @override
   @pragma('vm:prefer-inline')
   _$$AttachmentMediaLoadingStateErrorImplCopyWith<
-          _$AttachmentMediaLoadingStateErrorImpl>
-      get copyWith => __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl<
-          _$AttachmentMediaLoadingStateErrorImpl>(this, _$identity);
+    _$AttachmentMediaLoadingStateErrorImpl
+  >
+  get copyWith => __$$AttachmentMediaLoadingStateErrorImplCopyWithImpl<
+    _$AttachmentMediaLoadingStateErrorImpl
+  >(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -434,7 +445,7 @@ class _$AttachmentMediaLoadingStateErrorImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_AttachmentMediaLoadingStateLoading value)
-        loading,
+    loading,
     required TResult Function(_AttachmentMediaLoadingStateLoaded value) loaded,
     required TResult Function(_AttachmentMediaLoadingStateError value) error,
   }) {
@@ -477,8 +488,9 @@ abstract class _AttachmentMediaLoadingStateError
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AttachmentMediaLoadingStateErrorImplCopyWith<
-          _$AttachmentMediaLoadingStateErrorImpl>
-      get copyWith => throw _privateConstructorUsedError;
+    _$AttachmentMediaLoadingStateErrorImpl
+  >
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -497,21 +509,25 @@ mixin _$AttachmentMediaState {
 
 /// @nodoc
 abstract class $AttachmentMediaStateCopyWith<$Res> {
-  factory $AttachmentMediaStateCopyWith(AttachmentMediaState value,
-          $Res Function(AttachmentMediaState) then) =
-      _$AttachmentMediaStateCopyWithImpl<$Res, AttachmentMediaState>;
+  factory $AttachmentMediaStateCopyWith(
+    AttachmentMediaState value,
+    $Res Function(AttachmentMediaState) then,
+  ) = _$AttachmentMediaStateCopyWithImpl<$Res, AttachmentMediaState>;
   @useResult
-  $Res call(
-      {AttachmentMediaLoadingState mediaLoadingState,
-      File? mediaFile,
-      bool isDownloading});
+  $Res call({
+    AttachmentMediaLoadingState mediaLoadingState,
+    File? mediaFile,
+    bool isDownloading,
+  });
 
   $AttachmentMediaLoadingStateCopyWith<$Res> get mediaLoadingState;
 }
 
 /// @nodoc
-class _$AttachmentMediaStateCopyWithImpl<$Res,
-        $Val extends AttachmentMediaState>
+class _$AttachmentMediaStateCopyWithImpl<
+  $Res,
+  $Val extends AttachmentMediaState
+>
     implements $AttachmentMediaStateCopyWith<$Res> {
   _$AttachmentMediaStateCopyWithImpl(this._value, this._then);
 
@@ -529,20 +545,26 @@ class _$AttachmentMediaStateCopyWithImpl<$Res,
     Object? mediaFile = freezed,
     Object? isDownloading = null,
   }) {
-    return _then(_value.copyWith(
-      mediaLoadingState: null == mediaLoadingState
-          ? _value.mediaLoadingState
-          : mediaLoadingState // ignore: cast_nullable_to_non_nullable
-              as AttachmentMediaLoadingState,
-      mediaFile: freezed == mediaFile
-          ? _value.mediaFile
-          : mediaFile // ignore: cast_nullable_to_non_nullable
-              as File?,
-      isDownloading: null == isDownloading
-          ? _value.isDownloading
-          : isDownloading // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            mediaLoadingState:
+                null == mediaLoadingState
+                    ? _value.mediaLoadingState
+                    : mediaLoadingState // ignore: cast_nullable_to_non_nullable
+                        as AttachmentMediaLoadingState,
+            mediaFile:
+                freezed == mediaFile
+                    ? _value.mediaFile
+                    : mediaFile // ignore: cast_nullable_to_non_nullable
+                        as File?,
+            isDownloading:
+                null == isDownloading
+                    ? _value.isDownloading
+                    : isDownloading // ignore: cast_nullable_to_non_nullable
+                        as bool,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of AttachmentMediaState
@@ -550,25 +572,29 @@ class _$AttachmentMediaStateCopyWithImpl<$Res,
   @override
   @pragma('vm:prefer-inline')
   $AttachmentMediaLoadingStateCopyWith<$Res> get mediaLoadingState {
-    return $AttachmentMediaLoadingStateCopyWith<$Res>(_value.mediaLoadingState,
-        (value) {
-      return _then(_value.copyWith(mediaLoadingState: value) as $Val);
-    });
+    return $AttachmentMediaLoadingStateCopyWith<$Res>(
+      _value.mediaLoadingState,
+      (value) {
+        return _then(_value.copyWith(mediaLoadingState: value) as $Val);
+      },
+    );
   }
 }
 
 /// @nodoc
 abstract class _$$AttachmentMediaStateImplCopyWith<$Res>
     implements $AttachmentMediaStateCopyWith<$Res> {
-  factory _$$AttachmentMediaStateImplCopyWith(_$AttachmentMediaStateImpl value,
-          $Res Function(_$AttachmentMediaStateImpl) then) =
-      __$$AttachmentMediaStateImplCopyWithImpl<$Res>;
+  factory _$$AttachmentMediaStateImplCopyWith(
+    _$AttachmentMediaStateImpl value,
+    $Res Function(_$AttachmentMediaStateImpl) then,
+  ) = __$$AttachmentMediaStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {AttachmentMediaLoadingState mediaLoadingState,
-      File? mediaFile,
-      bool isDownloading});
+  $Res call({
+    AttachmentMediaLoadingState mediaLoadingState,
+    File? mediaFile,
+    bool isDownloading,
+  });
 
   @override
   $AttachmentMediaLoadingStateCopyWith<$Res> get mediaLoadingState;
@@ -578,9 +604,10 @@ abstract class _$$AttachmentMediaStateImplCopyWith<$Res>
 class __$$AttachmentMediaStateImplCopyWithImpl<$Res>
     extends _$AttachmentMediaStateCopyWithImpl<$Res, _$AttachmentMediaStateImpl>
     implements _$$AttachmentMediaStateImplCopyWith<$Res> {
-  __$$AttachmentMediaStateImplCopyWithImpl(_$AttachmentMediaStateImpl _value,
-      $Res Function(_$AttachmentMediaStateImpl) _then)
-      : super(_value, _then);
+  __$$AttachmentMediaStateImplCopyWithImpl(
+    _$AttachmentMediaStateImpl _value,
+    $Res Function(_$AttachmentMediaStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of AttachmentMediaState
   /// with the given fields replaced by the non-null parameter values.
@@ -591,30 +618,36 @@ class __$$AttachmentMediaStateImplCopyWithImpl<$Res>
     Object? mediaFile = freezed,
     Object? isDownloading = null,
   }) {
-    return _then(_$AttachmentMediaStateImpl(
-      mediaLoadingState: null == mediaLoadingState
-          ? _value.mediaLoadingState
-          : mediaLoadingState // ignore: cast_nullable_to_non_nullable
-              as AttachmentMediaLoadingState,
-      mediaFile: freezed == mediaFile
-          ? _value.mediaFile
-          : mediaFile // ignore: cast_nullable_to_non_nullable
-              as File?,
-      isDownloading: null == isDownloading
-          ? _value.isDownloading
-          : isDownloading // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+    return _then(
+      _$AttachmentMediaStateImpl(
+        mediaLoadingState:
+            null == mediaLoadingState
+                ? _value.mediaLoadingState
+                : mediaLoadingState // ignore: cast_nullable_to_non_nullable
+                    as AttachmentMediaLoadingState,
+        mediaFile:
+            freezed == mediaFile
+                ? _value.mediaFile
+                : mediaFile // ignore: cast_nullable_to_non_nullable
+                    as File?,
+        isDownloading:
+            null == isDownloading
+                ? _value.isDownloading
+                : isDownloading // ignore: cast_nullable_to_non_nullable
+                    as bool,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$AttachmentMediaStateImpl implements _AttachmentMediaState {
-  const _$AttachmentMediaStateImpl(
-      {this.mediaLoadingState = const AttachmentMediaLoadingState.loading(),
-      this.mediaFile,
-      this.isDownloading = false});
+  const _$AttachmentMediaStateImpl({
+    this.mediaLoadingState = const AttachmentMediaLoadingState.loading(),
+    this.mediaFile,
+    this.isDownloading = false,
+  });
 
   @override
   @JsonKey()
@@ -653,16 +686,19 @@ class _$AttachmentMediaStateImpl implements _AttachmentMediaState {
   @override
   @pragma('vm:prefer-inline')
   _$$AttachmentMediaStateImplCopyWith<_$AttachmentMediaStateImpl>
-      get copyWith =>
-          __$$AttachmentMediaStateImplCopyWithImpl<_$AttachmentMediaStateImpl>(
-              this, _$identity);
+  get copyWith =>
+      __$$AttachmentMediaStateImplCopyWithImpl<_$AttachmentMediaStateImpl>(
+        this,
+        _$identity,
+      );
 }
 
 abstract class _AttachmentMediaState implements AttachmentMediaState {
-  const factory _AttachmentMediaState(
-      {final AttachmentMediaLoadingState mediaLoadingState,
-      final File? mediaFile,
-      final bool isDownloading}) = _$AttachmentMediaStateImpl;
+  const factory _AttachmentMediaState({
+    final AttachmentMediaLoadingState mediaLoadingState,
+    final File? mediaFile,
+    final bool isDownloading,
+  }) = _$AttachmentMediaStateImpl;
 
   @override
   AttachmentMediaLoadingState get mediaLoadingState;
@@ -676,5 +712,5 @@ abstract class _AttachmentMediaState implements AttachmentMediaState {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AttachmentMediaStateImplCopyWith<_$AttachmentMediaStateImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  get copyWith => throw _privateConstructorUsedError;
 }

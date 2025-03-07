@@ -16,8 +16,9 @@ Widget? buildSecurityAndPrivacySectionWidget(
   final List<Widget> securityWidgetList = [];
 
   //Add Backup State Widget if feature is enabled
-  final isBackupFeatureEnabled =
-      ref.watch(isActiveProvider(LabsFeature.encryptionBackup));
+  final isBackupFeatureEnabled = ref.watch(
+    isActiveProvider(LabsFeature.encryptionBackup),
+  );
   final stateEnabled = ref.watch(backupStateProvider) == RecoveryState.enabled;
   if (isBackupFeatureEnabled && !stateEnabled) {
     securityWidgetList.add(BackupStateWidget());

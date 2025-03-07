@@ -134,7 +134,7 @@ class SubSpacesPage extends ConsumerWidget {
       localCategoryListProvider((
         spaceId: spaceId,
         categoriesFor: CategoriesFor.spaces,
-      ),),
+      )),
     );
 
     return localCategoryList.when(

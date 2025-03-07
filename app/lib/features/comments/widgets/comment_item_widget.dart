@@ -56,10 +56,9 @@ class CommentItemWidget extends ConsumerWidget {
   Widget userNameUI(BuildContext context, AvatarInfo avatarInfo) {
     final userId = avatarInfo.uniqueId;
     final displayName = avatarInfo.displayName;
-    final displayNameTextStyle = Theme.of(context)
-        .textTheme
-        .bodySmall
-        ?.copyWith(fontWeight: FontWeight.bold);
+    final displayNameTextStyle = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold);
     return Wrap(
       children: [
         // display name

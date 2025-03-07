@@ -4,10 +4,7 @@ const double maxWidth = 750;
 
 class CenteredPage extends StatelessWidget {
   final Widget child;
-  const CenteredPage({
-    super.key,
-    required this.child,
-  });
+  const CenteredPage({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

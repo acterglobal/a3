@@ -13,8 +13,10 @@ class TimeAgoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final originServerDateTime =
-        DateTime.fromMillisecondsSinceEpoch(originServerTs, isUtc: true);
+    final originServerDateTime = DateTime.fromMillisecondsSinceEpoch(
+      originServerTs,
+      isUtc: true,
+    );
     final time = originServerDateTime.toLocal().timeago();
     return Text(
       time,

@@ -8,10 +8,7 @@ import 'package:go_router/go_router.dart';
 
 class NotFoundPage extends ConsumerWidget {
   final GoRouterState routerState;
-  const NotFoundPage({
-    super.key,
-    required this.routerState,
-  });
+  const NotFoundPage({super.key, required this.routerState});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,10 +37,11 @@ class NotFoundPage extends ConsumerWidget {
                 OutlinedButton.icon(
                   icon: const Icon(Atlas.bug_clipboard_thin),
                   label: const Text('Report bug'),
-                  onPressed: () => openBugReport(
-                    context,
-                    queryParams: {'error': '404 for $currentLocation'},
-                  ),
+                  onPressed:
+                      () => openBugReport(
+                        context,
+                        queryParams: {'error': '404 for $currentLocation'},
+                      ),
                 ),
               ],
             ),

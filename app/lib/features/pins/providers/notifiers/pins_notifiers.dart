@@ -22,8 +22,9 @@ class AsyncPinNotifier
   Future<ActerPin> build(String arg) async {
     final pinId = arg;
     final client = await ref.watch(alwaysClientProvider.future);
-    _listener =
-        client.subscribeModelStream(pinId); // keep it resident in memory
+    _listener = client.subscribeModelStream(
+      pinId,
+    ); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
         state = await AsyncValue.guard(

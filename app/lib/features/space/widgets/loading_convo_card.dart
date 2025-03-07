@@ -46,15 +46,12 @@ class LoadingConvoCard extends ConsumerWidget {
     final avatar = ActerAvatar(
       options: AvatarOptions(
         AvatarInfo(uniqueId: roomId),
-        parentBadges: parentRoomId.map(
-              (roomId) => showParent
-                  ? [
-                      AvatarInfo(
-                        uniqueId: roomId,
-                        displayName: roomId,
-                      ),
-                    ]
-                  : [],
+        parentBadges:
+            parentRoomId.map(
+              (roomId) =>
+                  showParent
+                      ? [AvatarInfo(uniqueId: roomId, displayName: roomId)]
+                      : [],
             ) ??
             [],
       ),
@@ -77,26 +74,26 @@ class LoadingConvoCard extends ConsumerWidget {
                 title: Skeletonizer(
                   child: Text(
                     roomId,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                subtitle: constraints.maxWidth < 300
-                    ? null
-                    : subtitle.map((widget) => Skeletonizer(child: widget)),
+                subtitle:
+                    constraints.maxWidth < 300
+                        ? null
+                        : subtitle.map((widget) => Skeletonizer(child: widget)),
                 trailing: constraints.maxWidth < 300 ? null : trailing,
               ),
             ),
             constraints.maxWidth < 300
                 ? const SizedBox.shrink()
                 : Divider(
-                    indent: 75,
-                    endIndent: 10,
-                    color: colorScheme.tertiary,
-                  ),
+                  indent: 75,
+                  endIndent: 10,
+                  color: colorScheme.tertiary,
+                ),
           ],
         );
       },

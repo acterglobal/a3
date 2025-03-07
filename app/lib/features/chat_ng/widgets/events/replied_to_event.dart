@@ -29,12 +29,9 @@ class RepliedToEvent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Consumer(
-          builder: (context, ref, child) => replyProfileBuilder(
-            context,
-            ref,
-            roomId,
-            replyEventItem,
-          ),
+          builder:
+              (context, ref, child) =>
+                  replyProfileBuilder(context, ref, roomId, replyEventItem),
         ),
         // const SizedBox(height: 10),
         Padding(
@@ -61,19 +58,13 @@ class RepliedToEvent extends StatelessWidget {
 
     return Row(
       children: [
-        ActerAvatar(
-          options: AvatarOptions.DM(
-            replyProfile,
-            size: 12,
-          ),
-        ),
+        ActerAvatar(options: AvatarOptions.DM(replyProfile, size: 12)),
         const SizedBox(width: 5),
         Text(
           replyProfile.displayName ?? '',
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: Theme.of(context).colorScheme.tertiary),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
         ),
       ],
     );
@@ -99,11 +90,11 @@ class OriginalEventItem extends ConsumerWidget {
     return switch (eventType) {
       // handle message inner types separately
       'm.room.message' => buildReplyMsgEventItem(
-          roomId,
-          messageId,
-          item,
-          isUser,
-        ),
+        roomId,
+        messageId,
+        item,
+        isUser,
+      ),
       'm.room.redaction' => RedactedMessageWidget(),
       'm.room.encrypted' => EncryptedMessageWidget(),
       _ => _buildUnsupportedMessage(eventType),
@@ -123,32 +114,28 @@ class OriginalEventItem extends ConsumerWidget {
     if (msgType == null || content == null) return const SizedBox.shrink();
 
     return switch (msgType) {
-      'm.emote' || 'm.text' => TextMessageEvent.reply(
-          roomId: roomId,
-          content: content,
-        ),
+      'm.emote' ||
+      'm.text' => TextMessageEvent.reply(roomId: roomId, content: content),
       'm.image' => ImageMessageEvent(
-          messageId: messageId,
-          roomId: roomId,
-          content: content,
-        ),
+        messageId: messageId,
+        roomId: roomId,
+        content: content,
+      ),
       'm.video' => VideoMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       'm.file' => FileMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
 
   Widget _buildUnsupportedMessage(String? msgtype) {
-    return Text(
-      'Unsupported event type: $msgtype',
-    );
+    return Text('Unsupported event type: $msgtype');
   }
 }

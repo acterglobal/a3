@@ -6,10 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SpaceHeader extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
 
-  const SpaceHeader({
-    super.key,
-    required this.spaceIdOrAlias,
-  });
+  const SpaceHeader({super.key, required this.spaceIdOrAlias});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SpaceHeaderState();

@@ -40,14 +40,11 @@ void main() {
     bool allowDisabling = false,
   }) async {
     await tester.pumpProviderWidget(
-      child: Scaffold(
-        body: BackupStateWidget(
-          allowDisabling: allowDisabling,
-        ),
-      ),
+      child: Scaffold(body: BackupStateWidget(allowDisabling: allowDisabling)),
       overrides: [
-        backupStateProvider
-            .overrideWith(() => MockRecoveryStateNotifier(state)),
+        backupStateProvider.overrideWith(
+          () => MockRecoveryStateNotifier(state),
+        ),
         backupManagerProvider.overrideWith(
           (ref) => Future.delayed(
             const Duration(milliseconds: 200),
@@ -66,28 +63,31 @@ void main() {
   });
 
   group('BackupStateWidget', () {
-    testWidgets('renders unknown state with skeleton loader',
-        (WidgetTester tester) async {
+    testWidgets('renders unknown state with skeleton loader', (
+      WidgetTester tester,
+    ) async {
       await pumpBackupStateWidget(tester, state: RecoveryState.unknown);
       expect(find.text('Loading'), findsOneWidget);
     });
 
     testWidgets(
-        'renders enabled state with reset button when allowing disabling',
-        (WidgetTester tester) async {
-      await pumpBackupStateWidget(
-        tester,
-        state: RecoveryState.enabled,
-        allowDisabling: true,
-      );
+      'renders enabled state with reset button when allowing disabling',
+      (WidgetTester tester) async {
+        await pumpBackupStateWidget(
+          tester,
+          state: RecoveryState.enabled,
+          allowDisabling: true,
+        );
 
-      expect(find.byIcon(Atlas.check_website_thin), findsOneWidget);
-      expect(find.byType(OutlinedButton), findsOneWidget);
-      expect(find.textContaining('Reset'), findsOneWidget);
-    });
+        expect(find.byIcon(Atlas.check_website_thin), findsOneWidget);
+        expect(find.byType(OutlinedButton), findsOneWidget);
+        expect(find.textContaining('Reset'), findsOneWidget);
+      },
+    );
 
-    testWidgets('renders nothing when enabled and disabling not allowed',
-        (WidgetTester tester) async {
+    testWidgets('renders nothing when enabled and disabling not allowed', (
+      WidgetTester tester,
+    ) async {
       await pumpBackupStateWidget(
         tester,
         state: RecoveryState.enabled,
@@ -98,8 +98,9 @@ void main() {
       expect(find.byType(OutlinedButton), findsNothing);
     });
 
-    testWidgets('renders incomplete state with correct actions',
-        (WidgetTester tester) async {
+    testWidgets('renders incomplete state with correct actions', (
+      WidgetTester tester,
+    ) async {
       await pumpBackupStateWidget(
         tester,
         state: RecoveryState.incomplete,
@@ -111,16 +112,18 @@ void main() {
       expect(find.byType(OutlinedButton), findsNWidgets(2));
     });
 
-    testWidgets('renders disabled state with start action',
-        (WidgetTester tester) async {
+    testWidgets('renders disabled state with start action', (
+      WidgetTester tester,
+    ) async {
       await pumpBackupStateWidget(tester, state: RecoveryState.disabled);
 
       expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
       expect(find.byType(OutlinedButton), findsOneWidget);
     });
 
-    testWidgets('verifies warning color for incomplete state',
-        (WidgetTester tester) async {
+    testWidgets('verifies warning color for incomplete state', (
+      WidgetTester tester,
+    ) async {
       await pumpBackupStateWidget(tester, state: RecoveryState.incomplete);
 
       final iconFinder = find.byIcon(Icons.warning_amber_rounded);
@@ -128,8 +131,9 @@ void main() {
       expect(icon.color, equals(warningColor));
     });
 
-    testWidgets('verifies primary color for enabled state',
-        (WidgetTester tester) async {
+    testWidgets('verifies primary color for enabled state', (
+      WidgetTester tester,
+    ) async {
       await pumpBackupStateWidget(
         tester,
         state: RecoveryState.enabled,
@@ -138,10 +142,7 @@ void main() {
 
       final iconFinder = find.byIcon(Atlas.check_website_thin);
       final icon = tester.widget<Icon>(iconFinder);
-      expect(
-        icon.color,
-        isA<Color>(),
-      );
+      expect(icon.color, isA<Color>());
     });
   });
 }

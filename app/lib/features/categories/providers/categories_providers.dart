@@ -12,38 +12,41 @@ typedef CategoriesInfo = ({String spaceId, CategoriesFor categoriesFor});
 
 final categoryManagerProvider = FutureProvider.family
     .autoDispose<Categories, CategoriesInfo>((ref, categoryInfo) async {
-  final maybeSpace =
-      await ref.watch(maybeSpaceProvider(categoryInfo.spaceId).future);
-  if (maybeSpace != null) {
-    return maybeSpace.categories(categoryInfo.categoriesFor.name);
-  }
-  throw 'Space not found';
-});
+      final maybeSpace = await ref.watch(
+        maybeSpaceProvider(categoryInfo.spaceId).future,
+      );
+      if (maybeSpace != null) {
+        return maybeSpace.categories(categoryInfo.categoriesFor.name);
+      }
+      throw 'Space not found';
+    });
 
 final localCategoryListProvider = FutureProvider.family
-    .autoDispose<List<CategoryModelLocal>, CategoriesInfo>(
-        (ref, categoryInfo) async {
-  final categoriesManager = await ref.watch(
-    categoryManagerProvider(
-      (
-        spaceId: categoryInfo.spaceId,
-        categoriesFor: categoryInfo.categoriesFor
-      ),
-    ).future,
-  );
-  List<String> subEntriesList = [];
+    .autoDispose<List<CategoryModelLocal>, CategoriesInfo>((
+      ref,
+      categoryInfo,
+    ) async {
+      final categoriesManager = await ref.watch(
+        categoryManagerProvider((
+          spaceId: categoryInfo.spaceId,
+          categoriesFor: categoryInfo.categoriesFor,
+        )).future,
+      );
+      List<String> subEntriesList = [];
 
-  if (categoryInfo.categoriesFor == CategoriesFor.spaces) {
-    subEntriesList =
-        await ref.watch(subSpacesListProvider(categoryInfo.spaceId).future);
-  } else if (categoryInfo.categoriesFor == CategoriesFor.chats) {
-    subEntriesList =
-        await ref.watch(subChatsListProvider(categoryInfo.spaceId).future);
-  }
+      if (categoryInfo.categoriesFor == CategoriesFor.spaces) {
+        subEntriesList = await ref.watch(
+          subSpacesListProvider(categoryInfo.spaceId).future,
+        );
+      } else if (categoryInfo.categoriesFor == CategoriesFor.chats) {
+        subEntriesList = await ref.watch(
+          subChatsListProvider(categoryInfo.spaceId).future,
+        );
+      }
 
-  final categoryList = CategoryUtils().getCategorisedList(
-    categoriesManager.categories().toList(),
-    subEntriesList,
-  );
-  return categoryList;
-});
+      final categoryList = CategoryUtils().getCategorisedList(
+        categoriesManager.categories().toList(),
+        subEntriesList,
+      );
+      return categoryList;
+    });

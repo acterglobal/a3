@@ -8,12 +8,17 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::comments::manager');
 
 final commentsManagerProvider = AsyncNotifierProvider.autoDispose.family<
-    AsyncCommentsManagerNotifier, CommentsManager, CommentsManagerProvider>(
-  () => AsyncCommentsManagerNotifier(),
-);
+  AsyncCommentsManagerNotifier,
+  CommentsManager,
+  CommentsManagerProvider
+>(() => AsyncCommentsManagerNotifier());
 
-class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
-    CommentsManager, CommentsManagerProvider> {
+class AsyncCommentsManagerNotifier
+    extends
+        AutoDisposeFamilyAsyncNotifier<
+          CommentsManager,
+          CommentsManagerProvider
+        > {
   late Stream<bool> _listener;
   late StreamSubscription<void> _poller;
 
@@ -40,18 +45,20 @@ class AsyncCommentsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
 
 final commentsListProvider = FutureProvider.family
     .autoDispose<List<Comment>, CommentsManager>((ref, manager) async {
-  final commentList = (await manager.comments()).toList();
-  commentList.sort(
-    (a, b) => b.originServerTs().compareTo(a.originServerTs()),
-  );
-  return commentList;
-});
+      final commentList = (await manager.comments()).toList();
+      commentList.sort(
+        (a, b) => b.originServerTs().compareTo(a.originServerTs()),
+      );
+      return commentList;
+    });
 
 final updateCommentsCountProvider = FutureProvider.family
     .autoDispose<int, CommentsManagerProvider>((ref, managerProvider) async {
-  final commentManager =
-      await ref.watch(commentsManagerProvider(managerProvider).future);
-  final commentList =
-      await ref.watch(commentsListProvider(commentManager).future);
-  return commentList.length;
-});
+      final commentManager = await ref.watch(
+        commentsManagerProvider(managerProvider).future,
+      );
+      final commentList = await ref.watch(
+        commentsListProvider(commentManager).future,
+      );
+      return commentList.length;
+    });

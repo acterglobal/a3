@@ -14,17 +14,17 @@ Future<void> showRoomPreview({
   String? fallbackRoomDisplayName,
   String? senderId,
   List<String> serverNames = const [],
-}) =>
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(20),
-          topLeft: Radius.circular(20),
-        ),
-      ),
-      builder: (context) => Container(
+}) => showModalBottomSheet(
+  context: context,
+  isDismissible: true,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.only(
+      topRight: Radius.circular(20),
+      topLeft: Radius.circular(20),
+    ),
+  ),
+  builder:
+      (context) => Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         child: RoomPreviewWidget(
@@ -49,4 +49,4 @@ Future<void> showRoomPreview({
           },
         ),
       ),
-    );
+);

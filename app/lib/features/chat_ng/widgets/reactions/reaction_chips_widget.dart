@@ -30,23 +30,25 @@ class ReactionChipsWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: isLargeScreen
-            ? EdgeInsets.all(3)
-            : EdgeInsets.symmetric(horizontal: 3),
+        padding:
+            isLargeScreen
+                ? EdgeInsets.all(3)
+                : EdgeInsets.symmetric(horizontal: 3),
         child: Wrap(
           direction: Axis.horizontal,
           spacing: 3,
           runSpacing: 3,
-          children: reactions
-              .map(
-                (reaction) => _ReactionChip(
-                  emoji: reaction.$1,
-                  records: reaction.$2,
-                  onTap: () => onReactionTap(reaction.$1),
-                  onLongPress: onReactionLongPress,
-                ),
-              )
-              .toList(),
+          children:
+              reactions
+                  .map(
+                    (reaction) => _ReactionChip(
+                      emoji: reaction.$1,
+                      records: reaction.$2,
+                      onTap: () => onReactionTap(reaction.$1),
+                      onLongPress: onReactionLongPress,
+                    ),
+                  )
+                  .toList(),
         ),
       ),
     );
@@ -87,12 +89,13 @@ class _ReactionChip extends StatelessWidget {
         shape: const StadiumBorder(side: BorderSide(color: Colors.transparent)),
         avatar: _buildEmojiText(),
         labelStyle: Theme.of(context).textTheme.labelLarge,
-        label: moreThanOne
-            ? Text(
-                records.length.toString(),
-                style: Theme.of(context).textTheme.labelLarge,
-              )
-            : const SizedBox.shrink(),
+        label:
+            moreThanOne
+                ? Text(
+                  records.length.toString(),
+                  style: Theme.of(context).textTheme.labelLarge,
+                )
+                : const SizedBox.shrink(),
       ),
     );
   }

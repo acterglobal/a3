@@ -85,7 +85,7 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
       options.beforeSend = sentryBeforeSend;
-    }, appRunner: () => runApp(wrappedApp),);
+    }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
   }

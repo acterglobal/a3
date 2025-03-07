@@ -31,11 +31,7 @@ Future<bool> roomListFilterStateAppliesToRoom(
   return true;
 }
 
-enum FilterSelection {
-  all,
-  dmsOnly,
-  favorites,
-}
+enum FilterSelection { all, dmsOnly, favorites }
 
 @freezed
 class RoomListFilterState with _$RoomListFilterState {

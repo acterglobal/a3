@@ -11,15 +11,18 @@ class HasSubSpacesNotifier extends FamilyAsyncNotifier<bool, String> {
   @override
   FutureOr<bool> build(String arg) async {
     final spaceId = arg;
-    final relatedSpaces =
-        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final relatedSpaces = await ref.watch(
+      spaceRelationsOverviewProvider(spaceId).future,
+    );
     if (relatedSpaces.knownSubspaces.isNotEmpty) {
       return true; // we have subspaces and know it
     }
     if (relatedSpaces.hasMore) {
       // there might be some, but we need to confirm remotely. We do that without blocking
-      listener = ref.listen(remoteSubspaceRelationsProvider(spaceId),
-          (previous, next) {
+      listener = ref.listen(remoteSubspaceRelationsProvider(spaceId), (
+        previous,
+        next,
+      ) {
         state = next.whenData((data) => data.isNotEmpty);
       });
     }
@@ -33,15 +36,18 @@ class HasSubChatsNotifier extends FamilyAsyncNotifier<bool, String> {
   @override
   FutureOr<bool> build(String arg) async {
     final spaceId = arg;
-    final relatedSpaces =
-        await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+    final relatedSpaces = await ref.watch(
+      spaceRelationsOverviewProvider(spaceId).future,
+    );
     if (relatedSpaces.knownChats.isNotEmpty) {
       return true; // we have subspaces and know it
     }
     if (relatedSpaces.hasMore) {
       // there might be some, but we need to confirm remotely. We do that without blocking
-      listener =
-          ref.listen(remoteChatRelationsProvider(spaceId), (previous, next) {
+      listener = ref.listen(remoteChatRelationsProvider(spaceId), (
+        previous,
+        next,
+      ) {
         state = next.whenData((data) => data.isNotEmpty);
       });
     }

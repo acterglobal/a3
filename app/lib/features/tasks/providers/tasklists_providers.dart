@@ -13,17 +13,19 @@ final taskListSearchTermProvider = StateProvider<String>((ref) => '');
 //Single Task List Item based on the task list id
 final taskListProvider =
     AsyncNotifierProvider.family<TaskListItemNotifier, TaskList, String>(
-  () => TaskListItemNotifier(),
-);
+      () => TaskListItemNotifier(),
+    );
 
 //List of all task list
 final allTasksListsProvider =
     AsyncNotifierProvider<AsyncAllTaskListsNotifier, List<TaskList>>(
-  () => AsyncAllTaskListsNotifier(),
-);
+      () => AsyncAllTaskListsNotifier(),
+    );
 
-final taskListsProvider =
-    FutureProvider.family<List<String>, String?>((ref, spaceId) async {
+final taskListsProvider = FutureProvider.family<List<String>, String?>((
+  ref,
+  spaceId,
+) async {
   final allTaskLists = await priotizeBookmarked(
     ref,
     BookmarkType.task_lists,
@@ -42,18 +44,20 @@ final taskListsProvider =
 
 final tasksListSearchProvider = FutureProvider.autoDispose
     .family<List<String>, String?>((ref, spaceId) async {
-  final tasksList = await ref.watch(taskListsProvider(spaceId).future);
-  final searchTerm = ref.watch(taskListSearchTermProvider).trim().toLowerCase();
+      final tasksList = await ref.watch(taskListsProvider(spaceId).future);
+      final searchTerm =
+          ref.watch(taskListSearchTermProvider).trim().toLowerCase();
 
-  //Return all task list if search text is empty
-  if (searchTerm.isEmpty) return tasksList;
+      //Return all task list if search text is empty
+      if (searchTerm.isEmpty) return tasksList;
 
-  //Return all task list filter if search text is given
-  return filterTaskListData(ref, tasksList, searchTerm);
-});
+      //Return all task list filter if search text is given
+      return filterTaskListData(ref, tasksList, searchTerm);
+    });
 
-final taskListQuickSearchedProvider =
-    FutureProvider.autoDispose<List<String>>((ref) async {
+final taskListQuickSearchedProvider = FutureProvider.autoDispose<List<String>>((
+  ref,
+) async {
   final tasksList = await ref.watch(taskListsProvider(null).future);
   final searchTerm = ref.watch(quickSearchValueProvider).trim().toLowerCase();
 
@@ -83,8 +87,10 @@ Future<List<String>> filterTaskListData(
     final tasks = await ref.watch(taskItemsListProvider(taskListItem).future);
     for (final openTaskItemId in tasks.openTasks) {
       final openTaskItem = await ref.watch(
-        taskItemProvider((taskListId: taskListId, taskId: openTaskItemId))
-            .future,
+        taskItemProvider((
+          taskListId: taskListId,
+          taskId: openTaskItemId,
+        )).future,
       );
       if (openTaskItem.title().toLowerCase().contains(searchTerm)) {
         filteredTaskList.add(taskListId);

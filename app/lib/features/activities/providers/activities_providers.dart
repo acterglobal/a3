@@ -37,111 +37,123 @@ final hasUnconfirmedEmailAddresses = StateProvider(
 );
 
 final _spaceActivitiesProvider = AsyncNotifierProviderFamily<
-    AsyncSpaceActivitiesNotifier, List<String>, String>(
-  () => AsyncSpaceActivitiesNotifier(),
-);
+  AsyncSpaceActivitiesNotifier,
+  List<String>,
+  String
+>(() => AsyncSpaceActivitiesNotifier());
 
 final activityProvider =
     AsyncNotifierProviderFamily<AsyncActivityNotifier, Activity?, String>(
-  () => AsyncActivityNotifier(),
-);
-
-final spaceActivitiesProvider = FutureProvider.family<List<Activity>, String>(
-  (ref, spaceId) async {
-    final spaceActivities =
-        await ref.watch(_spaceActivitiesProvider(spaceId).future);
-    final activities = await Future.wait(
-      spaceActivities.map(
-        (activityId) async =>
-            await ref.watch(activityProvider(activityId).future),
-      ),
+      () => AsyncActivityNotifier(),
     );
-    //Remove null activities
-    final acitivitiesList = activities.whereType<Activity>().toList();
 
-    // Filter by supported activity types
-    acitivitiesList.removeWhere((activity) {
-      final activityType = PushStyles.values.asNameMap()[activity.typeStr()];
-      return !supportedActivityTypes.contains(activityType);
-    });
+final spaceActivitiesProvider = FutureProvider.family<List<Activity>, String>((
+  ref,
+  spaceId,
+) async {
+  final spaceActivities = await ref.watch(
+    _spaceActivitiesProvider(spaceId).future,
+  );
+  final activities = await Future.wait(
+    spaceActivities.map(
+      (activityId) async =>
+          await ref.watch(activityProvider(activityId).future),
+    ),
+  );
+  //Remove null activities
+  final acitivitiesList = activities.whereType<Activity>().toList();
 
-    //Sort by originServerTs
-    acitivitiesList
-        .sort((a, b) => b.originServerTs().compareTo(a.originServerTs()));
-    return acitivitiesList;
-  },
-);
+  // Filter by supported activity types
+  acitivitiesList.removeWhere((activity) {
+    final activityType = PushStyles.values.asNameMap()[activity.typeStr()];
+    return !supportedActivityTypes.contains(activityType);
+  });
 
-final allActivitiesProvider = FutureProvider<List<Activity>>(
-  (ref) async {
-    final allSpacesList = ref.watch(spacesProvider);
-    final activities = await Future.wait(
-      allSpacesList.map(
-        (space) async => await ref
-            .watch(spaceActivitiesProvider(space.getRoomIdStr()).future),
-      ),
+  //Sort by originServerTs
+  acitivitiesList.sort(
+    (a, b) => b.originServerTs().compareTo(a.originServerTs()),
+  );
+  return acitivitiesList;
+});
+
+final allActivitiesProvider = FutureProvider<List<Activity>>((ref) async {
+  final allSpacesList = ref.watch(spacesProvider);
+  final activities = await Future.wait(
+    allSpacesList.map(
+      (space) async =>
+          await ref.watch(spaceActivitiesProvider(space.getRoomIdStr()).future),
+    ),
+  );
+  return activities.expand((x) => x).toList();
+});
+
+final activityDatesProvider = FutureProvider<List<DateTime>>((ref) async {
+  final activities = await ref.watch(allActivitiesProvider.future);
+
+  final uniqueDates = <DateTime>{};
+
+  for (final activity in activities) {
+    final activityDate =
+        DateTime.fromMillisecondsSinceEpoch(
+          activity.originServerTs(),
+        ).toLocal();
+    // Set time to midnight for consistent date comparison
+    uniqueDates.add(
+      DateTime(activityDate.year, activityDate.month, activityDate.day),
     );
-    return activities.expand((x) => x).toList();
-  },
-);
+  }
 
-final activityDatesProvider = FutureProvider<List<DateTime>>(
-  (ref) async {
-    final activities = await ref.watch(allActivitiesProvider.future);
+  return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
+});
 
-    final uniqueDates = <DateTime>{};
+final roomIdsByDateProvider = FutureProvider.family<List<String>, DateTime>((
+  ref,
+  date,
+) async {
+  final activities = await ref.watch(allActivitiesProvider.future);
 
-    for (final activity in activities) {
-      final activityDate =
-          DateTime.fromMillisecondsSinceEpoch(activity.originServerTs())
-              .toLocal();
-      // Set time to midnight for consistent date comparison
-      uniqueDates.add(
-        DateTime(activityDate.year, activityDate.month, activityDate.day),
-      );
+  final roomIds = <String>{};
+
+  for (final activity in activities) {
+    final activityDate =
+        DateTime.fromMillisecondsSinceEpoch(
+          activity.originServerTs(),
+        ).toLocal();
+    final activityDateOnly = DateTime(
+      activityDate.year,
+      activityDate.month,
+      activityDate.day,
+    );
+
+    if (activityDateOnly.isAtSameMomentAs(date)) {
+      roomIds.add(activity.roomIdStr());
     }
+  }
 
-    return uniqueDates.toList()..sort((a, b) => b.compareTo(a));
-  },
-);
-
-final roomIdsByDateProvider = FutureProvider.family<List<String>, DateTime>(
-  (ref, date) async {
-    final activities = await ref.watch(allActivitiesProvider.future);
-
-    final roomIds = <String>{};
-
-    for (final activity in activities) {
-      final activityDate =
-          DateTime.fromMillisecondsSinceEpoch(activity.originServerTs())
-              .toLocal();
-      final activityDateOnly =
-          DateTime(activityDate.year, activityDate.month, activityDate.day);
-
-      if (activityDateOnly.isAtSameMomentAs(date)) {
-        roomIds.add(activity.roomIdStr());
-      }
-    }
-
-    return roomIds.toList();
-  },
-);
+  return roomIds.toList();
+});
 
 final spaceActivitiesProviderByDate =
-    FutureProvider.family<List<Activity>, ({String roomId, DateTime date})>(
-  (ref, params) async {
-    final activities =
-        await ref.watch(spaceActivitiesProvider(params.roomId).future);
+    FutureProvider.family<List<Activity>, ({String roomId, DateTime date})>((
+      ref,
+      params,
+    ) async {
+      final activities = await ref.watch(
+        spaceActivitiesProvider(params.roomId).future,
+      );
 
-    return activities.where((activity) {
-      // First check if activity matches the date
-      final activityDate =
-          DateTime.fromMillisecondsSinceEpoch(activity.originServerTs())
-              .toLocal();
-      final activityDateOnly =
-          DateTime(activityDate.year, activityDate.month, activityDate.day);
+      return activities.where((activity) {
+        // First check if activity matches the date
+        final activityDate =
+            DateTime.fromMillisecondsSinceEpoch(
+              activity.originServerTs(),
+            ).toLocal();
+        final activityDateOnly = DateTime(
+          activityDate.year,
+          activityDate.month,
+          activityDate.day,
+        );
 
-      return activityDateOnly.isAtSameMomentAs(params.date);
-    }).toList();
-  },
-);
+        return activityDateOnly.isAtSameMomentAs(params.date);
+      }).toList();
+    });

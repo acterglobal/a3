@@ -12,7 +12,8 @@ part of 'media_chat_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$MediaChatLoadingState {
@@ -22,16 +23,14 @@ mixin _$MediaChatLoadingState {
     required TResult Function() loading,
     required TResult Function() loaded,
     required TResult Function(String? error) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? notYetStarted,
     TResult? Function()? loading,
     TResult? Function()? loaded,
     TResult? Function(String? error)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? notYetStarted,
@@ -39,25 +38,22 @@ mixin _$MediaChatLoadingState {
     TResult Function()? loaded,
     TResult Function(String? error)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_MediaChatLoadingStateNotYetStarted value)
-        notYetStarted,
+    notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
     TResult? Function(_MediaChatLoadingStateLoading value)? loading,
     TResult? Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult? Function(_MediaChatLoadingStateError value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_MediaChatLoadingStateNotYetStarted value)? notYetStarted,
@@ -65,20 +61,22 @@ mixin _$MediaChatLoadingState {
     TResult Function(_MediaChatLoadingStateLoaded value)? loaded,
     TResult Function(_MediaChatLoadingStateError value)? error,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $MediaChatLoadingStateCopyWith<$Res> {
-  factory $MediaChatLoadingStateCopyWith(MediaChatLoadingState value,
-          $Res Function(MediaChatLoadingState) then) =
-      _$MediaChatLoadingStateCopyWithImpl<$Res, MediaChatLoadingState>;
+  factory $MediaChatLoadingStateCopyWith(
+    MediaChatLoadingState value,
+    $Res Function(MediaChatLoadingState) then,
+  ) = _$MediaChatLoadingStateCopyWithImpl<$Res, MediaChatLoadingState>;
 }
 
 /// @nodoc
-class _$MediaChatLoadingStateCopyWithImpl<$Res,
-        $Val extends MediaChatLoadingState>
+class _$MediaChatLoadingStateCopyWithImpl<
+  $Res,
+  $Val extends MediaChatLoadingState
+>
     implements $MediaChatLoadingStateCopyWith<$Res> {
   _$MediaChatLoadingStateCopyWithImpl(this._value, this._then);
 
@@ -94,20 +92,23 @@ class _$MediaChatLoadingStateCopyWithImpl<$Res,
 /// @nodoc
 abstract class _$$MediaChatLoadingStateNotYetStartedImplCopyWith<$Res> {
   factory _$$MediaChatLoadingStateNotYetStartedImplCopyWith(
-          _$MediaChatLoadingStateNotYetStartedImpl value,
-          $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) then) =
-      __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl<$Res>;
+    _$MediaChatLoadingStateNotYetStartedImpl value,
+    $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) then,
+  ) = __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl<$Res>
-    extends _$MediaChatLoadingStateCopyWithImpl<$Res,
-        _$MediaChatLoadingStateNotYetStartedImpl>
+    extends
+        _$MediaChatLoadingStateCopyWithImpl<
+          $Res,
+          _$MediaChatLoadingStateNotYetStartedImpl
+        >
     implements _$$MediaChatLoadingStateNotYetStartedImplCopyWith<$Res> {
   __$$MediaChatLoadingStateNotYetStartedImplCopyWithImpl(
-      _$MediaChatLoadingStateNotYetStartedImpl _value,
-      $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) _then)
-      : super(_value, _then);
+    _$MediaChatLoadingStateNotYetStartedImpl _value,
+    $Res Function(_$MediaChatLoadingStateNotYetStartedImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of MediaChatLoadingState
   /// with the given fields replaced by the non-null parameter values.
@@ -175,7 +176,7 @@ class _$MediaChatLoadingStateNotYetStartedImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_MediaChatLoadingStateNotYetStarted value)
-        notYetStarted,
+    notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -219,20 +220,23 @@ abstract class _MediaChatLoadingStateNotYetStarted
 /// @nodoc
 abstract class _$$MediaChatLoadingStateLoadingImplCopyWith<$Res> {
   factory _$$MediaChatLoadingStateLoadingImplCopyWith(
-          _$MediaChatLoadingStateLoadingImpl value,
-          $Res Function(_$MediaChatLoadingStateLoadingImpl) then) =
-      __$$MediaChatLoadingStateLoadingImplCopyWithImpl<$Res>;
+    _$MediaChatLoadingStateLoadingImpl value,
+    $Res Function(_$MediaChatLoadingStateLoadingImpl) then,
+  ) = __$$MediaChatLoadingStateLoadingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$MediaChatLoadingStateLoadingImplCopyWithImpl<$Res>
-    extends _$MediaChatLoadingStateCopyWithImpl<$Res,
-        _$MediaChatLoadingStateLoadingImpl>
+    extends
+        _$MediaChatLoadingStateCopyWithImpl<
+          $Res,
+          _$MediaChatLoadingStateLoadingImpl
+        >
     implements _$$MediaChatLoadingStateLoadingImplCopyWith<$Res> {
   __$$MediaChatLoadingStateLoadingImplCopyWithImpl(
-      _$MediaChatLoadingStateLoadingImpl _value,
-      $Res Function(_$MediaChatLoadingStateLoadingImpl) _then)
-      : super(_value, _then);
+    _$MediaChatLoadingStateLoadingImpl _value,
+    $Res Function(_$MediaChatLoadingStateLoadingImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of MediaChatLoadingState
   /// with the given fields replaced by the non-null parameter values.
@@ -300,7 +304,7 @@ class _$MediaChatLoadingStateLoadingImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_MediaChatLoadingStateNotYetStarted value)
-        notYetStarted,
+    notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -343,20 +347,23 @@ abstract class _MediaChatLoadingStateLoading implements MediaChatLoadingState {
 /// @nodoc
 abstract class _$$MediaChatLoadingStateLoadedImplCopyWith<$Res> {
   factory _$$MediaChatLoadingStateLoadedImplCopyWith(
-          _$MediaChatLoadingStateLoadedImpl value,
-          $Res Function(_$MediaChatLoadingStateLoadedImpl) then) =
-      __$$MediaChatLoadingStateLoadedImplCopyWithImpl<$Res>;
+    _$MediaChatLoadingStateLoadedImpl value,
+    $Res Function(_$MediaChatLoadingStateLoadedImpl) then,
+  ) = __$$MediaChatLoadingStateLoadedImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
 class __$$MediaChatLoadingStateLoadedImplCopyWithImpl<$Res>
-    extends _$MediaChatLoadingStateCopyWithImpl<$Res,
-        _$MediaChatLoadingStateLoadedImpl>
+    extends
+        _$MediaChatLoadingStateCopyWithImpl<
+          $Res,
+          _$MediaChatLoadingStateLoadedImpl
+        >
     implements _$$MediaChatLoadingStateLoadedImplCopyWith<$Res> {
   __$$MediaChatLoadingStateLoadedImplCopyWithImpl(
-      _$MediaChatLoadingStateLoadedImpl _value,
-      $Res Function(_$MediaChatLoadingStateLoadedImpl) _then)
-      : super(_value, _then);
+    _$MediaChatLoadingStateLoadedImpl _value,
+    $Res Function(_$MediaChatLoadingStateLoadedImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of MediaChatLoadingState
   /// with the given fields replaced by the non-null parameter values.
@@ -424,7 +431,7 @@ class _$MediaChatLoadingStateLoadedImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_MediaChatLoadingStateNotYetStarted value)
-        notYetStarted,
+    notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -467,36 +474,39 @@ abstract class _MediaChatLoadingStateLoaded implements MediaChatLoadingState {
 /// @nodoc
 abstract class _$$MediaChatLoadingStateErrorImplCopyWith<$Res> {
   factory _$$MediaChatLoadingStateErrorImplCopyWith(
-          _$MediaChatLoadingStateErrorImpl value,
-          $Res Function(_$MediaChatLoadingStateErrorImpl) then) =
-      __$$MediaChatLoadingStateErrorImplCopyWithImpl<$Res>;
+    _$MediaChatLoadingStateErrorImpl value,
+    $Res Function(_$MediaChatLoadingStateErrorImpl) then,
+  ) = __$$MediaChatLoadingStateErrorImplCopyWithImpl<$Res>;
   @useResult
   $Res call({String? error});
 }
 
 /// @nodoc
 class __$$MediaChatLoadingStateErrorImplCopyWithImpl<$Res>
-    extends _$MediaChatLoadingStateCopyWithImpl<$Res,
-        _$MediaChatLoadingStateErrorImpl>
+    extends
+        _$MediaChatLoadingStateCopyWithImpl<
+          $Res,
+          _$MediaChatLoadingStateErrorImpl
+        >
     implements _$$MediaChatLoadingStateErrorImplCopyWith<$Res> {
   __$$MediaChatLoadingStateErrorImplCopyWithImpl(
-      _$MediaChatLoadingStateErrorImpl _value,
-      $Res Function(_$MediaChatLoadingStateErrorImpl) _then)
-      : super(_value, _then);
+    _$MediaChatLoadingStateErrorImpl _value,
+    $Res Function(_$MediaChatLoadingStateErrorImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of MediaChatLoadingState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? error = freezed,
-  }) {
-    return _then(_$MediaChatLoadingStateErrorImpl(
-      freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+  $Res call({Object? error = freezed}) {
+    return _then(
+      _$MediaChatLoadingStateErrorImpl(
+        freezed == error
+            ? _value.error
+            : error // ignore: cast_nullable_to_non_nullable
+                as String?,
+      ),
+    );
   }
 }
 
@@ -530,8 +540,9 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @override
   @pragma('vm:prefer-inline')
   _$$MediaChatLoadingStateErrorImplCopyWith<_$MediaChatLoadingStateErrorImpl>
-      get copyWith => __$$MediaChatLoadingStateErrorImplCopyWithImpl<
-          _$MediaChatLoadingStateErrorImpl>(this, _$identity);
+  get copyWith => __$$MediaChatLoadingStateErrorImplCopyWithImpl<
+    _$MediaChatLoadingStateErrorImpl
+  >(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -574,7 +585,7 @@ class _$MediaChatLoadingStateErrorImpl implements _MediaChatLoadingStateError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_MediaChatLoadingStateNotYetStarted value)
-        notYetStarted,
+    notYetStarted,
     required TResult Function(_MediaChatLoadingStateLoading value) loading,
     required TResult Function(_MediaChatLoadingStateLoaded value) loaded,
     required TResult Function(_MediaChatLoadingStateError value) error,
@@ -619,7 +630,7 @@ abstract class _MediaChatLoadingStateError implements MediaChatLoadingState {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$MediaChatLoadingStateErrorImplCopyWith<_$MediaChatLoadingStateErrorImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -640,14 +651,16 @@ mixin _$MediaChatState {
 /// @nodoc
 abstract class $MediaChatStateCopyWith<$Res> {
   factory $MediaChatStateCopyWith(
-          MediaChatState value, $Res Function(MediaChatState) then) =
-      _$MediaChatStateCopyWithImpl<$Res, MediaChatState>;
+    MediaChatState value,
+    $Res Function(MediaChatState) then,
+  ) = _$MediaChatStateCopyWithImpl<$Res, MediaChatState>;
   @useResult
-  $Res call(
-      {MediaChatLoadingState mediaChatLoadingState,
-      File? mediaFile,
-      File? videoThumbnailFile,
-      bool isDownloading});
+  $Res call({
+    MediaChatLoadingState mediaChatLoadingState,
+    File? mediaFile,
+    File? videoThumbnailFile,
+    bool isDownloading,
+  });
 
   $MediaChatLoadingStateCopyWith<$Res> get mediaChatLoadingState;
 }
@@ -672,24 +685,31 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
     Object? videoThumbnailFile = freezed,
     Object? isDownloading = null,
   }) {
-    return _then(_value.copyWith(
-      mediaChatLoadingState: null == mediaChatLoadingState
-          ? _value.mediaChatLoadingState
-          : mediaChatLoadingState // ignore: cast_nullable_to_non_nullable
-              as MediaChatLoadingState,
-      mediaFile: freezed == mediaFile
-          ? _value.mediaFile
-          : mediaFile // ignore: cast_nullable_to_non_nullable
-              as File?,
-      videoThumbnailFile: freezed == videoThumbnailFile
-          ? _value.videoThumbnailFile
-          : videoThumbnailFile // ignore: cast_nullable_to_non_nullable
-              as File?,
-      isDownloading: null == isDownloading
-          ? _value.isDownloading
-          : isDownloading // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            mediaChatLoadingState:
+                null == mediaChatLoadingState
+                    ? _value.mediaChatLoadingState
+                    : mediaChatLoadingState // ignore: cast_nullable_to_non_nullable
+                        as MediaChatLoadingState,
+            mediaFile:
+                freezed == mediaFile
+                    ? _value.mediaFile
+                    : mediaFile // ignore: cast_nullable_to_non_nullable
+                        as File?,
+            videoThumbnailFile:
+                freezed == videoThumbnailFile
+                    ? _value.videoThumbnailFile
+                    : videoThumbnailFile // ignore: cast_nullable_to_non_nullable
+                        as File?,
+            isDownloading:
+                null == isDownloading
+                    ? _value.isDownloading
+                    : isDownloading // ignore: cast_nullable_to_non_nullable
+                        as bool,
+          )
+          as $Val,
+    );
   }
 
   /// Create a copy of MediaChatState
@@ -697,8 +717,9 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
   @override
   @pragma('vm:prefer-inline')
   $MediaChatLoadingStateCopyWith<$Res> get mediaChatLoadingState {
-    return $MediaChatLoadingStateCopyWith<$Res>(_value.mediaChatLoadingState,
-        (value) {
+    return $MediaChatLoadingStateCopyWith<$Res>(_value.mediaChatLoadingState, (
+      value,
+    ) {
       return _then(_value.copyWith(mediaChatLoadingState: value) as $Val);
     });
   }
@@ -707,16 +728,18 @@ class _$MediaChatStateCopyWithImpl<$Res, $Val extends MediaChatState>
 /// @nodoc
 abstract class _$$MediaChatStateImplCopyWith<$Res>
     implements $MediaChatStateCopyWith<$Res> {
-  factory _$$MediaChatStateImplCopyWith(_$MediaChatStateImpl value,
-          $Res Function(_$MediaChatStateImpl) then) =
-      __$$MediaChatStateImplCopyWithImpl<$Res>;
+  factory _$$MediaChatStateImplCopyWith(
+    _$MediaChatStateImpl value,
+    $Res Function(_$MediaChatStateImpl) then,
+  ) = __$$MediaChatStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {MediaChatLoadingState mediaChatLoadingState,
-      File? mediaFile,
-      File? videoThumbnailFile,
-      bool isDownloading});
+  $Res call({
+    MediaChatLoadingState mediaChatLoadingState,
+    File? mediaFile,
+    File? videoThumbnailFile,
+    bool isDownloading,
+  });
 
   @override
   $MediaChatLoadingStateCopyWith<$Res> get mediaChatLoadingState;
@@ -727,8 +750,9 @@ class __$$MediaChatStateImplCopyWithImpl<$Res>
     extends _$MediaChatStateCopyWithImpl<$Res, _$MediaChatStateImpl>
     implements _$$MediaChatStateImplCopyWith<$Res> {
   __$$MediaChatStateImplCopyWithImpl(
-      _$MediaChatStateImpl _value, $Res Function(_$MediaChatStateImpl) _then)
-      : super(_value, _then);
+    _$MediaChatStateImpl _value,
+    $Res Function(_$MediaChatStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of MediaChatState
   /// with the given fields replaced by the non-null parameter values.
@@ -740,35 +764,42 @@ class __$$MediaChatStateImplCopyWithImpl<$Res>
     Object? videoThumbnailFile = freezed,
     Object? isDownloading = null,
   }) {
-    return _then(_$MediaChatStateImpl(
-      mediaChatLoadingState: null == mediaChatLoadingState
-          ? _value.mediaChatLoadingState
-          : mediaChatLoadingState // ignore: cast_nullable_to_non_nullable
-              as MediaChatLoadingState,
-      mediaFile: freezed == mediaFile
-          ? _value.mediaFile
-          : mediaFile // ignore: cast_nullable_to_non_nullable
-              as File?,
-      videoThumbnailFile: freezed == videoThumbnailFile
-          ? _value.videoThumbnailFile
-          : videoThumbnailFile // ignore: cast_nullable_to_non_nullable
-              as File?,
-      isDownloading: null == isDownloading
-          ? _value.isDownloading
-          : isDownloading // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+    return _then(
+      _$MediaChatStateImpl(
+        mediaChatLoadingState:
+            null == mediaChatLoadingState
+                ? _value.mediaChatLoadingState
+                : mediaChatLoadingState // ignore: cast_nullable_to_non_nullable
+                    as MediaChatLoadingState,
+        mediaFile:
+            freezed == mediaFile
+                ? _value.mediaFile
+                : mediaFile // ignore: cast_nullable_to_non_nullable
+                    as File?,
+        videoThumbnailFile:
+            freezed == videoThumbnailFile
+                ? _value.videoThumbnailFile
+                : videoThumbnailFile // ignore: cast_nullable_to_non_nullable
+                    as File?,
+        isDownloading:
+            null == isDownloading
+                ? _value.isDownloading
+                : isDownloading // ignore: cast_nullable_to_non_nullable
+                    as bool,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$MediaChatStateImpl implements _MediaChatState {
-  const _$MediaChatStateImpl(
-      {this.mediaChatLoadingState = const MediaChatLoadingState.loading(),
-      this.mediaFile,
-      this.videoThumbnailFile,
-      this.isDownloading = false});
+  const _$MediaChatStateImpl({
+    this.mediaChatLoadingState = const MediaChatLoadingState.loading(),
+    this.mediaFile,
+    this.videoThumbnailFile,
+    this.isDownloading = false,
+  });
 
   @override
   @JsonKey()
@@ -802,8 +833,13 @@ class _$MediaChatStateImpl implements _MediaChatState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, mediaChatLoadingState, mediaFile,
-      videoThumbnailFile, isDownloading);
+  int get hashCode => Object.hash(
+    runtimeType,
+    mediaChatLoadingState,
+    mediaFile,
+    videoThumbnailFile,
+    isDownloading,
+  );
 
   /// Create a copy of MediaChatState
   /// with the given fields replaced by the non-null parameter values.
@@ -812,15 +848,18 @@ class _$MediaChatStateImpl implements _MediaChatState {
   @pragma('vm:prefer-inline')
   _$$MediaChatStateImplCopyWith<_$MediaChatStateImpl> get copyWith =>
       __$$MediaChatStateImplCopyWithImpl<_$MediaChatStateImpl>(
-          this, _$identity);
+        this,
+        _$identity,
+      );
 }
 
 abstract class _MediaChatState implements MediaChatState {
-  const factory _MediaChatState(
-      {final MediaChatLoadingState mediaChatLoadingState,
-      final File? mediaFile,
-      final File? videoThumbnailFile,
-      final bool isDownloading}) = _$MediaChatStateImpl;
+  const factory _MediaChatState({
+    final MediaChatLoadingState mediaChatLoadingState,
+    final File? mediaFile,
+    final File? videoThumbnailFile,
+    final bool isDownloading,
+  }) = _$MediaChatStateImpl;
 
   @override
   MediaChatLoadingState get mediaChatLoadingState;

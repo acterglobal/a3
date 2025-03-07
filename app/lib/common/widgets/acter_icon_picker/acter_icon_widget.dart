@@ -62,23 +62,26 @@ class _ActerIconWidgetState extends State<ActerIconWidget> {
           );
         },
       ),
-      child: widget.showEditIconIndicator
-          ? _buildEditIconUI(context)
-          : _buildIconUI(),
+      child:
+          widget.showEditIconIndicator
+              ? _buildEditIconUI(context)
+              : _buildIconUI(),
     );
   }
 
   Widget _buildIconUI() {
     return ValueListenableBuilder<Color>(
       valueListenable: color,
-      builder: (context, colorData, child) => ValueListenableBuilder<ActerIcon>(
-        valueListenable: icon,
-        builder: (context, acterIcon, child) => Icon(
-          acterIcon.data,
-          size: widget.iconSize ?? 70,
-          color: colorData,
-        ),
-      ),
+      builder:
+          (context, colorData, child) => ValueListenableBuilder<ActerIcon>(
+            valueListenable: icon,
+            builder:
+                (context, acterIcon, child) => Icon(
+                  acterIcon.data,
+                  size: widget.iconSize ?? 70,
+                  color: colorData,
+                ),
+          ),
     );
   }
 

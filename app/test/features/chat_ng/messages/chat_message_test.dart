@@ -55,8 +55,9 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          renderableChatMessagesProvider
-              .overrideWith((ref, roomId) => ['A1', 'A2', 'B1']),
+          renderableChatMessagesProvider.overrideWith(
+            (ref, roomId) => ['A1', 'A2', 'B1'],
+          ),
           chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
             final uniqueId = roomMsgId.uniqueId;
             return switch (uniqueId) {

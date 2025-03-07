@@ -10,10 +10,7 @@ import 'package:go_router/go_router.dart';
 class BottomNavigationWidget extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
-  const BottomNavigationWidget({
-    super.key,
-    required this.navigationShell,
-  });
+  const BottomNavigationWidget({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,19 +53,20 @@ class BottomNavigationWidget extends ConsumerWidget {
     return SizedBox(
       height: 50,
       child: Row(
-        children: bottomBarItems
-            .map(
-              (bottomBarNav) => Expanded(
-                child: Center(
-                  child: SizedBox(
-                    key: bottomBarNav.tutorialGlobalKey,
-                    height: 40,
-                    width: 40,
+        children:
+            bottomBarItems
+                .map(
+                  (bottomBarNav) => Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        key: bottomBarNav.tutorialGlobalKey,
+                        height: 40,
+                        width: 40,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            )
-            .toList(),
+                )
+                .toList(),
       ),
     );
   }

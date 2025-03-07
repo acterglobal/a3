@@ -53,9 +53,7 @@ class ActerChatTheme extends ChatTheme {
     super.messageInsetsVertical = 16,
     super.messageMaxWidth = 440,
     super.primaryColor = const Color(0xffFF8E00),
-    super.receivedEmojiMessageTextStyle = const TextStyle(
-      fontSize: 40,
-    ),
+    super.receivedEmojiMessageTextStyle = const TextStyle(fontSize: 40),
     super.receivedMessageBodyBoldTextStyle,
     super.receivedMessageBodyCodeTextStyle,
     super.receivedMessageBodyLinkTextStyle,
@@ -89,9 +87,7 @@ class ActerChatTheme extends ChatTheme {
     super.sendButtonIcon = const Icon(Atlas.paper_airplane),
     super.sendButtonMargin,
     super.sendingIcon,
-    super.sentEmojiMessageTextStyle = const TextStyle(
-      fontSize: 40,
-    ),
+    super.sentEmojiMessageTextStyle = const TextStyle(fontSize: 40),
     super.sentMessageBodyBoldTextStyle,
     super.sentMessageBodyCodeTextStyle,
     super.sentMessageBodyLinkTextStyle,

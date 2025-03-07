@@ -16,8 +16,9 @@ import '../../helpers/test_util.dart';
 
 void main() {
   group('Event List', () {
-    testWidgets('displays empty state when there are no events',
-        (tester) async {
+    testWidgets('displays empty state when there are no events', (
+      tester,
+    ) async {
       //Arrange:
       const emptyState = Text('empty state');
       final provider = FutureProvider<List<CalendarEvent>>((ref) async => []);
@@ -41,30 +42,30 @@ void main() {
     });
 
     testWidgets(
-        'displays error state when there is issue in loading event list',
-        (tester) async {
-      bool shouldFail = true;
+      'displays error state when there is issue in loading event list',
+      (tester) async {
+        bool shouldFail = true;
 
-      final provider = FutureProvider<List<CalendarEvent>>((ref) async {
-        if (shouldFail) {
-          shouldFail = false;
-          throw 'Some Error';
-        } else {
-          return [];
-        }
-      });
+        final provider = FutureProvider<List<CalendarEvent>>((ref) async {
+          if (shouldFail) {
+            shouldFail = false;
+            throw 'Some Error';
+          } else {
+            return [];
+          }
+        });
 
-      // Build the widget tree with the mocked provider
-      await tester.pumpProviderWidget(
-        child: EventListWidget(
-          listProvider: provider,
-        ),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
-    });
+        // Build the widget tree with the mocked provider
+        await tester.pumpProviderWidget(
+          child: EventListWidget(listProvider: provider),
+        );
+        await tester.ensureErrorPageWithRetryWorks();
+      },
+    );
 
-    testWidgets('displays list of event when data is available',
-        (tester) async {
+    testWidgets('displays list of event when data is available', (
+      tester,
+    ) async {
       // Arrange
 
       const eventFilter = EventFilters.upcoming;
@@ -77,11 +78,7 @@ void main() {
       final mockEvent3 = MockEvent(fakeEventTitle: 'Fake Event3');
 
       final finalListProvider = FutureProvider<List<CalendarEvent>>(
-        (ref) async => [
-          mockEvent1,
-          mockEvent2,
-          mockEvent3,
-        ],
+        (ref) async => [mockEvent1, mockEvent2, mockEvent3],
       );
 
       // Build the widget tree with the mocked provider
@@ -100,9 +97,7 @@ void main() {
           allUpcomingEventListProvider.overrideWith((ref, spaceId) => []),
           allPastEventListProvider.overrideWith((ref, spaceId) => []),
         ],
-        child: EventListWidget(
-          listProvider: finalListProvider,
-        ),
+        child: EventListWidget(listProvider: finalListProvider),
       );
       // Initial build
       await tester.pump();

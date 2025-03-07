@@ -31,37 +31,34 @@ class RoomVisibilityItem extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
+        side: BorderSide(color: Theme.of(context).colorScheme.onSurface),
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
         key: spaceVisibilityValue.map((val) => generateKey(val)),
         leading: Icon(iconData),
-        title: Text(
-          title,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(
           subtitle,
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        onTap: isShowRadio && onChanged != null
-            ? spaceVisibilityValue.map(
-                (val) => onChanged.map((cb) => () => cb(val)),
-              )
-            : null,
-        trailing: !isShowRadio
-            ? const Icon(Icons.keyboard_arrow_down_sharp)
-            : spaceVisibilityValue.map(
-                  (val) => Radio<RoomVisibility>(
-                    value: val,
-                    groupValue: selectedVisibilityValue,
-                    onChanged: onChanged.map((cb) => (value) => cb(value)),
-                  ),
-                ) ??
-                const Icon(Icons.keyboard_arrow_down_sharp),
+        onTap:
+            isShowRadio && onChanged != null
+                ? spaceVisibilityValue.map(
+                  (val) => onChanged.map((cb) => () => cb(val)),
+                )
+                : null,
+        trailing:
+            !isShowRadio
+                ? const Icon(Icons.keyboard_arrow_down_sharp)
+                : spaceVisibilityValue.map(
+                      (val) => Radio<RoomVisibility>(
+                        value: val,
+                        groupValue: selectedVisibilityValue,
+                        onChanged: onChanged.map((cb) => (value) => cb(value)),
+                      ),
+                    ) ??
+                    const Icon(Icons.keyboard_arrow_down_sharp),
       ),
     );
   }

@@ -55,7 +55,7 @@ class VideoMessageEvent extends ConsumerWidget {
           mediaChatStateProvider((
             messageId: messageId,
             roomId: roomId,
-          ),).notifier,
+          )).notifier,
         );
         await notifier.downloadMedia();
       },

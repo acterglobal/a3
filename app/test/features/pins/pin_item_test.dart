@@ -59,33 +59,37 @@ void main() {
     verify(() => mockOnTapPinItem.call('1234')).called(1);
   });
 
-  testWidgets('displays space name when isShowSpaceName is true',
-      (tester) async {
+  testWidgets('displays space name when isShowSpaceName is true', (
+    tester,
+  ) async {
     await createWidgetUnderTest(tester: tester, isShowSpaceName: true);
 
     expect(find.text('Space Name'), findsOneWidget);
   });
 
-  testWidgets('Do not displays space name when isShowSpaceName is false',
-      (tester) async {
+  testWidgets('Do not displays space name when isShowSpaceName is false', (
+    tester,
+  ) async {
     await createWidgetUnderTest(tester: tester, isShowSpaceName: false);
 
     expect(find.text('Space Name'), findsNothing);
   });
 
-  testWidgets('displays pin indication when isPinIndication is true',
-          (tester) async {
-        await createWidgetUnderTest(tester: tester, isPinIndication: true);
+  testWidgets('displays pin indication when isPinIndication is true', (
+    tester,
+  ) async {
+    await createWidgetUnderTest(tester: tester, isPinIndication: true);
 
-        expect(find.text('Pin'), findsOneWidget);
-        expect(find.byIcon(Atlas.pin), findsOneWidget);
-      });
+    expect(find.text('Pin'), findsOneWidget);
+    expect(find.byIcon(Atlas.pin), findsOneWidget);
+  });
 
-  testWidgets('displays pin indication when isPinIndication is true',
-          (tester) async {
-        await createWidgetUnderTest(tester: tester, isPinIndication: false);
+  testWidgets('displays pin indication when isPinIndication is true', (
+    tester,
+  ) async {
+    await createWidgetUnderTest(tester: tester, isPinIndication: false);
 
-        expect(find.text('Pin'), findsNothing);
-        expect(find.byIcon(Atlas.pin), findsNothing);
-      });
+    expect(find.text('Pin'), findsNothing);
+    expect(find.byIcon(Atlas.pin), findsNothing);
+  });
 }

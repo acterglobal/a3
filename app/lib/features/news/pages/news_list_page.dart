@@ -75,7 +75,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
         currentIndex.value = itemIdx!;
         listener?.close();
         listener = null;
-      }, fireImmediately: true,);
+      }, fireImmediately: true);
     }
   }
 

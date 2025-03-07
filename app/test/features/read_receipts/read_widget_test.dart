@@ -13,8 +13,9 @@ void main() {
     testWidgets('Shows Count', (tester) async {
       await tester.pumpProviderWidget(
         overrides: [
-          readReceiptsManagerProvider
-              .overrideWith(() => MockAsyncReadReceiptsManagerNotifier()),
+          readReceiptsManagerProvider.overrideWith(
+            () => MockAsyncReadReceiptsManagerNotifier(),
+          ),
         ],
         child: ReadCounterWidget(
           manager: Future.value(MockReadReceiptsManager(count: 10)),
@@ -27,8 +28,9 @@ void main() {
     testWidgets('Make sure Count is independent', (tester) async {
       await tester.pumpProviderWidget(
         overrides: [
-          readReceiptsManagerProvider
-              .overrideWith(() => MockAsyncReadReceiptsManagerNotifier()),
+          readReceiptsManagerProvider.overrideWith(
+            () => MockAsyncReadReceiptsManagerNotifier(),
+          ),
         ],
         child: Column(
           children: [
@@ -72,8 +74,9 @@ void main() {
     when(manager.announceRead).thenAnswer((_) async => true);
     await tester.pumpProviderWidget(
       overrides: [
-        readReceiptsManagerProvider
-            .overrideWith(() => MockAsyncReadReceiptsManagerNotifier()),
+        readReceiptsManagerProvider.overrideWith(
+          () => MockAsyncReadReceiptsManagerNotifier(),
+        ),
       ],
       child: ReadCounterWidget(
         manager: Future.value(manager),
@@ -95,8 +98,9 @@ void main() {
     when(manager.announceRead).thenAnswer((_) async => true);
     await tester.pumpProviderWidget(
       overrides: [
-        readReceiptsManagerProvider
-            .overrideWith(() => MockAsyncReadReceiptsManagerNotifier()),
+        readReceiptsManagerProvider.overrideWith(
+          () => MockAsyncReadReceiptsManagerNotifier(),
+        ),
       ],
       child: ReadCounterWidget(
         manager: Future.value(manager),

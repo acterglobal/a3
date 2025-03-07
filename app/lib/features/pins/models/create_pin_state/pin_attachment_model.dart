@@ -24,13 +24,12 @@ class PinAttachment {
     String? fileExtension,
     String? path,
     String? size,
-  }) =>
-      PinAttachment(
-        attachmentType: attachmentType ?? this.attachmentType,
-        title: title ?? this.title,
-        link: link ?? this.link,
-        fileExtension: fileExtension ?? this.fileExtension,
-        path: path ?? this.path,
-        size: size ?? this.size,
-      );
+  }) => PinAttachment(
+    attachmentType: attachmentType ?? this.attachmentType,
+    title: title ?? this.title,
+    link: link ?? this.link,
+    fileExtension: fileExtension ?? this.fileExtension,
+    path: path ?? this.path,
+    size: size ?? this.size,
+  );
 }

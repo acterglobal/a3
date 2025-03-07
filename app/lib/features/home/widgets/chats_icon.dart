@@ -15,11 +15,7 @@ class ChatsIcon extends ConsumerWidget {
         ref.watch(hasUnreadChatsProvider).valueOrNull ?? UrgencyBadge.none;
     return BadgedIcon(
       urgency: urgency,
-      child: const Icon(
-        Atlas.chats_thin,
-        key: MainNavKeys.chats,
-        size: 18,
-      ),
+      child: const Icon(Atlas.chats_thin, key: MainNavKeys.chats, size: 18),
     );
   }
 }

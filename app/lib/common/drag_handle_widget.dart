@@ -4,11 +4,7 @@ class DragHandleWidget extends StatelessWidget {
   final double? width;
   final Color? color;
 
-  const DragHandleWidget({
-    super.key,
-    this.width,
-    this.color,
-  });
+  const DragHandleWidget({super.key, this.width, this.color});
 
   @override
   Widget build(BuildContext context) {

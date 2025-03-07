@@ -18,10 +18,7 @@ class BackupAndResetCommand extends Command {
       'Backup accounts and sessions and reset the state to fresh and clean';
 
   BackupAndResetCommand() {
-    argParser.addFlag(
-      'dry',
-      help: 'dry run, do not actually write stuff',
-    );
+    argParser.addFlag('dry', help: 'dry run, do not actually write stuff');
   }
 
   @override

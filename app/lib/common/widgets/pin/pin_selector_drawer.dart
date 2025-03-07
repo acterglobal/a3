@@ -12,10 +12,11 @@ Future<String?> selectPinDrawer({
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    builder: (context) => PinsListPage(
-      spaceId: spaceId,
-      onSelectPinItem: (pinId) => Navigator.pop(context, pinId),
-    ),
+    builder:
+        (context) => PinsListPage(
+          spaceId: spaceId,
+          onSelectPinItem: (pinId) => Navigator.pop(context, pinId),
+        ),
   );
   return pinId == '' ? null : pinId;
 }

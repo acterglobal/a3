@@ -47,11 +47,7 @@ class ChatEmojiPicker extends ConsumerWidget {
           selection.startIndex,
           selection.end.offset - selection.start.offset,
         );
-        transaction.insertText(
-          startNode,
-          selection.startIndex,
-          emoji.emoji,
-        );
+        transaction.insertText(startNode, selection.startIndex, emoji.emoji);
 
         transaction.afterSelection = Selection.collapsed(
           Position(
@@ -73,8 +69,8 @@ class ChatEmojiPicker extends ConsumerWidget {
       size: Size(screenSize.width, screenSize.height * 0.3),
       onEmojiSelected: handleEmojiSelected,
       onBackspacePressed: () => handleBackspacePressed(ref),
-      onClosePicker: () =>
-          ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
+      onClosePicker:
+          () => ref.read(chatInputProvider.notifier).emojiPickerVisible(false),
     );
   }
 }

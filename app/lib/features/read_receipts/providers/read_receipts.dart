@@ -8,14 +8,17 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::read_receipts::manager');
 
 final readReceiptsManagerProvider = AsyncNotifierProvider.autoDispose.family<
-    AsyncReadReceiptsManagerNotifier,
-    ReadReceiptsManager,
-    Future<ReadReceiptsManager>>(
-  () => AsyncReadReceiptsManagerNotifier(),
-);
+  AsyncReadReceiptsManagerNotifier,
+  ReadReceiptsManager,
+  Future<ReadReceiptsManager>
+>(() => AsyncReadReceiptsManagerNotifier());
 
-class AsyncReadReceiptsManagerNotifier extends AutoDisposeFamilyAsyncNotifier<
-    ReadReceiptsManager, Future<ReadReceiptsManager>> {
+class AsyncReadReceiptsManagerNotifier
+    extends
+        AutoDisposeFamilyAsyncNotifier<
+          ReadReceiptsManager,
+          Future<ReadReceiptsManager>
+        > {
   late Stream<bool> _listener;
   late StreamSubscription<void> _poller;
 

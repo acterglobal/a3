@@ -4,5 +4,5 @@ import 'package:riverpod/riverpod.dart';
 /// Provider of verification state
 final verificationStateProvider =
     NotifierProvider<VerificationNotifier, VerificationState>(
-  () => VerificationNotifier(),
-);
+      () => VerificationNotifier(),
+    );

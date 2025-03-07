@@ -31,8 +31,9 @@ class CategoryUtils {
     List<String> entries,
   ) {
     //CONVERT CATEGORY LIST TO LOCAL CATEGORY LIST
-    List<CategoryModelLocal> categoryListLocal =
-        convertToLocalCategoryList(categoryList);
+    List<CategoryModelLocal> categoryListLocal = convertToLocalCategoryList(
+      categoryList,
+    );
 
     //GET CATEGORIES ENTRIES
     List<String> categoriesEntriesList = [];

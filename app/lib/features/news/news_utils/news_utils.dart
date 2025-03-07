@@ -31,15 +31,15 @@ class NewsUtils {
         return destFile;
       }
 
-      final thumbnailGenerated =
-          await FcNativeVideoThumbnail().getVideoThumbnail(
-        srcFile: videoFile.path,
-        destFile: destPath,
-        width: 128,
-        height: 128,
-        format: 'jpeg',
-        quality: 90,
-      );
+      final thumbnailGenerated = await FcNativeVideoThumbnail()
+          .getVideoThumbnail(
+            srcFile: videoFile.path,
+            destFile: destPath,
+            width: 128,
+            height: 128,
+            format: 'jpeg',
+            quality: 90,
+          );
 
       if (thumbnailGenerated) {
         return destFile;
@@ -52,10 +52,7 @@ class NewsUtils {
   }
 
   //Add text slide
-  static void addTextSlide({
-    required WidgetRef ref,
-    RefDetails? refDetails,
-  }) {
+  static void addTextSlide({required WidgetRef ref, RefDetails? refDetails}) {
     final postColors = getRandomElement(postColorSchemes);
     UpdateSlideItem textSlide = UpdateSlideItem(
       type: UpdateSlideType.text,
@@ -74,9 +71,7 @@ class NewsUtils {
     RefDetails? refDetails,
   }) async {
     final postColors = getRandomElement(postColorSchemes);
-    XFile? imageFile = await imagePicker.pickImage(
-      source: ImageSource.gallery,
-    );
+    XFile? imageFile = await imagePicker.pickImage(source: ImageSource.gallery);
     if (imageFile != null) {
       final slide = UpdateSlideItem(
         type: UpdateSlideType.image,
@@ -96,9 +91,7 @@ class NewsUtils {
     RefDetails? refDetails,
   }) async {
     final postColors = getRandomElement(postColorSchemes);
-    XFile? videoFile = await imagePicker.pickVideo(
-      source: ImageSource.gallery,
-    );
+    XFile? videoFile = await imagePicker.pickVideo(source: ImageSource.gallery);
     if (videoFile != null) {
       final slide = UpdateSlideItem(
         type: UpdateSlideType.video,
@@ -134,14 +127,8 @@ class NewsUtils {
     );
   }
 
-  static Color getLinkColor(
-    BuildContext context,
-    UpdateSlide updateSlide,
-  ) {
+  static Color getLinkColor(BuildContext context, UpdateSlide updateSlide) {
     final color = updateSlide.colors();
-    return convertColor(
-      color?.link(),
-      Colors.lightBlueAccent,
-    );
+    return convertColor(color?.link(), Colors.lightBlueAccent);
   }
 }

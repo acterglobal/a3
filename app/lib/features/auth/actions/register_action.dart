@@ -23,12 +23,7 @@ Future<bool> register({
   required WidgetRef ref,
 }) async {
   final authNotifier = ref.read(authStateProvider.notifier);
-  final errorMsg = await authNotifier.register(
-    username,
-    password,
-    name,
-    token,
-  );
+  final errorMsg = await authNotifier.register(username, password, name, token);
   if (errorMsg != null) {
     _log.severe('Failed to register', errorMsg);
     throw errorMsg;

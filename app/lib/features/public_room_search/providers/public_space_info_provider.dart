@@ -8,14 +8,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final searchItemProfileData = FutureProvider.autoDispose
     .family<AvatarInfo, PublicSearchResultItem>((ref, publicSpace) async {
-  final sdk = await ref.read(sdkProvider.future);
-  final size = sdk.api.newThumbSize(48, 48);
-  final avatar = (await publicSpace.getAvatar(size)).data();
-  return AvatarInfo(
-    uniqueId: publicSpace.roomIdStr(),
-    displayName: publicSpace.name(),
-    avatar: avatar != null
-        ? MemoryImage(Uint8List.fromList(avatar.asTypedList()))
-        : null,
-  );
-});
+      final sdk = await ref.read(sdkProvider.future);
+      final size = sdk.api.newThumbSize(48, 48);
+      final avatar = (await publicSpace.getAvatar(size)).data();
+      return AvatarInfo(
+        uniqueId: publicSpace.roomIdStr(),
+        displayName: publicSpace.name(),
+        avatar:
+            avatar != null
+                ? MemoryImage(Uint8List.fromList(avatar.asTypedList()))
+                : null,
+      );
+    });

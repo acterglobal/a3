@@ -36,10 +36,7 @@ void messageActions({
     pageBuilder: (context, animation, secondaryAnimation) {
       return Stack(
         children: [
-          _BlurOverlay(
-            animation: animation,
-            child: const SizedBox.shrink(),
-          ),
+          _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
           Positioned(
             left: messagePosition.dx,
             top: 0,
@@ -87,10 +84,7 @@ class _BlurOverlay extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
 
-  const _BlurOverlay({
-    required this.animation,
-    required this.child,
-  });
+  const _BlurOverlay({required this.animation, required this.child});
 
   @override
   Widget build(BuildContext context) {

@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final backupStateProvider =
     NotifierProvider<RecoveryStateNotifier, RecoveryState>(() {
-  return RecoveryStateNotifier();
-});
+      return RecoveryStateNotifier();
+    });
 
 final backupAreEnabledProvider = FutureProvider((ref) async {
   return ref.watch(backupStateProvider) == RecoveryState.enabled;

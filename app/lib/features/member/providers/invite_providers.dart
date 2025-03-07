@@ -33,39 +33,32 @@ final searchResultProvider = FutureProvider<List<UserProfile>>((ref) async {
 });
 
 final suggestedUsersProvider =
-    FutureProvider.family<List<UserProfile>, String?>(
-  (ref, roomId) async {
-    final client = await ref.watch(alwaysClientProvider.future);
-    return (await client.suggestedUsers(roomId)).toList();
-  },
-);
+    FutureProvider.family<List<UserProfile>, String?>((ref, roomId) async {
+      final client = await ref.watch(alwaysClientProvider.future);
+      return (await client.suggestedUsers(roomId)).toList();
+    });
 
 final filteredSuggestedUsersProvider =
     FutureProvider.family<List<UserProfile>, String?>((ref, roomId) async {
-  final newSearchValue = ref.watch(userSearchValueProvider);
-  final suggestedUsers =
-      ref.watch(suggestedUsersProvider(roomId)).valueOrNull ?? [];
-  if (newSearchValue == null || newSearchValue.isEmpty) {
-    // no search value: shows all
-    return suggestedUsers;
-  }
-
-  final loweredSearchValue = newSearchValue.toLowerCase();
-
-  return suggestedUsers.where(
-    (profile) {
-      if (profile
-          .userId()
-          .toString()
-          .toLowerCase()
-          .contains(loweredSearchValue)) {
-        return true;
+      final newSearchValue = ref.watch(userSearchValueProvider);
+      final suggestedUsers =
+          ref.watch(suggestedUsersProvider(roomId)).valueOrNull ?? [];
+      if (newSearchValue == null || newSearchValue.isEmpty) {
+        // no search value: shows all
+        return suggestedUsers;
       }
-      return profile
-              .displayName()
-              ?.toLowerCase()
-              .contains(loweredSearchValue) ==
-          true;
-    },
-  ).toList();
-});
+
+      final loweredSearchValue = newSearchValue.toLowerCase();
+
+      return suggestedUsers.where((profile) {
+        if (profile.userId().toString().toLowerCase().contains(
+          loweredSearchValue,
+        )) {
+          return true;
+        }
+        return profile.displayName()?.toLowerCase().contains(
+              loweredSearchValue,
+            ) ==
+            true;
+      }).toList();
+    });

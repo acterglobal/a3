@@ -121,10 +121,9 @@ class PrefNotifier<T> extends Notifier<T> {
 NotifierProvider<PrefNotifier<T>, T> createPrefProvider<T>({
   required String prefKey,
   required T defaultValue,
-}) =>
-    NotifierProvider<PrefNotifier<T>, T>(
-      () => PrefNotifier<T>(prefKey, defaultValue),
-    );
+}) => NotifierProvider<PrefNotifier<T>, T>(
+  () => PrefNotifier<T>(prefKey, defaultValue),
+);
 
 /// The type parameter `T` is the type of value that will
 /// be persisted in [SharedPreferences].
@@ -193,10 +192,9 @@ class AsyncPrefNotifier<T> extends AsyncNotifier<T> {
 AsyncNotifierProvider<AsyncPrefNotifier<T>, T> createAsyncPrefProvider<T>({
   required String prefKey,
   required T defaultValue,
-}) =>
-    AsyncNotifierProvider<AsyncPrefNotifier<T>, T>(
-      () => AsyncPrefNotifier<T>(prefKey, defaultValue),
-    );
+}) => AsyncNotifierProvider<AsyncPrefNotifier<T>, T>(
+  () => AsyncPrefNotifier<T>(prefKey, defaultValue),
+);
 
 /// Converts the value of type parameter `T` to a String and persists
 /// it in SharedPreferences.
@@ -295,7 +293,6 @@ NotifierProvider<MapPrefNotifier<T>, T> createMapPrefProvider<T>({
   required String prefKey,
   required T Function(String?) mapFrom,
   required String Function(T) mapTo,
-}) =>
-    NotifierProvider<MapPrefNotifier<T>, T>(
-      () => MapPrefNotifier<T>(prefKey, mapFrom, mapTo),
-    );
+}) => NotifierProvider<MapPrefNotifier<T>, T>(
+  () => MapPrefNotifier<T>(prefKey, mapFrom, mapTo),
+);

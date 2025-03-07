@@ -10,7 +10,7 @@ class MyProfileSkeletonWidget extends StatelessWidget {
   }
 
   Widget _buildMyProfileSkeletonUI(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

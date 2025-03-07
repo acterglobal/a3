@@ -75,9 +75,10 @@ class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
                         decoration: BoxDecoration(
                           color: colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
-                          border: currentSlide == slidePost
-                              ? Border.all(color: colorScheme.textColor)
-                              : null,
+                          border:
+                              currentSlide == slidePost
+                                  ? Border.all(color: colorScheme.textColor)
+                                  : null,
                         ),
                         child: getIconAsPerSlideType(
                           slidePost.type,
@@ -124,11 +125,12 @@ class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
           topLeft: Radius.circular(20),
         ),
       ),
-      builder: (context) => PostAttachmentOptions(
-        onTapAddText: () => NewsUtils.addTextSlide(ref: ref),
-        onTapImage: () async => await NewsUtils.addImageSlide(ref: ref),
-        onTapVideo: () async => await NewsUtils.addVideoSlide(ref: ref),
-      ),
+      builder:
+          (context) => PostAttachmentOptions(
+            onTapAddText: () => NewsUtils.addTextSlide(ref: ref),
+            onTapImage: () async => await NewsUtils.addImageSlide(ref: ref),
+            onTapVideo: () async => await NewsUtils.addVideoSlide(ref: ref),
+          ),
     );
   }
 
@@ -139,42 +141,36 @@ class _UpdateSlideOptionsState extends ConsumerState<UpdateSlideOptions> {
     return switch (slidePostType) {
       UpdateSlideType.text => const Icon(Atlas.size_text),
       UpdateSlideType.image => ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Image(
-            image: XFileImage(mediaFile.expect('image slide needs media file')),
-            fit: BoxFit.cover,
-          ),
+        borderRadius: BorderRadius.circular(5),
+        child: Image(
+          image: XFileImage(mediaFile.expect('image slide needs media file')),
+          fit: BoxFit.cover,
         ),
+      ),
       UpdateSlideType.video => Stack(
-          fit: StackFit.expand,
-          children: [
-            FutureBuilder(
-              future: NewsUtils.getThumbnailData(
-                mediaFile.expect('video slide needs media file'),
-              ),
-              builder: (context, snapshot) {
-                final data = snapshot.data;
-                if (data != null) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.file(
-                      data,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+        fit: StackFit.expand,
+        children: [
+          FutureBuilder(
+            future: NewsUtils.getThumbnailData(
+              mediaFile.expect('video slide needs media file'),
             ),
-            Container(
-              color: Colors.black38,
-              child: const Icon(
-                Icons.play_arrow_outlined,
-                size: 32,
-              ),
-            ),
-          ],
-        ),
+            builder: (context, snapshot) {
+              final data = snapshot.data;
+              if (data != null) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.file(data, fit: BoxFit.cover),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          Container(
+            color: Colors.black38,
+            child: const Icon(Icons.play_arrow_outlined, size: 32),
+          ),
+        ],
+      ),
     };
   }
 }

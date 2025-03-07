@@ -5,14 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Autocomplete with trigger `@`', () {
     final trigger = AutocompleteTrigger(
-        trigger: '@',
-        optionsViewBuilder: (
-          context,
-          autocompleteQuery,
-          textEditingController,
-        ) {
-          return const SizedBox.shrink();
-        },);
+      trigger: '@',
+      optionsViewBuilder: (
+        context,
+        autocompleteQuery,
+        textEditingController,
+      ) {
+        return const SizedBox.shrink();
+      },
+    );
 
     test('should return null if `@` is not found', () {
       const text = 'Hello There';

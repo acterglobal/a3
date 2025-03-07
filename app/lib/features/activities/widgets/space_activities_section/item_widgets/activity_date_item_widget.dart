@@ -24,8 +24,9 @@ class ActivityDateItemWidget extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(vertical: 16),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
           decoration: BoxDecoration(
-            border:
-                Border.all(color: colorScheme.outline.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: colorScheme.outline.withValues(alpha: 0.3),
+            ),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
@@ -37,8 +38,9 @@ class ActivityDateItemWidget extends ConsumerWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: roomIds.length,
-          itemBuilder: (context, index) =>
-              SpaceActivitiesItemWidget(date: date, roomId: roomIds[index]),
+          itemBuilder:
+              (context, index) =>
+                  SpaceActivitiesItemWidget(date: date, roomId: roomIds[index]),
         ),
       ],
     );
