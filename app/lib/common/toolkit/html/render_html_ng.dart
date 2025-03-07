@@ -35,38 +35,51 @@ class RenderHtmlNg extends ConsumerWidget {
       text,
       onTapUrl: (url) => openLink(ref, url, context),
       textStyle: defaultTextStyle,
-      customWidgetBuilder: (dom.Element element) {
-        if (element.localName?.toLowerCase() == 'a') {
-          final href = element.attributes['href'];
-          if (href == null) {
-            return null;
-          }
-          final uri = Uri.tryParse(href);
-          if (uri == null) {
-            return null;
-          }
-          try {
-            final parsed = parseActerUri(uri);
-            if (parsed.titleMatches(element.text)) {
-              return _buildPill(parsed);
-            } else {
-              return null;
-            }
-          } on SchemeNotSupported {
-            return null;
-          } on IncorrectHashError {
-            return null;
-          } on MissingUserError {
-            return null;
-          } on ObjectNotSupported {
-            return null;
-          } on ParsingFailed {
-            return null;
-          }
-        }
-        return null;
-      },
+      customWidgetBuilder:
+          (dom.Element element) => customWidgetBuilder(context, ref, element),
     );
+  }
+
+  Widget? customWidgetBuilder(
+    BuildContext context,
+    WidgetRef ref,
+    dom.Element element,
+  ) => switch (element.localName?.toLowerCase()) {
+    'a' => _handleLink(context, ref, element),
+    _ => null,
+  };
+
+  Widget? _handleLink(
+    BuildContext context,
+    WidgetRef ref,
+    dom.Element element,
+  ) {
+    final href = element.attributes['href'];
+    if (href == null) {
+      return null;
+    }
+    final uri = Uri.tryParse(href);
+    if (uri == null) {
+      return null;
+    }
+    try {
+      final parsed = parseActerUri(uri);
+      if (parsed.titleMatches(element.text)) {
+        return _buildPill(parsed);
+      } else {
+        // if the link title has been changed
+        // we should show the original link
+        return null;
+      }
+    } on (
+      SchemeNotSupported,
+      IncorrectHashError,
+      MissingUserError,
+      ObjectNotSupported,
+      ParsingFailed,
+    ) {
+      return null;
+    }
   }
 
   Widget? _buildPill(UriParseResult parsed) => switch (parsed.type) {
