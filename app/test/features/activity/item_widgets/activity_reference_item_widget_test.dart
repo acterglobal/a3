@@ -75,4 +75,136 @@ void main() {
     // Verify reference object title
     expect(find.text('Team Meeting'), findsOneWidget);
   });
+
+  testWidgets('Add reference on Event Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+      mockObject: MockActivityObject(
+        mockType: 'event',
+        mockEmoji: '🗓️',
+        mockTitle: 'Team Meeting',
+      ),
+      mockRefDetails: MockRefDetails(
+        mockTitle: 'Project Planning',
+        mockType: 'pin',
+        mockTargetId: 'pin-id',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Wait for the widget to be fully built
+    await tester.pump();
+
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.link), findsOneWidget);
+
+    // Verify action title
+    expect(find.text('Added references on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.calendar), findsAtLeast(1));
+
+    // Verify object title
+    expect(find.text('Team Meeting'), findsOneWidget);
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsAtLeast(1));
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+
+    // Verify reference object icon
+    expect(find.byIcon(PhosphorIconsRegular.pushPin), findsOneWidget);
+
+    // Verify reference object title
+    expect(find.text('Project Planning'), findsOneWidget);
+  });
+
+  testWidgets('Add reference on Task-list Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+      mockObject: MockActivityObject(
+        mockType: 'task-list',
+        mockEmoji: '📋',
+        mockTitle: 'Project Tasks',
+      ),
+      mockRefDetails: MockRefDetails(
+        mockTitle: 'Team Meeting',
+        mockType: 'calendar-event',
+        mockTargetId: 'event-id',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Wait for the widget to be fully built
+    await tester.pump();
+
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.link), findsOneWidget);
+
+    // Verify action title
+    expect(find.text('Added references on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.listChecks), findsAtLeast(1));
+
+    // Verify object title
+    expect(find.text('Project Tasks'), findsOneWidget);
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsAtLeast(1));
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+
+    // Verify reference object icon
+    expect(find.byIcon(PhosphorIconsRegular.calendar), findsOneWidget);
+
+    // Verify reference object title
+    expect(find.text('Team Meeting'), findsOneWidget);
+  });
+
+  testWidgets('Add reference on TaskItem Object', (tester) async {
+    MockActivity mockActivity = MockActivity(
+      mockType: PushStyles.references.name,
+      mockObject: MockActivityObject(
+        mockType: 'task',
+        mockEmoji: '☑️',
+        mockTitle: 'Complete Documentation',
+      ),
+      mockRefDetails: MockRefDetails(
+        mockTitle: 'Team Meeting',
+        mockType: 'calendar-event',
+        mockTargetId: 'event-id',
+      ),
+    );
+    await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
+
+    // Wait for the widget to be fully built
+    await tester.pump();
+
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.link), findsOneWidget);
+
+    // Verify action title
+    expect(find.text('Added references on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsAtLeast(1));
+
+    // Verify object title
+    expect(find.text('Complete Documentation'), findsOneWidget);
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsNothing);
+
+    // Verify user info
+    expect(find.text('User-1'), findsOneWidget);
+
+    // Verify reference object icon
+    expect(find.byIcon(PhosphorIconsRegular.calendar), findsOneWidget);
+
+    // Verify reference object title
+    expect(find.text('Team Meeting'), findsOneWidget);
+  });
 }
