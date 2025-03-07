@@ -99,6 +99,7 @@ class TextMessageEvent extends StatelessWidget {
           text: body,
           defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
           maxLines: _type == TextMessageType.reply ? 3 : null,
+          roomId: roomId,
         ),
       );
     }

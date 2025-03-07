@@ -253,6 +253,7 @@ class _TaskListPageState extends ConsumerState<TaskListDetailPage> {
                 ? RenderHtml(
                   text: formattedBody,
                   defaultTextStyle: textTheme.labelLarge,
+                  roomId: taskListData.spaceIdStr(),
                 )
                 : Text(description.body(), style: textTheme.labelLarge),
       ),

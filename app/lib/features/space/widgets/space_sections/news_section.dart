@@ -96,10 +96,11 @@ class NewsSection extends ConsumerWidget {
       child: Container(
         height: 100,
         margin: const EdgeInsets.all(6),
-        child: UpdateSlideItem(
+        child: UpdateSlideItemWidget(
           slide: slide,
           showRichContent: false,
           errorState: NewsMediaErrorState.showErrorImageOnly,
+          roomId: updateEntry.roomId().toString(),
         ),
       ),
     );

@@ -73,9 +73,10 @@ class _NewsItemState extends ConsumerState<NewsItem> {
       preloadPagesCount: slides.length,
       onPageChanged: (page) => currentSlideIndex.value = page,
       itemBuilder:
-          (context, index) => UpdateSlideItem(
+          (context, index) => UpdateSlideItemWidget(
             slide: slides[index],
             errorState: NewsMediaErrorState.showErrorWithTryAgain,
+            roomId: widget.updateEntry.roomId().toString(),
           ),
     );
   }

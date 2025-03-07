@@ -65,7 +65,7 @@ class RenderHtml extends ConsumerWidget {
     this.maxLines,
     this.renderNewlines = false,
     this.pillBuilder,
-    this.roomId = '',
+    required this.roomId,
   });
 
   @override

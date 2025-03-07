@@ -352,6 +352,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                     ? RenderHtml(
                       text: htmlBody,
                       defaultTextStyle: textTheme.labelLarge,
+                      roomId: pin.roomIdStr(),
                     )
                     : Text(plainBody, style: textTheme.labelLarge),
           ),

@@ -272,6 +272,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                     ? RenderHtml(
                       text: formattedBody,
                       defaultTextStyle: textTheme.labelLarge,
+                      roomId: task.roomIdStr(),
                     )
                     : Text(description.body(), style: textTheme.labelLarge),
           ),

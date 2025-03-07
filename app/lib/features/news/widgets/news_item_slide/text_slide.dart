@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 
 class TextSlide extends StatelessWidget {
   final UpdateSlide slide;
+  final String roomId;
 
-  const TextSlide({super.key, required this.slide});
+  const TextSlide({super.key, required this.slide, required this.roomId});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +54,7 @@ class TextSlide extends StatelessWidget {
         text: formattedText,
         defaultTextStyle: defaultTextStyle,
         linkTextStyle: linkTextStyle,
+        roomId: roomId,
       ),
     );
   }
