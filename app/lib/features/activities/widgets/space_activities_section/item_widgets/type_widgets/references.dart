@@ -83,8 +83,15 @@ class RefObjectWidget extends ConsumerWidget {
   }
 
   Widget getRefIconWidget(BuildContext context, WidgetRef ref) {
+    final defaultIconWidget = Icon(
+      objectDefaultIcon,
+      size: 16,
+      color: Theme.of(context).textTheme.labelMedium?.color,
+    );
+
     final refObjectId = refDetails?.targetIdStr();
-    if (refObjectId == null) return const SizedBox.shrink();
+    if (refObjectId == null) return defaultIconWidget;
+
     switch (refDetails?.typeStr()) {
       case 'pin':
         final pin = ref.watch(pinProvider(refObjectId)).valueOrNull;
@@ -104,11 +111,7 @@ class RefObjectWidget extends ConsumerWidget {
           icon: ActerIcon.list,
         );
       default:
-        return Icon(
-          objectDefaultIcon,
-          size: 16,
-          color: Theme.of(context).textTheme.labelMedium?.color,
-        );
+        return defaultIconWidget;
     }
   }
 
