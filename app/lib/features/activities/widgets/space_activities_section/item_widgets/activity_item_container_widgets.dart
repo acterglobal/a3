@@ -104,7 +104,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
 
   IconData getActivityObjectIcon() {
     return switch (activityObject?.typeStr()) {
-      'news' => PhosphorIconsRegular.newspaper,
+      'news' => PhosphorIconsRegular.rocketLaunch,
       'story' => PhosphorIconsRegular.book,
       'event' => PhosphorIconsRegular.calendar,
       'pin' => PhosphorIconsRegular.pushPin,

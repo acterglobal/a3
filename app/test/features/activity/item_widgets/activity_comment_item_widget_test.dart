@@ -1,8 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../common/mock_data/mock_avatar_info.dart';
 import '../../../helpers/test_util.dart';
@@ -18,10 +20,8 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-          (ref, param) => MockAvatarInfo(
-            uniqueId: param.userId,
-            mockDisplayName: 'User-1',
-          ),
+          (ref, param) =>
+              MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
       child: Material(
@@ -39,21 +39,27 @@ void main() {
         bodyText: 'This is a comment on a pin object',
       ),
       mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.pin.name,
-        mockEmoji: SpaceObjectTypes.pin.emoji,
+        mockType: 'pin',
+        mockEmoji: '📌',
         mockTitle: 'Pin Name',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.chatCenteredDots), findsOneWidget);
+
     // Verify action title
-    expect(
-      find.text('${PushStyles.comment.emoji} Commented on'),
-      findsOneWidget,
-    );
+    expect(find.text('Commented on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.pushPin), findsAtLeast(1));
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsOneWidget);
 
     // Verify object info
-    expect(find.text('${SpaceObjectTypes.pin.emoji} Pin Name'), findsOneWidget);
+    expect(find.text('Pin Name'), findsOneWidget);
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
@@ -65,28 +71,29 @@ void main() {
   testWidgets('Comment on Event Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.comment.name,
-      mockMsgContent: MockMsgContent(
-        bodyText: 'This is a comment on an event',
-      ),
+      mockMsgContent: MockMsgContent(bodyText: 'This is a comment on an event'),
       mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.event.name,
-        mockEmoji: SpaceObjectTypes.event.emoji,
+        mockType: 'event',
+        mockEmoji: '🗓️',
         mockTitle: 'Team Meeting',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.chatCenteredDots), findsOneWidget);
+
     // Verify action title
-    expect(
-      find.text('${PushStyles.comment.emoji} Commented on'),
-      findsOneWidget,
-    );
+    expect(find.text('Commented on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.calendar), findsAtLeast(1));
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsNothing);
 
     // Verify object info
-    expect(
-      find.text('${SpaceObjectTypes.event.emoji} Team Meeting'),
-      findsOneWidget,
-    );
+    expect(find.text('Team Meeting'), findsOneWidget);
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
@@ -102,24 +109,27 @@ void main() {
         bodyText: 'This is a comment on a task list',
       ),
       mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.taskList.name,
-        mockEmoji: SpaceObjectTypes.taskList.emoji,
+        mockType: 'task-list',
+        mockEmoji: '📋',
         mockTitle: 'Project Tasks',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.chatCenteredDots), findsOneWidget);
+
     // Verify action title
-    expect(
-      find.text('${PushStyles.comment.emoji} Commented on'),
-      findsOneWidget,
-    );
+    expect(find.text('Commented on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.listChecks), findsAtLeast(1));
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsOneWidget);
 
     // Verify object info
-    expect(
-      find.text('${SpaceObjectTypes.taskList.emoji} Project Tasks'),
-      findsOneWidget,
-    );
+    expect(find.text('Project Tasks'), findsOneWidget);
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
@@ -131,28 +141,29 @@ void main() {
   testWidgets('Comment on TaskItem Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.comment.name,
-      mockMsgContent: MockMsgContent(
-        bodyText: 'This is a comment on a task',
-      ),
+      mockMsgContent: MockMsgContent(bodyText: 'This is a comment on a task'),
       mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.taskItem.name,
-        mockEmoji: SpaceObjectTypes.taskItem.emoji,
+        mockType: 'task',
+        mockEmoji: '☑️',
         mockTitle: 'Complete Documentation',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.chatCenteredDots), findsOneWidget);
+
     // Verify action title
-    expect(
-      find.text('${PushStyles.comment.emoji} Commented on'),
-      findsOneWidget,
-    );
+    expect(find.text('Commented on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.check), findsAtLeast(1));
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsNothing);
 
     // Verify object info
-    expect(
-      find.text('${SpaceObjectTypes.taskItem.emoji} Complete Documentation'),
-      findsOneWidget,
-    );
+    expect(find.text('Complete Documentation'), findsOneWidget);
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
@@ -168,24 +179,27 @@ void main() {
         bodyText: 'This is a comment on a news item',
       ),
       mockObject: MockActivityObject(
-        mockType: SpaceObjectTypes.news.name,
-        mockEmoji: SpaceObjectTypes.news.emoji,
+        mockType: 'news',
+        mockEmoji: '🚀',
         mockTitle: 'Product Launch',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
+    // Verify action icon
+    expect(find.byIcon(PhosphorIconsRegular.chatCenteredDots), findsOneWidget);
+
     // Verify action title
-    expect(
-      find.text('${PushStyles.comment.emoji} Commented on'),
-      findsOneWidget,
-    );
+    expect(find.text('Commented on'), findsOneWidget);
+
+    // Verify object icon
+    expect(find.byIcon(PhosphorIconsRegular.rocketLaunch), findsAtLeast(1));
+
+    // Verify Activity Object icon
+    expect(find.byType(ActerIconWidget), findsNothing);
 
     // Verify object info
-    expect(
-      find.text('${SpaceObjectTypes.news.emoji} Product Launch'),
-      findsOneWidget,
-    );
+    expect(find.text('Boost'), findsOneWidget);
 
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
