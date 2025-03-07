@@ -101,7 +101,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
       'event' => PhosphorIconsRegular.calendar,
       'pin' => PhosphorIconsRegular.pushPin,
       'task-list' => PhosphorIconsRegular.listChecks,
-      'task' => PhosphorIconsRegular.check,
+      'task' => PhosphorIconsRegular.checkCircle,
       _ => PhosphorIconsRegular.question,
     };
   }
