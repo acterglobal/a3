@@ -10,7 +10,6 @@ class ChatBubble extends StatelessWidget {
   final BoxDecoration decoration;
   final MainAxisAlignment bubbleAlignment;
   final bool isEdited;
-  final Widget? repliedToBuilder;
 
   // default private constructor
   const ChatBubble._inner({
@@ -20,16 +19,14 @@ class ChatBubble extends StatelessWidget {
     required this.decoration,
     this.isEdited = false,
     this.messageWidth,
-    this.repliedToBuilder,
   });
 
   // factory bubble constructor
   factory ChatBubble({
     required Widget child,
     required BuildContext context,
-    bool isNextMessageInGroup = false,
+    bool isLastMessageBySender = false,
     bool isEdited = false,
-    Widget? repliedToBuilder,
     int? messageWidth,
   }) {
     final theme = Theme.of(context);
@@ -40,13 +37,12 @@ class ChatBubble extends StatelessWidget {
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(isNextMessageInGroup ? 16 : 4),
+          bottomLeft: Radius.circular(isLastMessageBySender ? 4 : 16),
           bottomRight: Radius.circular(16),
         ),
       ),
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
-      repliedToBuilder: repliedToBuilder,
       child: child,
     );
   }
@@ -56,10 +52,9 @@ class ChatBubble extends StatelessWidget {
     Key? key,
     required BuildContext context,
     required Widget child,
-    bool isNextMessageInGroup = false,
+    bool isLastMessageBySender = false,
     bool isEdited = false,
     int? messageWidth,
-    Widget? repliedToBuilder,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
@@ -71,11 +66,10 @@ class ChatBubble extends StatelessWidget {
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
           bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(isNextMessageInGroup ? 16 : 4),
+          bottomRight: Radius.circular(isLastMessageBySender ? 16 : 4),
         ),
       ),
       bubbleAlignment: MainAxisAlignment.end,
-      repliedToBuilder: repliedToBuilder,
       isEdited: isEdited,
       child: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
@@ -110,10 +104,6 @@ class ChatBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (repliedToBuilder != null) ...[
-                    repliedToBuilder.expect('widget cannot be null'),
-                    const SizedBox(height: 10),
-                  ],
                   child,
                   if (isEdited) ...[
                     const SizedBox(width: 5),
