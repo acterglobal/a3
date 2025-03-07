@@ -48,10 +48,10 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   cached_network_image: ^3.4.1
   fc_native_video_thumbnail: ^0.17.2
-  flutter_matrix_html:
+  # flutter_matrix_html:
     # path: "../../flutter_matrix_html"
-    git:
-      url: https://github.com/acterglobal/flutter_matrix_html.git
+    # git:
+    #   url: https://github.com/acterglobal/flutter_matrix_html.git
   flutter_slidable: ^4.0.0
   quds_popup_menu: ^0.0.1+1
   acter_avatar:
@@ -62,6 +62,7 @@ dependencies:
 
   flutter_easyloading: ^3.0.5
   appflowy_editor: ^4.0.0
+  appflowy_editor_plugins: 
   acter_trigger_auto_complete:
     path: ../packages/acter_trigger_auto_complete
   acter_notifify:
@@ -110,7 +111,7 @@ dependencies:
   logging: ^1.2.0
   args: ^2.4.2
   breadcrumbs: ^0.1.0
-  device_info_plus: ^10.1.0
+  device_info_plus: ^11.1.0
   app_settings: ^5.1.1
   video_player_media_kit: ^1.0.5
   media_kit_libs_android_video: any
@@ -189,6 +190,18 @@ dev_dependencies:
   mocktail: ^1.0.4
 
 dependency_overrides:
+
+  appflowy_editor:
+    git:
+      url: https://github.com/AppFlowy-IO/appflowy-editor.git
+      ref: "e2c9713"
+      # ref: "e2c9713"
+
+  appflowy_editor_plugins:
+    git:
+      url: https://github.com/AppFlowy-IO/AppFlowy-plugins.git
+      path: "packages/appflowy_editor_plugins"
+      ref: "ca8289099e40e0d6ad0605fbbe01fde3091538bb"
 
   # msix: #^3.7.0
   #   # FIXME mainline `msix` comes with outdated VS redistribution libs

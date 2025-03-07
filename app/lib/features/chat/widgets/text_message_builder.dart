@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -10,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // removes all matrix custom links
@@ -137,21 +136,10 @@ class _TextWidget extends ConsumerWidget {
                     ),
                     maxLines: isReply ? 3 : null,
                   )
-                  : Html(
-                    onLinkTap: (url) => onMessageLinkTap(url, ref, context),
-                    backgroundColor: Colors.transparent,
-                    data: message.text,
+                  : RenderHtml(
+                    roomId: roomId,
+                    text: message.text,
                     renderNewlines: true,
-                    pillBuilder:
-                        ({
-                          required String identifier,
-                          required String url,
-                          OnPillTap? onTap,
-                        }) => ActerPillBuilder(
-                          identifier: identifier,
-                          uri: url,
-                          roomId: roomId,
-                        ),
                     shrinkToFit: true,
                     defaultTextStyle: textTheme.bodySmall?.copyWith(
                       overflow: isReply ? TextOverflow.ellipsis : null,

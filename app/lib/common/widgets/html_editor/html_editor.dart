@@ -8,8 +8,10 @@ import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart'
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor_plugins/appflowy_editor_plugins.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::html_editor');
@@ -27,27 +29,29 @@ AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
 );
 AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
     const AppFlowyEditorMarkdownCodec(
-  encodeParsers: [
-    TextNodeParser(),
-    BulletedListNodeParser(),
-    NumberedListNodeParser(),
-    TodoListNodeParser(),
-    QuoteNodeParser(),
-    CodeBlockNodeParser(),
-    HeadingNodeParser(),
-    ImageNodeParser(),
-    TableNodeParser(),
-  ],
-);
+      encodeParsers: [
+        TextNodeParser(),
+        BulletedListNodeParser(),
+        NumberedListNodeParser(),
+        TodoListNodeParser(),
+        QuoteNodeParser(),
+        CodeBlockNodeParser(),
+        HeadingNodeParser(),
+        ImageNodeParser(),
+        TableNodeParser(),
+      ],
+    );
 
 // contains final input string with mentions processed and mentions
 typedef MentionParsedText = (String, List<MentionAttributes>);
 
+final List<SelectionMenuItem> slashMenuItems = [
+  ...standardSelectionMenuItems,
+  codeBlockItem('Code Block'),
+];
+
 extension ActerEditorStateHelpers on EditorState {
-  MentionParsedText mentionsParsedText(
-    String plainText,
-    String? htmlText,
-  ) {
+  MentionParsedText mentionsParsedText(String plainText, String? htmlText) {
     List<MentionAttributes> mentionAttributes = [];
 
     // Get the base text
@@ -66,9 +70,10 @@ extension ActerEditorStateHelpers on EditorState {
             final mention = op.attributes!['@'] as MentionAttributes;
             final displayText =
                 mention.displayName ?? mention.mentionId.substring(1);
-            final replacement = htmlText != null
-                ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
-                : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
+            final replacement =
+                htmlText != null
+                    ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
+                    : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
             processedText = processedText.replaceFirst('‖', replacement);
             mentionAttributes.add(mention);
           }
@@ -79,22 +84,20 @@ extension ActerEditorStateHelpers on EditorState {
 
     // Remove only trailing <br> tag if it exists
     if (processedText.endsWith('<br>')) {
-      processedText =
-          processedText.substring(0, processedText.length - '<br>'.length);
+      processedText = processedText.substring(
+        0,
+        processedText.length - '<br>'.length,
+      );
     }
 
     return (processedText.trimRight(), mentionAttributes);
   }
 
-  String intoMarkdown({
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
+  String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
 
-  String intoHtml({
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
+  String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
     return (codec ?? defaultHtmlCodec).encode(document);
   }
 
@@ -127,10 +130,7 @@ extension ActerEditorStateHelpers on EditorState {
 }
 
 extension ActerDocumentHelpers on Document {
-  static Document? _fromHtml(
-    String content, {
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
+  static Document? _fromHtml(String content, {AppFlowyEditorHTMLCodec? codec}) {
     if (content.isEmpty) {
       return null;
     }
@@ -217,7 +217,7 @@ class HtmlEditorState extends State<HtmlEditor> {
   late EditorScrollController editorScrollController;
   final TextDirection _textDirection = TextDirection.ltr;
   // we store this to the stream stays alive
-  StreamSubscription<(TransactionTime, Transaction)>? _changeListener;
+  StreamSubscription<EditorTransactionValue>? _changeListener;
 
   @override
   void initState() {
@@ -281,17 +281,53 @@ class HtmlEditorState extends State<HtmlEditor> {
     return isDesktop ? desktopEditor(roomId) : mobileEditor(roomId);
   }
 
-  Map<String, BlockComponentBuilder> _buildBlockComponentBuilders() {
-    final map = {...standardBlockComponentBuilderMap};
-    map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
-      showPlaceholder: (editorState, node) => editorState.document.isEmpty,
-      configuration: BlockComponentConfiguration(
-        placeholderText: (node) => widget.hintText ?? ' ',
+  Map<String, BlockComponentBuilder> get blockComponentBuilders => {
+    ...standardBlockComponentBuilderMap,
+    ...{
+      ParagraphBlockKeys.type: ParagraphBlockComponentBuilder(
+        showPlaceholder: (editorState, node) => editorState.document.isEmpty,
+        configuration: BlockComponentConfiguration(
+          placeholderText: (node) => widget.hintText ?? ' ',
+        ),
       ),
-    );
+      CodeBlockKeys.type: CodeBlockComponentBuilder(
+        configuration: BlockComponentConfiguration(
+          padding: (node) => EdgeInsets.zero,
+        ),
+        styleBuilder:
+            () => CodeBlockStyle(
+              backgroundColor:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey[200]!
+                      : Colors.grey[800]!,
+              foregroundColor:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Colors.blue
+                      : Colors.blue[800]!,
+            ),
+        actions: CodeBlockActions(
+          onCopy: (code) => Clipboard.setData(ClipboardData(text: code)),
+        ),
+      ),
+    },
+  };
 
-    return map;
-  }
+  List<CharacterShortcutEvent> get characterShortcutEvents => [
+    // code block
+    ...codeBlockCharacterEvents,
+
+    // customize the slash menu command
+    customSlashCommand(slashMenuItems),
+
+    ...standardCharacterShortcutEvents..removeWhere(
+      (element) => element == slashCommand,
+    ), // remove the default slash command.
+  ];
+
+  List<CommandShortcutEvent> get commandShortcutEvents => [
+    ...standardCommandShortcutEvents,
+    ...codeBlockCommands(),
+  ];
 
   Widget? generateFooter() {
     if (widget.footer != null) {
@@ -308,11 +344,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         ),
       );
     }
-    children.add(
-      const SizedBox(
-        width: 10,
-      ),
-    );
+    children.add(const SizedBox(width: 10));
     widget.onSave.map((cb) {
       children.add(
         ActerPrimaryActionButton(
@@ -368,12 +400,12 @@ class HtmlEditorState extends State<HtmlEditor> {
           editorState: editorState,
           editorStyle: desktopEditorStyle(),
           footer: generateFooter(),
-          blockComponentBuilders: _buildBlockComponentBuilders(),
+          blockComponentBuilders: blockComponentBuilders,
           characterShortcutEvents: [
-            ...standardCharacterShortcutEvents,
+            ...characterShortcutEvents,
             if (roomId != null) ...mentionShortcuts(context, roomId),
           ],
-          commandShortcutEvents: [...standardCommandShortcutEvents],
+          commandShortcutEvents: commandShortcutEvents,
           disableAutoScroll: true,
         ),
       ),
@@ -393,9 +425,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       itemOutlineColor: Theme.of(context).colorScheme.surface,
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
-        buildTextAndBackgroundColorMobileToolbarItem(
-          textColorOptions: [],
-        ),
+        buildTextAndBackgroundColorMobileToolbarItem(textColorOptions: []),
         headingMobileToolbarItem,
         listMobileToolbarItem,
         linkMobileToolbarItem,
@@ -438,11 +468,12 @@ class HtmlEditorState extends State<HtmlEditor> {
                     widget.scrollController ?? editorScrollController,
                 editorStyle: mobileEditorStyle(),
                 footer: generateFooter(),
-                blockComponentBuilders: _buildBlockComponentBuilders(),
+                blockComponentBuilders: blockComponentBuilders,
                 characterShortcutEvents: [
-                  ...standardCharacterShortcutEvents,
+                  ...characterShortcutEvents,
                   if (roomId != null) ...mentionShortcuts(context, roomId),
                 ],
+                commandShortcutEvents: commandShortcutEvents,
                 disableAutoScroll: true,
               ),
             ),
@@ -457,12 +488,12 @@ class HtmlEditorState extends State<HtmlEditor> {
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
       selectionColor: Theme.of(context).colorScheme.secondary,
-      textStyleConfiguration: widget.textStyleConfiguration ??
+      textStyleConfiguration:
+          widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context)
-                .textTheme
-                .bodySmall
-                .expect('bodySmall style not available'),
+            text: Theme.of(
+              context,
+            ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
@@ -474,12 +505,12 @@ class HtmlEditorState extends State<HtmlEditor> {
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
       selectionColor: Theme.of(context).colorScheme.secondary,
-      textStyleConfiguration: widget.textStyleConfiguration ??
+      textStyleConfiguration:
+          widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context)
-                .textTheme
-                .bodySmall
-                .expect('bodySmall style not available'),
+            text: Theme.of(
+              context,
+            ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
       mobileDragHandleBallSize: const Size(12, 12),
       textSpanDecorator:
@@ -504,9 +535,11 @@ class HtmlEditorState extends State<HtmlEditor> {
     // Inline Mentions
     MentionAttributes? mention;
     try {
-      mention = attributes.entries
-          .firstWhereOrNull((e) => e.value is MentionAttributes)
-          ?.value as MentionAttributes?;
+      mention =
+          attributes.entries
+                  .firstWhereOrNull((e) => e.value is MentionAttributes)
+                  ?.value
+              as MentionAttributes?;
     } catch (e) {
       // If any error occurs while processing mention attributes,
       // fallback to default decoration

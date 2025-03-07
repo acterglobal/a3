@@ -122,11 +122,21 @@ packages:
   appflowy_editor:
     dependency: "direct main"
     description:
-      name: appflowy_editor
-      sha256: "568a9e73315442157fdd0ff892aa5abed418bec0c1bf8885bb352c26d078a57f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
+      path: "."
+      ref: e2c9713
+      resolved-ref: e2c9713104f00658c83ac7d1657e7a0fade171ad
+      url: "https://github.com/AppFlowy-IO/appflowy-editor.git"
+    source: git
+    version: "5.1.0"
+  appflowy_editor_plugins:
+    dependency: "direct main"
+    description:
+      path: "packages/appflowy_editor_plugins"
+      ref: ca8289099e40e0d6ad0605fbbe01fde3091538bb
+      resolved-ref: ca8289099e40e0d6ad0605fbbe01fde3091538bb
+      url: "https://github.com/AppFlowy-IO/AppFlowy-plugins.git"
+    source: git
+    version: "0.0.6"
   archive:
     dependency: transitive
     description:
@@ -524,10 +534,10 @@ packages:
     dependency: transitive
     description:
       name: csslib
-      sha256: "831883fb353c8bdc1d71979e5b342c7d88acfbc643113c14ae51e2442ea0f20f"
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.3"
+    version: "1.0.2"
   cupertino_icons:
     dependency: transitive
     description:
@@ -572,10 +582,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: a7fd703482b391a87d60b6061d04dfdeab07826b96f9abd8f5ed98068acc0074
+      sha256: "306b78788d1bb569edb7c55d622953c2414ca12445b41c9117963e03afc5c513"
       url: "https://pub.dev"
     source: hosted
-    version: "10.1.2"
+    version: "11.3.3"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -843,14 +853,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
-  flutter_highlight:
-    dependency: transitive
-    description:
-      name: flutter_highlight
-      sha256: "7b96333867aa07e122e245c033b8ad622e4e3a42a1a2372cbb098a2541d8782c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.0"
   flutter_hooks:
     dependency: transitive
     description:
@@ -960,23 +962,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_math_fork:
-    dependency: transitive
-    description:
-      name: flutter_math_fork
-      sha256: "284bab89b2fbf1bc3a0baf13d011c1dd324d004e35d177626b77f2fc056366ac"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.3"
-  flutter_matrix_html:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "318a23a3a27f55bc69c3a0e531830a874fbf525d"
-      url: "https://github.com/acterglobal/flutter_matrix_html.git"
-    source: git
-    version: "1.2.2+1"
   flutter_parsed_text:
     dependency: transitive
     description:
@@ -1236,10 +1221,10 @@ packages:
     dependency: "direct main"
     description:
       name: html
-      sha256: "3a7812d5bcd2894edf53dfaf8cd640876cf6cef50a8f238745c8b8120ea74d3a"
+      sha256: "1fc58edeaec4307368c60d59b7e15b9d658b57d7f3125098b6294153c75337ec"
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.4"
+    version: "0.15.5"
   http:
     dependency: "direct main"
     description:
@@ -1509,14 +1494,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
-  matrix_link_text:
-    dependency: transitive
-    description:
-      name: matrix_link_text
-      sha256: "4e1c98ce07acf1566d89ccc55221a210bd92739943010f6e06ac40cf8cb634fd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   media_kit:
     dependency: transitive
     description:
@@ -2951,10 +2928,10 @@ packages:
     dependency: transitive
     description:
       name: win32_registry
-      sha256: "21ec76dfc731550fd3e2ce7a33a9ea90b828fdf19a5c3bcf556fa992cfa99852"
+      sha256: "6f1b564492d0147b330dd794fee8f512cec4977957f310f9951b5f9d83618dae"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.5"
+    version: "2.1.0"
   window_manager:
     dependency: "direct main"
     description:

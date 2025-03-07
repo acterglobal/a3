@@ -6,6 +6,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/frost_effect.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -28,8 +29,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 import 'package:logging/logging.dart';
@@ -908,19 +907,9 @@ class _ReplyContentWidget extends StatelessWidget {
       return Container(
         constraints: BoxConstraints(maxHeight: screenSize.height * 0.2),
         padding: const EdgeInsets.all(12),
-        child: Html(
-          data: textMsg.text,
-          pillBuilder: ({
-            required String identifier,
-            required String url,
-            OnPillTap? onTap,
-          }) {
-            return ActerPillBuilder(
-              identifier: identifier,
-              uri: url,
-              roomId: roomId,
-            );
-          },
+        child: RenderHtml(
+          text: textMsg.text,
+          roomId: roomId,
           defaultTextStyle: textTheme.bodySmall?.copyWith(
             overflow: TextOverflow.ellipsis,
           ),

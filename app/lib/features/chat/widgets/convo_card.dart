@@ -2,6 +2,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
@@ -13,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -281,14 +281,13 @@ class _SubtitleWidget extends ConsumerWidget {
                   ),
                 ),
                 Flexible(
-                  child: Html(
-                    // ignore: unnecessary_string_interpolations
-                    data: '''$body''',
+                  child: RenderHtml(
+                    text: body,
+                    roomId: roomId,
                     maxLines: 1,
                     defaultTextStyle: textTheme.labelMedium?.copyWith(
                       overflow: TextOverflow.ellipsis,
                     ),
-                    onLinkTap: (url) => {},
                   ),
                 ),
               ],
@@ -317,14 +316,13 @@ class _SubtitleWidget extends ConsumerWidget {
               ),
             ),
             Flexible(
-              child: Html(
-                // ignore: unnecessary_string_interpolations
-                data: '''$body''',
+              child: RenderHtml(
+                text: body,
+                roomId: roomId,
                 maxLines: 1,
                 defaultTextStyle: textTheme.labelMedium?.copyWith(
                   overflow: TextOverflow.ellipsis,
                 ),
-                onLinkTap: (url) => {},
               ),
             ),
           ],
@@ -428,14 +426,13 @@ class _SubtitleWidget extends ConsumerWidget {
               ),
             ),
             Flexible(
-              child: Html(
-                // ignore: unnecessary_string_interpolations
-                data: '''$body''',
+              child: RenderHtml(
+                text: body,
+                roomId: roomId,
                 maxLines: 1,
                 defaultTextStyle: textTheme.labelMedium?.copyWith(
                   overflow: TextOverflow.ellipsis,
                 ),
-                onLinkTap: (url) => {},
               ),
             ),
           ],
