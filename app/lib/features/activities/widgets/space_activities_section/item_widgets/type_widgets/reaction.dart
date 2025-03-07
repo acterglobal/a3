@@ -17,7 +17,6 @@ class ActivityReactionItemWidget extends StatelessWidget {
       activityObject: activity.object(),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
-      subtitle: '',
       originServerTs: activity.originServerTs(),
     );
   }

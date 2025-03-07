@@ -20,7 +20,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
   final String userId;
   final String roomId;
-  final String? subtitle;
+  final Widget? subtitle;
   final int originServerTs;
 
   const ActivityUserCentricItemContainerWidget({
@@ -90,15 +90,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
       contentPadding: EdgeInsets.zero,
       leading: ActerAvatar(options: AvatarOptions.DM(memberInfo, size: 32)),
       title: Text(memberInfo.displayName ?? userId),
-      subtitle:
-          subtitle != null
-              ? Text(
-                subtitle!,
-                style: Theme.of(context).textTheme.labelMedium,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              )
-              : const SizedBox.shrink(),
+      subtitle: subtitle ?? const SizedBox.shrink(),
     );
   }
 

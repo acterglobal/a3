@@ -18,7 +18,12 @@ class ActivityCommentItemWidget extends StatelessWidget {
       activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
-      subtitle: activity.msgContent()?.body() ?? '',
+      subtitle: Text(
+        activity.msgContent()?.body() ?? '',
+        style: Theme.of(context).textTheme.labelMedium,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       originServerTs: activity.originServerTs(),
     );
   }

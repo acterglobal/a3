@@ -20,7 +20,12 @@ class ActivityAttachmentItemWidget extends StatelessWidget {
       activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
-      subtitle: '$subType : $name',
+      subtitle: Text(
+        '$subType : $name',
+        style: Theme.of(context).textTheme.labelMedium,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       originServerTs: activity.originServerTs(),
     );
   }
