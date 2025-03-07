@@ -11,18 +11,12 @@ class MemberAvatar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: memberId, roomId: roomId)));
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: memberId, roomId: roomId)),
+    );
     return Container(
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-      ),
-      child: ActerAvatar(
-        options: AvatarOptions.DM(
-          avatarInfo,
-          size: 14,
-        ),
-      ),
+      decoration: const BoxDecoration(shape: BoxShape.circle),
+      child: ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 14)),
     );
   }
 }

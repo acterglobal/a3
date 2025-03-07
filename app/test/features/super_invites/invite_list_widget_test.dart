@@ -28,10 +28,7 @@ void main() {
     });
     testWidgets('List of invites available', (tester) async {
       final override = superInvitesTokensProvider.overrideWith(
-        (list) => [
-          MockSuperInviteToken(),
-          MockSuperInviteToken(),
-        ],
+        (list) => [MockSuperInviteToken(), MockSuperInviteToken()],
       );
       await createWidgetUnderTest(tester: tester, overrides: [override]);
       await tester.pumpAndSettle();

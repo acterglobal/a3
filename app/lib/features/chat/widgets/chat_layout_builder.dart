@@ -45,37 +45,27 @@ class ChatLayoutBuilder extends StatelessWidget {
       children: <Widget>[
         Flexible(
           child: rlwBuilder(
-            (String roomId) => pushReplacementRouting
-                ? context.pushReplacementNamed(
-                    // we switch without "push"
-                    Routes.chatroom.name,
-                    pathParameters: {'roomId': roomId},
-                  )
-                : context.pushNamed(
-                    // we switch without "push"
-                    Routes.chatroom.name,
-                    pathParameters: {'roomId': roomId},
-                  ),
+            (String roomId) =>
+                pushReplacementRouting
+                    ? context.pushReplacementNamed(
+                      // we switch without "push"
+                      Routes.chatroom.name,
+                      pathParameters: {'roomId': roomId},
+                    )
+                    : context.pushNamed(
+                      // we switch without "push"
+                      Routes.chatroom.name,
+                      pathParameters: {'roomId': roomId},
+                    ),
           ),
         ),
         // we have a room selected
-        if (center != null)
-          Flexible(
-            flex: 3,
-            child: center,
-          ),
+        if (center != null) Flexible(flex: 3, child: center),
         // we have an expanded as well
-        if (expanded != null)
-          Flexible(
-            flex: 2,
-            child: expanded,
-          ),
+        if (expanded != null) Flexible(flex: 2, child: expanded),
         // Fallback if neither is in our route
         if (center == null && expanded == null)
-          const Flexible(
-            flex: 2,
-            child: ChatSelectPage(),
-          ),
+          const Flexible(flex: 2, child: ChatSelectPage()),
       ],
     );
   }

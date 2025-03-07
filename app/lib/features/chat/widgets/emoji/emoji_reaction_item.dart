@@ -17,27 +17,19 @@ class EmojiReactionItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final avatarInfo =
-        ref.watch(memberAvatarInfoProvider((userId: userId, roomId: roomId)));
+    final avatarInfo = ref.watch(
+      memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+    );
 
     return ListTile(
-      leading: ActerAvatar(
-        options: AvatarOptions.DM(
-          avatarInfo,
-          size: 18,
-        ),
-      ),
+      leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18)),
       title: Text(avatarInfo.displayName ?? userId),
       subtitle: Text(userId),
       trailing: Wrap(
-        children: emojis
-            .map(
-              (emoji) => Text(
-                emoji,
-                style: EmojiConfig.emojiTextStyle,
-              ),
-            )
-            .toList(),
+        children:
+            emojis
+                .map((emoji) => Text(emoji, style: EmojiConfig.emojiTextStyle))
+                .toList(),
       ),
     );
   }

@@ -32,40 +32,42 @@ class ChatEventItem extends StatelessWidget {
     return switch (eventType) {
       // handle message inner types separately
       'm.room.message' => MessageEventItem(
-          roomId: roomId,
-          messageId: messageId,
-          item: item,
-          isMe: isMe,
-          canRedact: canRedact,
-          isNextMessageInGroup: isNextMessageInGroup,
-        ),
-      'm.room.redaction' => isMe
-          ? ChatBubble.me(
+        roomId: roomId,
+        messageId: messageId,
+        item: item,
+        isMe: isMe,
+        canRedact: canRedact,
+        isNextMessageInGroup: isNextMessageInGroup,
+      ),
+      'm.room.redaction' =>
+        isMe
+            ? ChatBubble.me(
               context: context,
               isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             )
-          : ChatBubble(
+            : ChatBubble(
               context: context,
               isNextMessageInGroup: isNextMessageInGroup,
               child: RedactedMessageWidget(),
             ),
-      'm.room.encrypted' => isMe
-          ? ChatBubble.me(
+      'm.room.encrypted' =>
+        isMe
+            ? ChatBubble.me(
               context: context,
               isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             )
-          : ChatBubble(
+            : ChatBubble(
               context: context,
               isNextMessageInGroup: isNextMessageInGroup,
               child: EncryptedMessageWidget(),
             ),
       'm.room.member' || 'ProfileChange' => MemberUpdateEvent(
-          isMe: isMe,
-          roomId: roomId,
-          item: item,
-        ),
+        isMe: isMe,
+        roomId: roomId,
+        item: item,
+      ),
       'm.policy.rule.room' ||
       'm.policy.rule.server' ||
       'm.policy.rule.user' ||
@@ -86,15 +88,16 @@ class ChatEventItem extends StatelessWidget {
       'm.room.tombstone' ||
       'm.room.topic' ||
       'm.space.child' ||
-      'm.space.parent' =>
-        RoomUpdateEvent(isMe: isMe, item: item, roomId: roomId),
+      'm.space.parent' => RoomUpdateEvent(
+        isMe: isMe,
+        item: item,
+        roomId: roomId,
+      ),
       _ => _buildUnsupportedMessage(eventType),
     };
   }
 
   Widget _buildUnsupportedMessage(String? msgtype) {
-    return Text(
-      'Unsupported chat event type: $msgtype',
-    );
+    return Text('Unsupported chat event type: $msgtype');
   }
 }

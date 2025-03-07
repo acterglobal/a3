@@ -7,13 +7,15 @@ const Key selectInviteCodeDrawerKey = Key('select-invitation-code-drawer');
 Future<SuperInviteToken?> selectSuperInviteDrawer({
   required BuildContext context,
 }) async {
- return await showModalBottomSheet(
+  return await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    builder: (context) => InviteListPage(
-      onSelectInviteCode : (inviteCodeId) => Navigator.pop(context, inviteCodeId),
-    ),
+    builder:
+        (context) => InviteListPage(
+          onSelectInviteCode:
+              (inviteCodeId) => Navigator.pop(context, inviteCodeId),
+        ),
   );
 }

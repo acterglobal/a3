@@ -14,7 +14,8 @@ import 'package:acter_notifify/processing/utils.dart';
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = getUserCentricTitlePart(notification, emoji, 'completed Task');
+    final title =
+        getUserCentricTitlePart(notification, emoji, 'completed Task');
     return (title, null);
   }
 }
@@ -31,7 +32,8 @@ import 'package:acter_notifify/processing/utils.dart';
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = getUserCentricTitlePart(notification, emoji, 're-opened Task');
+    final title =
+        getUserCentricTitlePart(notification, emoji, 're-opened Task');
     return (title, null);
   }
 }

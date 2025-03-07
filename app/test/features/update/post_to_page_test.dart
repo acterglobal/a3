@@ -46,15 +46,17 @@ void main() {
       overrides: [
         newsStateProvider.overrideWith((ref) => mockNewsStateNotifier),
         roomMembershipProvider.overrideWith((a, b) => mockMember),
-        selectedSpaceIdProvider
-            .overrideWith((ref) => mockNewsPostState.newsPostSpaceId),
+        selectedSpaceIdProvider.overrideWith(
+          (ref) => mockNewsPostState.newsPostSpaceId,
+        ),
       ],
     );
   }
 
   group('AddNewsPostToPage', () {
-    testWidgets('shows select space button when no space is selected',
-        (tester) async {
+    testWidgets('shows select space button when no space is selected', (
+      tester,
+    ) async {
       mockNewsPostState.newsPostSpaceId = null;
       selectedSpaceIdProvider.overrideWith((ref) => null);
       mockNewsStateNotifier.state = mockNewsPostState;
@@ -76,8 +78,9 @@ void main() {
       expect(find.text('Please select space'), findsNothing);
     });
 
-    testWidgets('shows both options disabled if member has no permission',
-        (tester) async {
+    testWidgets('shows both options disabled if member has no permission', (
+      tester,
+    ) async {
       selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
@@ -99,8 +102,9 @@ void main() {
       );
     });
 
-    testWidgets('shows both options enabled if member has permission',
-        (tester) async {
+    testWidgets('shows both options enabled if member has permission', (
+      tester,
+    ) async {
       selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
       mockNewsPostState.newsPostSpaceId = 'test-space-id';
       mockNewsStateNotifier.state = mockNewsPostState;
@@ -127,58 +131,56 @@ void main() {
     });
 
     testWidgets(
-        'shows story option enabled and news option disabled if member has permission',
-        (tester) async {
-      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
-      mockNewsPostState.newsPostSpaceId = 'test-space-id';
-      mockNewsStateNotifier.state = mockNewsPostState;
-      when(() => mockMember.canString('CanPostNews')).thenReturn(false);
-      when(() => mockMember.canString('CanPostStories')).thenReturn(true);
+      'shows story option enabled and news option disabled if member has permission',
+      (tester) async {
+        selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
+        mockNewsPostState.newsPostSpaceId = 'test-space-id';
+        mockNewsStateNotifier.state = mockNewsPostState;
+        when(() => mockMember.canString('CanPostNews')).thenReturn(false);
+        when(() => mockMember.canString('CanPostStories')).thenReturn(true);
 
-      await createWidgetUnderTest(tester);
-      await tester.pumpAndSettle();
+        await createWidgetUnderTest(tester);
+        await tester.pumpAndSettle();
 
-      final storyText = tester.widget<Text>(find.text('Story'));
-      final boostText = tester.widget<Text>(find.text('Boost'));
-      expect(
-        storyText.style?.color,
-        equals(
-          Theme.of(tester.element(find.text('Story'))).colorScheme.onSurface,
-        ),
-      );
-      expect(
-        boostText.style?.color,
-        equals(
-          Theme.of(tester.element(find.text('Boost'))).disabledColor,
-        ),
-      );
-    });
+        final storyText = tester.widget<Text>(find.text('Story'));
+        final boostText = tester.widget<Text>(find.text('Boost'));
+        expect(
+          storyText.style?.color,
+          equals(
+            Theme.of(tester.element(find.text('Story'))).colorScheme.onSurface,
+          ),
+        );
+        expect(
+          boostText.style?.color,
+          equals(Theme.of(tester.element(find.text('Boost'))).disabledColor),
+        );
+      },
+    );
     testWidgets(
-        'shows story option disabled and news option enabled if member has permission',
-        (tester) async {
-      selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
-      mockNewsPostState.newsPostSpaceId = 'test-space-id';
-      mockNewsStateNotifier.state = mockNewsPostState;
-      when(() => mockMember.canString('CanPostNews')).thenReturn(true);
-      when(() => mockMember.canString('CanPostStories')).thenReturn(false);
+      'shows story option disabled and news option enabled if member has permission',
+      (tester) async {
+        selectedSpaceIdProvider.overrideWith((ref) => 'test-space-id');
+        mockNewsPostState.newsPostSpaceId = 'test-space-id';
+        mockNewsStateNotifier.state = mockNewsPostState;
+        when(() => mockMember.canString('CanPostNews')).thenReturn(true);
+        when(() => mockMember.canString('CanPostStories')).thenReturn(false);
 
-      await createWidgetUnderTest(tester);
-      await tester.pumpAndSettle();
+        await createWidgetUnderTest(tester);
+        await tester.pumpAndSettle();
 
-      final storyText = tester.widget<Text>(find.text('Story'));
-      final boostText = tester.widget<Text>(find.text('Boost'));
-      expect(
-        storyText.style?.color,
-        equals(
-          Theme.of(tester.element(find.text('Story'))).disabledColor,
-        ),
-      );
-      expect(
-        boostText.style?.color,
-        equals(
-          Theme.of(tester.element(find.text('Boost'))).colorScheme.onSurface,
-        ),
-      );
-    });
+        final storyText = tester.widget<Text>(find.text('Story'));
+        final boostText = tester.widget<Text>(find.text('Boost'));
+        expect(
+          storyText.style?.color,
+          equals(Theme.of(tester.element(find.text('Story'))).disabledColor),
+        );
+        expect(
+          boostText.style?.color,
+          equals(
+            Theme.of(tester.element(find.text('Boost'))).colorScheme.onSurface,
+          ),
+        );
+      },
+    );
   });
 }

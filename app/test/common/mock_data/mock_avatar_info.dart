@@ -16,8 +16,5 @@ class MockAvatarInfo extends Mock implements AvatarInfo {
   @override
   TooltipStyle get tooltip => TooltipStyle.Combined;
 
-  MockAvatarInfo({
-    required this.uniqueId,
-    this.mockDisplayName,
-  });
+  MockAvatarInfo({required this.uniqueId, this.mockDisplayName});
 }

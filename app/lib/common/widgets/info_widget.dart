@@ -5,12 +5,7 @@ class InfoWidget extends StatelessWidget {
   final String? subTitle;
   final IconData? icon;
 
-  const InfoWidget({
-    super.key,
-    required this.title,
-    this.subTitle,
-    this.icon,
-  });
+  const InfoWidget({super.key, required this.title, this.subTitle, this.icon});
 
   @override
   Widget build(BuildContext context) {

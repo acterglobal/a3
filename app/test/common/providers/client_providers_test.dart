@@ -113,8 +113,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(container.read(isSyncingStateProvider), true); // read again
       expect(syncNotifier.restarted, 0); // no sync yet
-      await tester
-          .pumpAndSettle(Duration(seconds: 3)); // sync state takes a moment;
+      await tester.pumpAndSettle(
+        Duration(seconds: 3),
+      ); // sync state takes a moment;
       expect(container.read(isSyncingStateProvider), true); // read again
       expect(syncNotifier.restarted, 1);
       expect(syncNotifier.clientSet, 1);

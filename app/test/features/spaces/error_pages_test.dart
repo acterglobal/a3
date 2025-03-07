@@ -23,8 +23,9 @@ void main() {
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
           membersIdsProvider.overrideWith((a, b) => []),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           isBookmarkedProvider.overrideWith((a, b) => false),
           spaceInvitedMembersProvider.overrideWith((a, b) => []),

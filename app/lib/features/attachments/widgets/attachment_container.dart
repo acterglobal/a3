@@ -31,10 +31,7 @@ class AttachmentContainer extends ConsumerWidget {
         children: [
           Expanded(child: child),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 3,
-              vertical: 6,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
             child: Text(
               name,
               style: containerStyle?.copyWith(overflow: TextOverflow.ellipsis),

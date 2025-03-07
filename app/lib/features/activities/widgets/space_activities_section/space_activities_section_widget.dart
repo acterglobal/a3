@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Widget? buildSpaceActivitiesSectionWidget(
-  BuildContext context,
-  WidgetRef ref,
-) {
+Widget? buildSpaceActivitiesSectionWidget(BuildContext context, WidgetRef ref) {
   final activityDates = ref.watch(activityDatesProvider).valueOrNull;
   if (activityDates == null || activityDates.isEmpty) return null;
 
@@ -25,8 +22,9 @@ Widget? buildSpaceActivitiesSectionWidget(
         itemCount: activityDates.length,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) =>
-            ActivityDateItemWidget(date: activityDates[index]),
+        itemBuilder:
+            (context, index) =>
+                ActivityDateItemWidget(date: activityDates[index]),
       ),
     ],
   );

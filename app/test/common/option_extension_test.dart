@@ -41,13 +41,10 @@ void main() {
       bool wasCalled = false;
       String? target;
 
-      String? targetValue = target.map(
-        (a) {
-          wasCalled = true;
-          return 'inner';
-        },
-        defaultValue: 'ok',
-      );
+      String? targetValue = target.map((a) {
+        wasCalled = true;
+        return 'inner';
+      }, defaultValue: 'ok');
 
       expect(wasCalled, false);
       expect(targetValue, 'ok');
@@ -57,13 +54,10 @@ void main() {
       bool wasCalled = false;
       String? target;
 
-      String? targetValue = await target.mapAsync(
-        (a) async {
-          wasCalled = true;
-          return 'inner';
-        },
-        defaultValue: 'ok',
-      );
+      String? targetValue = await target.mapAsync((a) async {
+        wasCalled = true;
+        return 'inner';
+      }, defaultValue: 'ok');
 
       expect(wasCalled, false);
       expect(targetValue, 'ok');
@@ -73,13 +67,10 @@ void main() {
       bool wasCalled = false;
       String? target;
 
-      String? targetValue = target.map(
-        (a) {
-          wasCalled = true;
-          return 'inner';
-        },
-        orElse: () => 'ok',
-      );
+      String? targetValue = target.map((a) {
+        wasCalled = true;
+        return 'inner';
+      }, orElse: () => 'ok');
 
       expect(wasCalled, false);
       expect(targetValue, 'ok');
@@ -89,13 +80,10 @@ void main() {
       bool wasCalled = false;
       String? target;
 
-      String? targetValue = await target.mapAsync(
-        (a) async {
-          wasCalled = true;
-          return 'inner';
-        },
-        orElse: () => 'ok',
-      );
+      String? targetValue = await target.mapAsync((a) async {
+        wasCalled = true;
+        return 'inner';
+      }, orElse: () => 'ok');
 
       expect(wasCalled, false);
       expect(targetValue, 'ok');

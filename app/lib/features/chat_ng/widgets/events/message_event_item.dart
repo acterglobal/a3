@@ -50,27 +50,20 @@ class MessageEventItem extends StatelessWidget {
     RoomEventItem item,
     bool isMe,
   ) {
-    final messageWidget = buildMsgEventItem(
-      context,
-      roomId,
-      messageId,
-      item,
-    );
+    final messageWidget = buildMsgEventItem(context, roomId, messageId, item);
 
     return GestureDetector(
-      onLongPressStart: (_) => messageActions(
-        context: context,
-        messageWidget: messageWidget,
-        isMe: isMe,
-        canRedact: canRedact,
-        item: item,
-        messageId: messageId,
-        roomId: roomId,
-      ),
-      child: Hero(
-        tag: messageId,
-        child: messageWidget,
-      ),
+      onLongPressStart:
+          (_) => messageActions(
+            context: context,
+            messageWidget: messageWidget,
+            isMe: isMe,
+            canRedact: canRedact,
+            item: item,
+            messageId: messageId,
+            roomId: roomId,
+          ),
+      child: Hero(tag: messageId, child: messageWidget),
     );
   }
 
@@ -81,17 +74,10 @@ class MessageEventItem extends StatelessWidget {
     bool isMe,
   ) {
     return Padding(
-      padding: EdgeInsets.only(
-        right: isMe ? 12 : 0,
-        left: isMe ? 0 : 12,
-      ),
+      padding: EdgeInsets.only(right: isMe ? 12 : 0, left: isMe ? 0 : 12),
       child: FractionalTranslation(
         translation: Offset(0, -0.1),
-        child: ReactionsList(
-          roomId: roomId,
-          messageId: messageId,
-          item: item,
-        ),
+        child: ReactionsList(roomId: roomId, messageId: messageId, item: item),
       ),
     );
   }
@@ -111,23 +97,22 @@ class MessageEventItem extends StatelessWidget {
       'm.emote' ||
       'm.notice' ||
       'm.server_notice' ||
-      'm.text' =>
-        buildTextMsgEvent(context, item),
+      'm.text' => buildTextMsgEvent(context, item),
       'm.image' => ImageMessageEvent(
-          messageId: messageId,
-          roomId: roomId,
-          content: content,
-        ),
+        messageId: messageId,
+        roomId: roomId,
+        content: content,
+      ),
       'm.video' => VideoMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       'm.file' => FileMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        roomId: roomId,
+        messageId: messageId,
+        content: content,
+      ),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
@@ -142,8 +127,11 @@ class MessageEventItem extends StatelessWidget {
 
     // whether it contains `replied to` event.
     if (repliedTo != null) {
-      repliedToBuilder =
-          RepliedToPreview(roomId: roomId, originalId: repliedTo, isMe: isMe);
+      repliedToBuilder = RepliedToPreview(
+        roomId: roomId,
+        originalId: repliedTo,
+        isMe: isMe,
+      );
     }
 
     // if only consists of emojis
@@ -179,8 +167,6 @@ class MessageEventItem extends StatelessWidget {
   }
 
   Widget _buildUnsupportedMessage(String? msgtype) {
-    return Text(
-      'Unsupported event type: $msgtype',
-    );
+    return Text('Unsupported event type: $msgtype');
   }
 }

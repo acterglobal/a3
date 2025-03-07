@@ -15,8 +15,9 @@ import 'mock_data/mock_message_content.dart';
 
 void main() {
   group('Comment List', () {
-    testWidgets('displays empty state when there are no comments',
-        (tester) async {
+    testWidgets('displays empty state when there are no comments', (
+      tester,
+    ) async {
       // Arrange
       final mockCommentsManager = MockCommentsManager();
 
@@ -41,50 +42,53 @@ void main() {
     });
 
     testWidgets(
-        'displays error state when there are issue in loading comment list',
-        (tester) async {
-      // Arrange
-      final mockCommentsManager = MockCommentsManager();
+      'displays error state when there are issue in loading comment list',
+      (tester) async {
+        // Arrange
+        final mockCommentsManager = MockCommentsManager();
 
-      // Build the widget tree with the mocked provider
-      await tester.pumpProviderWidget(
-        overrides: [
-          commentsListProvider
-              .overrideWith((ref, manager) async => throw 'Some Error'),
-        ],
-        child: CommentListWidget(
-          manager: mockCommentsManager, // Provide the mock manager
-        ),
-      );
-      await tester.ensureErrorPageWorks();
-    });
+        // Build the widget tree with the mocked provider
+        await tester.pumpProviderWidget(
+          overrides: [
+            commentsListProvider.overrideWith(
+              (ref, manager) async => throw 'Some Error',
+            ),
+          ],
+          child: CommentListWidget(
+            manager: mockCommentsManager, // Provide the mock manager
+          ),
+        );
+        await tester.ensureErrorPageWorks();
+      },
+    );
 
     testWidgets(
-        'displays error state when there are issue in loading comment list and also test retry',
-        (tester) async {
-      bool shouldFail = true;
+      'displays error state when there are issue in loading comment list and also test retry',
+      (tester) async {
+        bool shouldFail = true;
 
-      // Arrange
-      final mockCommentsManager = MockCommentsManager();
+        // Arrange
+        final mockCommentsManager = MockCommentsManager();
 
-      // Build the widget tree with the mocked provider
-      await tester.pumpProviderWidget(
-        overrides: [
-          commentsListProvider.overrideWith((ref, manager) async {
-            if (shouldFail) {
-              shouldFail = false;
-              throw 'Some Error';
-            } else {
-              return [];
-            }
-          }),
-        ],
-        child: CommentListWidget(
-          manager: mockCommentsManager, // Provide the mock manager
-        ),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
-    });
+        // Build the widget tree with the mocked provider
+        await tester.pumpProviderWidget(
+          overrides: [
+            commentsListProvider.overrideWith((ref, manager) async {
+              if (shouldFail) {
+                shouldFail = false;
+                throw 'Some Error';
+              } else {
+                return [];
+              }
+            }),
+          ],
+          child: CommentListWidget(
+            manager: mockCommentsManager, // Provide the mock manager
+          ),
+        );
+        await tester.ensureErrorPageWithRetryWorks();
+      },
+    );
 
     testWidgets('displays list state when there are comments', (tester) async {
       // Arrange
@@ -111,14 +115,11 @@ void main() {
       // Build the widget tree with the mocked provider
       await tester.pumpProviderWidget(
         overrides: [
-          memberAvatarInfoProvider
-              .overrideWith((a, i) => const AvatarInfo(uniqueId: 'uniqueId')),
+          memberAvatarInfoProvider.overrideWith(
+            (a, i) => const AvatarInfo(uniqueId: 'uniqueId'),
+          ),
           commentsListProvider.overrideWith(
-            (ref, manager) async => [
-              mockComment1,
-              mockComment2,
-              mockComment3,
-            ],
+            (ref, manager) async => [mockComment1, mockComment2, mockComment3],
           ),
         ],
         child: CommentListWidget(

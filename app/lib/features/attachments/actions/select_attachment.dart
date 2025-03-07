@@ -11,9 +11,10 @@ Future<void> selectAttachment({
     isDismissible: true,
     showDragHandle: true,
     context: context,
-    builder: (context) => AttachmentSelectionOptions(
-      onSelected: onSelected,
-      onLinkSelected: onLinkSelected,
-    ),
+    builder:
+        (context) => AttachmentSelectionOptions(
+          onSelected: onSelected,
+          onLinkSelected: onLinkSelected,
+        ),
   );
 }

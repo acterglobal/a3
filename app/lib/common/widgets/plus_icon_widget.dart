@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class PlusIconWidget extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const PlusIconWidget({
-    super.key,
-    required this.onPressed,
-  });
+  const PlusIconWidget({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -15,12 +12,10 @@ class PlusIconWidget extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha:0.8),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
           borderRadius: const BorderRadius.all(Radius.circular(100)),
         ),
-        child: const Icon(
-          Icons.add,
-        ),
+        child: const Icon(Icons.add),
       ),
     );
   }

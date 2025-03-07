@@ -101,7 +101,7 @@ class MemberUpdateEvent extends ConsumerWidget {
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: inviteeId,
-                      ),),
+                      )),
                     )
                     .valueOrNull;
             return isMe

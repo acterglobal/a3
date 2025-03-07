@@ -18,10 +18,8 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-          (ref, param) => MockAvatarInfo(
-            uniqueId: param.userId,
-            mockDisplayName: 'User-1',
-          ),
+          (ref, param) =>
+              MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
       child: Material(
@@ -65,9 +63,7 @@ void main() {
   testWidgets('Comment on Event Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.comment.name,
-      mockMsgContent: MockMsgContent(
-        bodyText: 'This is a comment on an event',
-      ),
+      mockMsgContent: MockMsgContent(bodyText: 'This is a comment on an event'),
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.event.name,
         mockEmoji: SpaceObjectTypes.event.emoji,
@@ -131,9 +127,7 @@ void main() {
   testWidgets('Comment on TaskItem Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.comment.name,
-      mockMsgContent: MockMsgContent(
-        bodyText: 'This is a comment on a task',
-      ),
+      mockMsgContent: MockMsgContent(bodyText: 'This is a comment on a task'),
       mockObject: MockActivityObject(
         mockType: SpaceObjectTypes.taskItem.name,
         mockEmoji: SpaceObjectTypes.taskItem.emoji,
