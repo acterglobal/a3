@@ -6,7 +6,7 @@ import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -352,6 +352,7 @@ class _PinDetailsPageState extends ConsumerState<PinDetailsPage> {
                     ? RenderHtml(
                       text: htmlBody,
                       defaultTextStyle: textTheme.labelLarge,
+                      roomId: pin.roomIdStr(),
                     )
                     : Text(plainBody, style: textTheme.labelLarge),
           ),

@@ -8,16 +8,18 @@ import 'package:acter/features/news/widgets/news_item_slide/video_slide.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
-class UpdateSlideItem extends StatelessWidget {
+class UpdateSlideItemWidget extends StatelessWidget {
   final UpdateSlide slide;
   final bool showRichContent;
   final NewsMediaErrorState errorState;
+  final String roomId;
 
-  const UpdateSlideItem({
+  const UpdateSlideItemWidget({
     super.key,
     required this.slide,
     this.showRichContent = true,
     required this.errorState,
+    required this.roomId,
   });
 
   @override
@@ -38,7 +40,9 @@ class UpdateSlideItem extends StatelessWidget {
               'image' => ImageSlide(slide: slide, errorState: errorState),
               'video' => VideoSlide(slide: slide, errorState: errorState),
               'text' =>
-                showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
+                showRichContent
+                    ? TextSlide(slide: slide, roomId: roomId)
+                    : normalTextSlide(),
               _ => notSupportedSlide(context, slideType),
             },
           ),

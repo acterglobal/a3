@@ -1,10 +1,9 @@
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:markdown/markdown.dart' as md;
 
 enum TextMessageType { regular, reply, emoji, notice }
@@ -108,9 +107,11 @@ class TextMessageEvent extends StatelessWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Html(
-          data: body,
+        child: RenderHtml(
+          text: body,
           defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
+          maxLines: _type == TextMessageType.reply ? 3 : null,
+          roomId: roomId,
         ),
       );
     }
@@ -130,13 +131,14 @@ class TextMessageEvent extends StatelessWidget {
           const SizedBox(height: 4),
         ],
         if (replied != null) ...[replied, const SizedBox(height: 10)],
-        Html(
+        RenderHtml(
           shrinkToFit: true,
+          roomId: roomId,
           pillBuilder:
               ({
                 required String identifier,
                 required String url,
-                OnPillTap? onTap,
+                void Function(String)? onTap,
               }) => ActerPillBuilder(
                 identifier: identifier,
                 uri: url,
@@ -152,7 +154,7 @@ class TextMessageEvent extends StatelessWidget {
             overflow:
                 _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
           ),
-          data: body,
+          text: body,
         ),
       ],
     );
