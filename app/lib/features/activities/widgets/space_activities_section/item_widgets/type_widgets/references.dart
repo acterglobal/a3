@@ -73,6 +73,7 @@ class RefObjectWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (refDetails == null) return const SizedBox.shrink();
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         getRefIconWidget(context, ref),
         const SizedBox(width: 4),
