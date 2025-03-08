@@ -33,30 +33,25 @@ class ActivityReferencesItemWidget extends StatelessWidget {
   Widget? getRefObjectWidget(BuildContext context) {
     final refDetails = activity.refDetails();
     final refType = refDetails?.typeStr();
-    switch (refType) {
-      case 'pin':
-        return RefObjectWidget(
-          refDetails: refDetails,
-          objectDefaultIcon: PhosphorIconsRegular.pushPin,
-        );
-      case 'calendar-event':
-        return RefObjectWidget(
-          refDetails: refDetails,
-          objectDefaultIcon: PhosphorIconsRegular.calendar,
-        );
-      case 'task-list':
-        return RefObjectWidget(
-          refDetails: refDetails,
-          objectDefaultIcon: PhosphorIconsRegular.listChecks,
-        );
-      case 'task':
-        return RefObjectWidget(
-          refDetails: refDetails,
-          objectDefaultIcon: PhosphorIconsRegular.check,
-        );
-      default:
-        return null;
-    }
+    return switch (refType) {
+      'pin' => RefObjectWidget(
+        refDetails: refDetails,
+        objectDefaultIcon: PhosphorIconsRegular.pushPin,
+      ),
+      'calendar-event' => RefObjectWidget(
+        refDetails: refDetails,
+        objectDefaultIcon: PhosphorIconsRegular.calendar,
+      ),
+      'task-list' => RefObjectWidget(
+        refDetails: refDetails,
+        objectDefaultIcon: PhosphorIconsRegular.listChecks,
+      ),
+      'task' => RefObjectWidget(
+        refDetails: refDetails,
+        objectDefaultIcon: PhosphorIconsRegular.check,
+      ),
+      _ => null,
+    };
   }
 }
 
