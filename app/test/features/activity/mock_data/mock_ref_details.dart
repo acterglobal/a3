@@ -4,10 +4,12 @@ import 'package:mocktail/mocktail.dart';
 class MockRefDetails extends Mock implements RefDetails {
   final String mockTitle;
   final String mockType;
+  final String? mockTargetId;
 
   MockRefDetails({
     required this.mockTitle,
     required this.mockType,
+    this.mockTargetId,
   });
 
   @override
@@ -15,4 +17,7 @@ class MockRefDetails extends Mock implements RefDetails {
 
   @override
   String typeStr() => mockType;
+
+  @override
+  String? targetIdStr() => mockTargetId;
 }

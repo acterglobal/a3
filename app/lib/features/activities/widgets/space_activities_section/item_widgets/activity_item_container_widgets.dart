@@ -1,22 +1,29 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/acter_icon_picker/utils.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 //Main container for all activity item widgets
 class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
+  final IconData actionIcon;
   final String actionTitle;
-  final String? actionObjectInfo;
+  final Color? actionIconColor;
+  final ActivityObject? activityObject;
   final String userId;
   final String roomId;
-  final String? subtitle;
+  final Widget? subtitle;
   final int originServerTs;
 
   const ActivityUserCentricItemContainerWidget({
     super.key,
+    required this.actionIcon,
     required this.actionTitle,
-    this.actionObjectInfo,
+    this.actionIconColor,
+    this.activityObject,
     required this.userId,
     required this.roomId,
     this.subtitle,
@@ -34,7 +41,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildActionInfoUI(context),
+            buildActionInfoUI(context, ref),
             const SizedBox(height: 6),
             buildUserInfoUI(context, ref),
             TimeAgoWidget(originServerTs: originServerTs),
@@ -44,37 +51,66 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     );
   }
 
-  Widget buildActionInfoUI(BuildContext context) {
+  Widget buildActionInfoUI(BuildContext context, WidgetRef ref) {
     final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        Icon(actionIcon, size: 16, color: actionIconColor),
+        const SizedBox(width: 4),
         Text(actionTitle, style: actionTitleStyle),
-        if (actionObjectInfo != null) ...[
+        if (activityObject != null) ...[
           const SizedBox(width: 6),
-          Text(actionObjectInfo!, style: actionTitleStyle),
+          Row(
+            children: [
+              Icon(getActivityObjectIcon(), size: 16),
+              const SizedBox(width: 4),
+              Text(getActivityObjectTitle(), style: actionTitleStyle),
+            ],
+          ),
         ],
+        Spacer(),
+        ActerIconWidgetFromObjectIdAndType(
+          objectId: activityObject?.objectIdStr(),
+          objectType: activityObject?.typeStr(),
+          fallbackWidget: SizedBox.shrink(),
+          iconSize: 24,
+        ),
       ],
     );
   }
 
   Widget buildUserInfoUI(BuildContext context, WidgetRef ref) {
-    final memberInfo =
-        ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId)));
+    final memberInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+    );
     return ListTile(
       horizontalTitleGap: 6,
       contentPadding: EdgeInsets.zero,
       leading: ActerAvatar(options: AvatarOptions.DM(memberInfo, size: 32)),
       title: Text(memberInfo.displayName ?? userId),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: Theme.of(context).textTheme.labelMedium,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            )
-          : const SizedBox.shrink(),
+      subtitle: subtitle ?? const SizedBox.shrink(),
     );
+  }
+
+  IconData getActivityObjectIcon() {
+    return switch (activityObject?.typeStr()) {
+      'news' => PhosphorIconsRegular.rocketLaunch,
+      'story' => PhosphorIconsRegular.book,
+      'event' => PhosphorIconsRegular.calendar,
+      'pin' => PhosphorIconsRegular.pushPin,
+      'task-list' => PhosphorIconsRegular.listChecks,
+      'task' => PhosphorIconsRegular.checkCircle,
+      _ => PhosphorIconsRegular.question,
+    };
+  }
+
+  String getActivityObjectTitle() {
+    return switch (activityObject?.typeStr()) {
+      'news' => 'Boost',
+      'story' => 'Story',
+      _ => activityObject?.title() ?? '',
+    };
   }
 }
