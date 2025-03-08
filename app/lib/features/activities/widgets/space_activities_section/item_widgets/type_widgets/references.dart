@@ -1,11 +1,6 @@
-import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/color_data.dart';
+import 'package:acter/common/widgets/acter_icon_picker/utils.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_item_container_widgets.dart';
-import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,44 +65,19 @@ class RefObjectWidget extends ConsumerWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        getRefIconWidget(context, ref),
+        ActerIconWidgetFromObjectIdAndType(
+          objectId: refDetails?.targetIdStr(),
+          objectType: refDetails?.typeStr(),
+          fallbackWidget: Icon(
+            objectDefaultIcon,
+            size: 16,
+            color: Theme.of(context).textTheme.labelMedium?.color,
+          ),
+        ),
         const SizedBox(width: 4),
         getRefTitleTextWidget(context),
       ],
     );
-  }
-
-  Widget getRefIconWidget(BuildContext context, WidgetRef ref) {
-    final defaultIconWidget = Icon(
-      objectDefaultIcon,
-      size: 16,
-      color: Theme.of(context).textTheme.labelMedium?.color,
-    );
-
-    final refObjectId = refDetails?.targetIdStr();
-    if (refObjectId == null) return defaultIconWidget;
-
-    switch (refDetails?.typeStr()) {
-      case 'pin':
-        final pin = ref.watch(pinProvider(refObjectId)).valueOrNull;
-        return ActerIconWidget(
-          iconSize: 16,
-          color: convertColor(pin?.display()?.color(), iconPickerColors[0]),
-          icon: ActerIcon.iconForPin(pin?.display()?.iconStr()),
-        );
-      case 'task-list':
-        final taskList = ref.watch(taskListProvider(refObjectId)).valueOrNull;
-        return ActerIconWidget(
-          iconSize: 16,
-          color: convertColor(
-            taskList?.display()?.color(),
-            iconPickerColors[0],
-          ),
-          icon: ActerIcon.list,
-        );
-      default:
-        return defaultIconWidget;
-    }
   }
 
   Widget getRefTitleTextWidget(BuildContext context) {
