@@ -1,8 +1,10 @@
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_status_widget.dart';
@@ -58,7 +60,7 @@ class TaskItem extends ConsumerWidget {
             leading: leadingWidget(task),
             title: takeItemTitle(context, task),
             subtitle: takeItemSubTitle(ref, context, task),
-            trailing: trailing(ref, task),
+            trailing: trailing(ref, context, task),
           ),
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
@@ -163,15 +165,30 @@ class TaskItem extends ConsumerWidget {
         const SizedBox.shrink();
   }
 
-  Widget? trailing(WidgetRef ref, Task task) {
+  Widget? trailing(WidgetRef ref, BuildContext context, Task task) {
     return showBreadCrumb
         ? RoomAvatarBuilder(roomId: task.roomIdStr(), avatarSize: 35)
-        : taskAssignee(ref, task);
+        : taskAssignee(ref, context, task);
   }
 
-  Widget? taskAssignee(WidgetRef ref, Task task) {
+  Widget? taskAssignee(WidgetRef ref, BuildContext context, Task task) {
     final assignees = asDartStringList(task.assigneesStr());
     if (assignees.isEmpty) return null;
+
+    final myId = ref.watch(myUserIdStrProvider);
+    if (assignees.contains(myId)) {
+      // we prefer showing myself as assignee
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 3,
+          ),
+          shape: BoxShape.circle,
+        ),
+        child: UserAvatarWidget(size: 16),
+      );
+    }
 
     final roomId = task.roomIdStr();
     final avatarInfo = ref.watch(
