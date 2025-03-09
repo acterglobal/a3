@@ -55,6 +55,7 @@ mod verification;
 pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
+pub mod invitations;
 
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
@@ -130,6 +131,7 @@ pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
 pub use super_invites::{
     SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
 };
+pub use invitations::InvitationsManager;
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };

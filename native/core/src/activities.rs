@@ -369,6 +369,8 @@ impl Activity {
                 ))
             }
 
+            AnyActerModel::ExplicitInvite(_e) => todo!(),
+
             // -- Pin
             AnyActerModel::Pin(e) => {
                 let object = ActivityObject::Pin {

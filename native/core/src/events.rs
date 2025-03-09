@@ -12,6 +12,7 @@ pub mod settings;
 pub mod stories;
 pub mod tasks;
 pub mod three_pid;
+pub mod explicit_invites;
 
 pub use common::*;
 use matrix_sdk::{
