@@ -6,10 +6,10 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
-import 'package:acter/common/widgets/visibility/room_visibility_item.dart';
-import 'package:acter/common/widgets/visibility/visibility_selector_drawer.dart';
+import 'package:acter/common/widgets/join_rule/room_join_rule_item.dart';
+import 'package:acter/common/widgets/join_rule/room_join_rule_selector.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/spaces/actions/create_space.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -23,7 +23,7 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::spaces::create_space');
 
 // user selected visibility provider
-final _selectedVisibilityProvider = StateProvider.autoDispose<RoomVisibility?>(
+final _selectedJoinRuleProvider = StateProvider.autoDispose<RoomJoinRule?>(
   (ref) => null,
 );
 
@@ -61,21 +61,19 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       //Set default visibility based on the parent space selection
       // PRIVATE : If no parent is selected
       // SPACE VISIBLE : If parent space is selected
-      final visibleNotifier = ref.read(_selectedVisibilityProvider.notifier);
+      final visibleNotifier = ref.read(_selectedJoinRuleProvider.notifier);
       visibleNotifier.update(
         (state) =>
             widget.initialParentsSpaceId != null
-                ? RoomVisibility.SpaceVisible
-                : RoomVisibility.Private,
+                ? RoomJoinRule.Restricted
+                : RoomJoinRule.Private,
       );
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
-        final visibleNotifier = ref.read(_selectedVisibilityProvider.notifier);
+        final visibleNotifier = ref.read(_selectedJoinRuleProvider.notifier);
         visibleNotifier.update(
           (state) =>
-              next != null
-                  ? RoomVisibility.SpaceVisible
-                  : RoomVisibility.Private,
+              next != null ? RoomJoinRule.Restricted : RoomJoinRule.Private,
         );
       });
     });
@@ -243,46 +241,46 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         InkWell(
           key: CreateSpacePage.permissionsKey,
           onTap: () async {
-            final spaceVisibility = ref.read(_selectedVisibilityProvider);
+            final spaceVisibility = ref.read(_selectedJoinRuleProvider);
             final selectedSpace = ref.read(selectedSpaceIdProvider);
-            final selected = await selectVisibilityDrawer(
+            final selected = await selectJoinRuleDrawer(
               context: context,
-              selectedVisibilityEnum: spaceVisibility,
-              isLimitedVisibilityShow: selectedSpace != null,
+              selectedJoinRuleEnum: spaceVisibility,
+              isLimitedJoinRuleShow: selectedSpace != null,
             );
             if (selected != null) {
-              final notifier = ref.read(_selectedVisibilityProvider.notifier);
+              final notifier = ref.read(_selectedJoinRuleProvider.notifier);
               notifier.update((state) => selected);
             }
           },
-          child: selectedVisibility(),
+          child: selectedJoinRule(),
         ),
       ],
     );
   }
 
-  Widget selectedVisibility() {
+  Widget selectedJoinRule() {
     final lang = L10n.of(context);
-    return switch (ref.watch(_selectedVisibilityProvider)) {
-      RoomVisibility.Public => RoomVisibilityItem(
+    return switch (ref.watch(_selectedJoinRuleProvider)) {
+      RoomJoinRule.Public => RoomJoinRuleItem(
         iconData: Icons.language,
         title: lang.public,
         subtitle: lang.publicVisibilitySubtitle,
         isShowRadio: false,
       ),
-      RoomVisibility.Private => RoomVisibilityItem(
+      RoomJoinRule.Private => RoomJoinRuleItem(
         iconData: Icons.lock,
         title: lang.private,
         subtitle: lang.privateVisibilitySubtitle,
         isShowRadio: false,
       ),
-      RoomVisibility.SpaceVisible => RoomVisibilityItem(
+      RoomJoinRule.Restricted => RoomJoinRuleItem(
         iconData: Atlas.users,
         title: lang.limited,
         subtitle: lang.limitedVisibilitySubtitle,
         isShowRadio: false,
       ),
-      _ => RoomVisibilityItem(
+      _ => RoomJoinRuleItem(
         iconData: Icons.lock,
         title: lang.private,
         subtitle: lang.privateVisibilitySubtitle,
@@ -319,7 +317,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
       spaceAvatar: spaceAvatar,
       createDefaultChat: createDefaultChat,
       parentRoomId: ref.read(selectedSpaceIdProvider),
-      roomVisibility: ref.read(_selectedVisibilityProvider),
+      roomJoinRule: ref.read(_selectedJoinRuleProvider),
     );
     if (!mounted) return;
     if (newRoomId != null) {

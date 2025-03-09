@@ -42,82 +42,75 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     );
     LikeAnimation.controller = controller;
 
-    heartSize = TweenSequence(
-      <TweenSequenceItem<double>>[
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 1.0, end: 1.08).chain(
-            CurveTween(curve: Curves.easeOut),
-          ),
-          weight: 30.0,
-        ),
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 1.08, end: 1.0).chain(
-            CurveTween(curve: const Cubic(0.71, -0.01, 1.0, 1.0)),
-          ),
-          weight: 30.0,
-        ),
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 1.0, end: 0.8).chain(
-            CurveTween(curve: Curves.linear),
-          ),
-          weight: 20.0,
-        ),
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 0.8, end: 1.0).chain(
-            CurveTween(curve: Curves.elasticIn),
-          ),
-          weight: 20.0,
-        ),
-      ],
-    ).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0, 1),
+    heartSize = TweenSequence(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 1.0,
+          end: 1.08,
+        ).chain(CurveTween(curve: Curves.easeOut)),
+        weight: 30.0,
       ),
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 1.08,
+          end: 1.0,
+        ).chain(CurveTween(curve: const Cubic(0.71, -0.01, 1.0, 1.0))),
+        weight: 30.0,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 1.0,
+          end: 0.8,
+        ).chain(CurveTween(curve: Curves.linear)),
+        weight: 20.0,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 0.8,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.elasticIn)),
+        weight: 20.0,
+      ),
+    ]).animate(
+      CurvedAnimation(parent: controller, curve: const Interval(0, 1)),
     );
 
-    smallHeartOpacity = TweenSequence(
-      <TweenSequenceItem<double>>[
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 0.0, end: 1.0).chain(
-            CurveTween(curve: Curves.fastOutSlowIn),
-          ),
-          weight: 50.0,
-        ),
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 1.0, end: 0.0).chain(
-            CurveTween(curve: Curves.fastOutSlowIn),
-          ),
-          weight: 50.0,
-        ),
-      ],
-    ).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0, 0.7),
+    smallHeartOpacity = TweenSequence(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 0.0,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+        weight: 50.0,
       ),
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 1.0,
+          end: 0.0,
+        ).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+        weight: 50.0,
+      ),
+    ]).animate(
+      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
     );
 
-    sizedBoxsize = TweenSequence(
-      <TweenSequenceItem<double>>[
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 1.0, end: 0.7).chain(
-            CurveTween(curve: Curves.fastOutSlowIn),
-          ),
-          weight: 50.0,
-        ),
-        TweenSequenceItem<double>(
-          tween: Tween(begin: 0.7, end: 1.0).chain(
-            CurveTween(curve: Curves.fastOutSlowIn),
-          ),
-          weight: 50.0,
-        ),
-      ],
-    ).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0, 0.7),
+    sizedBoxsize = TweenSequence(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 1.0,
+          end: 0.7,
+        ).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+        weight: 50.0,
       ),
+      TweenSequenceItem<double>(
+        tween: Tween(
+          begin: 0.7,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.fastOutSlowIn)),
+        weight: 50.0,
+      ),
+    ]).animate(
+      CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
     );
   }
 
@@ -149,43 +142,46 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                     },
                     child: ShadowEffectWidget(
                       child: _LikeWidget(
-                        size: Size(
-                          heartSize.value * 30,
-                          heartSize.value * 30,
-                        ),
-                        icon: widget.isLiked
-                            ? Icon(
-                                Atlas.heart,
-                                fill: 1.0,
-                                color: Theme.of(context).colorScheme.error,
-                              )
-                            : const Icon(Atlas.heart),
-                        color: widget.isLiked
-                            ? Theme.of(context).colorScheme.tertiary
-                            : widget.color,
+                        size: Size(heartSize.value * 30, heartSize.value * 30),
+                        icon:
+                            widget.isLiked
+                                ? Icon(
+                                  Atlas.heart,
+                                  fill: 1.0,
+                                  color: Theme.of(context).colorScheme.error,
+                                )
+                                : const Icon(Atlas.heart),
+                        color:
+                            widget.isLiked
+                                ? Theme.of(context).colorScheme.tertiary
+                                : widget.color,
                         isSmall: false,
                       ),
                     ),
                   ),
                   Align(
                     alignment: Alignment.bottomLeft,
-                    child:
-                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
+                    child: _SmallHeartWidget(
+                      smallHeartOpacity: smallHeartOpacity,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.topRight,
-                    child:
-                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
+                    child: _SmallHeartWidget(
+                      smallHeartOpacity: smallHeartOpacity,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.topLeft,
-                    child:
-                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
+                    child: _SmallHeartWidget(
+                      smallHeartOpacity: smallHeartOpacity,
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
-                    child:
-                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
+                    child: _SmallHeartWidget(
+                      smallHeartOpacity: smallHeartOpacity,
+                    ),
                   ),
                 ],
               ),
@@ -193,10 +189,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
           },
         ),
         ShadowEffectWidget(
-          child: Text(
-            widget.likeCount.toString(),
-            style: widget.style,
-          ),
+          child: Text(widget.likeCount.toString(), style: widget.style),
         ),
       ],
     );
@@ -223,9 +216,7 @@ class _LikeWidget extends StatelessWidget {
 }
 
 class _SmallHeartWidget extends StatelessWidget {
-  const _SmallHeartWidget({
-    required this.smallHeartOpacity,
-  });
+  const _SmallHeartWidget({required this.smallHeartOpacity});
 
   final Animation<double> smallHeartOpacity;
 
@@ -233,10 +224,9 @@ class _SmallHeartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Icon(
       Icons.favorite,
-      color: Theme.of(context)
-          .colorScheme
-          .tertiary
-          .withValues(alpha:smallHeartOpacity.value * 0.8),
+      color: Theme.of(
+        context,
+      ).colorScheme.tertiary.withValues(alpha: smallHeartOpacity.value * 0.8),
       size: 12,
     );
   }
