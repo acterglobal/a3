@@ -551,7 +551,6 @@ class _TaskItemBody extends ConsumerWidget {
       await task.unassignSelf();
 
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
-      if (!context.mounted) return;
       EasyLoading.showToast(lang.assignmentWithdrawn);
     } catch (e, s) {
       _log.severe('Failed to self-unassign task', e, s);
