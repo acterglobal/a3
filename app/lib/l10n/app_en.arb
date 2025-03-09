@@ -1150,6 +1150,8 @@
     "@takeAFirstStep": {},
     "taskListName": "Task list name",
     "@taskListName": {},
+    "you": "You",
+    "@you": {},
     "tasks": "Tasks",
     "@tasks": {},
     "termsOfService": "Terms of Service",

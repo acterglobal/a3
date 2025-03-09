@@ -36,6 +36,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 final _log = Logger('a3::tasks::task_item_details');
 
@@ -439,6 +440,20 @@ class TaskItemDetailPage extends ConsumerWidget {
                   roomId: roomId,
                   memberId: memberId,
                   style: Theme.of(context).textTheme.bodyLarge,
+                  onTap:
+                      (
+                        context, {
+                        required bool isMe,
+                        required VoidCallback defaultOnTap,
+                      }) =>
+                          !isMe
+                              ? defaultOnTap()
+                              : onUnAssign(context, ref, task),
+                  trailingBuilder:
+                      (context, {bool isMe = false, double fontSize = 12}) =>
+                          isMe
+                              ? Icon(PhosphorIconsLight.x, size: fontSize)
+                              : null,
                 ),
               )
               .toList(),
