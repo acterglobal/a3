@@ -5,6 +5,7 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -421,41 +422,26 @@ class TaskItemDetailPage extends ConsumerWidget {
           ),
         ],
       ),
-      subtitle:
-          task.isAssignedToMe()
-              ? assigneeName(context, task, ref)
-              : Text(lang.noAssignment, style: textTheme.bodyMedium),
+      subtitle: assignees(context, task, ref),
     );
   }
 
-  Widget assigneeName(BuildContext context, Task task, WidgetRef ref) {
+  Widget assignees(BuildContext context, Task task, WidgetRef ref) {
     final assignees = asDartStringList(task.assigneesStr());
     final roomId = task.roomIdStr();
 
     return Wrap(
       direction: Axis.horizontal,
       children:
-          assignees.map((userId) {
-            final dispName =
-                ref
-                    .watch(
-                      memberDisplayNameProvider((
-                        roomId: roomId,
-                        userId: userId,
-                      ),),
-                    )
-                    .valueOrNull;
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Chip(
-                labelPadding: EdgeInsets.zero,
-                label: Text(
-                  dispName ?? userId,
-                  style: Theme.of(context).textTheme.bodyMedium,
+          assignees
+              .map(
+                (memberId) => UserChip(
+                  roomId: roomId,
+                  memberId: memberId,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-              ),
-            );
-          }).toList(),
+              )
+              .toList(),
     );
   }
 
