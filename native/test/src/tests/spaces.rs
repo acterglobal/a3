@@ -260,6 +260,157 @@ async fn create_subspace() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
+    assert_eq!(space.join_rule_str(), "restricted");
+    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+        let space = space.clone();
+        async move {
+            let space_relations = space.space_relations().await?;
+            let Some(space_parent) = space_relations.main_parent() else {
+                bail!("space misses main parent");
+            };
+            Ok(space_parent)
+        }
+    })
+    .await?;
+
+    assert_eq!(space_parent.room_id(), first.room_id());
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.spaces().await?.is_empty() {
+            bail!("still no spaces found");
+        }
+        Ok(())
+    })
+    .await?;
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn create_private_subspace() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let first = spaces.pop().unwrap();
+
+    let mut cfg = new_space_settings_builder();
+    cfg.set_name("subspace".to_owned());
+    cfg.set_parent(first.room_id().to_string());
+    cfg.join_rule("private".to_string());
+
+    let settings = cfg.build()?;
+    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
+
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 2 {
+                bail!("not the right number of spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let space = user.space(subspace_id.to_string()).await?;
+    assert_eq!(space.join_rule_str(), "private");
+    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+        let space = space.clone();
+        async move {
+            let space_relations = space.space_relations().await?;
+            let Some(space_parent) = space_relations.main_parent() else {
+                bail!("space misses main parent");
+            };
+            Ok(space_parent)
+        }
+    })
+    .await?;
+
+    assert_eq!(space_parent.room_id(), first.room_id());
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.spaces().await?.is_empty() {
+            bail!("still no spaces found");
+        }
+        Ok(())
+    })
+    .await?;
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn create_public_subspace() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let first = spaces.pop().unwrap();
+
+    let mut cfg = new_space_settings_builder();
+    cfg.set_name("subspace".to_owned());
+    cfg.set_parent(first.room_id().to_string());
+    cfg.join_rule("PUBLIC".to_string());
+
+    let settings = cfg.build()?;
+    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
+
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 2 {
+                bail!("not the right number of spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let space = user.space(subspace_id.to_string()).await?;
+    assert_eq!(space.join_rule_str(), "public");
     let space_parent = Retry::spawn(retry_strategy.clone(), move || {
         let space = space.clone();
         async move {

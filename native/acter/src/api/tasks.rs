@@ -702,6 +702,13 @@ impl Task {
         let event_id = self.content.event_id().to_owned();
         crate::AttachmentsManager::new(client, room, event_id).await
     }
+
+    pub async fn invitations(&self) -> Result<crate::InvitationsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+        crate::InvitationsManager::new(client, room, event_id).await
+    }
 }
 
 #[derive(Clone)]

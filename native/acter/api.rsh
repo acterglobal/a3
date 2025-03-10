@@ -2990,6 +2990,9 @@ object CreateSpaceSettingsBuilder {
     /// set the space’s visibility to either Public or Private
     fn set_visibility(value: string);
 
+    /// set who can join the space. either public, private, knock, knockrestricted, restricted
+    fn join_rule(value: string);
+
     /// append user id that will be invited to this space
     fn add_invitee(value: string) -> Result<()>;
 
@@ -3004,6 +3007,8 @@ object CreateSpaceSettingsBuilder {
     fn set_avatar_uri(value: string);
 
     /// set the parent of space
+    /// if the join rule is restricted or knockrestricted AND a parent is set
+    /// the space will be a subspace of the parent space
     fn set_parent(value: string);
 
     fn build() -> CreateSpaceSettings;

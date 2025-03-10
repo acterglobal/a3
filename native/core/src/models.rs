@@ -19,6 +19,7 @@ mod tag;
 mod tasks;
 #[cfg(any(test, feature = "testing"))]
 mod test;
+mod invites;
 
 pub use any::{ActerModel, AnyActerModel};
 pub use attachments::{Attachment, AttachmentUpdate, AttachmentsManager, AttachmentsStats};
@@ -41,6 +42,7 @@ pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
 };
+pub use invites::{InvitationsManager, InviteStats};
 
 #[cfg(any(test, feature = "testing"))]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
