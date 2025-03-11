@@ -9,49 +9,46 @@ class ChatEditorLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Skeletonizer(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.emoji_emotions, size: 20),
           ),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.emoji_emotions, size: 20),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).unselectedWidgetColor.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .unselectedWidgetColor
-                        .withValues(alpha:0.5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const SingleChildScrollView(
-                    child: IntrinsicHeight(
-                      child: HtmlEditor(
-                        footer: null,
-                        editable: true,
-                        shrinkWrap: true,
-                        editorPadding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                      ),
+              child: const SingleChildScrollView(
+                child: IntrinsicHeight(
+                  child: HtmlEditor(
+                    footer: null,
+                    editable: true,
+                    shrinkWrap: true,
+                    editorPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
                     ),
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Atlas.paperclip_attachment_thin,
-                  size: 20,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      );
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Atlas.paperclip_attachment_thin, size: 20),
+          ),
+        ],
+      ),
+    ),
+  );
 }

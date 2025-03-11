@@ -3,17 +3,9 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 part 'chat_input_state.freezed.dart';
 
-enum SelectedMessageState {
-  none,
-  actions,
-  replyTo,
-  edit,
-}
+enum SelectedMessageState { none, actions, replyTo, edit }
 
-enum SendingState {
-  preparing,
-  sending,
-}
+enum SendingState { preparing, sending }
 
 @freezed
 class ChatInputState with _$ChatInputState {

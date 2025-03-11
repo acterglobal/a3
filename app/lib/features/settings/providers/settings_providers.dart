@@ -6,11 +6,13 @@ import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final allowSentryReportingProvider =
-    FutureProvider((ref) => getCanReportToSentry());
+final allowSentryReportingProvider = FutureProvider(
+  (ref) => getCanReportToSentry(),
+);
 
-final localeProvider =
-    StateNotifierProvider<LocaleNotifier, String>((ref) => LocaleNotifier());
+final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
+  (ref) => LocaleNotifier(),
+);
 
 final ignoredUsersProvider = FutureProvider<List<UserId>>((ref) async {
   final account = await ref.watch(accountProvider.future);
@@ -22,8 +24,9 @@ final pushersProvider = FutureProvider<List<Pusher>>((ref) async {
   return (await client.pushers()).toList();
 });
 
-final possibleEmailToAddForPushProvider =
-    FutureProvider<List<String>>((ref) async {
+final possibleEmailToAddForPushProvider = FutureProvider<List<String>>((
+  ref,
+) async {
   final emailAddress = await ref.watch(emailAddressesProvider.future);
   if (emailAddress.confirmed.isEmpty) {
     return [];
@@ -49,15 +52,16 @@ final possibleEmailToAddForPushProvider =
 enum OpenSystemLinkSetting {
   open,
   // prompt // ask what to do
-  copy;
+  copy,
 }
 
 final openSystemLinkSettingsProvider =
     createMapPrefProvider<OpenSystemLinkSetting>(
-  prefKey: 'openSystemLinkSettings',
-  mapFrom: (v) => OpenSystemLinkSetting.values.firstWhere(
-    (e) => e.toString() == v,
-    orElse: () => OpenSystemLinkSetting.open,
-  ),
-  mapTo: (v) => v.toString(),
-);
+      prefKey: 'openSystemLinkSettings',
+      mapFrom:
+          (v) => OpenSystemLinkSetting.values.firstWhere(
+            (e) => e.toString() == v,
+            orElse: () => OpenSystemLinkSetting.open,
+          ),
+      mapTo: (v) => v.toString(),
+    );

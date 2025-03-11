@@ -109,8 +109,10 @@ class RoomCard extends ConsumerWidget {
     this.subtitleTextStyle,
     this.leadingAndTrailingTextStyle,
     this.avatarSize = 48,
-    this.contentPadding =
-        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    this.contentPadding = const EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: 6,
+    ),
     this.margin,
     this.shape,
     this.withBorder = true,
@@ -151,7 +153,8 @@ class RoomCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
-    final isBookmarked = ref.watch(spaceIsBookmarkedProvider(roomId)).valueOrNull ?? false;
+    final isBookmarked =
+        ref.watch(spaceIsBookmarkedProvider(roomId)).valueOrNull ?? false;
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     if (room == null && refDetails != null) {
       return ReferenceDetailsItem(refDetails: refDetails!);

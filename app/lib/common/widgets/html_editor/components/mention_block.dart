@@ -29,15 +29,15 @@ class MentionBlock extends ConsumerWidget {
 
     final options = switch (type) {
       MentionType.user => AvatarOptions.DM(
-          ref.watch(
-            memberAvatarInfoProvider(
-              (roomId: userRoomId, userId: mentionId),
-            ),
-          ),
-          size: 8,
+        ref.watch(
+          memberAvatarInfoProvider((roomId: userRoomId, userId: mentionId)),
         ),
-      MentionType.room =>
-        AvatarOptions(ref.watch(roomAvatarInfoProvider(mentionId)), size: 16),
+        size: 8,
+      ),
+      MentionType.room => AvatarOptions(
+        ref.watch(roomAvatarInfoProvider(mentionId)),
+        size: 16,
+      ),
     };
 
     return _mentionContent(
@@ -78,12 +78,13 @@ class MentionBlock extends ConsumerWidget {
     final Widget content = GestureDetector(
       onTap: _handleUserTap,
       behavior: HitTestBehavior.opaque,
-      child: hasMouseConnected
-          ? MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: mentionContentWidget,
-            )
-          : mentionContentWidget,
+      child:
+          hasMouseConnected
+              ? MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: mentionContentWidget,
+              )
+              : mentionContentWidget,
     );
 
     return content;

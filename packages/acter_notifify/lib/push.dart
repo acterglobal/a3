@@ -72,7 +72,7 @@ Future<void> initializePush({
       // FIXME: how to identify which clients are connected to this?
       _log.info('Just got a new FCM registration token: $token');
       final clients =
-      currentClientsGen == null ? [] : await currentClientsGen();
+          currentClientsGen == null ? [] : await currentClientsGen();
       for (final client in clients) {
         final deviceId = client.deviceId().toString();
         try {
@@ -93,7 +93,8 @@ Future<void> initializePush({
   }
 }
 
-Future<bool> _handlePushMessage(RemoteMessage message, {
+Future<bool> _handlePushMessage(
+  RemoteMessage message, {
   bool background = false,
   ShouldShowCheck? shouldShowCheck,
 }) async {
@@ -105,7 +106,8 @@ Future<bool> _handlePushMessage(RemoteMessage message, {
       background: background, shouldShowCheck: shouldShowCheck);
 }
 
-Future<bool?> setupPushNotificationsForDevice(Client client, {
+Future<bool?> setupPushNotificationsForDevice(
+  Client client, {
   required String appName,
   required String appIdPrefix,
   required String pushServerUrl,

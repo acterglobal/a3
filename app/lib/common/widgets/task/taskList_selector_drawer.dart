@@ -12,11 +12,13 @@ Future<String?> selectTaskListDrawer({
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    builder: (context) => TasksListPage(
-      spaceId: spaceId,
-      showOnlyTaskList: true,
-      onSelectTaskListItem: (taskListId) => Navigator.pop(context, taskListId),
-    ),
+    builder:
+        (context) => TasksListPage(
+          spaceId: spaceId,
+          showOnlyTaskList: true,
+          onSelectTaskListItem:
+              (taskListId) => Navigator.pop(context, taskListId),
+        ),
   );
   return taskListId == '' ? null : taskListId;
 }

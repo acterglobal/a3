@@ -46,7 +46,7 @@ class EventDateWidget extends StatelessWidget {
   }
 
   Color getColorBasedOnEventType(BuildContext context) => switch (eventType) {
-        EventFilters.past => Colors.grey.shade800,
-        _ => Theme.of(context).primaryColor
-      };
+    EventFilters.past => Colors.grey.shade800,
+    _ => Theme.of(context).primaryColor,
+  };
 }

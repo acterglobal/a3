@@ -43,10 +43,7 @@ class BriefRoomEntry extends ConsumerWidget {
     return ListTile(
       key: Key('$keyPrefix-$roomId'),
       enabled: (canPermission),
-      leading: RoomAvatarBuilder(
-        roomId: roomId,
-        avatarSize: 24,
-      ),
+      leading: RoomAvatarBuilder(roomId: roomId, avatarSize: 24),
       title: Text(roomName),
       subtitle: subtitle,
       trailing: trailing,

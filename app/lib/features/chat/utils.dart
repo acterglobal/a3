@@ -16,8 +16,9 @@ import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart';
 
 //Check for mentioned user link
-final mentionedUserLinkRegex =
-    RegExp(r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)');
+final mentionedUserLinkRegex = RegExp(
+  r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)',
+);
 
 bool renderCustomMessageBubble(types.CustomMessage message) {
   switch (message.metadata?['eventType']) {
@@ -174,7 +175,6 @@ Future<void> navigateToRoomOrAskToJoin(
       goToChat(context, roomId);
     }
   }
-
   /// Ask to join room if not yet joined
   else {
     showRoomPreview(context: context, roomIdOrAlias: roomId);
@@ -213,8 +213,10 @@ String parseEditMsg(types.Message message) {
       final aTagElementList = document.getElementsByTagName('a');
 
       for (final aTagElement in aTagElementList) {
-        final userMentionMessageData =
-            parseUserMentionMessage(msg, aTagElement);
+        final userMentionMessageData = parseUserMentionMessage(
+          msg,
+          aTagElement,
+        );
         msg = userMentionMessageData.parsedMessage;
       }
 
@@ -347,7 +349,6 @@ Future<void> onMessageLinkTap(
     if (roomId != null) {
       goToChat(context, roomId);
     }
-
     ///If link is other than matrix room link
     ///Then open it on browser
     else {

@@ -12,7 +12,8 @@ part of 'pin_edit_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$PinEditState {
@@ -32,15 +33,17 @@ mixin _$PinEditState {
 /// @nodoc
 abstract class $PinEditStateCopyWith<$Res> {
   factory $PinEditStateCopyWith(
-          PinEditState value, $Res Function(PinEditState) then) =
-      _$PinEditStateCopyWithImpl<$Res, PinEditState>;
+    PinEditState value,
+    $Res Function(PinEditState) then,
+  ) = _$PinEditStateCopyWithImpl<$Res, PinEditState>;
   @useResult
-  $Res call(
-      {String title,
-      String link,
-      String markdown,
-      String? html,
-      bool editMode});
+  $Res call({
+    String title,
+    String link,
+    String markdown,
+    String? html,
+    bool editMode,
+  });
 }
 
 /// @nodoc
@@ -64,28 +67,36 @@ class _$PinEditStateCopyWithImpl<$Res, $Val extends PinEditState>
     Object? html = freezed,
     Object? editMode = null,
   }) {
-    return _then(_value.copyWith(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      link: null == link
-          ? _value.link
-          : link // ignore: cast_nullable_to_non_nullable
-              as String,
-      markdown: null == markdown
-          ? _value.markdown
-          : markdown // ignore: cast_nullable_to_non_nullable
-              as String,
-      html: freezed == html
-          ? _value.html
-          : html // ignore: cast_nullable_to_non_nullable
-              as String?,
-      editMode: null == editMode
-          ? _value.editMode
-          : editMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            title:
+                null == title
+                    ? _value.title
+                    : title // ignore: cast_nullable_to_non_nullable
+                        as String,
+            link:
+                null == link
+                    ? _value.link
+                    : link // ignore: cast_nullable_to_non_nullable
+                        as String,
+            markdown:
+                null == markdown
+                    ? _value.markdown
+                    : markdown // ignore: cast_nullable_to_non_nullable
+                        as String,
+            html:
+                freezed == html
+                    ? _value.html
+                    : html // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            editMode:
+                null == editMode
+                    ? _value.editMode
+                    : editMode // ignore: cast_nullable_to_non_nullable
+                        as bool,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -93,16 +104,18 @@ class _$PinEditStateCopyWithImpl<$Res, $Val extends PinEditState>
 abstract class _$$PinEditStateImplCopyWith<$Res>
     implements $PinEditStateCopyWith<$Res> {
   factory _$$PinEditStateImplCopyWith(
-          _$PinEditStateImpl value, $Res Function(_$PinEditStateImpl) then) =
-      __$$PinEditStateImplCopyWithImpl<$Res>;
+    _$PinEditStateImpl value,
+    $Res Function(_$PinEditStateImpl) then,
+  ) = __$$PinEditStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {String title,
-      String link,
-      String markdown,
-      String? html,
-      bool editMode});
+  $Res call({
+    String title,
+    String link,
+    String markdown,
+    String? html,
+    bool editMode,
+  });
 }
 
 /// @nodoc
@@ -110,8 +123,9 @@ class __$$PinEditStateImplCopyWithImpl<$Res>
     extends _$PinEditStateCopyWithImpl<$Res, _$PinEditStateImpl>
     implements _$$PinEditStateImplCopyWith<$Res> {
   __$$PinEditStateImplCopyWithImpl(
-      _$PinEditStateImpl _value, $Res Function(_$PinEditStateImpl) _then)
-      : super(_value, _then);
+    _$PinEditStateImpl _value,
+    $Res Function(_$PinEditStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of PinEditState
   /// with the given fields replaced by the non-null parameter values.
@@ -124,40 +138,48 @@ class __$$PinEditStateImplCopyWithImpl<$Res>
     Object? html = freezed,
     Object? editMode = null,
   }) {
-    return _then(_$PinEditStateImpl(
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      link: null == link
-          ? _value.link
-          : link // ignore: cast_nullable_to_non_nullable
-              as String,
-      markdown: null == markdown
-          ? _value.markdown
-          : markdown // ignore: cast_nullable_to_non_nullable
-              as String,
-      html: freezed == html
-          ? _value.html
-          : html // ignore: cast_nullable_to_non_nullable
-              as String?,
-      editMode: null == editMode
-          ? _value.editMode
-          : editMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
+    return _then(
+      _$PinEditStateImpl(
+        title:
+            null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                    as String,
+        link:
+            null == link
+                ? _value.link
+                : link // ignore: cast_nullable_to_non_nullable
+                    as String,
+        markdown:
+            null == markdown
+                ? _value.markdown
+                : markdown // ignore: cast_nullable_to_non_nullable
+                    as String,
+        html:
+            freezed == html
+                ? _value.html
+                : html // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        editMode:
+            null == editMode
+                ? _value.editMode
+                : editMode // ignore: cast_nullable_to_non_nullable
+                    as bool,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$PinEditStateImpl implements _PinEditState {
-  const _$PinEditStateImpl(
-      {required this.title,
-      required this.link,
-      this.markdown = '',
-      this.html = null,
-      this.editMode = false});
+  const _$PinEditStateImpl({
+    required this.title,
+    required this.link,
+    this.markdown = '',
+    this.html = null,
+    this.editMode = false,
+  });
 
   @override
   final String title;
@@ -206,12 +228,13 @@ class _$PinEditStateImpl implements _PinEditState {
 }
 
 abstract class _PinEditState implements PinEditState {
-  const factory _PinEditState(
-      {required final String title,
-      required final String link,
-      final String markdown,
-      final String? html,
-      final bool editMode}) = _$PinEditStateImpl;
+  const factory _PinEditState({
+    required final String title,
+    required final String link,
+    final String markdown,
+    final String? html,
+    final bool editMode,
+  }) = _$PinEditStateImpl;
 
   @override
   String get title;

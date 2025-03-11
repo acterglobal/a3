@@ -36,10 +36,7 @@ class MockSpace extends Mock implements Space {
   final String id;
   final bool bookmarked;
 
-  MockSpace({
-    this.id = 'id',
-    this.bookmarked = false,
-  });
+  MockSpace({this.id = 'id', this.bookmarked = false});
 
   @override
   String getRoomIdStr() => id;
