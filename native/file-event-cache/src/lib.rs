@@ -1,7 +1,11 @@
 use async_trait::async_trait;
 use base64ct::{Base64UrlUnpadded, Encoding};
 use core::fmt::Debug;
-use matrix_sdk::{deserialized_responses::TimelineEvent, ruma::OwnedEventId};
+use matrix_sdk::{
+    deserialized_responses::TimelineEvent,
+    linked_chunk::Position,
+    ruma::{EventId, OwnedEventId},
+};
 use matrix_sdk_base::{
     event_cache::{
         store::{
@@ -256,9 +260,20 @@ where
         &self,
         room_id: &RoomId,
         events: Vec<OwnedEventId>,
-    ) -> Result<Vec<OwnedEventId>, Self::Error> {
+    ) -> Result<Vec<(OwnedEventId, Position)>, Self::Error> {
         self.inner
             .filter_duplicated_events(room_id, events)
+            .await
+            .map_err(|e| e.into())
+    }
+
+    async fn find_event(
+        &self,
+        room_id: &RoomId,
+        event_id: &EventId,
+    ) -> Result<Option<(Position, TimelineEvent)>, Self::Error> {
+        self.inner
+            .find_event(room_id, event_id)
             .await
             .map_err(|e| e.into())
     }
