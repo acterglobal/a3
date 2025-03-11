@@ -16,13 +16,8 @@ void nukeConfirmationDialog(BuildContext context, WidgetRef ref) {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Atlas.bomb_bold,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
+            Icon(Atlas.bomb_bold, color: Theme.of(context).colorScheme.error),
+            const SizedBox(height: 10),
             const Text('Nuke all local data'),
           ],
         ),

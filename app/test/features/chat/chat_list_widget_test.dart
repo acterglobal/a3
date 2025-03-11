@@ -34,20 +34,15 @@ void main() {
       ); // Ensure the empty state widget is displayed
     });
 
-    testWidgets('displays list of chats when data is available',
-        (tester) async {
+    testWidgets('displays list of chats when data is available', (
+      tester,
+    ) async {
       // Arrange
       final convo1 = MockConvo('roomId-1');
       final convo2 = MockConvo('roomId-2');
       final convo3 = MockConvo('roomId-3');
 
-      final provider = Provider<List<Convo>>(
-        (ref) => [
-          convo1,
-          convo2,
-          convo3,
-        ],
-      );
+      final provider = Provider<List<Convo>>((ref) => [convo1, convo2, convo3]);
 
       //Arrange:
       var emptyState = Text('empty state');

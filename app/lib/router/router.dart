@@ -67,8 +67,9 @@ Future<String?> forwardRedirect(
     }
     Client client;
     try {
-      final deviceId = state.uri.queryParameters['deviceId']
-          .expect('query params should contain device id');
+      final deviceId = state.uri.queryParameters['deviceId'].expect(
+        'query params should contain device id',
+      );
       client = await acterSdk.getClientWithDeviceId(deviceId, true);
     } catch (e, s) {
       _log.severe('Specified Client not found', e, s);
@@ -137,14 +138,8 @@ Page defaultPageBuilder({
   required Widget child,
 }) =>
     context.isLargeScreen
-        ? NoTransitionPage(
-            key: state.pageKey,
-            child: child,
-          )
-        : MaterialPage(
-            key: state.pageKey,
-            child: child,
-          );
+        ? NoTransitionPage(key: state.pageKey, child: child)
+        : MaterialPage(key: state.pageKey, child: child);
 
 final GlobalKey<NavigatorState> rootNavKey = GlobalKey<NavigatorState>(
   debugLabel: 'root',
@@ -169,26 +164,14 @@ final GlobalKey<NavigatorState> searchTabNavKey = GlobalKey<NavigatorState>(
 );
 
 final shellBranches = [
-  StatefulShellBranch(
-    navigatorKey: homeTabNavKey,
-    routes: homeShellRoutes,
-  ),
-  StatefulShellBranch(
-    navigatorKey: updateTabNavKey,
-    routes: updateShellRoutes,
-  ),
-  StatefulShellBranch(
-    navigatorKey: chatTabNavKey,
-    routes: chatShellRoutes,
-  ),
+  StatefulShellBranch(navigatorKey: homeTabNavKey, routes: homeShellRoutes),
+  StatefulShellBranch(navigatorKey: updateTabNavKey, routes: updateShellRoutes),
+  StatefulShellBranch(navigatorKey: chatTabNavKey, routes: chatShellRoutes),
   StatefulShellBranch(
     navigatorKey: activitiesTabNavKey,
     routes: activitiesShellRoutes,
   ),
-  StatefulShellBranch(
-    navigatorKey: searchTabNavKey,
-    routes: searchShellRoutes,
-  ),
+  StatefulShellBranch(navigatorKey: searchTabNavKey, routes: searchShellRoutes),
 ];
 
 final goRouter = GoRouter(

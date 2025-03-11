@@ -30,13 +30,14 @@ Widget localChatsListUI(
         roomId: roomId,
         showParents: false,
         onTap: () => goToChat(context, roomId),
-        trailing: showOptions
-            ? RoomHierarchyOptionsMenu(
-                isSuggested: suggestedId.contains(roomId),
-                childId: roomId,
-                parentId: spaceId,
-              )
-            : null,
+        trailing:
+            showOptions
+                ? RoomHierarchyOptionsMenu(
+                  isSuggested: suggestedId.contains(roomId),
+                  childId: roomId,
+                  parentId: spaceId,
+                )
+                : null,
       );
     },
   );

@@ -55,7 +55,8 @@ class MockRoomPreview with Mock implements RoomPreview {}
 // Mock of RoomNotifier that returns a Room when requested.
 class MockRoomNotifier extends Mock implements AsyncMaybeRoomNotifier {}
 
-class MockRoomUserSettingsNotifier extends Mock implements MockRoomUserSettings {}
+class MockRoomUserSettingsNotifier extends Mock
+    implements MockRoomUserSettings {}
 
 // Notifier to manage the state of the space's bookmarked status
 class MockSpaceIsBookmarkedNotifier {

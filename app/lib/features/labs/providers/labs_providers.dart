@@ -8,8 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const labsKey = 'a3.labs';
 
-final asyncFeaturesProvider =
-    FutureProvider<Features<LabsFeature>>((ref) async {
+final asyncFeaturesProvider = FutureProvider<Features<LabsFeature>>((
+  ref,
+) async {
   final prefInstance = await sharedPrefs();
   final currentData = prefInstance.getString(labsKey) ?? '[]';
   final features = featureFlagsFromJson<LabsFeature>(
@@ -23,20 +24,20 @@ final asyncFeaturesProvider =
 });
 
 final featuresProvider =
-    StateNotifierProvider<SharedPrefFeaturesNotifier, Features<LabsFeature>>(
-        (ref) {
-  return SharedPrefFeaturesNotifier(
-    labsKey,
-    ref,
-  );
-});
+    StateNotifierProvider<SharedPrefFeaturesNotifier, Features<LabsFeature>>((
+      ref,
+    ) {
+      return SharedPrefFeaturesNotifier(labsKey, ref);
+    });
 
 final isActiveProvider = StateProvider.family<bool, LabsFeature>(
   (ref, feature) => ref.watch(featuresProvider).isActive(feature),
 );
 
-final asyncIsActiveProvider =
-    FutureProvider.family<bool, LabsFeature>((ref, feature) async {
+final asyncIsActiveProvider = FutureProvider.family<bool, LabsFeature>((
+  ref,
+  feature,
+) async {
   return (await ref.watch(asyncFeaturesProvider.future)).isActive(feature);
 });
 

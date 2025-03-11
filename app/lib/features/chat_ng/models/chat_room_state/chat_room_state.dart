@@ -51,10 +51,7 @@ class ChatRoomState with _$ChatRoomState {
       this.messages.entries.where((entry) => entry.key != removedItem),
     );
     listState?.removeItem(idx, (a, b) => const SizedBox.shrink());
-    return copyWith(
-      messageList: messageList,
-      messages: messages,
-    );
+    return copyWith(messageList: messageList, messages: messages);
   }
 
   ChatRoomState copyWithNewMessageAt(
@@ -65,10 +62,7 @@ class ChatRoomState with _$ChatRoomState {
     final uniqueId = m.uniqueId();
     if (this.messageList.isEmpty) {
       listState?.insertItem(0);
-      return copyWith(
-        messageList: [uniqueId],
-        messages: {uniqueId: m},
-      );
+      return copyWith(messageList: [uniqueId], messages: {uniqueId: m});
     }
     final messageList = this.messageList.toList();
     messageList.insert(idx, uniqueId);
@@ -77,9 +71,6 @@ class ChatRoomState with _$ChatRoomState {
     messages[uniqueId] = m;
 
     listState?.insertItem(idx);
-    return copyWith(
-      messageList: messageList,
-      messages: messages,
-    );
+    return copyWith(messageList: messageList, messages: messages);
   }
 }

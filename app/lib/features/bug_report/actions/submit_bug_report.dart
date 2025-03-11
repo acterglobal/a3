@@ -26,8 +26,8 @@ Future<String> submitBugReport({
   request.fields.addAll({
     'text': title,
     'user_agent': userAgent,
-    'app': Env
-        .rageshakeAppName, // should be same as one among github_project_mappings
+    'app':
+        Env.rageshakeAppName, // should be same as one among github_project_mappings
     'version': Env.rageshakeAppVersion,
   });
   request.fields.addAll(extraFields);

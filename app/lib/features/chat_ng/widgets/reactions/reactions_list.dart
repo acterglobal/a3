@@ -24,8 +24,8 @@ class ReactionsList extends ConsumerWidget {
     if (reactions.isEmpty) return const SizedBox.shrink();
     return ReactionChipsWidget(
       reactions: reactions,
-      onReactionTap: (emoji) =>
-          toggleReactionAction(ref, roomId, messageId, emoji),
+      onReactionTap:
+          (emoji) => toggleReactionAction(ref, roomId, messageId, emoji),
       onReactionLongPress: () => showReactionsSheet(context, reactions),
     );
   }
@@ -33,10 +33,9 @@ class ReactionsList extends ConsumerWidget {
   void showReactionsSheet(BuildContext context, List<ReactionItem> reactions) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => ReactionDetailsSheet(
-        roomId: roomId,
-        reactions: reactions,
-      ),
+      builder:
+          (context) =>
+              ReactionDetailsSheet(roomId: roomId, reactions: reactions),
     );
   }
 }

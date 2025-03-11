@@ -32,10 +32,7 @@ Future<void> attachRefDetailToPin({
     );
 
     if (!context.mounted) return;
-    context.pushNamed(
-      Routes.pin.name,
-      pathParameters: {'pinId': targetPinId},
-    );
+    context.pushNamed(Routes.pin.name, pathParameters: {'pinId': targetPinId});
   }
 }
 
@@ -46,8 +43,9 @@ Future<void> attachRefDetailToEvent({
 }) async {
   final targetEventId = await selectEventDrawer(context: context);
   if (targetEventId != null) {
-    final targetEventObject =
-        await ref.read(calendarEventProvider(targetEventId).future);
+    final targetEventObject = await ref.read(
+      calendarEventProvider(targetEventId).future,
+    );
     final attachmentManager = await targetEventObject.attachments();
 
     //Upload ref attachment
@@ -74,8 +72,9 @@ Future<void> attachRefDetailToTaskList({
 }) async {
   final targetTaskListId = await selectTaskListDrawer(context: context);
   if (targetTaskListId != null) {
-    final targetTaskListObject =
-        await ref.read(taskListProvider(targetTaskListId).future);
+    final targetTaskListObject = await ref.read(
+      taskListProvider(targetTaskListId).future,
+    );
     final attachmentManager = await targetTaskListObject.attachments();
 
     //Upload ref attachment

@@ -16,11 +16,7 @@ class VideoSlide extends StatefulWidget {
   final UpdateSlide slide;
   final NewsMediaErrorState errorState; // Add the enum as a parameter
 
-  const VideoSlide({
-    super.key,
-    required this.slide,
-    required this.errorState,
-  });
+  const VideoSlide({super.key, required this.slide, required this.errorState});
 
   @override
   State<VideoSlide> createState() => _VideoSlideState();
@@ -72,12 +68,7 @@ class _VideoSlideState extends State<VideoSlide> {
   }
 
   Widget buildVideoLoadingUI() {
-    return Center(
-      child: Icon(
-        PhosphorIcons.video(),
-        size: 100,
-      ),
-    );
+    return Center(child: Icon(PhosphorIcons.video(), size: 100));
   }
 
   Widget buildVideoLoadingErrorUI(
@@ -92,7 +83,7 @@ class _VideoSlideState extends State<VideoSlide> {
       onTryAgain: () {
         setState(() {}); // Trigger reload of the image
       },
-      mediaType: widget.slide.typeStr(),  // Specify it's an image
+      mediaType: widget.slide.typeStr(), // Specify it's an image
     );
   }
 }

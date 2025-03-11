@@ -51,14 +51,8 @@ void main() {
 
     testWidgets('renders actions when provided', (tester) async {
       final testActions = [
-        ElevatedButton(
-          onPressed: () {},
-          child: const Text('Action 1'),
-        ),
-        ElevatedButton(
-          onPressed: () {},
-          child: const Text('Action 2'),
-        ),
+        ElevatedButton(onPressed: () {}, child: const Text('Action 1')),
+        ElevatedButton(onPressed: () {}, child: const Text('Action 2')),
       ];
 
       await pumpSecurityWidget(tester, actions: testActions);

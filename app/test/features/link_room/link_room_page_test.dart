@@ -35,17 +35,12 @@ void main() {
           roomDisplayNameProvider.overrideWith((a, b) => mockedNames[b]),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           spaceProvider.overrideWith((a, b) => MockSpace()),
-          chatsProvider.overrideWith(
-            (a) => [
-              mockChatA,
-              mockChatB,
-              dmConvo,
-            ],
-          ),
+          chatsProvider.overrideWith((a) => [mockChatA, mockChatB, dmConvo]),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(
               hasMore: false,
@@ -92,8 +87,9 @@ void main() {
           roomDisplayNameProvider.overrideWith((a, b) => mockedNames[b]),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
             () => MockSpaceListNotifiers([
@@ -109,7 +105,7 @@ void main() {
               'space-a' => mockSpaceA,
               'other-space' => mockSpaceB,
               'unlinked-space' => mockSpaceC,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           spaceRelationsOverviewProvider.overrideWith(

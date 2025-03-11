@@ -151,7 +151,7 @@ class MessageEventItem extends ConsumerWidget {
                 memberDisplayNameProvider((
                   userId: senderId,
                   roomId: letRoomId,
-                ),),
+                )),
               )
               .valueOrNull ??
           senderId;

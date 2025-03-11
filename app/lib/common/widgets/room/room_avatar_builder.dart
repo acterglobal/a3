@@ -20,10 +20,7 @@ class RoomAvatarBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final child = ActerAvatar(
-      options: AvatarOptions(
-        roomAvatarInfo,
-        size: avatarSize,
-      ),
+      options: AvatarOptions(roomAvatarInfo, size: avatarSize),
     );
     return padding.map((p) => Padding(padding: p, child: child)) ?? child;
   }
