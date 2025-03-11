@@ -44,26 +44,28 @@ class PageHeaderWidget extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-              background: expandedContent != null
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 10,
-                              top: 50,
-                              right: 50,
+              background:
+                  expandedContent != null
+                      ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 10,
+                                top: 50,
+                                right: 50,
+                              ),
+                              child:
+                                  size.width <= expandedHeighMinWidth
+                                      ? null
+                                      : expandedContent,
                             ),
-                            child: size.width <= expandedHeighMinWidth
-                                ? null
-                                : expandedContent,
                           ),
-                        ),
-                      ],
-                    )
-                  : null,
+                        ],
+                      )
+                      : null,
             ),
           );
         },

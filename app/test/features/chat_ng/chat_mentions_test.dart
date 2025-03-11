@@ -15,19 +15,20 @@ void main() {
     });
 
     test('processes single mention correctly', () {
-      final delta = Delta()
-        ..insert('Hello ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user123',
-              displayName: 'User',
-            ),
-            'inline': true,
-          },
-        );
+      final delta =
+          Delta()
+            ..insert('Hello ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user123',
+                  displayName: 'User',
+                ),
+                'inline': true,
+              },
+            );
       final node = paragraphNode(delta: delta);
       editorState.document.insert([0], [node]);
       final markdown = editorState.intoMarkdown();
@@ -45,31 +46,32 @@ void main() {
     });
 
     test('processes multiple mentions in single line correctly', () {
-      final delta = Delta()
-        ..insert('Hello ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user1',
-              displayName: 'User1',
-            ),
-            'inline': true,
-          },
-        )
-        ..insert(' and ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user2',
-              displayName: 'User2',
-            ),
-            'inline': true,
-          },
-        );
+      final delta =
+          Delta()
+            ..insert('Hello ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user1',
+                  displayName: 'User1',
+                ),
+                'inline': true,
+              },
+            )
+            ..insert(' and ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user2',
+                  displayName: 'User2',
+                ),
+                'inline': true,
+              },
+            );
 
       final node = paragraphNode(delta: delta);
 
@@ -90,35 +92,37 @@ void main() {
     });
 
     test('processes mentions in multi-line text correctly', () {
-      final delta1 = Delta()
-        ..insert('Line 1 ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user1',
-              displayName: 'User1',
-            ),
-            'inline': true,
-          },
-        );
+      final delta1 =
+          Delta()
+            ..insert('Line 1 ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user1',
+                  displayName: 'User1',
+                ),
+                'inline': true,
+              },
+            );
       // First line
       final node1 = paragraphNode(delta: delta1);
       // Second line
-      final delta2 = Delta()
-        ..insert('Line 2 ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user2',
-              displayName: 'User2',
-            ),
-            'inline': true,
-          },
-        );
+      final delta2 =
+          Delta()
+            ..insert('Line 2 ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user2',
+                  displayName: 'User2',
+                ),
+                'inline': true,
+              },
+            );
       final node2 = paragraphNode(delta: delta2);
       editorState.document.insert([0], [node1]);
       editorState.document.insert([1], [node2]);
@@ -153,29 +157,30 @@ void main() {
     });
 
     test('handles adjacent mentions correctly', () {
-      final delta = Delta()
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user1',
-              displayName: 'User1',
-            ),
-            'inline': true,
-          },
-        )
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user2',
-              displayName: 'User2',
-            ),
-            'inline': true,
-          },
-        );
+      final delta =
+          Delta()
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user1',
+                  displayName: 'User1',
+                ),
+                'inline': true,
+              },
+            )
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user2',
+                  displayName: 'User2',
+                ),
+                'inline': true,
+              },
+            );
       final node = paragraphNode(delta: delta);
       editorState.document.insert([0], [node]);
       // verify markdown
@@ -193,19 +198,20 @@ void main() {
     });
 
     test('handles special characters in text correctly', () {
-      final delta = Delta()
-        ..insert('Hello * _ ` # ||')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user1',
-              displayName: 'User1',
-            ),
-            'inline': true,
-          },
-        );
+      final delta =
+          Delta()
+            ..insert('Hello * _ ` # ||')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user1',
+                  displayName: 'User1',
+                ),
+                'inline': true,
+              },
+            );
       final node = paragraphNode(delta: delta);
 
       editorState.document.insert([0], [node]);
@@ -224,21 +230,22 @@ void main() {
     });
 
     test('preserves other delta attributes while processing mentions', () {
-      final delta = Delta()
-        ..insert('Bold', attributes: {'bold': true})
-        ..insert(' ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user1',
-              displayName: 'User1',
-            ),
-            'inline': true,
-          },
-        )
-        ..insert(' italic', attributes: {'italic': true});
+      final delta =
+          Delta()
+            ..insert('Bold', attributes: {'bold': true})
+            ..insert(' ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user1',
+                  displayName: 'User1',
+                ),
+                'inline': true,
+              },
+            )
+            ..insert(' italic', attributes: {'italic': true});
       final node = paragraphNode(delta: delta);
 
       editorState.document.insert([0], [node]);
@@ -257,18 +264,19 @@ void main() {
     });
 
     test('handles mentions with missing displayName correctly', () {
-      final delta = Delta()
-        ..insert('Hello ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user123',
-              displayName: null,
-            ),
-          },
-        );
+      final delta =
+          Delta()
+            ..insert('Hello ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user123',
+                  displayName: null,
+                ),
+              },
+            );
       final node = paragraphNode(delta: delta);
       editorState.document.insert([0], [node]);
       // verify markdown
@@ -280,19 +288,20 @@ void main() {
     });
 
     test('processes multiple nodes with mixed content correctly', () {
-      final delta1 = Delta()
-        ..insert('First ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user1',
-              displayName: 'User1',
-            ),
-            'inline': true,
-          },
-        );
+      final delta1 =
+          Delta()
+            ..insert('First ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user1',
+                  displayName: 'User1',
+                ),
+                'inline': true,
+              },
+            );
 
       // node 1: text with mention
       final node1 = paragraphNode(delta: delta1);
@@ -301,31 +310,32 @@ void main() {
       // node 2: plain text
       final node2 = paragraphNode(delta: delta2);
 
-      final delta3 = Delta()
-        ..insert('Last ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user2',
-              displayName: 'User2',
-            ),
-            'inline': true,
-          },
-        )
-        ..insert(' and ')
-        ..insert(
-          uniqueMarker,
-          attributes: {
-            '@': MentionAttributes(
-              type: MentionType.user,
-              mentionId: '@user3',
-              displayName: 'User3',
-            ),
-            'inline': true,
-          },
-        );
+      final delta3 =
+          Delta()
+            ..insert('Last ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user2',
+                  displayName: 'User2',
+                ),
+                'inline': true,
+              },
+            )
+            ..insert(' and ')
+            ..insert(
+              uniqueMarker,
+              attributes: {
+                '@': MentionAttributes(
+                  type: MentionType.user,
+                  mentionId: '@user3',
+                  displayName: 'User3',
+                ),
+                'inline': true,
+              },
+            );
       // node 3: Multiple mentions
       final node3 = paragraphNode(delta: delta3);
 

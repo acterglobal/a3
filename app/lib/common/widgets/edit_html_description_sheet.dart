@@ -81,10 +81,7 @@ class _EditHtmlDescriptionSheetState
               border: Border.all(color: brandColor),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: HtmlEditor(
-              editorState: textEditorState,
-              editable: true,
-            ),
+            child: HtmlEditor(editorState: textEditorState, editable: true),
           ),
           const SizedBox(height: 20),
           Row(

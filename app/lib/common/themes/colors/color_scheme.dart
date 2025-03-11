@@ -18,7 +18,6 @@ Color eventFeatureColor = const Color(0xff206a9a);
 Color taskFeatureColor = const Color(0xff406c6e);
 Color boastFeatureColor = Colors.blueGrey;
 
-
 var colorScheme = ColorScheme.dark(
   brightness: Brightness.dark,
   //Primary

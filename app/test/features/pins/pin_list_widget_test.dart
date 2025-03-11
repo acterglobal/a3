@@ -25,10 +25,7 @@ void main() {
 
       // Build the widget tree with an empty provider
       await tester.pumpProviderWidget(
-        child: PinListWidget(
-          pinListProvider: provider,
-          emptyState: emptyState,
-        ),
+        child: PinListWidget(pinListProvider: provider, emptyState: emptyState),
       );
 
       // Act
@@ -41,27 +38,27 @@ void main() {
       ); // Ensure the empty state widget is displayed
     });
 
-    testWidgets('displays error state when there is issue in loading pin list',
-        (tester) async {
-      bool shouldFail = true;
+    testWidgets(
+      'displays error state when there is issue in loading pin list',
+      (tester) async {
+        bool shouldFail = true;
 
-      final provider = FutureProvider<List<ActerPin>>((ref) async {
-        if (shouldFail) {
-          shouldFail = false;
-          throw 'Some Error';
-        } else {
-          return [];
-        }
-      });
+        final provider = FutureProvider<List<ActerPin>>((ref) async {
+          if (shouldFail) {
+            shouldFail = false;
+            throw 'Some Error';
+          } else {
+            return [];
+          }
+        });
 
-      // Build the widget tree with the mocked provider
-      await tester.pumpProviderWidget(
-        child: PinListWidget(
-          pinListProvider: provider,
-        ),
-      );
-      await tester.ensureErrorPageWithRetryWorks();
-    });
+        // Build the widget tree with the mocked provider
+        await tester.pumpProviderWidget(
+          child: PinListWidget(pinListProvider: provider),
+        );
+        await tester.ensureErrorPageWithRetryWorks();
+      },
+    );
   });
 
   testWidgets('displays list of pins when data is available', (tester) async {
@@ -73,11 +70,7 @@ void main() {
     final mockPin3 = FakeActerPin(pinTitle: 'Fake Pin3');
 
     final finalListProvider = FutureProvider<List<ActerPin>>(
-      (ref) async => [
-        mockPin1,
-        mockPin2,
-        mockPin3,
-      ],
+      (ref) async => [mockPin1, mockPin2, mockPin3],
     );
 
     // Build the widget tree with the mocked provider
@@ -90,9 +83,7 @@ void main() {
         pinListProvider.overrideWith(() => mockedNotifier),
         pinProvider.overrideWith(() => pinNotifier),
       ],
-      child: PinListWidget(
-        pinListProvider: finalListProvider,
-      ),
+      child: PinListWidget(pinListProvider: finalListProvider),
     );
     // Initial build
     await tester.pump();

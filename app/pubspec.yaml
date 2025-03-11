@@ -111,7 +111,10 @@ dependencies:
   args: ^2.4.2
   breadcrumbs: ^0.1.0
   device_info_plus: ^10.1.0
-  app_settings: ^5.1.1
+  app_settings: #^5.1.1
+    git:
+      url: https://github.com/spencerccf/app_settings
+      ref: bc0d4ae
   video_player_media_kit: ^1.0.5
   media_kit_libs_android_video: any
   media_kit_libs_ios_video: any

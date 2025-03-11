@@ -15,18 +15,17 @@ class RecoveryStateNotifier extends Notifier<RecoveryState> {
 
   @override
   RecoveryState build() {
-    _providerSubscription =
-        ref.listen<AsyncValue<BackupManager?>>(backupManagerProvider, (
-      AsyncValue<BackupManager?>? oldVal,
-      AsyncValue<BackupManager?> newVal,
-    ) {
-      final next = newVal.valueOrNull;
-      if (next == null) {
-        // we don't care for not having a proper client yet
-        return;
-      }
-      _reset(next);
-    });
+    _providerSubscription = ref.listen<AsyncValue<BackupManager?>>(
+      backupManagerProvider,
+      (AsyncValue<BackupManager?>? oldVal, AsyncValue<BackupManager?> newVal) {
+        final next = newVal.valueOrNull;
+        if (next == null) {
+          // we don't care for not having a proper client yet
+          return;
+        }
+        _reset(next);
+      },
+    );
     ref.onDispose(() => _providerSubscription.close());
     return RecoveryState.unknown;
   }

@@ -1,9 +1,4 @@
-enum RecoveryState {
-  incomplete,
-  enabled,
-  disabled,
-  unknown,
-}
+enum RecoveryState { incomplete, enabled, disabled, unknown }
 
 RecoveryState stringToState(String s) {
   return switch (s) {

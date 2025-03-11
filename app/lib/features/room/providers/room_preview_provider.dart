@@ -9,42 +9,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/extensions/options.dart';
 
-typedef RoomPreviewQuery = ({
-  String roomIdOrAlias,
-  AllHashed<String> serverNames
-});
+typedef RoomPreviewQuery =
+    ({String roomIdOrAlias, AllHashed<String> serverNames});
 
 final roomPreviewProvider =
     FutureProvider.family<RoomPreview, RoomPreviewQuery>((ref, query) async {
-  final sdk = await ref.read(sdkProvider.future);
-  VecStringBuilder servers = sdk.api.newVecStringBuilder();
-  for (final server in query.serverNames.items) {
-    servers.add(server);
-  }
-  final client = await ref.watch(alwaysClientProvider.future);
-  final prev = await client.roomPreview(query.roomIdOrAlias, servers);
-  return prev;
-});
+      final sdk = await ref.read(sdkProvider.future);
+      VecStringBuilder servers = sdk.api.newVecStringBuilder();
+      for (final server in query.serverNames.items) {
+        servers.add(server);
+      }
+      final client = await ref.watch(alwaysClientProvider.future);
+      final prev = await client.roomPreview(query.roomIdOrAlias, servers);
+      return prev;
+    });
 
 final _roomPreviewAvatarProvider =
     FutureProvider.family<MemoryImage?, RoomPreviewQuery>((ref, q) async {
-  final sdk = await ref.watch(sdkProvider.future);
-  final thumbsize = sdk.api.newThumbSize(48, 48);
-  final room = await ref.watch(roomPreviewProvider(q).future);
-  if (!room.hasAvatar()) return null;
-  final avatar = await room.avatar(thumbsize);
-  return avatar
-      .data()
-      .map((data) => MemoryImage(Uint8List.fromList(data.asTypedList())));
-});
+      final sdk = await ref.watch(sdkProvider.future);
+      final thumbsize = sdk.api.newThumbSize(48, 48);
+      final room = await ref.watch(roomPreviewProvider(q).future);
+      if (!room.hasAvatar()) return null;
+      final avatar = await room.avatar(thumbsize);
+      return avatar.data().map(
+        (data) => MemoryImage(Uint8List.fromList(data.asTypedList())),
+      );
+    });
 
 final roomPreviewAvatarInfo =
     StateProvider.family<AvatarInfo, RoomPreviewQuery>((ref, q) {
-  final preview = ref.watch(roomPreviewProvider(q)).valueOrNull;
-  final avatarData = ref.watch(_roomPreviewAvatarProvider(q)).valueOrNull;
-  return AvatarInfo(
-    uniqueId: q.roomIdOrAlias,
-    displayName: preview?.name(),
-    avatar: avatarData,
-  );
-});
+      final preview = ref.watch(roomPreviewProvider(q)).valueOrNull;
+      final avatarData = ref.watch(_roomPreviewAvatarProvider(q)).valueOrNull;
+      return AvatarInfo(
+        uniqueId: q.roomIdOrAlias,
+        displayName: preview?.name(),
+        avatar: avatarData,
+      );
+    });

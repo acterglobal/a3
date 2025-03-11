@@ -2301,6 +2301,8 @@
     "post": "Post",
     "stories": "Stories",
     "addStory": "Add Story",
+    "betaVersion": "Beta version",
+    "spaceAcitivitiesBetaInfo": "space activities section is under development, so this might not display all the activities",
     "spaceActivities": "Space Activities",
     "unableToLoadFile": "Unable to load file",
     "@addComment": {}

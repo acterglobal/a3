@@ -69,8 +69,9 @@ final generalRoutes = [
     name: Routes.saveUsername.name,
     path: Routes.saveUsername.route,
     builder: (context, state) {
-      final username = state.uri.queryParameters['username']
-          .expect('saveUsername route needs username as query param');
+      final username = state.uri.queryParameters['username'].expect(
+        'saveUsername route needs username as query param',
+      );
       return SaveUsernamePage(username: username);
     },
   ),
@@ -102,32 +103,32 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.bugReport.name,
     path: Routes.bugReport.route,
-    pageBuilder: (context, state) => DialogPage(
-      builder: (BuildContext context) {
-        final screenshot = state.uri.queryParameters['screenshot'];
-        final error = state.uri.queryParameters['error'];
-        final stack = state.uri.queryParameters['stack'];
-        return BugReportPage(
-          imagePath: screenshot,
-          error: error,
-          stack: stack,
-        );
-      },
-    ),
+    pageBuilder:
+        (context, state) => DialogPage(
+          builder: (BuildContext context) {
+            final screenshot = state.uri.queryParameters['screenshot'];
+            final error = state.uri.queryParameters['error'];
+            final stack = state.uri.queryParameters['stack'];
+            return BugReportPage(
+              imagePath: screenshot,
+              error: error,
+              stack: stack,
+            );
+          },
+        ),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
     name: Routes.fatalFail.name,
     path: Routes.fatalFail.route,
     builder: (context, state) {
-      final error = state.uri.queryParameters['error']
-          .expect('fatalFail route needs error query param');
-      final trace = state.uri.queryParameters['trace']
-          .expect('fatalFail route needs trace query param');
-      return FatalFailPage(
-        error: error,
-        trace: trace,
+      final error = state.uri.queryParameters['error'].expect(
+        'fatalFail route needs error query param',
       );
+      final trace = state.uri.queryParameters['trace'].expect(
+        'fatalFail route needs trace query param',
+      );
+      return FatalFailPage(error: error, trace: trace);
     },
   ),
   GoRoute(
@@ -148,8 +149,9 @@ final generalRoutes = [
     name: Routes.linkChat.name,
     path: Routes.linkChat.route,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('linkChat route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'linkChat route needs spaceId as path param',
+      );
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -173,8 +175,9 @@ final generalRoutes = [
     name: Routes.linkSpace.name,
     path: Routes.linkSpace.route,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('linkSpace route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'linkSpace route needs spaceId as path param',
+      );
       return SideSheetPage(
         key: state.pageKey,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -219,30 +222,32 @@ final generalRoutes = [
       final page = state.extra as int?;
       return context.isLargeScreen
           ? DialogPage(
-              barrierDismissible: false,
-              builder: (context) => CreateChatPage(
-                initialSelectedSpaceId: spaceId,
-                initialPage: page,
-              ),
-            )
+            barrierDismissible: false,
+            builder:
+                (context) => CreateChatPage(
+                  initialSelectedSpaceId: spaceId,
+                  initialPage: page,
+                ),
+          )
           : CustomTransitionPage(
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                final tween = Tween(
-                  begin: const Offset(0, 1),
-                  end: Offset.zero,
-                ).chain(CurveTween(curve: Curves.easeInOut));
-                final offsetAnimation = animation.drive(tween);
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-              child: CreateChatPage(
-                initialSelectedSpaceId: spaceId,
-                initialPage: page,
-              ),
-            );
+            transitionsBuilder: (
+              context,
+              animation,
+              secondaryAnimation,
+              child,
+            ) {
+              final tween = Tween(
+                begin: const Offset(0, 1),
+                end: Offset.zero,
+              ).chain(CurveTween(curve: Curves.easeInOut));
+              final offsetAnimation = animation.drive(tween);
+              return SlideTransition(position: offsetAnimation, child: child);
+            },
+            child: CreateChatPage(
+              initialSelectedSpaceId: spaceId,
+              initialPage: page,
+            ),
+          );
     },
   ),
   GoRoute(
@@ -250,8 +255,9 @@ final generalRoutes = [
     name: Routes.fullScreenAvatar.name,
     path: Routes.fullScreenAvatar.route,
     pageBuilder: (context, state) {
-      final roomId = state.uri.queryParameters['roomId']
-          .expect('fullScreenAvatar route needs roomId as query param');
+      final roomId = state.uri.queryParameters['roomId'].expect(
+        'fullScreenAvatar route needs roomId as query param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: FullScreenAvatarPage(roomId: roomId),
