@@ -1,0 +1,1 @@
+- Improved UI for task assignments: highlight my case, show the display name and a more intuitive action system
