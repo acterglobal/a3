@@ -1234,7 +1234,7 @@ object Room {
     fn notification_mode() -> Future<Result<string>>;
 
     /// default RoomNotificationMode for this type of room
-    fn default_notification_mode() -> Future<string>;
+    fn default_notification_mode() -> Future<Result<string>>;
 
     /// Unset the `mute` for this room.
     fn unmute() -> Future<Result<bool>>;
