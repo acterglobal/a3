@@ -102,7 +102,7 @@ class _VisibilityAccessibilityPageState
                 selectSpace(spaceId);
               } else {
                 updateSpaceVisibility(
-                  value ?? RoomJoinRule.Private,
+                  value ?? RoomJoinRule.Invite,
                   spaceIds: (allowedSpaces.valueOrNull ?? []),
                 );
               }
@@ -111,12 +111,12 @@ class _VisibilityAccessibilityPageState
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return const RoomJoinRuleType(
-          selectedJoinRuleEnum: RoomJoinRule.Private,
+          selectedJoinRuleEnum: RoomJoinRule.Invite,
         );
       },
       loading:
           () => const Skeletonizer(
-            child: RoomJoinRuleType(selectedJoinRuleEnum: RoomJoinRule.Private),
+            child: RoomJoinRuleType(selectedJoinRuleEnum: RoomJoinRule.Invite),
           ),
     );
   }
@@ -235,7 +235,7 @@ class _VisibilityAccessibilityPageState
     );
     final newList = allowedRooms.where((id) => id != spaceId).toList();
     final visibility =
-        newList.isEmpty ? RoomJoinRule.Private : RoomJoinRule.Restricted;
+        newList.isEmpty ? RoomJoinRule.Invite : RoomJoinRule.Restricted;
     await updateSpaceVisibility(visibility, spaceIds: newList);
   }
 
@@ -282,7 +282,7 @@ class _VisibilityAccessibilityPageState
         case RoomJoinRule.Public:
           update.joinRule('public');
           break;
-        case RoomJoinRule.Private:
+        case RoomJoinRule.Invite:
           update.joinRule('invite');
           break;
         case RoomJoinRule.Restricted:

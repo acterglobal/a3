@@ -52,7 +52,7 @@ final roomJoinRuleProvider = FutureProvider.family
       final visibility = switch (joinRule.toLowerCase()) {
         'public' => RoomJoinRule.Public,
         'restricted' => RoomJoinRule.Restricted,
-        'invite' || 'private' => RoomJoinRule.Private,
+        'invite' => RoomJoinRule.Invite,
         _ => null,
       };
       if (visibility == null) {

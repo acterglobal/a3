@@ -41,7 +41,7 @@ class RoomJoinRuleType extends ConsumerWidget {
             title: lang.private,
             subtitle: lang.privateVisibilitySubtitle,
             selectedJoinRuleValue: selectedJoinRuleEnum,
-            spaceJoinRuleValue: RoomJoinRule.Private,
+            spaceJoinRuleValue: RoomJoinRule.Invite,
             onChanged: canChange ? onJoinRuleChange : null,
           ),
           const SizedBox(height: 10),

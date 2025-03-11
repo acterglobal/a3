@@ -21,7 +21,7 @@ use matrix_sdk_base::{
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use strum::Display;
-use tracing::error;
+use tracing::{error, trace};
 
 use crate::{
     client::CoreClient,
@@ -248,7 +248,7 @@ impl CoreClient {
                         parent.clone(),
                     )])
                 } else {
-                    RoomJoinRulesEventContent::new(JoinRule::Private)
+                    RoomJoinRulesEventContent::new(JoinRule::Invite)
                 }
             }
             Some("knockrestricted") => {
@@ -257,13 +257,19 @@ impl CoreClient {
                         parent.clone(),
                     )])
                 } else {
-                    RoomJoinRulesEventContent::new(JoinRule::Private)
+                    RoomJoinRulesEventContent::new(JoinRule::Knock)
                 }
             }
             Some("knock") => RoomJoinRulesEventContent::new(JoinRule::Knock),
             Some("public") => RoomJoinRulesEventContent::new(JoinRule::Public),
-            _ => RoomJoinRulesEventContent::new(JoinRule::Private),
+            _ => RoomJoinRulesEventContent::new(JoinRule::Invite),
         });
+
+        trace!(
+            ?join_rule_ev,
+            ?join_rule_lowered,
+            "creating space with join rule"
+        );
 
         initial_states.push(join_rule_ev.to_raw_any());
 

@@ -66,14 +66,14 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         (state) =>
             widget.initialParentsSpaceId != null
                 ? RoomJoinRule.Restricted
-                : RoomJoinRule.Private,
+                : RoomJoinRule.Invite,
       );
       //LISTEN for changes on parent space selection
       ref.listenManual(selectedSpaceIdProvider, (previous, next) {
         final visibleNotifier = ref.read(_selectedJoinRuleProvider.notifier);
         visibleNotifier.update(
           (state) =>
-              next != null ? RoomJoinRule.Restricted : RoomJoinRule.Private,
+              next != null ? RoomJoinRule.Restricted : RoomJoinRule.Invite,
         );
       });
     });
@@ -268,7 +268,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
         subtitle: lang.publicVisibilitySubtitle,
         isShowRadio: false,
       ),
-      RoomJoinRule.Private => RoomJoinRuleItem(
+      RoomJoinRule.Invite => RoomJoinRuleItem(
         iconData: Icons.lock,
         title: lang.private,
         subtitle: lang.privateVisibilitySubtitle,
