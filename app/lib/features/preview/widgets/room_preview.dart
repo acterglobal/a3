@@ -103,7 +103,7 @@ class RoomPreviewWidget extends ConsumerWidget {
             // to contact the author
             ErrorCode.forbidden => InfoWidget(
               title: L10n.of(context).forbidden,
-              icon: Icons.warning,
+              leading: const Icon(Icons.warning),
               subTitle: L10n.of(context).forbiddenRoomExplainer,
             ),
             _ => ActerInlineErrorButton(
