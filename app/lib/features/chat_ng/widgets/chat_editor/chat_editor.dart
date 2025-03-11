@@ -47,8 +47,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   @override
   void initState() {
     super.initState();
-    scrollController =
-        EditorScrollController(editorState: textEditorState, shrinkWrap: true);
+    scrollController = EditorScrollController(
+      editorState: textEditorState,
+      shrinkWrap: true,
+    );
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
@@ -120,8 +122,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   void _editorUpdate(Transaction data) {
     // check if actual document content is empty
-    final state = data.document.root.children
-        .every((node) => node.delta?.toPlainText().isEmpty ?? true);
+    final state = data.document.root.children.every(
+      (node) => node.delta?.toPlainText().isEmpty ?? true,
+    );
     _isInputEmptyNotifier.value = state;
     _debounceTimer?.cancel();
     // delay operation to avoid excessive re-writes
@@ -148,8 +151,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   // composer draft load state handler
   Future<void> _loadDraft() async {
-    final draft =
-        await ref.read(chatComposerDraftProvider(widget.roomId).future);
+    final draft = await ref.read(
+      chatComposerDraftProvider(widget.roomId).future,
+    );
 
     if (draft != null) {
       final chatEditorState = ref.read(chatEditorStateProvider.notifier);
@@ -180,12 +184,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final transaction = textEditorState.transaction;
       final docNode = textEditorState.getNodeAtPath([0]);
       if (docNode == null) return;
-      transaction.replaceText(
-        docNode,
-        0,
-        docNode.delta?.length ?? 0,
-        body,
-      );
+      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
       final pos = Position(path: [0], offset: body.length);
       transaction.afterSelection = Selection.collapsed(pos);
       textEditorState.apply(transaction);
@@ -197,8 +196,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   Widget build(BuildContext context) {
     final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
-    final emojiPickerVisible = ref
-        .watch(chatInputProvider.select((value) => value.emojiPickerVisible));
+    final emojiPickerVisible = ref.watch(
+      chatInputProvider.select((value) => value.emojiPickerVisible),
+    );
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(widget.roomId)).valueOrNull == true;
     final chatEditorState = ref.watch(chatEditorStateProvider);
@@ -244,9 +244,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
           topLeft: Radius.circular(radiusVal),
           topRight: Radius.circular(radiusVal),
         ),
-        border: BorderDirectional(
-          top: BorderSide(color: greyColor),
-        ),
+        border: BorderDirectional(top: BorderSide(color: greyColor)),
       ),
       child: Row(
         children: [
@@ -275,9 +273,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   Widget editorField(bool isEncrypted) {
     final widgetSize = MediaQuery.sizeOf(context);
     final hintText = isEncrypted.map(
-      (v) => v == true
-          ? L10n.of(context).newEncryptedMessage
-          : L10n.of(context).newMessage,
+      (v) =>
+          v == true
+              ? L10n.of(context).newEncryptedMessage
+              : L10n.of(context).newMessage,
       orElse: () => L10n.of(context).newMessage,
     );
     return Expanded(
@@ -290,8 +289,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
             // keyboard shortcuts (desktop)
             child: CallbackShortcuts(
               bindings: <ShortcutActivator, VoidCallback>{
-                const SingleActivator(LogicalKeyboardKey.enter): () =>
-                    sendMessageAction(
+                const SingleActivator(LogicalKeyboardKey.enter):
+                    () => sendMessageAction(
                       roomId: widget.roomId,
                       textEditorState: textEditorState,
                       onTyping: widget.onTyping,
@@ -300,9 +299,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
                       log: _log,
                     ),
                 LogicalKeySet(
-                  LogicalKeyboardKey.enter,
-                  LogicalKeyboardKey.shift,
-                ): () => textEditorState.insertNewLine(),
+                      LogicalKeyboardKey.enter,
+                      LogicalKeyboardKey.shift,
+                    ):
+                    () => textEditorState.insertNewLine(),
               },
               child: _renderEditor(hintText),
             ),
@@ -313,23 +313,23 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderEditor(String? hintText) => HtmlEditor(
-        footer: null,
-        // if provided, will activate mentions
-        roomId: widget.roomId,
-        hintText: hintText,
-        editable: true,
-        shrinkWrap: true,
-        editorState: textEditorState,
-        scrollController: scrollController,
-        editorPadding: const EdgeInsets.symmetric(horizontal: 10),
-        onChanged: (body, html) {
-          if (html != null) {
-            widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-          } else {
-            widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-          }
-        },
-      );
+    footer: null,
+    // if provided, will activate mentions
+    roomId: widget.roomId,
+    hintText: hintText,
+    editable: true,
+    shrinkWrap: true,
+    editorState: textEditorState,
+    scrollController: scrollController,
+    editorPadding: const EdgeInsets.symmetric(horizontal: 10),
+    onChanged: (body, html) {
+      if (html != null) {
+        widget.onTyping?.map((cb) => cb(html.isNotEmpty));
+      } else {
+        widget.onTyping?.map((cb) => cb(body.isNotEmpty));
+      }
+    },
+  );
 
   // attachment/send button
   Widget trailingBtn() {
@@ -346,12 +346,13 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderSendBtn() => Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: IconButton.filled(
-          alignment: Alignment.center,
-          key: ChatEditor.sendBtnKey,
-          iconSize: 20,
-          onPressed: () => sendMessageAction(
+    padding: const EdgeInsets.only(right: 8),
+    child: IconButton.filled(
+      alignment: Alignment.center,
+      key: ChatEditor.sendBtnKey,
+      iconSize: 20,
+      onPressed:
+          () => sendMessageAction(
             textEditorState: textEditorState,
             roomId: widget.roomId,
             onTyping: widget.onTyping,
@@ -359,28 +360,27 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
             ref: ref,
             log: _log,
           ),
-          icon: const Icon(Icons.send),
-        ),
-      );
+      icon: const Icon(Icons.send),
+    ),
+  );
 
   Widget _renderAttachmentBtn() => Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: IconButton(
-          onPressed: () => selectAttachment(
+    padding: const EdgeInsets.only(right: 8),
+    child: IconButton(
+      onPressed:
+          () => selectAttachment(
             context: context,
-            onSelected: (files, type) => attachmentUploadAction(
-              roomId: widget.roomId,
-              files: files,
-              attachmentType: type,
-              ref: ref,
-              context: context,
-              log: _log,
-            ),
+            onSelected:
+                (files, type) => attachmentUploadAction(
+                  roomId: widget.roomId,
+                  files: files,
+                  attachmentType: type,
+                  ref: ref,
+                  context: context,
+                  log: _log,
+                ),
           ),
-          icon: const Icon(
-            Atlas.paperclip_attachment_thin,
-            size: 20,
-          ),
-        ),
-      );
+      icon: const Icon(Atlas.paperclip_attachment_thin, size: 20),
+    ),
+  );
 }

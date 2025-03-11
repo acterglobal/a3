@@ -5,15 +5,11 @@ var inputDecorationTheme = InputDecorationTheme(
   fillColor: surfaceColor,
   filled: true,
   focusedBorder: OutlineInputBorder(
-    borderSide: const BorderSide(
-      color: Colors.white70,
-    ),
+    borderSide: const BorderSide(color: Colors.white70),
     borderRadius: BorderRadius.circular(12),
   ),
   enabledBorder: OutlineInputBorder(
-    borderSide: const BorderSide(
-      color: Colors.white30,
-    ),
+    borderSide: const BorderSide(color: Colors.white30),
     borderRadius: BorderRadius.circular(12),
   ),
   border: OutlineInputBorder(
@@ -21,15 +17,11 @@ var inputDecorationTheme = InputDecorationTheme(
     borderRadius: BorderRadius.circular(12),
   ),
   errorBorder: OutlineInputBorder(
-    borderSide: const BorderSide(
-      color: Colors.red,
-    ),
+    borderSide: const BorderSide(color: Colors.red),
     borderRadius: BorderRadius.circular(12),
   ),
   focusedErrorBorder: OutlineInputBorder(
-    borderSide: const BorderSide(
-      color: Colors.red,
-    ),
+    borderSide: const BorderSide(color: Colors.red),
     borderRadius: BorderRadius.circular(12),
   ),
   hintStyle: const TextStyle(

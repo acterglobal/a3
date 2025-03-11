@@ -17,8 +17,11 @@ class MockReadReceiptsManager extends Mock implements ReadReceiptsManager {
 }
 
 class MockAsyncReadReceiptsManagerNotifier
-    extends AutoDisposeFamilyAsyncNotifier<ReadReceiptsManager,
-        Future<ReadReceiptsManager>>
+    extends
+        AutoDisposeFamilyAsyncNotifier<
+          ReadReceiptsManager,
+          Future<ReadReceiptsManager>
+        >
     with Mock
     implements AsyncReadReceiptsManagerNotifier {
   bool shouldFail;

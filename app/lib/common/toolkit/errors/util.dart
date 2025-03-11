@@ -20,7 +20,7 @@ enum ErrorCode {
   }
 }
 
-enum NewsMediaErrorState{
+enum NewsMediaErrorState {
   showErrorImageOnly,
   showErrorImageWithText,
   showErrorWithTryAgain,

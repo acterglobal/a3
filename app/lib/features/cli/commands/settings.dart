@@ -3,10 +3,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:args/command_runner.dart';
 
 // ignore_for_file: avoid_print
-const supportedKeys = {
-  'http-proxy': proxyKey,
-  'rust-log': rustLogKey,
-};
+const supportedKeys = {'http-proxy': proxyKey, 'rust-log': rustLogKey};
 
 class ShowCommand extends Command {
   @override
@@ -29,8 +26,9 @@ class ShowCommand extends Command {
     if (results != null) {
       if (results['all']) {
         for (final title in supportedKeys.keys) {
-          final key =
-              supportedKeys[title].expect('key of $title not available');
+          final key = supportedKeys[title].expect(
+            'key of $title not available',
+          );
           await printSetting(key, title);
         }
         return;
@@ -69,11 +67,7 @@ class SetCommand extends Command {
       help: 'key to set',
       mandatory: true,
     );
-    argParser.addOption(
-      'value',
-      help: 'value to set',
-      mandatory: true,
-    );
+    argParser.addOption('value', help: 'value to set', mandatory: true);
   }
 
   @override
@@ -119,8 +113,9 @@ class ResetCommand extends Command {
     if (results != null) {
       if (results['all']) {
         for (final title in supportedKeys.keys) {
-          final key =
-              supportedKeys[title].expect('key of $title not available');
+          final key = supportedKeys[title].expect(
+            'key of $title not available',
+          );
           await resetSetting(key, title);
         }
         return;

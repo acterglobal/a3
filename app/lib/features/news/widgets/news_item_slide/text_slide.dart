@@ -28,13 +28,14 @@ class TextSlide extends StatelessWidget {
     final bodyText = slideContent.body();
     final fgColor = NewsUtils.getForegroundColor(context, slide);
     final linkColor = NewsUtils.getLinkColor(context, slide);
-    final defaultTextStyle =
-        Theme.of(context).textTheme.bodyLarge?.copyWith(color: fgColor);
+    final defaultTextStyle = Theme.of(
+      context,
+    ).textTheme.bodyLarge?.copyWith(color: fgColor);
 
     final linkTextStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: linkColor,
-          decoration: TextDecoration.underline,
-        );
+      color: linkColor,
+      decoration: TextDecoration.underline,
+    );
 
     return formattedText != null
         ? renderHtmlText(formattedText, defaultTextStyle, linkTextStyle)

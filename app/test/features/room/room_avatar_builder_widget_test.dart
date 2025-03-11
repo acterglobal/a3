@@ -21,7 +21,9 @@ void main() {
     // Pump the widget into the test environment
     await tester.pumpProviderWidget(
       overrides: [
-        roomAvatarInfoProvider.overrideWith(() => MockRoomAvatarInfoNotifier(avatarInfos: _roomsData)),
+        roomAvatarInfoProvider.overrideWith(
+          () => MockRoomAvatarInfoNotifier(avatarInfos: _roomsData),
+        ),
       ],
       child: MaterialApp(
         home: Scaffold(
@@ -36,29 +38,35 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('RoomAvatarBuilder renders the correct avatar with given padding',
-      (WidgetTester tester) async {
+  testWidgets(
+    'RoomAvatarBuilder renders the correct avatar with given padding',
+    (WidgetTester tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        roomId: 'room1',
+        padding: EdgeInsets.all(10),
+      );
+      await tester.pumpAndSettle();
 
-    await createWidgetUnderTest(tester: tester, roomId: 'room1', padding: EdgeInsets.all(10));
-    await tester.pumpAndSettle();
+      // Check if the avatar widget is displayed
+      expect(find.byType(ActerAvatar), findsOneWidget);
 
-    // Check if the avatar widget is displayed
-    expect(find.byType(ActerAvatar), findsOneWidget);
+      // Check if the padding is applied (verify with specific padding)
+      final paddingFinder = find.byType(Padding);
+      expect(paddingFinder, findsOneWidget);
 
-    // Check if the padding is applied (verify with specific padding)
-    final paddingFinder = find.byType(Padding);
-    expect(paddingFinder, findsOneWidget);
+      final paddingWidget = tester.widget<Padding>(paddingFinder);
+      expect(paddingWidget.padding, EdgeInsets.all(10));
 
-    final paddingWidget = tester.widget<Padding>(paddingFinder);
-    expect(paddingWidget.padding, EdgeInsets.all(10));
+      // Check if avatar size matches the one given
+      final avatar = tester.widget<ActerAvatar>(find.byType(ActerAvatar));
+      expect(avatar.options.size, 20);
+    },
+  );
 
-    // Check if avatar size matches the one given
-    final avatar = tester.widget<ActerAvatar>(find.byType(ActerAvatar));
-    expect(avatar.options.size, 20);
-  });
-
-  testWidgets('RoomAvatarBuilder renders the correct avatar without padding',
-      (WidgetTester tester) async {
+  testWidgets('RoomAvatarBuilder renders the correct avatar without padding', (
+    WidgetTester tester,
+  ) async {
     await createWidgetUnderTest(tester: tester, roomId: 'room1');
     await tester.pumpAndSettle();
     // Check if the avatar widget is displayed

@@ -575,17 +575,14 @@ enum ActerIcon {
   //..
 
   //ICON ACCESS METHODS
-  static ActerIcon? iconFor(String? name) =>
-      ActerIcon.values.asNameMap()[name];
+  static ActerIcon? iconFor(String? name) => ActerIcon.values.asNameMap()[name];
 
-  static ActerIcon iconForTask(String? name) =>
-      iconFor(name) ?? ActerIcon.list;
+  static ActerIcon iconForTask(String? name) => iconFor(name) ?? ActerIcon.list;
 
   static ActerIcon iconForCategories(String? name) =>
       iconFor(name) ?? ActerIcon.list;
 
-  static ActerIcon iconForPin(String? name) =>
-      iconFor(name) ?? ActerIcon.pin;
+  static ActerIcon iconForPin(String? name) => iconFor(name) ?? ActerIcon.pin;
 
   //ENUM DECLARATION
   final IconData data;

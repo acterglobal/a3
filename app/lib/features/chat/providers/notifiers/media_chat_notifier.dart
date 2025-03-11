@@ -19,10 +19,8 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
   final ChatMessageInfo messageInfo;
   Convo? _convo;
 
-  MediaChatNotifier({
-    required this.messageInfo,
-    required this.ref,
-  }) : super(const MediaChatState()) {
+  MediaChatNotifier({required this.messageInfo, required this.ref})
+    : super(const MediaChatState()) {
     _init();
   }
 
@@ -52,8 +50,9 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
           }
         } else {
           // FIXME: this does not react if yet if we switched the network ...
-          final autoDownload = await ref
-              .read(autoDownloadMediaProvider(messageInfo.roomId).future);
+          final autoDownload = await ref.read(
+            autoDownloadMediaProvider(messageInfo.roomId).future,
+          );
           if (autoDownload) {
             await downloadMedia();
           } else {
@@ -72,8 +71,9 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
       }
     } else {
       state = state.copyWith(
-        mediaChatLoadingState:
-            const MediaChatLoadingState.error('Unable to load convo'),
+        mediaChatLoadingState: const MediaChatLoadingState.error(
+          'Unable to load convo',
+        ),
       );
     }
   }
@@ -128,15 +128,15 @@ class MediaChatNotifier extends StateNotifier<MediaChatState> {
         return destFile;
       }
 
-      final thumbnailGenerated =
-          await FcNativeVideoThumbnail().getVideoThumbnail(
-        srcFile: mediaPath,
-        destFile: destPath,
-        width: 300,
-        height: 300,
-        format: 'jpeg',
-        quality: 90,
-      );
+      final thumbnailGenerated = await FcNativeVideoThumbnail()
+          .getVideoThumbnail(
+            srcFile: mediaPath,
+            destFile: destPath,
+            width: 300,
+            height: 300,
+            format: 'jpeg',
+            quality: 90,
+          );
 
       if (thumbnailGenerated) {
         return destFile;

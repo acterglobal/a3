@@ -11,8 +11,14 @@ class MockGoRouter extends Mock implements GoRouter {
     Map<String, dynamic>? queryParameters = const <String, dynamic>{},
     Object? extra,
   }) {
-    super.noSuchMethod(Invocation.method(
-        #pushNamed, [name, extra, pathParameters, queryParameters],),);
+    super.noSuchMethod(
+      Invocation.method(#pushNamed, [
+        name,
+        extra,
+        pathParameters,
+        queryParameters,
+      ]),
+    );
     return Future.value(null);
   }
 }
@@ -31,8 +37,6 @@ class MockGoRouterProvider extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => InheritedGoRouter(
-        goRouter: goRouter,
-        child: child,
-      );
+  Widget build(BuildContext context) =>
+      InheritedGoRouter(goRouter: goRouter, child: child);
 }

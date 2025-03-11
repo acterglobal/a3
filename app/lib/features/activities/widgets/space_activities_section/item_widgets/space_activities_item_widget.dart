@@ -20,12 +20,14 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final spaceActivitiesLoader =
-        ref.watch(spaceActivitiesProviderByDate((roomId: roomId, date: date)));
+    final spaceActivitiesLoader = ref.watch(
+      spaceActivitiesProviderByDate((roomId: roomId, date: date)),
+    );
 
     return spaceActivitiesLoader.when(
-      data: (spaceActivities) =>
-          buildSpaceActivitiesItemUI(context, ref, spaceActivities),
+      data:
+          (spaceActivities) =>
+              buildSpaceActivitiesItemUI(context, ref, spaceActivities),
       error: (error, stack) => const SizedBox.shrink(),
       loading: () => const SpaceActivitiesSkeleton(),
     );
@@ -44,9 +46,10 @@ class SpaceActivitiesItemWidget extends ConsumerWidget {
       shape: const Border(),
       leading: ActerAvatar(options: AvatarOptions(avatarInfo, size: 24)),
       title: Text(spaceName),
-      children: activities
-          .map((activity) => ActivityItemWidget(activity: activity))
-          .toList(),
+      children:
+          activities
+              .map((activity) => ActivityItemWidget(activity: activity))
+              .toList(),
     );
   }
 }
@@ -60,13 +63,7 @@ class SpaceActivitiesSkeleton extends StatelessWidget {
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        children: [
-          listItem(),
-          listItem(),
-          listItem(),
-          listItem(),
-          listItem(),
-        ],
+        children: [listItem(), listItem(), listItem(), listItem(), listItem()],
       ),
     );
   }

@@ -48,25 +48,26 @@ class MockAsyncTaskListsNotifier extends Mock implements TaskItemsListNotifier {
 
   Future<List<Task>> loadTasks() async {
     if (shouldFail) {
-      throw Exception('Error loading tasks');  // Simulate error
+      throw Exception('Error loading tasks'); // Simulate error
     }
-    return [];  // Return an empty task list, you can modify it to return any mock tasks
+    return []; // Return an empty task list, you can modify it to return any mock tasks
   }
 
   @override
   Future<TasksOverview> build(TaskList arg) async {
     if (shouldFail) {
-      throw Exception('Error building TasksOverview');  // Simulate error
+      throw Exception('Error building TasksOverview'); // Simulate error
     }
 
     // Return a mock TasksOverview when build is called
     final mockOverview = MockTasksOverview();
-    when(() => mockOverview.openTasks).thenReturn([]);  // Simulate no open tasks
-    when(() => mockOverview.doneTasks).thenReturn([]);  // Simulate no completed tasks
+    when(() => mockOverview.openTasks).thenReturn([]); // Simulate no open tasks
+    when(
+      () => mockOverview.doneTasks,
+    ).thenReturn([]); // Simulate no completed tasks
 
-    return mockOverview;  // Return the mock TasksOverview
+    return mockOverview; // Return the mock TasksOverview
   }
-
 }
 
 class MockTaskListItemNotifier extends Mock implements TaskListItemNotifier {}
@@ -177,11 +178,7 @@ class MockTask extends Fake implements Task {
   final String? date;
   final String desc;
 
-  MockTask({
-    this.fakeTitle = 'Fake Task',
-    this.date,
-    this.desc = '',
-  });
+  MockTask({this.fakeTitle = 'Fake Task', this.date, this.desc = ''});
 
   @override
   String taskListIdStr() => 'taskListId';

@@ -15,11 +15,9 @@ import 'package:flutter/material.dart';
 extension ActerChatThemeExtension on ThemeData {
   ActerChatTheme get chatTheme => const ActerChatTheme();
 
-  ElevatedButtonThemeData get dangerButtonTheme =>
-      dangerButtonThemeMaker();
+  ElevatedButtonThemeData get dangerButtonTheme => dangerButtonThemeMaker();
 
-  TextButtonThemeData get inlineTextButtonTheme =>
-      inlineTextButtonThemeMaker();
+  TextButtonThemeData get inlineTextButtonTheme => inlineTextButtonThemeMaker();
 }
 
 class ActerTheme {
