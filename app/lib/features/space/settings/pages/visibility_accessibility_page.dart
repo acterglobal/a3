@@ -4,7 +4,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
-import 'package:acter/common/widgets/join_rule/room_join_rule_type.dart';
+import 'package:acter/features/room/join_rule/room_join_rule_type.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';

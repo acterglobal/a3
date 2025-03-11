@@ -240,31 +240,30 @@ impl CoreClient {
         };
         let join_rule_lowered = join_rule.as_ref().map(|x| x.to_lowercase());
 
-        let join_rule_ev =
-            InitialRoomJoinRulesEvent::new(match join_rule_lowered.as_deref() {
-                // if we have a parent, by default we allow access to the subspace.
-                None | Some("restricted") => {
-                    if let Some(ref parent) = parent {
-                        RoomJoinRulesEventContent::restricted(vec![AllowRule::room_membership(
-                            parent.clone(),
-                        )])
-                    } else {
-                        RoomJoinRulesEventContent::new(JoinRule::Private)
-                    }
+        let join_rule_ev = InitialRoomJoinRulesEvent::new(match join_rule_lowered.as_deref() {
+            // if we have a parent, by default we allow access to the subspace.
+            None | Some("restricted") => {
+                if let Some(ref parent) = parent {
+                    RoomJoinRulesEventContent::restricted(vec![AllowRule::room_membership(
+                        parent.clone(),
+                    )])
+                } else {
+                    RoomJoinRulesEventContent::new(JoinRule::Private)
                 }
-                Some("knockrestricted") => {
-                    if let Some(ref parent) = parent {
-                        RoomJoinRulesEventContent::knock_restricted(vec![
-                            AllowRule::room_membership(parent.clone()),
-                        ])
-                    } else {
-                        RoomJoinRulesEventContent::new(JoinRule::Private)
-                    }
+            }
+            Some("knockrestricted") => {
+                if let Some(ref parent) = parent {
+                    RoomJoinRulesEventContent::knock_restricted(vec![AllowRule::room_membership(
+                        parent.clone(),
+                    )])
+                } else {
+                    RoomJoinRulesEventContent::new(JoinRule::Private)
                 }
-                Some("knock") => RoomJoinRulesEventContent::new(JoinRule::Knock),
-                Some("public") => RoomJoinRulesEventContent::new(JoinRule::Public),
-                _ => RoomJoinRulesEventContent::new(JoinRule::Private),
-            });
+            }
+            Some("knock") => RoomJoinRulesEventContent::new(JoinRule::Knock),
+            Some("public") => RoomJoinRulesEventContent::new(JoinRule::Public),
+            _ => RoomJoinRulesEventContent::new(JoinRule::Private),
+        });
 
         initial_states.push(join_rule_ev.to_raw_any());
 
