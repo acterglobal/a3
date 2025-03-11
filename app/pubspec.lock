@@ -106,10 +106,11 @@ packages:
   app_settings:
     dependency: "direct main"
     description:
-      name: app_settings
-      sha256: "476df1d85cec143c3d27dd1c7451629a59c0c5ccf70a0adcbfa92a0a2d928705"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: bc0d4ae
+      resolved-ref: bc0d4ae457b914b93ac7765f2955e8d145d6c922
+      url: "https://github.com/spencerccf/app_settings"
+    source: git
     version: "5.2.0"
   appcheck:
     dependency: "direct main"
