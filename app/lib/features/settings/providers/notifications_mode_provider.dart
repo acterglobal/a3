@@ -26,9 +26,9 @@ class AsyncNotificationSettingNotifier
 
 final currentNotificationModeProvider = FutureProvider.autoDispose
     .family<String, NotificationConfiguration>((ref, config) async {
-  final settings = await ref.watch(notificationSettingsProvider.future);
-  return await settings.defaultNotificationMode(
-    config.encrypted,
-    config.oneToOne,
-  );
-});
+      final settings = await ref.watch(notificationSettingsProvider.future);
+      return await settings.defaultNotificationMode(
+        config.encrypted,
+        config.oneToOne,
+      );
+    });

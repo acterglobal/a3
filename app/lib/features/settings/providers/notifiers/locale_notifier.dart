@@ -13,10 +13,11 @@ class LocaleNotifier extends StateNotifier<String> {
     final prefInstance = await sharedPrefs();
     final prefLanguageCode = prefInstance.getString(languagePrefKey);
     final deviceLanguageCode = PlatformDispatcher.instance.locale.languageCode;
-    final bool isLanguageContain = LanguageModel.allLanguagesList
-        .where((element) => element.languageCode == deviceLanguageCode)
-        .toList()
-        .isNotEmpty;
+    final bool isLanguageContain =
+        LanguageModel.allLanguagesList
+            .where((element) => element.languageCode == deviceLanguageCode)
+            .toList()
+            .isNotEmpty;
 
     if (prefLanguageCode != null) {
       _localSet(prefLanguageCode);

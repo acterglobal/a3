@@ -442,7 +442,7 @@ class TaskItemDetailPage extends ConsumerWidget {
                       memberDisplayNameProvider((
                         roomId: roomId,
                         userId: userId,
-                      ),),
+                      )),
                     )
                     .valueOrNull;
             return Padding(

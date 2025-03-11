@@ -2,10 +2,7 @@ class LanguageModel {
   final String languageName;
   final String languageCode;
 
-  LanguageModel({
-    required this.languageName,
-    required this.languageCode,
-  });
+  LanguageModel({required this.languageName, required this.languageCode});
 
   factory LanguageModel.fromCode(String? locale) {
     return switch (locale) {
@@ -23,41 +20,27 @@ class LanguageModel {
   }
 
   // We show each language in their native tongue
-  const LanguageModel.danish()
-      : languageName = 'Dansk',
-        languageCode = 'da';
+  const LanguageModel.danish() : languageName = 'Dansk', languageCode = 'da';
 
-  const LanguageModel.german()
-      : languageName = 'Deutsch',
-        languageCode = 'de';
+  const LanguageModel.german() : languageName = 'Deutsch', languageCode = 'de';
 
-  const LanguageModel.english()
-      : languageName = 'English',
-        languageCode = 'en';
+  const LanguageModel.english() : languageName = 'English', languageCode = 'en';
 
-  const LanguageModel.spanish()
-      : languageName = 'Espanol',
-        languageCode = 'es';
+  const LanguageModel.spanish() : languageName = 'Espanol', languageCode = 'es';
 
-  const LanguageModel.french()
-      : languageName = 'Français',
-        languageCode = 'fr';
+  const LanguageModel.french() : languageName = 'Français', languageCode = 'fr';
 
-  const LanguageModel.polish()
-      : languageName = 'Polski',
-        languageCode = 'pl';
+  const LanguageModel.polish() : languageName = 'Polski', languageCode = 'pl';
 
   const LanguageModel.arabic()
-      : languageName = 'اَلْعَرَبِيَّةُ',
-        languageCode = 'ar';
+    : languageName = 'اَلْعَرَبِيَّةُ',
+      languageCode = 'ar';
 
-  const LanguageModel.swahili()
-      : languageName = 'Swahili',
-        languageCode = 'sw';
+  const LanguageModel.swahili() : languageName = 'Swahili', languageCode = 'sw';
 
   const LanguageModel.urdu()
-      : languageName = 'اردو ویکیپیڈیا',
-        languageCode = 'ur';
+    : languageName = 'اردو ویکیپیڈیا',
+      languageCode = 'ur';
 
   static const allLanguagesList = [
     // we show them in ehm... alphabetical order of the name in their own language

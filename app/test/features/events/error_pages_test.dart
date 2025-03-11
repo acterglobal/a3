@@ -52,14 +52,14 @@ void main() {
           }
           return [];
         }),
-        searchValueProvider.overrideWith((_) => searchText ?? ''), // set a search string
+        searchValueProvider.overrideWith(
+          (_) => searchText ?? '',
+        ), // set a search string
         roomDisplayNameProvider.overrideWith((a, b) => 'test'),
         roomMembershipProvider.overrideWith((a, b) => null),
         hasSpaceWithPermissionProvider.overrideWith((_, ref) => false),
       ],
-      child: EventListPage(
-        spaceId: spaceId,
-      ),
+      child: EventListPage(spaceId: spaceId),
     );
     await tester.ensureErrorPageWithRetryWorks();
   }
@@ -89,16 +89,16 @@ void main() {
         overrides: [
           isBookmarkedProvider.overrideWith((a, b) => false),
           calendarEventProvider.overrideWith(() => mockedNofitier),
-          participantsProvider
-              .overrideWith(() => MockAsyncParticipantsNotifier()),
-          myRsvpStatusProvider
-              .overrideWith(() => MockAsyncRsvpStatusNotifier()),
+          participantsProvider.overrideWith(
+            () => MockAsyncParticipantsNotifier(),
+          ),
+          myRsvpStatusProvider.overrideWith(
+            () => MockAsyncRsvpStatusNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => 'RoomName'),
         ],
-        child: const EventDetailPage(
-          calendarId: '!asdf',
-        ),
+        child: const EventDetailPage(calendarId: '!asdf'),
       );
       await tester.ensureErrorPageWithRetryWorks();
     });

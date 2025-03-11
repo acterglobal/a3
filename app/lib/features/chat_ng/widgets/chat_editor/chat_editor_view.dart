@@ -20,10 +20,10 @@ class ChatEditorView extends ConsumerWidget {
 
     return switch (canSend) {
       true => ChatEditor(
-          // we have permission, show editor field
-          roomId: roomId,
-          onTyping: onTyping,
-        ),
+        // we have permission, show editor field
+        roomId: roomId,
+        onTyping: onTyping,
+      ),
       false => const ChatEditorNoAccess(), // no permissions to send messages
       null => const ChatEditorLoading(), // we're still loading
     };

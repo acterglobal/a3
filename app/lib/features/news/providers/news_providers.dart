@@ -7,43 +7,45 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:riverpod/riverpod.dart';
 
 //EVENT FILTERS
-enum UpdateFilters {
-  all,
-  news,
-  story,
-}
+enum UpdateFilters { all, news, story }
 
-final updateFilterProvider =
-    StateProvider.autoDispose<UpdateFilters>((ref) => UpdateFilters.all);
-
-final newsListProvider = AsyncNotifierProvider.family<AsyncNewsListNotifier,
-    List<NewsEntry>, String?>(
-  () => AsyncNewsListNotifier(),
+final updateFilterProvider = StateProvider.autoDispose<UpdateFilters>(
+  (ref) => UpdateFilters.all,
 );
+
+final newsListProvider = AsyncNotifierProvider.family<
+  AsyncNewsListNotifier,
+  List<NewsEntry>,
+  String?
+>(() => AsyncNewsListNotifier());
 
 final newsUpdateListProvider =
     FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
-  final news = (await ref.watch(newsListProvider(arg).future))
-      .map((inner) => UpdateNewsEntry(inner))
-      .toList();
-  return news;
-});
+      final news =
+          (await ref.watch(
+            newsListProvider(arg).future,
+          )).map((inner) => UpdateNewsEntry(inner)).toList();
+      return news;
+    });
 
 final storiesListProvider =
     AsyncNotifierProvider.family<AsyncStoryListNotifier, List<Story>, String?>(
-  () => AsyncStoryListNotifier(),
-);
+      () => AsyncStoryListNotifier(),
+    );
 
 final storyUpdateListProvider =
     FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
-  final stories = (await ref.watch(storiesListProvider(arg).future))
-      .map((inner) => UpdateStoryEntry(inner))
-      .toList();
-  return stories;
-});
+      final stories =
+          (await ref.watch(
+            storiesListProvider(arg).future,
+          )).map((inner) => UpdateStoryEntry(inner)).toList();
+      return stories;
+    });
 
-final updateListProvider =
-    FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
+final updateListProvider = FutureProvider.family<List<UpdateEntry>, String?>((
+  ref,
+  arg,
+) async {
   final news = await ref.watch(newsUpdateListProvider(arg).future);
   final stories = await ref.watch(storyUpdateListProvider(arg).future);
 
@@ -56,8 +58,10 @@ final updateListProvider =
   return entries;
 });
 
-final filteredUpdateListProvider =
-    FutureProvider.family<List<UpdateEntry>, String?>((ref, arg) async {
+final filteredUpdateListProvider = FutureProvider.family<
+  List<UpdateEntry>,
+  String?
+>((ref, arg) async {
   final updateFilter = ref.watch(updateFilterProvider);
 
   return switch (updateFilter) {
@@ -69,20 +73,24 @@ final filteredUpdateListProvider =
 
 final updateReactionsProvider =
     FutureProvider.family<ReactionManager, UpdateEntry>((ref, news) async {
-  final manager = await news.reactions();
-  return ref.watch(reactionManagerProvider(manager));
-});
+      final manager = await news.reactions();
+      return ref.watch(reactionManagerProvider(manager));
+    });
 
-final likedByMeProvider =
-    FutureProvider.autoDispose.family<bool, UpdateEntry>((ref, news) async {
-  final reactionsManager =
-      await ref.watch(updateReactionsProvider(news).future);
+final likedByMeProvider = FutureProvider.autoDispose.family<bool, UpdateEntry>((
+  ref,
+  news,
+) async {
+  final reactionsManager = await ref.watch(
+    updateReactionsProvider(news).future,
+  );
   return reactionsManager.likedByMe();
 });
 
-final totalLikesForNewsProvider =
-    FutureProvider.autoDispose.family<int, UpdateEntry>((ref, news) async {
-  final reactionsManager =
-      await ref.watch(updateReactionsProvider(news).future);
-  return reactionsManager.likesCount();
-});
+final totalLikesForNewsProvider = FutureProvider.autoDispose
+    .family<int, UpdateEntry>((ref, news) async {
+      final reactionsManager = await ref.watch(
+        updateReactionsProvider(news).future,
+      );
+      return reactionsManager.likesCount();
+    });

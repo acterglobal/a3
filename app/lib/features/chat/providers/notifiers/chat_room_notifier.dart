@@ -30,10 +30,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   late Stream<RoomMessageDiff> _listener;
   late StreamSubscription<RoomMessageDiff> _poller;
 
-  ChatRoomNotifier({
-    required this.roomId,
-    required this.ref,
-  }) : super(const ChatRoomState()) {
+  ChatRoomNotifier({required this.roomId, required this.ref})
+    : super(const ChatRoomState()) {
     _init();
   }
 
@@ -57,18 +55,14 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       } while (state.hasMore && state.messages.where(msgFilter).length < 10);
     } catch (e, s) {
       _log.severe('Error loading more messages', e, s);
-      state = state.copyWith(
-        loading: ChatRoomLoadingState.error(e.toString()),
-      );
+      state = state.copyWith(loading: ChatRoomLoadingState.error(e.toString()));
     }
   }
 
   Future<void> loadMore({bool failOnError = false}) async {
     if (state.hasMore && !state.loading.isLoading) {
       try {
-        state = state.copyWith(
-          loading: const ChatRoomLoadingState.loading(),
-        );
+        state = state.copyWith(loading: const ChatRoomLoadingState.loading());
         final hasMore = !await timeline.paginateBackwards(20);
         // wait for diffRx to be finished
         state = state.copyWith(
@@ -275,18 +269,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     try {
       roomMsg = await timeline.getMessage(originalId);
     } catch (e, s) {
-      _log.severe(
-        'Failing to load reference $msgId (from $originalId)',
-        e,
-        s,
-      );
+      _log.severe('Failing to load reference $msgId (from $originalId)', e, s);
       return;
     }
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
-    RoomEventItem orgEventItem =
-        roomMsg.eventItem().expect('room msg should have event item');
+    RoomEventItem orgEventItem = roomMsg.eventItem().expect(
+      'room msg should have event item',
+    );
     EventSendState? eventState = orgEventItem.sendState();
     String eventType = orgEventItem.eventType();
     Map<String, dynamic> repliedToContent = {'eventState': eventState};
@@ -318,10 +309,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
           id: roomMsg.uniqueId(),
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-          },
+          metadata: {'itemType': 'event', 'eventType': eventType},
         );
         break;
       case 'm.room.redaction':
@@ -329,10 +317,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: types.User(id: orgEventItem.sender()),
           createdAt: orgEventItem.originServerTs(),
           id: roomMsg.uniqueId(),
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-          },
+          metadata: {'itemType': 'event', 'eventType': eventType},
         );
         break;
       case 'm.call.answer':
@@ -370,9 +355,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['base64'] = base64Encode(data.asTypedList());
               });
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.image should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.image should have media source',
+              );
               repliedTo = types.ImageMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -395,9 +380,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.audio should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.audio should have media source',
+              );
               repliedTo = types.AudioMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -420,9 +405,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               convo.mediaBinary(originalId, null).then((data) {
                 repliedToContent['content'] = base64Encode(data.asTypedList());
               });
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.video should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.video should have media source',
+              );
               repliedTo = types.VideoMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -437,12 +422,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.file':
             MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
-              repliedToContent = {
-                'content': msgContent.body(),
-              };
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.file should have media source');
+              repliedToContent = {'content': msgContent.body()};
+              final source = msgContent.source().expect(
+                'msg content of m.file should have media source',
+              );
               repliedTo = types.FileMessage(
                 author: types.User(id: orgEventItem.sender()),
                 id: originalId,
@@ -495,8 +478,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
 
     // If not virtual item, it should be event item
-    RoomEventItem eventItem =
-        message.eventItem().expect('room msg should have event item');
+    RoomEventItem eventItem = message.eventItem().expect(
+      'room msg should have event item',
+    );
     EventSendState? eventState;
     if (eventItem.sendState() != null) {
       eventState = eventItem.sendState();
@@ -506,10 +490,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String sender = eventItem.sender();
     bool isEditable = eventItem.isEditable();
     bool wasEdited = eventItem.wasEdited();
-    final author = types.User(
-      id: sender,
-      firstName: simplifyUserId(sender),
-    );
+    final author = types.User(id: sender, firstName: simplifyUserId(sender));
     int createdAt = eventItem.originServerTs(); // in milliseconds
     String uniqueId = message.uniqueId();
     String? eventId = eventItem.eventId();
@@ -647,9 +628,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.audio should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.audio should have media source',
+              );
               return types.AudioMessage(
                 author: author,
                 createdAt: createdAt,
@@ -708,9 +689,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.file should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.file should have media source',
+              );
               return types.FileMessage(
                 author: author,
                 remoteId: eventId,
@@ -739,9 +720,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.image should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.image should have media source',
+              );
               return types.ImageMessage(
                 author: author,
                 remoteId: eventId,
@@ -848,9 +829,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               if (reactions.isNotEmpty) {
                 metadata['reactions'] = reactions;
               }
-              final source = msgContent
-                  .source()
-                  .expect('msg content of m.video should have media source');
+              final source = msgContent.source().expect(
+                'msg content of m.video should have media source',
+              );
               return types.VideoMessage(
                 author: author,
                 remoteId: eventId,
@@ -935,9 +916,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       author: const types.User(id: 'virtual'),
       remoteId: eventId,
       id: UniqueKey().toString(),
-      metadata: const {
-        'itemType': 'virtual',
-      },
+      metadata: const {'itemType': 'virtual'},
     );
   }
 

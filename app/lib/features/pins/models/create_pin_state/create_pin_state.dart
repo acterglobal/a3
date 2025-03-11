@@ -12,7 +12,5 @@ class CreatePinState with _$CreatePinState {
   }) = _CreatePinState;
 }
 
-typedef PinDescriptionParams = ({
-  String htmlBodyDescription,
-  String plainDescription
-});
+typedef PinDescriptionParams =
+    ({String htmlBodyDescription, String plainDescription});

@@ -5,11 +5,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
 final notificationSettingsProvider = AsyncNotifierProvider<
-    AsyncNotificationSettingsNotifier,
-    NotificationSettings>(() => AsyncNotificationSettingsNotifier());
+  AsyncNotificationSettingsNotifier,
+  NotificationSettings
+>(() => AsyncNotificationSettingsNotifier());
 
-final appContentNotificationSetting =
-    FutureProvider.family<bool, String>((ref, appKey) async {
+final appContentNotificationSetting = FutureProvider.family<bool, String>((
+  ref,
+  appKey,
+) async {
   final settings = await ref.watch(notificationSettingsProvider.future);
   return await settings.globalContentSetting(appKey);
 });

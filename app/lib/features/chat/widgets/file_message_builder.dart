@@ -25,21 +25,21 @@ class FileMessageBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ChatMessageInfo messageInfo =
-        (messageId: message.remoteId ?? message.id, roomId: roomId);
+    final ChatMessageInfo messageInfo = (
+      messageId: message.remoteId ?? message.id,
+      roomId: roomId,
+    );
     final mediaState = ref.watch(mediaChatStateProvider(messageInfo));
     return InkWell(
       onTap: () async {
         final mediaFile =
             ref.read(mediaChatStateProvider(messageInfo)).mediaFile;
         if (mediaFile != null) {
-          await openFileShareDialog(
-            context: context,
-            file: mediaFile,
-          );
+          await openFileShareDialog(context: context, file: mediaFile);
         } else {
-          final notifier =
-              ref.read(mediaChatStateProvider(messageInfo).notifier);
+          final notifier = ref.read(
+            mediaChatStateProvider(messageInfo).notifier,
+          );
           await notifier.downloadMedia();
         }
       },

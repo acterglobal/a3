@@ -61,9 +61,10 @@ class EmojiRow extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(maxWidth: 238, maxHeight: 42),
       padding: const EdgeInsets.all(8),
-      margin: !isAuthor
-          ? const EdgeInsets.only(bottom: 4, left: 8)
-          : const EdgeInsets.only(bottom: 4, right: 8),
+      margin:
+          !isAuthor
+              ? const EdgeInsets.only(bottom: 4, left: 8)
+              : const EdgeInsets.only(bottom: 4, right: 8),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
         color: Theme.of(context).colorScheme.surface,
@@ -88,10 +89,7 @@ class EmojiRow extends StatelessWidget {
                 onTap: () => _showBottomSheet(context),
                 child: const Padding(
                   padding: EdgeInsets.only(top: 3),
-                  child: Icon(
-                    Atlas.dots_horizontal_thin,
-                    size: 18,
-                  ),
+                  child: Icon(Atlas.dots_horizontal_thin, size: 18),
                 ),
               ),
             ],
@@ -102,9 +100,10 @@ class EmojiRow extends StatelessWidget {
   }
 
   void _showBottomSheet(BuildContext context) => showModalBottomSheet<void>(
-        context: context,
-        enableDrag: false,
-        builder: (context) => EmojiPickerWidget(
+    context: context,
+    enableDrag: false,
+    builder:
+        (context) => EmojiPickerWidget(
           withBoarder: true,
           onEmojiSelected: (category, emoji) {
             onEmojiTap(message.id, emoji.emoji);
@@ -112,5 +111,5 @@ class EmojiRow extends StatelessWidget {
           },
           onClosePicker: () => Navigator.pop(context),
         ),
-      );
+  );
 }
