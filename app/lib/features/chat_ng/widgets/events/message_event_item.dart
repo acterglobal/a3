@@ -120,24 +120,37 @@ class MessageEventItem extends ConsumerWidget {
       'm.notice' ||
       'm.server_notice' ||
       'm.text' => buildTextMsgEvent(context, ref, item),
-      'm.image' => ImageMessageEvent(
-        messageId: messageId,
-        roomId: roomId,
-        content: content,
+      'm.image' => alignedWidget(
+        ImageMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+        ),
       ),
-      'm.video' => VideoMessageEvent(
-        roomId: roomId,
-        messageId: messageId,
-        content: content,
+      'm.video' => alignedWidget(
+        VideoMessageEvent(
+          roomId: roomId,
+          messageId: messageId,
+          content: content,
+        ),
       ),
-      'm.file' => FileMessageEvent(
-        roomId: roomId,
-        messageId: messageId,
-        content: content,
+      'm.file' => alignedWidget(
+        FileMessageEvent(
+          roomId: roomId,
+          messageId: messageId,
+          content: content,
+        ),
       ),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
+
+  // for image/video/file messages
+  Widget alignedWidget(Widget child) => Container(
+    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+    width: double.infinity,
+    child: child,
+  );
 
   Widget buildTextMsgEvent(
     BuildContext context,
