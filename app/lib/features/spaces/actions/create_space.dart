@@ -5,7 +5,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -28,7 +28,7 @@ Future<String?> createSpace(
   String? description,
   File? spaceAvatar,
   String? parentRoomId,
-  RoomVisibility? roomVisibility,
+  RoomJoinRule? roomJoinRule,
   bool createDefaultChat = false,
 }) async {
   final lang = L10n.of(context);
@@ -47,8 +47,8 @@ Future<String?> createSpace(
     if (parentRoomId != null) {
       config.setParent(parentRoomId);
     }
-    if (roomVisibility != null) {
-      config.setVisibility(roomVisibility.name);
+    if (roomJoinRule != null) {
+      config.joinRule(roomJoinRule.name);
     }
     final client = await ref.read(alwaysClientProvider.future);
     final result = await client.createActerSpace(config.build());

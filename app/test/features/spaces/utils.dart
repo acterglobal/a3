@@ -9,7 +9,7 @@ import '../../helpers/mock_space_providers.dart';
 
 List<Override> spaceOverrides() => [
   // mocking so we can display the page in general
-  roomVisibilityProvider.overrideWith((a, b) => null),
+  roomJoinRuleProvider.overrideWith((a, b) => null),
   roomDisplayNameProvider.overrideWith((a, b) => null),
   parentAvatarInfosProvider.overrideWith((a, b) => []),
   roomAvatarProvider.overrideWith((a, b) => null),

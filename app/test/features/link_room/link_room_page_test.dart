@@ -31,7 +31,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => mockedNames[b]),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
@@ -83,7 +83,7 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => mockedNames[b]),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),

@@ -8,7 +8,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/edit_plain_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/visibility/visibility_chip.dart';
+import 'package:acter/features/room/join_rule/join_rule_chip.dart';
 import 'package:acter/features/chat/widgets/member_list.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat/widgets/skeletons/action_item_skeleton_widget.dart';
@@ -383,7 +383,7 @@ class _RoomProfilePageState extends ConsumerState<RoomProfilePage> {
                 tiles: [
                   SettingsTile(
                     title: Text(L10n.of(context).accessAndVisibility),
-                    description: VisibilityChip(roomId: widget.roomId),
+                    description: JoinRuleChip(roomId: widget.roomId),
                     leading: const Icon(Atlas.lab_appliance_thin),
                     onPressed:
                         (context) => context.pushNamed(
