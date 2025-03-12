@@ -39,8 +39,7 @@ class MessageEventItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SwipeTo(
-      onRightSwipe: !isMe ? (_) => _handleReplySwipe(ref, item) : null,
-      onLeftSwipe: isMe ? (_) => _handleReplySwipe(ref, item) : null,
+      onRightSwipe: (_) => _handleReplySwipe(ref, item),
       child: Column(
         crossAxisAlignment:
             isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
