@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -13,6 +14,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class MessageEventItem extends ConsumerWidget {
   final String roomId;
@@ -36,15 +38,23 @@ class MessageEventItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment:
-          isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-        _buildReactionsList(roomId, messageId, item, isMe),
-      ],
+    return SwipeTo(
+      onRightSwipe: !isMe ? (_) => _handleReplySwipe(ref, item) : null,
+      onLeftSwipe: isMe ? (_) => _handleReplySwipe(ref, item) : null,
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildMessageUI(context, ref, roomId, messageId, item, isMe),
+          _buildReactionsList(roomId, messageId, item, isMe),
+        ],
+      ),
     );
+  }
+
+  void _handleReplySwipe(WidgetRef ref, RoomEventItem item) {
+    ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
   }
 
   Widget _buildMessageUI(
