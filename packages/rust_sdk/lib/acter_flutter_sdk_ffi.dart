@@ -22439,6 +22439,13 @@ class Api {
   late final _activityTargetUrl =
       _activityTargetUrlPtr
           .asFunction<_ActivityTargetUrlReturn Function(int)>();
+  late final _activityTaskListIdStrPtr = _lookup<
+    ffi.NativeFunction<_ActivityTaskListIdStrReturn Function(ffi.IntPtr)>
+  >("__Activity_task_list_id_str");
+
+  late final _activityTaskListIdStr =
+      _activityTaskListIdStrPtr
+          .asFunction<_ActivityTaskListIdStrReturn Function(int)>();
   late final _activityObjectPtr =
       _lookup<ffi.NativeFunction<_ActivityObjectReturn Function(ffi.IntPtr)>>(
         "__Activity_object",
@@ -48025,6 +48032,38 @@ class Activity {
     return tmp2;
   }
 
+  /// where to route to for the details of this activity
+  String? taskListIdStr() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityTaskListIdStr(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the object this activity happened on, if any
   ActivityObject? object() {
     var tmp0 = 0;
@@ -60381,6 +60420,17 @@ class _ActivityTargetUrlReturn extends ffi.Struct {
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
+}
+
+class _ActivityTaskListIdStrReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _ActivityObjectReturn extends ffi.Struct {
