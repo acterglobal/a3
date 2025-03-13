@@ -1,6 +1,8 @@
 {
     "about": "About",
     "@about": {},
+    "abortSending": "Abort Sending",
+    "@abort": {},
     "accept": "Accept",
     "@accept": {},
     "acceptRequest": "Accept Request",

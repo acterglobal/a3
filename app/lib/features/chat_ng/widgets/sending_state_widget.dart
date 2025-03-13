@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-import 'package:acter/common/toolkit/errors/error_dialog.dart';
 import 'package:acter/common/toolkit/widgets/pulsating_icon.dart';
+import 'package:acter/features/chat_ng/widgets/sending_error_dialog.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show EventSendState;
@@ -34,15 +34,7 @@ class SendingStateWidget extends StatelessWidget {
   Widget _buildSendingFailed(BuildContext context) =>
       ActerInlineTextButton.icon(
         onPressed:
-            () => ActerErrorDialog.show(
-              context: context,
-              error: state.error() ?? 'Error sending message',
-              title: L10n.of(context).chatSendingFailed,
-              onRetryTap: () {
-                state.abort();
-              },
-              includeBugReportButton: false,
-            ),
+            () => SendingErrorDialog.show(context: context, state: state),
         icon: const Icon(Icons.error),
         label: Text(L10n.of(context).chatSendingFailed),
       );
