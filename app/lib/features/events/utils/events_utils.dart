@@ -106,6 +106,13 @@ String getMonthFromDate(UtcDateTime utcDateTime) {
   return month;
 }
 
+String getYearFromDate(UtcDateTime utcDateTime) {
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  final month = DateFormat.y().format(localDateTime);
+  return month;
+}
+
+
 String getDayFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
   final day = DateFormat.d().format(localDateTime);

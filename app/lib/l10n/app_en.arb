@@ -2305,5 +2305,8 @@
     "spaceAcitivitiesBetaInfo": "space activities section is under development, so this might not display all the activities",
     "spaceActivities": "Space Activities",
     "unableToLoadFile": "Unable to load file",
+    "rescheduled": "Rescheduled",
+    "goingTo": "Going to",
+    "notGoingTo": "Not Going to",
     "@addComment": {}
 }
