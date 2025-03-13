@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/join_rule/room_join_rule_item.dart';
+import 'package:acter/features/room/join_rule/room_join_rule_item.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ class RoomJoinRuleType extends ConsumerWidget {
             title: lang.private,
             subtitle: lang.privateVisibilitySubtitle,
             selectedJoinRuleValue: selectedJoinRuleEnum,
-            spaceJoinRuleValue: RoomJoinRule.Private,
+            spaceJoinRuleValue: RoomJoinRule.Invite,
             onChanged: canChange ? onJoinRuleChange : null,
           ),
           const SizedBox(height: 10),

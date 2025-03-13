@@ -21,7 +21,7 @@ use matrix_sdk_base::{
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use strum::Display;
-use tracing::error;
+use tracing::{error, trace};
 
 use crate::{
     client::CoreClient,
@@ -240,31 +240,36 @@ impl CoreClient {
         };
         let join_rule_lowered = join_rule.as_ref().map(|x| x.to_lowercase());
 
-        let join_rule_ev =
-            InitialRoomJoinRulesEvent::new(match join_rule_lowered.as_deref() {
-                // if we have a parent, by default we allow access to the subspace.
-                None | Some("restricted") => {
-                    if let Some(ref parent) = parent {
-                        RoomJoinRulesEventContent::restricted(vec![AllowRule::room_membership(
-                            parent.clone(),
-                        )])
-                    } else {
-                        RoomJoinRulesEventContent::new(JoinRule::Private)
-                    }
+        let join_rule_ev = InitialRoomJoinRulesEvent::new(match join_rule_lowered.as_deref() {
+            // if we have a parent, by default we allow access to the subspace.
+            None | Some("restricted") => {
+                if let Some(ref parent) = parent {
+                    RoomJoinRulesEventContent::restricted(vec![AllowRule::room_membership(
+                        parent.clone(),
+                    )])
+                } else {
+                    RoomJoinRulesEventContent::new(JoinRule::Invite)
                 }
-                Some("knockrestricted") => {
-                    if let Some(ref parent) = parent {
-                        RoomJoinRulesEventContent::knock_restricted(vec![
-                            AllowRule::room_membership(parent.clone()),
-                        ])
-                    } else {
-                        RoomJoinRulesEventContent::new(JoinRule::Private)
-                    }
+            }
+            Some("knockrestricted") => {
+                if let Some(ref parent) = parent {
+                    RoomJoinRulesEventContent::knock_restricted(vec![AllowRule::room_membership(
+                        parent.clone(),
+                    )])
+                } else {
+                    RoomJoinRulesEventContent::new(JoinRule::Knock)
                 }
-                Some("knock") => RoomJoinRulesEventContent::new(JoinRule::Knock),
-                Some("public") => RoomJoinRulesEventContent::new(JoinRule::Public),
-                _ => RoomJoinRulesEventContent::new(JoinRule::Private),
-            });
+            }
+            Some("knock") => RoomJoinRulesEventContent::new(JoinRule::Knock),
+            Some("public") => RoomJoinRulesEventContent::new(JoinRule::Public),
+            _ => RoomJoinRulesEventContent::new(JoinRule::Invite),
+        });
+
+        trace!(
+            ?join_rule_ev,
+            ?join_rule_lowered,
+            "creating space with join rule"
+        );
 
         initial_states.push(join_rule_ev.to_raw_any());
 

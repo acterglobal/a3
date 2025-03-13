@@ -1,5 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/widgets/join_rule/join_rule_chip.dart';
+import 'package:acter/features/room/join_rule/join_rule_chip.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';

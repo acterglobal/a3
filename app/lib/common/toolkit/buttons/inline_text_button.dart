@@ -44,10 +44,7 @@ class ActerInlineTextButton extends TextButton {
       autofocus: autofocus ?? false,
       clipBehavior: clipBehavior = Clip.none,
       statesController: statesController,
-      child: _IconLabelChild(
-        icon: icon,
-        label: label,
-      ),
+      child: _IconLabelChild(icon: icon, label: label),
     );
   }
 
@@ -63,10 +60,7 @@ class _IconLabelChild extends StatelessWidget {
   final Widget label;
   final Widget icon;
 
-  const _IconLabelChild({
-    required this.label,
-    required this.icon,
-  });
+  const _IconLabelChild({required this.label, required this.icon});
 
   @override
   Widget build(BuildContext context) {

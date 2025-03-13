@@ -38,10 +38,7 @@ class MenuItemWidget extends StatelessWidget {
         onTap: onTap,
         visualDensity: visualDensity,
         leading: iconData.map(
-          (data) => Icon(
-            data,
-            color: enabled ? iconColor : disabledColor,
-          ),
+          (data) => Icon(data, color: enabled ? iconColor : disabledColor),
         ),
         title: Text(
           title,
@@ -53,7 +50,8 @@ class MenuItemWidget extends StatelessWidget {
             style: titleStyles?.copyWith(color: enabled ? null : disabledColor),
           ),
         ),
-        trailing: trailing ??
+        trailing:
+            trailing ??
             (withMenu ? const Icon(Icons.keyboard_arrow_right_outlined) : null),
       ),
     );

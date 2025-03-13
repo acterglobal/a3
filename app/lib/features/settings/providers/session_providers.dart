@@ -4,14 +4,12 @@ import 'package:riverpod/riverpod.dart';
 
 final allSessionsProvider =
     AsyncNotifierProvider<AsyncDevicesNotifier, List<DeviceRecord>>(
-  () => AsyncDevicesNotifier(),
-);
+      () => AsyncDevicesNotifier(),
+    );
 
-final unknownSessionsProvider = FutureProvider<List<DeviceRecord>>(
-  (ref) async {
-    final sessions = await ref.watch(allSessionsProvider.future);
-    return sessions
-        .where((session) => !session.isMe()) // exclude me
-        .toList();
-  },
-);
+final unknownSessionsProvider = FutureProvider<List<DeviceRecord>>((ref) async {
+  final sessions = await ref.watch(allSessionsProvider.future);
+  return sessions
+      .where((session) => !session.isMe()) // exclude me
+      .toList();
+});

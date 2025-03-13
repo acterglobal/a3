@@ -5360,25 +5360,41 @@ class Api {
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
     final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
-    if (tmp10 == 0) {
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp9_ptr = ffi.Pointer.fromAddress(tmp9);
-    List<int> tmp9_buf = [];
-    final tmp9_precast = tmp9_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp10; i++) {
-      int char = tmp9_precast.elementAt(i).value;
-      tmp9_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
     }
-    final tmp7 = utf8.decode(tmp9_buf, allowMalformed: true);
-    if (tmp11 > 0) {
-      final ffi.Pointer<ffi.Void> tmp9_0;
-      tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-      this.__deallocate(tmp9_0, tmp11 * 1, 1);
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
     }
     return tmp7;
   }
@@ -70025,12 +70041,20 @@ class _RoomNotificationModeFuturePollReturn extends ffi.Struct {
 class _RoomDefaultNotificationModeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.IntPtr()
+  @ffi.Uint8()
   external int arg1;
-  @ffi.UintPtr()
+  @ffi.IntPtr()
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+  @ffi.UintPtr()
+  external int arg7;
 }
 
 class _RoomUnmuteFuturePollReturn extends ffi.Struct {

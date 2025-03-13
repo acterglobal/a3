@@ -4,7 +4,7 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
-import 'package:acter/common/widgets/join_rule/room_join_rule_type.dart';
+import 'package:acter/features/room/join_rule/room_join_rule_type.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -102,7 +102,7 @@ class _VisibilityAccessibilityPageState
                 selectSpace(spaceId);
               } else {
                 updateSpaceVisibility(
-                  value ?? RoomJoinRule.Private,
+                  value ?? RoomJoinRule.Invite,
                   spaceIds: (allowedSpaces.valueOrNull ?? []),
                 );
               }
@@ -111,12 +111,12 @@ class _VisibilityAccessibilityPageState
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
         return const RoomJoinRuleType(
-          selectedJoinRuleEnum: RoomJoinRule.Private,
+          selectedJoinRuleEnum: RoomJoinRule.Invite,
         );
       },
       loading:
           () => const Skeletonizer(
-            child: RoomJoinRuleType(selectedJoinRuleEnum: RoomJoinRule.Private),
+            child: RoomJoinRuleType(selectedJoinRuleEnum: RoomJoinRule.Invite),
           ),
     );
   }
@@ -235,7 +235,7 @@ class _VisibilityAccessibilityPageState
     );
     final newList = allowedRooms.where((id) => id != spaceId).toList();
     final visibility =
-        newList.isEmpty ? RoomJoinRule.Private : RoomJoinRule.Restricted;
+        newList.isEmpty ? RoomJoinRule.Invite : RoomJoinRule.Restricted;
     await updateSpaceVisibility(visibility, spaceIds: newList);
   }
 
@@ -282,7 +282,7 @@ class _VisibilityAccessibilityPageState
         case RoomJoinRule.Public:
           update.joinRule('public');
           break;
-        case RoomJoinRule.Private:
+        case RoomJoinRule.Invite:
           update.joinRule('invite');
           break;
         case RoomJoinRule.Restricted:

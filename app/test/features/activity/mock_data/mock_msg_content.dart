@@ -5,10 +5,7 @@ class MockMsgContent extends Mock implements MsgContent {
   final String? mockBody;
   final String? mockFormattedBody;
 
-  MockMsgContent({
-    required this.mockBody,
-    this.mockFormattedBody,
-  });
+  MockMsgContent({required this.mockBody, this.mockFormattedBody});
 
   @override
   String body() => mockBody ?? 'message body';

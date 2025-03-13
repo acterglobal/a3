@@ -92,7 +92,7 @@ class ChatEvent extends ConsumerWidget {
                       memberAvatarInfoProvider((
                         roomId: roomId,
                         userId: item.sender(),
-                      ),),
+                      )),
                     ),
                     size: 14,
                   ),

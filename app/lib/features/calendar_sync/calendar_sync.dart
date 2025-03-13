@@ -84,18 +84,17 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   // clear if it existed before
   _subscription?.close();
   // start listening
-  _subscription = mainProviderContainer.listen(
-    eventsToSyncProvider,
-    (prev, next) async {
-      final events = next.valueOrNull;
-      if (events == null) {
-        _log.info('ignoring state change without value');
-        return;
-      }
-      scheduleRefresh(calendarId, events);
-    },
-    fireImmediately: true,
-  );
+  _subscription = mainProviderContainer.listen(eventsToSyncProvider, (
+    prev,
+    next,
+  ) async {
+    final events = next.valueOrNull;
+    if (events == null) {
+      _log.info('ignoring state change without value');
+      return;
+    }
+    scheduleRefresh(calendarId, events);
+  }, fireImmediately: true);
 }
 
 Completer<void>? _completer;
@@ -106,10 +105,7 @@ bool _running = false;
 // schedules an update of the calender
 // makes sure there is only one running at a time
 @visibleForTesting
-Future<void> scheduleRefresh(
-  String calendarId,
-  List<EventAndRsvp> events,
-) {
+Future<void> scheduleRefresh(String calendarId, List<EventAndRsvp> events) {
   _debounce?.cancel(); // cancel the current debounce;
   _completer ??= Completer<void>();
   _debounce = Timer(const Duration(seconds: 3), () async {
@@ -181,9 +177,9 @@ Future<void> _refreshCalendar(
     Event? localEvent;
     if (localId != null) {
       localEvent = foundEvents.cast<Event?>().firstWhere(
-            (e) => e?.eventId == localId,
-            orElse: () => null,
-          );
+        (e) => e?.eventId == localId,
+        orElse: () => null,
+      );
     }
 
     if (localEvent == null) {
@@ -216,14 +212,12 @@ Future<void> _refreshCalendar(
       newLinks.entries.map((m) => '${m.key}=${m.value}').toList();
   _log.info('Storing new mapping: $newMapping');
   // set our new mapping
-  await preferences.setStringList(
-    calendarSyncIdsKey,
-    newMapping,
-  );
+  await preferences.setStringList(calendarSyncIdsKey, newMapping);
 
   // time to clean up events that we aren’t tracking anymore
-  for (final toDelete in foundEvents
-      .where((e) => e.eventId != null && !foundEventIds.contains(e.eventId))) {
+  for (final toDelete in foundEvents.where(
+    (e) => e.eventId != null && !foundEventIds.contains(e.eventId),
+  )) {
     _log.info('Deleting event ${toDelete.eventId}');
     _logError(
       await deviceCalendar.deleteEvent(calendarId, toDelete.eventId),
@@ -244,10 +238,7 @@ Future<Event> updateEventDetails(
     toDartDatetime(acterEvent.utcStart()),
     UTC,
   );
-  localEvent.end = TZDateTime.from(
-    toDartDatetime(acterEvent.utcEnd()),
-    UTC,
-  );
+  localEvent.end = TZDateTime.from(toDartDatetime(acterEvent.utcEnd()), UTC);
   final (status, reminders) = switch (rsvp) {
     RsvpStatusTag.Yes => (EventStatus.Confirmed, [Reminder(minutes: 10)]),
     RsvpStatusTag.Maybe => (EventStatus.Tentative, [Reminder(minutes: 10)]),
@@ -271,12 +262,13 @@ Future<List<String>> _findActerCalendars() async {
   }
   return calendars
       .where(
-    (c) => c.accountType?.toLowerCase() == 'local' && c.name == 'Acter',
-  )
+        (c) => c.accountType?.toLowerCase() == 'local' && c.name == 'Acter',
+      )
       .map((c) {
-    _log.info('Found ${c.id} (${c.accountType})');
-    return c.id!;
-  }).toList();
+        _log.info('Found ${c.id} (${c.accountType})');
+        return c.id!;
+      })
+      .toList();
 }
 
 Future<void> clearActerCalendars() async {
@@ -322,15 +314,16 @@ Future<String> _getOrCreateCalendar() async {
   _log.info('No previous calendar found, creating a new one');
 
   // fallback: calendar not found or not yet created. Create one
-  final newCalendarId = _logError(
-    await deviceCalendar.createCalendar(
-      'Acter',
-      calendarColor: brandColor,
-      localAccountName: 'Acter',
-    ),
-    'Failed to create new calendar',
-    doThrow: true,
-  )!;
+  final newCalendarId =
+      _logError(
+        await deviceCalendar.createCalendar(
+          'Acter',
+          calendarColor: brandColor,
+          localAccountName: 'Acter',
+        ),
+        'Failed to create new calendar',
+        doThrow: true,
+      )!;
   await preferences.setString(calendarSyncKey, newCalendarId);
   return newCalendarId;
 }

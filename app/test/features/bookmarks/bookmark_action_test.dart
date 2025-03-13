@@ -34,8 +34,9 @@ void main() {
     });
     testWidgets('unset bookmark', (tester) async {
       final mockManager = MockedBookmarksManager();
-      when(() => mockManager.remove(any(), any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => mockManager.remove(any(), any()),
+      ).thenAnswer((a) async => true);
       await tester.pumpProviderWidget(
         overrides: [
           isBookmarkedProvider.overrideWith((ref, b) => true),

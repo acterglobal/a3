@@ -13,13 +13,9 @@ final _log = Logger('a3::news::image_slide');
 
 class ImageSlide extends StatefulWidget {
   final UpdateSlide slide;
-  final NewsMediaErrorState errorState;  // Add the enum as a parameter
+  final NewsMediaErrorState errorState; // Add the enum as a parameter
 
-  const ImageSlide({
-    super.key,
-    required this.slide,
-    required this.errorState,
-  });
+  const ImageSlide({super.key, required this.slide, required this.errorState});
 
   @override
   State<ImageSlide> createState() => _ImageSlideState();
@@ -63,12 +59,7 @@ class _ImageSlideState extends State<ImageSlide> {
   }
 
   Widget buildImageLoadingUI() {
-    return Center(
-      child: Icon(
-        PhosphorIcons.image(),
-        size: 100,
-      ),
-    );
+    return Center(child: Icon(PhosphorIcons.image(), size: 100));
   }
 
   Widget buildImageLoadingErrorUI(
@@ -83,7 +74,7 @@ class _ImageSlideState extends State<ImageSlide> {
       onTryAgain: () {
         setState(() {}); // Trigger reload of the image
       },
-      mediaType: widget.slide.typeStr(),  // Specify it's an image
+      mediaType: widget.slide.typeStr(), // Specify it's an image
     );
   }
 }

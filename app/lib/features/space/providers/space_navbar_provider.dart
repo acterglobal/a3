@@ -17,11 +17,13 @@ enum TabEntry {
   chats,
   spaces,
   members,
-  actions;
+  actions,
 }
 
-final tabsProvider =
-    FutureProvider.family<List<TabEntry>, String>((ref, spaceId) async {
+final tabsProvider = FutureProvider.family<List<TabEntry>, String>((
+  ref,
+  spaceId,
+) async {
   final space = await ref.watch(spaceProvider(spaceId).future);
 
   List<TabEntry> tabs = [];
@@ -63,15 +65,17 @@ final tabsProvider =
     }
   }
 
-  final suggestedChats =
-      await ref.watch(suggestedChatsProvider(spaceId).future);
+  final suggestedChats = await ref.watch(
+    suggestedChatsProvider(spaceId).future,
+  );
   final hasSuggestedChats =
       suggestedChats.$1.isNotEmpty || suggestedChats.$2.isNotEmpty;
   if (hasSuggestedChats) {
     tabs.add(TabEntry.suggestedChats);
   }
-  final suggestedSpaces =
-      await ref.watch(suggestedSpacesProvider(spaceId).future);
+  final suggestedSpaces = await ref.watch(
+    suggestedSpacesProvider(spaceId).future,
+  );
   final hasSuggestedSpaces =
       suggestedSpaces.$1.isNotEmpty || suggestedSpaces.$2.isNotEmpty;
   if (hasSuggestedSpaces) {
@@ -84,8 +88,9 @@ final tabsProvider =
     tabs.add(TabEntry.chats);
   }
 
-  final otherSubSpaces =
-      await ref.watch(otherSubSpacesProvider(spaceId).future);
+  final otherSubSpaces = await ref.watch(
+    otherSubSpacesProvider(spaceId).future,
+  );
   final hasOtherSubSpaces =
       otherSubSpaces.$1.isNotEmpty || otherSubSpaces.$2.isNotEmpty;
   if (hasOtherSubSpaces) {

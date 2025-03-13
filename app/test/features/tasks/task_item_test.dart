@@ -47,8 +47,9 @@ class MockMemberAvatarInfoProvider extends Mock {
     return AvatarInfo(
       uniqueId: query.userId,
       displayName: 'Test User', // Mocked display name
-      avatar:
-          NetworkImage('https://acter.global/avatar.png'), // Mocked avatar URL
+      avatar: NetworkImage(
+        'https://acter.global/avatar.png',
+      ), // Mocked avatar URL
     );
   }
 }
@@ -95,12 +96,14 @@ void main() {
           return mockMemberDisplayNameProvider.call(query);
         }),
         memberAvatarProvider.overrideWith((ref, query) {
-          return mockMemberAvatarProvider
-              .call(query); // This returns Future<MemoryImage?>
+          return mockMemberAvatarProvider.call(
+            query,
+          ); // This returns Future<MemoryImage?>
         }),
         memberAvatarInfoProvider.overrideWith((ref, query) {
-          return mockMemberAvatarInfoProvider
-              .call(query); // Returning mocked AvatarInfo
+          return mockMemberAvatarInfoProvider.call(
+            query,
+          ); // Returning mocked AvatarInfo
         }),
         taskItemProvider.overrideWith((ref, query) {
           return mockedNotifier.build(mockTask);
@@ -184,13 +187,14 @@ void main() {
     await tester.pumpAndSettle();
     final date = DateTime.parse(mockTaskDate.date.toString());
     final dateText = DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
-    final label = date.isToday
-        ? 'Due today'
-        : date.isTomorrow
+    final label =
+        date.isToday
+            ? 'Due today'
+            : date.isTomorrow
             ? 'Due tomorrow'
             : date.isPast
-                ? date.timeago()
-                : dateText;
+            ? date.timeago()
+            : dateText;
     expect(find.text(label), findsOneWidget);
     expect(find.byIcon(Icons.access_time), findsOneWidget);
   });
@@ -217,8 +221,14 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(find.byType(RoomAvatarBuilder), findsNothing); // Should not find room avatar widget
-    expect(find.text('new desc'), findsOneWidget); // Should find Text with description
+    expect(
+      find.byType(RoomAvatarBuilder),
+      findsNothing,
+    ); // Should not find room avatar widget
+    expect(
+      find.text('new desc'),
+      findsOneWidget,
+    ); // Should find Text with description
   });
 
   testWidgets('TaskItem handles task assignee', (tester) async {
@@ -231,6 +241,9 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    expect(find.byType(ActerAvatar), findsOneWidget); // Should not find room avatar widget
+    expect(
+      find.byType(ActerAvatar),
+      findsOneWidget,
+    ); // Should not find room avatar widget
   });
 }

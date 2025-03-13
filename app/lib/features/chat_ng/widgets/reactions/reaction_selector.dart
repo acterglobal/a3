@@ -71,8 +71,9 @@ class ReactionSelector extends ConsumerWidget {
       },
       child: Text(
         emoji,
-        style: (EmojiConfig.emojiTextStyle ?? const TextStyle())
-            .copyWith(fontSize: size ?? 28),
+        style: (EmojiConfig.emojiTextStyle ?? const TextStyle()).copyWith(
+          fontSize: size ?? 28,
+        ),
       ),
     );
   }
@@ -82,10 +83,7 @@ class ReactionSelector extends ConsumerWidget {
       onTap: () => _showEmojiPicker(context, ref),
       child: const Padding(
         padding: EdgeInsets.only(top: 3),
-        child: Icon(
-          Atlas.dots_horizontal_thin,
-          size: 28,
-        ),
+        child: Icon(Atlas.dots_horizontal_thin, size: 28),
       ),
     );
   }
@@ -94,18 +92,19 @@ class ReactionSelector extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       enableDrag: false,
-      builder: (context) => EmojiPickerWidget(
-        withBoarder: true,
-        onEmojiSelected: (category, emoji) async {
-          await toggleReactionAction(ref, roomId, messageId, emoji.emoji);
-          if (context.mounted) {
-            // we have overlays opened, dismiss both of them
-            Navigator.pop(context);
-            Navigator.pop(context);
-          }
-        },
-        onClosePicker: () => Navigator.pop(context),
-      ),
+      builder:
+          (context) => EmojiPickerWidget(
+            withBoarder: true,
+            onEmojiSelected: (category, emoji) async {
+              await toggleReactionAction(ref, roomId, messageId, emoji.emoji);
+              if (context.mounted) {
+                // we have overlays opened, dismiss both of them
+                Navigator.pop(context);
+                Navigator.pop(context);
+              }
+            },
+            onClosePicker: () => Navigator.pop(context),
+          ),
     );
   }
 }

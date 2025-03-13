@@ -11,8 +11,10 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::common::common_providers');
 
-final eventTypeUpdatesStream =
-    StreamProvider.family<int, String>((ref, key) async* {
+final eventTypeUpdatesStream = StreamProvider.family<int, String>((
+  ref,
+  key,
+) async* {
   final client = await ref.watch(alwaysClientProvider.future);
   int counter = 0; // to ensure the value updates
 
@@ -30,9 +32,8 @@ final myUserIdStrProvider = Provider(
 );
 
 final accountProvider = FutureProvider(
-  (ref) => ref.watch(
-    alwaysClientProvider.selectAsync((client) => client.account()),
-  ),
+  (ref) =>
+      ref.watch(alwaysClientProvider.selectAsync((client) => client.account())),
 );
 
 final hasFirstSyncedProvider = Provider(
@@ -41,9 +42,7 @@ final hasFirstSyncedProvider = Provider(
 
 final deviceIdProvider = FutureProvider(
   (ref) => ref.watch(
-    alwaysClientProvider.selectAsync(
-      (v) => v.deviceId().toString(),
-    ),
+    alwaysClientProvider.selectAsync((v) => v.deviceId().toString()),
   ),
 );
 
@@ -61,30 +60,29 @@ final accountAvatarInfoProvider = StateProvider.autoDispose<AvatarInfo>((ref) {
           avatar: data,
         ),
       ) ??
-      AvatarInfo(
-        uniqueId: userId,
-        displayName: displayName,
-      );
+      AvatarInfo(uniqueId: userId, displayName: displayName);
 });
 
 /// Caching the name of each Room
-final accountDisplayNameProvider =
-    FutureProvider.autoDispose<String?>((ref) async {
+final accountDisplayNameProvider = FutureProvider.autoDispose<String?>((
+  ref,
+) async {
   final account = await ref.watch(accountProvider.future);
   return (await account.displayName()).text();
 });
 
-final _accountAvatarProvider =
-    FutureProvider.autoDispose<MemoryImage?>((ref) async {
+final _accountAvatarProvider = FutureProvider.autoDispose<MemoryImage?>((
+  ref,
+) async {
   final sdk = await ref.watch(sdkProvider.future);
   final account = await ref.watch(accountProvider.future);
   final thumbSize = sdk.api.newThumbSize(48, 48);
   final avatar = await account.avatar(thumbSize);
   // Only call data() once as it will consume the value and any subsequent
   // call will come back with `null`.
-  return avatar
-      .data()
-      .map((data) => MemoryImage(Uint8List.fromList(data.asTypedList())));
+  return avatar.data().map(
+    (data) => MemoryImage(Uint8List.fromList(data.asTypedList())),
+  );
 });
 
 // Email addresses that registered by user
@@ -106,15 +104,16 @@ final emailAddressesProvider = FutureProvider((ref) async {
   return EmailAddresses(confirmed, unconfirmed);
 });
 
-final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(
-  ((ref, arg) async {
-    try {
-      return await arg.canRedact();
-    } catch (e, s) {
-      _log.severe('Fetching canRedact failed for $arg', e, s);
-      return false;
-    }
-  }),
-);
+final canRedactProvider = FutureProvider.autoDispose.family<bool, dynamic>(((
+  ref,
+  arg,
+) async {
+  try {
+    return await arg.canRedact();
+  } catch (e, s) {
+    _log.severe('Fetching canRedact failed for $arg', e, s);
+    return false;
+  }
+}));
 
 final searchValueProvider = StateProvider.autoDispose<String>((ref) => '');

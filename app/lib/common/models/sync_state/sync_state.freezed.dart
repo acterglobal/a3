@@ -12,7 +12,8 @@ part of 'sync_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
+);
 
 /// @nodoc
 mixin _$SyncState {
@@ -33,8 +34,12 @@ abstract class $SyncStateCopyWith<$Res> {
   factory $SyncStateCopyWith(SyncState value, $Res Function(SyncState) then) =
       _$SyncStateCopyWithImpl<$Res, SyncState>;
   @useResult
-  $Res call(
-      {bool initialSync, String? errorMsg, int? countDown, int? nextRetry});
+  $Res call({
+    bool initialSync,
+    String? errorMsg,
+    int? countDown,
+    int? nextRetry,
+  });
 }
 
 /// @nodoc
@@ -57,24 +62,31 @@ class _$SyncStateCopyWithImpl<$Res, $Val extends SyncState>
     Object? countDown = freezed,
     Object? nextRetry = freezed,
   }) {
-    return _then(_value.copyWith(
-      initialSync: null == initialSync
-          ? _value.initialSync
-          : initialSync // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errorMsg: freezed == errorMsg
-          ? _value.errorMsg
-          : errorMsg // ignore: cast_nullable_to_non_nullable
-              as String?,
-      countDown: freezed == countDown
-          ? _value.countDown
-          : countDown // ignore: cast_nullable_to_non_nullable
-              as int?,
-      nextRetry: freezed == nextRetry
-          ? _value.nextRetry
-          : nextRetry // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ) as $Val);
+    return _then(
+      _value.copyWith(
+            initialSync:
+                null == initialSync
+                    ? _value.initialSync
+                    : initialSync // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            errorMsg:
+                freezed == errorMsg
+                    ? _value.errorMsg
+                    : errorMsg // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            countDown:
+                freezed == countDown
+                    ? _value.countDown
+                    : countDown // ignore: cast_nullable_to_non_nullable
+                        as int?,
+            nextRetry:
+                freezed == nextRetry
+                    ? _value.nextRetry
+                    : nextRetry // ignore: cast_nullable_to_non_nullable
+                        as int?,
+          )
+          as $Val,
+    );
   }
 }
 
@@ -82,12 +94,17 @@ class _$SyncStateCopyWithImpl<$Res, $Val extends SyncState>
 abstract class _$$NewSyncStateImplCopyWith<$Res>
     implements $SyncStateCopyWith<$Res> {
   factory _$$NewSyncStateImplCopyWith(
-          _$NewSyncStateImpl value, $Res Function(_$NewSyncStateImpl) then) =
-      __$$NewSyncStateImplCopyWithImpl<$Res>;
+    _$NewSyncStateImpl value,
+    $Res Function(_$NewSyncStateImpl) then,
+  ) = __$$NewSyncStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {bool initialSync, String? errorMsg, int? countDown, int? nextRetry});
+  $Res call({
+    bool initialSync,
+    String? errorMsg,
+    int? countDown,
+    int? nextRetry,
+  });
 }
 
 /// @nodoc
@@ -95,8 +112,9 @@ class __$$NewSyncStateImplCopyWithImpl<$Res>
     extends _$SyncStateCopyWithImpl<$Res, _$NewSyncStateImpl>
     implements _$$NewSyncStateImplCopyWith<$Res> {
   __$$NewSyncStateImplCopyWithImpl(
-      _$NewSyncStateImpl _value, $Res Function(_$NewSyncStateImpl) _then)
-      : super(_value, _then);
+    _$NewSyncStateImpl _value,
+    $Res Function(_$NewSyncStateImpl) _then,
+  ) : super(_value, _then);
 
   /// Create a copy of SyncState
   /// with the given fields replaced by the non-null parameter values.
@@ -108,35 +126,42 @@ class __$$NewSyncStateImplCopyWithImpl<$Res>
     Object? countDown = freezed,
     Object? nextRetry = freezed,
   }) {
-    return _then(_$NewSyncStateImpl(
-      initialSync: null == initialSync
-          ? _value.initialSync
-          : initialSync // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errorMsg: freezed == errorMsg
-          ? _value.errorMsg
-          : errorMsg // ignore: cast_nullable_to_non_nullable
-              as String?,
-      countDown: freezed == countDown
-          ? _value.countDown
-          : countDown // ignore: cast_nullable_to_non_nullable
-              as int?,
-      nextRetry: freezed == nextRetry
-          ? _value.nextRetry
-          : nextRetry // ignore: cast_nullable_to_non_nullable
-              as int?,
-    ));
+    return _then(
+      _$NewSyncStateImpl(
+        initialSync:
+            null == initialSync
+                ? _value.initialSync
+                : initialSync // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        errorMsg:
+            freezed == errorMsg
+                ? _value.errorMsg
+                : errorMsg // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        countDown:
+            freezed == countDown
+                ? _value.countDown
+                : countDown // ignore: cast_nullable_to_non_nullable
+                    as int?,
+        nextRetry:
+            freezed == nextRetry
+                ? _value.nextRetry
+                : nextRetry // ignore: cast_nullable_to_non_nullable
+                    as int?,
+      ),
+    );
   }
 }
 
 /// @nodoc
 
 class _$NewSyncStateImpl with DiagnosticableTreeMixin implements _NewSyncState {
-  const _$NewSyncStateImpl(
-      {required this.initialSync,
-      this.errorMsg,
-      this.countDown,
-      this.nextRetry});
+  const _$NewSyncStateImpl({
+    required this.initialSync,
+    this.errorMsg,
+    this.countDown,
+    this.nextRetry,
+  });
 
   @override
   final bool initialSync;
@@ -192,11 +217,12 @@ class _$NewSyncStateImpl with DiagnosticableTreeMixin implements _NewSyncState {
 }
 
 abstract class _NewSyncState implements SyncState {
-  const factory _NewSyncState(
-      {required final bool initialSync,
-      final String? errorMsg,
-      final int? countDown,
-      final int? nextRetry}) = _$NewSyncStateImpl;
+  const factory _NewSyncState({
+    required final bool initialSync,
+    final String? errorMsg,
+    final int? countDown,
+    final int? nextRetry,
+  }) = _$NewSyncStateImpl;
 
   @override
   bool get initialSync;

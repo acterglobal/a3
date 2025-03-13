@@ -58,10 +58,7 @@ final homeShellRoutes = [
     path: Routes.dashboard.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const Dashboard(),
-      );
+      return MaterialPage(key: state.pageKey, child: const Dashboard());
     },
   ),
 
@@ -93,10 +90,7 @@ final homeShellRoutes = [
     path: Routes.settingsLabs.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const SettingsLabsPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const SettingsLabsPage());
     },
   ),
   GoRoute(
@@ -104,10 +98,7 @@ final homeShellRoutes = [
     path: Routes.settingsChat.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const ChatSettingsPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const ChatSettingsPage());
     },
   ),
   GoRoute(
@@ -148,10 +139,7 @@ final homeShellRoutes = [
     path: Routes.settingsSuperInvites.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const InviteListPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const InviteListPage());
     },
   ),
   GoRoute(
@@ -170,10 +158,7 @@ final homeShellRoutes = [
     path: Routes.info.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const SettingsInfoPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const SettingsInfoPage());
     },
   ),
   GoRoute(
@@ -181,10 +166,7 @@ final homeShellRoutes = [
     path: Routes.myProfile.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const MyProfilePage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const MyProfilePage());
     },
   ),
   GoRoute(
@@ -192,10 +174,7 @@ final homeShellRoutes = [
     path: Routes.settingSessions.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const SessionsPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const SessionsPage());
     },
   ),
   GoRoute(
@@ -203,10 +182,7 @@ final homeShellRoutes = [
     path: Routes.settingBackup.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const BackupPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const BackupPage());
     },
   ),
   GoRoute(
@@ -236,10 +212,7 @@ final homeShellRoutes = [
     path: Routes.blockedUsers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const BlockedUsersPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const BlockedUsersPage());
     },
   ),
   GoRoute(
@@ -258,8 +231,9 @@ final homeShellRoutes = [
     path: Routes.subSpaces.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('subSpaces route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'subSpaces route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: SubSpacesPage(spaceId: spaceId),
@@ -271,8 +245,9 @@ final homeShellRoutes = [
     path: Routes.subChats.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('subChats route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'subChats route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: SubChatsPage(spaceId: spaceId),
@@ -284,10 +259,12 @@ final homeShellRoutes = [
     path: Routes.organizeCategories.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('organizeCategories route needs spaceId as path param');
-      final categoriesFor = state.pathParameters['categoriesFor']
-          .expect('organizeCategories route needs categoriesFor as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'organizeCategories route needs spaceId as path param',
+      );
+      final categoriesFor = state.pathParameters['categoriesFor'].expect(
+        'organizeCategories route needs categoriesFor as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: OrganizeCategoriesPage(
@@ -302,8 +279,9 @@ final homeShellRoutes = [
     path: Routes.spaceMembers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceMembers route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceMembers route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: SpaceMembersPage(spaceIdOrAlias: spaceId),
@@ -315,8 +293,9 @@ final homeShellRoutes = [
     path: Routes.spacePins.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spacePins route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spacePins route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: PinsListPage(spaceId: spaceId),
@@ -328,8 +307,9 @@ final homeShellRoutes = [
     path: Routes.spaceEvents.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceEvents route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceEvents route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: EventListPage(spaceId: spaceId),
@@ -341,8 +321,9 @@ final homeShellRoutes = [
     path: Routes.spaceTasks.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceTasks route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceTasks route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: TasksListPage(spaceId: spaceId),
@@ -354,8 +335,9 @@ final homeShellRoutes = [
     path: Routes.spaceUpdates.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceUpdates route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceUpdates route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: NewsListPage(spaceId: spaceId),
@@ -379,8 +361,9 @@ final homeShellRoutes = [
     path: Routes.space.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('space route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'space route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: SpaceDetailsPage(spaceId: spaceId),
@@ -405,8 +388,9 @@ final homeShellRoutes = [
     path: Routes.spaceSettings.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceSettings route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceSettings route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: SpaceSettingsMenuIndexPage(spaceId: spaceId),
@@ -418,8 +402,9 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsApps.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceSettingsApps route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceSettingsApps route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: SpaceAppsSettingsPage(spaceId: spaceId),
@@ -431,8 +416,9 @@ final homeShellRoutes = [
     path: Routes.spaceSettingsVisibility.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceSettingsVisibility route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceSettingsVisibility route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: WithSidebar(
@@ -473,16 +459,15 @@ final homeShellRoutes = [
     path: Routes.taskItemDetails.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final taskListId = state.pathParameters['taskListId']
-          .expect('taskItemDetails route needs taskListId as path param');
-      final taskId = state.pathParameters['taskId']
-          .expect('taskItemDetails route needs taskId as path param');
+      final taskListId = state.pathParameters['taskListId'].expect(
+        'taskItemDetails route needs taskListId as path param',
+      );
+      final taskId = state.pathParameters['taskId'].expect(
+        'taskItemDetails route needs taskId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
-        child: TaskItemDetailPage(
-          taskListId: taskListId,
-          taskId: taskId,
-        ),
+        child: TaskItemDetailPage(taskListId: taskListId, taskId: taskId),
       );
     },
   ),
@@ -491,8 +476,9 @@ final homeShellRoutes = [
     path: Routes.taskListDetails.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final taskListId = state.pathParameters['taskListId']
-          .expect('taskListDetails route needs taskListId as path param');
+      final taskListId = state.pathParameters['taskListId'].expect(
+        'taskListDetails route needs taskListId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: TaskListDetailPage(taskListId: taskListId),
@@ -516,8 +502,9 @@ final homeShellRoutes = [
     path: Routes.pin.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final pinId = state.pathParameters['pinId']
-          .expect('pin route needs pinId as path param');
+      final pinId = state.pathParameters['pinId'].expect(
+        'pin route needs pinId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: PinDetailsPage(pinId: pinId),
@@ -560,8 +547,9 @@ final homeShellRoutes = [
     path: Routes.calendarEvent.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final calendarId = state.pathParameters['calendarId']
-          .expect('calendarEvent route needs calendarId as path param');
+      final calendarId = state.pathParameters['calendarId'].expect(
+        'calendarEvent route needs calendarId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: EventDetailPage(calendarId: calendarId),
@@ -574,10 +562,7 @@ final homeShellRoutes = [
     path: Routes.updateList.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const NewsListPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const NewsListPage());
     },
   ),
   GoRoute(
@@ -597,8 +582,9 @@ final homeShellRoutes = [
     path: Routes.spaceInvite.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final spaceId = state.pathParameters['spaceId']
-          .expect('spaceInvite route needs spaceId as path param');
+      final spaceId = state.pathParameters['spaceId'].expect(
+        'spaceInvite route needs spaceId as path param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: InvitePage(roomId: spaceId),
@@ -610,8 +596,9 @@ final homeShellRoutes = [
     path: Routes.inviteIndividual.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.uri.queryParameters['roomId']
-          .expect('inviteIndividual route needs roomId as query param');
+      final roomId = state.uri.queryParameters['roomId'].expect(
+        'inviteIndividual route needs roomId as query param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: InviteIndividualUsers(roomId: roomId),
@@ -623,8 +610,9 @@ final homeShellRoutes = [
     path: Routes.inviteSpaceMembers.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.uri.queryParameters['roomId']
-          .expect('inviteSpaceMembers route needs roomId as query param');
+      final roomId = state.uri.queryParameters['roomId'].expect(
+        'inviteSpaceMembers route needs roomId as query param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: InviteSpaceMembers(roomId: roomId),
@@ -636,16 +624,15 @@ final homeShellRoutes = [
     path: Routes.shareInviteCode.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final inviteCode = state.uri.queryParameters['inviteCode']
-          .expect('shareInviteCode route needs inviteCode as query param');
-      final roomId = state.uri.queryParameters['roomId']
-          .expect('shareInviteCode route needs roomId as query param');
+      final inviteCode = state.uri.queryParameters['inviteCode'].expect(
+        'shareInviteCode route needs inviteCode as query param',
+      );
+      final roomId = state.uri.queryParameters['roomId'].expect(
+        'shareInviteCode route needs roomId as query param',
+      );
       return MaterialPage(
         key: state.pageKey,
-        child: ShareInviteCode(
-          inviteCode: inviteCode,
-          roomId: roomId,
-        ),
+        child: ShareInviteCode(inviteCode: inviteCode, roomId: roomId),
       );
     },
   ),
@@ -654,8 +641,9 @@ final homeShellRoutes = [
     path: Routes.invitePending.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      final roomId = state.uri.queryParameters['roomId']
-          .expect('invitePending route needs roomId as query param');
+      final roomId = state.uri.queryParameters['roomId'].expect(
+        'invitePending route needs roomId as query param',
+      );
       return MaterialPage(
         key: state.pageKey,
         child: InvitePending(roomId: roomId),

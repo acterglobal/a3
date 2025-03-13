@@ -154,7 +154,7 @@ class NotificationsSettingsPage extends ConsumerWidget {
               currentNotificationModeProvider((
                 encrypted: isEncrypted,
                 oneToOne: isOneToOne,
-              ),),
+              )),
             )
             .valueOrNull ??
         '';

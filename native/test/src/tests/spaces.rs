@@ -317,7 +317,7 @@ async fn create_private_subspace() -> Result<()> {
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("private".to_string());
+    cfg.join_rule("invite".to_string());
 
     let settings = cfg.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -335,7 +335,7 @@ async fn create_private_subspace() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    assert_eq!(space.join_rule_str(), "private");
+    assert_eq!(space.join_rule_str(), "invite");
     let space_parent = Retry::spawn(retry_strategy.clone(), move || {
         let space = space.clone();
         async move {
@@ -468,8 +468,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
 
-    let settings = cfg.build()?;
-    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
+    let subspace_id = user.create_acter_space(Box::new(cfg.build()?)).await?;
 
     let fetcher_client = user.clone();
     Retry::spawn(retry_strategy.clone(), move || {
@@ -496,29 +495,29 @@ async fn change_subspace_join_rule() -> Result<()> {
     })
     .await?;
     assert_eq!(space_parent.room_id(), first.room_id());
-    assert_eq!(space.join_rule_str(), "restricted");
+    assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
     let mut update = new_join_rule_builder();
-    update.join_rule("private".to_string());
+    update.join_rule("invite".to_string());
 
     space.set_join_rule(Box::new(update)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    let space = Retry::spawn(retry_strategy.clone(), || async {
         let space = user.space(subspace_id.to_string()).await?;
-        if space.join_rule_str() != "private" {
+        if space.join_rule_str() != "invite" {
             bail!("update did not occur");
         }
-        Ok(())
+        Ok(space)
     })
     .await?;
 
     // let’s move it back to restricted
-    assert_eq!(space.join_rule_str(), "private");
+    assert_eq!(space.join_rule_str(), "invite");
     let join_rule = space.join_rule();
 
-    assert!(matches!(join_rule, JoinRule::Private));
+    assert!(matches!(join_rule, JoinRule::Invite));
 
     let mut update = new_join_rule_builder();
     update.join_rule("restricted".to_string());

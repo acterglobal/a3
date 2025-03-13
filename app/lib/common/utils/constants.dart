@@ -48,10 +48,7 @@ class ServerEntry {
   final String value;
   final String? name;
 
-  const ServerEntry({
-    required this.value,
-    this.name,
-  });
+  const ServerEntry({required this.value, this.name});
 }
 
 List<ServerEntry> parseServers(String listing) {

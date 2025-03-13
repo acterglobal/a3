@@ -10,6 +10,6 @@ Widget attachmentLeadingIcon(AttachmentType pinAttachmentType) {
     AttachmentType.audio => const Icon(Atlas.audio_headphones),
     AttachmentType.file => const Icon(Atlas.file),
     AttachmentType.camera => const Icon(Atlas.camera),
-    AttachmentType.location => const Icon(Atlas.location)
+    AttachmentType.location => const Icon(Atlas.location),
   };
 }
