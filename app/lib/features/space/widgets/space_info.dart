@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/widgets/visibility/visibility_chip.dart';
+import 'package:acter/features/room/join_rule/join_rule_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class SpaceInfo extends ConsumerWidget {
       data:
           (space) => Wrap(
             children: [
-              VisibilityChip(roomId: spaceId),
+              JoinRuleChip(roomId: spaceId),
               const SizedBox(width: 5),
               acterSpaceInfoUI(context, ref, space),
             ],

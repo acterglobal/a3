@@ -1,27 +1,27 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:flutter/material.dart';
 
-class RoomVisibilityItem extends StatelessWidget {
+class RoomJoinRuleItem extends StatelessWidget {
   final IconData iconData;
   final String title;
   final String subtitle;
-  final RoomVisibility? selectedVisibilityValue;
-  final RoomVisibility? spaceVisibilityValue;
-  final ValueChanged<RoomVisibility?>? onChanged;
+  final RoomJoinRule? selectedJoinRuleValue;
+  final RoomJoinRule? spaceJoinRuleValue;
+  final ValueChanged<RoomJoinRule?>? onChanged;
   final bool isShowRadio;
 
-  static Key generateKey(RoomVisibility visibility) {
-    return Key('select-visibility-${visibility.name}');
+  static Key generateKey(RoomJoinRule joinRule) {
+    return Key('select-joinRule-${joinRule.name}');
   }
 
-  const RoomVisibilityItem({
+  const RoomJoinRuleItem({
     super.key,
     required this.iconData,
     required this.title,
     required this.subtitle,
-    this.selectedVisibilityValue,
-    this.spaceVisibilityValue,
+    this.selectedJoinRuleValue,
+    this.spaceJoinRuleValue,
     this.onChanged,
     this.isShowRadio = true,
   });
@@ -35,7 +35,7 @@ class RoomVisibilityItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        key: spaceVisibilityValue.map((val) => generateKey(val)),
+        key: spaceJoinRuleValue.map(generateKey),
         leading: Icon(iconData),
         title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
         subtitle: Text(
@@ -44,17 +44,17 @@ class RoomVisibilityItem extends StatelessWidget {
         ),
         onTap:
             isShowRadio && onChanged != null
-                ? spaceVisibilityValue.map(
+                ? spaceJoinRuleValue.map(
                   (val) => onChanged.map((cb) => () => cb(val)),
                 )
                 : null,
         trailing:
             !isShowRadio
                 ? const Icon(Icons.keyboard_arrow_down_sharp)
-                : spaceVisibilityValue.map(
-                      (val) => Radio<RoomVisibility>(
+                : spaceJoinRuleValue.map(
+                      (val) => Radio<RoomJoinRule>(
                         value: val,
-                        groupValue: selectedVisibilityValue,
+                        groupValue: selectedJoinRuleValue,
                         onChanged: onChanged.map((cb) => (value) => cb(value)),
                       ),
                     ) ??

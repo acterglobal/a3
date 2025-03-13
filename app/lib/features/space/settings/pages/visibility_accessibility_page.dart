@@ -4,8 +4,8 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/spaces/has_space_permission.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
-import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/join_rule/room_join_rule_type.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -63,8 +63,8 @@ class _VisibilityAccessibilityPageState
           children: [
             _buildVisibilityUI(hasPermission: false),
             const SizedBox(height: 20),
-            if (ref.watch(roomVisibilityProvider(widget.roomId)).value ==
-                RoomVisibility.SpaceVisible)
+            if (ref.watch(roomJoinRuleProvider(widget.roomId)).value ==
+                RoomJoinRule.Restricted)
               _buildSpaceWithAccess(hasPermission: false),
           ],
         ),
@@ -74,8 +74,8 @@ class _VisibilityAccessibilityPageState
           children: [
             _buildVisibilityUI(),
             const SizedBox(height: 20),
-            if (ref.watch(roomVisibilityProvider(widget.roomId)).value ==
-                RoomVisibility.SpaceVisible)
+            if (ref.watch(roomJoinRuleProvider(widget.roomId)).value ==
+                RoomJoinRule.Restricted)
               _buildSpaceWithAccess(),
           ],
         ),
@@ -85,24 +85,24 @@ class _VisibilityAccessibilityPageState
 
   Widget _buildVisibilityUI({bool hasPermission = true}) {
     final spaceId = widget.roomId;
-    final visibilityLoader = ref.watch(roomVisibilityProvider(spaceId));
+    final visibilityLoader = ref.watch(roomJoinRuleProvider(spaceId));
     final allowedSpaces = ref.watch(joinRulesAllowedRoomsProvider(spaceId));
     return visibilityLoader.when(
       data:
-          (visibility) => RoomVisibilityType(
-            selectedVisibilityEnum: visibility,
+          (visibility) => RoomJoinRuleType(
+            selectedJoinRuleEnum: visibility,
             canChange: hasPermission,
-            onVisibilityChange: (value) {
+            onJoinRuleChange: (value) {
               if (!hasPermission) {
                 EasyLoading.showToast(L10n.of(context).visibilityNoPermission);
                 return;
               }
-              if (value == RoomVisibility.SpaceVisible &&
+              if (value == RoomJoinRule.Restricted &&
                   allowedSpaces.valueOrNull?.isEmpty == true) {
                 selectSpace(spaceId);
               } else {
                 updateSpaceVisibility(
-                  value ?? RoomVisibility.Private,
+                  value ?? RoomJoinRule.Invite,
                   spaceIds: (allowedSpaces.valueOrNull ?? []),
                 );
               }
@@ -110,15 +110,13 @@ class _VisibilityAccessibilityPageState
           ),
       error: (e, s) {
         _log.severe('Failed to load room visibility', e, s);
-        return const RoomVisibilityType(
-          selectedVisibilityEnum: RoomVisibility.Private,
+        return const RoomJoinRuleType(
+          selectedJoinRuleEnum: RoomJoinRule.Invite,
         );
       },
       loading:
           () => const Skeletonizer(
-            child: RoomVisibilityType(
-              selectedVisibilityEnum: RoomVisibility.Private,
-            ),
+            child: RoomJoinRuleType(selectedJoinRuleEnum: RoomJoinRule.Invite),
           ),
     );
   }
@@ -237,7 +235,7 @@ class _VisibilityAccessibilityPageState
     );
     final newList = allowedRooms.where((id) => id != spaceId).toList();
     final visibility =
-        newList.isEmpty ? RoomVisibility.Private : RoomVisibility.SpaceVisible;
+        newList.isEmpty ? RoomJoinRule.Invite : RoomJoinRule.Restricted;
     await updateSpaceVisibility(visibility, spaceIds: newList);
   }
 
@@ -252,7 +250,7 @@ class _VisibilityAccessibilityPageState
         if (!isAlreadyAdded) {
           spaceList.add(spaceId);
           await updateSpaceVisibility(
-            RoomVisibility.SpaceVisible,
+            RoomJoinRule.Restricted,
             spaceIds: spaceList,
           );
         }
@@ -268,7 +266,7 @@ class _VisibilityAccessibilityPageState
   }
 
   Future<void> updateSpaceVisibility(
-    RoomVisibility value, {
+    RoomJoinRule value, {
     List<String>? spaceIds,
   }) async {
     try {
@@ -281,13 +279,13 @@ class _VisibilityAccessibilityPageState
         throw 'Room not found';
       }
       switch (value) {
-        case RoomVisibility.Public:
+        case RoomJoinRule.Public:
           update.joinRule('public');
           break;
-        case RoomVisibility.Private:
+        case RoomJoinRule.Invite:
           update.joinRule('invite');
           break;
-        case RoomVisibility.SpaceVisible:
+        case RoomJoinRule.Restricted:
           update.joinRule('restricted');
           for (final roomId in (spaceIds ?? [])) {
             update.addRoom(roomId);

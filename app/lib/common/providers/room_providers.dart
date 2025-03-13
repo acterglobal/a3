@@ -9,7 +9,7 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -44,15 +44,15 @@ final maybeRoomProvider =
     );
 
 /// gives current visibility state of space, return empty if no space is found
-final roomVisibilityProvider = FutureProvider.family
-    .autoDispose<RoomVisibility?, String>((ref, roomId) async {
+final roomJoinRuleProvider = FutureProvider.family
+    .autoDispose<RoomJoinRule?, String>((ref, roomId) async {
       final room = await ref.watch(maybeRoomProvider(roomId).future);
       if (room == null) return null;
       final joinRule = room.joinRuleStr();
-      final visibility = switch (joinRule) {
-        'public' => RoomVisibility.Public,
-        'restricted' => RoomVisibility.SpaceVisible,
-        'invite' => RoomVisibility.Private,
+      final visibility = switch (joinRule.toLowerCase()) {
+        'public' => RoomJoinRule.Public,
+        'restricted' => RoomJoinRule.Restricted,
+        'invite' => RoomJoinRule.Invite,
         _ => null,
       };
       if (visibility == null) {
