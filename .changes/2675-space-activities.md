@@ -1,2 +1,0 @@
-- [New] : Now you can see who is doing what on space by all new acitivities feature.
-- [New] If someone add comment, reaction, attachment or reference in space object then you will all this actions from Acitivity Screen.

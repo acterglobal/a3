@@ -1,6 +1,4 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/errors/inline_error_button.dart';
-import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -14,9 +12,10 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show EventSendState, RoomEventItem;
+    show RoomEventItem;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:swipe_to/swipe_to.dart';
 
 class MessageEventItem extends ConsumerWidget {
   final String roomId;
@@ -44,29 +43,36 @@ class MessageEventItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
     final sendingState = item.sendState();
-    return Column(
-      crossAxisAlignment:
-          isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-        if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
-        if (sendingState != null || (isMe && isLastMessage))
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child:
-                  sendingState != null
-                      ? SendingStateWidget(
-                        state: sendingState,
-                        showSentIconOnUnknown: isMe && isLastMessage,
-                      )
-                      : SendingStateWidget.sent(context),
+    return SwipeTo(
+      onRightSwipe: (_) => _handleReplySwipe(ref, item),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildMessageUI(context, ref, roomId, messageId, item, isMe),
+          if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
+          if (sendingState != null || (isMe && isLastMessage))
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child:
+                    sendingState != null
+                        ? SendingStateWidget(
+                          state: sendingState,
+                          showSentIconOnUnknown: isMe && isLastMessage,
+                        )
+                        : SendingStateWidget.sent(context),
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
+  }
+
+  void _handleReplySwipe(WidgetRef ref, RoomEventItem item) {
+    ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
   }
 
   Widget _buildMessageUI(
@@ -132,24 +138,37 @@ class MessageEventItem extends ConsumerWidget {
       'm.notice' ||
       'm.server_notice' ||
       'm.text' => buildTextMsgEvent(context, ref, item),
-      'm.image' => ImageMessageEvent(
-        messageId: messageId,
-        roomId: roomId,
-        content: content,
+      'm.image' => alignedWidget(
+        ImageMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+        ),
       ),
-      'm.video' => VideoMessageEvent(
-        roomId: roomId,
-        messageId: messageId,
-        content: content,
+      'm.video' => alignedWidget(
+        VideoMessageEvent(
+          roomId: roomId,
+          messageId: messageId,
+          content: content,
+        ),
       ),
-      'm.file' => FileMessageEvent(
-        roomId: roomId,
-        messageId: messageId,
-        content: content,
+      'm.file' => alignedWidget(
+        FileMessageEvent(
+          roomId: roomId,
+          messageId: messageId,
+          content: content,
+        ),
       ),
       _ => _buildUnsupportedMessage(msgType),
     };
   }
+
+  // for image/video/file messages
+  Widget alignedWidget(Widget child) => Container(
+    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+    width: double.infinity,
+    child: child,
+  );
 
   Widget buildTextMsgEvent(
     BuildContext context,

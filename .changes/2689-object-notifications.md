@@ -1,1 +1,0 @@
-- Fix: notifications for some events (RSVP, Task) were not being shown
