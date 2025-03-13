@@ -1,6 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/errors/inline_error_button.dart';
+import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
@@ -9,8 +12,9 @@ import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
+import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show EventSendState, RoomEventItem;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,13 +40,23 @@ class MessageEventItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
+    final sendingState = item.sendState();
     return Column(
       crossAxisAlignment:
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-        _buildReactionsList(roomId, messageId, item, isMe),
+        if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
+        if (sendingState != null)
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: SendingStateWidget(state: sendingState),
+            ),
+          ),
       ],
     );
   }
