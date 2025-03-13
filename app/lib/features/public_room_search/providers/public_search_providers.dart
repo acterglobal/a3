@@ -7,11 +7,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 final publicSearchProvider = StateNotifierProvider.autoDispose<
-    PublicSearchNotifier, PagedState<Next?, PublicSearchResultItem>>((ref) {
+  PublicSearchNotifier,
+  PagedState<Next?, PublicSearchResultItem>
+>((ref) {
   return PublicSearchNotifier(ref);
 });
 
 final searchFilterProvider =
     StateNotifierProvider<PublicSearchFiltersNotifier, PublicSearchFilters>(
-  (ref) => PublicSearchFiltersNotifier(),
-);
+      (ref) => PublicSearchFiltersNotifier(),
+    );

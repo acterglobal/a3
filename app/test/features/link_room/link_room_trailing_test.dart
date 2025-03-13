@@ -50,39 +50,38 @@ void main() {
       final parentSpace = MockSpace(id: 'parentSpace');
       final mockRoom = MockRoom();
 
-      when(() => parentSpace.removeChildRoom('child-space', any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => parentSpace.removeChildRoom('child-space', any()),
+      ).thenAnswer((a) async => true);
 
       when(() => mockRoom.isSpace()).thenReturn(true);
 
-      when(() => mockRoom.removeParentRoom('parentSpace', any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => mockRoom.removeParentRoom('parentSpace', any()),
+      ).thenAnswer((a) async => true);
 
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => null),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            () => MockSpaceListNotifiers([
-              parentSpace,
-            ]),
+            () => MockSpaceListNotifiers([parentSpace]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parentSpace' => parentSpace,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           maybeRoomProvider.overrideWith(
-            () => MockAsyncMaybeRoomNotifier(
-              items: {'child-space': mockRoom},
-            ),
+            () => MockAsyncMaybeRoomNotifier(items: {'child-space': mockRoom}),
           ),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(
@@ -119,39 +118,38 @@ void main() {
       final parentSpace = MockSpace(id: 'parentSpace');
       final mockRoom = MockRoom();
 
-      when(() => parentSpace.removeChildRoom('child-space', any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => parentSpace.removeChildRoom('child-space', any()),
+      ).thenAnswer((a) async => true);
 
       when(() => mockRoom.isSpace()).thenReturn(true);
 
-      when(() => mockRoom.removeParentRoom('parentSpace', any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => mockRoom.removeParentRoom('parentSpace', any()),
+      ).thenAnswer((a) async => true);
 
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => null),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            () => MockSpaceListNotifiers([
-              parentSpace,
-            ]),
+            () => MockSpaceListNotifiers([parentSpace]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parentSpace' => parentSpace,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           maybeRoomProvider.overrideWith(
-            () => MockAsyncMaybeRoomNotifier(
-              items: {'child-space': mockRoom},
-            ),
+            () => MockAsyncMaybeRoomNotifier(items: {'child-space': mockRoom}),
           ),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(
@@ -188,39 +186,38 @@ void main() {
       final parentSpace = MockSpace(id: 'parentSpace');
       final mockRoom = MockRoom();
 
-      when(() => parentSpace.removeChildRoom('child-chat', any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => parentSpace.removeChildRoom('child-chat', any()),
+      ).thenAnswer((a) async => true);
 
       when(() => mockRoom.isSpace()).thenReturn(false);
 
-      when(() => mockRoom.removeParentRoom('parentSpace', any()))
-          .thenAnswer((a) async => true);
+      when(
+        () => mockRoom.removeParentRoom('parentSpace', any()),
+      ).thenAnswer((a) async => true);
 
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => null),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith((a, b) => null),
           spacesProvider.overrideWith(
-            () => MockSpaceListNotifiers([
-              parentSpace,
-            ]),
+            () => MockSpaceListNotifiers([parentSpace]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parentSpace' => parentSpace,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           maybeRoomProvider.overrideWith(
-            () => MockAsyncMaybeRoomNotifier(
-              items: {'child-chat': mockRoom},
-            ),
+            () => MockAsyncMaybeRoomNotifier(items: {'child-chat': mockRoom}),
           ),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(
@@ -262,42 +259,41 @@ void main() {
 
       when(() => childMembership.canString('CanLinkSpaces')).thenReturn(true);
 
-      when(() => parentSpace.addChildRoom('child-space', any()))
-          .thenAnswer((a) async => 'asdf');
+      when(
+        () => parentSpace.addChildRoom('child-space', any()),
+      ).thenAnswer((a) async => 'asdf');
 
       when(() => mockRoom.isSpace()).thenReturn(true);
       when(() => mockRoom.joinRuleStr()).thenReturn('public');
 
-      when(() => mockRoom.addParentRoom('parentSpace', any()))
-          .thenAnswer((a) async => 'asdf');
+      when(
+        () => mockRoom.addParentRoom('parentSpace', any()),
+      ).thenAnswer((a) async => 'asdf');
 
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => null),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith(
             (a, b) => b == 'child-space' ? childMembership : null,
           ),
           spacesProvider.overrideWith(
-            () => MockSpaceListNotifiers([
-              parentSpace,
-            ]),
+            () => MockSpaceListNotifiers([parentSpace]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parentSpace' => parentSpace,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           maybeRoomProvider.overrideWith(
-            () => MockAsyncMaybeRoomNotifier(
-              items: {'child-space': mockRoom},
-            ),
+            () => MockAsyncMaybeRoomNotifier(items: {'child-space': mockRoom}),
           ),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(
@@ -337,41 +333,40 @@ void main() {
 
       when(() => childMembership.canString('CanLinkSpaces')).thenReturn(true);
 
-      when(() => parentSpace.addChildRoom('child-space', any()))
-          .thenAnswer((a) async => 'asdf');
+      when(
+        () => parentSpace.addChildRoom('child-space', any()),
+      ).thenAnswer((a) async => 'asdf');
 
       when(() => mockRoom.isSpace()).thenReturn(false);
       when(() => mockRoom.joinRuleStr()).thenReturn('public');
 
-      when(() => mockRoom.addParentRoom('parentSpace', any()))
-          .thenAnswer((a) async => 'asdf');
+      when(
+        () => mockRoom.addParentRoom('parentSpace', any()),
+      ).thenAnswer((a) async => 'asdf');
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => null),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith(
             (a, b) => b == 'child-space' ? childMembership : null,
           ),
           spacesProvider.overrideWith(
-            () => MockSpaceListNotifiers([
-              parentSpace,
-            ]),
+            () => MockSpaceListNotifiers([parentSpace]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parentSpace' => parentSpace,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           maybeRoomProvider.overrideWith(
-            () => MockAsyncMaybeRoomNotifier(
-              items: {'child-space': mockRoom},
-            ),
+            () => MockAsyncMaybeRoomNotifier(items: {'child-space': mockRoom}),
           ),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(
@@ -404,50 +399,50 @@ void main() {
       verifyNever(() => mockRoom.addParentRoom('parentSpace', any()));
     });
 
-    testWidgets('link public space without upgrade permissions',
-        (tester) async {
+    testWidgets('link public space without upgrade permissions', (
+      tester,
+    ) async {
       final parentSpace = MockSpace(id: 'parentSpace');
       final mockRoom = MockRoom();
       final childMembership = MockMember();
 
-      when(() => parentSpace.addChildRoom('child-space', any()))
-          .thenAnswer((a) async => 'asdf');
+      when(
+        () => parentSpace.addChildRoom('child-space', any()),
+      ).thenAnswer((a) async => 'asdf');
 
       when(() => mockRoom.isSpace()).thenReturn(true);
       when(() => mockRoom.joinRuleStr()).thenReturn('public');
 
       when(() => childMembership.canString('CanLinkSpaces')).thenReturn(false);
 
-      when(() => mockRoom.addParentRoom('parentSpace', any()))
-          .thenAnswer((a) async => 'asdf');
+      when(
+        () => mockRoom.addParentRoom('parentSpace', any()),
+      ).thenAnswer((a) async => 'asdf');
 
       await tester.pumpProviderWidget(
         overrides: [
           // mocking so we can display the page in general
-          roomVisibilityProvider.overrideWith((a, b) => null),
+          roomJoinRuleProvider.overrideWith((a, b) => null),
           roomDisplayNameProvider.overrideWith((a, b) => null),
           parentAvatarInfosProvider.overrideWith((a, b) => []),
           roomAvatarProvider.overrideWith((a, b) => null),
-          roomAvatarInfoProvider
-              .overrideWith(() => MockRoomAvatarInfoNotifier()),
+          roomAvatarInfoProvider.overrideWith(
+            () => MockRoomAvatarInfoNotifier(),
+          ),
           roomMembershipProvider.overrideWith(
             (a, b) => b == 'child-space' ? childMembership : null,
           ),
           spacesProvider.overrideWith(
-            () => MockSpaceListNotifiers([
-              parentSpace,
-            ]),
+            () => MockSpaceListNotifiers([parentSpace]),
           ),
           spaceProvider.overrideWith(
             (a, b) => switch (b) {
               'parentSpace' => parentSpace,
-              _ => throw 'Room Not Found'
+              _ => throw 'Room Not Found',
             },
           ),
           maybeRoomProvider.overrideWith(
-            () => MockAsyncMaybeRoomNotifier(
-              items: {'child-space': mockRoom},
-            ),
+            () => MockAsyncMaybeRoomNotifier(items: {'child-space': mockRoom}),
           ),
           spaceRelationsOverviewProvider.overrideWith(
             (a, b) async => SpaceRelationsOverview(

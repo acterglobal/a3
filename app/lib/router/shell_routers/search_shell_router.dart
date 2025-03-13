@@ -10,10 +10,7 @@ final searchShellRoutes = [
     path: Routes.search.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const QuickSearchPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const QuickSearchPage());
     },
   ),
 ];

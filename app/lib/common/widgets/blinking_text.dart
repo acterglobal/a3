@@ -159,8 +159,10 @@ class BlinkTextState extends State<BlinkText>
     final times = widget.times ?? 0;
 
     _controller = AnimationController(vsync: this, duration: duration);
-    _colorAnimation = ColorTween(begin: beginColor, end: endColor)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
+    _colorAnimation = ColorTween(
+      begin: beginColor,
+      end: endColor,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {

@@ -43,14 +43,16 @@ class AsyncStoryListNotifier extends FamilyAsyncNotifier<List<Story>, String?> {
   Future<List<Story>> _fetchStories(Client client, String? spaceId) async {
     //GET ALL STORIES
     if (spaceId == null) {
-      final storyEntries =
-          await client.latestStories(25); // this might throw internally
+      final storyEntries = await client.latestStories(
+        25,
+      ); // this might throw internally
       return sortNewsListDscTime(storyEntries.toList());
     } else {
       //GET SPACE STORIES
       final space = await client.space(spaceId);
-      final storyEntries =
-          await space.latestStories(100); // this might throw internally
+      final storyEntries = await space.latestStories(
+        100,
+      ); // this might throw internally
       return sortNewsListDscTime(storyEntries.toList());
     }
   }

@@ -5,14 +5,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 
 import 'package:acter/common/models/types.dart';
 
-typedef OnAttachmentSelected = Future<void> Function(
-  List<File> files,
-  AttachmentType attachmentType,
-);
-typedef OnLinkSelected = Future<void> Function(
-  String title,
-  String link,
-);
+typedef OnAttachmentSelected =
+    Future<void> Function(List<File> files, AttachmentType attachmentType);
+typedef OnLinkSelected = Future<void> Function(String title, String link);
 
 /// This is the actual input type for the providers and widget of this feature
 /// the way to get this is through implementing a "wrapper" type for the getter

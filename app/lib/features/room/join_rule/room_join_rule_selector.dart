@@ -1,19 +1,17 @@
-import 'package:acter/common/widgets/visibility/room_visibilty_type.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/join_rule/room_join_rule_type.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
-const Key selectVisibilityDrawerKey = Key(
-  'space-widgets-select-visibility-drawer',
-);
+const Key selectJoinRuleDrawerKey = Key('space-widgets-select-joinRule-drawer');
 
-Future<RoomVisibility?> selectVisibilityDrawer({
+Future<RoomJoinRule?> selectJoinRuleDrawer({
   required BuildContext context,
-  Key? key = selectVisibilityDrawerKey,
-  RoomVisibility? selectedVisibilityEnum,
-  bool isLimitedVisibilityShow = true,
+  Key? key = selectJoinRuleDrawerKey,
+  RoomJoinRule? selectedJoinRuleEnum,
+  bool isLimitedJoinRuleShow = true,
 }) async {
-  final selected = await showModalBottomSheet<RoomVisibility>(
+  final selected = await showModalBottomSheet<RoomJoinRule>(
     showDragHandle: true,
     enableDrag: true,
     context: context,
@@ -28,10 +26,10 @@ Future<RoomVisibility?> selectVisibilityDrawer({
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 20),
-          RoomVisibilityType(
-            isLimitedVisibilityShow: isLimitedVisibilityShow,
-            selectedVisibilityEnum: selectedVisibilityEnum,
-            onVisibilityChange: (value) {
+          RoomJoinRuleType(
+            isLimitedJoinRuleShow: isLimitedJoinRuleShow,
+            selectedJoinRuleEnum: selectedJoinRuleEnum,
+            onJoinRuleChange: (value) {
               Navigator.pop(context, value);
             },
           ),

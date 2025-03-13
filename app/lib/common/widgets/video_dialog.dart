@@ -7,11 +7,7 @@ class VideoDialog extends StatelessWidget {
   final String title;
   final File videoFile;
 
-  const VideoDialog({
-    super.key,
-    required this.title,
-    required this.videoFile,
-  });
+  const VideoDialog({super.key, required this.title, required this.videoFile});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +21,7 @@ class VideoDialog extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          actions: [
-            ShareFileButton(file: videoFile),
-          ],
+          actions: [ShareFileButton(file: videoFile)],
         ),
         body: Container(
           height: MediaQuery.of(context).size.height,

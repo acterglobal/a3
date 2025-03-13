@@ -110,7 +110,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
-      title: const Text('Due date'),
+      title: Text(L10n.of(context).dueDate),
       actions: [
         if (currentDue != null)
           TextButton.icon(

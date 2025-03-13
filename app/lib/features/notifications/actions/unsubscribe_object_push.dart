@@ -25,7 +25,7 @@ Future<bool> unsubscribeObjectPush({
       pushNotificationSubscribedStatusProvider((
         objectId: objectId,
         subType: subType,
-      ),),
+      )),
     );
     return res;
   } catch (error, stack) {

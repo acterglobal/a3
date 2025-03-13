@@ -25,23 +25,25 @@ List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
   T? Function(String) fromString,
 ) {
   List<FeatureFlag<T>> flags = List.from(
-    json.map((json) {
-      try {
-        final key = json['key'] as String?;
-        if (key == null) {
-          throw 'json should contain key';
-        }
-        final feature = fromString(key);
-        if (feature == null) {
-          throw 'enum parsing from $key failed';
-        }
-        final active = json['active'] as bool;
-        return FeatureFlag<T>(feature: feature, active: active);
-      } catch (e, s) {
-        _log.severe('Failed to parse FeatureFlag: $json', e, s);
-        return null;
-      }
-    }).where((x) => x != null),
+    json
+        .map((json) {
+          try {
+            final key = json['key'] as String?;
+            if (key == null) {
+              throw 'json should contain key';
+            }
+            final feature = fromString(key);
+            if (feature == null) {
+              throw 'enum parsing from $key failed';
+            }
+            final active = json['active'] as bool;
+            return FeatureFlag<T>(feature: feature, active: active);
+          } catch (e, s) {
+            _log.severe('Failed to parse FeatureFlag: $json', e, s);
+            return null;
+          }
+        })
+        .where((x) => x != null),
   );
   return flags;
 }
@@ -50,16 +52,10 @@ class FeatureFlag<T extends Enum> {
   late T feature;
   late bool active;
 
-  FeatureFlag({
-    required this.feature,
-    required this.active,
-  });
+  FeatureFlag({required this.feature, required this.active});
 
   Map toJson() {
-    Map fromObject = {
-      'key': feature.keyName(),
-      'active': active,
-    };
+    Map fromObject = {'key': feature.keyName(), 'active': active};
     return fromObject;
   }
 }
@@ -69,10 +65,7 @@ class Features<T extends Enum> {
   final List<FeatureFlag<T>> flags;
   final List<T> defaultOn;
 
-  const Features({
-    required this.flags,
-    required this.defaultOn,
-  });
+  const Features({required this.flags, required this.defaultOn});
 
   String toJson() => json.encode(flags);
 

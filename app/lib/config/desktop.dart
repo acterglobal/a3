@@ -20,10 +20,7 @@ const appName = kDebugMode ? 'Acter-dev' : 'Acter';
 class DesktopSupport extends StatefulWidget {
   final Widget child;
 
-  const DesktopSupport({
-    super.key,
-    required this.child,
-  });
+  const DesktopSupport({super.key, required this.child});
 
   @override
   State<DesktopSupport> createState() => _DesktopSupportState();
@@ -83,27 +80,12 @@ class _DesktopSupportState extends State<DesktopSupport>
     );
     Menu menu = Menu(
       items: [
-        MenuItem(
-          key: 'search',
-          label: 'Search',
-        ),
-        MenuItem(
-          key: 'home',
-          label: 'Home',
-        ),
-        MenuItem(
-          key: 'chat',
-          label: 'Chat',
-        ),
-        MenuItem(
-          key: 'activities',
-          label: 'Activities',
-        ),
+        MenuItem(key: 'search', label: 'Search'),
+        MenuItem(key: 'home', label: 'Home'),
+        MenuItem(key: 'chat', label: 'Chat'),
+        MenuItem(key: 'activities', label: 'Activities'),
         MenuItem.separator(),
-        MenuItem(
-          key: 'exit_app',
-          label: 'Exit App',
-        ),
+        MenuItem(key: 'exit_app', label: 'Exit App'),
       ],
     );
     if (!Platform.isMacOS) {

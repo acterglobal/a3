@@ -45,10 +45,7 @@ Future<String?> initializeNotifications() async {
   return initialLocationFromNotification;
 }
 
-Future<bool> setupPushNotifications(
-  Client client, {
-  forced = false,
-}) async {
+Future<bool> setupPushNotifications(Client client, {forced = false}) async {
   if ((Platform.isAndroid || Platform.isIOS)) {
     if (pushServer.isEmpty) {
       // no server given. Ignoring
@@ -60,9 +57,7 @@ Future<bool> setupPushNotifications(
   } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
     if (ntfyServer.isEmpty) {
       // no server given. Ignoring
-      _log.warning(
-        'No NTFY server configured. Skipping notification setup.',
-      );
+      _log.warning('No NTFY server configured. Skipping notification setup.');
       return false;
     }
   } else {
@@ -151,8 +146,9 @@ bool _handleMessageTapForContext(
 Future<bool> _isEnabled() async {
   try {
     // ignore: use_build_context_synchronously
-    if (!await mainProviderContainer
-        .read(isPushNotificationsActiveProvider.future)) {
+    if (!await mainProviderContainer.read(
+      isPushNotificationsActiveProvider.future,
+    )) {
       _log.info(
         'Showing push notifications has been disabled on this device. Ignoring',
       );

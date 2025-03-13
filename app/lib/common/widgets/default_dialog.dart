@@ -45,20 +45,20 @@ class DefaultDialog extends ConsumerWidget {
                 description ?? const SizedBox.shrink(),
                 isLoader
                     ? const Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 20),
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 20),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
                     : actions.isNotEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: actions,
-                            ),
-                          )
-                        : const SizedBox.shrink(),
+                    ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: actions,
+                      ),
+                    )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),

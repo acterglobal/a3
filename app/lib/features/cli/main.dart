@@ -5,13 +5,14 @@ import 'package:args/command_runner.dart';
 import 'dart:io';
 
 Future<void> cliMain(List<String> args) async {
-  final builder = CommandRunner(
-    'acter',
-    'community communication and casual organizing platform',
-  )
-    ..addCommand(InfoCommand())
-    ..addCommand(SettingsCommand())
-    ..addCommand(BackupAndResetCommand());
+  final builder =
+      CommandRunner(
+          'acter',
+          'community communication and casual organizing platform',
+        )
+        ..addCommand(InfoCommand())
+        ..addCommand(SettingsCommand())
+        ..addCommand(BackupAndResetCommand());
   await builder.run(args);
   exit(0);
 }

@@ -10,10 +10,11 @@ Future<String?> selectEventDrawer({
     isScrollControlled: true,
     useSafeArea: true,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    builder: (context) => EventListPage(
-      spaceId: spaceId,
-      onSelectEventItem: (eventId) => Navigator.pop(context, eventId),
-    ),
+    builder:
+        (context) => EventListPage(
+          spaceId: spaceId,
+          onSelectEventItem: (eventId) => Navigator.pop(context, eventId),
+        ),
   );
   return eventId == '' ? null : eventId;
 }

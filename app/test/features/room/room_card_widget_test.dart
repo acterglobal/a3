@@ -15,26 +15,34 @@ const Map<String, AvatarInfo> _roomsData = {
 };
 
 void main() {
-
   group('RoomCard Widget Tests', () {
     // Test 1: Renders the RoomCard widget correctly
-    testWidgets('Renders RoomCard with mock avatar and display name', (tester) async {
+    testWidgets('Renders RoomCard with mock avatar and display name', (
+      tester,
+    ) async {
       final mockRoomId = 'room_1';
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            roomAvatarInfoProvider.overrideWith(() => MockRoomAvatarInfoNotifier(avatarInfos: _roomsData)),
+            roomAvatarInfoProvider.overrideWith(
+              () => MockRoomAvatarInfoNotifier(avatarInfos: _roomsData),
+            ),
           ],
           child: MaterialApp(home: RoomCard(roomId: mockRoomId)),
         ),
       );
 
       await tester.pumpAndSettle();
-      expect(find.byType(RoomCard), findsOneWidget); // Ensure image (avatar) is displayed.
+      expect(
+        find.byType(RoomCard),
+        findsOneWidget,
+      ); // Ensure image (avatar) is displayed.
     });
 
-    testWidgets('should return list of parent AvatarInfo from the provider', (WidgetTester tester) async {
+    testWidgets('should return list of parent AvatarInfo from the provider', (
+      WidgetTester tester,
+    ) async {
       // Set up mock data
       final mockRoomId = 'room_1';
       final mockAvatarInfo1 = MockAvatarInfo(uniqueId: 'roomA');
@@ -45,13 +53,14 @@ void main() {
         ProviderScope(
           overrides: [
             // Override parentAvatarInfosProvider with mock data
-            parentAvatarInfosProvider.overrideWith((_,id) => Future.value([
-              mockAvatarInfo1,
-              mockAvatarInfo2,
-            ]),),
+            parentAvatarInfosProvider.overrideWith(
+              (_, id) => Future.value([mockAvatarInfo1, mockAvatarInfo2]),
+            ),
           ],
           child: MaterialApp(
-            home: RoomCard(roomId: mockRoomId), // Or any widget you want to test
+            home: RoomCard(
+              roomId: mockRoomId,
+            ), // Or any widget you want to test
           ),
         ),
       );
@@ -61,17 +70,23 @@ void main() {
       expect(find.byType(RoomCard), findsOneWidget);
     });
 
-    testWidgets('RoomCard displays the correct bookmark status (Mocked Data)', (WidgetTester tester) async {
+    testWidgets('RoomCard displays the correct bookmark status (Mocked Data)', (
+      WidgetTester tester,
+    ) async {
       final mockRoomId = 'room_1';
       final mockNotifier = MockSpaceIsBookmarkedNotifier(true);
       // Override spaceIsBookmarkedProvider to simulate mock data
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            spaceIsBookmarkedProvider.overrideWith((_,id) => mockNotifier.fetchBookmarkStatus()),
+            spaceIsBookmarkedProvider.overrideWith(
+              (_, id) => mockNotifier.fetchBookmarkStatus(),
+            ),
           ],
           child: MaterialApp(
-            home: RoomCard(roomId: mockRoomId),  // RoomCard widget is being tested
+            home: RoomCard(
+              roomId: mockRoomId,
+            ), // RoomCard widget is being tested
           ),
         ),
       );
@@ -83,4 +98,3 @@ void main() {
     });
   });
 }
-

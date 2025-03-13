@@ -557,7 +557,7 @@ impl MsgDraft {
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
-                let mut image_content = if room.is_encrypted().await? {
+                let mut image_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
@@ -596,7 +596,7 @@ impl MsgDraft {
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
-                let mut audio_content = if room.is_encrypted().await? {
+                let mut audio_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
@@ -635,7 +635,7 @@ impl MsgDraft {
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
-                let mut video_content = if room.is_encrypted().await? {
+                let mut video_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()
@@ -674,7 +674,7 @@ impl MsgDraft {
                 let mimetype = info.mimetype.clone().expect("mimetype needed");
                 let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
-                let mut file_content = if room.is_encrypted().await? {
+                let mut file_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
                     let encrypted_file = room
                         .client()

@@ -9,13 +9,7 @@ class InviteListSkeleton extends StatelessWidget {
     return Skeletonizer(
       child: ListView(
         shrinkWrap: true,
-        children: [
-          listItem(),
-          listItem(),
-          listItem(),
-          listItem(),
-          listItem(),
-        ],
+        children: [listItem(), listItem(), listItem(), listItem(), listItem()],
       ),
     );
   }

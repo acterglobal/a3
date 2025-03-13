@@ -1,8 +1,9 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final networkConnectivityProvider =
-    StreamProvider<List<ConnectivityResult>>((ref) async* {
+final networkConnectivityProvider = StreamProvider<List<ConnectivityResult>>((
+  ref,
+) async* {
   final con = Connectivity();
   yield await con.checkConnectivity();
   await for (final value in con.onConnectivityChanged) {

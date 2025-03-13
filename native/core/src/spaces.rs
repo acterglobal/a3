@@ -1,5 +1,5 @@
 use derive_builder::Builder;
-use matrix_sdk::room::Room;
+use matrix_sdk::{room::Room, ruma::events::room::join_rules::JoinRule};
 use matrix_sdk_base::{
     ruma::{
         api::client::room::{create_room, Visibility},
@@ -21,7 +21,7 @@ use matrix_sdk_base::{
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use strum::Display;
-use tracing::error;
+use tracing::{error, trace};
 
 use crate::{
     client::CoreClient,
@@ -52,7 +52,7 @@ fn space_visibilty_default() -> Visibility {
     Visibility::Private
 }
 
-#[derive(Builder, Default, Deserialize, Serialize, Clone)]
+#[derive(Builder, Default, Serialize, Deserialize, Clone)]
 pub struct CreateSpaceSettings {
     #[builder(setter(strip_option))]
     name: Option<String>,
@@ -60,6 +60,10 @@ pub struct CreateSpaceSettings {
     #[builder(default = "Visibility::Private")]
     #[serde(default = "space_visibilty_default")]
     visibility: Visibility,
+
+    #[builder(setter(strip_option), default)]
+    #[serde(default)]
+    join_rule: Option<String>,
 
     #[builder(default = "Vec::new()")]
     #[serde(default)]
@@ -202,6 +206,7 @@ impl CoreClient {
             avatar_uri, // remote or local
             parent,
             app_settings,
+            join_rule,
         } = settings;
         let mut initial_states = default_acter_space_states();
         // the space app settings as configured
@@ -233,6 +238,40 @@ impl CoreClient {
             };
             initial_states.push(InitialRoomAvatarEvent::new(avatar_content).to_raw_any());
         };
+        let join_rule_lowered = join_rule.as_ref().map(|x| x.to_lowercase());
+
+        let join_rule_ev = InitialRoomJoinRulesEvent::new(match join_rule_lowered.as_deref() {
+            // if we have a parent, by default we allow access to the subspace.
+            None | Some("restricted") => {
+                if let Some(ref parent) = parent {
+                    RoomJoinRulesEventContent::restricted(vec![AllowRule::room_membership(
+                        parent.clone(),
+                    )])
+                } else {
+                    RoomJoinRulesEventContent::new(JoinRule::Invite)
+                }
+            }
+            Some("knockrestricted") => {
+                if let Some(ref parent) = parent {
+                    RoomJoinRulesEventContent::knock_restricted(vec![AllowRule::room_membership(
+                        parent.clone(),
+                    )])
+                } else {
+                    RoomJoinRulesEventContent::new(JoinRule::Knock)
+                }
+            }
+            Some("knock") => RoomJoinRulesEventContent::new(JoinRule::Knock),
+            Some("public") => RoomJoinRulesEventContent::new(JoinRule::Public),
+            _ => RoomJoinRulesEventContent::new(JoinRule::Invite),
+        });
+
+        trace!(
+            ?join_rule_ev,
+            ?join_rule_lowered,
+            "creating space with join rule"
+        );
+
+        initial_states.push(join_rule_ev.to_raw_any());
 
         if let Some(parent) = parent {
             let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse) else {
@@ -245,13 +284,7 @@ impl CoreClient {
                 state_key: parent.clone(),
             };
             initial_states.push(parent_event.to_raw_any());
-            // if we have a parent, by default we allow access to the subspace.
-            let join_rule =
-                InitialRoomJoinRulesEvent::new(RoomJoinRulesEventContent::restricted(vec![
-                    AllowRule::room_membership(parent),
-                ]));
-            initial_states.push(join_rule.to_raw_any());
-        };
+        }
 
         let request = assign!(create_room::v3::Request::new(), {
             creation_content: Some(Raw::new(&content)?),

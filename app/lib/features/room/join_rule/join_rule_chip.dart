@@ -1,6 +1,6 @@
 import 'package:acter/common/actions/show_limited_space_list.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/room/model/room_visibility.dart';
+import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -8,13 +8,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-final _log = Logger('a3::common::visibility::chip');
+final _log = Logger('a3::common::joinRule::chip');
 
-class VisibilityChip extends ConsumerWidget {
+class JoinRuleChip extends ConsumerWidget {
   final String roomId;
   final bool useCompactView;
 
-  const VisibilityChip({
+  const JoinRuleChip({
     super.key,
     required this.roomId,
     this.useCompactView = false,
@@ -22,18 +22,18 @@ class VisibilityChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final visibilityLoader = ref.watch(roomVisibilityProvider(roomId));
-    return visibilityLoader.when(
+    final joinRuleLoader = ref.watch(roomJoinRuleProvider(roomId));
+    return joinRuleLoader.when(
       data:
-          (visibility) => GestureDetector(
+          (joinRule) => GestureDetector(
             onTap: () {
-              if (visibility != RoomVisibility.SpaceVisible) return;
+              if (joinRule != RoomJoinRule.Restricted) return;
               showLimitedSpaceList(context, roomId);
             },
-            child: renderSpaceChip(context, visibility),
+            child: renderSpaceChip(context, joinRule),
           ),
       error: (e, s) {
-        _log.severe('Failed to load room visibility', e, s);
+        _log.severe('Failed to load room joinRule', e, s);
         return Chip(label: Text(L10n.of(context).loadingFailed(e)));
       },
       loading: () => renderLoading(),
@@ -49,16 +49,16 @@ class VisibilityChip extends ConsumerWidget {
     );
   }
 
-  Widget renderSpaceChip(BuildContext context, RoomVisibility? visibility) {
+  Widget renderSpaceChip(BuildContext context, RoomJoinRule? joinRule) {
     final lang = L10n.of(context);
-    IconData icon = switch (visibility) {
-      RoomVisibility.Public => Icons.language,
-      RoomVisibility.SpaceVisible => Atlas.users,
+    IconData icon = switch (joinRule) {
+      RoomJoinRule.Public => Icons.language,
+      RoomJoinRule.Restricted => Atlas.users,
       _ => Icons.lock,
     };
-    String label = switch (visibility) {
-      RoomVisibility.Public => lang.public,
-      RoomVisibility.SpaceVisible => lang.limited,
+    String label = switch (joinRule) {
+      RoomJoinRule.Public => lang.public,
+      RoomJoinRule.Restricted => lang.limited,
       _ => lang.private,
     };
     return useCompactView

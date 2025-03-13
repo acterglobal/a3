@@ -34,7 +34,7 @@ class _SpaceMembersPageState extends ConsumerState<SpaceMembersPage> {
       membersIdWithSearchProvider((
         roomId: widget.spaceIdOrAlias,
         searchValue: searchValue,
-      ),),
+      )),
     );
     final membership =
         ref.watch(roomMembershipProvider(widget.spaceIdOrAlias)).valueOrNull;
