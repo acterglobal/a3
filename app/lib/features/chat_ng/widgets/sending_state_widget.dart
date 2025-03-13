@@ -23,12 +23,11 @@ class SendingStateWidget extends StatelessWidget {
       color: Theme.of(context).colorScheme.onSecondary,
     ),
     'SendingFailed' => _buildSendingFailed(context),
-    'Sent' => _buildSentIcon(context),
-    _ =>
-      showSentIconOnUnknown ? _buildSentIcon(context) : const SizedBox.shrink(),
+    'Sent' => sent(context),
+    _ => showSentIconOnUnknown ? sent(context) : const SizedBox.shrink(),
   };
 
-  Widget _buildSentIcon(BuildContext context) =>
+  static Widget sent(BuildContext context) =>
       Icon(Icons.check, color: Theme.of(context).colorScheme.primary);
 
   Widget _buildSendingFailed(BuildContext context) =>

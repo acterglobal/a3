@@ -26,6 +26,7 @@ class MessageEventItem extends ConsumerWidget {
   final bool canRedact;
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
+  final bool isLastMessage;
 
   const MessageEventItem({
     super.key,
@@ -36,6 +37,7 @@ class MessageEventItem extends ConsumerWidget {
     required this.canRedact,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
+    required this.isLastMessage,
   });
 
   @override
@@ -49,12 +51,18 @@ class MessageEventItem extends ConsumerWidget {
       children: [
         _buildMessageUI(context, ref, roomId, messageId, item, isMe),
         if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
-        if (sendingState != null)
+        if (sendingState != null || (isMe && isLastMessage))
           Align(
             alignment: Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.only(right: 12),
-              child: SendingStateWidget(state: sendingState),
+              child:
+                  sendingState != null
+                      ? SendingStateWidget(
+                        state: sendingState,
+                        showSentIconOnUnknown: isMe && isLastMessage,
+                      )
+                      : SendingStateWidget.sent(context),
             ),
           ),
       ],
