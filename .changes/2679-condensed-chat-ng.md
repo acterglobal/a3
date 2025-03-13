@@ -1,1 +1,0 @@
-- [Chat NG] improved grouping of messages by sender, consended margins for the same group and show the sender name on the first message of the group
