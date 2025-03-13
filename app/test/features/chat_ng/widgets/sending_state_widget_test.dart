@@ -217,8 +217,29 @@ void main() {
       );
 
       await tester.pumpProviderWidget(
-        child: SendingErrorDialog(state: mockState),
+        navigatorOverride: navigator,
+        child: Material(
+          child: Builder(
+            builder:
+                (context) => ElevatedButton(
+                  onPressed:
+                      () => SendingErrorDialog.show(
+                        context: context,
+                        state: mockState,
+                      ),
+
+                  child: const Text('Show Dialog'),
+                ),
+          ),
+        ),
       );
+
+      // Show the dialog
+      await tester.tap(find.text('Show Dialog'));
+      await tester.pumpAndSettle();
+
+      // confirms the dialog is visible
+      expect(find.byType(SendingErrorDialog), findsOneWidget);
 
       final BuildContext context = tester.element(
         find.byType(SendingErrorDialog),
@@ -231,6 +252,9 @@ void main() {
 
       // Verify abort was called
       verify(() => mockState.abort()).called(1);
+
+      // confirms the dialog is closed
+      expect(find.byType(SendingErrorDialog), findsNothing);
     });
 
     testWidgets('closes dialog when cancel button is tapped', (tester) async {

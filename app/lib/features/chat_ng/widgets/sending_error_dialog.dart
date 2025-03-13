@@ -41,7 +41,10 @@ class SendingErrorDialog extends StatelessWidget {
           confirmBtnText: lang.abortSending,
           cancelBtnText: lang.close,
           confirmBtnColor: theme.primaryColor,
-          onConfirmBtnTap: () => state.abort(),
+          onConfirmBtnTap: () {
+            state.abort();
+            Navigator.of(context).pop();
+          },
           borderRadius: 15.0,
         ),
       ),
