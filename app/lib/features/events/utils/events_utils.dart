@@ -106,13 +106,6 @@ String getMonthFromDate(UtcDateTime utcDateTime) {
   return month;
 }
 
-String getYearFromDate(UtcDateTime utcDateTime) {
-  final localDateTime = toDartDatetime(utcDateTime).toLocal();
-  final month = DateFormat.y().format(localDateTime);
-  return month;
-}
-
-
 String getDayFromDate(UtcDateTime utcDateTime) {
   final localDateTime = toDartDatetime(utcDateTime).toLocal();
   final day = DateFormat.d().format(localDateTime);
@@ -126,4 +119,9 @@ String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
 
 String eventDateFormat(DateTime dateTime) {
   return DateFormat('MMM dd, yyyy').format(dateTime);
+}
+
+String getDateFormat(UtcDateTime utcDateTime){
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  return DateFormat('dd MMMM, yyyy').format(localDateTime);
 }

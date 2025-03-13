@@ -15,14 +15,12 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
     final newDate = activity.newDate();
 
     // Handle the case when newDate is null
-    final day = newDate != null ? getDayFromDate(newDate) : null;
-    final month = newDate != null ? getMonthFromDate(newDate) : null;
-    final year = newDate != null ? getYearFromDate(newDate) : null;
+    final startDate = newDate != null ? getDateFormat(newDate) : null;
     final startTime = newDate != null ? getTimeFromDate(context, newDate) : null;
 
     // Use a fallback message if newDate is null
     final dateText = newDate != null
-        ? '$day $month, $year - $startTime'
+        ? '$startDate - $startTime'
         : ''; // Assuming noDateAvailable is a string in your localization.
 
     return ActivityUserCentricItemContainerWidget(
