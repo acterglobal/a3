@@ -11,10 +11,19 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activityObject = activity.object();
-    final day = getDayFromDate(activity.newDate()!);
-    final month = getMonthFromDate(activity.newDate()!);
-    final year = getYearFromDate(activity.newDate()!);
-    final startTime = getTimeFromDate(context,activity.newDate()!);
+    // Get the new date (if available)
+    final newDate = activity.newDate();
+
+    // Handle the case when newDate is null
+    final day = newDate != null ? getDayFromDate(newDate) : null;
+    final month = newDate != null ? getMonthFromDate(newDate) : null;
+    final year = newDate != null ? getYearFromDate(newDate) : null;
+    final startTime = newDate != null ? getTimeFromDate(context, newDate) : null;
+
+    // Use a fallback message if newDate is null
+    final dateText = newDate != null
+        ? '$day $month, $year - $startTime'
+        : ''; // Assuming noDateAvailable is a string in your localization.
 
     return ActivityUserCentricItemContainerWidget(
       actionIcon: Icons.access_time,
@@ -23,7 +32,7 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       subtitle: Text(
-        '$day $month, $year - $startTime' ?? '',
+        dateText,
         style: Theme.of(context).textTheme.labelMedium,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
