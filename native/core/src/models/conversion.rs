@@ -3,6 +3,7 @@ use crate::events::{
     attachments::{AttachmentEventContent, AttachmentUpdateEventContent},
     calendar::{CalendarEventEventContent, CalendarEventUpdateEventContent},
     comments::{CommentEventContent, CommentUpdateEventContent},
+    explicit_invites::ExplicitInviteEventContent,
     news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
     pins::{PinEventContent, PinUpdateEventContent},
     read_receipt::ReadReceiptEventContent,
@@ -325,6 +326,20 @@ impl TryFrom<AnyActerEvent> for AnyActerModel {
                 MessageLikeEvent::Original(m) => Ok(AnyActerModel::ReadReceipt(m.into())),
                 MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
                     model_type: ReadReceiptEventContent::TYPE.to_owned(),
+                    meta: EventMeta {
+                        room_id: r.room_id,
+                        event_id: r.event_id,
+                        sender: r.sender,
+                        origin_server_ts: r.origin_server_ts,
+                        redacted: None,
+                    },
+                    reason: r.unsigned.redacted_because,
+                }),
+            },
+            AnyActerEvent::ExplicitInvite(e) => match e {
+                MessageLikeEvent::Original(m) => Ok(AnyActerModel::ExplicitInvite(m.into())),
+                MessageLikeEvent::Redacted(r) => Err(Self::Error::ModelRedacted {
+                    model_type: ExplicitInviteEventContent::TYPE.to_owned(),
                     meta: EventMeta {
                         room_id: r.room_id,
                         event_id: r.event_id,

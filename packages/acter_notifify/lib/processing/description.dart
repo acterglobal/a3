@@ -9,9 +9,8 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final content = '$username updated description: "$newDescription"';
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'changed');
+  final title = notification.parent()?.getObjectCentricTitlePart('changed');
+  if (title != null) {
     return (title, content);
   } else {
     return (content, null);
