@@ -3,9 +3,11 @@ import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
+import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
+import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem, MsgContent, RoomMessage, EventSendState;
+    show RoomEventItem, MsgContent, RoomMessage, EventSendState, ReactionRecord;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -82,6 +84,20 @@ class MockRoomMessage extends Mock implements RoomMessage {
 
   @override
   RoomEventItem? eventItem() => _eventItem;
+}
+
+class MockReactionRecord extends Mock implements ReactionRecord {
+  final String _sender;
+  final bool _sentByMe;
+
+  MockReactionRecord(this._sender, {bool sentByMe = false})
+    : _sentByMe = sentByMe;
+
+  @override
+  String sender() => _sender;
+
+  @override
+  bool sentByMe() => _sentByMe;
 }
 
 void main() {
@@ -340,6 +356,71 @@ void main() {
 
         expect(find.byType(SendingStateWidget), findsNothing);
         expect(find.byIcon(Icons.check), findsNothing);
+      });
+    });
+
+    group('Reactions Tests', () {
+      testWidgets('renders reactions when message has reactions', (
+        tester,
+      ) async {
+        final reactions = [
+          (
+            '👍',
+            [
+              MockReactionRecord('user1'),
+              MockReactionRecord('user2', sentByMe: true),
+            ],
+          ),
+          ('❤️', [MockReactionRecord('user3')]),
+        ];
+
+        await tester.pumpProviderWidget(
+          overrides: [
+            messageReactionsProvider.overrideWith((ref, item) => reactions),
+            renderableChatMessagesProvider.overrideWith(
+              (ref, roomId) => ['test-message'],
+            ),
+            chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
+              if (roomMsgId.uniqueId == 'test-message') {
+                return mockRoomMessage;
+              }
+              return null;
+            }),
+          ],
+          child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
+        );
+
+        expect(find.byType(ReactionChipsWidget), findsOneWidget);
+
+        // Verify reaction chips are rendered
+        expect(find.text('👍'), findsOneWidget);
+        expect(find.text('❤️'), findsOneWidget);
+
+        // Verify reaction counts
+        expect(find.text('2'), findsOneWidget); // Count for 👍
+        expect(find.text('1'), findsNothing); // Count for ❤️ is 1, not rendered
+      });
+
+      testWidgets('does not render reactions section when no reactions', (
+        tester,
+      ) async {
+        await tester.pumpProviderWidget(
+          overrides: [
+            messageReactionsProvider.overrideWith((ref, item) => []),
+            renderableChatMessagesProvider.overrideWith(
+              (ref, roomId) => ['test-message'],
+            ),
+            chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
+              if (roomMsgId.uniqueId == 'test-message') {
+                return mockRoomMessage;
+              }
+              return null;
+            }),
+          ],
+          child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
+        );
+
+        expect(find.byType(ReactionChipsWidget), findsNothing);
       });
     });
   });
