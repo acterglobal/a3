@@ -95,8 +95,6 @@ void main() {
       );
       // try to submit without a title
 
-      debugDumpApp();
-
       final submitBtn = find.byKey(CreateTaskWidget.submitBtn);
       expect(submitBtn, findsOneWidget);
       await tester.tap(submitBtn);
