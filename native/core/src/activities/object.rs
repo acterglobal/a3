@@ -130,6 +130,7 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
                 title: e.title().clone(),
             }),
             AnyActerModel::RedactedActerModel(_)
+            | AnyActerModel::ExplicitInvite(_)
             | AnyActerModel::CalendarEventUpdate(_)
             | AnyActerModel::TaskListUpdate(_)
             | AnyActerModel::TaskUpdate(_)

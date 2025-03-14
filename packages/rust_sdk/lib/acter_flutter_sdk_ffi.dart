@@ -7754,6 +7754,115 @@ class Api {
     return tmp7;
   }
 
+  String? __invitationsManagerInviteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _invitationsManagerInviteFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  InvitationsManager? __invitationsManagerReloadFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _invitationsManagerReloadFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_InvitationsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = InvitationsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __attachmentDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -8498,6 +8607,53 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_AttachmentsManager");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = AttachmentsManager._(this, tmp13_1);
+    return tmp7;
+  }
+
+  InvitationsManager? __taskInvitationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskInvitationsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_InvitationsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = InvitationsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -16391,6 +16547,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __invitationsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _invitationsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   bool? __attachmentsManagerSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -23136,6 +23325,78 @@ class Api {
       int Function(
         int,
       )>();
+  late final _invitationsManagerInvitedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__InvitationsManager_invited");
+
+  late final _invitationsManagerInvited =
+      _invitationsManagerInvitedPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _invitationsManagerHasInvitationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__InvitationsManager_has_invitations");
+
+  late final _invitationsManagerHasInvitations =
+      _invitationsManagerHasInvitationsPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _invitationsManagerIsInvitedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__InvitationsManager_is_invited");
+
+  late final _invitationsManagerIsInvited =
+      _invitationsManagerIsInvitedPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _invitationsManagerInvitePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__InvitationsManager_invite");
+
+  late final _invitationsManagerInvite =
+      _invitationsManagerInvitePtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _invitationsManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__InvitationsManager_subscribe_stream");
+
+  late final _invitationsManagerSubscribeStream =
+      _invitationsManagerSubscribeStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _invitationsManagerReloadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__InvitationsManager_reload");
+
+  late final _invitationsManagerReload =
+      _invitationsManagerReloadPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _attachmentDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -23709,6 +23970,16 @@ class Api {
           )>>("__Task_attachments");
 
   late final _taskAttachments = _taskAttachmentsPtr.asFunction<
+      int Function(
+        int,
+      )>();
+  late final _taskInvitationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Task_invitations");
+
+  late final _taskInvitations = _taskInvitationsPtr.asFunction<
       int Function(
         int,
       )>();
@@ -26075,6 +26346,16 @@ class Api {
 
   late final _activityNewDate = _activityNewDatePtr.asFunction<
       _ActivityNewDateReturn Function(
+        int,
+      )>();
+  late final _activityWhomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__Activity_whom");
+
+  late final _activityWhom = _activityWhomPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _activitiesGetIdsPtr = _lookup<
@@ -32893,6 +33174,36 @@ class Api {
             int,
             int,
           )>();
+  late final _invitationsManagerInviteFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _InvitationsManagerInviteFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__InvitationsManager_invite_future_poll");
+
+  late final _invitationsManagerInviteFuturePoll =
+      _invitationsManagerInviteFuturePollPtr.asFunction<
+          _InvitationsManagerInviteFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _invitationsManagerReloadFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _InvitationsManagerReloadFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__InvitationsManager_reload_future_poll");
+
+  late final _invitationsManagerReloadFuturePoll =
+      _invitationsManagerReloadFuturePollPtr.asFunction<
+          _InvitationsManagerReloadFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
   late final _attachmentDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _AttachmentDraftSendFuturePollReturn Function(
@@ -33126,6 +33437,21 @@ class Api {
   late final _taskAttachmentsFuturePoll =
       _taskAttachmentsFuturePollPtr.asFunction<
           _TaskAttachmentsFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _taskInvitationsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskInvitationsFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__Task_invitations_future_poll");
+
+  late final _taskInvitationsFuturePoll =
+      _taskInvitationsFuturePollPtr.asFunction<
+          _TaskInvitationsFuturePollReturn Function(
             int,
             int,
             int,
@@ -35703,6 +36029,23 @@ class Api {
   late final _commentsManagerSubscribeStreamStreamPoll =
       _commentsManagerSubscribeStreamStreamPollPtr.asFunction<
           _CommentsManagerSubscribeStreamStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _invitationsManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _InvitationsManagerSubscribeStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__InvitationsManager_subscribe_stream_stream_poll");
+
+  late final _invitationsManagerSubscribeStreamStreamPoll =
+      _invitationsManagerSubscribeStreamStreamPollPtr.asFunction<
+          _InvitationsManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -49224,6 +49567,127 @@ class CommentsManager {
   }
 }
 
+/// Reference of explicit invitations to a particular item
+class InvitationsManager {
+  final Api _api;
+  final _Box _box;
+
+  InvitationsManager._(this._api, this._box);
+
+  /// Get the list of users that were invited
+  FfiListFfiString invited() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerInvited(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Whether or not any invitations exist
+  bool hasInvitations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerHasInvitations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Whether or not this user has been invited
+  bool isInvited() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerIsInvited(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// invite a specific user to this object, returns the event_id
+  Future<String> invite(
+    String userId,
+  ) {
+    final tmp1 = userId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._invitationsManagerInvite(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__InvitationsManager_invite_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__invitationsManagerInviteFuturePoll);
+    return tmp6;
+  }
+
+  /// subscribe to the changes this manager
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__InvitationsManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__invitationsManagerSubscribeStreamStreamPoll);
+    return tmp2;
+  }
+
+  /// reload the data from the database
+  Future<InvitationsManager> reload() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerReload(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__InvitationsManager_reload_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__invitationsManagerReloadFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class AttachmentDraft {
   final Api _api;
   final _Box _box;
@@ -50474,6 +50938,21 @@ class Task {
     final tmp3_1 = _Box(_api, tmp3_0, "__Task_attachments_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskAttachmentsFuturePoll);
+    return tmp2;
+  }
+
+  /// get the invitations manager for this task
+  Future<InvitationsManager> invitations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskInvitations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_invitations_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskInvitationsFuturePoll);
     return tmp2;
   }
 
@@ -54677,6 +55156,23 @@ class Activity {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// whom, if this involved additional users, e.g. when someone is invited
+  /// to an object
+  FfiListFfiString whom() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityWhom(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -70826,6 +71322,40 @@ class _CommentsManagerReloadFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _InvitationsManagerInviteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+  @ffi.UintPtr()
+  external int arg7;
+}
+
+class _InvitationsManagerReloadFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _AttachmentDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -71052,6 +71582,21 @@ class _TaskCommentsFuturePollReturn extends ffi.Struct {
 }
 
 class _TaskAttachmentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _TaskInvitationsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -73597,6 +74142,13 @@ class _TimelineStreamMessagesStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _CommentsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _InvitationsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
