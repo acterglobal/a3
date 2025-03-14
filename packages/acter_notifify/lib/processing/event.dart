@@ -25,7 +25,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parentInfo = notification.parent()?.parentPart();
   if (parentInfo != null) {
-    return (parentInfo, title);
+    return (title, parentInfo);
   }
 
   return (title, null);
@@ -37,7 +37,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parentInfo = notification.parent()?.parentPart();
   if (parentInfo != null) {
-    return (parentInfo, title);
+    return (title, parentInfo);
   }
 
   return (title, null);
@@ -49,7 +49,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parentInfo = notification.parent()?.parentPart();
   if (parentInfo != null) {
-    return (parentInfo, title);
+    return (title, parentInfo);
   }
 
   return (title, null);
