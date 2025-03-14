@@ -2960,6 +2960,9 @@ object NotificationItem {
 
     /// does this mention the user
     fn mentions_you() -> bool; 
+
+    /// does this involve other users than the sender?
+    fn whom() -> Vec<string>;
 }
 
 /// The pusher we sent notifications via to the user
