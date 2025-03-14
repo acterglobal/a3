@@ -70,7 +70,7 @@ impl Client {
 
                 let Some(notif) = notif_client.get_notification(&room_id, &event_id).await? else {
                     tracing::warn!("Notification couldn't be loaded. Showing fallback");
-                    return NotificationItem::fallback(me, room_id).await
+                    return NotificationItem::fallback(me, room_id).await;
                 };
 
                 NotificationItem::from(me, notif, room_id).await

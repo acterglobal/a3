@@ -63,17 +63,17 @@ async fn task_invitation() -> Result<()> {
     let manager = obj_entry.invitations().await?;
     let stream = manager.subscribe_stream();
     let mut stream = stream.fuse();
-    let event_id = manager.invite(second_user.user_id()?).await?;
+    let event_id = manager.invite(second_user.user_id()?.to_string()).await?;
     let _ = stream.next().await; // await the invite being sent
 
     // check activity
     let activity = first.activity(event_id.to_string()).await?;
-    
+
     assert_eq!(activity.type_str(), "objectInvitation");
     let object = activity.object().unwrap();
     assert_eq!(object.object_id_str(), obj_entry.event_id().to_string());
     assert_eq!(activity.whom().len(), 1);
-    assert_eq!(activity.whom()[0], second_user.user_id()?);
+    assert_eq!(activity.whom()[0], second_user.user_id()?.to_string());
 
     // see what the recipient sees
 
@@ -103,15 +103,21 @@ async fn task_invitation() -> Result<()> {
     assert_eq!(invite.len(), 1);
     assert_eq!(invite[0], second_user.user_id()?);
 
-    // check the invite as a notification 
+    // check the invite as a notification
     // as it is a mention, we get it without having to actually
     // been subscribing to anything special
-    let notification = second_user.get_notification_item(space_id.to_string(), event_id.to_string()).await?;
+    let notification = second_user
+        .get_notification_item(space_id.to_string(), event_id.to_string())
+        .await?;
     assert_eq!(notification.push_style(), "objectInvitation");
     let parent = notification.parent().unwrap();
     assert_eq!(parent.title().unwrap(), "Scroll news");
     assert_eq!(parent.type_str(), "task");
     assert_eq!(notification.sender().user_id(), first.user_id()?);
-    
+    assert_eq!(
+        notification.whom(),
+        vec![second_user.user_id()?.to_string()]
+    );
+
     Ok(())
 }

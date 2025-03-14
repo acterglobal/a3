@@ -327,6 +327,14 @@ impl NotificationItem {
     pub fn has_image(&self) -> bool {
         self.msg_content.as_ref().and_then(|a| a.source()).is_some()
     }
+
+    pub fn whom(&self) -> Vec<String> {
+        let NotificationItemInner::Activity(a) = &self.inner else {
+            return vec![];
+        };
+        a.whom()
+    }
+
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
         let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {

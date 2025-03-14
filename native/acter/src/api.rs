@@ -52,7 +52,7 @@ mod typing;
 mod utils;
 mod verification;
 
-pub mod invitations;
+mod invitations;
 pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
