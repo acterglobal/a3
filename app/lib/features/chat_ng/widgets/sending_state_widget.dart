@@ -6,6 +6,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show EventSendState;
 import 'package:flutter/material.dart';
 
+class SentStateWidget extends StatelessWidget {
+  const SentStateWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      Icon(Icons.check, color: Theme.of(context).colorScheme.primary);
+}
+
 class SendingStateWidget extends StatelessWidget {
   final EventSendState state;
   final bool showSentIconOnUnknown;
@@ -23,12 +31,11 @@ class SendingStateWidget extends StatelessWidget {
       color: Theme.of(context).colorScheme.onSecondary,
     ),
     'SendingFailed' => _buildSendingFailed(context),
-    'Sent' => sent(context),
-    _ => showSentIconOnUnknown ? sent(context) : const SizedBox.shrink(),
+    'Sent' => SentStateWidget(),
+    _ => showSentIconOnUnknown ? SentStateWidget() : const SizedBox.shrink(),
   };
 
-  static Widget sent(BuildContext context) =>
-      Icon(Icons.check, color: Theme.of(context).colorScheme.primary);
+  static Widget sent() => SentStateWidget();
 
   Widget _buildSendingFailed(BuildContext context) =>
       ActerInlineTextButton.icon(

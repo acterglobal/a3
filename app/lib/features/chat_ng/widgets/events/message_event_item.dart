@@ -63,7 +63,7 @@ class MessageEventItem extends ConsumerWidget {
                           state: sendingState,
                           showSentIconOnUnknown: isMe && isLastMessage,
                         )
-                        : SendingStateWidget.sent(context),
+                        : SendingStateWidget.sent(),
               ),
             ),
         ],

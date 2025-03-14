@@ -108,7 +108,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.check), findsOneWidget);
+      expect(find.byType(SentStateWidget), findsOneWidget);
     });
 
     testWidgets('does not show sent icon for non-last message', (tester) async {
@@ -132,7 +132,7 @@ void main() {
       );
 
       expect(find.byType(SendingStateWidget), findsNothing);
-      expect(find.byIcon(Icons.check), findsNothing);
+      expect(find.byType(SentStateWidget), findsNothing);
     });
 
     testWidgets('shows error state for failed message', (tester) async {
@@ -211,7 +211,7 @@ void main() {
       );
 
       expect(find.byType(SendingStateWidget), findsOneWidget);
-      expect(find.byIcon(Icons.check), findsOneWidget);
+      expect(find.byType(SentStateWidget), findsOneWidget);
     });
   });
 }
