@@ -6,9 +6,8 @@ import 'package:acter_notifify/processing/utils.dart';
   final username = sender.displayName() ?? sender.userId();
   final referencesObject = notification.title();
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
+  final parentInfo = notification.parent()?.parentPart();
+  if (parentInfo != null) {
     final title = '$referencesObject added';
     final body = 'by $username in "$parentInfo"';
     return (title, body);
