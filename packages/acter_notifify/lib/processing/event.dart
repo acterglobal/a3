@@ -9,9 +9,8 @@ import 'package:acter_notifify/processing/utils.dart';
   // FIXME: use actual date given
   final newEventDate = notification.title();
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'rescheduled');
+  final title = notification.parent()?.getObjectCentricTitlePart('rescheduled');
+  if (title != null) {
     final body = 'by $username to "$newEventDate"';
     return (title, body);
   } else {
@@ -22,12 +21,11 @@ import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForEventRsvpYes(NotificationItem notification) {
   final emoji = PushStyles.rsvpYes.emoji;
-  final title = getUserCentricTitlePart(notification, emoji, 'will join');
+  final title = notification.getUserCentricTitlePart(emoji, 'will join');
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
-    return (title, parentInfo);
+  final parentInfo = notification.parent()?.parentPart();
+  if (parentInfo != null) {
+    return (parentInfo, title);
   }
 
   return (title, null);
@@ -35,12 +33,11 @@ import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForEventRsvpMaybe(NotificationItem notification) {
   final emoji = PushStyles.rsvpMaybe.emoji;
-  final title = getUserCentricTitlePart(notification, emoji, 'might join');
+  final title = notification.getUserCentricTitlePart(emoji, 'might join');
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
-    return (title, parentInfo);
+  final parentInfo = notification.parent()?.parentPart();
+  if (parentInfo != null) {
+    return (parentInfo, title);
   }
 
   return (title, null);
@@ -48,12 +45,11 @@ import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForEventRsvpNo(NotificationItem notification) {
   final emoji = PushStyles.rsvpNo.emoji;
-  final title = getUserCentricTitlePart(notification, emoji, 'will not join');
+  final title = notification.getUserCentricTitlePart(emoji, 'will not join');
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
-    return (title, parentInfo);
+  final parentInfo = notification.parent()?.parentPart();
+  if (parentInfo != null) {
+    return (parentInfo, title);
   }
 
   return (title, null);

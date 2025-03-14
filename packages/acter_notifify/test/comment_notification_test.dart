@@ -61,7 +61,7 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, "💬 John Doe commented");
-      expect(body, "On 📖 Story: This is great");
+      expect(body, "On 📖 story: This is great");
     });
 
     test("Comment on Pin", () {

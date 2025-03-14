@@ -7,13 +7,11 @@ import '../model/push_styles.dart';
   final emoji = notification.reactionKey() ?? PushStyles.reaction.emoji;
   final suffix = (emoji == PushStyles.reaction.emoji) ? "liked" : "reacted";
 
-  final title = getUserCentricTitlePart(notification, emoji, suffix);
+  final title = notification.getUserCentricTitlePart(emoji, suffix);
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
-    final body = parentInfo;
-    return (title, body);
+  final parentInfo = notification.parent()?.parentPart();
+  if (parentInfo != null) {
+    return (parentInfo, title);
   }
 
   return (title, null);
