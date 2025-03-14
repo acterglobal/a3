@@ -10,9 +10,5 @@ import '../model/push_styles.dart';
   final title = notification.getUserCentricTitlePart(emoji, suffix);
 
   final parentInfo = notification.parent()?.parentPart();
-  if (parentInfo != null) {
-    return (parentInfo, title);
-  }
-
-  return (title, null);
+  return (title, parentInfo);
 }
