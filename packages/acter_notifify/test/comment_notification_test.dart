@@ -45,6 +45,25 @@ void main() {
       expect(body, "On 🚀 boost: This is great");
     });
 
+    test("Comment on Story", () {
+      // Arrange: Set parent object data
+      when(() => parent.typeStr()).thenReturn(MockObject.story.name);
+      when(() => parent.emoji()).thenReturn(MockObject.story.emoji);
+      // Arrange: Set sender user name
+      final sender = MockNotificationSender(name: "John Doe");
+      when(() => item.sender()).thenReturn(sender);
+      // Arrange: Set comment content
+      msg = MockMsgContent(content: "This is great");
+      when(() => item.body()).thenReturn(msg);
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, "💬 John Doe commented");
+      expect(body, "On 📖 Story: This is great");
+    });
+
     test("Comment on Pin", () {
       // Arrange: Set parent data
       when(() => parent.typeStr()).thenReturn(MockObject.pin.name);
@@ -141,6 +160,32 @@ void main() {
       // Assert: Check if tile and body are as expected
       expect(title, "💬 @id:acter.global commented");
       expect(body, "Love it!!");
+    });
+
+    test("Comment without a title on the parent", () {
+      // Arrange: Set parent data
+      final sender = MockNotificationSender(
+          username: "@id:acter.global", name: "Bernd Maur");
+
+      // Arrange: Set parent data
+      when(() => parent.typeStr()).thenReturn(MockObject.taskList.name);
+      when(() => parent.emoji()).thenReturn(MockObject.taskList.emoji);
+
+      // Act: process processing and get tile and body
+      when(() => parent.title()).thenReturn(null);
+
+      when(() => item.sender()).thenReturn(sender);
+
+      // Arrange: Set comment content
+      msg = MockMsgContent(content: "Loving it!!");
+      when(() => item.body()).thenReturn(msg);
+
+      // Act: process processing and get tile and body
+      final (title, body) = genTitleAndBody(item);
+
+      // Assert: Check if tile and body are as expected
+      expect(title, "💬 Bernd Maur commented");
+      expect(body, "Loving it!!");
     });
   });
 }
