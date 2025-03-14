@@ -1,21 +1,21 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 extension ActerNotififyActivityObjectExtension on ActivityObject {
-  String parentPart() {
+  String? parentPart() {
     final emoji = this.emoji();
     final title = switch (typeStr()) {
       'news' => 'boost',
       'story' => 'story',
       _ => this.title(),
     };
-    return "$emoji $title";
+    return title != null ? "$emoji $title" : null;
   }
 
-  String getObjectCentricTitlePart(
+  String? getObjectCentricTitlePart(
     String suffix,
   ) {
     final parentInfo = parentPart();
-    return '$parentInfo $suffix';
+    return parentInfo != null ? '$parentInfo $suffix' : null;
   }
 }
 
