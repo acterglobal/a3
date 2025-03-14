@@ -277,6 +277,17 @@ impl Activity {
             | ActivityContent::RoomName(_) => todo!(),
         }
     }
+
+    pub fn task_list_id_str(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::TaskAccept { object }
+            | ActivityContent::TaskAdd { object, .. }
+            | ActivityContent::TaskDecline { object }
+            | ActivityContent::TaskDueDateChange { object, .. }
+            | ActivityContent::TaskProgress { object, .. } => object.task_list_id_str(),
+            _ => None,
+        }
+    }
 }
 
 impl Activity {

@@ -87,6 +87,13 @@ impl ActivityObject {
         }
     }
 
+    pub fn task_list_id_str(&self) -> Option<String> {
+        match self {
+            ActivityObject::Task { tl_id, .. } => Some(format!("/tasks/{tl_id}")),
+            _ => None,
+        }
+    }
+
     pub fn emoji(&self) -> String {
         match self {
             ActivityObject::News { .. } => "🚀",          // boost rocket

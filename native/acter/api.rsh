@@ -2294,6 +2294,9 @@ object Activity {
     /// where to route to for the details of this activity
     fn target_url() -> string;
 
+    /// where to route to for the details of this activity
+    fn task_list_id_str() -> Option<string>;
+
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
