@@ -17,6 +17,7 @@ class ChatEventItem extends StatelessWidget {
   final bool canRedact;
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
+  final bool isLastMessage;
   const ChatEventItem({
     super.key,
     required this.roomId,
@@ -26,6 +27,7 @@ class ChatEventItem extends StatelessWidget {
     required this.canRedact,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
+    required this.isLastMessage,
   });
 
   @override
@@ -41,6 +43,7 @@ class ChatEventItem extends StatelessWidget {
         canRedact: canRedact,
         isFirstMessageBySender: isFirstMessageBySender,
         isLastMessageBySender: isLastMessageBySender,
+        isLastMessage: isLastMessage,
       ),
       'm.room.redaction' =>
         isMe

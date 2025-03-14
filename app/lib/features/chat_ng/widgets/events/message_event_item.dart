@@ -10,6 +10,7 @@ import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
+import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show RoomEventItem;
 import 'package:flutter/widgets.dart';
@@ -24,6 +25,7 @@ class MessageEventItem extends ConsumerWidget {
   final bool canRedact;
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
+  final bool isLastMessage;
 
   const MessageEventItem({
     super.key,
@@ -34,10 +36,13 @@ class MessageEventItem extends ConsumerWidget {
     required this.canRedact,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
+    required this.isLastMessage,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
+    final sendingState = item.sendState();
     return SwipeTo(
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
       child: Column(
@@ -46,7 +51,21 @@ class MessageEventItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-          _buildReactionsList(roomId, messageId, item, isMe),
+          if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
+          if (sendingState != null || (isMe && isLastMessage))
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child:
+                    sendingState != null
+                        ? SendingStateWidget(
+                          state: sendingState,
+                          showSentIconOnUnknown: isMe && isLastMessage,
+                        )
+                        : SendingStateWidget.sent(),
+              ),
+            ),
         ],
       ),
     );
