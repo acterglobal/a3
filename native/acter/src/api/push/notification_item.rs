@@ -289,6 +289,8 @@ pub struct NotificationItem {
     pub(crate) inner: NotificationItemInner,
     #[builder(setter(into, strip_option), default)]
     pub(crate) msg_content: Option<MsgContent>,
+    #[builder(default)]
+    pub(crate) mentions_you: bool,
 }
 
 impl Deref for NotificationItem {
@@ -323,6 +325,9 @@ impl NotificationItem {
     }
     pub fn room_invite_str(&self) -> Option<String> {
         self.inner.room_invite().map(|r| r.to_string())
+    }
+    pub fn mentions_you(&self) -> bool {
+        self.mentions_you
     }
     pub fn has_image(&self) -> bool {
         self.msg_content.as_ref().and_then(|a| a.source()).is_some()
@@ -452,6 +457,7 @@ impl NotificationItemBuilder {
         client: Client,
         event: AnyActerEvent,
     ) -> Result<NotificationItem> {
+        let user_id = client.user_id()?;
         let activity = match convert_acter_model(client, event).await {
             Err(error) => {
                 warn!(?error, "Could not convert acter activity");
@@ -558,7 +564,9 @@ impl NotificationItemBuilder {
                 content: Some(content),
             } => builder.msg_content(MsgContent::from(content)),
             ActivityContent::ObjectInvitation { object, invitees } => {
-                builder.title(object.title().unwrap_or("Object".to_owned()))
+                builder
+                    .title(object.title().unwrap_or("Object".to_owned()))
+                    .mentions_you(invitees.contains(&user_id))
             }
             _ => &mut builder,
         };

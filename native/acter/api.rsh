@@ -2336,7 +2336,10 @@ object Activity {
 
     /// whom, if this involved additional users, e.g. when someone is invited
     /// to an object
-    fn whom() -> Vec<string>; 
+    fn whom() -> Vec<string>;
+
+    /// does this mention the user
+    fn mentions_you() -> bool; 
 
 }
 
@@ -2954,6 +2957,9 @@ object NotificationItem {
 
     /// the date on eventDateChange (started or ended) or taskDueDateChane
     fn new_date() -> Option<UtcDateTime>;
+
+    /// does this mention the user
+    fn mentions_you() -> bool; 
 }
 
 /// The pusher we sent notifications via to the user
