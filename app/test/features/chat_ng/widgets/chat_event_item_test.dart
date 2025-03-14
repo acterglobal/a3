@@ -3,7 +3,6 @@ import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
-import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -87,14 +86,9 @@ class MockRoomMessage extends Mock implements RoomMessage {
 }
 
 class MockReactionRecord extends Mock implements ReactionRecord {
-  final String _sender;
   final bool _sentByMe;
 
-  MockReactionRecord(this._sender, {bool sentByMe = false})
-    : _sentByMe = sentByMe;
-
-  @override
-  String sender() => _sender;
+  MockReactionRecord({bool sentByMe = false}) : _sentByMe = sentByMe;
 
   @override
   bool sentByMe() => _sentByMe;
@@ -364,14 +358,8 @@ void main() {
         tester,
       ) async {
         final reactions = [
-          (
-            '👍',
-            [
-              MockReactionRecord('user1'),
-              MockReactionRecord('user2', sentByMe: true),
-            ],
-          ),
-          ('❤️', [MockReactionRecord('user3')]),
+          ('👍', [MockReactionRecord(), MockReactionRecord(sentByMe: true)]),
+          ('❤️', [MockReactionRecord()]),
         ];
 
         await tester.pumpProviderWidget(
