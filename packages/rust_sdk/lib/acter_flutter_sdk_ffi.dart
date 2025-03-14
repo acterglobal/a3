@@ -26358,6 +26358,16 @@ class Api {
       int Function(
         int,
       )>();
+  late final _activityMentionsYouPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__Activity_mentions_you");
+
+  late final _activityMentionsYou = _activityMentionsYouPtr.asFunction<
+      int Function(
+        int,
+      )>();
   late final _activitiesGetIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -28551,6 +28561,27 @@ class Api {
 
   late final _notificationItemNewDate = _notificationItemNewDatePtr.asFunction<
       _NotificationItemNewDateReturn Function(
+        int,
+      )>();
+  late final _notificationItemMentionsYouPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+            ffi.IntPtr,
+          )>>("__NotificationItem_mentions_you");
+
+  late final _notificationItemMentionsYou =
+      _notificationItemMentionsYouPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _notificationItemWhomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__NotificationItem_whom");
+
+  late final _notificationItemWhom = _notificationItemWhomPtr.asFunction<
+      int Function(
         int,
       )>();
   late final _pusherIsEmailPusherPtr = _lookup<
@@ -55176,6 +55207,18 @@ class Activity {
     return tmp2;
   }
 
+  /// does this mention the user
+  bool mentionsYou() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityMentionsYou(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -59828,6 +59871,34 @@ class NotificationItem {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// does this mention the user
+  bool mentionsYou() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemMentionsYou(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// does this involve other users than the sender?
+  FfiListFfiString whom() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._notificationItemWhom(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
     return tmp2;
   }
 
