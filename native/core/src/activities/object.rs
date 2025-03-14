@@ -107,51 +107,51 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
     fn try_from(value: &AnyActerModel) -> std::result::Result<Self, Self::Error> {
         match value {
             AnyActerModel::NewsEntry(e) => Ok(ActivityObject::News {
-                        object_id: e.event_id().to_owned(),
-                    }),
+                object_id: e.event_id().to_owned(),
+            }),
             AnyActerModel::Story(e) => Ok(ActivityObject::Story {
-                        object_id: e.event_id().to_owned(),
-                    }),
+                object_id: e.event_id().to_owned(),
+            }),
             AnyActerModel::CalendarEvent(e) => Ok(ActivityObject::CalendarEvent {
-                        object_id: e.event_id().to_owned(),
-                        title: e.title().clone(),
-                    }),
+                object_id: e.event_id().to_owned(),
+                title: e.title().clone(),
+            }),
             AnyActerModel::Pin(e) => Ok(ActivityObject::Pin {
-                        object_id: e.event_id().to_owned(),
-                        title: e.title().clone(),
-                    }),
+                object_id: e.event_id().to_owned(),
+                title: e.title().clone(),
+            }),
             AnyActerModel::TaskList(e) => Ok(ActivityObject::TaskList {
-                        object_id: e.event_id().to_owned(),
-                        title: e.name().clone(),
-                    }),
+                object_id: e.event_id().to_owned(),
+                title: e.name().clone(),
+            }),
             AnyActerModel::Task(e) => Ok(ActivityObject::Task {
-                        object_id: e.event_id().to_owned(),
-                        tl_id: e.task_list_id.event_id.clone(),
-                        title: e.title().clone(),
-                    }),
+                object_id: e.event_id().to_owned(),
+                tl_id: e.task_list_id.event_id.clone(),
+                title: e.title().clone(),
+            }),
             AnyActerModel::RedactedActerModel(_)
-                    | AnyActerModel::CalendarEventUpdate(_)
-                    | AnyActerModel::TaskListUpdate(_)
-                    | AnyActerModel::TaskUpdate(_)
-                    | AnyActerModel::TaskSelfAssign(_)
-                    | AnyActerModel::TaskSelfUnassign(_)
-                    | AnyActerModel::PinUpdate(_)
-                    | AnyActerModel::NewsEntryUpdate(_)
-                    | AnyActerModel::StoryUpdate(_)
-                    | AnyActerModel::Comment(_)
-                    | AnyActerModel::CommentUpdate(_)
-                    | AnyActerModel::Attachment(_)
-                    | AnyActerModel::AttachmentUpdate(_)
-                    | AnyActerModel::Rsvp(_)
-                    | AnyActerModel::Reaction(_)
-                    | AnyActerModel::RoomStatus(_)
-                    | AnyActerModel::ReadReceipt(_) => {
-                        tracing::trace!("Received Notification on an unsupported parent");
-                        Err(())
-                    }
-                    AnyActerModel::ExplicitInvite(explicit_invite) => todo!(),
+            | AnyActerModel::ExplicitInvite(_)
+            | AnyActerModel::CalendarEventUpdate(_)
+            | AnyActerModel::TaskListUpdate(_)
+            | AnyActerModel::TaskUpdate(_)
+            | AnyActerModel::TaskSelfAssign(_)
+            | AnyActerModel::TaskSelfUnassign(_)
+            | AnyActerModel::PinUpdate(_)
+            | AnyActerModel::NewsEntryUpdate(_)
+            | AnyActerModel::StoryUpdate(_)
+            | AnyActerModel::Comment(_)
+            | AnyActerModel::CommentUpdate(_)
+            | AnyActerModel::Attachment(_)
+            | AnyActerModel::AttachmentUpdate(_)
+            | AnyActerModel::Rsvp(_)
+            | AnyActerModel::Reaction(_)
+            | AnyActerModel::RoomStatus(_)
+            | AnyActerModel::ReadReceipt(_) => {
+                tracing::trace!("Received Notification on an unsupported parent");
+                Err(())
+            }
             #[cfg(any(test, feature = "testing"))]
-                    AnyActerModel::TestModel(_test_model) => todo!(),
+            AnyActerModel::TestModel(_test_model) => todo!(),
         }
     }
 }

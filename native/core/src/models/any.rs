@@ -27,13 +27,13 @@ use tracing::{error, trace, warn};
 #[cfg(any(test, feature = "testing"))]
 use super::test::TestModel;
 
-use crate::events::explicit_invites::ExplicitInviteEventContent;
 use crate::store::Store;
 use crate::{
     events::{
         attachments::{AttachmentEventContent, AttachmentUpdateEventContent},
         calendar::{CalendarEventEventContent, CalendarEventUpdateEventContent},
         comments::{CommentEventContent, CommentUpdateEventContent},
+        explicit_invites::ExplicitInviteEventContent,
         news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
         pins::{PinEventContent, PinUpdateEventContent},
         read_receipt::ReadReceiptEventContent,

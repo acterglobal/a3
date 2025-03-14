@@ -6,6 +6,7 @@ mod comments;
 mod common;
 mod conversion;
 mod execution;
+mod invites;
 mod meta;
 mod news;
 mod pins;
@@ -19,7 +20,6 @@ mod tag;
 mod tasks;
 #[cfg(any(test, feature = "testing"))]
 mod test;
-mod invites;
 
 pub use any::{ActerModel, AnyActerModel};
 pub use attachments::{Attachment, AttachmentUpdate, AttachmentsManager, AttachmentsStats};
@@ -29,6 +29,7 @@ pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
 pub(crate) use execution::default_model_execute;
+pub use invites::{InvitationsManager, InviteStats};
 pub use meta::{can_redact, EventMeta};
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
@@ -42,7 +43,6 @@ pub use tag::Tag;
 pub use tasks::{
     Task, TaskList, TaskListUpdate, TaskSelfAssign, TaskSelfUnassign, TaskStats, TaskUpdate,
 };
-pub use invites::{InvitationsManager, InviteStats};
 
 #[cfg(any(test, feature = "testing"))]
 pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};

@@ -52,10 +52,10 @@ mod typing;
 mod utils;
 mod verification;
 
+pub mod invitations;
 pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
-pub mod invitations;
 
 #[cfg(feature = "uniffi")]
 pub use uniffi_api::*;
@@ -100,6 +100,7 @@ pub use core::time::Duration as EfkDuration;
 pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
 pub use invitation::Invitation;
+pub use invitations::InvitationsManager;
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
@@ -131,7 +132,6 @@ pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
 pub use super_invites::{
     SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
 };
-pub use invitations::InvitationsManager;
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
