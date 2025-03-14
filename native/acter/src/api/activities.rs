@@ -83,6 +83,13 @@ impl Activity {
             _ => None,
         }
     }
+
+    pub fn whom(&self) -> Vec<String> {
+        let ActivityContent::ObjectInvitation { ref invitees, .. } = self.inner.content() else {    
+            return vec![];
+        };
+        invitees.iter().map(|i| i.to_string()).collect()
+    }
 }
 
 impl Deref for Activity {

@@ -549,6 +549,9 @@ impl NotificationItemBuilder {
                 object,
                 content: Some(content),
             } => builder.msg_content(MsgContent::from(content)),
+            ActivityContent::ObjectInvitation { object, invitees } => {
+                builder.title(object.title().unwrap_or("Object".to_owned()))
+            }
             _ => &mut builder,
         };
 

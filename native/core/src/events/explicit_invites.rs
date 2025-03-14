@@ -17,7 +17,7 @@ pub struct ExplicitInviteEventContent {
 
     /// The actual user being invited    
     #[builder(setter(into))]
-    #[serde(rename = "m.mention")]
+    #[serde(rename = "m.mentions")]
     // We model this after a mention to use the existing notification setup
     pub mention: Mentions,
 }
