@@ -74,7 +74,7 @@ async fn task_invitation() -> Result<()> {
     assert_eq!(object.object_id_str(), obj_entry.event_id().to_string());
     assert_eq!(activity.whom().len(), 1);
     assert_eq!(activity.whom()[0], second_user.user_id()?.to_string());
-    assert!(activity.mentions_you() == false);
+    assert!(!activity.mentions_you());
 
     // see what the recipient sees
 

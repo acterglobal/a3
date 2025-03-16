@@ -563,11 +563,9 @@ impl NotificationItemBuilder {
                 object,
                 content: Some(content),
             } => builder.msg_content(MsgContent::from(content)),
-            ActivityContent::ObjectInvitation { object, invitees } => {
-                builder
-                    .title(object.title().unwrap_or("Object".to_owned()))
-                    .mentions_you(invitees.contains(&user_id))
-            }
+            ActivityContent::ObjectInvitation { object, invitees } => builder
+                .title(object.title().unwrap_or("Object".to_owned()))
+                .mentions_you(invitees.contains(&user_id)),
             _ => &mut builder,
         };
 
