@@ -89,8 +89,9 @@ class MockAsyncRsvpStatusNotifier
 
 class MockEvent extends Fake implements CalendarEvent {
   final String fakeEventTitle;
+  final int? fakeEventTs;
 
-  MockEvent({this.fakeEventTitle = 'Fake Event'});
+  MockEvent({this.fakeEventTitle = 'Fake Event', this.fakeEventTs});
 
   @override
   EventId eventId() => MockEventId('eventId');
@@ -105,7 +106,7 @@ class MockEvent extends Fake implements CalendarEvent {
   TextMessageContent? description() => null;
 
   @override
-  UtcDateTime utcStart() => FakeUtcDateTime();
+  UtcDateTime utcStart() => FakeUtcDateTime(ts: fakeEventTs ?? 10);
 
   @override
   UtcDateTime utcEnd() => FakeUtcDateTime();
@@ -123,8 +124,13 @@ class MockEvent extends Fake implements CalendarEvent {
 }
 
 class FakeUtcDateTime extends Fake implements UtcDateTime {
+  final int ts;
+  FakeUtcDateTime({this.ts = 10});
   @override
-  int timestampMillis() => 10;
+  int timestampMillis() => ts;
+
+  @override
+  int timestamp() => ts;
 }
 
 class MockUtcNowNotifier extends StateNotifier<DateTime>
