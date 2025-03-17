@@ -7,9 +7,8 @@ import 'package:acter_notifify/processing/utils.dart';
   final username = sender.displayName() ?? sender.userId();
   final newTitle = notification.title();
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'renamed');
+  final title = notification.parent()?.getObjectCentricTitlePart('renamed');
+  if (title != null) {
     final body = 'by $username to "$newTitle"';
     return (title, body);
   } else {

@@ -1,3 +1,0 @@
-- [Labs] Chat-NG:
-  - [fix] room state events are now properly shown with descriptive info.
-  - [fix] notice and server notice messages are now appearing in chats.
