@@ -89,12 +89,17 @@ class MockAsyncRsvpStatusNotifier
 
 class MockEvent extends Fake implements CalendarEvent {
   final String fakeEventTitle;
+  final String fakeEventId;
   final int? fakeEventTs;
 
-  MockEvent({this.fakeEventTitle = 'Fake Event', this.fakeEventTs});
+  MockEvent({
+    this.fakeEventId = 'eventId',
+    this.fakeEventTitle = 'Fake Event',
+    this.fakeEventTs,
+  });
 
   @override
-  EventId eventId() => MockEventId('eventId');
+  EventId eventId() => MockEventId(fakeEventId);
 
   @override
   String roomIdStr() => 'testRoomId';
@@ -109,7 +114,7 @@ class MockEvent extends Fake implements CalendarEvent {
   UtcDateTime utcStart() => FakeUtcDateTime(ts: fakeEventTs ?? 10);
 
   @override
-  UtcDateTime utcEnd() => FakeUtcDateTime();
+  UtcDateTime utcEnd() => FakeUtcDateTime(ts: (fakeEventTs ?? 10) + 10);
 
   @override
   Future<FfiListFfiString> participants() =>
@@ -135,14 +140,23 @@ class FakeUtcDateTime extends Fake implements UtcDateTime {
 
 class MockUtcNowNotifier extends StateNotifier<DateTime>
     implements UtcNowNotifier {
-  MockUtcNowNotifier({DateTime? state})
-    : super(state ?? DateTime.now().toUtc());
+  MockUtcNowNotifier({DateTime? state, int? ts})
+    : super(
+        state ??
+            (ts != null
+                    ? DateTime.fromMillisecondsSinceEpoch(ts)
+                    : DateTime.now())
+                .toUtc(),
+      );
 }
 
 class MockEventId extends Mock implements EventId {
   final String fakeEventId;
 
   MockEventId(this.fakeEventId);
+
+  @override
+  String toString() => fakeEventId;
 }
 
 class MockEventListSearchFilterProvider extends Mock {}
