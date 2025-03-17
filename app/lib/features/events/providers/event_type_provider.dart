@@ -8,7 +8,7 @@ final eventTypeProvider = Provider.autoDispose
     .family<EventFilters, ffi.CalendarEvent>((ref, event) {
       DateTime eventStartDateTime = toDartDatetime(event.utcStart());
       DateTime eventEndDateTime = toDartDatetime(event.utcEnd());
-      DateTime currentDateTime = ref.read(utcNowProvider);
+      DateTime currentDateTime = ref.watch(utcNowProvider);
 
       //Check for event type
       if (eventStartDateTime.isBefore(currentDateTime) &&
