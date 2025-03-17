@@ -30,7 +30,7 @@ class CustomMockRsvpStatusNotifier extends AsyncRsvpStatusNotifier {
       case 'eventId': // Default ID for mock events
         return RsvpStatusTag.Yes;
       default:
-        final eventNumber = int.tryParse(arg.split(" ").last);
+        final eventNumber = int.tryParse(arg.split(' ').last);
         if (eventNumber != null) {
           if (eventNumber == 1 ||
               eventNumber == 2 ||
