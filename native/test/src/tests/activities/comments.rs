@@ -30,8 +30,7 @@ title = "Check the weather"
 #[tokio::test]
 async fn task_comment_activity() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) =
-        random_user_with_template("tasks_activities", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("tasks_activities", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
