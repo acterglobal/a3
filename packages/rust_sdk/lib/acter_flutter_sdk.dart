@@ -163,15 +163,17 @@ class ActerSdk {
     );
     final iOptions = IOSOptions(
       synchronizable: false,
-      accessibility: KeychainAccessibility
-          .first_unlock, // must have been unlocked since reboot
+      accessibility:
+          KeychainAccessibility
+              .first_unlock, // must have been unlocked since reboot
       groupId:
           appleKeychainAppGroupName, // to allow the background process to access the same store
     );
     final mOptions = MacOsOptions(
       synchronizable: false,
-      accessibility: KeychainAccessibility
-          .first_unlock, // must have been unlocked since reboot
+      accessibility:
+          KeychainAccessibility
+              .first_unlock, // must have been unlocked since reboot
       groupId:
           appleKeychainAppGroupName, // to allow the background process to access the same store
     );
@@ -249,8 +251,11 @@ class ActerSdk {
     SharedPreferences prefs = await sharedPrefs();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     for (final token in sessions) {
-      ffi.Client client =
-          await _api.loginWithToken(appDocPath, appCachePath, token);
+      ffi.Client client = await _api.loginWithToken(
+        appDocPath,
+        appCachePath,
+        token,
+      );
       _clients.add(client);
     }
     _index = prefs.getInt('$_sessionKey::currentClientIdx') ?? 0;
@@ -313,11 +318,7 @@ class ActerSdk {
       _log.info('Secure Store: decoding sessions: ${sessionKeys.length} found');
       return sessionKeys.map((e) => e as String).toList();
     } catch (error, stack) {
-      _log.severe(
-        "Parsing sessions keys '$sessionKeys' failed.",
-        error,
-        stack,
-      );
+      _log.severe("Parsing sessions keys '$sessionKeys' failed.", error, stack);
       return [];
     }
   }
@@ -342,8 +343,11 @@ class ActerSdk {
         if (token != null) {
           try {
             _log.info('Secure Store[$deviceId]: token found');
-            ffi.Client client =
-                await _api.loginWithToken(appDocPath, appCachePath, token);
+            ffi.Client client = await _api.loginWithToken(
+              appDocPath,
+              appCachePath,
+              token,
+            );
             _log.info('Secure Store[$deviceId]: login successful');
             _clients.add(client);
           } catch (error, stack) {
@@ -471,18 +475,18 @@ class ActerSdk {
   }
 
   static Future<ActerSdk> _unrestoredInstanceInner() async {
-    final api = Platform.isAndroid
-        ? ffi.Api(await _getAndroidDynLib('libacter.so'))
-        : ffi.Api.load();
+    final api =
+        Platform.isAndroid
+            ? ffi.Api(await _getAndroidDynLib('libacter.so'))
+            : ffi.Api.load();
     String logPath = await appCacheDir();
     FileSystemEntity? latestLogPath;
 
     try {
       // clear screenshots, and logs (but keep the latest one)
-      final entities = Directory(logPath).list(
-        recursive: false,
-        followLinks: false,
-      );
+      final entities = Directory(
+        logPath,
+      ).list(recursive: false, followLinks: false);
       await for (final entity in entities) {
         if (screenshotFileRegExp.hasMatch(entity.path)) {
           try {
