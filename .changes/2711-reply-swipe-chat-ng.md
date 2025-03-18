@@ -1,2 +1,0 @@
-- [Labs] Chat-NG:
-  - [Improvement]: reply swipe on chat messages is now supported.

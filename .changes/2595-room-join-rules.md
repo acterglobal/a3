@@ -1,1 +1,0 @@
-- Fix a bug where the room join rules were not being applied correctly upon room creation

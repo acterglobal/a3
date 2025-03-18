@@ -61,6 +61,9 @@ class ChatEvent extends ConsumerWidget {
     final isFirstMessageBySender = ref.watch(
       isFirstMessageBySenderProvider((roomId: roomId, uniqueId: eventId)),
     );
+    final isLastMessage = ref.watch(
+      isLastMessageProvider((roomId: roomId, uniqueId: eventId)),
+    );
     final myId = ref.watch(myUserIdStrProvider);
     final messageId = msg.uniqueId();
     // FIXME: should check canRedact permission from the room
@@ -108,6 +111,7 @@ class ChatEvent extends ConsumerWidget {
               canRedact: canRedact,
               isFirstMessageBySender: isFirstMessageBySender,
               isLastMessageBySender: isLastMessageBySender,
+              isLastMessage: isLastMessage,
             ),
           ),
         ],

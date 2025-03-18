@@ -9,8 +9,10 @@ use tokio_retry::{
 
 mod attachments;
 mod calendar;
+mod comments;
 mod likes;
 mod status;
+mod tasks;
 
 async fn get_latest_activity(
     cl: &Client,
