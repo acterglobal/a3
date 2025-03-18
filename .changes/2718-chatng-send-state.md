@@ -1,0 +1,1 @@
+- Add sending state widget to chat-ng

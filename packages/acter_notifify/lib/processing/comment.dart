@@ -4,15 +4,14 @@ import 'package:acter_notifify/processing/utils.dart';
 
 (String, String?) titleAndBodyForComment(NotificationItem notification) {
   final emoji = PushStyles.comment.emoji;
-  final title = getUserCentricTitlePart(notification, emoji, 'commented');
+  final title = notification.getUserCentricTitlePart(emoji, 'commented');
 
   //Generate comment body
   String? body;
   final comment = notification.body()?.body();
-  final parent = notification.parent();
+  final parentInfo = notification.parent()?.parentPart();
 
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
+  if (parentInfo != null) {
     final content = comment != null ? ': $comment' : '';
     body = "On $parentInfo$content";
   } else {

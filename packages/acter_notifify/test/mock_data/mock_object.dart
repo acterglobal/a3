@@ -2,6 +2,7 @@
 enum MockObject {
   //LIST OF OBJECT EMOJIS
   news('🚀'),
+  story('📖'),
   pin('📌'),
   event('🗓️'),
   taskList('📋'),

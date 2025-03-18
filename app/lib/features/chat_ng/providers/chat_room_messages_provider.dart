@@ -121,6 +121,14 @@ final isFirstMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   return currentMsg?.eventItem()?.sender() != prevMsg.eventItem()?.sender();
 });
 
+final isLastMessageProvider = Provider.family<bool, RoomMsgId>((
+  ref,
+  roomMsgId,
+) {
+  final messages = ref.watch(renderableChatMessagesProvider(roomMsgId.roomId));
+  return messages.last == roomMsgId.uniqueId;
+});
+
 /// Provider to fetch user mentions
 final userMentionSuggestionsProvider =
     StateProvider.family<Map<String, String>?, String>((ref, roomId) {

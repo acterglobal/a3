@@ -10,9 +10,8 @@ import 'package:acter_notifify/processing/utils.dart';
   final content =
       "$username added ${PushStyles.attachment.emoji} $attachmentTitle";
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final parentInfo = parentPart(parent);
+  final parentInfo = notification.parent()?.parentPart();
+  if (parentInfo != null) {
     return (parentInfo, content);
   } else {
     return (content, null);

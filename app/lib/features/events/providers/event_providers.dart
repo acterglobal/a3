@@ -191,7 +191,7 @@ final allPastEventListWithSearchProvider = FutureProvider.autoDispose
       );
       final searchTerm = ref.watch(eventListSearchTermProvider(spaceId));
       final eventList = _filterEventBySearchTerm(searchTerm, allEventList);
-      return sortEventListAscTime(eventList);
+      return sortEventListDscTime(eventList);
     });
 
 //MY PAST EVENTS
