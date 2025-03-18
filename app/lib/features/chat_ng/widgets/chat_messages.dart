@@ -24,6 +24,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   );
 
   Timer? markReadDebouce;
+  bool _showScrollToBottom = false;
 
   bool get isLoading => ref.watch(
     chatMessagesStateProvider(widget.roomId).select((v) => v.loading.isLoading),
@@ -86,6 +87,18 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         }
       }
     }
+
+    // Update scroll to bottom button visibility
+    final shouldShowButton =
+        _scrollController.hasClients &&
+        _scrollController.position.pixels <
+            (_scrollController.position.maxScrollExtent - 200);
+
+    if (shouldShowButton != _showScrollToBottom) {
+      setState(() {
+        _showScrollToBottom = shouldShowButton;
+      });
+    }
   }
 
   void scrollToEnd() {
@@ -112,7 +125,11 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         children: [
           Expanded(
             child: Stack(
-              children: [_buildMessagesList(messages), _buildScrollIndicator()],
+              children: [
+                _buildMessagesList(messages),
+                _buildScrollIndicator(),
+                _buildScrollToBottomButton(),
+              ],
             ),
           ),
         ],
@@ -145,6 +162,25 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         width: isLoading ? 14 : 0,
         child: Center(
           child: isLoading ? const CircularProgressIndicator() : null,
+        ),
+      ),
+    ),
+  );
+
+  //  scroll indicator widget
+  Widget _buildScrollToBottomButton() => Positioned(
+    bottom: 16,
+    right: 16,
+    child: AnimatedOpacity(
+      opacity: _showScrollToBottom ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 200),
+      child: AnimatedScale(
+        scale: _showScrollToBottom ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: FloatingActionButton(
+          mini: true,
+          onPressed: _showScrollToBottom ? scrollToEnd : null,
+          child: const Icon(Icons.arrow_downward),
         ),
       ),
     ),
