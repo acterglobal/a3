@@ -139,22 +139,17 @@ impl Bookmarks {
 impl crate::Account {
     pub async fn bookmarks(&self) -> Result<Bookmarks> {
         let account = self.account.clone();
-        let inner = RUNTIME
+        RUNTIME
             .spawn(async move {
-                let raw = account.account_data::<BookmarksEventContent>().await?;
-
-                anyhow::Ok(if let Some(o) = raw {
-                    o.deserialize().map(Option::Some)?
+                let inner = if let Some(o) = account.account_data::<BookmarksEventContent>().await?
+                {
+                    o.deserialize()?
                 } else {
-                    None
-                })
-            })
-            .await??
-            .unwrap_or_default();
+                    Default::default()
+                };
 
-        Ok(Bookmarks {
-            inner,
-            account: self.account.clone(),
-        })
+                anyhow::Ok(Bookmarks { inner, account })
+            })
+            .await?
     }
 }
