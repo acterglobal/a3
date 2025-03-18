@@ -89,7 +89,7 @@ impl ActivityObject {
 
     pub fn task_list_id_str(&self) -> Option<String> {
         match self {
-            ActivityObject::Task { tl_id, .. } => Some(format!("/tasks/{tl_id}")),
+            ActivityObject::Task { tl_id, .. } => Some(tl_id.to_string()),
             _ => None,
         }
     }

@@ -2261,6 +2261,9 @@ object ActivityObject {
     fn object_id_str() -> string;
     fn title() -> Option<string>;
     fn emoji() -> string;
+
+    /// if this is a `task` type, what `task-list-id` does it belong to
+    fn task_list_id_str() -> Option<string>;
 }
 
 object Activity {
