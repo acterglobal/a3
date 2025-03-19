@@ -153,13 +153,7 @@ impl Client {
 
         let me = self.clone();
         let client = self.core.client().clone();
-        let user_id = client
-            .clone()
-            .user_id()
-            .expect("User must be logged in")
-            .to_owned();
-
-        let sync_service = SyncService::builder(client.clone()).build().await?;
+        let sync_service = SyncService::builder(client).build().await?;
         let room_list = sync_service.room_list_service().all_rooms().await?;
 
         let rooms = self.sync_controller.rooms.clone();
@@ -236,7 +230,7 @@ impl Client {
                 // we couldn't do below, because it's a sync lock, and has to be
                 // sync b/o rendering; and we'd have to cross await points
                 // below).
-                let prev_ui_rooms = ui_rooms.read().await.clone();
+                let prev_ui_rooms = ui_rooms.read().await;
 
                 let mut new_ui_rooms = HashMap::new();
                 let mut new_timelines = vec![];
@@ -291,7 +285,6 @@ impl Client {
                         continue;
                     };
                     let (items, stream) = sdk_timeline.subscribe().await;
-                    let my_id = user_id.clone();
                     for item in items {
                         me.set_latest_message(ui_room.room_id(), item).await;
                     }
@@ -447,7 +440,7 @@ impl Client {
 
             updated
         };
-        info!("refreshed room: {:?}", update_keys.clone());
+        info!("refreshed room: {:?}", &update_keys);
         self.executor().notify(
             update_keys
                 .into_iter()
@@ -463,12 +456,12 @@ impl Client {
         let Ok(my_id) = self.user_id() else {
             return;
         };
-        let new_msg = RoomMessage::from((item, my_id.clone()));
+        let new_msg = RoomMessage::from((item, my_id));
         let mut ri = self.sync_controller.room_infos.write().await;
         let Some(room_info) = ri.get_mut(room_id) else {
             return;
         };
-        if let Some(prev_msg) = room_info.clone().latest_msg {
+        if let Some(prev_msg) = &room_info.latest_msg {
             if prev_msg.event_id() == new_msg.event_id()
                 && prev_msg.event_type() == new_msg.event_type()
             {
@@ -491,13 +484,14 @@ impl Client {
                 }
             }
         }
-        trace!(?room_id, "Setting latest message");
-        room_info.latest_msg = Some(new_msg.clone());
 
         let key = latest_message_storage_key(room_id);
         self.store().set_raw(&key.as_storage_key(), &new_msg).await;
-        info!("******************** changed latest msg: {:?}", key.clone());
+        info!("******************** changed latest msg: {:?}", &key);
         self.executor().notify(vec![key]);
+
+        trace!(?room_id, "Setting latest message");
+        room_info.latest_msg = Some(new_msg);
     }
 
     pub(crate) async fn load_from_cache(&self) {
@@ -509,17 +503,14 @@ impl Client {
             .map(|r| Space::new(self.clone(), r))
             .collect::<Vector<Space>>();
         {
-            let rooms = self.sync_controller.rooms.read().await;
             let room_infos = self.sync_controller.room_infos.read().await;
             spaces.sort_by(|a, b| {
                 let a_ts = room_infos
                     .get(a.room_id())
-                    .and_then(|info| info.latest_msg.clone())
-                    .and_then(|x| x.origin_server_ts());
+                    .and_then(|info| info.latest_msg.as_ref().and_then(|x| x.origin_server_ts()));
                 let b_ts = room_infos
                     .get(b.room_id())
-                    .and_then(|info| info.latest_msg.clone())
-                    .and_then(|x| x.origin_server_ts());
+                    .and_then(|info| info.latest_msg.as_ref().and_then(|x| x.origin_server_ts()));
                 if a_ts.is_none() == b_ts.is_none() {
                     return Ordering::Equal;
                 }
@@ -539,17 +530,14 @@ impl Client {
             .map(|r| Convo::new(self.clone(), r))
             .collect::<Vector<Convo>>();
         {
-            let rooms = self.sync_controller.rooms.read().await;
             let room_infos = self.sync_controller.room_infos.read().await;
             convos.sort_by(|a, b| {
                 let a_ts = room_infos
                     .get(a.room_id())
-                    .and_then(|info| info.latest_msg.clone())
-                    .and_then(|x| x.origin_server_ts());
+                    .and_then(|info| info.latest_msg.as_ref().and_then(|x| x.origin_server_ts()));
                 let b_ts = room_infos
                     .get(b.room_id())
-                    .and_then(|info| info.latest_msg.clone())
-                    .and_then(|x| x.origin_server_ts());
+                    .and_then(|info| info.latest_msg.as_ref().and_then(|x| x.origin_server_ts()));
                 if a_ts.is_none() == b_ts.is_none() {
                     return Ordering::Equal;
                 }
@@ -587,14 +575,12 @@ fn insert_to_convo(
 ) {
     if let Some(msg_ts) = room_infos
         .get(convo.deref().room_id())
-        .and_then(|info| info.latest_msg.clone())
-        .and_then(|x| x.origin_server_ts())
+        .and_then(|info| info.latest_msg.as_ref().and_then(|x| x.origin_server_ts()))
     {
         let result = target.iter().position(|convo| {
             let origin_server_ts = room_infos
                 .get(convo.deref().room_id())
-                .and_then(|info| info.latest_msg.clone())
-                .and_then(|x| x.origin_server_ts());
+                .and_then(|info| info.latest_msg.as_ref().and_then(|x| x.origin_server_ts()));
             match origin_server_ts {
                 Some(ts) => ts < msg_ts,
                 None => false,
