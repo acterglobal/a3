@@ -120,6 +120,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
 
     final String? activityType = activityObject?.typeStr();
     final String? objectId = activityObject?.objectIdStr();
+    final String? taskListId = activityObject?.taskListIdStr();
 
     if (activityType == null || objectId == null || objectId.isEmpty) {
       debugPrint('Invalid activity type or object ID');
@@ -127,18 +128,29 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     }
 
     final navigationMap = {
-      'pin': () => context.pushNamed(
-        Routes.pin.name,
-        pathParameters: {'pinId': objectId},
-      ),
-      'task-list': () => context.pushNamed(
-        Routes.taskListDetails.name,
-        pathParameters: {'taskListId': objectId},
-      ),
-      'event': () => context.pushNamed(
-        Routes.calendarEvent.name,
-        pathParameters: {'calendarId': objectId},
-      ),
+      'pin':
+          () => context.pushNamed(
+            Routes.pin.name,
+            pathParameters: {'pinId': objectId},
+          ),
+      'task': () {
+        if (taskListId != null) {
+          context.pushNamed(
+            Routes.taskItemDetails.name,
+            pathParameters: {'taskId': objectId, 'taskListId': taskListId},
+          );
+        }
+      },
+      'task-list':
+          () => context.pushNamed(
+            Routes.taskListDetails.name,
+            pathParameters: {'taskListId': objectId},
+          ),
+      'event':
+          () => context.pushNamed(
+            Routes.calendarEvent.name,
+            pathParameters: {'calendarId': objectId},
+          ),
       'news': () {
         ref.read(updateFilterProvider.notifier).state = UpdateFilters.news;
         context.pushNamed(
@@ -162,7 +174,6 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
       debugPrint('Navigation error: $e');
     }
   }
-
 
   String getActivityObjectTitle() {
     return switch (activityObject?.typeStr()) {
