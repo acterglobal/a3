@@ -565,8 +565,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ben-fix-event-color-type
-      resolved-ref: "56522f0b513056b764be2425b3dae4d29ece7863"
+      ref: "2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5"
+      resolved-ref: "2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5"
       url: "https://github.com/acterglobal/device_calendar"
     source: git
     version: "4.3.1"
