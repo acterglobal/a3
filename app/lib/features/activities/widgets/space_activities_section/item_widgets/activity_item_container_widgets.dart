@@ -2,13 +2,15 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/utils.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
-import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+final _log = Logger('a3::activity::item');
 
 //Main container for all activity item widgets
 class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
@@ -36,7 +38,7 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
-      onTap: () => onActivityObjectTap(context,ref),
+      onTap: () => onTapActivityItem(context, ref),
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
         child: Padding(
@@ -112,9 +114,9 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     };
   }
 
-  void onActivityObjectTap(BuildContext context, WidgetRef ref) {
+  void onTapActivityItem(BuildContext context, WidgetRef ref) {
     if (activityObject == null) {
-      debugPrint('Activity object is null');
+      _log.info('Activity object is null');
       return;
     }
 
@@ -123,55 +125,44 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     final String? taskListId = activityObject?.taskListIdStr();
 
     if (activityType == null || objectId == null || objectId.isEmpty) {
-      debugPrint('Invalid activity type or object ID');
+      _log.info('onTapActivityItem : activityType or objectId is null');
       return;
     }
 
-    final navigationMap = {
-      'pin':
-          () => context.pushNamed(
-            Routes.pin.name,
-            pathParameters: {'pinId': objectId},
-          ),
-      'task': () {
-        if (taskListId != null) {
-          context.pushNamed(
-            Routes.taskItemDetails.name,
-            pathParameters: {'taskId': objectId, 'taskListId': taskListId},
-          );
-        }
-      },
-      'task-list':
-          () => context.pushNamed(
-            Routes.taskListDetails.name,
-            pathParameters: {'taskListId': objectId},
-          ),
-      'event':
-          () => context.pushNamed(
-            Routes.calendarEvent.name,
-            pathParameters: {'calendarId': objectId},
-          ),
-      'news': () {
-        ref.read(updateFilterProvider.notifier).state = UpdateFilters.news;
+    switch (activityType) {
+      case 'pin':
+        context.pushNamed(Routes.pin.name, pathParameters: {'pinId': objectId});
+        break;
+      case 'task':
+        context.pushNamed(
+          Routes.taskItemDetails.name,
+          pathParameters: {'taskId': objectId, 'taskListId': taskListId!},
+        );
+        break;
+      case 'task-list':
+        context.pushNamed(
+          Routes.taskListDetails.name,
+          pathParameters: {'taskListId': objectId},
+        );
+        break;
+      case 'event':
+        context.pushNamed(
+          Routes.calendarEvent.name,
+          pathParameters: {'calendarId': objectId},
+        );
+        break;
+      case 'news':
         context.pushNamed(
           Routes.update.name,
           pathParameters: {'updateId': objectId},
         );
-      },
-      'story': () {
-        ref.read(updateFilterProvider.notifier).state = UpdateFilters.story;
+        break;
+      case 'story':
         context.pushNamed(
           Routes.update.name,
           pathParameters: {'updateId': objectId},
         );
-      },
-    };
-
-    try {
-      navigationMap[activityType]?.call() ??
-          debugPrint('Tapped on unknown activity: $activityType');
-    } catch (e) {
-      debugPrint('Navigation error: $e');
+        break;
     }
   }
 
