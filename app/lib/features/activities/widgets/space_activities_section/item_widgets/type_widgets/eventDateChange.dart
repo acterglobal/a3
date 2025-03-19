@@ -11,17 +11,16 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activityObject = activity.object();
-    // Get the new date (if available)
+
     final newDate = activity.newDate();
 
-    // Handle the case when newDate is null
-    final startDate = newDate != null ? getDateFormat(newDate) : null;
-    final startTime = newDate != null ? getTimeFromDate(context, newDate) : null;
+    String? newEventSchedule;
 
-    // Use a fallback message if newDate is null
-    final dateText = newDate != null
-        ? '$startDate - $startTime'
-        : ''; // Assuming noDateAvailable is a string in your localization.
+    if (newDate != null) {
+      final startDate = getDateFormat(newDate);
+      final startTime = getTimeFromDate(context, newDate);
+      newEventSchedule = '$startDate - $startTime';
+    }
 
     return ActivityUserCentricItemContainerWidget(
       actionIcon: Icons.access_time,
@@ -30,7 +29,7 @@ class ActivityEventDateChangeItemWidget extends StatelessWidget {
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       subtitle: Text(
-        dateText,
+        newEventSchedule ?? '',
         style: Theme.of(context).textTheme.labelMedium,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,

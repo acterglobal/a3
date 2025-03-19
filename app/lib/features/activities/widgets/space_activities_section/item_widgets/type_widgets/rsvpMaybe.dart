@@ -13,7 +13,7 @@ class ActivityEventRSVPMayBeItemWidget extends StatelessWidget {
 
     return ActivityUserCentricItemContainerWidget(
       actionIcon: Icons.question_mark,
-      actionTitle: L10n.of(context).notGoingTo,
+      actionTitle: L10n.of(context).mayBe,
       actionIconColor: Colors.grey.shade400,
       activityObject: activityObject,
       userId: activity.senderIdStr(),

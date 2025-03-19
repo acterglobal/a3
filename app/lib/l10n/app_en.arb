@@ -2310,5 +2310,6 @@
     "rescheduled": "Rescheduled",
     "goingTo": "Going to",
     "notGoingTo": "Not Going to",
+    "mayBe": "Might be attending",
     "@addComment": {}
 }
