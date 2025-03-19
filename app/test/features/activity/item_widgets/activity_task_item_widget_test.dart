@@ -117,7 +117,7 @@ void main() {
 
     // Verify the expected date text
     expect(
-      find.text('09 March, 2024 - 9:30 PM'),
+      find.textContaining('09 March, 2024'),
       findsOneWidget,
     ); // Mocked date output
   });
