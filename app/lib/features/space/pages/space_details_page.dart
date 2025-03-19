@@ -244,7 +244,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.pins => lang.pins,
       TabEntry.tasks => lang.tasks,
       TabEntry.events => lang.events,
-      TabEntry.news => lang.boosts,
+      TabEntry.updates => lang.updates,
       TabEntry.suggestedChats => lang.suggestedChats,
       TabEntry.suggestedSpaces => lang.suggestedSpaces,
       TabEntry.chats => lang.chats,
@@ -257,7 +257,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   Widget spacePageUI(TabEntry tabItem) {
     return switch (tabItem) {
       TabEntry.overview => AboutSection(spaceId: widget.spaceId),
-      TabEntry.news => NewsSection(spaceId: widget.spaceId),
+      TabEntry.updates => NewsSection(spaceId: widget.spaceId),
       TabEntry.pins => PinListWidget(
         pinListProvider: pinsProvider(widget.spaceId),
         spaceId: widget.spaceId,

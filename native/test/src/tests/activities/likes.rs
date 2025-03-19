@@ -4,7 +4,7 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::tests::activities::status::get_latest_activity;
+use super::get_latest_activity;
 use crate::utils::random_users_with_random_space_under_template;
 
 const TMPL: &str = r#"

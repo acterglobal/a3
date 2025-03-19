@@ -13,6 +13,10 @@ final supportedActivityTypes = [
   PushStyles.reaction,
   PushStyles.attachment,
   PushStyles.references,
+  PushStyles.eventDateChange,
+  PushStyles.rsvpYes,
+  PushStyles.rsvpMaybe,
+  PushStyles.rsvpNo,
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {

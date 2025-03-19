@@ -1,16 +1,14 @@
-use std::future;
-
 use acter_core::{activities::ActivityContent, models::status::membership::MembershipChangeType};
 use anyhow::{bail, Result};
-use futures::{pin_mut, StreamExt};
 use matrix_sdk::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
 
-use acter::{Activity, Client, SyncState};
+use acter::{Client, SyncState};
 
+use super::get_latest_activity;
 use crate::utils::{random_user, random_users_with_random_space};
 
 async fn _setup_accounts(
@@ -29,34 +27,6 @@ async fn _setup_accounts(
     sync_state2.await_has_synced_history().await?;
 
     Ok(((admin, sync_state1), (observer, sync_state2), room_id))
-}
-
-pub(crate) async fn get_latest_activity(
-    cl: &Client,
-    room_id: String,
-    activity_type: &str,
-) -> Result<Activity> {
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let observer_room_activities = cl.activities_for_room(room_id)?;
-
-    // check the create event
-    let room_activities = observer_room_activities.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        async move {
-            let stream = room_activities.iter().await?;
-            pin_mut!(stream);
-            let Some(a) = stream
-                .filter(|f| future::ready(f.type_str() == activity_type))
-                .next()
-                .await
-            else {
-                bail!("activity not found")
-            };
-            cl.activity(a.event_meta().event_id.to_string()).await
-        }
-    })
-    .await
 }
 
 #[tokio::test]

@@ -83,6 +83,11 @@ class QuickActionButtons extends ConsumerWidget {
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
         false;
+    final canAddStories =
+        ref
+            .watch(hasSpaceWithPermissionProvider('CanPostStories'))
+            .valueOrNull ??
+        false;
     return [
       ActionButtonWidget(
         iconData: Atlas.users,
@@ -139,8 +144,19 @@ class QuickActionButtons extends ConsumerWidget {
         ),
       if (canAddBoost)
         ActionButtonWidget(
-          iconData: Atlas.megaphone_thin,
+          iconData: Icons.rocket_launch_sharp,
           title: lang.addBoost,
+          color: boastFeatureColor,
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          onPressed: () {
+            ref.read(quickActionVisibilityProvider.notifier).state = false;
+            context.pushNamed(Routes.actionAddUpdate.name);
+          },
+        ),
+      if (canAddStories)
+        ActionButtonWidget(
+          iconData: Icons.amp_stories,
+          title: lang.addStory,
           color: boastFeatureColor,
           padding: const EdgeInsets.symmetric(vertical: 6),
           onPressed: () {

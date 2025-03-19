@@ -48,7 +48,7 @@ class FeaturesNavWidget extends StatelessWidget {
               const SizedBox(width: 20),
               featuresNavItem(
                 context: context,
-                title: lang.boosts,
+                title: lang.updates,
                 iconData: Atlas.megaphone_thin,
                 color: boastFeatureColor,
                 onTap: () => context.pushNamed(Routes.updateList.name),
