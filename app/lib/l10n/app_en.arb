@@ -1843,6 +1843,7 @@
     "@jumpTo": {},
     "noMatchingPinsFound": "no matching pins found",
     "@noMatchingPinsFound": {},
+    "updates": "Updates",
     "update": "Update",
     "@update": {},
     "event": "Event",

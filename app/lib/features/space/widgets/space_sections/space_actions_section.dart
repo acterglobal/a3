@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SpaceActionsSection extends ConsumerWidget {
   static const createChatAction = Key('space-action-create-chat');
@@ -150,7 +149,7 @@ class SpaceActionsSection extends ConsumerWidget {
     if (canPostUpdate || canChangeSetting) {
       return simpleActionButton(
         context: context,
-        iconData: PhosphorIcons.newspaper(),
+        iconData: Icons.rocket_launch_sharp,
         title: L10n.of(context).addBoost,
         onPressed: () async {
           if (!isActive && canChangeSetting) {
@@ -187,7 +186,7 @@ class SpaceActionsSection extends ConsumerWidget {
     if (canPostUpdate || canChangeSetting) {
       return simpleActionButton(
         context: context,
-        iconData: PhosphorIcons.newspaper(),
+        iconData: Icons.amp_stories,
         title: L10n.of(context).addStory,
         onPressed: () async {
           if (!isActive && canChangeSetting) {
