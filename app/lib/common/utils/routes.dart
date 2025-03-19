@@ -13,6 +13,7 @@ enum Routes {
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
   analyticsOptIn('/analyticsOptIn'),
+  encryptionBackup('/enableEncryptionBackup'),
 
   // --- profile
   myProfile('/profile'),

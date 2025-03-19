@@ -87,8 +87,8 @@ class Dashboard extends ConsumerWidget {
     final showQuickActions = ref.watch(quickActionVisibilityProvider);
     return FloatingActionButton.small(
       onPressed: () {
-        ref.read(quickActionVisibilityProvider.notifier).state =
-            !showQuickActions;
+        // ref.read(quickActionVisibilityProvider.notifier).state =!showQuickActions;
+        context.pushNamed(Routes.encryptionBackup.name);
       },
       backgroundColor: Theme.of(context).primaryColor,
       child: Icon(showQuickActions ? Icons.close : Icons.add),
