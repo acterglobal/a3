@@ -16,7 +16,7 @@ class ActivityTaskAddItemWidget extends StatelessWidget {
       actionIcon: Icons.add_circle_outline,
       actionTitle: L10n.of(context).created,
       subtitle: Text(
-        '${L10n.of(context).taskName} : $name',
+        '${L10n.of(context).taskLabel} : $name',
         style: Theme.of(context).textTheme.labelMedium,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
