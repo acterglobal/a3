@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
   const EncryptionBackupPage({super.key});
@@ -120,8 +122,11 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
         ),
         const SizedBox(width: 24),
         _buildActionButton(
-          icon: Icons.desktop_windows,
-          onTap: () {},
+          icon: PhosphorIcons.share(),
+          onTap: () async {
+            await Share.share(encryptionKey.value);
+            isShowNextButton.value = true;
+          },
           context: context,
         ),
       ],
