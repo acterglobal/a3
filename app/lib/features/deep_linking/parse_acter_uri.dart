@@ -50,11 +50,7 @@ UriParseResult _parseHttpsUri(Uri uri) {
   if (hash == null || hash.isEmpty) {
     throw IncorrectHashError();
   }
-
-  final pathWithoutHash = uri.path.substring(
-    0,
-    uri.path.length - hash.length - 1,
-  );
+  final pathWithoutHash = uri.path.substring(0, uri.path.length - hash.length);
   final strippedUri = uri.replace(path: pathWithoutHash);
   final hashableUri = strippedUri.toString();
   final calculatedHash = sha1.convert(utf8.encode(hashableUri)).toString();
