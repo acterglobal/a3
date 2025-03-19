@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 class WithSidebar extends StatelessWidget {
   final Widget child;
   final Widget sidebar;
-  const WithSidebar({
-    super.key,
-    required this.child,
-    required this.sidebar,
-  });
+  const WithSidebar({super.key, required this.child, required this.sidebar});
 
   @override
   Widget build(BuildContext context) {

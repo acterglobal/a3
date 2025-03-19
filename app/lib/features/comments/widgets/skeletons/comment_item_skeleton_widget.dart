@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class CommentItemSkeleton extends StatelessWidget {
   const CommentItemSkeleton({super.key});
@@ -15,18 +15,12 @@ class CommentItemSkeleton extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Container(
-            height: 50,
-            width: 50,
-            color: Colors.white,
-          ),
+          Container(height: 50, width: 50, color: Colors.white),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(L10n.of(context).commentEmptyStateTitle),
-              ],
+              children: [Text(L10n.of(context).commentEmptyStateTitle)],
             ),
           ),
         ],

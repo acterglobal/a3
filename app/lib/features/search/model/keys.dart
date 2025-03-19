@@ -13,11 +13,4 @@ class QuickJumpKeys {
 }
 
 //EVENT FILTERS
-enum QuickSearchFilters {
-  all,
-  spaces,
-  chats,
-  pins,
-  events,
-  tasks,
-}
+enum QuickSearchFilters { all, spaces, chats, pins, events, tasks }

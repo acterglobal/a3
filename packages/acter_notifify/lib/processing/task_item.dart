@@ -9,12 +9,12 @@ import 'package:acter_notifify/processing/utils.dart';
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
-    final parentInfo = parentPart(parent);
-    final title = getUserCentricTitlePart(notification, emoji, 'completed');
+    final parentInfo = parent.parentPart();
+    final title = notification.getUserCentricTitlePart(emoji, 'completed');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = getUserCentricTitlePart(notification, emoji, 'completed Task');
+    final title = notification.getUserCentricTitlePart(emoji, 'completed Task');
     return (title, null);
   }
 }
@@ -26,12 +26,12 @@ import 'package:acter_notifify/processing/utils.dart';
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
-    final parentInfo = parentPart(parent);
-    final title = getUserCentricTitlePart(notification, emoji, 're-opened');
+    final parentInfo = parent.parentPart();
+    final title = notification.getUserCentricTitlePart(emoji, 're-opened');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = getUserCentricTitlePart(notification, emoji, 're-opened Task');
+    final title = notification.getUserCentricTitlePart(emoji, 're-opened Task');
     return (title, null);
   }
 }
@@ -43,12 +43,12 @@ import 'package:acter_notifify/processing/utils.dart';
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
-    final parentInfo = parentPart(parent);
-    final title = getUserCentricTitlePart(notification, emoji, 'accepted');
+    final parentInfo = parent.parentPart();
+    final title = notification.getUserCentricTitlePart(emoji, 'accepted');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = getUserCentricTitlePart(notification, emoji, 'accepted Task');
+    final title = notification.getUserCentricTitlePart(emoji, 'accepted Task');
     return (title, null);
   }
 }
@@ -60,12 +60,12 @@ import 'package:acter_notifify/processing/utils.dart';
   final parent = notification.parent();
   if (parent != null) {
     final taskList = notification.title();
-    final parentInfo = parentPart(parent);
-    final title = getUserCentricTitlePart(notification, emoji, 'declined');
+    final parentInfo = parent.parentPart();
+    final title = notification.getUserCentricTitlePart(emoji, 'declined');
     final body = '$parentInfo of $taskList';
     return (title, body);
   } else {
-    final title = getUserCentricTitlePart(notification, emoji, 'declined Task');
+    final title = notification.getUserCentricTitlePart(emoji, 'declined Task');
     return (title, null);
   }
 }
@@ -78,7 +78,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final parent = notification.parent();
   if (parent != null) {
-    final parentInfo = parentPart(parent);
+    final parentInfo = parent.parentPart();
     final title = '$parentInfo rescheduled';
     final body = 'by $username to "$taskDueDate"';
     return (title, body);

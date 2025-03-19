@@ -2,37 +2,58 @@
 
 # acter3 — get organized!
 
+</div>
+
 Your social organizing app build on [matrix](https://matrix.org): think WhatsApp, but with proper task lists, structured discussion, etc.
 
-## Try now
+<div align='center'>
+
+## Try Acter now
 
 <a href='https://play.google.com/store/apps/details?id=global.acter.a3&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' width="250" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a> <a href="https://apps.apple.com/us/app/acter/id6445989155?itsct=apps_box_badge&amp;itscg=30200" style="display: inline-block; overflow: hidden; border-radius: 13px; width: 250px; height: 83px;"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1694390400" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;"></a>
 <a href="ms-windows-store://pdp/?ProductId=9NZLTDVTN203">
 <img height="83" src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Download Acter" />
 </a>
 
-## More info
+#### For all other platforms:
+
+[![Latest Release](https://img.shields.io/github/v/release/acterglobal/a3?style=for-the-badge&label=Latest%20Release&color=limegreen
+)](https://github.com/acterglobal/a3/releases?q=nightly&expanded=true)
+
+
+### More info
 
 [![Homepage ](https://img.shields.io/badge/HOMEPAGE-gray?style=for-the-badge)](https://acter.global)
-[![User Docs ](https://img.shields.io/badge/User_Docs-blue?style=for-the-badge)](https://docs.acter.global)
-[![Developer Docs ](https://img.shields.io/badge/Docs-blue?style=for-the-badge)](https://dev.acter.global)
-[![Matrix ](https://img.shields.io/badge/News-yellow?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
+[![Guide Docs ](https://img.shields.io/badge/About_The_App-green?style=for-the-badge)](https://acter.global/app/)
+[![Guide Docs ](https://img.shields.io/badge/User_Guide-blue?style=for-the-badge)](https://acter.global/guide/)
 
-[![Nightly Build](https://img.shields.io/badge/Nightly_Build-available-gree?style=for-the-badge)](https://github.com/acterglobal/a3/tags)
+### Chat with us
 
-## Contact:
-
-[![Matrix: #News](https://img.shields.io/badge/News-deeppink?style=for-the-badge)](https://matrix.to/#/#news:acter.global)
-[![Matrix: #Foyer](https://img.shields.io/badge/Foyer-aquamarine?style=for-the-badge)](https://matrix.to/#/#foyer:acter.global)
-[![Matrix: #Tech](https://img.shields.io/badge/tech-crimson?style=for-the-badge)](https://matrix.to/#/#tech:acter.global)
+[![Matrix: Support](https://img.shields.io/badge/Support_&_Feedack-deeppink?style=for-the-badge&label=Matrix+Chat)](https://matrix.to/#/#support:acter.global)
 
 </div>
 
-## CI Status:
+## 🏗️ Developers:
 
-![Native Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/native.yml?branch=main&label=Rust%20Build&style=for-the-badge)
-![App Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/deploy.yml?branch=main&label=App&style=for-the-badge)
-![Docs](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/docs.yml?branch=main&label=Docs&style=for-the-badge)
+[![Nightly Build](https://img.shields.io/github/v/release/acterglobal/a3?include_prereleases&sort=date&display_name=release&style=for-the-badge&label=Latest%20Nightly&color=green)](https://github.com/acterglobal/a3/releases?q=nightly&expanded=true)
+
+[![Developer Docs ](https://img.shields.io/badge/Guide-blue?label=Contributor&style=for-the-badge)](https://acter.global/dev/)
+[![API Docs ](https://img.shields.io/badge/Docs-yellow?label=API&style=for-the-badge)](https://dev.acter.global/)
+
+[![Matrix: #Tech](https://img.shields.io/badge/%23tech-crimson?label=Developer+Chat&style=for-the-badge)](https://matrix.to/#/#tech:acter.global)
+
+
+
+### 🚦 CI Status:
+
+![App Tests](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/check-flutter-unittest.yml?branch=main&label=Flutter+Tests&style=for-the-badge)
+![Rust Tests](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/check-rust-integration-tests.yml?branch=main&label=Rust+Checks&style=for-the-badge)
+![Code Coverage](https://img.shields.io/codecov/c/github/acterglobal/a3?style=for-the-badge)
+
+![Style Checks](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/check-styles.yml?branch=main&label=Style+Checks&style=for-the-badge)
+![Native Checks](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/check-native.yml?branch=main&label=Native+Checks&style=for-the-badge)
+![Docs](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/build-docs.yml?branch=main&label=Docs&style=for-the-badge)
+
 
 ## License
 

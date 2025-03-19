@@ -21,10 +21,7 @@ void main() {
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
           maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
         ],
-        child: RoomPreviewWidget(
-          roomId: 'roomId',
-          onForward: (a, b, c) {},
-        ),
+        child: RoomPreviewWidget(roomId: 'roomId', onForward: (a, b, c) {}),
       );
       await tester.pump();
       expect(find.text('Test Chat'), findsOneWidget);
@@ -43,10 +40,7 @@ void main() {
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
           maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
         ],
-        child: RoomPreviewWidget(
-          roomId: 'roomId',
-          onForward: (a, b, c) {},
-        ),
+        child: RoomPreviewWidget(roomId: 'roomId', onForward: (a, b, c) {}),
       );
       await tester.pump();
       expect(find.text('Test Chat'), findsOneWidget);
@@ -64,10 +58,7 @@ void main() {
           roomPreviewProvider.overrideWith((r, a) async => roomPreview),
           maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
         ],
-        child: RoomPreviewWidget(
-          roomId: 'roomId',
-          onForward: (ca, bb, ac) {},
-        ),
+        child: RoomPreviewWidget(roomId: 'roomId', onForward: (ca, bb, ac) {}),
       );
       await tester.pump();
       expect(find.text('Test Space'), findsOneWidget);
@@ -77,7 +68,8 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         roomPreviewProvider.overrideWith(
-            (r, a) async => throw '[403 / M_FORBIDDEN] Room not accessible',),
+          (r, a) async => throw '[403 / M_FORBIDDEN] Room not accessible',
+        ),
         maybeRoomProvider.overrideWith(() => MockAsyncMaybeRoomNotifier()),
       ],
       child: RoomPreviewWidget(

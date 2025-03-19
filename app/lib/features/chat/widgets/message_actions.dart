@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -19,10 +19,7 @@ final _log = Logger('a3::chat::message_actions');
 class MessageActions extends ConsumerWidget {
   final String roomId;
 
-  const MessageActions({
-    super.key,
-    required this.roomId,
-  });
+  const MessageActions({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,28 +53,19 @@ class MessageActions extends ConsumerWidget {
               ref.read(chatInputProvider.notifier).setReplyToMessage(message);
             },
             text: Text(lang.reply),
-            icon: const Icon(
-              Icons.reply_rounded,
-              size: 18,
-            ),
+            icon: const Icon(Icons.reply_rounded, size: 18),
           ),
           if (isTextMessage)
             makeMenuItem(
               pressed: () => onCopyMessage(context, ref, message),
               text: Text(lang.copyMessage),
-              icon: const Icon(
-                Icons.copy_all_outlined,
-                size: 14,
-              ),
+              icon: const Icon(Icons.copy_all_outlined, size: 14),
             ),
           if (isAuthor)
             makeMenuItem(
               pressed: () => onPressEditMessage(ref, message),
               text: Text(lang.edit),
-              icon: const Icon(
-                Atlas.pencil_box_bold,
-                size: 14,
-              ),
+              icon: const Icon(Atlas.pencil_box_bold, size: 14),
             ),
           if (!isAuthor)
             makeMenuItem(
@@ -95,12 +83,13 @@ class MessageActions extends ConsumerWidget {
           // FIXME: should be a check whether the user can redact.
           if (isAuthor)
             makeMenuItem(
-              pressed: () => onDeleteOwnMessage(
-                context,
-                ref,
-                message.remoteId ?? message.id,
-                roomId,
-              ),
+              pressed:
+                  () => onDeleteOwnMessage(
+                    context,
+                    ref,
+                    message.remoteId ?? message.id,
+                    roomId,
+                  ),
               text: Text(
                 lang.delete,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -124,16 +113,10 @@ class MessageActions extends ConsumerWidget {
     return InkWell(
       onTap: pressed,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 3,
-          vertical: 5,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            text,
-            if (icon != null) icon,
-          ],
+          children: [text, if (icon != null) icon],
         ),
       ),
     );
@@ -145,9 +128,7 @@ class MessageActions extends ConsumerWidget {
     Message message,
   ) async {
     String msg = (message as TextMessage).text.trim();
-    await Clipboard.setData(
-      ClipboardData(text: msg),
-    );
+    await Clipboard.setData(ClipboardData(text: msg));
     if (context.mounted) {
       EasyLoading.showToast(L10n.of(context).messageCopiedToClipboard);
     }
@@ -180,42 +161,43 @@ class MessageActions extends ConsumerWidget {
     final lang = L10n.of(context);
     await showAdaptiveDialog(
       context: context,
-      builder: (context) => DefaultDialog(
-        title: Text(lang.areYouSureYouWantToDeleteThisMessage),
-        actions: <Widget>[
-          OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(lang.no),
+      builder:
+          (context) => DefaultDialog(
+            title: Text(lang.areYouSureYouWantToDeleteThisMessage),
+            actions: <Widget>[
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(lang.no),
+              ),
+              ActerPrimaryActionButton(
+                onPressed: () async {
+                  try {
+                    final convo = await ref.read(chatProvider(roomId).future);
+                    if (convo == null) throw RoomNotFound();
+                    await convo.redactMessage(
+                      messageId,
+                      ref.read(myUserIdStrProvider),
+                      null,
+                      null,
+                    );
+                    chatInputNotifier.unsetSelectedMessage();
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  } catch (e, s) {
+                    _log.severe('Redacting message failed', e, s);
+                    if (!context.mounted) return;
+                    EasyLoading.showError(
+                      lang.redactionFailed(e),
+                      duration: const Duration(seconds: 3),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text(lang.yes),
+              ),
+            ],
           ),
-          ActerPrimaryActionButton(
-            onPressed: () async {
-              try {
-                final convo = await ref.read(chatProvider(roomId).future);
-                if (convo == null) throw RoomNotFound();
-                await convo.redactMessage(
-                  messageId,
-                  ref.read(myUserIdStrProvider),
-                  null,
-                  null,
-                );
-                chatInputNotifier.unsetSelectedMessage();
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              } catch (e, s) {
-                _log.severe('Redacting message failed', e, s);
-                if (!context.mounted) return;
-                EasyLoading.showError(
-                  lang.redactionFailed(e),
-                  duration: const Duration(seconds: 3),
-                );
-                Navigator.pop(context);
-              }
-            },
-            child: Text(lang.yes),
-          ),
-        ],
-      ),
     );
   }
 

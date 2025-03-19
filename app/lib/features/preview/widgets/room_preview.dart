@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class RoomPreviewWidget extends ConsumerWidget {
   final String roomId;
@@ -37,9 +37,9 @@ class RoomPreviewWidget extends ConsumerWidget {
   });
 
   RoomPreviewQuery get query => (
-        roomIdOrAlias: roomId,
-        serverNames: AllHashed(viaServers),
-      );
+    roomIdOrAlias: roomId,
+    serverNames: AllHashed(viaServers),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,20 +59,21 @@ class RoomPreviewWidget extends ConsumerWidget {
       children: [
         if (headerInfo != null) headerInfo!,
         if (foundRoom != null && foundRoom.isJoined())
-          RoomCard(
-            roomId: roomId,
-          )
+          RoomCard(roomId: roomId)
         else
-          ref.watch(roomPreviewProvider(query)).when(
-                data: (preview) => Column(
-                  children: [
-                    roomHeader(preview),
-                    roomInfo(context, preview),
-                    renderActions(context, ref, preview),
-                  ],
-                ),
-                error: (error, stack) =>
-                    renderError(context, ref, error, stack),
+          ref
+              .watch(roomPreviewProvider(query))
+              .when(
+                data:
+                    (preview) => Column(
+                      children: [
+                        roomHeader(preview),
+                        roomInfo(context, preview),
+                        renderActions(context, ref, preview),
+                      ],
+                    ),
+                error:
+                    (error, stack) => renderError(context, ref, error, stack),
                 loading: () => renderLoading(),
               ),
       ],
@@ -101,20 +102,20 @@ class RoomPreviewWidget extends ConsumerWidget {
             // by showing an information box and hand out the sender Id to
             // to contact the author
             ErrorCode.forbidden => InfoWidget(
-                title: L10n.of(context).forbidden,
-                icon: Icons.warning,
-                subTitle: L10n.of(context).forbiddenRoomExplainer,
-              ),
+              title: L10n.of(context).forbidden,
+              leading: const Icon(Icons.warning),
+              subTitle: L10n.of(context).forbiddenRoomExplainer,
+            ),
             _ => ActerInlineErrorButton(
-                error: error,
-                stack: stack,
-                textBuilder: (error, errCode) =>
-                    L10n.of(context).loadingFailed(error),
-                onRetryTap: () {
-                  ref.invalidate(maybeRoomProvider(roomId));
-                  ref.invalidate(roomPreviewProvider(query));
-                },
-              )
+              error: error,
+              stack: stack,
+              textBuilder:
+                  (error, errCode) => L10n.of(context).loadingFailed(error),
+              onRetryTap: () {
+                ref.invalidate(maybeRoomProvider(roomId));
+                ref.invalidate(roomPreviewProvider(query));
+              },
+            ),
           },
         ),
       ],
@@ -122,16 +123,15 @@ class RoomPreviewWidget extends ConsumerWidget {
   }
 
   Widget roomHeader(RoomPreview preview) => Consumer(
-        builder: (context, ref, child) => ListTile(
+    builder:
+        (context, ref, child) => ListTile(
           leading: ActerAvatar(
             options: AvatarOptions(ref.watch(roomPreviewAvatarInfo(query))),
           ),
-          title: Text(
-            preview.name() ?? preview.roomIdStr(),
-          ),
+          title: Text(preview.name() ?? preview.roomIdStr()),
           subtitle: Text(preview.canonicalAliasStr() ?? ''),
         ),
-      );
+  );
 
   Widget roomInfo(BuildContext context, RoomPreview preview) {
     final description = preview.topic();
@@ -147,10 +147,7 @@ class RoomPreviewWidget extends ConsumerWidget {
             L10n.of(context).about,
             style: Theme.of(context).textTheme.titleSmall,
           ),
-          Text(
-            description,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text(description, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -160,28 +157,21 @@ class RoomPreviewWidget extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     RoomPreview preview,
-  ) =>
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: renderPreviewActions(
-            context,
-            ref,
-            preview,
-          ),
-        ),
-      );
+  ) => Padding(
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: renderPreviewActions(context, ref, preview),
+    ),
+  );
 
   Widget renderLoading() => const Skeletonizer(
-        child: ListTile(
-          leading: Bone.circle(size: 50),
-          title: Text(
-            'preview.name()',
-          ),
-          subtitle: Text('preview.canonicalAliasStr()'),
-        ),
-      );
+    child: ListTile(
+      leading: Bone.circle(size: 50),
+      title: Text('preview.name()'),
+      subtitle: Text('preview.canonicalAliasStr()'),
+    ),
+  );
 
   List<Widget> renderPreviewActions(
     BuildContext context,
@@ -195,54 +185,51 @@ class RoomPreviewWidget extends ConsumerWidget {
 
     return switch (joinRule.toLowerCase()) {
       'private' || 'invite' => [
-          Padding(
-            padding: EdgeInsets.only(right: 5),
-            child: Text(lang.youNeedBeInvitedToJoinThisRoom),
-          ),
-          OutlinedButton(
-            onPressed: () =>
-                EasyLoading.showToast(lang.youNeedBeInvitedToJoinThisRoom),
-            child: Text(lang.private),
-          ),
-        ],
+        Padding(
+          padding: EdgeInsets.only(right: 5),
+          child: Text(lang.youNeedBeInvitedToJoinThisRoom),
+        ),
+        OutlinedButton(
+          onPressed:
+              () => EasyLoading.showToast(lang.youNeedBeInvitedToJoinThisRoom),
+          child: Text(lang.private),
+        ),
+      ],
       'restricted' => [
-          Padding(
-            padding: EdgeInsets.only(right: 5),
-            child: Text(lang.youAreAbleToJoinThisRoom),
-          ),
-          ActerPrimaryActionButton(
-            onPressed: () => joinRoom(
-              context: context,
-              ref: ref,
-              roomIdOrAlias: roomId,
-              serverNames: viaServers,
-              roomName: roomName,
-            ),
-            child: Text(lang.join),
-          ),
-        ],
+        Padding(
+          padding: EdgeInsets.only(right: 5),
+          child: Text(lang.youAreAbleToJoinThisRoom),
+        ),
+        ActerPrimaryActionButton(
+          onPressed:
+              () => joinRoom(
+                context: context,
+                ref: ref,
+                roomIdOrAlias: roomId,
+                serverNames: viaServers,
+                roomName: roomName,
+              ),
+          child: Text(lang.join),
+        ),
+      ],
       'public' => [
-          Padding(
-            padding: EdgeInsets.only(right: 5),
-            child: Text(lang.public),
-          ),
-          OutlinedButton(
-            onPressed: () => joinRoom(
-              context: context,
-              ref: ref,
-              roomIdOrAlias: roomId,
-              serverNames: viaServers,
-              roomName: roomName,
-            ),
-            child: Text(lang.join),
-          ),
-        ],
+        Padding(padding: EdgeInsets.only(right: 5), child: Text(lang.public)),
+        OutlinedButton(
+          onPressed:
+              () => joinRoom(
+                context: context,
+                ref: ref,
+                roomIdOrAlias: roomId,
+                serverNames: viaServers,
+                roomName: roomName,
+              ),
+          child: Text(lang.join),
+        ),
+      ],
       _ => [
-          Text(lang.joinRuleNotSupportedYet(joinRule)),
-          Chip(
-            label: Text(lang.unknown),
-          ),
-        ],
+        Text(lang.joinRuleNotSupportedYet(joinRule)),
+        Chip(label: Text(lang.unknown)),
+      ],
     };
   }
 }

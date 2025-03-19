@@ -1053,14 +1053,14 @@ impl Room {
             .context("Mode not set")
     }
 
-    pub async fn default_notification_mode(&self) -> String {
+    pub async fn default_notification_mode(&self) -> Result<String> {
         let client = self.core.client().clone();
         let room = self.room.clone();
 
         RUNTIME
             .spawn(async move {
                 let notification_settings = client.notification_settings().await;
-                let is_encrypted = room.is_encrypted().await.unwrap_or_default();
+                let is_encrypted = room.latest_encryption_state().await?.is_encrypted();
                 // Otherwise, if encrypted status is available, get the default mode for this
                 // type of room.
                 // From the point of view of notification settings, a `one-to-one` room is one
@@ -1072,10 +1072,9 @@ impl Room {
                         is_one_to_one,
                     )
                     .await;
-                room_notification_mode_name(&default_mode)
+                Ok(room_notification_mode_name(&default_mode))
             })
-            .await
-            .unwrap_or_default()
+            .await?
     }
 
     pub async fn unmute(&self) -> Result<bool> {
@@ -1085,7 +1084,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let notification_settings = client.notification_settings().await;
-                let is_encrypted = room.is_encrypted().await.unwrap_or_default();
+                let is_encrypted = room.latest_encryption_state().await?.is_encrypted();
                 // Otherwise, if encrypted status is available, get the default mode for this
                 // type of room.
                 // From the point of view of notification settings, a `one-to-one` room is one
@@ -1631,7 +1630,7 @@ impl Room {
 
         RUNTIME
             .spawn(async move {
-                let encrypted = room.is_encrypted().await?;
+                let encrypted = room.latest_encryption_state().await?.is_encrypted();
                 Ok(encrypted)
             })
             .await?

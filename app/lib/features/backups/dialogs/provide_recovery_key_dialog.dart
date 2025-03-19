@@ -2,7 +2,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -51,9 +51,11 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
                   ),
                 ),
                 // required field, space not allowed
-                validator: (val) => val == null || val.trim().isEmpty
-                    ? lang.encryptionBackupRecoverProvideKey
-                    : null,
+                validator:
+                    (val) =>
+                        val == null || val.trim().isEmpty
+                            ? lang.encryptionBackupRecoverProvideKey
+                            : null,
               ),
             ],
           ),

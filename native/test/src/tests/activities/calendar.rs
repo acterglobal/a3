@@ -4,7 +4,8 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::{tests::activities::status::get_latest_activity, utils::random_user_with_template};
+use super::get_latest_activity;
+use crate::utils::random_user_with_template;
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -54,8 +55,8 @@ async fn calendar_creation_activity() -> Result<()> {
 
     let activity = get_latest_activity(&user, main_space.room_id().to_string(), "creation").await?;
     assert_eq!(activity.type_str(), "creation");
-    // let object = activity.object().expect("we have an object");
-    // assert_eq!(object.type_str(), "event");
-    // assert_eq!(object.title(), "Onboarding on Acter");
+    let object = activity.object().expect("we have an object");
+    assert_eq!(object.type_str(), "event");
+    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
     Ok(())
 }

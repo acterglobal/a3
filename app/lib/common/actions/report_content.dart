@@ -6,7 +6,7 @@ import 'package:acter/common/widgets/default_dialog.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -26,14 +26,15 @@ Future<bool> openReportContentDialog(
   return await showAdaptiveDialog(
     context: context,
     useRootNavigator: false,
-    builder: (context) => _ReportContentWidget(
-      title: title,
-      description: description,
-      eventId: eventId,
-      senderId: senderId,
-      roomId: roomId,
-      isSpace: isSpace ?? false,
-    ),
+    builder:
+        (context) => _ReportContentWidget(
+          title: title,
+          description: description,
+          eventId: eventId,
+          senderId: senderId,
+          roomId: roomId,
+          isSpace: isSpace ?? false,
+        ),
   );
 }
 
@@ -64,18 +65,12 @@ class _ReportContentWidget extends ConsumerWidget {
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
         ),
       ),
       subtitle: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-          description,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        child: Text(description, style: Theme.of(context).textTheme.bodySmall),
       ),
       description: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

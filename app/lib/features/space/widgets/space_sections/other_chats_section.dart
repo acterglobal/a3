@@ -6,7 +6,7 @@ import 'package:acter/features/space/widgets/related/chats_helpers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,11 +14,7 @@ class OtherChatsSection extends ConsumerWidget {
   final String spaceId;
   final int limit;
 
-  const OtherChatsSection({
-    super.key,
-    required this.spaceId,
-    this.limit = 3,
-  });
+  const OtherChatsSection({super.key, required this.spaceId, this.limit = 3});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,8 +35,10 @@ class OtherChatsSection extends ConsumerWidget {
     List<SpaceHierarchyRoomInfo> otherRemoteChats,
   ) {
     final localChatCount = min(limit, otherLocalChats.length);
-    final remoteChatCount =
-        min((limit - localChatCount), otherRemoteChats.length);
+    final remoteChatCount = min(
+      (limit - localChatCount),
+      otherRemoteChats.length,
+    );
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -49,17 +47,13 @@ class OtherChatsSection extends ConsumerWidget {
         SectionHeader(
           title: L10n.of(context).chats,
           isShowSeeAllButton: true,
-          onTapSeeAll: () => context.pushNamed(
-            Routes.subChats.name,
-            pathParameters: {'spaceId': spaceId},
-          ),
+          onTapSeeAll:
+              () => context.pushNamed(
+                Routes.subChats.name,
+                pathParameters: {'spaceId': spaceId},
+              ),
         ),
-        localChatsListUI(
-          ref,
-          spaceId,
-          otherLocalChats,
-          limit: localChatCount,
-        ),
+        localChatsListUI(ref, spaceId, otherLocalChats, limit: localChatCount),
         remoteChatsListUI(
           ref,
           spaceId,

@@ -29,31 +29,32 @@ void main() {
 
     // Mock the values expected by the widget
     when(() => mockCommentsManager.roomIdStr()).thenReturn('roomId');
-    when(() => mockAvatarInfo.displayName).thenReturn('Test User');
   });
 
   testWidgets(
-      'renders CommentItemWidget with avatar, name, content, and timestamp',
-      (WidgetTester tester) async {
-    // Wrap in ProviderScope and override the necessary providers
-    await tester.pumpProviderWidget(
-      overrides: [
-        memberAvatarInfoProvider
-            .overrideWith((ref, MemberInfo memberInfo) => mockAvatarInfo),
-      ],
-      child: CommentItemWidget(
-        comment: mockComment,
-        manager: mockCommentsManager,
-      ),
-    );
+    'renders CommentItemWidget with avatar, name, content, and timestamp',
+    (WidgetTester tester) async {
+      // Wrap in ProviderScope and override the necessary providers
+      await tester.pumpProviderWidget(
+        overrides: [
+          memberAvatarInfoProvider.overrideWith(
+            (ref, MemberInfo memberInfo) => mockAvatarInfo,
+          ),
+        ],
+        child: CommentItemWidget(
+          comment: mockComment,
+          manager: mockCommentsManager,
+        ),
+      );
 
-    // Verify all expected widgets are displayed
-    expect(find.text('Test User'), findsOneWidget);
-    expect(find.text('This is a test message'), findsOneWidget);
-    expect(find.byType(ActerAvatar), findsOneWidget);
-    expect(
-      find.byType(RenderHtml),
-      findsNothing,
-    ); // Because formattedBody is null
-  });
+      // Verify all expected widgets are displayed
+      expect(find.text('Test User'), findsOneWidget);
+      expect(find.text('This is a test message'), findsOneWidget);
+      expect(find.byType(ActerAvatar), findsOneWidget);
+      expect(
+        find.byType(RenderHtml),
+        findsNothing,
+      ); // Because formattedBody is null
+    },
+  );
 }

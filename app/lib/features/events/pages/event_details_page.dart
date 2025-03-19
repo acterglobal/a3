@@ -35,7 +35,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jiffy/jiffy.dart';
@@ -49,10 +49,7 @@ final _log = Logger('a3::cal_event::details');
 class EventDetailPage extends ConsumerStatefulWidget {
   final String calendarId;
 
-  const EventDetailPage({
-    super.key,
-    required this.calendarId,
-  });
+  const EventDetailPage({super.key, required this.calendarId});
 
   @override
   ConsumerState<EventDetailPage> createState() =>
@@ -74,8 +71,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         background: const EventDetailsSkeleton(),
         error: errored.error,
         stack: errored.stackTrace,
-        textBuilder: (error, code) =>
-            L10n.of(context).errorLoadingEventDueTo(error),
+        textBuilder:
+            (error, code) => L10n.of(context).errorLoadingEventDueTo(error),
         onRetryTap: () {
           ref.invalidate(calendarEventProvider(widget.calendarId));
         },
@@ -84,10 +81,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
       body: CustomScrollView(
-        slivers: [
-          _buildEventAppBar(calEvent),
-          _buildEventBody(calEvent),
-        ],
+        slivers: [_buildEventAppBar(calEvent), _buildEventBody(calEvent)],
       ),
     );
   }
@@ -96,26 +90,24 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
-      actions: calendarEvent != null
-          ? [
-              IconButton(
-                icon: PhosphorIcon(PhosphorIcons.shareFat()),
-                onPressed: () => onShareEvent(context, calendarEvent),
-              ),
-              BookmarkAction(
-                bookmarker: BookmarkType.forEvent(widget.calendarId),
-              ),
-              ObjectNotificationStatus(objectId: widget.calendarId),
-              _buildActionMenu(calendarEvent),
-            ]
-          : [],
+      actions:
+          calendarEvent != null
+              ? [
+                IconButton(
+                  icon: PhosphorIcon(PhosphorIcons.shareFat()),
+                  onPressed: () => onShareEvent(context, calendarEvent),
+                ),
+                BookmarkAction(
+                  bookmarker: BookmarkType.forEvent(widget.calendarId),
+                ),
+                ObjectNotificationStatus(objectId: widget.calendarId),
+                _buildActionMenu(calendarEvent),
+              ]
+              : [],
       flexibleSpace: Container(
         padding: const EdgeInsets.only(top: 20),
         child: const FlexibleSpaceBar(
-          background: Icon(
-            Atlas.calendar_dots,
-            size: 80,
-          ),
+          background: Icon(Atlas.calendar_dots, size: 80),
         ),
       ),
     );
@@ -189,10 +181,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         actions.add(
           PopupMenuItem(
             onTap: () {
-              context.pushNamed(
-                Routes.createEvent.name,
-                extra: event,
-              );
+              context.pushNamed(Routes.createEvent.name, extra: event);
             },
             child: Row(
               children: <Widget>[
@@ -211,23 +200,21 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       actions.addAll([
         PopupMenuItem(
           key: EventsKeys.eventDeleteBtn,
-          onTap: () => openRedactContentDialog(
-            context,
-            removeBtnKey: EventsKeys.eventRemoveBtn,
-            title: lang.removeThisPost,
-            eventId: event.eventId().toString(),
-            onSuccess: () {
-              Navigator.pop(context);
-            },
-            roomId: spaceId,
-            isSpace: true,
-          ),
+          onTap:
+              () => openRedactContentDialog(
+                context,
+                removeBtnKey: EventsKeys.eventRemoveBtn,
+                title: lang.removeThisPost,
+                eventId: event.eventId().toString(),
+                onSuccess: () {
+                  Navigator.pop(context);
+                },
+                roomId: spaceId,
+                isSpace: true,
+              ),
           child: Row(
             children: <Widget>[
-              Icon(
-                Atlas.trash_can_thin,
-                color: colorScheme.error,
-              ),
+              Icon(Atlas.trash_can_thin, color: colorScheme.error),
               const SizedBox(width: 10),
               Text(lang.eventRemove),
             ],
@@ -239,21 +226,19 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     //Report Event Action
     actions.add(
       PopupMenuItem(
-        onTap: () => openReportContentDialog(
-          context,
-          title: lang.reportThisEvent,
-          description: lang.reportThisContent,
-          eventId: widget.calendarId,
-          roomId: spaceId,
-          senderId: event.sender().toString(),
-          isSpace: true,
-        ),
+        onTap:
+            () => openReportContentDialog(
+              context,
+              title: lang.reportThisEvent,
+              description: lang.reportThisContent,
+              eventId: widget.calendarId,
+              roomId: spaceId,
+              senderId: event.sender().toString(),
+              isSpace: true,
+            ),
         child: Row(
           children: <Widget>[
-            Icon(
-              Atlas.warning_thin,
-              color: colorScheme.error,
-            ),
+            Icon(Atlas.warning_thin, color: colorScheme.error),
             const SizedBox(width: 10),
             Text(lang.eventReport),
           ],
@@ -331,18 +316,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   ),
                 ),
               ),
-              SpaceChip(
-                spaceId: spaceId,
-                useCompactView: true,
-              ),
+              SpaceChip(spaceId: spaceId, useCompactView: true),
               const SizedBox(height: 5),
               Row(
                 children: [
                   const Icon(Atlas.accounts_group_people),
                   const SizedBox(width: 10),
                   Text(
-                    L10n.of(context)
-                        .peopleGoing(eventParticipantsList?.length ?? 0),
+                    L10n.of(
+                      context,
+                    ).peopleGoing(eventParticipantsList?.length ?? 0),
                   ),
                 ],
               ),
@@ -372,8 +355,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingRSVP);
     try {
-      final event =
-          await ref.read(calendarEventProvider(widget.calendarId).future);
+      final event = await ref.read(
+        calendarEventProvider(widget.calendarId).future,
+      );
       final rsvpManager = await event.rsvps();
       final draft = rsvpManager.rsvpDraft();
       final statusStr = switch (status) {
@@ -385,11 +369,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       final rsvpId = await draft.send();
       _log.info('new rsvp id: $rsvpId');
 
-      await autosubscribe(
-        ref: ref,
-        objectId: widget.calendarId,
-        lang: lang,
-      );
+      await autosubscribe(ref: ref, objectId: widget.calendarId, lang: lang);
       // refresh cache
       final client = await ref.read(alwaysClientProvider.future);
       await client.waitForRsvp(rsvpId.toString(), null);
@@ -467,15 +447,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           },
           fileDetailContentBuilder: () async {
             Navigator.pop(context);
-            final filename =
-                event.title().replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');
+            final filename = event.title().replaceAll(
+              RegExp(r'[^A-Za-z0-9_-]'),
+              '_',
+            );
             final tempDir = await getTemporaryDirectory();
             final icalPath = join(tempDir.path, '$filename.ics');
             event.icalForSharing(icalPath);
-            return (
-              file: File(icalPath),
-              mimeType: 'text/calendar',
-            );
+            return (file: File(icalPath), mimeType: 'text/calendar');
           },
         );
       }
@@ -515,8 +494,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             Text(
               actionName,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: isSelected ? rsvpStatusColor : Colors.white38,
-                  ),
+                color: isSelected ? rsvpStatusColor : Colors.white38,
+              ),
             ),
           ],
         ),
@@ -536,9 +515,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildEventDataSet(CalendarEvent ev) {
     final lang = L10n.of(context);
     final agoTime =
-        Jiffy.parseFromDateTime(toDartDatetime(ev.utcStart()).toLocal())
-            .endOf(Unit.hour)
-            .fromNow();
+        Jiffy.parseFromDateTime(
+          toDartDatetime(ev.utcStart()).toLocal(),
+        ).endOf(Unit.hour).fromNow();
 
     String eventDateTime = '${formatDate(ev)} (${formatTime(ev)})';
     final eventType = ref.watch(eventTypeProvider(ev));
@@ -591,8 +570,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final membersCount = eventParticipantsList.length;
     List<String> firstFiveEventParticipantsList = eventParticipantsList;
     if (membersCount > 5) {
-      firstFiveEventParticipantsList =
-          firstFiveEventParticipantsList.sublist(0, 5);
+      firstFiveEventParticipantsList = firstFiveEventParticipantsList.sublist(
+        0,
+        5,
+      );
     }
 
     return GestureDetector(
@@ -602,10 +583,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         spacing: -10,
         children: [
           ...firstFiveEventParticipantsList.map(
-            (a) => MemberAvatar(
-              memberId: a,
-              roomId: roomId,
-            ),
+            (a) => MemberAvatar(memberId: a, roomId: roomId),
           ),
           if (membersCount > 5)
             CircleAvatar(
@@ -647,9 +625,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   ActerAvatar fallbackAvatar(String roomId) {
-    return ActerAvatar(
-      options: AvatarOptions(AvatarInfo(uniqueId: roomId)),
-    );
+    return ActerAvatar(options: AvatarOptions(AvatarInfo(uniqueId: roomId)));
   }
 
   Widget _buildEventDescription(CalendarEvent ev) {
@@ -664,23 +640,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Text(
-            L10n.of(context).about,
-            style: textTheme.titleSmall,
-          ),
+          Text(L10n.of(context).about, style: textTheme.titleSmall),
           const SizedBox(height: 10),
           SelectionArea(
             child: GestureDetector(
               onTap: () => showEditDescriptionSheet(ev),
-              child: formattedText != null
-                  ? RenderHtml(
-                      text: formattedText,
-                      defaultTextStyle: textTheme.labelMedium,
-                    )
-                  : Text(
-                      bodyText,
-                      style: textTheme.labelMedium,
-                    ),
+              child:
+                  formattedText != null
+                      ? RenderHtml(
+                        text: formattedText,
+                        defaultTextStyle: textTheme.labelMedium,
+                      )
+                      : Text(bodyText, style: textTheme.labelMedium),
             ),
           ),
         ],

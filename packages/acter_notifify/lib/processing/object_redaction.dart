@@ -7,9 +7,8 @@ import 'package:acter_notifify/processing/utils.dart';
   final username = sender.displayName() ?? sender.userId();
   final spaceName = notification.title();
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'removed');
+  final title = notification.parent()?.getObjectCentricTitlePart('removed');
+  if (title != null) {
     final body = 'by $username from "$spaceName"';
     return (title, body);
   } else {

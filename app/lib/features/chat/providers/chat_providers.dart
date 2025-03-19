@@ -22,8 +22,10 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:riverpod/riverpod.dart';
 
-final autoDownloadMediaProvider =
-    FutureProvider.family<bool, String>((ref, roomId) async {
+final autoDownloadMediaProvider = FutureProvider.family<bool, String>((
+  ref,
+  roomId,
+) async {
   // this should also check for local room settings...
   final userSettings = await ref.read(userAppSettingsProvider.future);
   final globalAutoDownload = (userSettings.autoDownloadChat() ?? 'always');
@@ -37,16 +39,18 @@ final autoDownloadMediaProvider =
 // keep track of text controller values across rooms.
 final chatInputProvider =
     StateNotifierProvider.autoDispose<ChatInputNotifier, ChatInputState>(
-  (ref) => ChatInputNotifier(),
-);
+      (ref) => ChatInputNotifier(),
+    );
 
 final chatStateProvider =
     StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, String>(
-  (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
-);
+      (ref, roomId) => ChatRoomNotifier(ref: ref, roomId: roomId),
+    );
 
-final chatTopic =
-    FutureProvider.autoDispose.family<String?, String>((ref, roomId) async {
+final chatTopic = FutureProvider.autoDispose.family<String?, String>((
+  ref,
+  roomId,
+) async {
   final c = await ref.watch(chatProvider(roomId).future);
   return c?.topic();
 });
@@ -56,67 +60,63 @@ bool msgFilter(types.Message m) {
       !(m is types.CustomMessage && !renderCustomMessageBubble(m));
 }
 
-final renderableChatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
-  return ref
-      .watch(chatStateProvider(roomId).select((value) => value.messages))
-      .where(
-        // filter only items we can show
-        msgFilter,
-      )
-      .toList()
-      .reversed
-      .toList();
-});
+final renderableChatMessagesProvider = StateProvider.autoDispose
+    .family<List<Message>, String>((ref, roomId) {
+      return ref
+          .watch(chatStateProvider(roomId).select((value) => value.messages))
+          .where(
+            // filter only items we can show
+            msgFilter,
+          )
+          .toList()
+          .reversed
+          .toList();
+    });
 
-final chatMessagesProvider =
-    StateProvider.autoDispose.family<List<Message>, String>((ref, roomId) {
-  final moreMessages = [];
-  if (ref.watch(chatStateProvider(roomId).select((value) => !value.hasMore))) {
-    moreMessages.add(
-      const types.SystemMessage(
-        id: 'chat-invite',
-        text: 'invite',
-        metadata: {
-          'type': '_invite',
-        },
-      ),
-    );
+final chatMessagesProvider = StateProvider.autoDispose
+    .family<List<Message>, String>((ref, roomId) {
+      final moreMessages = [];
+      if (ref.watch(
+        chatStateProvider(roomId).select((value) => !value.hasMore),
+      )) {
+        moreMessages.add(
+          const types.SystemMessage(
+            id: 'chat-invite',
+            text: 'invite',
+            metadata: {'type': '_invite'},
+          ),
+        );
 
-    // we have reached the end, show topic
-    final topic = ref.watch(chatTopic(roomId)).valueOrNull;
-    if (topic != null) {
-      moreMessages.add(
-        types.SystemMessage(
-          id: 'chat-topic',
-          text: topic,
-          metadata: const {
-            'type': '_topic',
-          },
-        ),
-      );
-    }
+        // we have reached the end, show topic
+        final topic = ref.watch(chatTopic(roomId)).valueOrNull;
+        if (topic != null) {
+          moreMessages.add(
+            types.SystemMessage(
+              id: 'chat-topic',
+              text: topic,
+              metadata: const {'type': '_topic'},
+            ),
+          );
+        }
 
-    // and encryption information block
-    if (ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull == true) {
-      moreMessages.add(
-        const types.SystemMessage(
-          id: 'encrypted-information',
-          text: '',
-          metadata: {
-            'type': '_encryptedInfo',
-          },
-        ),
-      );
-    }
-  }
-  final messages = ref.watch(renderableChatMessagesProvider(roomId));
-  if (moreMessages.isEmpty) {
-    return messages;
-  }
-  // return as a new list to ensure the provider is properly resetting
-  return [...messages, ...moreMessages];
-});
+        // and encryption information block
+        if (ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull == true) {
+          moreMessages.add(
+            const types.SystemMessage(
+              id: 'encrypted-information',
+              text: '',
+              metadata: {'type': '_encryptedInfo'},
+            ),
+          );
+        }
+      }
+      final messages = ref.watch(renderableChatMessagesProvider(roomId));
+      if (moreMessages.isEmpty) {
+        return messages;
+      }
+      // return as a new list to ensure the provider is properly resetting
+      return [...messages, ...moreMessages];
+    });
 
 final isAuthorOfSelectedMessage = StateProvider.autoDispose<bool>((ref) {
   final chatInputState = ref.watch(chatInputProvider);
@@ -124,13 +124,16 @@ final isAuthorOfSelectedMessage = StateProvider.autoDispose<bool>((ref) {
   return chatInputState.selectedMessage?.author.id == myUserId;
 });
 
-final mediaChatStateProvider = StateNotifierProvider.family<MediaChatNotifier,
-    MediaChatState, ChatMessageInfo>(
-  (ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo),
-);
+final mediaChatStateProvider = StateNotifierProvider.family<
+  MediaChatNotifier,
+  MediaChatState,
+  ChatMessageInfo
+>((ref, messageInfo) => MediaChatNotifier(ref: ref, messageInfo: messageInfo));
 
-final timelineStreamProvider =
-    FutureProvider.family<TimelineStream, String>((ref, roomId) async {
+final timelineStreamProvider = FutureProvider.family<TimelineStream, String>((
+  ref,
+  roomId,
+) async {
   final chat = await ref.watch(chatProvider(roomId).future);
   if (chat == null) {
     throw RoomNotFound();
@@ -138,8 +141,9 @@ final timelineStreamProvider =
   return await chat.timelineStream();
 });
 
-final filteredChatsProvider =
-    FutureProvider.autoDispose<List<String>>((ref) async {
+final filteredChatsProvider = FutureProvider.autoDispose<List<String>>((
+  ref,
+) async {
   final allRooms = ref.watch(chatIdsProvider);
   if (!ref.watch(hasRoomFilters)) {
     throw 'No filters selected';
@@ -158,8 +162,10 @@ final filteredChatsProvider =
 });
 
 // get status of room encryption
-final isRoomEncryptedProvider =
-    FutureProvider.family<bool, String>((ref, roomId) async {
+final isRoomEncryptedProvider = FutureProvider.family<bool, String>((
+  ref,
+  roomId,
+) async {
   final convo = await ref.watch(chatProvider(roomId).future);
   // FIXME: unify this over all rooms.
   return (await convo?.isEncrypted()) == true;
@@ -167,46 +173,43 @@ final isRoomEncryptedProvider =
 
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
-  final client = await ref.watch(alwaysClientProvider.future);
-  final userId = ref.watch(myUserIdStrProvider);
-  yield [];
-  await for (final event in client.subscribeToTypingEventStream(roomId)) {
-    yield event
-        .userIds()
-        .toList()
-        .map((i) => i.toString())
-        .where((id) => id != userId) // remove our User ID
-        .map(
-          (id) => types.User(
-            id: id,
-            firstName: id,
-          ),
-        )
-        .toList();
-  }
-});
+      final client = await ref.watch(alwaysClientProvider.future);
+      final userId = ref.watch(myUserIdStrProvider);
+      yield [];
+      await for (final event in client.subscribeToTypingEventStream(roomId)) {
+        yield event
+            .userIds()
+            .toList()
+            .map((i) => i.toString())
+            .where((id) => id != userId) // remove our User ID
+            .map((id) => types.User(id: id, firstName: id))
+            .toList();
+      }
+    });
 
 // unread notifications, unread mentions, unread messages
 typedef UnreadCounters = (int, int, int);
 
-final unreadCountersProvider =
-    FutureProvider.family<UnreadCounters, String>((ref, roomId) async {
-  final convo = await ref.watch(
-    chatProvider(roomId).future,
-  );
+final unreadCountersProvider = FutureProvider.family<UnreadCounters, String>((
+  ref,
+  roomId,
+) async {
+  final convo = await ref.watch(chatProvider(roomId).future);
   if (convo == null) {
     return (0, 0, 0);
   }
   final ret = (
     convo.numUnreadNotificationCount(),
     convo.numUnreadMentions(),
-    convo.numUnreadMessages()
+    convo.numUnreadMessages(),
   );
   return ret;
 });
 
-final hasUnreadMessages =
-    FutureProvider.family<bool, String>((ref, roomId) async {
+final hasUnreadMessages = FutureProvider.family<bool, String>((
+  ref,
+  roomId,
+) async {
   final unreadCounters = ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
   if (unreadCounters == null) return false;
@@ -242,18 +245,22 @@ final hasUnreadChatsProvider = FutureProvider.autoDispose((ref) async {
   return currentBadge;
 });
 
-final subChatsListProvider =
-    FutureProvider.family<List<String>, String>((ref, spaceId) async {
+final subChatsListProvider = FutureProvider.family<List<String>, String>((
+  ref,
+  spaceId,
+) async {
   List<String> subChatsList = [];
 
   //Get known sub-chats
-  final spaceRelationsOverview =
-      await ref.watch(spaceRelationsOverviewProvider(spaceId).future);
+  final spaceRelationsOverview = await ref.watch(
+    spaceRelationsOverviewProvider(spaceId).future,
+  );
   subChatsList.addAll(spaceRelationsOverview.knownChats);
 
   //Get more sub-chats
-  final relatedChatsLoader =
-      await ref.watch(remoteChatRelationsProvider(spaceId).future);
+  final relatedChatsLoader = await ref.watch(
+    remoteChatRelationsProvider(spaceId).future,
+  );
   for (var element in relatedChatsLoader) {
     subChatsList.add(element.roomIdStr());
   }
@@ -264,15 +271,17 @@ final subChatsListProvider =
 // useful for disabling send button for short time while message is preparing to be sent
 final allowSendInputProvider = StateProvider.family.autoDispose<bool, String>(
   (ref, roomId) => ref.watch(
-    chatInputProvider
-        .select((state) => state.sendingState == SendingState.preparing),
+    chatInputProvider.select(
+      (state) => state.sendingState == SendingState.preparing,
+    ),
   ),
 );
 
 // whether user has enough permissions to send message in room
-final canSendMessageProvider = FutureProvider.family<bool?, String>(
-  (ref, roomId) async {
-    final membership = ref.watch(roomMembershipProvider(roomId));
-    return membership.valueOrNull?.canString('CanSendChatMessages');
-  },
-);
+final canSendMessageProvider = FutureProvider.family<bool?, String>((
+  ref,
+  roomId,
+) async {
+  final membership = ref.watch(roomMembershipProvider(roomId));
+  return membership.valueOrNull?.canString('CanSendChatMessages');
+});

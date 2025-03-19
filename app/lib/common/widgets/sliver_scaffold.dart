@@ -57,19 +57,17 @@ class SliverScaffold extends StatelessWidget {
             shrinkWrap: true,
             slivers: [
               SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    _SliverHeader(
-                      header: header,
-                      addBackIconButton: addBackIconButton,
-                      addCloseIconButton: addCloseIconButton,
-                      backButtonTooltip: backButtonTooltip,
-                      closeButtonTooltip: closeButtonTooltip,
-                    ),
-                    if (body != null) SingleChildScrollView(child: body),
-                    ...(delegates ?? []),
-                  ],
-                ),
+                delegate: SliverChildListDelegate([
+                  _SliverHeader(
+                    header: header,
+                    addBackIconButton: addBackIconButton,
+                    addCloseIconButton: addCloseIconButton,
+                    backButtonTooltip: backButtonTooltip,
+                    closeButtonTooltip: closeButtonTooltip,
+                  ),
+                  if (body != null) SingleChildScrollView(child: body),
+                  ...(delegates ?? []),
+                ]),
               ),
               SliverFillRemaining(
                 hasScrollBody: false,
@@ -146,10 +144,7 @@ class _SliverHeader extends StatelessWidget {
                 Navigator.pop(context);
               },
               tooltip: closeButtonTooltip,
-              icon: const Icon(
-                Icons.close,
-                key: SliverScaffold.closeKey,
-              ),
+              icon: const Icon(Icons.close, key: SliverScaffold.closeKey),
             ),
           ),
         ],
@@ -193,7 +188,8 @@ class _SliverFooter extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: actions ??
+            children:
+                actions ??
                 [
                   if (cancelTitle != null)
                     OutlinedButton(

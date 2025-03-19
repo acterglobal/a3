@@ -10,9 +10,9 @@ import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/categories/widgets/add_edit_category.dart';
 import 'package:acter/features/categories/widgets/category_header_view.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -45,9 +45,10 @@ class _DraggableCategoriesListState
   void setDragAndDropList() async {
     //GET LOCAL CATEGORY LIST
     categoryList = await ref.read(
-      localCategoryListProvider(
-        (spaceId: widget.spaceId, categoriesFor: widget.categoriesFor),
-      ).future,
+      localCategoryListProvider((
+        spaceId: widget.spaceId,
+        categoriesFor: widget.categoriesFor,
+      )).future,
     );
 
     //SET DRAG AND DROP LIST DATA BASED ON THE LOCAL CATEGORY LIST
@@ -82,8 +83,9 @@ class _DraggableCategoriesListState
       child: CategoryHeaderView(
         categoryModelLocal: categoryList[categoryIndex],
         isShowDragHandle: true,
-        headerBackgroundColor:
-            Theme.of(context).unselectedWidgetColor.withValues(alpha: 0.7),
+        headerBackgroundColor: Theme.of(
+          context,
+        ).unselectedWidgetColor.withValues(alpha: 0.7),
         onClickEditCategory: () => callEditCategory(categoryIndex),
         onClickDeleteCategory: () => callDeleteCategory(categoryIndex),
       ),
@@ -175,10 +177,7 @@ class _DraggableCategoriesListState
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            lang.organize,
-            style: textTheme.titleLarge,
-          ),
+          Text(lang.organize, style: textTheme.titleLarge),
           Text(
             '(${widget.categoriesFor.name} in $spaceName)',
             overflow: TextOverflow.ellipsis,
@@ -189,11 +188,12 @@ class _DraggableCategoriesListState
       actions: [
         IconButton(
           icon: Icon(PhosphorIcons.plus()),
-          onPressed: () => showAddEditCategoryBottomSheet(
-            context: context,
-            bottomSheetTitle: lang.addCategory,
-            onSave: callAddCategory,
-          ),
+          onPressed:
+              () => showAddEditCategoryBottomSheet(
+                context: context,
+                bottomSheetTitle: lang.addCategory,
+                onSave: callAddCategory,
+              ),
         ),
       ],
     );
@@ -203,12 +203,7 @@ class _DraggableCategoriesListState
   void callAddCategory(String title, Color color, ActerIcon icon) {
     categoryList.insert(
       0,
-      CategoryModelLocal(
-        title: title,
-        color: color,
-        icon: icon,
-        entries: [],
-      ),
+      CategoryModelLocal(title: title, color: color, icon: icon, entries: []),
     );
     setDragAndDropListData();
   }
@@ -222,9 +217,7 @@ class _DraggableCategoriesListState
             onItemReorder: _onItemReorder,
           ),
         ) ??
-        const Center(
-          child: CircularProgressIndicator(),
-        );
+        const Center(child: CircularProgressIndicator());
   }
 
   //ON HEADER ITEM REORDER
@@ -251,8 +244,9 @@ class _DraggableCategoriesListState
       final movedItem = list[oldListIndex].children.removeAt(oldItemIndex);
       list[newListIndex].children.insert(newItemIndex, movedItem);
 
-      final movedEntryItem =
-          categoryList[oldListIndex].entries.removeAt(oldItemIndex);
+      final movedEntryItem = categoryList[oldListIndex].entries.removeAt(
+        oldItemIndex,
+      );
       categoryList[newListIndex].entries.insert(newItemIndex, movedEntryItem);
 
       setDragAndDropListData();

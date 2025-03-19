@@ -1251,7 +1251,7 @@ object Room {
     fn notification_mode() -> Future<Result<string>>;
 
     /// default RoomNotificationMode for this type of room
-    fn default_notification_mode() -> Future<string>;
+    fn default_notification_mode() -> Future<Result<string>>;
 
     /// Unset the `mute` for this room.
     fn unmute() -> Future<Result<bool>>;
@@ -2278,6 +2278,9 @@ object ActivityObject {
     fn object_id_str() -> string;
     fn title() -> Option<string>;
     fn emoji() -> string;
+
+    /// if this is a `task` type, what `task-list-id` does it belong to
+    fn task_list_id_str() -> Option<string>;
 }
 
 object Activity {
@@ -2298,6 +2301,10 @@ object Activity {
     /// e.g. invited, invitationAccepted
     fn type_str() -> string;
 
+    /// the sub type of this activity as a string, in particular for attachments
+    /// e.g. image, video, audio, file, link, location, etc.
+    fn sub_type_str() -> Option<string>;
+
     /// the details of this membership change activity
     fn membership_change() -> Option<MembershipChange>;
 
@@ -2307,10 +2314,17 @@ object Activity {
     /// where to route to for the details of this activity
     fn target_url() -> string;
 
+    /// where to route to for the details of this activity
+    fn task_list_id_str() -> Option<string>;
+
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
-    /// content of this activity, if any
+    /// The name of the object (e.g. Attachment filename) if given
+    fn name() -> Option<string>;
+
+
+    /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
 
     /// reaction specific: the reaction key used
@@ -2999,6 +3013,9 @@ object CreateSpaceSettingsBuilder {
     /// set the space’s visibility to either Public or Private
     fn set_visibility(value: string);
 
+    /// set who can join the space. either public, private, knock, knockrestricted, restricted
+    fn join_rule(value: string);
+
     /// append user id that will be invited to this space
     fn add_invitee(value: string) -> Result<()>;
 
@@ -3013,6 +3030,8 @@ object CreateSpaceSettingsBuilder {
     fn set_avatar_uri(value: string);
 
     /// set the parent of space
+    /// if the join rule is restricted or knockrestricted AND a parent is set
+    /// the space will be a subspace of the parent space
     fn set_parent(value: string);
 
     fn build() -> CreateSpaceSettings;

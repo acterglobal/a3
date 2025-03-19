@@ -12,12 +12,7 @@ class RoomProfileHeader extends ConsumerWidget {
     final roomAvatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return Column(
       children: [
-        ActerAvatar(
-          options: AvatarOptions(
-            roomAvatarInfo,
-            size: 50,
-          ),
-        ),
+        ActerAvatar(options: AvatarOptions(roomAvatarInfo, size: 50)),
         const SizedBox(height: 10),
         Text(roomAvatarInfo.displayName ?? ''),
       ],

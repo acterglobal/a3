@@ -1,8 +1,10 @@
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
+import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/task_status_widget.dart';
@@ -10,7 +12,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -38,32 +40,28 @@ class TaskItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final taskLoader =
-        ref.watch(taskItemProvider((taskListId: taskListId, taskId: taskId)));
+    final taskLoader = ref.watch(
+      taskItemProvider((taskListId: taskListId, taskId: taskId)),
+    );
     return taskLoader.when(
-      data: (task) => ListTile(
-        onTap: () {
-          context.pushNamed(
-            Routes.taskItemDetails.name,
-            pathParameters: {
-              'taskId': taskId,
-              'taskListId': taskListId,
+      data:
+          (task) => ListTile(
+            onTap: () {
+              context.pushNamed(
+                Routes.taskItemDetails.name,
+                pathParameters: {'taskId': taskId, 'taskListId': taskListId},
+              );
             },
-          );
-        },
-        horizontalTitleGap: 0,
-        minVerticalPadding: 0,
-        contentPadding: const EdgeInsets.all(3),
-        visualDensity: const VisualDensity(
-          horizontal: 0,
-          vertical: -4,
-        ),
-        minLeadingWidth: 35,
-        leading: leadingWidget(task),
-        title: takeItemTitle(context, task),
-        subtitle: takeItemSubTitle(ref, context, task),
-        trailing: trailing(ref, task),
-      ),
+            horizontalTitleGap: 0,
+            minVerticalPadding: 0,
+            contentPadding: const EdgeInsets.all(3),
+            visualDensity: const VisualDensity(horizontal: 0, vertical: -4),
+            minLeadingWidth: 35,
+            leading: leadingWidget(task),
+            title: takeItemTitle(context, task),
+            subtitle: takeItemSubTitle(ref, context, task),
+            trailing: trailing(ref, context, task),
+          ),
       error: (e, s) {
         _log.severe('Failed to load task', e, s);
         // FIXME: don't show broken task list items on main screen;
@@ -72,9 +70,7 @@ class TaskItem extends ConsumerWidget {
         // //   title: Text(lang.loadingFailed(e)),
         // );
       },
-      loading: () => ListTile(
-        title: Text(lang.loading),
-      ),
+      loading: () => ListTile(title: Text(lang.loading)),
     );
   }
 
@@ -82,12 +78,13 @@ class TaskItem extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     return Text(
       task.title(),
-      style: task.isDone()
-          ? textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w100,
-              decoration: TextDecoration.lineThrough,
-            )
-          : textTheme.bodyMedium,
+      style:
+          task.isDone()
+              ? textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w100,
+                decoration: TextDecoration.lineThrough,
+              )
+              : textTheme.bodyMedium,
     );
   }
 
@@ -107,27 +104,19 @@ class TaskItem extends ConsumerWidget {
         children: [
           if (showBreadCrumb)
             tasklistLoader.when(
-              data: (taskList) => Row(
-                children: [
-                  const Icon(
-                    Icons.list,
-                    color: Colors.white54,
-                    size: 22,
+              data:
+                  (taskList) => Row(
+                    children: [
+                      const Icon(Icons.list, color: Colors.white54, size: 22),
+                      const SizedBox(width: 6),
+                      Text(taskList.name(), style: textTheme.labelMedium),
+                    ],
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    taskList.name(),
-                    style: textTheme.labelMedium,
-                  ),
-                ],
-              ),
               error: (e, s) {
                 _log.severe('Failed to load task', e, s);
                 return Text(lang.loadingFailed(e));
               },
-              loading: () => Skeletonizer(
-                child: Text(lang.loading),
-              ),
+              loading: () => Skeletonizer(child: Text(lang.loading)),
             ),
           if (description != null && !showBreadCrumb)
             Text(
@@ -148,15 +137,17 @@ class TaskItem extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return task.dueDate().map((dueDate) {
           final date = DateTime.parse(dueDate);
-          final dateText =
-              DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(date);
-          final label = date.isToday
-              ? lang.dueToday
-              : date.isTomorrow
+          final dateText = DateFormat(
+            DateFormat.YEAR_MONTH_WEEKDAY_DAY,
+          ).format(date);
+          final label =
+              date.isToday
+                  ? lang.dueToday
+                  : date.isTomorrow
                   ? lang.dueTomorrow
                   : date.isPast
-                      ? date.timeago()
-                      : lang.due(dateText);
+                  ? date.timeago()
+                  : lang.due(dateText);
           final iconColor =
               date.isPast ? colorScheme.onSurface : Colors.white54;
           var textStyle = textTheme.labelMedium;
@@ -165,46 +156,46 @@ class TaskItem extends ConsumerWidget {
           }
           return Row(
             children: [
-              Icon(
-                Icons.access_time,
-                color: iconColor,
-                size: 18,
-              ),
+              Icon(Icons.access_time, color: iconColor, size: 18),
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: textStyle,
-              ),
+              Text(label, style: textStyle),
             ],
           );
         }) ??
         const SizedBox.shrink();
   }
 
-  Widget? trailing(WidgetRef ref, Task task) {
+  Widget? trailing(WidgetRef ref, BuildContext context, Task task) {
     return showBreadCrumb
-        ? RoomAvatarBuilder(
-            roomId: task.roomIdStr(),
-            avatarSize: 35,
-          )
-        : taskAssignee(ref, task);
+        ? RoomAvatarBuilder(roomId: task.roomIdStr(), avatarSize: 35)
+        : taskAssignee(ref, context, task);
   }
 
-  Widget? taskAssignee(WidgetRef ref, Task task) {
+  Widget? taskAssignee(WidgetRef ref, BuildContext context, Task task) {
     final assignees = asDartStringList(task.assigneesStr());
     if (assignees.isEmpty) return null;
+
+    final myId = ref.watch(myUserIdStrProvider);
+    if (assignees.contains(myId)) {
+      // we prefer showing myself as assignee
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 3,
+          ),
+          shape: BoxShape.circle,
+        ),
+        child: UserAvatarWidget(size: 16),
+      );
+    }
 
     final roomId = task.roomIdStr();
     final avatarInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomId, userId: assignees.first)),
     );
 
-    return ActerAvatar(
-      options: AvatarOptions.DM(
-        avatarInfo,
-        size: 16,
-      ),
-    );
+    return ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 16));
   }
 
   Key doneKey() {

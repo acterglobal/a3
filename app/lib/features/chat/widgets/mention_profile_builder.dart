@@ -2,10 +2,10 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -27,12 +27,13 @@ class MentionProfileBuilder extends ConsumerWidget {
     final userId = ref.watch(myUserIdStrProvider);
     final membersLoader = ref.watch(membersIdsProvider(roomQuery.roomId));
     return membersLoader.when(
-      loading: () => Skeletonizer(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.3,
-          child: Card(child: ListView()),
-        ),
-      ),
+      loading:
+          () => Skeletonizer(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: Card(child: ListView()),
+            ),
+          ),
       error: (e, s) {
         _log.severe('Failed to load room members', e, s);
         return ErrorWidget(L10n.of(context).loadingFailed(e));
@@ -41,9 +42,10 @@ class MentionProfileBuilder extends ConsumerWidget {
         final users = members.fold<Map<String, String>>({}, (map, uId) {
           if (uId != userId) {
             final displayName = ref.watch(
-              memberDisplayNameProvider(
-                (roomId: roomQuery.roomId, userId: uId),
-              ),
+              memberDisplayNameProvider((
+                roomId: roomQuery.roomId,
+                userId: uId,
+              )),
             );
 
             final normalizedId = uId.toLowerCase();
@@ -79,15 +81,13 @@ class MentionProfileBuilder extends ConsumerWidget {
                   leading: Consumer(
                     builder: (context, ref, child) {
                       final avatarInfo = ref.watch(
-                        memberAvatarInfoProvider(
-                          (roomId: roomQuery.roomId, userId: userId),
-                        ),
+                        memberAvatarInfoProvider((
+                          roomId: roomQuery.roomId,
+                          userId: userId,
+                        )),
                       );
                       return ActerAvatar(
-                        options: AvatarOptions.DM(
-                          avatarInfo,
-                          size: 18,
-                        ),
+                        options: AvatarOptions.DM(avatarInfo, size: 18),
                       );
                     },
                   ),

@@ -8,10 +8,7 @@ Future<void> showQrCode(
 }) async {
   showDialog(
     context: context,
-    builder: (context) => _ShowQrCode(
-      qrData: codeData,
-      title: title,
-    ),
+    builder: (context) => _ShowQrCode(qrData: codeData, title: title),
   );
 }
 
@@ -23,22 +20,22 @@ class _ShowQrCode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: title,
-        content: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: PrettyQrView.data(
-            data: qrData,
-            errorCorrectLevel: QrErrorCorrectLevel.M,
-            decoration: PrettyQrDecoration(
-              shape: PrettyQrSmoothSymbol(
-                color: Theme.of(context).colorScheme.inversePrimary,
-              ),
-              background: Theme.of(context).dialogBackgroundColor,
-              image: const PrettyQrDecorationImage(
-                image: AssetImage('assets/icon/logo.png'),
-              ),
-            ),
+    title: title,
+    content: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      child: PrettyQrView.data(
+        data: qrData,
+        errorCorrectLevel: QrErrorCorrectLevel.M,
+        decoration: PrettyQrDecoration(
+          shape: PrettyQrSmoothSymbol(
+            color: Theme.of(context).colorScheme.inversePrimary,
+          ),
+          background: Theme.of(context).dialogTheme.backgroundColor,
+          image: const PrettyQrDecorationImage(
+            image: AssetImage('assets/icon/logo.png'),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

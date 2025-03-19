@@ -1,0 +1,1 @@
+- Address a crash upon using Account.Bookmarks right at startup

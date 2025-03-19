@@ -19,10 +19,7 @@ class InDashboard extends ConsumerWidget {
                 flex: 1,
                 child: NewsListPage(newsViewMode: NewsViewMode.fullView),
               ),
-              Flexible(
-                flex: 2,
-                child: child,
-              ),
+              Flexible(flex: 2, child: child),
             ],
           );
         }

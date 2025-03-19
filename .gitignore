@@ -15,3 +15,4 @@ native/acter/bindings.dart
 app/lib/config/env.g.dart
 app/.env.*
 app/coverage
+devtools_options.yaml

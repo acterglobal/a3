@@ -11,10 +11,7 @@ final activitiesShellRoutes = [
     path: Routes.activities.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const ActivitiesPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const ActivitiesPage());
     },
   ),
   GoRoute(
@@ -22,10 +19,7 @@ final activitiesShellRoutes = [
     path: Routes.myOpenInvitations.route,
     redirect: authGuardRedirect,
     pageBuilder: (context, state) {
-      return MaterialPage(
-        key: state.pageKey,
-        child: const InvitesPage(),
-      );
+      return MaterialPage(key: state.pageKey, child: const InvitesPage());
     },
   ),
 ];

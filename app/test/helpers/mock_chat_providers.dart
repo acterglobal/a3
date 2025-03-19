@@ -32,13 +32,13 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   final String roomId;
 
   MockChatRoomNotifier(this.roomId)
-      : super(
-          const ChatRoomState(
-            hasMore: false,
-            messages: [],
-            loading: ChatRoomLoadingState.loaded(),
-          ),
-        );
+    : super(
+        const ChatRoomState(
+          hasMore: false,
+          messages: [],
+          loading: ChatRoomLoadingState.loaded(),
+        ),
+      );
 
   @override
   Future<void> fetchMediaBinary(String? msgType, String eventId, String msgId) {
@@ -166,12 +166,12 @@ class MockRoomListFilterNotifier extends StateNotifier<RoomListFilterState>
     with Mock
     implements RoomListFilterNotifier {
   MockRoomListFilterNotifier()
-      : super(
-          const RoomListFilterState(
-            searchTerm: null,
-            selection: FilterSelection.all,
-          ),
-        );
+    : super(
+        const RoomListFilterState(
+          searchTerm: null,
+          selection: FilterSelection.all,
+        ),
+      );
 }
 
 class MockPersistentPrefNotifier extends Notifier<FilterSelection>
@@ -193,18 +193,22 @@ class MockPersistentPrefNotifier extends Notifier<FilterSelection>
 
 List<Override> mockChatRoomProviders(MockedRoomData roomsData) {
   return [
-    persistentRoomListFilterSelector
-        .overrideWith(() => MockPersistentPrefNotifier()),
+    persistentRoomListFilterSelector.overrideWith(
+      () => MockPersistentPrefNotifier(),
+    ),
     chatIdsProvider.overrideWithValue(roomsData.keys.toList()),
     chatTypingEventProvider.overrideWith((ref, roomId) => const Stream.empty()),
     roomIsMutedProvider.overrideWith((ref, roomId) => false),
     latestMessageProvider.overrideWith(() => MockAsyncLatestMsgNotifier()),
     chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
-    roomDisplayNameProvider
-        .overrideWith((ref, roomId) => roomsData[roomId]?.displayName),
-    chatStateProvider
-        .overrideWith((ref, roomId) => MockChatRoomNotifier(roomId)),
-    roomAvatarInfoProvider
-        .overrideWith(() => MockRoomAvatarInfoNotifier(avatarInfos: roomsData)),
+    roomDisplayNameProvider.overrideWith(
+      (ref, roomId) => roomsData[roomId]?.displayName,
+    ),
+    chatStateProvider.overrideWith(
+      (ref, roomId) => MockChatRoomNotifier(roomId),
+    ),
+    roomAvatarInfoProvider.overrideWith(
+      () => MockRoomAvatarInfoNotifier(avatarInfos: roomsData),
+    ),
   ];
 }

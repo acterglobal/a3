@@ -2,11 +2,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-enum UpdateSlideType {
-  text,
-  image,
-  video,
-}
+enum UpdateSlideType { text, image, video }
 
 class UpdateSlideItem {
   UpdateSlideType type;

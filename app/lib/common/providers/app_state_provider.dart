@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final appStateProvider =
-    StateProvider<AppLifecycleState>((ref) => AppLifecycleState.resumed);
+final appStateProvider = StateProvider<AppLifecycleState>(
+  (ref) => AppLifecycleState.resumed,
+);
 
 final isAppInForeground = StateProvider<bool>(
   (ref) =>

@@ -6,9 +6,8 @@ import 'package:acter_notifify/processing/utils.dart';
   final sender = notification.sender();
   final username = sender.displayName() ?? sender.userId();
 
-  final parent = notification.parent();
-  if (parent != null) {
-    final title = getObjectCentricTitlePart(parent, 'updated');
+  final title = notification.parent()?.getObjectCentricTitlePart('updated');
+  if (title != null) {
     final body = 'by $username';
     return (title, body);
   } else {

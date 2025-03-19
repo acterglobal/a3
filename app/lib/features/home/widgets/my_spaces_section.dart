@@ -8,17 +8,14 @@ import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/spaces/widgets/space_list_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class MySpacesSection extends ConsumerWidget {
   final int? limit;
 
-  const MySpacesSection({
-    super.key,
-    this.limit,
-  });
+  const MySpacesSection({super.key, this.limit});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,7 +43,8 @@ class MySpacesSection extends ConsumerWidget {
     }
 
     //All Spaces : If bookmark list is empty
-    final count = limit.map((val) => min(val, allSpacesList.length)) ??
+    final count =
+        limit.map((val) => min(val, allSpacesList.length)) ??
         allSpacesList.length;
     return SpaceListWidget(
       spaceListProvider: spacesProvider,

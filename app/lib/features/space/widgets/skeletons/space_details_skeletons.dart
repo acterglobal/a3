@@ -44,10 +44,7 @@ class SpaceDetailsSkeletons extends StatelessWidget {
 
   Widget menuItem() {
     return const Skeletonizer(
-      child: Padding(
-        padding: EdgeInsets.all(14),
-        child: Text('Menu Item'),
-      ),
+      child: Padding(padding: EdgeInsets.all(14), child: Text('Menu Item')),
     );
   }
 

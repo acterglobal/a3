@@ -31,7 +31,7 @@
 .pub/
 /build/
 report.json
-
+.sentry-native/
 # Web related
 lib/generated_plugin_registrant.dart
 
@@ -45,6 +45,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/.cxx
 
 # testing related
 coverage/
+
+# Localisation class files
+/lib/l10n/generated/

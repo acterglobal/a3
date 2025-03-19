@@ -8,8 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef EventAndRsvp = ({CalendarEvent event, RsvpStatusTag? rsvp});
 
-final shouldSyncRoomProvider =
-    FutureProvider.autoDispose.family<bool, String>((ref, roomId) async {
+final shouldSyncRoomProvider = FutureProvider.autoDispose.family<bool, String>((
+  ref,
+  roomId,
+) async {
   try {
     final settings = await ref.watch(roomUserSettingsProvider(roomId).future);
     return settings.includeCalSync();

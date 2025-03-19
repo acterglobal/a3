@@ -5,9 +5,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const userAgent = '${Env.rageshakeAppName}/${Env.rageshakeAppName}';
-final defaultLogSetting = Platform.environment.containsKey(rustLogKey)
-    ? Platform.environment[rustLogKey] as String
-    : Env.defaultRustLog;
+final defaultLogSetting =
+    Platform.environment.containsKey(rustLogKey)
+        ? Platform.environment[rustLogKey] as String
+        : Env.defaultRustLog;
 
 final mainProviderContainer = ProviderContainer();
 

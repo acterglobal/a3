@@ -73,7 +73,15 @@ args = ["fmt", "--", "--emit=files"]
 dependencies = [
     "check-ffi-debug",
     "check-ffi-release",
+    "format-ffi",
 ]
+
+[tasks.format-ffi]
+
+script_runner = "@shell"
+script = [
+    "dart format ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/rust_sdk/lib"
+    ]
 
 [tasks.check-ffi-debug]
 condition = { env_true = ["DEV"] }

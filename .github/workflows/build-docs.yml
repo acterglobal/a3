@@ -12,7 +12,7 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.4'
+          flutter-version: '3.29'
           channel: 'stable'
 
       - name: Install supported toolchain
@@ -42,7 +42,7 @@ jobs:
           mv target/doc/ docs/api/main/rust
 
       - name: Build Dart App
-        run: flutter pub global run dartdoc  --include-external integration_test/main_test.dart --output ../docs/api/main/app/
+        run: flutter pub global run dartdoc  --output ../docs/api/main/app/
         working-directory: app
 
       - name: Checking for bindings

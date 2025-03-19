@@ -17,22 +17,22 @@ import '../../helpers/test_util.dart';
 
 void main() {
   List<Override> spaceOverrides() => [
-        // mocking so we can display the page in general
-        roomVisibilityProvider.overrideWith((a, b) => null),
-        roomDisplayNameProvider.overrideWith((a, b) => null),
-        parentAvatarInfosProvider.overrideWith((a, b) => []),
-        roomAvatarProvider.overrideWith((a, b) => null),
-        membersIdsProvider.overrideWith((a, b) => []),
-        roomAvatarInfoProvider.overrideWith(() => MockRoomAvatarInfoNotifier()),
-        roomMembershipProvider.overrideWith((a, b) => null),
-        isBookmarkedProvider.overrideWith((a, b) => false),
-        spaceInvitedMembersProvider.overrideWith((a, b) => []),
-        shouldShowSuggestedProvider.overrideWith((a, b) => false),
-        isActerSpaceForSpace.overrideWith((a, b) => false),
-        suggestedSpacesProvider.overrideWith((a, b) async {
-          return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
-        }),
-      ];
+    // mocking so we can display the page in general
+    roomJoinRuleProvider.overrideWith((a, b) => null),
+    roomDisplayNameProvider.overrideWith((a, b) => null),
+    parentAvatarInfosProvider.overrideWith((a, b) => []),
+    roomAvatarProvider.overrideWith((a, b) => null),
+    membersIdsProvider.overrideWith((a, b) => []),
+    roomAvatarInfoProvider.overrideWith(() => MockRoomAvatarInfoNotifier()),
+    roomMembershipProvider.overrideWith((a, b) => null),
+    isBookmarkedProvider.overrideWith((a, b) => false),
+    spaceInvitedMembersProvider.overrideWith((a, b) => []),
+    shouldShowSuggestedProvider.overrideWith((a, b) => false),
+    isActerSpaceForSpace.overrideWith((a, b) => false),
+    suggestedSpacesProvider.overrideWith((a, b) async {
+      return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
+    }),
+  ];
 
   group('Subspaces Page unaccessible items', () {
     testWidgets('Known show only', (tester) async {
@@ -122,9 +122,7 @@ void main() {
             (a, b) => SpaceRelationsOverview(
               parents: [],
               knownChats: [],
-              knownSubspaces: [
-                'b',
-              ],
+              knownSubspaces: ['b'],
               // those are known, 'c' is a known remote one
               otherRelations: [],
               mainParent: null,

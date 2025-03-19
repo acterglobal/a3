@@ -41,5 +41,5 @@ class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
 
 final myOpenTasksProvider =
     AsyncNotifierProvider<MyOpenTasksNotifier, List<Task>>(() {
-  return MyOpenTasksNotifier();
-});
+      return MyOpenTasksNotifier();
+    });

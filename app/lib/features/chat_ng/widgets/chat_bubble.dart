@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class ChatBubble extends StatelessWidget {
   final Widget child;
@@ -10,7 +10,6 @@ class ChatBubble extends StatelessWidget {
   final BoxDecoration decoration;
   final MainAxisAlignment bubbleAlignment;
   final bool isEdited;
-  final Widget? repliedToBuilder;
 
   // default private constructor
   const ChatBubble._inner({
@@ -20,16 +19,14 @@ class ChatBubble extends StatelessWidget {
     required this.decoration,
     this.isEdited = false,
     this.messageWidth,
-    this.repliedToBuilder,
   });
 
   // factory bubble constructor
   factory ChatBubble({
     required Widget child,
     required BuildContext context,
-    bool isNextMessageInGroup = false,
+    bool isLastMessageBySender = false,
     bool isEdited = false,
-    Widget? repliedToBuilder,
     int? messageWidth,
   }) {
     final theme = Theme.of(context);
@@ -40,13 +37,12 @@ class ChatBubble extends StatelessWidget {
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(isNextMessageInGroup ? 16 : 4),
+          bottomLeft: Radius.circular(isLastMessageBySender ? 4 : 16),
           bottomRight: Radius.circular(16),
         ),
       ),
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
-      repliedToBuilder: repliedToBuilder,
       child: child,
     );
   }
@@ -56,10 +52,9 @@ class ChatBubble extends StatelessWidget {
     Key? key,
     required BuildContext context,
     required Widget child,
-    bool isNextMessageInGroup = false,
+    bool isLastMessageBySender = false,
     bool isEdited = false,
     int? messageWidth,
-    Widget? repliedToBuilder,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
@@ -71,15 +66,15 @@ class ChatBubble extends StatelessWidget {
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
           bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(isNextMessageInGroup ? 16 : 4),
+          bottomRight: Radius.circular(isLastMessageBySender ? 16 : 4),
         ),
       ),
       bubbleAlignment: MainAxisAlignment.end,
-      repliedToBuilder: repliedToBuilder,
       isEdited: isEdited,
       child: DefaultTextStyle.merge(
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: theme.colorScheme.onPrimary),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onPrimary,
+        ),
         child: child,
       ),
     );
@@ -101,23 +96,14 @@ class ChatBubble extends StatelessWidget {
         children: [
           const SizedBox(width: 5),
           Container(
-            constraints: BoxConstraints(
-              maxWidth: msgWidth ?? defaultWidth,
-            ),
+            constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
             width: msgWidth,
             decoration: decoration,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (repliedToBuilder != null) ...[
-                    repliedToBuilder.expect('widget cannot be null'),
-                    const SizedBox(height: 10),
-                  ],
                   child,
                   if (isEdited) ...[
                     const SizedBox(width: 5),
@@ -125,8 +111,9 @@ class ChatBubble extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       child: Text(
                         L10n.of(context).edited,
-                        style: chatTheme.emptyChatPlaceholderTextStyle
-                            .copyWith(fontSize: 12),
+                        style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],

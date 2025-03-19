@@ -3,7 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void showEditHtmlDescriptionBottomSheet({
@@ -81,11 +81,7 @@ class _EditHtmlDescriptionSheetState
               border: Border.all(color: brandColor),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: HtmlEditor(
-              editorState: textEditorState,
-              editable: true,
-              autoFocus: true,
-            ),
+            child: HtmlEditor(editorState: textEditorState, editable: true),
           ),
           const SizedBox(height: 20),
           Row(

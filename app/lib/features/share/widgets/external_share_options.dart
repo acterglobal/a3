@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ExternalShareOptions extends ConsumerWidget {
@@ -68,11 +68,7 @@ class ExternalShareOptions extends ConsumerWidget {
       name: lang.qr,
       iconWidget: Icon(PhosphorIcons.qrCode()),
       color: Colors.grey.shade600,
-      onTap: () => showQrCode(
-        context,
-        qrContent,
-        title: qrCodeHeader,
-      ),
+      onTap: () => showQrCode(context, qrContent, title: qrCodeHeader),
     );
   }
 
@@ -84,17 +80,18 @@ class ExternalShareOptions extends ConsumerWidget {
     final lang = L10n.of(context);
     final isWhatsAppInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.whatsApp)).valueOrNull ==
-            true;
-    final isWhatsAppBusinessInstalled = ref
+        true;
+    final isWhatsAppBusinessInstalled =
+        ref
             .watch(isAppInstalledProvider(ExternalApps.whatsBusiness))
             .valueOrNull ==
         true;
     final isTelegramInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.telegram)).valueOrNull ==
-            true;
+        true;
     final isSignalInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull ==
-            true;
+        true;
     return Row(
       children: [
         shareToItemUI(

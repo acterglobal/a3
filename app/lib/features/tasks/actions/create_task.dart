@@ -10,7 +10,7 @@ import 'package:acter/features/tasks/widgets/due_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,13 +24,11 @@ Future<void> showCreateTaskBottomSheet(
     showDragHandle: true,
     useSafeArea: true,
     isScrollControlled: true,
-    builder: (context) => Padding(
-      padding: MediaQuery.of(context).viewInsets,
-      child: CreateTaskWidget(
-        taskList: taskList,
-        taskName: taskName,
-      ),
-    ),
+    builder:
+        (context) => Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: CreateTaskWidget(taskList: taskList, taskName: taskName),
+        ),
   );
 }
 
@@ -48,11 +46,7 @@ class CreateTaskWidget extends ConsumerStatefulWidget {
   final TaskList? taskList;
   final String? taskName;
 
-  const CreateTaskWidget({
-    super.key,
-    this.taskList,
-    this.taskName,
-  });
+  const CreateTaskWidget({super.key, this.taskList, this.taskName});
 
   @override
   ConsumerState<CreateTaskWidget> createState() =>
@@ -60,8 +54,9 @@ class CreateTaskWidget extends ConsumerStatefulWidget {
 }
 
 class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
-  final GlobalKey<FormState> _formKey =
-      GlobalKey<FormState>(debugLabel: 'create task list form');
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>(
+    debugLabel: 'create task list form',
+  );
   final TextEditingController _taskNameController = TextEditingController();
   final TextEditingController _taskDescriptionController =
       TextEditingController();
@@ -102,23 +97,14 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
 
-    final fields = [
-      const SizedBox(height: 20),
-      _widgetTaskName(),
-    ];
+    final fields = [const SizedBox(height: 20), _widgetTaskName()];
 
     if (showDescriptionField) {
-      fields.addAll([
-        const SizedBox(height: 20),
-        _widgetDescriptionName(),
-      ]);
+      fields.addAll([const SizedBox(height: 20), _widgetDescriptionName()]);
     }
 
     if (showDueDate) {
-      fields.addAll([
-        const SizedBox(height: 20),
-        _widgetDueDate(),
-      ]);
+      fields.addAll([const SizedBox(height: 20), _widgetDueDate()]);
     }
 
     return Padding(
@@ -176,10 +162,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          lang.taskName,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        Text(lang.taskName, style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: 5),
         TextFormField(
           key: CreateTaskWidget.titleField,
@@ -188,8 +171,9 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _taskNameController,
           // required field, space not allowed
-          validator: (val) =>
-              val?.trim().isEmpty == true ? lang.pleaseEnterAName : null,
+          validator:
+              (val) =>
+                  val?.trim().isEmpty == true ? lang.pleaseEnterAName : null,
         ),
       ],
     );
@@ -238,10 +222,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              lang.dueDate,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(lang.dueDate, style: Theme.of(context).textTheme.bodySmall),
             IconButton(
               key: CreateTaskWidget.closeDueDateAction,
               onPressed: () {
@@ -272,20 +253,22 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
           children: [
             ActerInlineTextButton(
               key: CreateTaskWidget.dueDateTodayBtn,
-              onPressed: () => setState(() {
-                final date = DateTime.now();
-                selectedDate = date;
-                _taskDueDateController.text = taskDueDateFormat(date);
-              }),
+              onPressed:
+                  () => setState(() {
+                    final date = DateTime.now();
+                    selectedDate = date;
+                    _taskDueDateController.text = taskDueDateFormat(date);
+                  }),
               child: Text(lang.today),
             ),
             ActerInlineTextButton(
               key: CreateTaskWidget.dueDateTomorrowBtn,
-              onPressed: () => setState(() {
-                final date = DateTime.now().addDays(1);
-                selectedDate = date;
-                _taskDueDateController.text = taskDueDateFormat(date);
-              }),
+              onPressed:
+                  () => setState(() {
+                    final date = DateTime.now().addDays(1);
+                    selectedDate = date;
+                    _taskDueDateController.text = taskDueDateFormat(date);
+                  }),
               child: Text(lang.tomorrow),
             ),
           ],
@@ -325,9 +308,10 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
       actions.add(
         ActerInlineTextButton(
           key: CreateTaskWidget.addDescAction,
-          onPressed: () => setState(() {
-            showDescriptionField = true;
-          }),
+          onPressed:
+              () => setState(() {
+                showDescriptionField = true;
+              }),
           child: Text(lang.description),
         ),
       );
@@ -336,10 +320,11 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
       actions.add(
         ActerInlineTextButton(
           key: CreateTaskWidget.addDueDateAction,
-          onPressed: () => setState(() {
-            showDueDate = true;
-            selectDueDate();
-          }),
+          onPressed:
+              () => setState(() {
+                showDueDate = true;
+                selectDueDate();
+              }),
           child: Text(lang.dueDate),
         ),
       );
@@ -349,11 +334,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
     }
 
     return Row(
-      children: [
-        Text(lang.add),
-        const SizedBox(width: 5),
-        ...actions,
-      ],
+      children: [Text(lang.add), const SizedBox(width: 5), ...actions],
     );
   }
 
@@ -383,10 +364,7 @@ class _CreateTaskWidgetConsumerState extends ConsumerState<CreateTaskWidget> {
         Navigator.pop(context);
         context.pushNamed(
           Routes.taskItemDetails.name,
-          pathParameters: {
-            'taskListId': taskListId,
-            'taskId': taskId,
-          },
+          pathParameters: {'taskListId': taskListId, 'taskId': taskId},
         );
       }
     }

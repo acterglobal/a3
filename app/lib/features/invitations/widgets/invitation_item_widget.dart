@@ -7,7 +7,7 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -16,10 +16,7 @@ final _log = Logger('a3::activities::invitation_widget');
 class InvitationItemWidget extends ConsumerStatefulWidget {
   final Invitation invitation;
 
-  const InvitationItemWidget({
-    super.key,
-    required this.invitation,
-  });
+  const InvitationItemWidget({super.key, required this.invitation});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -35,7 +32,8 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
   bool get isSpace => widget.invitation.room().isSpace();
   String get roomId => widget.invitation.roomIdStr();
   String get senderId => widget.invitation.senderIdStr();
-  dynamic get profile => ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
+  dynamic get profile =>
+      ref.watch(invitationUserProfileProvider(widget.invitation)).valueOrNull;
 
   @override
   void initState() {
@@ -49,10 +47,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
     final title = await room.displayName();
     setState(() {
       roomTitle = title.text();
-      avatarInfo = AvatarInfo(
-        uniqueId: roomId,
-        displayName: roomTitle,
-      );
+      avatarInfo = AvatarInfo(uniqueId: roomId, displayName: roomTitle);
     });
     final avatarData = (await room.avatar(null)).data();
     if (avatarData != null) {
@@ -69,9 +64,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -80,9 +73,7 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
           children: [
             buildLeadingImageUI(),
             const SizedBox(width: 12),
-            Expanded(
-              child: buildContentUI(context),
-            ),
+            Expanded(child: buildContentUI(context)),
           ],
         ),
       ),
@@ -91,19 +82,17 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
 
   Widget buildLeadingImageUI() {
     return ActerAvatar(
-      options: isDM
-          ? AvatarOptions.DM(
-              AvatarInfo(
-                uniqueId: roomId,
-                displayName: profile?.displayName,
-                avatar: profile?.avatar,
-              ),
-              size: 24,
-            )
-          : AvatarOptions(
-              avatarInfo,
-              size: 48,
-            ),
+      options:
+          isDM
+              ? AvatarOptions.DM(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: profile?.displayName,
+                  avatar: profile?.avatar,
+                ),
+                size: 24,
+              )
+              : AvatarOptions(avatarInfo, size: 48),
     );
   }
 
@@ -134,24 +123,21 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
     final inviterName = profile?.displayName ?? senderId;
     final inviteTypeTextStyle = Theme.of(context).textTheme.labelLarge;
     return isDM
-        ? Text(
-            lang.invitationToDM,
-            style: inviteTypeTextStyle,
-          )
+        ? Text(lang.invitationToDM, style: inviteTypeTextStyle)
         : Wrap(
-            children: [
-              Text(
-                isSpace ? lang.invitationToSpace : lang.invitationToChat,
-                style: inviteTypeTextStyle,
+          children: [
+            Text(
+              isSpace ? lang.invitationToSpace : lang.invitationToChat,
+              style: inviteTypeTextStyle,
+            ),
+            Text(
+              inviterName,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.secondary,
               ),
-              Text(
-                inviterName,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-              ),
-            ],
-          );
+            ),
+          ],
+        );
   }
 
   Widget buildActionButtons(BuildContext context) {

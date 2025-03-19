@@ -6,15 +6,15 @@ import 'package:riverpod/riverpod.dart';
 
 final chatProvider =
     AsyncNotifierProvider.family<AsyncConvoNotifier, Convo?, String>(
-  () => AsyncConvoNotifier(),
-);
+      () => AsyncConvoNotifier(),
+    );
 
 // Chat Providers
 
 final latestMessageProvider =
     AsyncNotifierProvider.family<AsyncLatestMsgNotifier, RoomMessage?, String>(
-  () => AsyncLatestMsgNotifier(),
-);
+      () => AsyncLatestMsgNotifier(),
+    );
 
 /// Provider for fetching rooms list. This’ll always bring up unsorted list.
 final _convosProvider = NotifierProvider<ChatRoomsListNotifier, List<Convo>>(
@@ -35,17 +35,17 @@ final chatIdsProvider = Provider<List<String>>(
 
 final selectedChatIdProvider =
     NotifierProvider<SelectedChatIdNotifier, String?>(
-  () => SelectedChatIdNotifier(),
-);
+      () => SelectedChatIdNotifier(),
+    );
 
 final chatComposerDraftProvider = FutureProvider.autoDispose
     .family<ComposeDraft?, String>((ref, roomId) async {
-  final chat = await ref.watch(chatProvider(roomId).future);
-  if (chat == null) {
-    return null;
-  }
-  return (await chat.msgDraft().then((val) => val.draft()));
-});
+      final chat = await ref.watch(chatProvider(roomId).future);
+      if (chat == null) {
+        return null;
+      }
+      return (await chat.msgDraft().then((val) => val.draft()));
+    });
 
 //Space list for quick search value provider
 final chatListQuickSearchedProvider = Provider.autoDispose<List<Convo>>((ref) {

@@ -6,11 +6,11 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/utils.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -20,10 +20,7 @@ final _log = Logger('a3::invite::invite_code');
 class InviteCodeUI extends ConsumerStatefulWidget {
   final String roomId;
 
-  const InviteCodeUI({
-    super.key,
-    required this.roomId,
-  });
+  const InviteCodeUI({super.key, required this.roomId});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InviteCodeUIState();
@@ -90,10 +87,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
               Expanded(
                 child: Column(
                   children: [
-                    Text(
-                      inviteCode,
-                      textAlign: TextAlign.center,
-                    ),
+                    Text(inviteCode, textAlign: TextAlign.center),
                     if (otherRoomsCount > 0)
                       Text(
                         lang.moreRooms(otherRoomsCount),
@@ -123,25 +117,25 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
           alignment: Alignment.centerRight,
           child: ActerInlineTextButton(
             onPressed: () async {
-              final token = await ref.read(superInviteTokenProvider(inviteCode).future);
-              if (!context.mounted) return;
-              context.pushNamed(
-                Routes.createSuperInvite.name,
-                extra: token,
+              final token = await ref.read(
+                superInviteTokenProvider(inviteCode).future,
               );
+              if (!context.mounted) return;
+              context.pushNamed(Routes.createSuperInvite.name, extra: token);
             },
             child: Text(lang.manage),
           ),
         ),
         const SizedBox(height: 10),
         ActerPrimaryActionButton(
-          onPressed: () => context.pushNamed(
-            Routes.shareInviteCode.name,
-            queryParameters: {
-              'inviteCode': inviteCode,
-              'roomId': widget.roomId,
-            },
-          ),
+          onPressed:
+              () => context.pushNamed(
+                Routes.shareInviteCode.name,
+                queryParameters: {
+                  'inviteCode': inviteCode,
+                  'roomId': widget.roomId,
+                },
+              ),
           child: Text(lang.share),
         ),
       ],
@@ -157,54 +151,54 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
       enableDrag: true,
       context: context,
       isDismissible: true,
-      builder: (context) => Consumer(
-        builder: (context, ref, child) {
-          final lang = L10n.of(context);
-          final inviteCodes =
-              ref.watch(superInvitesForRoom(widget.roomId)).valueOrNull ?? [];
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(lang.select),
+      builder:
+          (context) => Consumer(
+            builder: (context, ref, child) {
+              final lang = L10n.of(context);
+              final inviteCodes =
+                  ref.watch(superInvitesForRoom(widget.roomId)).valueOrNull ??
+                  [];
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(lang.select)),
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context, null),
+                          label: Text(lang.close),
+                        ),
+                      ],
                     ),
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context, null),
-                      label: Text(lang.close),
-                    ),
-                  ],
-                ),
-              ),
-              Flexible(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: inviteCodes.length,
-                  itemBuilder: (context, index) {
-                    final invite = inviteCodes[index];
-                    final otherRoomsCount =
-                        (selectedToken?.rooms().length ?? 1) - 1;
-                    return ListTile(
-                      title: Text(invite.token()),
-                      subtitle: Text(lang.moreRooms(otherRoomsCount)),
-                      onTap: () {
-                        setState(() => selectedToken = invite);
-                        Navigator.pop(context, null);
+                  ),
+                  Flexible(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: inviteCodes.length,
+                      itemBuilder: (context, index) {
+                        final invite = inviteCodes[index];
+                        final otherRoomsCount =
+                            (selectedToken?.rooms().length ?? 1) - 1;
+                        return ListTile(
+                          title: Text(invite.token()),
+                          subtitle: Text(lang.moreRooms(otherRoomsCount)),
+                          onTap: () {
+                            setState(() => selectedToken = invite);
+                            Navigator.pop(context, null);
+                          },
+                        );
                       },
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
     );
   }
 
@@ -215,15 +209,14 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
     final lang = L10n.of(context);
     try {
       EasyLoading.show(status: lang.generateInviteCode);
-      final displayName =
-          await ref.read(roomDisplayNameProvider(widget.roomId).future);
+      final displayName = await ref.read(
+        roomDisplayNameProvider(widget.roomId).future,
+      );
       final inviteCode = generateInviteCodeName(displayName);
 
-      await newSuperInviteForRooms(
-        ref,
-        [widget.roomId],
-        inviteCode: inviteCode,
-      );
+      await newSuperInviteForRooms(ref, [
+        widget.roomId,
+      ], inviteCode: inviteCode);
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
     } catch (e, s) {

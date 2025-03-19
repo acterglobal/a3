@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -23,34 +23,33 @@ class SectionHeader extends StatelessWidget {
 
   Widget sectionHeaderUI(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final titleMediumTextStyle =
-        Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).primaryColor,
-            );
-    final titleSmallTextStyle = Theme.of(context)
-        .textTheme
-        .titleSmall
-        ?.copyWith(fontWeight: FontWeight.normal);
+    final titleMediumTextStyle = Theme.of(
+      context,
+    ).textTheme.titleMedium?.copyWith(color: Theme.of(context).primaryColor);
+    final titleSmallTextStyle = Theme.of(
+      context,
+    ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.normal);
     return GestureDetector(
       onTap: onTapSeeAll,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14),
         margin: showSectionBg ? const EdgeInsets.symmetric(vertical: 12) : null,
-        decoration: showSectionBg
-            ? BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.surface.withValues(alpha:0.9),
-                    colorScheme.surface.withValues(alpha:0.3),
-                    colorScheme.secondaryContainer.withValues(alpha: 0.1),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  stops: const [0.0, 0.5, 1.0],
-                  tileMode: TileMode.mirror,
-                ),
-              )
-            : null,
+        decoration:
+            showSectionBg
+                ? BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      colorScheme.surface.withValues(alpha: 0.9),
+                      colorScheme.surface.withValues(alpha: 0.3),
+                      colorScheme.secondaryContainer.withValues(alpha: 0.1),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.topRight,
+                    stops: const [0.0, 0.5, 1.0],
+                    tileMode: TileMode.mirror,
+                  ),
+                )
+                : null,
         child: Row(
           children: [
             Text(
@@ -60,9 +59,9 @@ class SectionHeader extends StatelessWidget {
             const Spacer(),
             isShowSeeAllButton
                 ? ActerInlineTextButton(
-                    onPressed: onTapSeeAll,
-                    child: Text(L10n.of(context).seeAll),
-                  )
+                  onPressed: onTapSeeAll,
+                  child: Text(L10n.of(context).seeAll),
+                )
                 : const SizedBox(height: 50),
           ],
         ),

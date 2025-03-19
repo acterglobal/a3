@@ -48,17 +48,14 @@ class SyncNotifier extends Notifier<SyncState> {
   }
 
   Future<void> _tickSyncState() async {
-    await state.countDown.mapAsync(
-      (countDown) async {
-        if (countDown == 0) {
-          await restartSync();
-        } else {
-          // just count down.
-          state = state.copyWith(countDown: countDown - 1);
-        }
-      },
-      orElse: () async => await restartSync(),
-    );
+    await state.countDown.mapAsync((countDown) async {
+      if (countDown == 0) {
+        await restartSync();
+      } else {
+        // just count down.
+        state = state.copyWith(countDown: countDown - 1);
+      }
+    }, orElse: () async => await restartSync());
   }
 
   Future<void> restartSync() async {

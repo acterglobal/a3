@@ -2,10 +2,10 @@ use acter_core::RestoreToken;
 use anyhow::{bail, Context, Result};
 use lazy_static::lazy_static;
 use matrix_sdk::{
-    authentication::matrix::{MatrixSession, MatrixSessionTokens},
+    authentication::matrix::MatrixSession,
     encryption::{BackupDownloadStrategy, EncryptionSettings},
     reqwest::{ClientBuilder as ReqClientBuilder, StatusCode},
-    Client as SdkClient, ClientBuilder as SdkClientBuilder,
+    Client as SdkClient, ClientBuilder as SdkClientBuilder, SessionTokens,
 };
 use matrix_sdk_base::{
     ruma::{
@@ -141,7 +141,7 @@ pub async fn guest_client(
                     user_id: response.user_id.clone(),
                     device_id,
                 },
-                tokens: MatrixSessionTokens {
+                tokens: SessionTokens {
                     access_token: response.access_token.context("no access token given")?,
                     refresh_token: response.refresh_token.clone(),
                 },
@@ -178,7 +178,7 @@ pub async fn login_with_token_under_config(
                     user_id: session.user_id.clone(),
                     device_id: session.device_id.clone(),
                 },
-                tokens: MatrixSessionTokens {
+                tokens: SessionTokens {
                     access_token: session.access_token.clone(),
                     refresh_token: None,
                 },

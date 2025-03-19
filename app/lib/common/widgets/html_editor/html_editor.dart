@@ -27,27 +27,24 @@ AppFlowyEditorHTMLCodec defaultHtmlCodec = const AppFlowyEditorHTMLCodec(
 );
 AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
     const AppFlowyEditorMarkdownCodec(
-  encodeParsers: [
-    TextNodeParser(),
-    BulletedListNodeParser(),
-    NumberedListNodeParser(),
-    TodoListNodeParser(),
-    QuoteNodeParser(),
-    CodeBlockNodeParser(),
-    HeadingNodeParser(),
-    ImageNodeParser(),
-    TableNodeParser(),
-  ],
-);
+      encodeParsers: [
+        TextNodeParser(),
+        BulletedListNodeParser(),
+        NumberedListNodeParser(),
+        TodoListNodeParser(),
+        QuoteNodeParser(),
+        CodeBlockNodeParser(),
+        HeadingNodeParser(),
+        ImageNodeParser(),
+        TableNodeParser(),
+      ],
+    );
 
 // contains final input string with mentions processed and mentions
 typedef MentionParsedText = (String, List<MentionAttributes>);
 
 extension ActerEditorStateHelpers on EditorState {
-  MentionParsedText mentionsParsedText(
-    String plainText,
-    String? htmlText,
-  ) {
+  MentionParsedText mentionsParsedText(String plainText, String? htmlText) {
     List<MentionAttributes> mentionAttributes = [];
 
     // Get the base text
@@ -66,9 +63,10 @@ extension ActerEditorStateHelpers on EditorState {
             final mention = op.attributes!['@'] as MentionAttributes;
             final displayText =
                 mention.displayName ?? mention.mentionId.substring(1);
-            final replacement = htmlText != null
-                ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
-                : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
+            final replacement =
+                htmlText != null
+                    ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
+                    : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
             processedText = processedText.replaceFirst('‖', replacement);
             mentionAttributes.add(mention);
           }
@@ -79,22 +77,20 @@ extension ActerEditorStateHelpers on EditorState {
 
     // Remove only trailing <br> tag if it exists
     if (processedText.endsWith('<br>')) {
-      processedText =
-          processedText.substring(0, processedText.length - '<br>'.length);
+      processedText = processedText.substring(
+        0,
+        processedText.length - '<br>'.length,
+      );
     }
 
     return (processedText.trimRight(), mentionAttributes);
   }
 
-  String intoMarkdown({
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
+  String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
 
-  String intoHtml({
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
+  String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
     return (codec ?? defaultHtmlCodec).encode(document);
   }
 
@@ -102,7 +98,6 @@ extension ActerEditorStateHelpers on EditorState {
   void clear() async {
     if (!document.isEmpty) {
       final transaction = this.transaction;
-      final selection = this.selection;
 
       // Delete all existing nodes
       int nodeIndex = 0;
@@ -115,20 +110,20 @@ extension ActerEditorStateHelpers on EditorState {
 
       transaction.insertNode([0], paragraphNode(text: ''));
 
-      updateSelectionWithReason(
-        selection,
-        reason: SelectionUpdateReason.transaction,
-      );
       apply(transaction);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        updateSelectionWithReason(
+          Selection.single(path: [0], startOffset: 0, endOffset: 0),
+          reason: SelectionUpdateReason.uiEvent,
+        );
+      });
     }
   }
 }
 
 extension ActerDocumentHelpers on Document {
-  static Document? _fromHtml(
-    String content, {
-    AppFlowyEditorHTMLCodec? codec,
-  }) {
+  static Document? _fromHtml(String content, {AppFlowyEditorHTMLCodec? codec}) {
     if (content.isEmpty) {
       return null;
     }
@@ -179,7 +174,6 @@ class HtmlEditor extends StatefulWidget {
   final String? hintText;
   final Widget? header;
   final Widget? footer;
-  final bool autoFocus;
   final bool editable;
   final bool shrinkWrap;
   final EditorState? editorState;
@@ -199,7 +193,6 @@ class HtmlEditor extends StatefulWidget {
     this.onChanged,
     this.onCancel,
     this.textStyleConfiguration,
-    this.autoFocus = true,
     this.editable = false,
     this.shrinkWrap = false,
     this.editorPadding = const EdgeInsets.all(10),
@@ -228,16 +221,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   void updateEditorState(EditorState newEditorState) {
     setState(() {
       editorState = newEditorState;
-
-      if (widget.editable && widget.autoFocus) {
-        editorState.updateSelectionWithReason(
-          Selection.single(
-            path: [0],
-            startOffset: 0,
-          ),
-          reason: SelectionUpdateReason.uiEvent,
-        );
-      }
 
       editorScrollController = EditorScrollController(
         editorState: editorState,
@@ -318,11 +301,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         ),
       );
     }
-    children.add(
-      const SizedBox(
-        width: 10,
-      ),
-    );
+    children.add(const SizedBox(width: 10));
     widget.onSave.map((cb) {
       children.add(
         ActerPrimaryActionButton(
@@ -370,7 +349,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           // widget pass through
           editable: widget.editable,
           shrinkWrap: widget.shrinkWrap,
-          autoFocus: widget.autoFocus,
+          autoFocus: true,
           header: widget.header,
           // local states
           editorScrollController:
@@ -403,9 +382,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       itemOutlineColor: Theme.of(context).colorScheme.surface,
       toolbarItems: [
         textDecorationMobileToolbarItemV2,
-        buildTextAndBackgroundColorMobileToolbarItem(
-          textColorOptions: [],
-        ),
+        buildTextAndBackgroundColorMobileToolbarItem(textColorOptions: []),
         headingMobileToolbarItem,
         listMobileToolbarItem,
         linkMobileToolbarItem,
@@ -440,7 +417,7 @@ class HtmlEditorState extends State<HtmlEditor> {
                 // widget pass through
                 editable: widget.editable,
                 shrinkWrap: widget.shrinkWrap,
-                autoFocus: widget.autoFocus,
+                autoFocus: false,
                 header: widget.header,
                 // local states
                 editorState: editorState,
@@ -467,12 +444,12 @@ class HtmlEditorState extends State<HtmlEditor> {
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
       selectionColor: Theme.of(context).colorScheme.secondary,
-      textStyleConfiguration: widget.textStyleConfiguration ??
+      textStyleConfiguration:
+          widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context)
-                .textTheme
-                .bodySmall
-                .expect('bodySmall style not available'),
+            text: Theme.of(
+              context,
+            ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
@@ -484,12 +461,12 @@ class HtmlEditorState extends State<HtmlEditor> {
       padding: widget.editorPadding,
       cursorColor: Theme.of(context).colorScheme.primary,
       selectionColor: Theme.of(context).colorScheme.secondary,
-      textStyleConfiguration: widget.textStyleConfiguration ??
+      textStyleConfiguration:
+          widget.textStyleConfiguration ??
           TextStyleConfiguration(
-            text: Theme.of(context)
-                .textTheme
-                .bodySmall
-                .expect('bodySmall style not available'),
+            text: Theme.of(
+              context,
+            ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
       mobileDragHandleBallSize: const Size(12, 12),
       textSpanDecorator:
@@ -514,9 +491,11 @@ class HtmlEditorState extends State<HtmlEditor> {
     // Inline Mentions
     MentionAttributes? mention;
     try {
-      mention = attributes.entries
-          .firstWhereOrNull((e) => e.value is MentionAttributes)
-          ?.value as MentionAttributes?;
+      mention =
+          attributes.entries
+                  .firstWhereOrNull((e) => e.value is MentionAttributes)
+                  ?.value
+              as MentionAttributes?;
     } catch (e) {
       // If any error occurs while processing mention attributes,
       // fallback to default decoration

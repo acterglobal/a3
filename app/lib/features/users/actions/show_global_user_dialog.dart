@@ -15,9 +15,6 @@ Future<void> showUserInfoDrawer({
     context: context,
     isScrollControlled: true,
     isDismissible: true,
-    builder: (context) => UserInfoDrawer(
-      key: key,
-      userId: userId,
-    ),
+    builder: (context) => UserInfoDrawer(key: key, userId: userId),
   );
 }

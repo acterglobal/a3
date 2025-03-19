@@ -7,7 +7,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 final _log = Logger('a3::comments::list::widget');
 
@@ -28,8 +28,8 @@ class CommentListWidget extends ConsumerWidget {
     final commentsLoader = ref.watch(commentsListProvider(manager));
     return commentsLoader.when(
       data: (commentList) => buildCommentListUI(context, commentList),
-      error: (error, stack) =>
-          commentListErrorWidget(context, ref, error, stack),
+      error:
+          (error, stack) => commentListErrorWidget(context, ref, error, stack),
       loading: () => const CommentListSkeletonWidget(),
     );
   }
@@ -45,10 +45,7 @@ class CommentListWidget extends ConsumerWidget {
       reverse: true,
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
-        return CommentItemWidget(
-          comment: commentList[index],
-          manager: manager,
-        );
+        return CommentItemWidget(comment: commentList[index], manager: manager);
       },
     );
   }

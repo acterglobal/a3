@@ -16,18 +16,16 @@ class RepliedToMessageNotifier
   @override
   Future<RepliedToMsgState> build(RoomMsgId arg) async {
     try {
-      final timeline =
-          await ref.watch(timelineStreamProvider(arg.roomId).future);
+      final timeline = await ref.watch(
+        timelineStreamProvider(arg.roomId).future,
+      );
       final roomMsg = await timeline.getMessage(arg.uniqueId);
-      final repliedToItem =
-          roomMsg.eventItem().expect('msg should have event item');
+      final repliedToItem = roomMsg.eventItem().expect(
+        'msg should have event item',
+      );
       return RepliedToMsgData(repliedToItem);
     } catch (e, s) {
-      _log.severe(
-        'Failed to load reference ${arg.uniqueId})',
-        e,
-        s,
-      );
+      _log.severe('Failed to load reference ${arg.uniqueId})', e, s);
       return RepliedToMsgError(arg.uniqueId, e, s);
     }
   }

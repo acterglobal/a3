@@ -7,7 +7,8 @@ class ChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState> {
   ChatEditorNotifier() : super();
 
   @override
-  ChatEditorState build() => state = ChatEditorState(
+  ChatEditorState build() =>
+      state = ChatEditorState(
         selectedMsgItem: null,
         actionType: MessageAction.none,
       );

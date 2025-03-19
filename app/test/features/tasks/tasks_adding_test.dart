@@ -36,8 +36,9 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
 
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
@@ -46,9 +47,7 @@ void main() {
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
         ],
-        child: CreateTaskWidget(
-          taskList: mockTaskList,
-        ),
+        child: CreateTaskWidget(taskList: mockTaskList),
       );
       // try to submit without a title
 
@@ -79,24 +78,22 @@ void main() {
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title(any())).thenAnswer((_) => true);
       when(() => mockTaskDraft.descriptionText(any())).thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
-          pushNotificationSubscribedStatusProvider
-              .overrideWith((ref, arg) => SubscriptionStatus.none),
+          pushNotificationSubscribedStatusProvider.overrideWith(
+            (ref, arg) => SubscriptionStatus.none,
+          ),
         ],
-        child: CreateTaskWidget(
-          taskList: mockTaskList,
-        ),
+        child: CreateTaskWidget(taskList: mockTaskList),
       );
       // try to submit without a title
-
-      debugDumpApp();
 
       final submitBtn = find.byKey(CreateTaskWidget.submitBtn);
       expect(submitBtn, findsOneWidget);
@@ -146,20 +143,20 @@ void main() {
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title(any())).thenAnswer((_) => true);
       when(() => mockTaskDraft.descriptionText(any())).thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
-          pushNotificationSubscribedStatusProvider
-              .overrideWith((ref, arg) => SubscriptionStatus.none),
+          pushNotificationSubscribedStatusProvider.overrideWith(
+            (ref, arg) => SubscriptionStatus.none,
+          ),
         ],
-        child: CreateTaskWidget(
-          taskList: mockTaskList,
-        ),
+        child: CreateTaskWidget(taskList: mockTaskList),
       );
       // try to submit without a title
 
@@ -216,25 +213,27 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
-      when(() => mockTaskDraft.dueDate(any(), any(), any()))
-          .thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.dueDate(any(), any(), any()),
+      ).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
 
-      when(() => navigator.push<PickedDue>(any()))
-          .thenAnswer((_) async => Future.value(null));
+      when(
+        () => navigator.push<PickedDue>(any()),
+      ).thenAnswer((_) async => Future.value(null));
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         goRouter: mockedGoRouter,
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
-          pushNotificationSubscribedStatusProvider
-              .overrideWith((ref, arg) => SubscriptionStatus.none),
+          pushNotificationSubscribedStatusProvider.overrideWith(
+            (ref, arg) => SubscriptionStatus.none,
+          ),
         ],
-        child: CreateTaskWidget(
-          taskList: mockTaskList,
-        ),
+        child: CreateTaskWidget(taskList: mockTaskList),
       );
       // try to submit without a title
 
@@ -299,13 +298,16 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
-      when(() => mockTaskDraft.dueDate(any(), any(), any()))
-          .thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.dueDate(any(), any(), any()),
+      ).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
 
-      when(() => navigator.push<PickedDue>(any()))
-          .thenAnswer((_) async => Future.value(null));
+      when(
+        () => navigator.push<PickedDue>(any()),
+      ).thenAnswer((_) async => Future.value(null));
 
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
@@ -313,12 +315,11 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
-          pushNotificationSubscribedStatusProvider
-              .overrideWith((ref, arg) => SubscriptionStatus.none),
+          pushNotificationSubscribedStatusProvider.overrideWith(
+            (ref, arg) => SubscriptionStatus.none,
+          ),
         ],
-        child: CreateTaskWidget(
-          taskList: mockTaskList,
-        ),
+        child: CreateTaskWidget(taskList: mockTaskList),
       );
       // try to submit without a title
 
@@ -358,8 +359,9 @@ void main() {
       await tester.tap(dueTomorrow);
 
       // we closed the due again
-      final closeDueDateAction =
-          find.byKey(CreateTaskWidget.closeDueDateAction);
+      final closeDueDateAction = find.byKey(
+        CreateTaskWidget.closeDueDateAction,
+      );
       expect(closeDueDateAction, findsOneWidget);
       await tester.tap(closeDueDateAction);
 
@@ -386,10 +388,12 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
-      when(() => mockTaskDraft.dueDate(any(), any(), any()))
-          .thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.dueDate(any(), any(), any()),
+      ).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
 
       final expectedDate = DateTime.now().add(const Duration(days: 1));
 
@@ -404,12 +408,11 @@ void main() {
         overrides: [
           selectedSpaceDetailsProvider.overrideWith((_) => null),
           autoSubscribeProvider.overrideWith((a) async => false),
-          pushNotificationSubscribedStatusProvider
-              .overrideWith((ref, arg) => SubscriptionStatus.none),
+          pushNotificationSubscribedStatusProvider.overrideWith(
+            (ref, arg) => SubscriptionStatus.none,
+          ),
         ],
-        child: CreateTaskWidget(
-          taskList: mockTaskList,
-        ),
+        child: CreateTaskWidget(taskList: mockTaskList),
       );
       // try to submit without a title
 
@@ -461,12 +464,11 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
-      when(() => mockTaskDraft.send())
-          .thenAnswer((_) async => MockEventId(id: 'test'));
+      when(
+        () => mockTaskDraft.send(),
+      ).thenAnswer((_) async => MockEventId(id: 'test'));
       await tester.pumpProviderWidget(
-        overrides: [
-          selectedSpaceDetailsProvider.overrideWith((_) => null),
-        ],
+        overrides: [selectedSpaceDetailsProvider.overrideWith((_) => null)],
         child: const CreateTaskWidget(),
       );
       // try to submit without a title
