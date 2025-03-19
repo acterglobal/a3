@@ -1,12 +1,41 @@
+import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
-class EncryptionBackupPage extends ConsumerWidget {
+class EncryptionBackupPage extends ConsumerStatefulWidget {
   const EncryptionBackupPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EncryptionBackupPage> createState() =>
+      _EncryptionBackupPageState();
+}
+
+class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
+  final ValueNotifier<bool> isShowNextButton = ValueNotifier(false);
+  final ValueNotifier<String> encryptionKey = ValueNotifier('');
+
+  @override
+  void initState() {
+    super.initState();
+    enableBackup(context);
+  }
+
+  void enableBackup(BuildContext context) async {
+    final manager = await ref.read(backupManagerProvider.future);
+    encryptionKey.value = await manager.enable();
+  }
+
+  @override
+  void dispose() {
+    isShowNextButton.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
 
     return Scaffold(
@@ -20,7 +49,7 @@ class EncryptionBackupPage extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildDescription(context, lang),
             const SizedBox(height: 32),
-            _buildEncryptionKey(context, ref),
+            _buildEncryptionKey(context),
             const SizedBox(height: 32),
             _buildActionButtons(context),
             const Spacer(),
@@ -47,20 +76,28 @@ class EncryptionBackupPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildEncryptionKey(BuildContext context, WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: SelectableText(
-        'recoveryKey',
-        style: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2),
-        textAlign: TextAlign.center,
-      ),
+  Widget _buildEncryptionKey(BuildContext context) {
+    return ValueListenableBuilder<String>(
+      valueListenable: encryptionKey,
+      builder: (context, key, _) {
+        if (key.isEmpty) {
+          return const Center(child: LinearProgressIndicator());
+        }
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: SelectableText(
+            key,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2),
+            textAlign: TextAlign.center,
+          ),
+        );
+      },
     );
   }
 
@@ -68,7 +105,19 @@ class EncryptionBackupPage extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildActionButton(icon: Icons.copy, onTap: () {}, context: context),
+        _buildActionButton(
+          icon: Icons.copy,
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: encryptionKey.value));
+            isShowNextButton.value = true;
+            if (context.mounted) {
+              EasyLoading.showToast(
+                L10n.of(context).encryptionBackupRecoveryCopiedToClipboard,
+              );
+            }
+          },
+          context: context,
+        ),
         const SizedBox(width: 24),
         _buildActionButton(
           icon: Icons.desktop_windows,
@@ -92,9 +141,14 @@ class EncryptionBackupPage extends ConsumerWidget {
   }
 
   Widget _buildNextButton(BuildContext context, L10n lang) {
-    return ElevatedButton(
-      onPressed: () {},
-      child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+    return ValueListenableBuilder<bool>(
+      valueListenable: isShowNextButton,
+      builder: (context, isEnabled, _) {
+        return ElevatedButton(
+          onPressed: isEnabled ? () {} : null,
+          child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+        );
+      },
     );
   }
 
