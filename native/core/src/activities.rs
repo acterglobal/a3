@@ -114,10 +114,7 @@ impl Activity {
     }
 
     pub fn name(&self) -> Option<String> {
-        match &self.inner {
-            ActivityContent::Attachment { content, .. } => content.name(),
-            _ => None,
-        }
+        self.title()
     }
 
     pub fn type_str(&self) -> String {
@@ -172,6 +169,7 @@ impl Activity {
     pub fn title(&self) -> Option<String> {
         match &self.inner {
             ActivityContent::Attachment { content, .. } => content.name(),
+            ActivityContent::TaskAdd { task, .. } => Some(task.title.clone()),
             _ => None,
         }
     }

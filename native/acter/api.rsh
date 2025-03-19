@@ -2303,9 +2303,11 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
-    /// The name of the object (e.g. Attachment filename) if given
+    /// see title
     fn name() -> Option<string>;
 
+    /// The title of the activity (e.g. Attachment filename or Task on TaskAdd) if given
+    fn title() -> Option<string>;
 
     /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
