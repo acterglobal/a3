@@ -160,7 +160,7 @@ void main() {
     expect(find.byIcon(Icons.question_mark), findsOneWidget);
 
     // Verify action title
-    expect(find.text('Not Going to'), findsOneWidget);
+    expect(find.text('Might be attending'), findsOneWidget);
 
     // Verify object icon
     expect(find.byIcon(PhosphorIconsRegular.calendar), findsAtLeast(1));
