@@ -2306,6 +2306,9 @@
     "betaVersion": "Beta version",
     "spaceAcitivitiesBetaInfo": "space activities section is under development, so this might not display all the activities",
     "spaceActivities": "Space Activities",
+    "encryptionKeyBackupTitle": "Encryption Key Backup",
+    "encryptionKeyBackupDescription": "Acter is End-2-End-Encrypted: only your devices can decrypt the messages. To provide an additional safety-net for you, there is an encrypted backup of your keys stored on our services. To access it you will need the following key. Store it safely!",
+    "remindMeLater": "Remind me later",
     "unableToLoadFile": "Unable to load file",
     "@addComment": {}
 }

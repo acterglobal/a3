@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 
 class EncryptionBackupPage extends ConsumerWidget {
   const EncryptionBackupPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
+
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -13,35 +16,32 @@ class EncryptionBackupPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildHeader(context),
+            _buildHeader(context, lang),
             const SizedBox(height: 16),
-            _buildDescription(context),
+            _buildDescription(context, lang),
             const SizedBox(height: 32),
             _buildEncryptionKey(context, ref),
             const SizedBox(height: 32),
             _buildActionButtons(context),
             const Spacer(),
-            _buildNavigationButtons(context),
+            _buildNavigationButtons(context, lang),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, L10n lang) {
     return Text(
-      'Encryption Key Backup',
+      lang.encryptionKeyBackupTitle,
       style: Theme.of(context).textTheme.titleLarge,
       textAlign: TextAlign.center,
     );
   }
 
-  Widget _buildDescription(BuildContext context) {
+  Widget _buildDescription(BuildContext context, L10n lang) {
     return Text(
-      'Acter is End-2-End-Encrypted: only your devices can decrypt the messages. '
-      'To provide an additional safety-net for you, there is an encrypted backup '
-      'of your keys stored on our services. To access it you will need the '
-      'following key. Store it safely!',
+      lang.encryptionKeyBackupDescription,
       style: Theme.of(context).textTheme.labelMedium?.copyWith(fontSize: 14),
       textAlign: TextAlign.center,
     );
@@ -79,30 +79,30 @@ class EncryptionBackupPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildNavigationButtons(BuildContext context) {
+  Widget _buildNavigationButtons(BuildContext context, L10n lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildNextButton(context),
+        _buildNextButton(context, lang),
         const SizedBox(height: 16),
-        _buildRemindLaterButton(context),
+        _buildRemindLaterButton(context, lang),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildNextButton(BuildContext context) {
+  Widget _buildNextButton(BuildContext context, L10n lang) {
     return ElevatedButton(
       onPressed: () {},
-      child: const Text('Next', style: TextStyle(fontSize: 16)),
+      child: Text(lang.next, style: const TextStyle(fontSize: 16)),
     );
   }
 
-  Widget _buildRemindLaterButton(BuildContext context) {
+  Widget _buildRemindLaterButton(BuildContext context, L10n lang) {
     return TextButton(
       onPressed: () {},
       child: Text(
-        'Remind me later',
+        lang.remindMeLater,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
           color: Theme.of(context).colorScheme.primary,
         ),
