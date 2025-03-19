@@ -152,7 +152,7 @@ dependencies:
   device_calendar: #^4.3.3-20240801
     git:
       url: https://github.com/acterglobal/device_calendar
-      ref: ben-fix-event-color-type
+      ref: 2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5
   quickalert: ^1.1.0
   drag_and_drop_lists:
     git:
