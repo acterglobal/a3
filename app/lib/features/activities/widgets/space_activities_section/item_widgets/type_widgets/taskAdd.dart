@@ -10,10 +10,17 @@ class ActivityTaskAddItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activityObject = activity.object();
+    final name = activity.name();
 
     return ActivityUserCentricItemContainerWidget(
       actionIcon: Icons.add_circle_outline,
       actionTitle: L10n.of(context).created,
+      subtitle: Text(
+        '${L10n.of(context).taskName} : $name',
+        style: Theme.of(context).textTheme.labelMedium,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),

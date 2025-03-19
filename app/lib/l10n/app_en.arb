@@ -2316,5 +2316,6 @@
     "completed": "Completed",
     "accepted": "Accepted",
     "rejected": "Declined",
+    "taskName": "Task",
     "@addComment": {}
 }
