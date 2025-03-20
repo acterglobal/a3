@@ -10,6 +10,8 @@ pub enum Capability {
     ReadTracking,
     // someone can rsvp on this
     RSVPable,
+    // someone can invite on this
+    Inviteable,
     // another custom capability
     Custom(&'static str),
 }
