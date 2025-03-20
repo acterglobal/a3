@@ -59,7 +59,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
 
     // Check if we're near the bottom of the list (which is now the top of the chat history)
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 50) {
+        _scrollController.position.maxScrollExtent) {
       if (isLoading) return;
 
       // Get the notifier to load more messages
@@ -90,8 +90,8 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     // Update scroll to bottom button visibility
     final shouldShowButton =
         _scrollController.hasClients &&
-        _scrollController.position.pixels <
-            (_scrollController.position.maxScrollExtent);
+        _scrollController.position.pixels >
+            (_scrollController.position.minScrollExtent + 5);
 
     if (shouldShowButton != _showScrollToBottom) {
       setState(() {
