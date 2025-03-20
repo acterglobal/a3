@@ -52,6 +52,12 @@ impl OptionString {
     }
 }
 
+impl From<Option<String>> for OptionString {
+    fn from(text: Option<String>) -> Self {
+        OptionString { text }
+    }
+}
+
 pub struct OptionBuffer {
     pub(crate) data: Option<Vec<u8>>,
 }
