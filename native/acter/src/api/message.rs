@@ -19,8 +19,8 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem, TimelineItemContent,
-    TimelineItemKind, VirtualTimelineItem,
+    MembershipChange, OtherState, TimelineDetails, TimelineEventItemId, TimelineItem,
+    TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -108,6 +108,14 @@ pub struct RoomEventItem {
     #[builder(default)]
     in_reply_to: Option<OwnedEventId>,
     #[builder(default)]
+    replied_to_sender: Option<OwnedUserId>,
+    #[builder(default)]
+    replied_to_body: Option<String>,
+    #[builder(default)]
+    replied_to_msgtype: Option<String>,
+    #[builder(default)]
+    replied_to_content: Option<MsgContent>,
+    #[builder(default)]
     read_receipts: IndexMap<String, Receipt>,
     #[builder(default)]
     reactions: IndexMap<String, Vec<ReactionRecord>>,
@@ -175,7 +183,27 @@ impl RoomEventItem {
                     _ => None,
                 });
                 if let Some(in_reply_to) = msg.in_reply_to() {
-                    me.in_reply_to(Some(in_reply_to.clone().event_id));
+                    me.in_reply_to(Some(in_reply_to.event_id.clone()));
+                    // fetch_details_for_event
+                    if let TimelineDetails::Ready(replied_to) = in_reply_to.event.clone() {
+                        me.replied_to_sender(Some(replied_to.sender().to_owned()));
+                        if let Some(m) = replied_to.content().as_message() {
+                            me.replied_to_body(Some(m.body().to_owned()));
+                            let msgtype = m.msgtype();
+                            me.replied_to_msgtype(Some(msgtype.msgtype().to_owned()));
+                            let content = match msgtype {
+                                MessageType::Text(content) => Some(MsgContent::from(content)),
+                                MessageType::Emote(content) => Some(MsgContent::from(content)),
+                                MessageType::Image(content) => Some(MsgContent::from(content)),
+                                MessageType::Audio(content) => Some(MsgContent::from(content)),
+                                MessageType::Video(content) => Some(MsgContent::from(content)),
+                                MessageType::File(content) => Some(MsgContent::from(content)),
+                                MessageType::Location(content) => Some(MsgContent::from(content)),
+                                _ => None,
+                            };
+                            me.replied_to_content(content);
+                        }
+                    }
                 }
                 me.edited(msg.is_edited());
             }
@@ -369,7 +397,23 @@ impl RoomEventItem {
     }
 
     pub fn in_reply_to(&self) -> Option<String> {
-        self.in_reply_to.as_ref().map(|x| x.to_string())
+        self.in_reply_to.as_ref().map(ToString::to_string)
+    }
+
+    pub fn replied_to_sender(&self) -> Option<String> {
+        self.replied_to_sender.as_ref().map(ToString::to_string)
+    }
+
+    pub fn replied_to_body(&self) -> Option<String> {
+        self.replied_to_body.clone()
+    }
+
+    pub fn replied_to_msgtype(&self) -> Option<String> {
+        self.replied_to_msgtype.clone()
+    }
+
+    pub fn replied_to_content(&self) -> Option<MsgContent> {
+        self.replied_to_content.clone()
     }
 
     pub fn read_users(&self) -> Vec<String> {
@@ -1265,7 +1309,7 @@ impl RoomVirtualItem {
                     None
                 };
                 RoomVirtualItem {
-                    event_type: "DayDivider".to_string(),
+                    event_type: "DateDivider".to_string(),
                     desc,
                 }
             }

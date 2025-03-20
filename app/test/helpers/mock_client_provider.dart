@@ -50,7 +50,7 @@ class MockSyncNotifier extends SyncNotifier {
   ffi.Client get client => _client!;
 
   @override
-  void restartSync() {
+  Future<void> restartSync() async {
     restarted += 1;
   }
 }

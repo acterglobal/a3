@@ -24,7 +24,7 @@ use matrix_sdk_base::{
         OwnedRoomAliasId, OwnedRoomId, RoomAliasId, RoomId, RoomOrAliasId, ServerName,
     },
 };
-use matrix_sdk_ui::timeline::RoomExt;
+use matrix_sdk_ui::{room_list_service, timeline::RoomExt};
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
 use tokio::sync::broadcast::Receiver;
@@ -33,32 +33,15 @@ use tracing::{error, info, trace, warn};
 
 use crate::{Client, Room, TimelineStream, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
+use super::{
+    client::SyncController,
+    utils::{remap_for_diff, ApiVectorDiff},
+};
 
 #[derive(Debug, Clone)]
 pub struct Space {
     pub client: Client,
     pub(crate) inner: Room,
-}
-
-impl PartialEq for Space {
-    fn eq(&self, other: &Self) -> bool {
-        self.inner.room_id() == other.inner.room_id()
-    }
-}
-
-impl Eq for Space {}
-
-impl PartialOrd for Space {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Space {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.room_id().cmp(other.room_id())
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,6 +54,7 @@ impl HistoryState {
     pub fn new(last_seen: String) -> HistoryState {
         HistoryState { seen: last_seen }
     }
+
     pub(crate) fn storage_key(room_id: &RoomId) -> String {
         format!("{room_id}::history")
     }
@@ -82,6 +66,7 @@ impl HistoryState {
         trace!(?room_id, seen = history.seen, "Loading history key");
         Ok(history)
     }
+
     pub(crate) async fn store(store: &Store, room_id: &RoomId, seen: String) -> Result<()> {
         trace!(?room_id, ?seen, "Storing history key");
         Ok(store
@@ -177,16 +162,18 @@ impl Space {
 
 impl Space {
     #[cfg(feature = "testing")]
-    pub async fn timeline_stream(&self) -> TimelineStream {
+    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
         let room = self.inner.clone();
-        let timeline = Arc::new(
-            self.inner
-                .deref()
-                .timeline()
-                .await
-                .expect("Timeline creation doesn’t fail"),
-        );
-        TimelineStream::new(room, timeline)
+        let sync_controller = self.client.sync_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                let timelines = sync_controller.timelines.read().await;
+                let timeline = timelines
+                    .get(room.room.room_id())
+                    .context("timeline not started yet")?;
+                Ok(TimelineStream::new(room, timeline.inner.clone()))
+            })
+            .await?
     }
 
     pub async fn create_onboarding_data(&self) -> Result<()> {
@@ -443,35 +430,46 @@ impl Client {
 
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn space_typed(&self, room_id: &RoomId) -> Option<Space> {
-        self.spaces
-            .read()
-            .await
-            .iter()
-            .find(|s| s.room_id() == room_id)
-            .cloned()
+        let ui_rooms = self.sync_controller.ui_rooms.read().await;
+        ui_rooms
+            .get(room_id)
+            .filter(|r| r.is_space())
+            .map(|room| {
+                Room::new(
+                    self.core.clone(),
+                    room.inner_room().clone(),
+                    self.sync_controller.clone(),
+                )
+            })
+            .map(|inner| Space::new(self.clone(), inner))
     }
 
     // ***_typed fn accepts rust-typed input, not string-based one
     async fn space_by_alias_typed(&self, room_alias: OwnedRoomAliasId) -> Result<Space> {
-        let space = self
-            .spaces
-            .read()
-            .await
+        let ui_rooms = self.sync_controller.ui_rooms.read().await;
+        let space = ui_rooms
             .iter()
-            .find(|s| {
-                if let Some(con_alias) = s.canonical_alias() {
+            .find(|(room_id, room)| {
+                if let Some(con_alias) = room.canonical_alias() {
                     if con_alias == room_alias {
                         return true;
                     }
                 }
-                for alt_alias in s.alt_aliases() {
+                for alt_alias in room.alt_aliases() {
                     if alt_alias == room_alias {
                         return true;
                     }
                 }
                 false
             })
-            .cloned();
+            .map(|(room_id, room)| {
+                Room::new(
+                    self.core.clone(),
+                    room.inner_room().clone(),
+                    self.sync_controller.clone(),
+                )
+            })
+            .map(|inner| Space::new(self.clone(), inner));
         match space {
             Some(space) => Ok(space),
             None => {
@@ -484,17 +482,22 @@ impl Client {
     }
 
     pub async fn space(&self, room_id_or_alias: String) -> Result<Space> {
-        let either = RoomOrAliasId::parse(&room_id_or_alias)?;
-        if either.is_room_id() {
-            let room_id = RoomId::parse(either.as_str())?;
-            self.space_typed(&room_id)
-                .await
-                .context(format!("Space {room_id} not found"))
-        } else if either.is_room_alias_id() {
-            let room_alias = RoomAliasId::parse(either.as_str())?;
-            self.space_by_alias_typed(room_alias).await
-        } else {
-            bail!("{room_id_or_alias} isn’t a valid room id or alias...");
-        }
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let either = RoomOrAliasId::parse(&room_id_or_alias)?;
+                if either.is_room_id() {
+                    let room_id = RoomId::parse(either.as_str())?;
+                    me.space_typed(&room_id)
+                        .await
+                        .context(format!("Space {room_id} not found"))
+                } else if either.is_room_alias_id() {
+                    let room_alias = RoomAliasId::parse(either.as_str())?;
+                    me.space_by_alias_typed(room_alias).await
+                } else {
+                    bail!("{room_id_or_alias} isn’t a valid room id or alias...");
+                }
+            })
+            .await?
     }
 }

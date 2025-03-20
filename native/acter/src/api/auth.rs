@@ -239,7 +239,7 @@ async fn login_client(
         "Successfully logged in user {user_id}, device {:?}",
         client.device_id(),
     );
-    Client::new(client.clone(), state).await
+    Client::new(client, state).await
 }
 
 pub async fn login_new_client_under_config(
@@ -251,14 +251,8 @@ pub async fn login_new_client_under_config(
 ) -> Result<Client> {
     RUNTIME
         .spawn(async move {
-            login_client(
-                config.build().await?,
-                user_id,
-                password,
-                db_passphrase,
-                device_name,
-            )
-            .await
+            let client = config.build().await?;
+            login_client(client, user_id, password, db_passphrase, device_name).await
         })
         .await?
 }

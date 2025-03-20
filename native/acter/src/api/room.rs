@@ -63,6 +63,7 @@ use tracing::{info, warn};
 
 use super::{
     api::FfiBuffer,
+    client::SyncController,
     deep_linking::RefDetails,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
@@ -612,11 +613,16 @@ impl SpaceRelations {
 pub struct Room {
     pub(crate) core: CoreClient,
     pub(crate) room: SdkRoom,
+    sync_controller: SyncController,
 }
 
 impl Room {
-    pub fn new(core: CoreClient, room: SdkRoom) -> Self {
-        Room { core, room }
+    pub fn new(core: CoreClient, room: SdkRoom, sync_controller: SyncController) -> Self {
+        Room {
+            core,
+            room,
+            sync_controller,
+        }
     }
 
     pub fn has_avatar(&self) -> bool {
@@ -635,16 +641,23 @@ impl Room {
     }
 
     pub async fn display_name(&self) -> Result<OptionString> {
+        let sync_controller = self.sync_controller.clone();
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let result = room.display_name().await?;
-                match result {
-                    RoomDisplayName::Named(name) => Ok(OptionString::new(Some(name))),
-                    RoomDisplayName::Aliased(name) => Ok(OptionString::new(Some(name))),
-                    RoomDisplayName::Calculated(name) => Ok(OptionString::new(Some(name))),
-                    RoomDisplayName::EmptyWas(name) => Ok(OptionString::new(Some(name))),
-                    RoomDisplayName::Empty => Ok(OptionString::new(None)),
+                let room_infos = sync_controller.room_infos.read().await;
+                if let Some(info) = room_infos.get(room.room_id()) {
+                    Ok(OptionString::new(info.display_name()))
+                } else {
+                    let display_name = room.display_name().await?;
+                    let text = match display_name {
+                        RoomDisplayName::Named(name) => Some(name),
+                        RoomDisplayName::Aliased(name) => Some(name),
+                        RoomDisplayName::Calculated(name) => Some(name),
+                        RoomDisplayName::EmptyWas(name) => Some(name),
+                        RoomDisplayName::Empty => None,
+                    };
+                    Ok(OptionString::new(text))
                 }
             })
             .await?

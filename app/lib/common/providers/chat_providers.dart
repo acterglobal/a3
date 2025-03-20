@@ -24,7 +24,8 @@ final _convosProvider = NotifierProvider<ChatRoomsListNotifier, List<Convo>>(
 /// Provider that sorts up list based on latest timestamp from [_convosProvider].
 final chatsProvider = Provider<List<Convo>>((ref) {
   final convos = List.of(ref.watch(_convosProvider));
-  convos.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
+  // it was already sorted from rust side
+  // convos.sort((a, b) => b.latestMessageTs().compareTo(a.latestMessageTs()));
   return convos;
 });
 

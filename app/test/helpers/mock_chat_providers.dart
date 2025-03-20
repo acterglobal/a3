@@ -12,6 +12,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_types/src/message.dart';
 import 'package:flutter_chat_types/src/messages/text_message.dart';
 import 'package:flutter_chat_types/src/preview_data.dart';
@@ -46,7 +47,11 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   }
 
   @override
-  Future<void> fetchOriginalContent(String originalId, String replyId) {
+  Future<void> fetchOriginalContent(
+    String originalId,
+    RoomMessage originalRoomMsg,
+    types.Message msg,
+  ) {
     // TODO: implement fetchOriginalContent
     throw UnimplementedError();
   }

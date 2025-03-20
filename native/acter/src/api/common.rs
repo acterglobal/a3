@@ -32,7 +32,7 @@ use std::{ops::Deref, str::FromStr};
 use tracing::error;
 
 use super::api::FfiBuffer;
-use super::RefDetails;
+use super::{RefDetails, RoomMessage};
 
 pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
@@ -83,6 +83,7 @@ impl OptionRsvpStatus {
         self.status.as_ref().map(|x| x.to_string())
     }
 }
+
 #[derive(Clone)]
 pub struct OptionComposeDraft {
     draft: Option<ComposeDraft>,
@@ -95,6 +96,20 @@ impl OptionComposeDraft {
 
     pub fn draft(&self) -> Option<ComposeDraft> {
         self.draft.clone()
+    }
+}
+
+pub struct OptionRoomMessage {
+    data: Option<RoomMessage>,
+}
+
+impl OptionRoomMessage {
+    pub(crate) fn new(data: Option<RoomMessage>) -> Self {
+        OptionRoomMessage { data }
+    }
+
+    pub fn data(&self) -> Option<RoomMessage> {
+        self.data.clone()
     }
 }
 

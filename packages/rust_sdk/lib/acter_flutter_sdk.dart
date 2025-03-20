@@ -163,17 +163,15 @@ class ActerSdk {
     );
     final iOptions = IOSOptions(
       synchronizable: false,
-      accessibility:
-          KeychainAccessibility
-              .first_unlock, // must have been unlocked since reboot
+      accessibility: KeychainAccessibility
+          .first_unlock, // must have been unlocked since reboot
       groupId:
           appleKeychainAppGroupName, // to allow the background process to access the same store
     );
     final mOptions = MacOsOptions(
       synchronizable: false,
-      accessibility:
-          KeychainAccessibility
-              .first_unlock, // must have been unlocked since reboot
+      accessibility: KeychainAccessibility
+          .first_unlock, // must have been unlocked since reboot
       groupId:
           appleKeychainAppGroupName, // to allow the background process to access the same store
     );
@@ -475,10 +473,9 @@ class ActerSdk {
   }
 
   static Future<ActerSdk> _unrestoredInstanceInner() async {
-    final api =
-        Platform.isAndroid
-            ? ffi.Api(await _getAndroidDynLib('libacter.so'))
-            : ffi.Api.load();
+    final api = Platform.isAndroid
+        ? ffi.Api(await _getAndroidDynLib('libacter.so'))
+        : ffi.Api.load();
     String logPath = await appCacheDir();
     FileSystemEntity? latestLogPath;
 
