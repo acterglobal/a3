@@ -50,6 +50,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
 
   @override
   void dispose() {
+    markReadDebouce?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
