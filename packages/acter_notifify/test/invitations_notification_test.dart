@@ -61,7 +61,7 @@ void main() {
 
       // Assert: Check if tile and body are as expected
       expect(title, '📨 Bernd Maur invited you');
-      expect(body, "☑️ Website Redesign");
+      expect(body, "To ☑️ Website Redesign");
     });
     test("Invites you someone else to task", () {
       // Arrange: Set sender user name

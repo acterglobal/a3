@@ -8,7 +8,7 @@ import 'package:acter_notifify/processing/utils.dart';
 
   final objectTitle = notification.parent()?.parentPart();
   if (notification.mentionsYou()) {
-    return ("📨 $username invited you", objectTitle);
+    return ("📨 $username invited you", "To $objectTitle");
   } else {
     final whom = notification.whom();
     late String title;
