@@ -81,18 +81,26 @@ impl InvitationsManager {
         Ok(true)
     }
 
-    pub(crate) fn mark_as_accepted(&mut self, entry: OwnedUserId) -> Result<bool> {
-        self.stats.invited.remove(&entry);
-        self.stats.declined.remove(&entry);
-        self.stats.accepted.insert(entry);
-        Ok(true)
+    pub(crate) fn mark_as_accepted(&mut self, entry: OwnedUserId) -> bool {
+        let mut was_invited = self.stats.invited.remove(&entry);
+        if !was_invited {
+            was_invited = self.stats.declined.remove(&entry);
+        }
+        if was_invited {
+            self.stats.accepted.insert(entry);
+        }
+        was_invited
     }
 
-    pub(crate) fn mark_as_declined(&mut self, entry: OwnedUserId) -> Result<bool> {
-        self.stats.invited.remove(&entry);
-        self.stats.accepted.remove(&entry);
-        self.stats.declined.insert(entry);
-        Ok(true)
+    pub(crate) fn mark_as_declined(&mut self, entry: OwnedUserId) -> bool {
+        let mut was_invited = self.stats.invited.remove(&entry);
+        if !was_invited {
+            was_invited = self.stats.accepted.remove(&entry);
+        }
+        if was_invited {
+            self.stats.declined.insert(entry);
+        }
+        was_invited
     }
 
     pub fn stats(&self) -> &InviteStats {

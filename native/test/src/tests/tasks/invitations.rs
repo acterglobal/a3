@@ -166,8 +166,6 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
 
     // see what the recipient sees
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-
     let fetcher_client = second_user.clone();
     let task = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
@@ -199,9 +197,9 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
         })
         .await?;
 
-        assert_eq!(invites.is_invited(), true);
-        assert_eq!(invites.has_accepted(), false);
-        assert_eq!(invites.has_declined(), false);
+        assert!(invites.is_invited());
+        assert!(!invites.has_accepted());
+        assert!(!invites.has_declined());
         let invite = invites.invited();
 
         assert_eq!(invite.len(), 1);
@@ -224,9 +222,9 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
         })
         .await?;
 
-        assert_eq!(invites.is_invited(), false); // we are not invited anymore
-        assert_eq!(invites.has_accepted(), true);
-        assert_eq!(invites.has_declined(), false);
+        assert!(!invites.is_invited()); // we are not invited anymore
+        assert!(invites.has_accepted());
+        assert!(!invites.has_declined());
 
         assert_eq!(invites.invited().len(), 0);
         assert_eq!(invites.declined().len(), 0);
@@ -255,9 +253,9 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
         })
         .await?;
 
-        assert_eq!(invites.is_invited(), false); // we are not invited anymore
-        assert_eq!(invites.has_accepted(), false);
-        assert_eq!(invites.has_declined(), true);
+        assert!(!invites.is_invited()); // we are not invited anymore
+        assert!(!invites.has_accepted());
+        assert!(invites.has_declined());
 
         assert_eq!(invites.invited().len(), 0);
         assert_eq!(invites.accepted().len(), 0);
@@ -306,8 +304,6 @@ async fn can_invite_after_unassign_task() -> Result<()> {
 
     // see what the recipient sees
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-
     let fetcher_client = second_user.clone();
     let task = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
@@ -333,6 +329,7 @@ async fn can_invite_after_unassign_task() -> Result<()> {
     let stream = manager.subscribe_stream();
     let mut stream = stream.fuse();
     assert!(manager.can_invite(second_user_str.clone())?);
+    manager.invite(second_user_str.clone()).await?;
     let _ = stream.next().await; // await the invite being sent
 
     {
@@ -369,7 +366,7 @@ async fn can_invite_after_unassign_task() -> Result<()> {
         })
         .await?;
 
-        assert_eq!(invites.can_invite(second_user_str.clone()).unwrap(), false);
+        assert!(!invites.can_invite(second_user_str.clone()).unwrap());
     }
 
     Ok(())

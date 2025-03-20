@@ -265,16 +265,16 @@ impl ActerModel for TaskSelfAssign {
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         let belongs_to = self.inner.task.event_id.clone();
         let sender = self.meta.sender.clone();
-        let mut updates = default_model_execute(store, self.into()).await?;
         let manager = {
             let mut manager = InvitationsManager::from_store_and_event_id(store, &belongs_to).await;
-            if manager.mark_as_accepted(sender)? {
+            if manager.mark_as_accepted(sender) {
                 Some(manager)
             } else {
                 None
             }
         };
 
+        let mut updates = default_model_execute(store, self.into()).await?;
         if let Some(manager) = manager {
             updates.push(manager.save().await?);
         }
@@ -339,16 +339,16 @@ impl ActerModel for TaskSelfUnassign {
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
         let belongs_to = self.inner.task.event_id.clone();
         let sender = self.meta.sender.clone();
-        let mut updates = default_model_execute(store, self.into()).await?;
         let manager = {
             let mut manager = InvitationsManager::from_store_and_event_id(store, &belongs_to).await;
-            if manager.mark_as_declined(sender)? {
+            if manager.mark_as_declined(sender) {
                 Some(manager)
             } else {
                 None
             }
         };
 
+        let mut updates = default_model_execute(store, self.into()).await?;
         if let Some(manager) = manager {
             updates.push(manager.save().await?);
         }
