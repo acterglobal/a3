@@ -11,6 +11,7 @@ use crate::{
         TaskEventContent, TaskSelfAssignEventContent, TaskSelfUnassignEventContent,
         TaskUpdateBuilder, TaskUpdateEventContent,
     },
+    models::InvitationsManager,
     referencing::{ExecuteReference, IndexKey, ObjectListIndex, SpecialListsIndex},
     Result,
 };
@@ -262,7 +263,22 @@ impl ActerModel for TaskSelfAssign {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
-        default_model_execute(store, self.into()).await
+        let belongs_to = self.inner.task.event_id.clone();
+        let sender = self.meta.sender.clone();
+        let mut updates = default_model_execute(store, self.into()).await?;
+        let manager = {
+            let mut manager = InvitationsManager::from_store_and_event_id(store, &belongs_to).await;
+            if manager.mark_as_accepted(sender)? {
+                Some(manager)
+            } else {
+                None
+            }
+        };
+
+        if let Some(manager) = manager {
+            updates.push(manager.save().await?);
+        }
+        Ok(updates)
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
@@ -321,7 +337,22 @@ impl ActerModel for TaskSelfUnassign {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
-        default_model_execute(store, self.into()).await
+        let belongs_to = self.inner.task.event_id.clone();
+        let sender = self.meta.sender.clone();
+        let mut updates = default_model_execute(store, self.into()).await?;
+        let manager = {
+            let mut manager = InvitationsManager::from_store_and_event_id(store, &belongs_to).await;
+            if manager.mark_as_declined(sender)? {
+                Some(manager)
+            } else {
+                None
+            }
+        };
+
+        if let Some(manager) = manager {
+            updates.push(manager.save().await?);
+        }
+        Ok(updates)
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
