@@ -1,9 +1,11 @@
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -26,8 +28,12 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   void enableBackup(BuildContext context) async {
-    final manager = await ref.read(backupManagerProvider.future);
-    encryptionKey.value = await manager.enable();
+    try {
+      final manager = await ref.read(backupManagerProvider.future);
+      encryptionKey.value = await manager.enable();
+    } catch (e) {
+      encryptionKey.value = e.toString();
+    }
   }
 
   @override
@@ -47,6 +53,13 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Spacer(),
+            Icon(
+              PhosphorIcons.lockKey(),
+              size: 80,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 24),
             _buildHeader(context, lang),
             const SizedBox(height: 16),
             _buildDescription(context, lang),
@@ -79,27 +92,27 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buildEncryptionKey(BuildContext context) {
-    return ValueListenableBuilder<String>(
-      valueListenable: encryptionKey,
-      builder: (context, key, _) {
-        if (key.isEmpty) {
-          return const Center(child: LinearProgressIndicator());
-        }
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: SelectableText(
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ValueListenableBuilder<String>(
+        valueListenable: encryptionKey,
+        builder: (context, key, _) {
+          if (key.isEmpty) {
+            return const Center(child: LinearProgressIndicator());
+          }
+          return SelectableText(
             key,
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2),
             textAlign: TextAlign.center,
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -150,7 +163,8 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isShowNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled ? () {} : null,
+          onPressed:
+              isEnabled ? () => context.goNamed(Routes.linkEmail.name) : null,
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
@@ -159,7 +173,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildRemindLaterButton(BuildContext context, L10n lang) {
     return TextButton(
-      onPressed: () {},
+      onPressed: () => context.goNamed(Routes.linkEmail.name),
       child: Text(
         lang.remindMeLater,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
