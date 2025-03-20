@@ -231,6 +231,11 @@ class SidebarWidget extends ConsumerWidget {
     final canAddBoost =
         ref.watch(hasSpaceWithPermissionProvider('CanPostNews')).valueOrNull ??
         false;
+    final canAddStories =
+        ref
+            .watch(hasSpaceWithPermissionProvider('CanPostStories'))
+            .valueOrNull ??
+        false;
     if (canAddPin) {
       actions.add(
         PopupMenuItem(
@@ -280,8 +285,23 @@ class SidebarWidget extends ConsumerWidget {
       actions.add(
         PopupMenuItem(
           child: ActionButtonWidget(
-            iconData: Atlas.megaphone_thin,
+            iconData: Icons.rocket_launch_sharp,
             title: lang.addBoost,
+            color: boastFeatureColor,
+            onPressed: () {
+              if (context.canPop()) Navigator.pop(context);
+              context.pushNamed(Routes.actionAddUpdate.name);
+            },
+          ),
+        ),
+      );
+    }
+    if (canAddStories) {
+      actions.add(
+        PopupMenuItem(
+          child: ActionButtonWidget(
+            iconData: Icons.amp_stories,
+            title: lang.addStory,
             color: boastFeatureColor,
             onPressed: () {
               if (context.canPop()) Navigator.pop(context);

@@ -1,1 +1,0 @@
-- Fix notifications format for comments on stories

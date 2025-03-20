@@ -207,7 +207,7 @@ UriMaker makeUriMakerForPublicPrefix(
             : null;
     final hash =
         sha1.convert(utf8.encode('$uriPrefix$finalQuery#$path')).toString();
-    return Uri.parse('$uriPrefix/$hash$finalQuery#$path');
+    return Uri.parse('$uriPrefix$hash$finalQuery#$path');
   }
 
   return makeDomainLink;

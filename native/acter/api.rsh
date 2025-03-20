@@ -2286,6 +2286,9 @@ object ActivityObject {
     fn object_id_str() -> string;
     fn title() -> Option<string>;
     fn emoji() -> string;
+
+    /// if this is a `task` type, what `task-list-id` does it belong to
+    fn task_list_id_str() -> Option<string>;
 }
 
 object Activity {
@@ -2319,11 +2322,17 @@ object Activity {
     /// where to route to for the details of this activity
     fn target_url() -> string;
 
+    /// where to route to for the details of this activity
+    fn task_list_id_str() -> Option<string>;
+
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
-    /// The name of the object (e.g. Attachment filename) if given
+    /// see title
     fn name() -> Option<string>;
+
+    /// The title of the activity (e.g. Attachment filename or Task on TaskAdd) if given
+    fn title() -> Option<string>;
 
     /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;

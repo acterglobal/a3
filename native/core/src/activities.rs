@@ -118,10 +118,7 @@ impl Activity {
     }
 
     pub fn name(&self) -> Option<String> {
-        match &self.inner {
-            ActivityContent::Attachment { content, .. } => content.name(),
-            _ => None,
-        }
+        self.title()
     }
 
     pub fn type_str(&self) -> String {
@@ -177,6 +174,7 @@ impl Activity {
     pub fn title(&self) -> Option<String> {
         match &self.inner {
             ActivityContent::Attachment { content, .. } => content.name(),
+            ActivityContent::TaskAdd { task, .. } => Some(task.title.clone()),
             _ => None,
         }
     }
@@ -290,6 +288,17 @@ impl Activity {
             return vec![];
         };
         invitees.iter().map(|i| i.to_string()).collect()
+    }
+    
+    pub fn task_list_id_str(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::TaskAccept { object }
+            | ActivityContent::TaskAdd { object, .. }
+            | ActivityContent::TaskDecline { object }
+            | ActivityContent::TaskDueDateChange { object, .. }
+            | ActivityContent::TaskProgress { object, .. } => object.task_list_id_str(),
+            _ => None,
+        }
     }
 }
 

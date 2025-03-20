@@ -120,3 +120,8 @@ String getTimeFromDate(BuildContext context, UtcDateTime utcDateTime) {
 String eventDateFormat(DateTime dateTime) {
   return DateFormat('MMM dd, yyyy').format(dateTime);
 }
+
+String getDateFormat(UtcDateTime utcDateTime){
+  final localDateTime = toDartDatetime(utcDateTime).toLocal();
+  return DateFormat('dd MMMM, yyyy').format(localDateTime);
+}
