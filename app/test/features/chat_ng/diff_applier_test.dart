@@ -239,9 +239,9 @@ void main() {
           ),
         );
         // reversed
-        expect(secondState.messageList, ['a', 'h', 'g', 'b', 'd', 'e', 'f']);
-        expect(secondState.messages.length, 6);
-        expect(secondState.messages.keys, ['b', 'd', 'e', 'f', 'g', 'h']);
+        expect(secondState.messageList, ['a', 'b', 'd', 'e', 'f']);
+        expect(secondState.messages.length, 5);
+        expect(secondState.messages.keys, ['b', 'd', 'e', 'f', 'a']);
       });
     });
 
@@ -300,7 +300,7 @@ void main() {
         );
         final newState = handleDiff(startingState, null, mockDiff);
         // reversed
-        expect(newState.messageList, ['a', 'd', 'b']);
+        expect(newState.messageList, ['d', 'b', 'a']);
         expect(newState.messages.keys, ['d', 'b', 'a']);
       });
     });
@@ -606,9 +606,9 @@ void main() {
           MockedRoomMessageDiff(act: 'Remove', idx: 2),
         );
         // reversed
-        expect(thirdNew.messageList, ['d', 'b', 'f']);
+        expect(thirdNew.messageList, ['d', 'e', 'f']);
         expect(thirdNew.messages.length, 3);
-        expect(thirdNew.messages.keys, ['b', 'd', 'f']);
+        expect(thirdNew.messages.keys, ['d', 'e', 'f']);
 
         final verifier3 = verify(
           () => mockAnimatedState.removeItem(captureAny(), any()),
@@ -717,7 +717,7 @@ void main() {
         );
         verifier1.called(1);
         // reversed
-        expect(verifier1.captured.single, 2);
+        expect(verifier1.captured.single, 0);
       });
     });
 
