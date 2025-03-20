@@ -262,11 +262,7 @@ impl Client {
                     .iter()
                     .filter(|room| !prev_ui_rooms.contains_key(room.room_id()))
                 {
-                    let key = latest_message_storage_key(ui_room.room_id()).as_storage_key();
-                    let latest_message = me.store().get_raw::<RoomMessage>(&key).await.ok();
-
-                    let loaded_latest_msg = latest_message.is_some();
-                    let latest_message = Arc::new(RwLock::new(latest_message));
+                    let mut found_latest_msg = me.load_latest_message(ui_room.room_id()).await;
 
                     // Initialize the timeline.
                     let Ok(builder) = ui_room.default_room_timeline_builder().await else {
@@ -285,13 +281,18 @@ impl Client {
                         continue;
                     };
                     let (items, stream) = sdk_timeline.subscribe().await;
-                    for item in items {
-                        me.set_latest_message(ui_room.room_id(), item).await;
+                    // Update the latest message if there is new msg in the first page
+                    for item in items.into_iter().rev() {
+                        if me.save_latest_message(ui_room.room_id(), item).await {
+                            found_latest_msg = true;
+                            break;
+                        }
                     }
 
-                    // Spawn a timeline task that will listen to all the timeline item changes.
+                    // Spawn a timeline task that will track the latest message.
+                    // Will listen to msg history in TimelineStream::messages_stream().
                     let room_id = ui_room.room_id().to_owned();
-                    let client = me.clone();
+                    let this = me.clone();
                     let timeline_task = tokio::spawn(async move {
                         pin_mut!(stream);
                         while let Some(diffs) = stream.next().await {
@@ -299,30 +300,34 @@ impl Client {
                             for diff in diffs.clone() {
                                 match diff {
                                     VectorDiff::Append { values } => {
-                                        for value in values {
-                                            client.set_latest_message(&room_id, value).await;
+                                        for value in values.into_iter().rev() {
+                                            if this.save_latest_message(&room_id, value).await {
+                                                break;
+                                            }
                                         }
                                     }
                                     VectorDiff::Clear => {}
                                     VectorDiff::Insert { index, value } => {
-                                        client.set_latest_message(&room_id, value).await;
+                                        this.save_latest_message(&room_id, value).await;
                                     }
                                     VectorDiff::PopBack => {}
                                     VectorDiff::PopFront => {}
                                     VectorDiff::PushBack { value } => {
-                                        client.set_latest_message(&room_id, value).await;
+                                        this.save_latest_message(&room_id, value).await;
                                     }
                                     VectorDiff::PushFront { value } => {
-                                        client.set_latest_message(&room_id, value).await;
+                                        this.save_latest_message(&room_id, value).await;
                                     }
                                     VectorDiff::Remove { index } => {}
                                     VectorDiff::Reset { values } => {
-                                        for value in values {
-                                            client.set_latest_message(&room_id, value).await;
+                                        for value in values.into_iter().rev() {
+                                            if this.save_latest_message(&room_id, value).await {
+                                                break;
+                                            }
                                         }
                                     }
                                     VectorDiff::Set { index, value } => {
-                                        client.set_latest_message(&room_id, value).await;
+                                        this.save_latest_message(&room_id, value).await;
                                     }
                                     VectorDiff::Truncate { length } => {}
                                 }
@@ -330,11 +335,11 @@ impl Client {
                         }
                     });
 
-                    // Paginate backwards, if the latest message is missed
+                    // Paginate backwards, if the latest message was not found in the first page or cache
                     {
                         let ri = room_infos.read().await;
                         if let Some(room_info) = ri.get(ui_room.room_id()) {
-                            if room_info.latest_msg.is_none() && !loaded_latest_msg {
+                            if room_info.latest_msg.is_none() && !found_latest_msg {
                                 // paginate_backwards passes execution flow to timeline_task
                                 if let Err(err) = sdk_timeline.paginate_backwards(10).await {
                                     error!(?err, room_id=?ui_room.room_id(), "backpagination failed");
@@ -449,24 +454,37 @@ impl Client {
         );
     }
 
-    async fn set_latest_message(&self, room_id: &RoomId, item: Arc<TimelineItem>) {
+    async fn load_latest_message(&self, room_id: &RoomId) -> bool {
+        let key = latest_message_storage_key(room_id).as_storage_key();
+        let latest_message = self.store().get_raw::<RoomMessage>(&key).await.ok();
+        if latest_message.is_none() {
+            return false;
+        }
+        let mut room_infos = self.sync_controller.room_infos.write().await;
+        if let Some(room_info) = (*room_infos).get_mut(room_id) {
+            room_info.latest_msg = latest_message;
+        }
+        true
+    }
+
+    async fn save_latest_message(&self, room_id: &RoomId, item: Arc<TimelineItem>) -> bool {
         if item.as_event().is_none() {
-            return;
+            return false;
         }
         let Ok(my_id) = self.user_id() else {
-            return;
+            return false;
         };
         let new_msg = RoomMessage::from((item, my_id));
-        let mut ri = self.sync_controller.room_infos.write().await;
-        let Some(room_info) = ri.get_mut(room_id) else {
-            return;
+        let mut room_infos = self.sync_controller.room_infos.write().await;
+        let Some(room_info) = (*room_infos).get_mut(room_id) else {
+            return false;
         };
         if let Some(prev_msg) = &room_info.latest_msg {
             if prev_msg.event_id() == new_msg.event_id()
                 && prev_msg.event_type() == new_msg.event_type()
             {
                 trace!("Nothing to update, room message stayed the same");
-                return;
+                return false;
             }
             // if prev_ts was None, replace prev msg with new msg unconditionally
             if let Some(prev_ts) = prev_msg.origin_server_ts() {
@@ -474,12 +492,12 @@ impl Client {
                     Some(new_ts) => {
                         if new_ts <= prev_ts {
                             // new msg is not the latest
-                            return;
+                            return false;
                         }
                     }
                     None => {
                         error!("new latest message should have timestamp");
-                        return;
+                        return false;
                     }
                 }
             }
@@ -492,6 +510,8 @@ impl Client {
 
         trace!(?room_id, "Setting latest message");
         room_info.latest_msg = Some(new_msg);
+
+        true
     }
 
     pub(crate) async fn load_from_cache(&self) {
