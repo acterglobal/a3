@@ -2319,7 +2319,7 @@
     "rejected": "Declined",
     "taskLabel": "Task",
     "creation": "Created",
-    "redaction": "Removed",
+    "redaction": "Deleted",
     "updated": "Updated",
     "@addComment": {}
 }
