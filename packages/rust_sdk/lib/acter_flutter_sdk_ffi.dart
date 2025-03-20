@@ -16280,6 +16280,141 @@ class Api {
     return tmp7;
   }
 
+  OptionString? __backupManagerStoredEncKeyFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerStoredEncKeyFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionString._(this, tmp13_1);
+    return tmp7;
+  }
+
+  int? __backupManagerStoredEncKeyWhenFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerStoredEncKeyWhenFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13;
+    return tmp7;
+  }
+
+  bool? __backupManagerDestroyStoredEncKeyFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerDestroyStoredEncKeyFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   bool? __acterPinSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -31363,6 +31498,39 @@ class Api {
         int,
         int,
       )>();
+  late final _backupManagerStoredEncKeyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__BackupManager_stored_enc_key");
+
+  late final _backupManagerStoredEncKey =
+      _backupManagerStoredEncKeyPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _backupManagerStoredEncKeyWhenPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__BackupManager_stored_enc_key_when");
+
+  late final _backupManagerStoredEncKeyWhen =
+      _backupManagerStoredEncKeyWhenPtr.asFunction<
+          int Function(
+            int,
+          )>();
+  late final _backupManagerDestroyStoredEncKeyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__BackupManager_destroy_stored_enc_key");
+
+  late final _backupManagerDestroyStoredEncKey =
+      _backupManagerDestroyStoredEncKeyPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _loginNewClientFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _LoginNewClientFuturePollReturn Function(
@@ -35956,6 +36124,51 @@ class Api {
   late final _backupManagerRecoverFuturePoll =
       _backupManagerRecoverFuturePollPtr.asFunction<
           _BackupManagerRecoverFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerStoredEncKeyFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerStoredEncKeyFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__BackupManager_stored_enc_key_future_poll");
+
+  late final _backupManagerStoredEncKeyFuturePoll =
+      _backupManagerStoredEncKeyFuturePollPtr.asFunction<
+          _BackupManagerStoredEncKeyFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerStoredEncKeyWhenFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerStoredEncKeyWhenFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__BackupManager_stored_enc_key_when_future_poll");
+
+  late final _backupManagerStoredEncKeyWhenFuturePoll =
+      _backupManagerStoredEncKeyWhenFuturePollPtr.asFunction<
+          _BackupManagerStoredEncKeyWhenFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerDestroyStoredEncKeyFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerDestroyStoredEncKeyFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__BackupManager_destroy_stored_enc_key_future_poll");
+
+  late final _backupManagerDestroyStoredEncKeyFuturePoll =
+      _backupManagerDestroyStoredEncKeyFuturePollPtr.asFunction<
+          _BackupManagerDestroyStoredEncKeyFuturePollReturn Function(
             int,
             int,
             int,
@@ -65948,6 +66161,57 @@ class BackupManager {
     return tmp6;
   }
 
+  /// the backup key as it was stored last, might be empty if there isn't any stored
+  Future<OptionString> storedEncKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerStoredEncKey(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__BackupManager_stored_enc_key_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__backupManagerStoredEncKeyFuturePoll);
+    return tmp2;
+  }
+
+  /// When was the key stored as unix timestamp. 0 if nothing was found
+  Future<int> storedEncKeyWhen() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerStoredEncKeyWhen(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__BackupManager_stored_enc_key_when_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__backupManagerStoredEncKeyWhenFuturePoll);
+    return tmp2;
+  }
+
+  /// Remove the key from storage - backup will continue to work fine though
+  Future<bool> destroyStoredEncKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._backupManagerDestroyStoredEncKey(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__BackupManager_destroy_stored_enc_key_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__backupManagerDestroyStoredEncKeyFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -74315,6 +74579,51 @@ class _BackupManagerDisableFuturePollReturn extends ffi.Struct {
 }
 
 class _BackupManagerRecoverFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _BackupManagerStoredEncKeyFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _BackupManagerStoredEncKeyWhenFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint64()
+  external int arg5;
+}
+
+class _BackupManagerDestroyStoredEncKeyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

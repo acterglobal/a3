@@ -3660,4 +3660,13 @@ object BackupManager {
     /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
 
+    /// the backup key as it was stored last, might be empty if there isn't any stored
+    fn stored_enc_key() -> Future<Result<OptionString>>;
+
+    /// When was the key stored as unix timestamp. 0 if nothing was found
+    fn stored_enc_key_when() -> Future<Result<u64>>;
+
+    /// Remove the key from storage - backup will continue to work fine though
+    fn destroy_stored_enc_key() -> Future<Result<bool>>;
+
 }
