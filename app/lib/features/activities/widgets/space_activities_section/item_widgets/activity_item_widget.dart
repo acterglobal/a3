@@ -1,7 +1,11 @@
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/creation.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/descriptionChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/otherChanges.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/redaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpMaybe.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpNo.dart';
@@ -12,6 +16,7 @@ import 'package:acter/features/activities/widgets/space_activities_section/item_
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskDecline.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskDueDateChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskReOpen.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/titleChange.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +46,11 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.taskAccept => ActivityTaskAcceptedItemWidget(activity: activity),
       PushStyles.taskDecline => ActivityTaskDeclineItemWidget(activity: activity),
       PushStyles.taskDueDateChange => ActivityTaskDueDateChangedItemWidget(activity: activity),
+      PushStyles.creation => ActivityCreationItemWidget(activity: activity),
+      PushStyles.redaction => ActivityRedactionItemWidget(activity: activity),
+      PushStyles.titleChange => ActivityTitleChangeItemWidget(activity: activity),
+      PushStyles.descriptionChange => ActivityDescriptionChangeItemWidget(activity: activity),
+      PushStyles.otherChanges => ActivityOtherChangesItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
   }
