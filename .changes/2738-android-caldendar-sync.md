@@ -1,1 +1,0 @@
-- Fix calendar sync on some older devices not showing any events

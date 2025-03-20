@@ -1,1 +1,0 @@
--[Implemented] : Implemented a feature that redirects the user to a specific screen based on the activity type when clicked.
