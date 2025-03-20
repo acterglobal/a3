@@ -149,12 +149,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   Widget _buildNavigationButtons(BuildContext context, L10n lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildNextButton(context, lang),
-        const SizedBox(height: 16),
-        _buildRemindLaterButton(context, lang),
-        const SizedBox(height: 16),
-      ],
+      children: [_buildNextButton(context, lang), const SizedBox(height: 16)],
     );
   }
 
@@ -168,18 +163,6 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
-    );
-  }
-
-  Widget _buildRemindLaterButton(BuildContext context, L10n lang) {
-    return TextButton(
-      onPressed: () => context.goNamed(Routes.linkEmail.name),
-      child: Text(
-        lang.remindMeLater,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
     );
   }
 
