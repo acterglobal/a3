@@ -88,7 +88,8 @@ void main() {
           messages: messages,
         );
         final newState = handleDiff(startingState, null, mockDiff);
-        expect(newState.messageList, ['a', 'b', 'c']);
+        // reversed
+        expect(newState.messageList, ['c', 'b', 'a']);
         expect(newState.messages.length, 3);
         expect(newState.messages.keys, ['a', 'b', 'c']);
       });
@@ -132,9 +133,9 @@ void main() {
         );
         final mockDiff = MockedRoomMessageDiff(act: 'PopFront');
         final newState = handleDiff(startingState, null, mockDiff);
-        expect(newState.messageList, ['b']);
+        expect(newState.messageList, ['d']);
         expect(newState.messages.length, 1);
-        expect(newState.messages.keys, ['b']);
+        expect(newState.messages.keys, ['d']);
       });
     });
 
@@ -156,9 +157,9 @@ void main() {
         );
         final mockDiff = MockedRoomMessageDiff(act: 'PopBack');
         final newState = handleDiff(startingState, null, mockDiff);
-        expect(newState.messageList, ['d']);
+        expect(newState.messageList, ['b']);
         expect(newState.messages.length, 1);
-        expect(newState.messages.keys, ['d']);
+        expect(newState.messages.keys, ['b']);
       });
     });
 
@@ -178,27 +179,30 @@ void main() {
           null,
           MockedRoomMessageDiff(act: 'Remove', idx: 0),
         );
-        expect(newState.messageList, ['b', 'e', 'f']);
+        // reversed
+        expect(newState.messageList, ['d', 'b', 'e']);
         expect(newState.messages.length, 3);
-        expect(newState.messages.keys, ['b', 'e', 'f']);
+        expect(newState.messages.keys, ['b', 'd', 'e']);
 
         final secondNew = handleDiff(
           startingState,
           null,
           MockedRoomMessageDiff(act: 'Remove', idx: 1),
         );
-        expect(secondNew.messageList, ['d', 'e', 'f']);
+        // reversed
+        expect(secondNew.messageList, ['d', 'b', 'f']);
         expect(secondNew.messages.length, 3);
-        expect(secondNew.messages.keys, ['d', 'e', 'f']);
+        expect(secondNew.messages.keys, ['b', 'd', 'f']);
 
         final thirdNew = handleDiff(
           startingState,
           null,
           MockedRoomMessageDiff(act: 'Remove', idx: 2),
         );
-        expect(thirdNew.messageList, ['d', 'b', 'f']);
+        // reversed
+        expect(thirdNew.messageList, ['d', 'e', 'f']);
         expect(thirdNew.messages.length, 3);
-        expect(thirdNew.messages.keys, ['b', 'd', 'f']);
+        expect(thirdNew.messages.keys, ['d', 'e', 'f']);
       });
     });
 
@@ -221,7 +225,8 @@ void main() {
             messages: [MockRoomMessage(id: 'g'), MockRoomMessage(id: 'h')],
           ),
         );
-        expect(newState.messageList, ['b', 'd', 'e', 'f', 'g', 'h']);
+        // reversed
+        expect(newState.messageList, ['h', 'g', 'b', 'd', 'e', 'f']);
         expect(newState.messages.length, 6);
         expect(newState.messages.keys, ['b', 'd', 'e', 'f', 'g', 'h']);
 
@@ -233,9 +238,10 @@ void main() {
             messages: [MockRoomMessage(id: 'a')],
           ),
         );
-        expect(secondState.messageList, ['b', 'd', 'e', 'f', 'a']);
-        expect(secondState.messages.length, 5);
-        expect(secondState.messages.keys, ['b', 'd', 'e', 'f', 'a']);
+        // reversed
+        expect(secondState.messageList, ['a', 'h', 'g', 'b', 'd', 'e', 'f']);
+        expect(secondState.messages.length, 6);
+        expect(secondState.messages.keys, ['b', 'd', 'e', 'f', 'g', 'h']);
       });
     });
 
@@ -263,7 +269,8 @@ void main() {
           message: MockRoomMessage(id: 'a'),
         );
         final newState = handleDiff(startingState, null, mockDiff);
-        expect(newState.messageList, ['d', 'b', 'a']);
+        // reversed
+        expect(newState.messageList, ['a', 'd', 'b']);
         expect(newState.messages.keys, ['d', 'b', 'a']);
       });
     });
@@ -292,6 +299,7 @@ void main() {
           message: MockRoomMessage(id: 'a'),
         );
         final newState = handleDiff(startingState, null, mockDiff);
+        // reversed
         expect(newState.messageList, ['a', 'd', 'b']);
         expect(newState.messages.keys, ['d', 'b', 'a']);
       });
@@ -377,8 +385,10 @@ void main() {
             'b': MockRoomMessage(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 1);
+        // reversed
+        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 2);
         final newState = handleDiff(startingState, null, mockDiff);
+
         expect(newState.messageList, ['d']);
         expect(newState.messages.keys, ['d']);
       });
@@ -417,7 +427,8 @@ void main() {
           messages: messages,
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
-        expect(newState.messageList, ['a', 'b', 'c']);
+        // reversed
+        expect(newState.messageList, ['c', 'b', 'a']);
         expect(newState.messages.length, 3);
         expect(newState.messages.keys, ['a', 'b', 'c']);
         verify(() => mockAnimatedState.removeAllItems(any())).called(1);
@@ -484,15 +495,17 @@ void main() {
         );
         final mockDiff = MockedRoomMessageDiff(act: 'PopFront');
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
-        expect(newState.messageList, ['b']);
+        // reversed
+        expect(newState.messageList, ['d']);
         expect(newState.messages.length, 1);
-        expect(newState.messages.keys, ['b']);
+        expect(newState.messages.keys, ['d']);
 
         final verifier = verify(
           () => mockAnimatedState.removeItem(captureAny(), any()),
         );
         verifier.called(1);
-        expect(verifier.captured.single, 0);
+        // reversed
+        expect(verifier.captured.single, 1);
       });
     });
 
@@ -505,6 +518,7 @@ void main() {
           mockAnimatedState,
           mockDiff,
         );
+
         expect(newState.messageList.length, 0);
         expect(newState.messages.length, 0);
 
@@ -523,15 +537,17 @@ void main() {
         );
         final mockDiff = MockedRoomMessageDiff(act: 'PopBack');
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
-        expect(newState.messageList, ['d']);
+        // reversed
+        expect(newState.messageList, ['b']);
         expect(newState.messages.length, 1);
-        expect(newState.messages.keys, ['d']);
+        expect(newState.messages.keys, ['b']);
 
         final verifier = verify(
           () => mockAnimatedState.removeItem(captureAny(), any()),
         );
         verifier.called(1);
-        expect(verifier.captured.single, 1);
+        // reversed
+        expect(verifier.captured.single, 0);
       });
     });
 
@@ -552,15 +568,17 @@ void main() {
           mockAnimatedState,
           MockedRoomMessageDiff(act: 'Remove', idx: 0),
         );
-        expect(newState.messageList, ['b', 'e', 'f']);
+        // reversed
+        expect(newState.messageList, ['d', 'b', 'e']);
         expect(newState.messages.length, 3);
-        expect(newState.messages.keys, ['b', 'e', 'f']);
+        expect(newState.messages.keys, ['b', 'd', 'e']);
 
         final verifier = verify(
           () => mockAnimatedState.removeItem(captureAny(), any()),
         );
         verifier.called(1);
-        expect(verifier.captured.single, 0);
+        // reversed
+        expect(verifier.captured.single, 3);
 
         mockAnimatedState = MockAnimatedListState();
         final secondNew = handleDiff(
@@ -568,15 +586,17 @@ void main() {
           mockAnimatedState,
           MockedRoomMessageDiff(act: 'Remove', idx: 1),
         );
-        expect(secondNew.messageList, ['d', 'e', 'f']);
+        // reversed
+        expect(secondNew.messageList, ['d', 'b', 'f']);
         expect(secondNew.messages.length, 3);
-        expect(secondNew.messages.keys, ['d', 'e', 'f']);
+        expect(secondNew.messages.keys, ['b', 'd', 'f']);
 
         final verifier2 = verify(
           () => mockAnimatedState.removeItem(captureAny(), any()),
         );
         verifier2.called(1);
-        expect(verifier2.captured.single, 1);
+        // reversed
+        expect(verifier2.captured.single, 2);
 
         mockAnimatedState = MockAnimatedListState();
 
@@ -585,6 +605,7 @@ void main() {
           mockAnimatedState,
           MockedRoomMessageDiff(act: 'Remove', idx: 2),
         );
+        // reversed
         expect(thirdNew.messageList, ['d', 'b', 'f']);
         expect(thirdNew.messages.length, 3);
         expect(thirdNew.messages.keys, ['b', 'd', 'f']);
@@ -593,7 +614,8 @@ void main() {
           () => mockAnimatedState.removeItem(captureAny(), any()),
         );
         verifier3.called(1);
-        expect(verifier3.captured.single, 2);
+        // reversed
+        expect(verifier3.captured.single, 1);
       });
     });
 
@@ -617,7 +639,8 @@ void main() {
             messages: [MockRoomMessage(id: 'g'), MockRoomMessage(id: 'h')],
           ),
         );
-        expect(newState.messageList, ['b', 'd', 'e', 'f', 'g', 'h']);
+        // reversed
+        expect(newState.messageList, ['h', 'g', 'b', 'd', 'e', 'f']);
         expect(newState.messages.length, 6);
         expect(newState.messages.keys, ['b', 'd', 'e', 'f', 'g', 'h']);
 
@@ -625,7 +648,8 @@ void main() {
           () => mockAnimatedState.insertAllItems(captureAny(), captureAny()),
         );
         verifier1.called(1);
-        expect(verifier1.captured, [4, 2]);
+        // reversed
+        expect(verifier1.captured, [0, 2]);
 
         mockAnimatedState = MockAnimatedListState();
         final secondState = handleDiff(
@@ -636,7 +660,7 @@ void main() {
             messages: [MockRoomMessage(id: 'a')],
           ),
         );
-        expect(secondState.messageList, ['b', 'd', 'e', 'f', 'a']);
+        expect(secondState.messageList, ['a', 'b', 'd', 'e', 'f']);
         expect(secondState.messages.length, 5);
         expect(secondState.messages.keys, ['b', 'd', 'e', 'f', 'a']);
 
@@ -644,7 +668,7 @@ void main() {
           () => mockAnimatedState.insertAllItems(captureAny(), captureAny()),
         );
         verifier2.called(1);
-        expect(verifier2.captured, [4, 1]);
+        expect(verifier2.captured, [0, 1]);
       });
     });
 
@@ -684,13 +708,15 @@ void main() {
           message: MockRoomMessage(id: 'a'),
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
-        expect(newState.messageList, ['d', 'b', 'a']);
+        // reversed
+        expect(newState.messageList, ['a', 'd', 'b']);
         expect(newState.messages.keys, ['d', 'b', 'a']);
 
         final verifier1 = verify(
           () => mockAnimatedState.insertItem(captureAny()),
         );
         verifier1.called(1);
+        // reversed
         expect(verifier1.captured.single, 2);
       });
     });
@@ -731,14 +757,14 @@ void main() {
           message: MockRoomMessage(id: 'a'),
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
-        expect(newState.messageList, ['a', 'd', 'b']);
+        expect(newState.messageList, ['d', 'b', 'a']);
         expect(newState.messages.keys, ['d', 'b', 'a']);
 
         final verifier1 = verify(
           () => mockAnimatedState.insertItem(captureAny()),
         );
         verifier1.called(1);
-        expect(verifier1.captured.single, 0);
+        expect(verifier1.captured.single, 2);
       });
     });
 
@@ -861,8 +887,9 @@ void main() {
             'b': MockRoomMessage(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 1);
+        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 2);
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
+        // reversed
         expect(newState.messageList, ['d']);
         expect(newState.messages.keys, ['d']);
 
@@ -870,7 +897,8 @@ void main() {
           () => mockAnimatedState.removeItem(captureAny(), any()),
         );
         verifier1.called(2);
-        expect(verifier1.captured, [2, 1]);
+        // reversed
+        expect(verifier1.captured, [1, 2]);
       });
     });
   });
