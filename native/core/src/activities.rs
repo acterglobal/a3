@@ -289,7 +289,7 @@ impl Activity {
         };
         invitees.iter().map(|i| i.to_string()).collect()
     }
-    
+
     pub fn task_list_id_str(&self) -> Option<String> {
         match &self.inner {
             ActivityContent::TaskAccept { object }
