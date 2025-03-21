@@ -1,3 +1,5 @@
+import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
+import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:flutter/material.dart';
@@ -99,10 +101,26 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buildEncryptionKeyError(BuildContext context, String error) {
-    final style = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      color: Theme.of(context).colorScheme.error,
+    final errorColor = Theme.of(context).colorScheme.error;
+    final style = Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(color: errorColor);
+    return Center(
+      child: Column(
+        children: [
+          Text(error, style: style),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: errorColor,
+              side: BorderSide(color: errorColor),
+            ),
+            onPressed: () => ref.invalidate(enableEncrptionBackUpProvider),
+            child: Text(L10n.of(context).retry),
+          ),
+        ],
+      ),
     );
-    return Center(child: Text(error, style: style));
   }
 
   Widget _buildActionButtons(BuildContext context, String encryptionKey) {
