@@ -17012,6 +17012,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __invitationsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _invitationsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   ConvoDiff? __clientConvosStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -29112,6 +29145,17 @@ class Api {
           int Function(
             int,
           )>();
+  late final _invitationsManagerSubscribeStreamPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+          )>>("__InvitationsManager_subscribe_stream");
+
+  late final _invitationsManagerSubscribeStream =
+      _invitationsManagerSubscribeStreamPtr.asFunction<
+          int Function(
+            int,
+          )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -36468,6 +36512,23 @@ class Api {
   late final _syncStateSyncErrorRxStreamPoll =
       _syncStateSyncErrorRxStreamPollPtr.asFunction<
           _SyncStateSyncErrorRxStreamPollReturn Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
+  late final _invitationsManagerSubscribeStreamStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _InvitationsManagerSubscribeStreamStreamPollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+            ffi.Int64,
+          )>>("__InvitationsManager_subscribe_stream_stream_poll");
+
+  late final _invitationsManagerSubscribeStreamStreamPoll =
+      _invitationsManagerSubscribeStreamStreamPollPtr.asFunction<
+          _InvitationsManagerSubscribeStreamStreamPollReturn Function(
             int,
             int,
             int,
@@ -60977,6 +61038,7 @@ class InvitationsManager {
 
   InvitationsManager._(this._api, this._box);
 
+  /// current set of rooms that the user is invited to
   Future<FfiListRoomInvitation> roomInvitations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -60990,6 +61052,23 @@ class InvitationsManager {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
         tmp3_1, _api.__invitationsManagerRoomInvitationsFuturePoll);
+    return tmp2;
+  }
+
+  /// whenever an update occurs
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerSubscribeStream(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__InvitationsManager_subscribe_stream_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+        tmp3_1, _api.__invitationsManagerSubscribeStreamStreamPoll);
     return tmp2;
   }
 
@@ -74784,6 +74863,13 @@ class _SyncStateSyncErrorRxStreamPollReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _InvitationsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
 }
 
 class _ClientConvosStreamStreamPollReturn extends ffi.Struct {

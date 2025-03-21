@@ -12,7 +12,7 @@ class ImportantActivitiesSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final invitations = ref.watch(invitationListProvider);
+    final invitations = ref.watch(invitationListProvider).valueOrNull ?? [];
     final lang = L10n.of(context);
 
     if (invitations.isNotEmpty) {

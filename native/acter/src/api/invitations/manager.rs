@@ -1,5 +1,11 @@
+use std::collections::BTreeSet;
+
 use crate::{Client, Room};
 use anyhow::Result;
+use futures::Stream;
+use ruma::OwnedRoomId;
+use tokio::sync::broadcast::Receiver;
+use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 
 use super::RoomInvitation;
 
@@ -10,6 +16,20 @@ pub struct InvitationsManager {
 impl InvitationsManager {
     pub(crate) fn new(client: Client) -> Self {
         Self { client }
+    }
+
+    pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
+        let mut prev_set: BTreeSet<OwnedRoomId> = Default::default();
+        BroadcastStream::new(self.client.subscribe_to_all_room_updates()).filter_map(move |u| {
+            let Ok(update) = u else { return None };
+            let new_set: BTreeSet<OwnedRoomId> = update.invite.keys().map(Clone::clone).collect();
+            if (new_set != prev_set) {
+                prev_set = new_set;
+                Some(true)
+            } else {
+                None
+            }
+        })
     }
 
     pub async fn room_invitations(&self) -> Result<Vec<RoomInvitation>> {

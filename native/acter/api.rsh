@@ -3063,7 +3063,12 @@ object CreateSpaceSettingsBuilder {
 object CreateSpaceSettings {}
 
 object InvitationsManager {
+    /// current set of rooms that the user is invited to
     fn room_invitations() -> Future<Result<Vec<RoomInvitation>>>;
+
+    /// whenever an update occurs
+    fn subscribe_stream() -> Stream<bool>;
+
 }
 
 

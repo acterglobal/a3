@@ -1,4 +1,5 @@
 use anyhow::Result;
+use futures::StreamExt;
 use matrix_sdk::RoomState;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -24,6 +25,10 @@ async fn chat_invitation_shows_up() -> Result<()> {
     })
     .await?;
 
+    let invites = kyra.invitations();
+    let stream = invites.subscribe_stream();
+    let mut stream = stream.fuse();
+
     convo.invite_user_by_id(&kyra.user_id()?).await?;
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
@@ -35,6 +40,9 @@ async fn chat_invitation_shows_up() -> Result<()> {
         }
     })
     .await?;
+
+    // stream triggered
+    assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
     let room = invited.first().unwrap();
@@ -63,6 +71,9 @@ async fn space_invitation_shows_up() -> Result<()> {
     })
     .await?;
 
+    let invites = kyra.invitations();
+    let stream = invites.subscribe_stream();
+    let mut stream = stream.fuse();
     space.invite_user_by_id(&kyra.user_id()?).await?;
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
@@ -74,6 +85,9 @@ async fn space_invitation_shows_up() -> Result<()> {
         }
     })
     .await?;
+
+    // stream triggered
+    assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
     let room = invited.first().unwrap();
