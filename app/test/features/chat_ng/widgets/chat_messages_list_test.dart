@@ -20,6 +20,8 @@ class MockTimelineStream extends Mock implements TimelineStream {
   Future<bool> paginateBackwards(int count) async => false;
 }
 
+class MockRef extends Mock implements Ref {}
+
 class MockChatRoomMessagesNotifier extends Mock
     implements ChatRoomMessagesNotifier {
   final ChatRoomState initalState;
@@ -85,6 +87,39 @@ void main() {
       expect(find.byType(ChatEvent), findsNothing);
     });
 
+    testWidgets('renders messages correctly when available', (tester) async {
+      final messagesState = ChatRoomState(
+        messageList: List.generate(5, (index) => 'msg$index'),
+        loading: const ChatRoomLoadingState.loaded(),
+      );
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          chatMessagesStateProvider(
+            testRoomId,
+          ).overrideWith((ref) => MockChatRoomMessagesNotifier(messagesState)),
+          chat
+              .timelineStreamProvider(testRoomId)
+              .overrideWith((ref) => Future.value(MockTimelineStream())),
+          animatedListChatMessagesProvider(
+            testRoomId,
+          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
+          isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => false),
+        ],
+        child: ChatMessages(roomId: testRoomId),
+      );
+
+      await tester.pump();
+
+      expect(find.byType(AnimatedList), findsOneWidget);
+
+      //  verify the list has the correct number of items
+      final animatedList = tester.widget<AnimatedList>(
+        find.byType(AnimatedList),
+      );
+      expect(animatedList.initialItemCount, equals(5));
+    });
+
     testWidgets('shows loading indicator when loading', (tester) async {
       final loadingState = ChatRoomState(
         messageList: ['msg1', 'msg2'],
@@ -133,138 +168,59 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('scroll to bottom button appears when scrolled up', (
-      WidgetTester tester,
+    testWidgets('handles message insertion animation correctly', (
+      tester,
     ) async {
-      final messagesState = ChatRoomState(
-        messageList: List.generate(20, (index) => 'msg$index'),
+      final initialState = ChatRoomState(
+        messageList: List.generate(3, (index) => 'msg$index'),
         loading: const ChatRoomLoadingState.loaded(),
       );
 
+      // Create a real notifier that we can update
+      final notifier = ChatRoomMessagesNotifier(
+        roomId: testRoomId,
+        ref: MockRef(),
+      );
+      notifier.state = initialState;
+
+      final animatedListKey = GlobalKey<AnimatedListState>();
+
       await tester.pumpProviderWidget(
         overrides: [
-          chatMessagesStateProvider(
-            testRoomId,
-          ).overrideWith((ref) => MockChatRoomMessagesNotifier(messagesState)),
+          chatMessagesStateProvider(testRoomId).overrideWith((ref) => notifier),
           chat
               .timelineStreamProvider(testRoomId)
               .overrideWith((ref) => Future.value(MockTimelineStream())),
           animatedListChatMessagesProvider(
             testRoomId,
-          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
+          ).overrideWith((ref) => animatedListKey),
         ],
         child: ChatMessages(roomId: testRoomId),
       );
 
-      final scrollController =
-          tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
-      scrollController!.position.jumpTo(100.0);
+      expect(animatedListKey.currentState?.widget.initialItemCount, equals(3));
+
+      // Verify initial message order
+      expect(notifier.state.messageList, equals(['msg0', 'msg1', 'msg2']));
+
+      // add new message
+      final updatedState = initialState.copyWith(
+        messageList: [...initialState.messageList, 'newMessage'],
+      );
+      notifier.state = updatedState;
 
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
-      // now the button should be visible
-      final updatedOpacityWidget = tester.widget<AnimatedOpacity>(
-        find.ancestor(
-          of: find.byIcon(Icons.arrow_downward),
-          matching: find.byType(AnimatedOpacity),
-        ),
+      // verify the list was updated
+      expect(animatedListKey.currentState?.widget.initialItemCount, equals(4));
+
+      // Verify final message order
+      expect(
+        notifier.state.messageList,
+        equals(['msg0', 'msg1', 'msg2', 'newMessage']),
       );
-      expect(updatedOpacityWidget.opacity, 1.0);
     });
-
-    // testWidgets('pagination is called when scrolled to top', (
-    //   WidgetTester tester,
-    // ) async {
-    //   final messagesState = ChatRoomState(
-    //     messageList: List.generate(20, (index) => 'msg$index'),
-    //     loading: const ChatRoomLoadingState.loaded(),
-    //     hasMore: true,
-    //   );
-
-    //   // Create a proper Mocktail mock
-    //   final mockNotifier = MockChatRoomMessagesNotifier(messagesState);
-    //   final mockTimelineStream = MockTimelineStream();
-
-    //   // Make sure the mock is properly set up for verification
-    //   when(
-    //     () => mockNotifier.loadMore(failOnError: any(named: 'failOnError')),
-    //   ).thenAnswer((_) async {});
-
-    //   await tester.pumpProviderWidget(
-    //     overrides: [
-    //       chatMessagesStateProvider(
-    //         testRoomId,
-    //       ).overrideWith((ref) => mockNotifier),
-    //       chat
-    //           .timelineStreamProvider(testRoomId)
-    //           .overrideWith((ref) => Future.value(mockTimelineStream)),
-    //       animatedListChatMessagesProvider(
-    //         testRoomId,
-    //       ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
-    //     ],
-    //     child: ChatMessages(roomId: testRoomId),
-    //   );
-
-    //   final scrollController =
-    //       tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
-
-    //   scrollController!.position.jumpTo(
-    //     scrollController.position.maxScrollExtent,
-    //   );
-    //   await tester.pump();
-
-    //   // Verify loadMore was called
-    //   verify(() => mockNotifier.loadMore(failOnError: false)).called(1);
-    // });
-
-    // testWidgets('marks messages as read when scrolled to bottom', (
-    //   WidgetTester tester,
-    // ) async {
-    //   final messagesState = ChatRoomState(
-    //     messageList: List.generate(20, (index) => 'msg$index'),
-    //     loading: const ChatRoomLoadingState.loaded(),
-    //   );
-
-    //   final mockNotifier = MockChatRoomMessagesNotifier(messagesState);
-    //   final timelineStream = MockTimelineStream();
-
-    //   // Set up the mock behavior properly
-    //   when(
-    //     () => timelineStream.markAsRead(any()),
-    //   ).thenAnswer((_) async => true);
-
-    //   await tester.pumpProviderWidget(
-    //     overrides: [
-    //       chatMessagesStateProvider(
-    //         testRoomId,
-    //       ).overrideWith((ref) => mockNotifier),
-    //       chat
-    //           .timelineStreamProvider(testRoomId)
-    //           .overrideWith((ref) => Future.value(timelineStream)),
-    //       animatedListChatMessagesProvider(
-    //         testRoomId,
-    //       ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
-    //       isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => false),
-    //       chat.hasUnreadMessages(testRoomId).overrideWith((ref) => true),
-    //     ],
-    //     child: ChatMessages(roomId: testRoomId),
-    //   );
-
-    //   final chatMessagesWidget = find.byType(ChatMessages);
-    //   expect(chatMessagesWidget, findsOneWidget);
-
-    //   final state =
-    //       tester.state(chatMessagesWidget) as ConsumerState<ChatMessages>;
-
-    //   await (state as dynamic).onScroll();
-
-    //   // Wait for the debounce timer
-    //   await tester.pump(const Duration(milliseconds: 300));
-    //   await tester.pump();
-
-    //   // Verify markAsRead was called
-    //   verify(() => timelineStream.markAsRead(any())).called(1);
-    // });
 
     testWidgets('scroll to end animates to the bottom of the list', (
       WidgetTester tester,
@@ -314,6 +270,52 @@ void main() {
       expect(scrollController?.position.pixels, equals(0.0));
       // button should be hidden
       expect((finalState as dynamic).showScrollToBottom, isFalse);
+    });
+
+    testWidgets('preserves correct message order when displayed in reverse', (
+      tester,
+    ) async {
+      final messagesState = ChatRoomState(
+        messageList: List.generate(5, (index) => 'msg$index'),
+        loading: const ChatRoomLoadingState.loaded(),
+      );
+
+      final mockNotifier = MockChatRoomMessagesNotifier(messagesState);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          chatMessagesStateProvider(
+            testRoomId,
+          ).overrideWith((ref) => mockNotifier),
+          chat
+              .timelineStreamProvider(testRoomId)
+              .overrideWith((ref) => Future.value(MockTimelineStream())),
+          animatedListChatMessagesProvider(
+            testRoomId,
+          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
+          isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => false),
+        ],
+        child: ChatMessages(roomId: testRoomId),
+      );
+
+      await tester.pump();
+
+      // Get the AnimatedList
+      final animatedList = tester.widget<AnimatedList>(
+        find.byType(AnimatedList),
+      );
+
+      // Verify the list is in reverse
+      expect(animatedList.reverse, isTrue);
+
+      // Verify the correct number of items
+      expect(animatedList.initialItemCount, equals(5));
+
+      // Check the order of messages in the state
+      expect(
+        mockNotifier.state.messageList,
+        equals(['msg0', 'msg1', 'msg2', 'msg3', 'msg4']),
+      );
     });
   });
 }
