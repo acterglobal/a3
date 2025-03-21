@@ -20,14 +20,18 @@ async fn change_space_name() -> Result<()> {
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
     assert_eq!(activity.type_str(), "roomName");
-    let room_name = activity.room_name().expect("space name should be already assigned");
+    let room_name = activity
+        .room_name()
+        .expect("space name should be already assigned");
     // for example, it-room-change-space-name-9a2b3db1-d3f9-4f58-a471-81c04bdaa9f4
     assert!(room_name.find("change-space-name").is_some());
 
     let activity = get_latest_activity(&observer, room_id.to_string(), "roomName").await?;
     info!("initial room name event: {}", activity.event_id_str());
     assert_eq!(activity.type_str(), "roomName");
-    let room_name = activity.room_name().expect("space name should be already assigned");
+    let room_name = activity
+        .room_name()
+        .expect("space name should be already assigned");
     // for example, it-room-change-space-name-9a2b3db1-d3f9-4f58-a471-81c04bdaa9f4
     assert!(room_name.find("change-space-name").is_some());
 
@@ -53,20 +57,21 @@ async fn change_space_avatar() -> Result<()> {
         setup_accounts("change-space-avatar").await?;
 
     let bytes = include_bytes!("../fixtures/kingfisher.jpg");
-    let mut jpg_file = Builder::new()
-        .prefix("Fishy")
-        .suffix(".jpg")
-        .tempfile()?;
+    let mut jpg_file = Builder::new().prefix("Fishy").suffix(".jpg").tempfile()?;
     jpg_file.as_file_mut().write_all(bytes)?;
 
     // admin changes space avatar
     let room = admin.room(room_id.to_string()).await?;
-    let uri = room.upload_avatar(jpg_file.path().to_string_lossy().to_string()).await?;
+    let uri = room
+        .upload_avatar(jpg_file.path().to_string_lossy().to_string())
+        .await?;
 
     // observer detects the change of space avatar
     let activity = get_latest_activity(&observer, room_id.to_string(), "roomAvatar").await?;
     assert_eq!(activity.type_str(), "roomAvatar");
-    let room_avatar = activity.room_avatar().expect("space topic should be already assigned");
+    let room_avatar = activity
+        .room_avatar()
+        .expect("space topic should be already assigned");
     assert_eq!(room_avatar.as_str(), uri.as_str());
 
     Ok(())
@@ -85,7 +90,9 @@ async fn change_space_topic() -> Result<()> {
     // observer detects the change of space topic
     let activity = get_latest_activity(&observer, room_id.to_string(), "roomTopic").await?;
     assert_eq!(activity.type_str(), "roomTopic");
-    let room_topic = activity.room_topic().expect("space topic should be already assigned");
+    let room_topic = activity
+        .room_topic()
+        .expect("space topic should be already assigned");
     assert_eq!(room_topic, "Here is playground");
 
     Ok(())

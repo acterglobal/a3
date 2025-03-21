@@ -148,8 +148,7 @@ async fn invite_and_join() -> Result<()> {
 async fn kicked() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        setup_accounts("kicked").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("kicked").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -364,8 +363,7 @@ async fn kickban_and_unban() -> Result<()> {
 async fn left() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        setup_accounts("left").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("left").await?;
 
     let room = observer.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
