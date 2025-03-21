@@ -1,0 +1,4 @@
+- [Labs] Chat NG
+- [Fix] opening chat room initially should correctly set to the last message.
+- [Improvement] added scroll-to-bottom feature. Scrolling through previous messages will show scroll-to-bottom button to navigate to last message.
+- [Improvement] smoothen scrolling effect while scrolling to previous messages.

@@ -84,6 +84,7 @@ ChatRoomState handleDiff(
   RoomMessageDiff diff, // the diff to apply
 ) {
   final action = diff.action();
+  // the diff is applied in reverse order as the animated list is provided to UI in reverse .i.e. for improved scrolling
   switch (action) {
     case 'Append':
       List<RoomMessage> incoming =
@@ -96,14 +97,20 @@ ChatRoomState handleDiff(
       for (final m in incoming) {
         final uniqueId = m.uniqueId();
         messages[uniqueId] = m;
-        messageList.add(uniqueId);
+        messageList.insert(0, uniqueId);
       }
       final endLen = messageList.length;
-      animatedList?.insertAllItems(startLen, endLen - startLen);
+
+      animatedList?.insertAllItems(0, endLen - startLen);
+
       return state.copyWith(messageList: messageList, messages: messages);
+
     case 'Set': // used to update UnableToDecrypt message
       RoomMessage m = diff.value().expect('set diff must contain value');
       final index = diff.index().expect('set diff must contain index');
+
+      final reversedIndex =
+          state.messageList.isEmpty ? 0 : state.messageList.length - 1 - index;
 
       final uniqueId = m.uniqueId();
       if (state.messageList.isEmpty) {
@@ -111,21 +118,29 @@ ChatRoomState handleDiff(
         return state.copyWith(messageList: [uniqueId], messages: {uniqueId: m});
       }
       final messageList = state.messageList.toList();
-      final removedItem = messageList.removeAt(index);
-      messageList.insert(index, uniqueId);
+      final removedItem = messageList.removeAt(reversedIndex);
+      messageList.insert(reversedIndex, uniqueId);
 
       final messages = Map.fromEntries(
         state.messages.entries.where((entry) => entry.key != removedItem),
       );
       messages[uniqueId] = m;
+
       return state.copyWith(messageList: messageList, messages: messages);
     case 'Insert':
       RoomMessage m = diff.value().expect('insert diff must contain value');
       final index = diff.index().expect('insert diff must contain index');
-      return state.copyWithNewMessageAt(index, m, animatedList);
+
+      final reversedIndex =
+          state.messageList.isEmpty ? 0 : state.messageList.length - index;
+
+      return state.copyWithNewMessageAt(reversedIndex, m, animatedList);
     case 'Remove':
       int index = diff.index().expect('remove diff must contain index');
-      return state.copyWithRemovedMessageAt(index, animatedList);
+
+      final reversedIndex =
+          state.messageList.isEmpty ? 0 : state.messageList.length - 1 - index;
+      return state.copyWithRemovedMessageAt(reversedIndex, animatedList);
     case 'PushBack':
       RoomMessage m = diff.value().expect('push back diff must contain value');
 
@@ -134,24 +149,27 @@ ChatRoomState handleDiff(
         animatedList?.insertItem(0);
         return state.copyWith(messageList: [uniqueId], messages: {uniqueId: m});
       }
+
+      return state.copyWithNewMessageAt(0, m, animatedList);
+    case 'PushFront':
+      RoomMessage m = diff.value().expect('push front diff must contain value');
+
       return state.copyWithNewMessageAt(
         state.messageList.length,
         m,
         animatedList,
       );
-    case 'PushFront':
-      RoomMessage m = diff.value().expect('push front diff must contain value');
-      return state.copyWithNewMessageAt(0, m, animatedList);
     case 'PopBack':
       if (state.messageList.isEmpty) {
         return state;
       }
+
+      return state.copyWithRemovedMessageAt(0, animatedList);
+    case 'PopFront':
       return state.copyWithRemovedMessageAt(
         state.messageList.length - 1,
         animatedList,
       );
-    case 'PopFront':
-      return state.copyWithRemovedMessageAt(0, animatedList);
     case 'Clear':
       if (state.messageList.isNotEmpty && animatedList != null) {
         animatedList.removeAllItems((b, a) => const SizedBox.shrink());
@@ -160,16 +178,18 @@ ChatRoomState handleDiff(
     case 'Reset':
       List<RoomMessage> incoming =
           diff.values().expect('reset diff must contain values').toList();
+
       final (messageList, messages) = incoming.fold(
         (List<String>.empty(growable: true), <String, RoomMessage>{}),
         (val, m) {
           final (list, map) = val;
           final uniqueId = m.uniqueId();
-          list.add(uniqueId);
+          list.insert(0, uniqueId);
           map[uniqueId] = m;
           return (list, map);
         },
       );
+
       if (animatedList != null) {
         animatedList.removeAllItems((b, a) => const SizedBox.shrink());
         animatedList.insertAllItems(0, messageList.length);
@@ -181,36 +201,32 @@ ChatRoomState handleDiff(
       }
       final index = diff.index().expect('truncate diff must contain index');
 
-      final (before, after) = state.messageList.fold((<String>[], <String>[]), (
-        f,
-        e,
-      ) {
-        final (before, after) = f;
-        if (before.length >= index) {
-          after.add(e);
-        } else {
-          before.add(e);
-        }
-        return (before, after);
-      });
-      if (after.isEmpty) {
-        animatedList?.removeAllItems((a, b) => const SizedBox.shrink());
-        return state.copyWith(
-          messageList: before,
-          messages: Map.fromEntries(state.messages.entries),
-        );
+      final reversedIndex = state.messageList.length - index;
+
+      final messageList = state.messageList.toList();
+
+      final keptMessages = messageList.take(reversedIndex).toList();
+      final removedMessages = messageList.skip(reversedIndex).toList();
+
+      if (removedMessages.isEmpty) {
+        return state;
       } else {
         if (animatedList != null) {
-          for (var x = state.messageList.length; x >= after.length; x--) {
-            // remove from the bottom up
-            animatedList.removeItem(x - 1, (a, b) => const SizedBox.shrink());
+          for (var i = 0; i < removedMessages.length; i++) {
+            animatedList.removeItem(
+              reversedIndex + i,
+              (a, b) => const SizedBox.shrink(),
+            );
           }
         }
-        // we have to remove some
+
         final messages = Map.fromEntries(
-          state.messages.entries.where((entry) => !after.contains(entry.key)),
+          state.messages.entries.where(
+            (entry) => !removedMessages.contains(entry.key),
+          ),
         );
-        return state.copyWith(messageList: before, messages: messages);
+
+        return state.copyWith(messageList: keptMessages, messages: messages);
       }
     default:
       _log.severe('Unsupported action $action when diffing room messages');
