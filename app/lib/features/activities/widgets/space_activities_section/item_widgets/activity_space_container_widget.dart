@@ -12,6 +12,7 @@ class ActivitySpaceItemContainerWidget extends ConsumerWidget {
   final String userId;
   final String roomId;
   final Widget? subtitle;
+  final String updatedText;
   final int originServerTs;
 
   const ActivitySpaceItemContainerWidget({
@@ -22,6 +23,7 @@ class ActivitySpaceItemContainerWidget extends ConsumerWidget {
     required this.roomId,
     this.subtitle,
     required this.originServerTs,
+    required this.updatedText,
   });
 
   @override
@@ -55,7 +57,7 @@ class ActivitySpaceItemContainerWidget extends ConsumerWidget {
       leading: actionIcon != null
           ? Icon(actionIcon, size: 40)
           : ActerAvatar(options: AvatarOptions(memberInfo, size: 50)),
-      title: Text(memberInfo.displayName ?? userId),
+      title: Text('${memberInfo.displayName ?? userId} $updatedText'),
       subtitle: subtitle ?? const SizedBox.shrink(),
     );
   }
