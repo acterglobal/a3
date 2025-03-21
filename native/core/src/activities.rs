@@ -4,7 +4,7 @@ use matrix_sdk::ruma::{
         avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
         message::TextMessageEventContent, name::RoomNameEventContent, topic::RoomTopicEventContent,
     },
-    OwnedEventId, OwnedMxcUri,
+    OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -91,6 +91,10 @@ pub enum ActivityContent {
     TaskDecline {
         object: ActivityObject,
     },
+    ObjectInvitation {
+        object: ActivityObject,
+        invitees: Vec<OwnedUserId>,
+    },
     OtherChanges {
         object: ActivityObject,
     },
@@ -155,6 +159,7 @@ impl Activity {
                 RsvpStatus::No => "rsvpNo",
             },
             ActivityContent::TaskAdd { .. } => "taskAdd",
+            ActivityContent::ObjectInvitation { .. } => "objectInvitation",
             ActivityContent::OtherChanges { .. } => "otherChanges",
         }
         .to_owned()
@@ -226,7 +231,8 @@ impl Activity {
             | ActivityContent::TaskProgress { object, .. }
             | ActivityContent::TaskDueDateChange { object, .. }
             | ActivityContent::TaskAccept { object }
-            | ActivityContent::TaskDecline { object } => Some(object.clone()),
+            | ActivityContent::TaskDecline { object }
+            | ActivityContent::ObjectInvitation { object, .. } => Some(object.clone()),
         }
     }
 
@@ -274,7 +280,8 @@ impl Activity {
             | ActivityContent::TaskAccept { object, .. }
             | ActivityContent::TaskDecline { object, .. }
             | ActivityContent::OtherChanges { object }
-            | ActivityContent::Creation { object, .. } => object.target_url(),
+            | ActivityContent::Creation { object, .. }
+            | ActivityContent::ObjectInvitation { object, .. } => object.target_url(),
 
             ActivityContent::Attachment { object, .. } => format!(
                 "{}?section=attachments&attachmentId={}",
@@ -306,6 +313,13 @@ impl Activity {
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomTopic(_) => todo!(),
         }
+    }
+
+    pub fn whom(&self) -> Vec<String> {
+        let ActivityContent::ObjectInvitation { ref invitees, .. } = self.content() else {
+            return vec![];
+        };
+        invitees.iter().map(|i| i.to_string()).collect()
     }
 
     pub fn task_list_id_str(&self) -> Option<String> {
@@ -412,6 +426,27 @@ impl Activity {
                     ActivityContent::Reaction {
                         object,
                         key: e.inner.relates_to.key,
+                    },
+                ))
+            }
+
+            AnyActerModel::ExplicitInvite(e) => {
+                let object = store
+                    .get(&e.inner.to.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of reaction");
+                    })
+                    .ok()
+                    .and_then(|o| ActivityObject::try_from(&o).ok())
+                    .unwrap_or_else(|| ActivityObject::Unknown {
+                        object_id: e.inner.to.event_id.to_owned(),
+                    });
+                Ok(Self::new(
+                    meta,
+                    ActivityContent::ObjectInvitation {
+                        object,
+                        invitees: e.inner.mention.user_ids.into_iter().collect(),
                     },
                 ))
             }
