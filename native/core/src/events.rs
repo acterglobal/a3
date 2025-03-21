@@ -66,7 +66,6 @@ pub enum AnyActerEvent {
 impl AnyActerEvent {
     pub fn room_id(&self) -> &RoomId {
         match &self {
-            Self::Attachment(e) => e.room_id(),
             AnyActerEvent::CalendarEvent(e) => e.room_id(),
             AnyActerEvent::CalendarEventUpdate(e) => e.room_id(),
             AnyActerEvent::Pin(e) => e.room_id(),
@@ -83,6 +82,7 @@ impl AnyActerEvent {
             AnyActerEvent::TaskSelfUnassign(e) => e.room_id(),
             AnyActerEvent::Comment(e) => e.room_id(),
             AnyActerEvent::CommentUpdate(e) => e.room_id(),
+            AnyActerEvent::Attachment(e) => e.room_id(),
             AnyActerEvent::AttachmentUpdate(e) => e.room_id(),
             AnyActerEvent::Reaction(e) => e.room_id(),
             AnyActerEvent::ReadReceipt(e) => e.room_id(),
@@ -146,6 +146,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     .map_err(D::Error::custom)?;
                 Ok(Self::StoryUpdate(event))
             }
+
             tasks::TaskListEventContent::TYPE => {
                 let event = smart_serde_json::from_str::<tasks::TaskListEvent>(json.get())
                     .map_err(D::Error::custom)?;
@@ -173,7 +174,6 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     .map_err(D::Error::custom)?;
                 Ok(Self::TaskSelfAssign(event))
             }
-
             tasks::TaskSelfUnassignEventContent::TYPE => {
                 let event = smart_serde_json::from_str::<tasks::TaskSelfUnassignEvent>(json.get())
                     .map_err(D::Error::custom)?;
@@ -272,7 +272,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
 }
 
 #[derive(Clone, Debug)]
-pub enum SyncAnyActerEvent {
+pub enum AnySyncActerEvent {
     CalendarEvent(calendar::SyncCalendarEventEvent),
     CalendarEventUpdate(calendar::SyncCalendarEventUpdateEvent),
 
@@ -290,6 +290,7 @@ pub enum SyncAnyActerEvent {
 
     Task(tasks::SyncTaskEvent),
     TaskUpdate(tasks::SyncTaskUpdateEvent),
+
     TaskSelfAssign(tasks::SyncTaskSelfAssignEvent),
     TaskSelfUnassign(tasks::SyncTaskSelfUnassignEvent),
 
@@ -308,7 +309,7 @@ pub enum SyncAnyActerEvent {
     RegularTimelineEvent(AnySyncTimelineEvent),
 }
 
-impl SyncAnyActerEvent {
+impl AnySyncActerEvent {
     /// Convert this sync event into a full event (one with a `room_id` field).
     pub fn into_full_any_acter_event(self, room_id: OwnedRoomId) -> AnyActerEvent {
         match self {
@@ -347,7 +348,7 @@ impl SyncAnyActerEvent {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
+impl<'de> serde::Deserialize<'de> for AnySyncActerEvent {
     fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -433,7 +434,6 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                         .map_err(D::Error::custom)?;
                 Ok(Self::TaskSelfAssign(event))
             }
-
             tasks::TaskSelfUnassignEventContent::TYPE => {
                 let event =
                     smart_serde_json::from_str::<tasks::SyncTaskSelfUnassignEvent>(json.get())
@@ -538,7 +538,7 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
     }
 }
 
-impl SyncEvent for SyncAnyActerEvent {
+impl SyncEvent for AnySyncActerEvent {
     const KIND: HandlerKind = HandlerKind::Timeline;
     const TYPE: Option<&'static str> = None;
 }
