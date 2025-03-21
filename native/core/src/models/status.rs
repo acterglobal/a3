@@ -1,7 +1,13 @@
 use std::ops::Deref;
 
 use matrix_sdk::ruma::{
-    events::{room::create::RoomCreateEventContent, AnyStateEvent, AnyTimelineEvent, StateEvent},
+    events::{
+        room::{
+            avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
+            name::RoomNameEventContent, topic::RoomTopicEventContent,
+        },
+        AnyStateEvent, AnyTimelineEvent, StateEvent,
+    },
     OwnedEventId, UserId,
 };
 use serde::{Deserialize, Serialize};
@@ -18,8 +24,10 @@ use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ActerSupportedRoomStatusEvents {
     RoomCreate(RoomCreateEventContent),
+    RoomAvatar(RoomAvatarEventContent),
     MembershipChange(MembershipChange),
-    RoomName(String),
+    RoomName(RoomNameEventContent),
+    RoomTopic(RoomTopicEventContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -56,8 +64,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
                 meta,
             }),
+            AnyStateEvent::RoomAvatar(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomAvatar(inner.content.clone()),
+                meta,
+            }),
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
+                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.clone()),
+                meta,
+            }),
+            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomTopic(inner.content.clone()),
                 meta,
             }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => inner
