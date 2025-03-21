@@ -28,7 +28,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
