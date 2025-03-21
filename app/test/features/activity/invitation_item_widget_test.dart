@@ -12,7 +12,7 @@ import '../../helpers/mock_room_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
 // Mock classes
-class MockInvitation extends Mock implements Invitation {}
+class MockInvitation extends Mock implements RoomInvitation {}
 
 class MockUserProfile extends Mock implements UserProfile {}
 

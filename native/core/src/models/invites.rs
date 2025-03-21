@@ -12,7 +12,7 @@ use tracing::{error, trace};
 use super::{ActerModel, AnyActerModel, Capability, EventMeta};
 use crate::{
     events::explicit_invites::ExplicitInviteEventContent,
-    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex},
+    referencing::{ExecuteReference, IndexKey, ModelParam, ObjectListIndex, SpecialListsIndex},
     store::Store,
     Result,
 };
@@ -25,6 +25,39 @@ pub struct InviteStats {
     accepted: BTreeSet<OwnedUserId>,
     #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
     declined: BTreeSet<OwnedUserId>,
+}
+
+#[derive(Clone, Debug)]
+pub struct MyInvitesManager {
+    invited_to: BTreeSet<OwnedEventId>,
+    store: Store,
+}
+
+impl MyInvitesManager {
+    fn key() -> ExecuteReference {
+        ExecuteReference::Index(IndexKey::Special(SpecialListsIndex::InvitedTo))
+    }
+
+    pub async fn load(store: &Store) -> MyInvitesManager {
+        let store = store.clone();
+        let invited_to = store
+            .get_raw(&Self::key().as_storage_key())
+            .await
+            .unwrap_or_default();
+        MyInvitesManager { store, invited_to }
+    }
+
+    pub fn invited_to(&self) -> &BTreeSet<OwnedEventId> {
+        &self.invited_to
+    }
+
+    pub async fn save(&self) -> Result<ExecuteReference> {
+        let update_key = Self::key();
+        self.store
+            .set_raw(&update_key.as_storage_key(), &self.invited_to)
+            .await?;
+        Ok(update_key)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -111,12 +144,25 @@ impl InvitationsManager {
         Self::stats_field_for(self.event_id.to_owned())
     }
 
-    pub async fn save(&self) -> Result<ExecuteReference> {
+    pub async fn save(&self) -> Result<Vec<ExecuteReference>> {
         let update_key = self.update_key();
         self.store
             .set_raw(&update_key.as_storage_key(), &self.stats)
             .await?;
-        Ok(update_key)
+        let mut keys = vec![update_key];
+
+        let mut full_manager = MyInvitesManager::load(&self.store).await;
+        let is_invited = self.stats.invited.contains(self.store.user_id());
+        let was_changed = if is_invited {
+            full_manager.invited_to.insert(self.event_id.to_owned())
+        } else {
+            full_manager.invited_to.remove(&self.event_id)
+        };
+        if was_changed {
+            keys.push(full_manager.save().await?)
+        }
+
+        Ok(keys)
     }
 }
 
@@ -188,14 +234,14 @@ impl ActerModel for ExplicitInvite {
         let mut updates = store.save(self.clone().into()).await?;
         trace!(event_id=?self.event_id(), "saved invite entry");
         if let Some(manager) = manager {
-            updates.push(manager.save().await?);
+            updates.extend_from_slice(&manager.save().await?);
         }
         Ok(updates)
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
         // the higher ups don’t need to be bothered by this
-        None
+        Some(vec![self.inner.to.event_id.clone()])
     }
 }
 

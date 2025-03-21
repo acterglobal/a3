@@ -40,8 +40,8 @@ use tracing::{error, trace};
 use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
-    api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController, VecStringBuilder,
+    api::FfiBuffer, device::DeviceController, typing::TypingController,
+    verification::VerificationController, VecStringBuilder,
 };
 
 mod models;
@@ -72,7 +72,6 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) core: CoreClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
@@ -186,7 +185,6 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
@@ -543,7 +541,6 @@ impl Client {
         }
         let client = self.core.client().clone();
 
-        self.invitation_controller.remove_event_handler();
         self.verification_controller
             .remove_to_device_event_handler(&client);
         self.verification_controller

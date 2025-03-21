@@ -4,7 +4,8 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Invitation;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
+    show RoomInvitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -14,7 +15,7 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::activities::invitation_widget');
 
 class InvitationItemWidget extends ConsumerStatefulWidget {
-  final Invitation invitation;
+  final RoomInvitation invitation;
 
   const InvitationItemWidget({super.key, required this.invitation});
 

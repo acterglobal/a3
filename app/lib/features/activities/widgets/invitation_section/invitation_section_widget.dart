@@ -7,7 +7,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Widget? buildInvitationSectionWidget(BuildContext context, WidgetRef ref) {
-  final invitations = ref.watch(invitationListProvider);
+  final invitations = ref.watch(invitationListProvider).valueOrNull ?? [];
   if (invitations.isEmpty) return null;
   return Column(
     children: [
