@@ -18,35 +18,12 @@ class EncryptionBackupPage extends ConsumerStatefulWidget {
 }
 
 class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
-  final ValueNotifier<bool> isShowNextButton = ValueNotifier(false);
-  final ValueNotifier<String> encryptionKey = ValueNotifier('');
-
-  @override
-  void initState() {
-    super.initState();
-    enableBackup(context);
-  }
-
-  void enableBackup(BuildContext context) async {
-    try {
-      encryptionKey.value = await ref.read(
-        enableEncrptionBackUpProvider.future,
-      );
-      isShowNextButton.value = true;
-    } catch (e) {
-      encryptionKey.value = e.toString();
-    }
-  }
-
-  @override
-  void dispose() {
-    isShowNextButton.dispose();
-    super.dispose();
-  }
+  final isEnableNextButton = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
       appBar: AppBar(),
@@ -56,19 +33,13 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Spacer(),
-            Icon(
-              PhosphorIcons.lockKey(),
-              size: 80,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            Icon(PhosphorIcons.lockKey(), size: 80, color: primaryColor),
             const SizedBox(height: 24),
             _buildHeader(context, lang),
             const SizedBox(height: 16),
             _buildDescription(context, lang),
             const SizedBox(height: 32),
             _buildEncryptionKey(context),
-            const SizedBox(height: 32),
-            _buildActionButtons(context),
             const Spacer(),
             _buildNavigationButtons(context, lang),
           ],
@@ -94,39 +65,55 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buildEncryptionKey(BuildContext context) {
+    final encKey = ref.watch(enableEncrptionBackUpProvider);
+
+    return encKey.when(
+      data: (data) {
+        return Column(
+          children: [
+            _buildEncryptionKeyContent(context, data),
+            const SizedBox(height: 32),
+            _buildActionButtons(context, data),
+          ],
+        );
+      },
+      error:
+          (error, stack) => _buildEncryptionKeyError(context, error.toString()),
+      loading: () => const Center(child: LinearProgressIndicator()),
+    );
+  }
+
+  Widget _buildEncryptionKeyContent(BuildContext context, String encKey) {
+    final style = Theme.of(
+      context,
+    ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: ValueListenableBuilder<String>(
-        valueListenable: encryptionKey,
-        builder: (context, key, _) {
-          if (key.isEmpty) {
-            return const Center(child: LinearProgressIndicator());
-          }
-          return SelectableText(
-            key,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2),
-            textAlign: TextAlign.center,
-          );
-        },
-      ),
+      child: SelectableText(encKey, style: style, textAlign: TextAlign.center),
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildEncryptionKeyError(BuildContext context, String error) {
+    final style = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: Theme.of(context).colorScheme.error,
+    );
+    return Center(child: Text(error, style: style));
+  }
+
+  Widget _buildActionButtons(BuildContext context, String encryptionKey) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildActionButton(
           icon: Icons.copy,
           onTap: () async {
-            await Clipboard.setData(ClipboardData(text: encryptionKey.value));
-            isShowNextButton.value = true;
+            await Clipboard.setData(ClipboardData(text: encryptionKey));
+            isEnableNextButton.value = true;
             if (context.mounted) {
               EasyLoading.showToast(
                 L10n.of(context).encryptionBackupRecoveryCopiedToClipboard,
@@ -139,8 +126,8 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
         _buildActionButton(
           icon: PhosphorIcons.share(),
           onTap: () async {
-            await Share.share(encryptionKey.value);
-            isShowNextButton.value = true;
+            await Share.share(encryptionKey);
+            isEnableNextButton.value = true;
           },
           context: context,
         ),
@@ -151,13 +138,17 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   Widget _buildNavigationButtons(BuildContext context, L10n lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [_buildNextButton(context, lang), const SizedBox(height: 16)],
+      children: [
+        _buildNextButton(context, lang),
+        const SizedBox(height: 16),
+        _buildRemindMeLaterButton(context, lang),
+      ],
     );
   }
 
   Widget _buildNextButton(BuildContext context, L10n lang) {
     return ValueListenableBuilder<bool>(
-      valueListenable: isShowNextButton,
+      valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
           onPressed:
@@ -165,6 +156,13 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
+    );
+  }
+
+  Widget _buildRemindMeLaterButton(BuildContext context, L10n lang) {
+    return OutlinedButton(
+      onPressed: () => context.goNamed(Routes.linkEmail.name),
+      child: Text(L10n.of(context).remindMeLater),
     );
   }
 
