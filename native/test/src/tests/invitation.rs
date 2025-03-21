@@ -27,7 +27,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
     convo.invite_user_by_id(&kyra.user_id()?).await?;
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
-        let invited = kyra.invited_rooms();
+        let invited = kyra.invitations().room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))
         } else {
@@ -41,6 +41,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert_eq!(room.is_space(), false);
+    assert_eq!(room.sender_id(), sisko.user_id()?);
 
     Ok(())
 }
@@ -65,7 +66,7 @@ async fn space_invitation_shows_up() -> Result<()> {
     space.invite_user_by_id(&kyra.user_id()?).await?;
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
-        let invited = kyra.invited_rooms();
+        let invited = kyra.invitations().room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))
         } else {
@@ -79,6 +80,7 @@ async fn space_invitation_shows_up() -> Result<()> {
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert_eq!(room.is_space(), true);
+    assert_eq!(room.sender_id(), sisko.user_id()?);
 
     Ok(())
 }
