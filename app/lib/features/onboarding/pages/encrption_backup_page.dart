@@ -141,7 +141,8 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       children: [
         _buildNextButton(context, lang),
         const SizedBox(height: 16),
-        _buildRemindMeLaterButton(context, lang),
+        _buidSkipButton(context, lang),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -159,10 +160,10 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     );
   }
 
-  Widget _buildRemindMeLaterButton(BuildContext context, L10n lang) {
+  Widget _buidSkipButton(BuildContext context, L10n lang) {
     return OutlinedButton(
       onPressed: () => context.goNamed(Routes.linkEmail.name),
-      child: Text(L10n.of(context).remindMeLater),
+      child: Text(L10n.of(context).skip),
     );
   }
 
