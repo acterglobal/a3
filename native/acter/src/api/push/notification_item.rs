@@ -4,7 +4,7 @@ use acter_core::{
         attachments::{AttachmentContent, FallbackAttachmentContent},
         news::{FallbackNewsContent, NewsContent},
         rsvp::RsvpStatus,
-        AnyActerEvent, RefDetails, RefPreview, SyncAnyActerEvent, UtcDateTime,
+        AnyActerEvent, AnySyncActerEvent, RefDetails, RefPreview, UtcDateTime,
     },
     models::{ActerModel, AnyActerModel, Attachment},
     push::default_rules,
@@ -416,10 +416,10 @@ impl NotificationItem {
 
         // acter specific items:
         if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
-            if let Ok(event) = raw_tl.deserialize_as::<SyncAnyActerEvent>() {
+            if let Ok(event) = raw_tl.deserialize_as::<AnySyncActerEvent>() {
                 if !matches!(
                     event,
-                    SyncAnyActerEvent::RegularTimelineEvent(AnySyncTimelineEvent::MessageLike(_))
+                    AnySyncActerEvent::RegularTimelineEvent(AnySyncTimelineEvent::MessageLike(_))
                 ) {
                     return builder
                         .build_for_acter_object(client, event.into_full_any_acter_event(room_id))
