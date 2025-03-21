@@ -9,9 +9,7 @@ class ActivityRoomAvatarItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activityObject = activity.object();
     return ActivitySpaceItemContainerWidget(
-      activityObject: activityObject,
       updatedText: L10n.of(context).spaceAvatarUpdate,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),

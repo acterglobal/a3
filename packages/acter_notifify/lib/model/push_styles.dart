@@ -31,7 +31,9 @@ enum PushStyles {
   otherChanges('✏️'),
 
   //Space Name
-  roomName('✏️');
+  roomName('✏️'),
+  roomTopic('✏️'),
+  roomAvatar('👤');
 
   const PushStyles(this.emoji);
 
