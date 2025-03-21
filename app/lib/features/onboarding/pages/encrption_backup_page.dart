@@ -29,8 +29,10 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   void enableBackup(BuildContext context) async {
     try {
-      final manager = await ref.read(backupManagerProvider.future);
-      encryptionKey.value = await manager.enable();
+      encryptionKey.value = await ref.read(
+        enableEncrptionBackUpProvider.future,
+      );
+      isShowNextButton.value = true;
     } catch (e) {
       encryptionKey.value = e.toString();
     }
