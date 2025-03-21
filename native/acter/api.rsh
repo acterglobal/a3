@@ -3066,6 +3066,9 @@ object InvitationsManager {
     /// current set of rooms that the user is invited to
     fn room_invitations() -> Future<Result<Vec<RoomInvitation>>>;
 
+    /// current set of objects that the user is invited to
+    fn object_invitations() -> Future<Result<Vec<string>>>;
+
     /// whenever an update occurs
     fn subscribe_stream() -> Stream<bool>;
 

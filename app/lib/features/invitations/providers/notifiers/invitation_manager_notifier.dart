@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:logging/logging.dart';
@@ -17,7 +18,9 @@ class InvitationManagerNotifier extends AsyncNotifier<InvitesState> {
 
   FutureOr<InvitesState> _load() async {
     final roomInvites = (await manager.roomInvitations()).toList();
-    final List<String> objectsWithInvites = [];
+    final List<String> objectsWithInvites = asDartStringList(
+      (await manager.objectInvitations()),
+    );
     return (rooms: roomInvites, objects: objectsWithInvites);
   }
 
