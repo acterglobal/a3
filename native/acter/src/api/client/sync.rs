@@ -1,5 +1,5 @@
 use acter_core::{
-    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel,
+    events::AnySyncActerEvent, executor::Executor, models::AnyActerModel,
     referencing::ExecuteReference, spaces::is_acter_space,
 };
 use anyhow::Result;
@@ -243,13 +243,14 @@ impl Client {
 
         // Any
         self.add_event_handler(
-            |ev: SyncAnyActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+            |ev: AnySyncActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
                 let room_id = room.room_id().to_owned();
                 let acter_event = ev.into_full_any_acter_event(room_id);
                 AnyActerModel::execute(&executor, acter_event).await;
             },
         );
     }
+
     fn refresh_history_on_start(
         &self,
         sync_keys: Vec<OwnedRoomId>,
