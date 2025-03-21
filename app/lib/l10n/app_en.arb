@@ -2318,5 +2318,6 @@
     "accepted": "Accepted",
     "rejected": "Declined",
     "taskLabel": "Task",
+    "updated": "Updated",
     "@addComment": {}
 }
