@@ -2318,5 +2318,8 @@
     "accepted": "Accepted",
     "rejected": "Declined",
     "taskLabel": "Task",
+    "creation": "Created",
+    "redaction": "Deleted",
+    "updated": "Updated",
     "@addComment": {}
 }

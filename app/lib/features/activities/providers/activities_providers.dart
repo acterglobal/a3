@@ -23,6 +23,11 @@ final supportedActivityTypes = [
   PushStyles.taskAccept,
   PushStyles.taskDecline,
   PushStyles.taskDueDateChange,
+  PushStyles.creation,
+  PushStyles.redaction,
+  PushStyles.titleChange,
+  PushStyles.descriptionChange,
+  PushStyles.otherChanges
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {
