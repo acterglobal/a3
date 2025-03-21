@@ -33,6 +33,27 @@ impl InvitationsManager {
         };
         self.inner.invited().contains(&user_id)
     }
+
+    /// whether
+    pub fn can_invite(&self, user_id: String) -> Result<bool> {
+        let user_id = UserId::parse(user_id)?;
+        Ok(!self.inner.accepted().contains(&user_id)
+            && !self.inner.declined().contains(&user_id)
+            && !self.inner.accepted().contains(&user_id))
+    }
+    pub fn has_accepted(&self) -> bool {
+        let Ok(user_id) = self.client.user_id() else {
+            return false;
+        };
+        self.inner.accepted().contains(&user_id)
+    }
+
+    pub fn has_declined(&self) -> bool {
+        let Ok(user_id) = self.client.user_id() else {
+            return false;
+        };
+        self.inner.declined().contains(&user_id)
+    }
     pub fn invited(&self) -> Vec<String> {
         self.inner
             .invited()
@@ -40,6 +61,23 @@ impl InvitationsManager {
             .map(|id| id.to_string())
             .collect()
     }
+
+    pub fn accepted(&self) -> Vec<String> {
+        self.inner
+            .accepted()
+            .iter()
+            .map(|id| id.to_string())
+            .collect()
+    }
+
+    pub fn declined(&self) -> Vec<String> {
+        self.inner
+            .declined()
+            .iter()
+            .map(|id| id.to_string())
+            .collect()
+    }
+
     pub fn has_invitations(&self) -> bool {
         !self.inner.invited().is_empty()
     }
