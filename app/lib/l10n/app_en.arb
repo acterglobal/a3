@@ -2315,5 +2315,11 @@
     "goingTo": "Going to",
     "notGoingTo": "Not Going to",
     "mayBe": "Might be attending",
+    "created": "Added task on",
+    "reOpened": "Re-opened",
+    "completed": "Completed",
+    "accepted": "Accepted",
+    "rejected": "Declined",
+    "taskLabel": "Task",
     "@addComment": {}
 }

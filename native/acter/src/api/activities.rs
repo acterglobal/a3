@@ -83,6 +83,13 @@ impl Activity {
             _ => None,
         }
     }
+
+    pub fn mentions_you(&self) -> bool {
+        let Ok(user_id) = self.client.user_id() else {
+            return false;
+        };
+        self.inner.whom().contains(&user_id.to_string())
+    }
 }
 
 impl Deref for Activity {

@@ -1,8 +1,14 @@
-use anyhow::Result;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+use acter_core::{events::UtcDateTime, store::Store, Error as SdkError};
+use anyhow::{bail, Result};
 use futures::{Stream, StreamExt};
 use matrix_sdk::encryption::{recovery::RecoveryState, Encryption};
+use serde::{Deserialize, Serialize};
 
 use crate::{Client, RUNTIME};
+
+use super::OptionString;
 
 fn state_to_string(state: &RecoveryState) -> String {
     match state {
@@ -13,38 +19,110 @@ fn state_to_string(state: &RecoveryState) -> String {
     }
 }
 
+#[derive(Clone, Serialize, Deserialize)]
+struct StoredBackupKey {
+    timestamp: u64,
+    key: String,
+}
+
 #[derive(Debug, Clone)]
 pub struct BackupManager {
     inner: Encryption,
+    store: Store,
 }
 
+const BACKUP_STORE_KEY: &str = "backup_encryption_key";
+
+async fn store_backup_key(store: Store, key: String) -> Result<bool> {
+    let o = StoredBackupKey {
+        timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
+        key,
+    };
+    Ok(store.set_raw(BACKUP_STORE_KEY, &o).await.is_ok())
+}
+
+async fn read_backup_key(store: Store) -> Result<StoredBackupKey, SdkError> {
+    store.get_raw(BACKUP_STORE_KEY).await
+}
+
+/// Public Api
 impl BackupManager {
     pub async fn enable(&self) -> Result<String> {
         let inner = self.inner.clone();
+        let store = self.store.clone();
         RUNTIME
             .spawn(async move {
                 inner.wait_for_e2ee_initialization_tasks().await;
                 let recovery = inner.recovery();
-                Ok(recovery.enable().wait_for_backups_to_upload().await?)
+                let key = recovery.enable().wait_for_backups_to_upload().await?;
+                store_backup_key(store, key.clone()).await?;
+                Ok(key)
             })
             .await?
     }
 
     pub async fn reset(&self) -> Result<String> {
         let inner = self.inner.clone();
+        let store = self.store.clone();
         RUNTIME
             .spawn(async move {
                 let recovery = inner.recovery();
-                Ok(recovery.reset_key().await?)
+                let key = recovery.reset_key().await?;
+
+                store_backup_key(store, key.clone()).await?;
+                Ok(key)
             })
             .await?
     }
 
     pub async fn disable(&self) -> Result<bool> {
         let encryption = self.inner.clone();
+        let store = self.store.clone();
         RUNTIME
             .spawn(async move {
                 encryption.recovery().disable().await?;
+                store.delete_key(BACKUP_STORE_KEY).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    async fn stored_key(&self) -> Result<Option<StoredBackupKey>> {
+        match self.inner.recovery().state() {
+            RecoveryState::Disabled => Ok(None),
+            RecoveryState::Unknown | RecoveryState::Enabled | RecoveryState::Incomplete => {
+                let store = self.store.clone();
+                RUNTIME
+                    .spawn(async move {
+                        match read_backup_key(store).await {
+                            Err(SdkError::ModelNotFound(_)) => Ok(None),
+                            Ok(s) => Ok(Some(s)),
+                            Err(e) => bail!(e),
+                        }
+                    })
+                    .await?
+            }
+        }
+    }
+
+    pub async fn stored_enc_key(&self) -> Result<OptionString> {
+        Ok(self.stored_key().await?.map(|k| k.key).into())
+    }
+
+    /// timestamp when this key was stored
+    pub async fn stored_enc_key_when(&self) -> Result<u64> {
+        Ok(self
+            .stored_key()
+            .await?
+            .map(|k| k.timestamp)
+            .unwrap_or_default())
+    }
+
+    pub async fn destroy_stored_enc_key(&self) -> Result<bool> {
+        let store = self.store.clone();
+        RUNTIME
+            .spawn(async move {
+                store.delete_key(BACKUP_STORE_KEY).await?;
                 Ok(true)
             })
             .await?
@@ -79,6 +157,7 @@ impl Client {
     pub fn backup_manager(&self) -> BackupManager {
         BackupManager {
             inner: self.core.client().encryption().clone(),
+            store: self.store().clone(),
         }
     }
 }

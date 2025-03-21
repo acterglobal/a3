@@ -1623,6 +1623,28 @@ object CommentsManager {
 }
 
 
+/// Reference of explicit invitations to a particular item
+object InvitationsManager {
+    /// Get the list of users that were invited
+    fn invited() -> Vec<string>;
+
+    /// Whether or not any invitations exist
+    fn has_invitations() -> bool;
+
+    /// Whether or not this user has been invited
+    fn is_invited() -> bool;
+
+    /// invite a specific user to this object, returns the event_id
+    fn invite(user_id: string) -> Future<Result<string>>;
+
+    /// subscribe to the changes this manager
+    fn subscribe_stream() -> Stream<bool>;
+
+    /// reload the data from the database
+    fn reload() -> Future<Result<InvitationsManager>>;
+}
+
+
 //     ###    ######## ########    ###     ######  ##     ## ##     ## ######## ##    ## ########  ######  
 //    ## ##      ##       ##      ## ##   ##    ## ##     ## ###   ### ##       ###   ##    ##    ##    ## 
 //   ##   ##     ##       ##     ##   ##  ##       ##     ## #### #### ##       ####  ##    ##    ##       
@@ -1813,6 +1835,9 @@ object Task {
 
     /// get the attachments manager
     fn attachments() -> Future<Result<AttachmentsManager>>;
+
+    /// get the invitations manager for this task
+    fn invitations() -> Future<Result<InvitationsManager>>;
 }
 
 object TaskUpdateBuilder {
@@ -2303,9 +2328,11 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
-    /// The name of the object (e.g. Attachment filename) if given
+    /// see title
     fn name() -> Option<string>;
 
+    /// The title of the activity (e.g. Attachment filename or Task on TaskAdd) if given
+    fn title() -> Option<string>;
 
     /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
@@ -2315,6 +2342,13 @@ object Activity {
 
     /// the date on eventDateChange (started or ended) or taskDueDateChane
     fn new_date() -> Option<UtcDateTime>;
+
+    /// whom, if this involved additional users, e.g. when someone is invited
+    /// to an object
+    fn whom() -> Vec<string>;
+
+    /// does this mention the user
+    fn mentions_you() -> bool; 
 
 }
 
@@ -2932,6 +2966,12 @@ object NotificationItem {
 
     /// the date on eventDateChange (started or ended) or taskDueDateChane
     fn new_date() -> Option<UtcDateTime>;
+
+    /// does this mention the user
+    fn mentions_you() -> bool; 
+
+    /// does this involve other users than the sender?
+    fn whom() -> Vec<string>;
 }
 
 /// The pusher we sent notifications via to the user
@@ -3619,5 +3659,14 @@ object BackupManager {
 
     /// Open the existing secret store using the given key and import the keys
     fn recover(secret: string) -> Future<Result<bool>>;
+
+    /// the backup key as it was stored last, might be empty if there isn't any stored
+    fn stored_enc_key() -> Future<Result<OptionString>>;
+
+    /// When was the key stored as unix timestamp. 0 if nothing was found
+    fn stored_enc_key_when() -> Future<Result<u64>>;
+
+    /// Remove the key from storage - backup will continue to work fine though
+    fn destroy_stored_enc_key() -> Future<Result<bool>>;
 
 }
