@@ -10,11 +10,9 @@ class ActivityRoomTopicItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activityObject = activity.object();
     return ActivitySpaceItemContainerWidget(
       actionIcon: PhosphorIconsRegular.pencilSimpleLine,
       updatedText: L10n.of(context).spaceDescriptionUpdate,
-      activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       originServerTs: activity.originServerTs(),
