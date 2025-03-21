@@ -30,6 +30,7 @@ pub enum ObjectListIndex {
     ReadReceipt,
     Rsvp,
     Tasks,
+    Invites,
 }
 
 #[derive(
@@ -72,6 +73,8 @@ pub enum ModelParam {
     RsvpStats,
     #[strum(to_string = "read_receipts")]
     ReadReceiptsStats,
+    #[strum(to_string = "invites")]
+    InviteStats,
 }
 
 #[derive(

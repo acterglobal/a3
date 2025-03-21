@@ -129,6 +129,7 @@ impl ActerModel for Task {
             Capability::Commentable,
             Capability::Attachmentable,
             Capability::Reactable,
+            Capability::Inviteable,
         ]
     }
 

@@ -21,6 +21,7 @@ enum PushStyles {
   taskAccept('🤝'),
   taskDecline('✖️'),
   taskDueDateChange('🕒'),
+  objectInvitation('📨'),
 
   //General
   titleChange('✏️'),
