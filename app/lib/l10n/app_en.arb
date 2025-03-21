@@ -2318,5 +2318,8 @@
     "accepted": "Accepted",
     "rejected": "Declined",
     "taskLabel": "Task",
+    "spaceNameUpdate": " updated space name",
+    "spaceDescriptionUpdate": " updated space description",
+    "spaceAvatarUpdate": "updated avatar",
     "@addComment": {}
 }
