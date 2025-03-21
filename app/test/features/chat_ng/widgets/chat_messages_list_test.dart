@@ -168,6 +168,91 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
+    testWidgets('automatically scrolls to bottom on initial load', (
+      tester,
+    ) async {
+      final initialState = ChatRoomState(
+        messageList: [],
+        loading: const ChatRoomLoadingState.loaded(),
+      );
+
+      final notifier = ChatRoomMessagesNotifier(
+        roomId: testRoomId,
+        ref: MockRef(),
+      );
+      notifier.state = initialState;
+
+      final animatedListKey = GlobalKey<AnimatedListState>();
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          chatMessagesStateProvider(testRoomId).overrideWith((ref) => notifier),
+          chat
+              .timelineStreamProvider(testRoomId)
+              .overrideWith((ref) => Future.value(MockTimelineStream())),
+          animatedListChatMessagesProvider(
+            testRoomId,
+          ).overrideWith((ref) => animatedListKey),
+        ],
+        child: ChatMessages(roomId: testRoomId),
+      );
+
+      // Update with messages to trigger auto-scroll
+      final updatedState = initialState.copyWith(
+        messageList: List.generate(5, (index) => 'msg$index'),
+      );
+      notifier.state = updatedState;
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // Verify the scroll position is at the bottom (0.0 for reversed list)
+      final scrollController =
+          tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
+      expect(scrollController?.position.pixels, equals(0.0));
+    });
+
+    testWidgets('marks messages as read when scrolling to bottom', (
+      tester,
+    ) async {
+      final messagesState = ChatRoomState(
+        messageList: List.generate(20, (index) => 'msg$index'),
+        loading: const ChatRoomLoadingState.loaded(),
+      );
+
+      final mockTimelineStream = MockTimelineStream();
+      when(
+        () => mockTimelineStream.markAsRead(any()),
+      ).thenAnswer((_) async => false);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          chatMessagesStateProvider(
+            testRoomId,
+          ).overrideWith((ref) => MockChatRoomMessagesNotifier(messagesState)),
+          chat
+              .timelineStreamProvider(testRoomId)
+              .overrideWith((ref) => Future.value(mockTimelineStream)),
+          animatedListChatMessagesProvider(
+            testRoomId,
+          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
+          isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => false),
+          chat.hasUnreadMessages(testRoomId).overrideWith((ref) => true),
+        ],
+        child: ChatMessages(roomId: testRoomId),
+      );
+
+      final chatMessagesWidget = find.byType(ChatMessages);
+      final state = tester.state(chatMessagesWidget) as dynamic;
+
+      await state.onScroll();
+
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // verifymarkAsRead was called
+      verify(() => mockTimelineStream.markAsRead(true)).called(1);
+    });
+
     testWidgets('handles message insertion animation correctly', (
       tester,
     ) async {
