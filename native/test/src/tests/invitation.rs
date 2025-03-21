@@ -48,7 +48,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
     let room = invited.first().unwrap();
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
-    assert_eq!(room.is_space(), false);
+    assert!(!room.is_space());
     assert_eq!(room.sender_id(), sisko.user_id()?);
 
     Ok(())
@@ -93,7 +93,7 @@ async fn space_invitation_shows_up() -> Result<()> {
     let room = invited.first().unwrap();
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
-    assert_eq!(room.is_space(), true);
+    assert!(room.is_space());
     assert_eq!(room.sender_id(), sisko.user_id()?);
 
     Ok(())
