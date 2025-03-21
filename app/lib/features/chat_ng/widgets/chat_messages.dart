@@ -25,7 +25,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   );
 
   Timer? markReadDebouce;
-  bool _showScrollToBottom = false;
+  bool showScrollToBottom = false;
 
   bool get isLoading => ref.watch(
     chatMessagesStateProvider(widget.roomId).select((v) => v.loading.isLoading),
@@ -94,9 +94,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         _scrollController.position.pixels >
             (_scrollController.position.minScrollExtent + 5);
 
-    if (shouldShowButton != _showScrollToBottom) {
+    if (shouldShowButton != showScrollToBottom) {
       setState(() {
-        _showScrollToBottom = shouldShowButton;
+        showScrollToBottom = shouldShowButton;
       });
     }
   }
@@ -172,14 +172,14 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     bottom: 16,
     right: 16,
     child: AnimatedOpacity(
-      opacity: _showScrollToBottom ? 1.0 : 0.0,
+      opacity: showScrollToBottom ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 200),
       child: AnimatedScale(
-        scale: _showScrollToBottom ? 1.0 : 0.0,
+        scale: showScrollToBottom ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 200),
         child: FloatingActionButton(
           mini: true,
-          onPressed: _showScrollToBottom ? scrollToEnd : null,
+          onPressed: showScrollToBottom ? scrollToEnd : null,
           child: const Icon(Icons.arrow_downward),
         ),
       ),

@@ -8,6 +8,7 @@ import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -288,9 +289,31 @@ void main() {
         child: ChatMessages(roomId: testRoomId),
       );
 
-      // just verify the button exists
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+      final scrollController =
+          tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
+      final chatMessagesWidget = find.byType(ChatMessages);
+
+      // scroll up to make the button visible
+      scrollController?.position.jumpTo(100.0);
+
+      await tester.pump();
+
+      final initialState =
+          tester.state(chatMessagesWidget) as ConsumerState<ChatMessages>;
+      expect((initialState as dynamic).showScrollToBottom, isTrue);
+
+      final finalState =
+          tester.state(chatMessagesWidget) as ConsumerState<ChatMessages>;
+
+      await (finalState as dynamic).scrollToEnd();
+
+      await tester.pump();
+      //wait for the animation to complete
+      await tester.pumpAndSettle();
+
+      expect(scrollController?.position.pixels, equals(0.0));
+      // button should be hidden
+      expect((finalState as dynamic).showScrollToBottom, isFalse);
     });
   });
 }
