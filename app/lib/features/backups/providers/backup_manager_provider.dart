@@ -6,3 +6,8 @@ final backupManagerProvider = FutureProvider(
     alwaysClientProvider.selectAsync((client) => client.backupManager()),
   ),
 );
+
+final enableEncrptionBackUpProvider = FutureProvider((ref) async {
+  final manager = await ref.watch(backupManagerProvider.future);
+  return manager.enable();
+});
