@@ -12,14 +12,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 class ChatMessages extends ConsumerStatefulWidget {
+  static const fabScrollToBottomKey = Key('chat_messages_fab_scroll_to_bottom');
   final String roomId;
   const ChatMessages({super.key, required this.roomId});
 
   @override
-  ConsumerState<ChatMessages> createState() => _ChatMessagesConsumerState();
+  ConsumerState<ChatMessages> createState() => ChatMessagesConsumerState();
 }
 
-class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
+class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   final ScrollController _scrollController = AutoScrollController(
     initialScrollOffset: 0.0,
   );
@@ -169,6 +170,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
 
   //  scroll indicator widget
   Widget _buildScrollToBottomButton() => Positioned(
+    key: ChatMessages.fabScrollToBottomKey,
     bottom: 16,
     right: 16,
     child: AnimatedOpacity(

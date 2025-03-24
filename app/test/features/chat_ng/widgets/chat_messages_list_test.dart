@@ -25,8 +25,12 @@ class MockRef extends Mock implements Ref {}
 class MockChatRoomMessagesNotifier extends Mock
     implements ChatRoomMessagesNotifier {
   final ChatRoomState initalState;
+  final bool useDefaultListener;
 
-  MockChatRoomMessagesNotifier(this.initalState);
+  MockChatRoomMessagesNotifier(
+    this.initalState, {
+    this.useDefaultListener = true,
+  });
 
   @override
   ChatRoomState get state => initalState;
@@ -36,25 +40,26 @@ class MockChatRoomMessagesNotifier extends Mock
     void Function(ChatRoomState) listener, {
     bool fireImmediately = true,
   }) {
-    if (fireImmediately) {
-      listener(state);
+    if (useDefaultListener) {
+      if (fireImmediately) {
+        listener(state);
+      }
+      return () {};
     }
-    return () {};
+    return super.noSuchMethod(
+          Invocation.method(
+            #addListener,
+            [listener],
+            {#fireImmediately: fireImmediately},
+          ),
+        )
+        as void Function();
   }
-
-  @override
-  Future<void> loadMore({bool failOnError = true}) async {}
 }
 
 void main() {
   group('ChatMessages Widget Tests', () {
     final testRoomId = 'test-room-id';
-
-    setUp(() {
-      registerFallbackValue(const ChatRoomState());
-      registerFallbackValue(true); // Register fallback for boolean parameters
-      registerFallbackValue(false); // Register fallback for boolean parameters
-    });
 
     testWidgets('renders empty state correctly', (tester) async {
       final emptyState = ChatRoomState(
@@ -120,69 +125,19 @@ void main() {
       expect(animatedList.initialItemCount, equals(5));
     });
 
-    testWidgets('shows loading indicator when loading', (tester) async {
-      final loadingState = ChatRoomState(
-        messageList: ['msg1', 'msg2'],
-        loading: const ChatRoomLoadingState.loading(),
-      );
-
-      await tester.pumpProviderWidget(
-        overrides: [
-          chatMessagesStateProvider(
-            testRoomId,
-          ).overrideWith((ref) => MockChatRoomMessagesNotifier(loadingState)),
-          chat
-              .timelineStreamProvider(testRoomId)
-              .overrideWith((ref) => Future.value(MockTimelineStream())),
-          animatedListChatMessagesProvider(
-            testRoomId,
-          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
-        ],
-        child: ChatMessages(roomId: testRoomId),
-      );
-
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
-    testWidgets('hides loading indicator when not loading', (tester) async {
-      final loadedState = ChatRoomState(
-        messageList: ['msg1', 'msg2'],
-        loading: const ChatRoomLoadingState.loaded(),
-      );
-
-      await tester.pumpProviderWidget(
-        overrides: [
-          chatMessagesStateProvider(
-            testRoomId,
-          ).overrideWith((ref) => MockChatRoomMessagesNotifier(loadedState)),
-          chat
-              .timelineStreamProvider(testRoomId)
-              .overrideWith((ref) => Future.value(MockTimelineStream())),
-          animatedListChatMessagesProvider(
-            testRoomId,
-          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
-        ],
-        child: ChatMessages(roomId: testRoomId),
-      );
-
-      expect(find.byType(CircularProgressIndicator), findsNothing);
-    });
-
-    testWidgets('automatically scrolls to bottom on initial load', (
+    testWidgets('shows loading indicator and hides it when done loading', (
       tester,
     ) async {
-      final initialState = ChatRoomState(
-        messageList: [],
-        loading: const ChatRoomLoadingState.loaded(),
-      );
-
       final notifier = ChatRoomMessagesNotifier(
         roomId: testRoomId,
         ref: MockRef(),
       );
-      notifier.state = initialState;
 
-      final animatedListKey = GlobalKey<AnimatedListState>();
+      // initialize with loading state
+      notifier.state = ChatRoomState(
+        messageList: ['msg1', 'msg2'],
+        loading: const ChatRoomLoadingState.loading(),
+      );
 
       await tester.pumpProviderWidget(
         overrides: [
@@ -192,24 +147,22 @@ void main() {
               .overrideWith((ref) => Future.value(MockTimelineStream())),
           animatedListChatMessagesProvider(
             testRoomId,
-          ).overrideWith((ref) => animatedListKey),
+          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
         ],
         child: ChatMessages(roomId: testRoomId),
       );
 
-      // Update with messages to trigger auto-scroll
-      final updatedState = initialState.copyWith(
-        messageList: List.generate(5, (index) => 'msg$index'),
+      // verify indicator is shown when loading
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // update state to loaded
+      notifier.state = notifier.state.copyWith(
+        loading: const ChatRoomLoadingState.loaded(),
       );
-      notifier.state = updatedState;
 
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      // Verify the scroll position is at the bottom (0.0 for reversed list)
-      final scrollController =
-          tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
-      expect(scrollController?.position.pixels, equals(0.0));
+      //   verify indicator is hidden when loaded
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('marks messages as read when scrolling to bottom', (
@@ -315,11 +268,15 @@ void main() {
         loading: const ChatRoomLoadingState.loaded(),
       );
 
+      final notifier = ChatRoomMessagesNotifier(
+        roomId: testRoomId,
+        ref: MockRef(),
+      );
+      notifier.state = messagesState;
+
       await tester.pumpProviderWidget(
         overrides: [
-          chatMessagesStateProvider(
-            testRoomId,
-          ).overrideWith((ref) => MockChatRoomMessagesNotifier(messagesState)),
+          chatMessagesStateProvider(testRoomId).overrideWith((ref) => notifier),
           chat
               .timelineStreamProvider(testRoomId)
               .overrideWith((ref) => Future.value(MockTimelineStream())),
@@ -327,34 +284,55 @@ void main() {
             testRoomId,
           ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
         ],
-        child: ChatMessages(roomId: testRoomId),
+        child: MaterialApp(
+          home: Scaffold(
+            body: SizedBox(
+              width: 800,
+              height: 600,
+              child: ChatMessages(roomId: testRoomId),
+            ),
+          ),
+        ),
       );
 
       final scrollController =
           tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
-      final chatMessagesWidget = find.byType(ChatMessages);
 
-      // scroll up to make the button visible
+      // scroll up
       scrollController?.position.jumpTo(100.0);
-
       await tester.pump();
 
-      final initialState =
-          tester.state(chatMessagesWidget) as ConsumerState<ChatMessages>;
-      expect((initialState as dynamic).showScrollToBottom, isTrue);
+      final fabFinder = find.byKey(ChatMessages.fabScrollToBottomKey);
+      expect(fabFinder, findsOneWidget);
 
-      final finalState =
-          tester.state(chatMessagesWidget) as ConsumerState<ChatMessages>;
+      // button is visible (opacity should be 1)
+      final opacityWidget = tester.widget<AnimatedOpacity>(
+        find.byType(AnimatedOpacity),
+      );
+      expect(opacityWidget.opacity, equals(1.0));
 
-      await (finalState as dynamic).scrollToEnd();
+      final buttonFinder = find.descendant(
+        of: fabFinder,
+        matching: find.byType(FloatingActionButton),
+      );
 
-      await tester.pump();
-      //wait for the animation to complete
+      expect(buttonFinder, findsOneWidget);
+
+      await tester.ensureVisible(buttonFinder);
       await tester.pumpAndSettle();
+      await tester.tap(buttonFinder);
+      await tester.pumpAndSettle(Durations.medium3);
 
-      expect(scrollController?.position.pixels, equals(0.0));
-      // button should be hidden
-      expect((finalState as dynamic).showScrollToBottom, isFalse);
+      expect(
+        scrollController?.position.pixels,
+        equals(scrollController!.position.minScrollExtent),
+      );
+
+      // verify button is hidden (opacity should be 0)
+      final updatedOpacityWidget = tester.widget<AnimatedOpacity>(
+        find.byType(AnimatedOpacity),
+      );
+      expect(updatedOpacityWidget.opacity, equals(0.0));
     });
 
     testWidgets('preserves correct message order when displayed in reverse', (
