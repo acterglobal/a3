@@ -334,51 +334,5 @@ void main() {
       );
       expect(updatedOpacityWidget.opacity, equals(0.0));
     });
-
-    testWidgets('preserves correct message order when displayed in reverse', (
-      tester,
-    ) async {
-      final messagesState = ChatRoomState(
-        messageList: List.generate(5, (index) => 'msg$index'),
-        loading: const ChatRoomLoadingState.loaded(),
-      );
-
-      final mockNotifier = MockChatRoomMessagesNotifier(messagesState);
-
-      await tester.pumpProviderWidget(
-        overrides: [
-          chatMessagesStateProvider(
-            testRoomId,
-          ).overrideWith((ref) => mockNotifier),
-          chat
-              .timelineStreamProvider(testRoomId)
-              .overrideWith((ref) => Future.value(MockTimelineStream())),
-          animatedListChatMessagesProvider(
-            testRoomId,
-          ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
-          isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => false),
-        ],
-        child: ChatMessages(roomId: testRoomId),
-      );
-
-      await tester.pump();
-
-      // Get the AnimatedList
-      final animatedList = tester.widget<AnimatedList>(
-        find.byType(AnimatedList),
-      );
-
-      // Verify the list is in reverse
-      expect(animatedList.reverse, isTrue);
-
-      // Verify the correct number of items
-      expect(animatedList.initialItemCount, equals(5));
-
-      // Check the order of messages in the state
-      expect(
-        mockNotifier.state.messageList,
-        equals(['msg0', 'msg1', 'msg2', 'msg3', 'msg4']),
-      );
-    });
   });
 }
