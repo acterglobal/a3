@@ -3,7 +3,10 @@ use matrix_sdk_base::ruma::{
     events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedUserId, UserId,
 };
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, ops::Deref};
+use std::{
+    collections::{BTreeSet, HashMap},
+    ops::Deref,
+};
 use tracing::{error, trace};
 
 use super::{ActerModel, AnyActerModel, Capability, EventMeta};
@@ -16,7 +19,12 @@ use crate::{
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct InviteStats {
-    invited: Vec<OwnedUserId>,
+    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+    invited: BTreeSet<OwnedUserId>,
+    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+    accepted: BTreeSet<OwnedUserId>,
+    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+    declined: BTreeSet<OwnedUserId>,
 }
 
 #[derive(Clone, Debug)]
@@ -48,10 +56,6 @@ impl InvitationsManager {
         self.event_id.clone()
     }
 
-    pub fn invited(&self) -> &Vec<OwnedUserId> {
-        &self.stats.invited
-    }
-
     pub async fn invite_entries(&self) -> Result<HashMap<OwnedUserId, ExplicitInvite>> {
         let mut entries = HashMap::new();
         for mdl in self
@@ -69,11 +73,34 @@ impl InvitationsManager {
 
     pub(crate) fn add_invite_entry(&mut self, entry: &ExplicitInvite) -> Result<bool> {
         for user_id in &entry.inner.mention.user_ids {
-            if !self.stats.invited.contains(user_id) {
-                self.stats.invited.push(user_id.clone());
+            if self.stats.accepted.contains(user_id) || self.stats.declined.contains(user_id) {
+                continue; // we ignore entries if the user already interacted with it
             }
+            self.stats.invited.insert(user_id.clone());
         }
         Ok(true)
+    }
+
+    pub(crate) fn mark_as_accepted(&mut self, entry: OwnedUserId) -> bool {
+        let mut was_invited = self.stats.invited.remove(&entry);
+        if !was_invited {
+            was_invited = self.stats.declined.remove(&entry);
+        }
+        if was_invited {
+            self.stats.accepted.insert(entry);
+        }
+        was_invited
+    }
+
+    pub(crate) fn mark_as_declined(&mut self, entry: OwnedUserId) -> bool {
+        let mut was_invited = self.stats.invited.remove(&entry);
+        if !was_invited {
+            was_invited = self.stats.accepted.remove(&entry);
+        }
+        if was_invited {
+            self.stats.declined.insert(entry);
+        }
+        was_invited
     }
 
     pub fn stats(&self) -> &InviteStats {
