@@ -28,7 +28,12 @@ enum PushStyles {
   descriptionChange('✏️'),
   creation('➕'),
   redaction('🗑️'),
-  otherChanges('✏️');
+  otherChanges('✏️'),
+
+  invitationAccepted('✅'),
+  invited('📨'),
+  joined('🤝'),
+  invitationRevoked('❌');
 
   const PushStyles(this.emoji);
 
