@@ -1120,7 +1120,7 @@ object MsgContent {
     fn profile_change() -> Option<ProfileChange>;
 
     /// available when a user changed another user
-    fn membership_change() -> Option<SimpleMembershipChange>;
+    fn membership_change() -> Option<MembershipChange>;
 }
 
 object ProfileChange {
@@ -1146,7 +1146,7 @@ object ProfileChange {
     fn avatar_url_new_val() -> Option<MxcUri>;
 }
 
-object SimpleMembershipChange {
+object MembershipChange {
     /// The ID of the user whose profile changed.
     fn user_id() -> UserId;
 
@@ -2337,7 +2337,7 @@ object Activity {
     fn sub_type_str() -> Option<string>;
 
     /// the details of this membership change activity
-    fn membership_change() -> Option<SimpleMembershipChange>;
+    fn membership_change() -> Option<MembershipChange>;
 
     /// if the added information is a reference
     fn ref_details() -> Option<RefDetails>;

@@ -13,7 +13,7 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::{Change, ProfileChange, SimpleMembershipChange},
+        status::membership::{Change, MembershipChange, ProfileChange},
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -182,10 +182,10 @@ impl Activity {
         }
     }
 
-    pub fn membership_change(&self) -> Option<SimpleMembershipChange> {
+    pub fn membership_change(&self) -> Option<MembershipChange> {
         match &self.inner {
             ActivityContent::MembershipChange { user_id, change } => {
-                Some(SimpleMembershipChange::new(user_id.clone(), change.clone()))
+                Some(MembershipChange::new(user_id.clone(), change.clone()))
             }
             _ => None,
         }

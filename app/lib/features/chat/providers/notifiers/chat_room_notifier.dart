@@ -603,8 +603,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'membershipChange': // some of m.room.member
-        SimpleMembershipChange? change =
-            eventItem.msgContent()?.membershipChange();
+        MembershipChange? change = eventItem.msgContent()?.membershipChange();
         String? mode = change?.change();
         if (mode == null) {
           return types.UnsupportedMessage(

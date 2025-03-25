@@ -5,7 +5,7 @@ use acter_core::{
         rsvp::RsvpStatus,
         ColorizeBuilder, DisplayBuilder, ObjRefBuilder, Position, RefDetails as CoreRefDetails,
     },
-    models::status::membership::{Change, ProfileChange, SimpleMembershipChange},
+    models::status::membership::{Change, MembershipChange, ProfileChange},
 };
 use anyhow::{Context, Result};
 use core::time::Duration;
@@ -680,10 +680,10 @@ impl MsgContent {
         }
     }
 
-    pub fn membership_change(&self) -> Option<SimpleMembershipChange> {
+    pub fn membership_change(&self) -> Option<MembershipChange> {
         match self {
             MsgContent::MembershipChange { user_id, change } => {
-                Some(SimpleMembershipChange::new(user_id.clone(), change.clone()))
+                Some(MembershipChange::new(user_id.clone(), change.clone()))
             }
             _ => None,
         }

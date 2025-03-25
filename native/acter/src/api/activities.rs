@@ -1,7 +1,7 @@
 pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
     activities::{Activity as CoreActivity, ActivityContent},
-    models::{status::membership::SimpleMembershipChange, ActerModel},
+    models::{status::membership::MembershipChange, ActerModel},
     referencing::IndexKey,
 };
 use futures::{FutureExt, Stream, StreamExt};
@@ -23,7 +23,7 @@ impl Activity {
         self.inner.content()
     }
 
-    pub fn membership_change(&self) -> Option<SimpleMembershipChange> {
+    pub fn membership_change(&self) -> Option<MembershipChange> {
         self.inner.membership_change()
     }
 

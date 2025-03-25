@@ -19668,20 +19668,20 @@ class Api {
   late final _profileChangeAvatarUrlNewVal =
       _profileChangeAvatarUrlNewValPtr
           .asFunction<_ProfileChangeAvatarUrlNewValReturn Function(int)>();
-  late final _simpleMembershipChangeUserIdPtr =
+  late final _membershipChangeUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__SimpleMembershipChange_user_id",
+        "__MembershipChange_user_id",
       );
 
-  late final _simpleMembershipChangeUserId =
-      _simpleMembershipChangeUserIdPtr.asFunction<int Function(int)>();
-  late final _simpleMembershipChangeChangePtr = _lookup<
-    ffi.NativeFunction<_SimpleMembershipChangeChangeReturn Function(ffi.IntPtr)>
-  >("__SimpleMembershipChange_change");
+  late final _membershipChangeUserId =
+      _membershipChangeUserIdPtr.asFunction<int Function(int)>();
+  late final _membershipChangeChangePtr = _lookup<
+    ffi.NativeFunction<_MembershipChangeChangeReturn Function(ffi.IntPtr)>
+  >("__MembershipChange_change");
 
-  late final _simpleMembershipChangeChange =
-      _simpleMembershipChangeChangePtr
-          .asFunction<_SimpleMembershipChangeChangeReturn Function(int)>();
+  late final _membershipChangeChange =
+      _membershipChangeChangePtr
+          .asFunction<_MembershipChangeChangeReturn Function(int)>();
   late final _reactionRecordSenderIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__ReactionRecord_sender_id",
@@ -40745,7 +40745,7 @@ class MsgContent {
   }
 
   /// available when a user changed another user
-  SimpleMembershipChange? membershipChange() {
+  MembershipChange? membershipChange() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._msgContentMembershipChange(tmp0);
@@ -40755,9 +40755,9 @@ class MsgContent {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SimpleMembershipChange");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = SimpleMembershipChange._(_api, tmp4_1);
+    final tmp2 = MembershipChange._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -40954,17 +40954,17 @@ class ProfileChange {
   }
 }
 
-class SimpleMembershipChange {
+class MembershipChange {
   final Api _api;
   final _Box _box;
 
-  SimpleMembershipChange._(this._api, this._box);
+  MembershipChange._(this._api, this._box);
 
   /// The ID of the user whose profile changed.
   UserId userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._simpleMembershipChangeUserId(tmp0);
+    final tmp1 = _api._membershipChangeUserId(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
@@ -40977,7 +40977,7 @@ class SimpleMembershipChange {
   String? change() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._simpleMembershipChangeChange(tmp0);
+    final tmp1 = _api._membershipChangeChange(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -48903,7 +48903,7 @@ class Activity {
   }
 
   /// the details of this membership change activity
-  SimpleMembershipChange? membershipChange() {
+  MembershipChange? membershipChange() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._activityMembershipChange(tmp0);
@@ -48913,9 +48913,9 @@ class Activity {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SimpleMembershipChange");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = SimpleMembershipChange._(_api, tmp4_1);
+    final tmp2 = MembershipChange._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -60608,7 +60608,7 @@ class _ProfileChangeAvatarUrlNewValReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SimpleMembershipChangeChangeReturn extends ffi.Struct {
+class _MembershipChangeChangeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

@@ -111,14 +111,14 @@ impl ProfileChange {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SimpleMembershipChange {
+pub struct MembershipChange {
     user_id: OwnedUserId,
     change: Option<String>,
 }
 
-impl SimpleMembershipChange {
+impl MembershipChange {
     pub fn new(user_id: OwnedUserId, change: Option<String>) -> Self {
-        SimpleMembershipChange { user_id, change }
+        MembershipChange { user_id, change }
     }
 
     pub fn user_id(&self) -> OwnedUserId {
