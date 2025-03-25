@@ -64,20 +64,46 @@ class _SpaceFeaturesActivationState
     String featureDescription,
   ) {
     final textTheme = Theme.of(context).textTheme;
+    final isFeatureActivated = ref.watch(featureActivationProvider);
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 6),
-      child: ListTile(
-        leading: Icon(featureIcon),
-        title: Text(featureName, style: textTheme.bodyMedium),
-        subtitle: Text(featureDescription, style: textTheme.labelSmall),
-        trailing: Switch(
-          value: ref.watch(featureActivationProvider),
-          onChanged: (value) {
-            ref
-                .read(featureActivationProvider.notifier)
-                .update((state) => value);
-          },
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: Icon(featureIcon),
+            title: Text(featureName, style: textTheme.bodyMedium),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(featureDescription, style: textTheme.labelSmall),
+                if (isFeatureActivated) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text('Permission level :', style: textTheme.bodySmall),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Admin',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+            trailing: Switch(
+              value: ref.watch(featureActivationProvider),
+              onChanged: (value) {
+                ref
+                    .read(featureActivationProvider.notifier)
+                    .update((state) => value);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
