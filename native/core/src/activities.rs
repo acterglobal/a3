@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
     events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId, OwnedUserId,
+    OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -13,8 +13,8 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::MembershipChange, ActerModel, ActerSupportedRoomStatusEvents,
-        AnyActerModel, EventMeta, Task,
+        status::membership::{Change, ProfileChange, SimpleMembershipChange},
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
 };
@@ -24,7 +24,15 @@ pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
-    MembershipChange(MembershipChange),
+    ProfileChange {
+        user_id: OwnedUserId,
+        display_name_change: Option<Change<Option<String>>>,
+        avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+    },
+    MembershipChange {
+        user_id: OwnedUserId,
+        change: Option<String>,
+    },
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
     Boost {
@@ -123,7 +131,8 @@ impl Activity {
 
     pub fn type_str(&self) -> String {
         match &self.inner {
-            ActivityContent::MembershipChange(c) => c.as_str(),
+            ActivityContent::ProfileChange { .. } => "profileChange",
+            ActivityContent::MembershipChange { .. } => "membershipChange",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::Comment { .. } => "comment",
@@ -158,13 +167,28 @@ impl Activity {
         .to_owned()
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        #[allow(irrefutable_let_patterns)]
-        let ActivityContent::MembershipChange(c) = &self.inner
-        else {
-            return None;
-        };
-        Some(c.clone())
+    pub fn profile_change(&self) -> Option<ProfileChange> {
+        match &self.inner {
+            ActivityContent::ProfileChange {
+                user_id,
+                display_name_change,
+                avatar_url_change,
+            } => Some(ProfileChange::new(
+                user_id.clone(),
+                display_name_change.clone(),
+                avatar_url_change.clone(),
+            )),
+            _ => None,
+        }
+    }
+
+    pub fn membership_change(&self) -> Option<SimpleMembershipChange> {
+        match &self.inner {
+            ActivityContent::MembershipChange { user_id, change } => {
+                Some(SimpleMembershipChange::new(user_id.clone(), change.clone()))
+            }
+            _ => None,
+        }
     }
 
     pub fn event_meta(&self) -> &EventMeta {
@@ -181,7 +205,8 @@ impl Activity {
 
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
-            ActivityContent::MembershipChange(_)
+            ActivityContent::ProfileChange { .. }
+            | ActivityContent::MembershipChange { .. }
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => None,
 
@@ -277,7 +302,8 @@ impl Activity {
             ActivityContent::TaskAdd { object, .. } => {
                 format!("/tasks/{}/{}", object.object_id_str(), self.meta.event_id)
             }
-            ActivityContent::MembershipChange(_)
+            ActivityContent::ProfileChange { .. }
+            | ActivityContent::MembershipChange { .. }
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => todo!(),
         }
@@ -307,9 +333,21 @@ impl Activity {
         let meta = mdl.event_meta().clone();
         match mdl {
             AnyActerModel::RoomStatus(s) => match s.inner {
-                ActerSupportedRoomStatusEvents::MembershipChange(c) => {
-                    Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
-                }
+                ActerSupportedRoomStatusEvents::ProfileChange {
+                    user_id,
+                    display_name_change,
+                    avatar_url_change,
+                } => Ok(Self::new(
+                    meta,
+                    ActivityContent::ProfileChange {
+                        user_id,
+                        display_name_change,
+                        avatar_url_change,
+                    },
+                )),
+                ActerSupportedRoomStatusEvents::MembershipChange { user_id, change } => Ok(
+                    Self::new(meta, ActivityContent::MembershipChange { user_id, change }),
+                ),
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
                 }

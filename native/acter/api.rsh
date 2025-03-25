@@ -2304,20 +2304,6 @@ object ActerAppSettingsBuilder {
 //  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ## 
 //  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######  
 
-object MembershipChange {
-    /// user_id of the member that has changed
-    fn user_id_str() -> string;
-
-    /// avatar_url of the member that has changed
-    fn avatar_url() -> Option<string>;
-
-    /// display_name of the member that has changed
-    fn display_name() -> Option<string>;
-
-    /// reason if any was provided
-    fn reason() -> Option<string>;
-}
-
 object ActivityObject {
     fn type_str() -> string;
     fn object_id_str() -> string;
@@ -2351,7 +2337,7 @@ object Activity {
     fn sub_type_str() -> Option<string>;
 
     /// the details of this membership change activity
-    fn membership_change() -> Option<MembershipChange>;
+    fn membership_change() -> Option<SimpleMembershipChange>;
 
     /// if the added information is a reference
     fn ref_details() -> Option<RefDetails>;

@@ -67,9 +67,12 @@ pub use acter_core::{
         CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,
         UtcDateTime,
     },
-    models::{ActerModel, Tag, TextMessageContent},
+    models::{
+        status::membership::{ProfileChange, SimpleMembershipChange},
+        ActerModel, Tag, TextMessageContent,
+    },
 };
-pub use activities::{Activities, Activity, ActivityObject, MembershipChange};
+pub use activities::{Activities, Activity, ActivityObject};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
@@ -90,8 +93,8 @@ pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, new_colorize_builder, new_display_builder, new_obj_ref_builder,
     new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
-    OptionComposeDraft, OptionRsvpStatus, OptionString, ProfileChange, ReactionRecord,
-    SimpleMembershipChange, ThumbnailInfo, ThumbnailSize, UrlPreview,
+    OptionComposeDraft, OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo,
+    ThumbnailSize, UrlPreview,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,

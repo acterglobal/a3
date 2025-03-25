@@ -1,3 +1,4 @@
+use acter_core::models::status::membership::Change;
 use anyhow::bail;
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
@@ -27,7 +28,7 @@ use std::sync::Arc;
 use tracing::info;
 
 use super::{
-    common::{Change, MsgContent, ReactionRecord},
+    common::{MsgContent, ReactionRecord},
     RUNTIME,
 };
 

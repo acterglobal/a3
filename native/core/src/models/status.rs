@@ -1,24 +1,35 @@
-use std::ops::Deref;
-
 use matrix_sdk::ruma::{
-    events::{room::create::RoomCreateEventContent, AnyStateEvent, AnyTimelineEvent, StateEvent},
-    OwnedEventId, UserId,
+    events::{
+        room::{create::RoomCreateEventContent, member::MembershipChange as MChange},
+        AnyStateEvent, AnyTimelineEvent, StateEvent,
+    },
+    OwnedEventId, OwnedMxcUri, OwnedUserId, UserId,
 };
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
+
 pub mod membership;
 
 use crate::{
     events::AnyActerEvent,
     referencing::{ExecuteReference, IndexKey},
 };
-use membership::MembershipChange;
+use membership::Change;
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ActerSupportedRoomStatusEvents {
     RoomCreate(RoomCreateEventContent),
-    MembershipChange(MembershipChange),
+    ProfileChange {
+        user_id: OwnedUserId,
+        display_name_change: Option<Change<Option<String>>>,
+        avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+    },
+    MembershipChange {
+        user_id: OwnedUserId,
+        change: Option<String>,
+    },
     RoomName(String),
 }
 
@@ -60,20 +71,60 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
                 meta,
             }),
-            AnyStateEvent::RoomMember(StateEvent::Original(inner)) => inner
-                .membership_change()
-                .try_into()
-                .map(|change| RoomStatus {
-                    inner: ActerSupportedRoomStatusEvents::MembershipChange(MembershipChange {
-                        change,
-                        user_id: inner.state_key.clone(),
-                        display_name: inner.content.displayname.clone(),
-                        avatar_url: inner.content.avatar_url.clone(),
-                        reason: inner.content.reason.clone(),
-                    }),
+            AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {
+                let user_id = inner.state_key.clone();
+                let membership_change = inner.content.membership_change(
+                    inner.prev_content().map(|c| c.details()),
+                    &inner.sender,
+                    &user_id,
+                );
+                let inner_status = if let MChange::ProfileChanged {
+                    displayname_change,
+                    avatar_url_change,
+                } = membership_change
+                {
+                    ActerSupportedRoomStatusEvents::ProfileChange {
+                        user_id,
+                        display_name_change: displayname_change.map(|c| Change {
+                            new_val: c.new.map(ToOwned::to_owned),
+                            old_val: c.old.map(ToOwned::to_owned),
+                        }),
+                        avatar_url_change: avatar_url_change.map(|c| Change {
+                            new_val: c.new.map(ToOwned::to_owned),
+                            old_val: c.old.map(ToOwned::to_owned),
+                        }),
+                    }
+                } else {
+                    let change = match membership_change {
+                        MChange::None => "None",
+                        MChange::Error => "Error",
+                        MChange::Joined => "Joined",
+                        MChange::Left => "Left",
+                        MChange::Banned => "Banned",
+                        MChange::Unbanned => "Unbanned",
+                        MChange::Kicked => "Kicked",
+                        MChange::Invited => "Invited",
+                        MChange::KickedAndBanned => "KickedAndBanned",
+                        MChange::InvitationAccepted => "InvitationAccepted",
+                        MChange::InvitationRejected => "InvitationRejected",
+                        MChange::InvitationRevoked => "InvitationRevoked",
+                        MChange::Knocked => "Knocked",
+                        MChange::KnockAccepted => "KnockAccepted",
+                        MChange::KnockRetracted => "KnockRetracted",
+                        MChange::KnockDenied => "KnockDenied",
+                        MChange::ProfileChanged { .. } => unreachable!(),
+                        _ => "NotImplemented",
+                    };
+                    ActerSupportedRoomStatusEvents::MembershipChange {
+                        user_id,
+                        change: Some(change.to_owned()),
+                    }
+                };
+                Ok(RoomStatus {
+                    inner: inner_status,
                     meta,
                 })
-                .map_err(|_| make_err(event)),
+            }
             _ => Err(make_err(event)),
         }
     }
