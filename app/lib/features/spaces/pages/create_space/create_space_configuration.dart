@@ -47,17 +47,18 @@ class _CreateSpaceConfigurationState
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildParentSpace(),
-          const SizedBox(height: 20),
-          _buildVisibility(),
-          const SizedBox(height: 20),
           _buildDefaultChatField(),
+          const SizedBox(height: 24),
+          _buildParentSpace(),
+          const SizedBox(height: 24),
+          _buildVisibility(),
         ],
       ),
     );
   }
 
   Widget _buildDefaultChatField() {
+    final textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap:
           () => ref
@@ -65,15 +66,28 @@ class _CreateSpaceConfigurationState
               .update((state) => !state),
       child: Row(
         children: [
-          Switch(
-            value: ref.watch(createDefaultChatProvider),
-            onChanged: (newValue) {
-              ref
-                  .read(createDefaultChatProvider.notifier)
-                  .update((state) => newValue);
-            },
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Default Chat', style: textTheme.bodyMedium),
+              Text(
+                'Configure default chat for this space.',
+                style: textTheme.labelSmall,
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-          Text(L10n.of(context).createDefaultChat),
+          Spacer(),
+          Expanded(
+            child: Switch(
+              value: ref.watch(createDefaultChatProvider),
+              onChanged: (newValue) {
+                ref
+                    .read(createDefaultChatProvider.notifier)
+                    .update((state) => newValue);
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -81,12 +95,23 @@ class _CreateSpaceConfigurationState
 
   Widget _buildParentSpace() {
     final lang = L10n.of(context);
-    return SelectSpaceFormField(
-      canCheck: (m) => m?.canString('CanLinkSpaces') == true,
-      mandatory: false,
-      title: lang.parentSpace,
-      selectTitle: lang.selectParentSpace,
-      emptyText: lang.optionalParentSpace,
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(lang.parentSpace, style: textTheme.bodyMedium),
+        Text(
+          'Select space which you want to make as parent of this space.',
+          style: textTheme.labelSmall,
+        ),
+        const SizedBox(height: 8),
+        SelectSpaceFormField(
+          canCheck: (m) => m?.canString('CanLinkSpaces') == true,
+          mandatory: false,
+          selectTitle: lang.selectParentSpace,
+          emptyText: lang.optionalParentSpace,
+        ),
+      ],
     );
   }
 
@@ -97,8 +122,8 @@ class _CreateSpaceConfigurationState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(lang.visibilityTitle, style: textTheme.bodyMedium),
-        Text(lang.visibilitySubtitle, style: textTheme.bodySmall),
-        const SizedBox(height: 10),
+        Text(lang.visibilitySubtitle, style: textTheme.labelSmall),
+        const SizedBox(height: 16),
         InkWell(
           key: CreateSpacePage.permissionsKey,
           onTap: () async {
