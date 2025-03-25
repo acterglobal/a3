@@ -47,7 +47,7 @@ class MemberUpdateEvent extends ConsumerWidget {
             )
             .valueOrNull;
 
-    if (eventType == 'MembershipChange') {
+    if (eventType == 'membershipChange') {
       final change = item.msgContent()?.membershipChange();
       if (change == null) return '';
       final mode = change.change();
@@ -90,7 +90,7 @@ class MemberUpdateEvent extends ConsumerWidget {
         default:
           return lang.chatMembershipNone(userId);
       }
-    } else if (eventType == 'ProfileChange') {
+    } else if (eventType == 'profileChange') {
       final change = item.msgContent()?.profileChange();
       if (change == null) return '';
       final userId = firstName ?? change.userId().toString();

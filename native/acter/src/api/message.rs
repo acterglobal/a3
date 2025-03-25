@@ -195,7 +195,7 @@ impl RoomEventItem {
             }
             TimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
-                me.event_type("MembershipChange".to_string()); // some of m.room.member
+                me.event_type("membershipChange".to_string()); // some of m.room.member
                 let msg_content = match m.content() {
                     FullStateEventContent::Original {
                         content,
@@ -209,7 +209,7 @@ impl RoomEventItem {
             }
             TimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event");
-                me.event_type("ProfileChange".to_string()); // some of m.room.member
+                me.event_type("profileChange".to_string()); // some of m.room.member
                 let msg_content = MsgContent::from(p);
                 me.msg_content(Some(msg_content));
             }

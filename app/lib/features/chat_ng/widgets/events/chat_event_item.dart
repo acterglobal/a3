@@ -69,7 +69,7 @@ class ChatEventItem extends StatelessWidget {
               isLastMessageBySender: isLastMessageBySender,
               child: EncryptedMessageWidget(),
             ),
-      'MembershipChange' || 'ProfileChange' => MemberUpdateEvent(
+      'membershipChange' || 'profileChange' => MemberUpdateEvent(
         isMe: isMe,
         roomId: roomId,
         item: item,

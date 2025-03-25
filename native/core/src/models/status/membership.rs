@@ -53,10 +53,10 @@ impl ProfileChange {
                         return Some("ChangedDisplayName".to_owned());
                     }
                 }
-                (None, Some(old_val)) => {
+                (None, Some(_)) => {
                     return Some("UnsetDisplayName".to_owned());
                 }
-                (Some(new_val), None) => {
+                (Some(_), None) => {
                     return Some("SetDisplayName".to_owned());
                 }
                 (None, None) => {}
@@ -85,10 +85,10 @@ impl ProfileChange {
                         return Some("ChangedAvatarUrl".to_owned());
                     }
                 }
-                (None, Some(old_val)) => {
+                (None, Some(_)) => {
                     return Some("UnsetAvatarUrl".to_owned());
                 }
-                (Some(new_val), None) => {
+                (Some(_), None) => {
                     return Some("SetAvatarUrl".to_owned());
                 }
                 (None, None) => {}

@@ -539,7 +539,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'receipts': receipts,
           },
         );
-      case 'ProfileChange': // some of m.room.member
+      case 'profileChange': // some of m.room.member
         ProfileChange? change = eventItem.msgContent()?.profileChange();
         if (change == null) {
           return types.UnsupportedMessage(
@@ -602,7 +602,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           remoteId: eventId,
           metadata: metadata,
         );
-      case 'MembershipChange': // some of m.room.member
+      case 'membershipChange': // some of m.room.member
         SimpleMembershipChange? change =
             eventItem.msgContent()?.membershipChange();
         String? mode = change?.change();
