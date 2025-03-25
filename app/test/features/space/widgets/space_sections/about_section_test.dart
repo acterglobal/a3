@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -95,6 +97,20 @@ void main() {
       expect(find.text('No topic found'), findsOneWidget);
     });
 
+    testWidgets('renders action to convert non acter space', (tester) async {
+      final mockSpace = MockSpace(topicText: null);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          spaceProvider.overrideWith((ref, _) => Future.value(mockSpace)),
+        ],
+        child: const AboutSection(spaceId: testSpaceId),
+      );
+
+      await tester.pump();
+      expect(find.text('No topic found'), findsOneWidget);
+    });
+
     testWidgets('renders error message when spaceProvider fails', (
       tester,
     ) async {
@@ -111,6 +127,73 @@ void main() {
 
       await tester.pump();
       expect(find.textContaining(errorMessage), findsOneWidget);
+    });
+
+    testWidgets('shows upgrade button for non-acter space with permissions', (
+      tester,
+    ) async {
+      final mockSpace = MockSpace(topicText: testTopic, canSetTopic: true);
+      final mockMembership = MockMembership(canSetTopic: true);
+      when(
+        () => mockSpace.getMyMembership(),
+      ).thenAnswer((_) async => mockMembership);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          spaceProvider.overrideWith((ref, _) => Future.value(mockSpace)),
+          isActerSpace.overrideWith((ref, _) => Future.value(false)),
+          roomPermissionProvider.overrideWith((ref, arg) => Future.value(true)),
+        ],
+        child: const AboutSection(spaceId: testSpaceId),
+      );
+
+      await tester.pump();
+      expect(find.text('Upgrade to Acter Space'), findsOneWidget);
+      expect(find.byIcon(Atlas.up_arrow), findsOneWidget);
+    });
+
+    testWidgets('hides upgrade button for acter space', (tester) async {
+      final mockSpace = MockSpace(topicText: testTopic, canSetTopic: true);
+      final mockMembership = MockMembership(canSetTopic: true);
+      when(
+        () => mockSpace.getMyMembership(),
+      ).thenAnswer((_) async => mockMembership);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          spaceProvider.overrideWith((ref, _) => Future.value(mockSpace)),
+          isActerSpace.overrideWith((ref, _) => Future.value(true)),
+          roomPermissionProvider.overrideWith((ref, arg) => Future.value(true)),
+        ],
+        child: const AboutSection(spaceId: testSpaceId),
+      );
+
+      await tester.pump();
+      expect(find.text('Upgrade to Acter Space'), findsNothing);
+    });
+
+    testWidgets('hides upgrade button when user lacks permission', (
+      tester,
+    ) async {
+      final mockSpace = MockSpace(topicText: testTopic, canSetTopic: false);
+      final mockMembership = MockMembership(canSetTopic: false);
+      when(
+        () => mockSpace.getMyMembership(),
+      ).thenAnswer((_) async => mockMembership);
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          spaceProvider.overrideWith((ref, _) => Future.value(mockSpace)),
+          isActerSpace.overrideWith((ref, _) => Future.value(false)),
+          roomPermissionProvider.overrideWith(
+            (ref, arg) => Future.value(false),
+          ),
+        ],
+        child: const AboutSection(spaceId: testSpaceId),
+      );
+
+      await tester.pump();
+      expect(find.text('Upgrade to Acter Space'), findsNothing);
     });
   });
 }

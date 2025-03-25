@@ -1,5 +1,8 @@
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/space/actions/convert_into_acter_space.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,12 +25,45 @@ class AboutSection extends ConsumerWidget {
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [aboutLabel(context), spaceDescription(context, ref)],
+            children: [
+              aboutLabel(context),
+              spaceDescription(context, ref),
+
+              if (ref.watch(isActerSpace(spaceId)).valueOrNull != true &&
+                  ref
+                          .watch(
+                            roomPermissionProvider((
+                              roomId: spaceId,
+                              permission: 'CanSetTopic',
+                            )),
+                          )
+                          .valueOrNull ==
+                      true)
+                acterSpaceInfoUI(context, ref),
+            ],
           ),
         ),
       ),
     );
   }
+
+  Widget acterSpaceInfoUI(BuildContext context, WidgetRef ref) => Padding(
+    padding: const EdgeInsets.only(right: 3),
+    child: Tooltip(
+      message: L10n.of(context).thisIsNotAProperActerSpace,
+      child: OutlinedButton.icon(
+        onPressed: () async {
+          await convertIntoActerSpace(
+            context: context,
+            ref: ref,
+            spaceId: spaceId,
+          );
+        },
+        label: Text(L10n.of(context).upgradeToActerSpace),
+        icon: const Icon(Atlas.up_arrow),
+      ),
+    ),
+  );
 
   Widget aboutLabel(BuildContext context) {
     return Text(
