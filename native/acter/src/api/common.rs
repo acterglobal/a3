@@ -27,12 +27,14 @@ use matrix_sdk_base::{
     },
     ComposerDraft, ComposerDraftType,
 };
+use matrix_sdk_ui::timeline::{
+    MemberProfileChange, MembershipChange as SdkMembershipChange, RoomMembershipChange,
+};
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, str::FromStr};
 use tracing::error;
 
-use super::api::FfiBuffer;
-use super::RefDetails;
+use super::{api::FfiBuffer, RefDetails};
 
 pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
@@ -140,6 +142,119 @@ impl ThumbnailInfo {
     }
 }
 
+// ruma_events::room::member::change::Change doesn't support serialization
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Change<T> {
+    /// The old data.
+    pub old_val: T,
+
+    /// The new data.
+    pub new_val: T,
+}
+
+impl<T: PartialEq> Change<T> {
+    pub fn new(old_val: T, new_val: T) -> Option<Self> {
+        if old_val == new_val {
+            None
+        } else {
+            Some(Self { old_val, new_val })
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ProfileChange {
+    user_id: OwnedUserId,
+    display_name_change: Option<Change<Option<String>>>,
+    avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+}
+
+impl ProfileChange {
+    pub fn user_id(&self) -> OwnedUserId {
+        self.user_id.clone()
+    }
+
+    pub fn display_name_change(&self) -> Option<String> {
+        if let Some(c) = &self.display_name_change {
+            match (c.new_val.clone(), c.old_val.clone()) {
+                (Some(new_val), Some(old_val)) => {
+                    if new_val != old_val {
+                        return Some("ChangedDisplayName".to_owned());
+                    }
+                }
+                (None, Some(old_val)) => {
+                    return Some("UnsetDisplayName".to_owned());
+                }
+                (Some(new_val), None) => {
+                    return Some("SetDisplayName".to_owned());
+                }
+                (None, None) => {}
+            }
+        }
+        None
+    }
+
+    pub fn display_name_old_val(&self) -> Option<String> {
+        self.display_name_change
+            .as_ref()
+            .and_then(|c| c.old_val.clone())
+    }
+
+    pub fn display_name_new_val(&self) -> Option<String> {
+        self.display_name_change
+            .as_ref()
+            .and_then(|c| c.new_val.clone())
+    }
+
+    pub fn avatar_url_change(&self) -> Option<String> {
+        if let Some(c) = &self.avatar_url_change {
+            match (c.new_val.clone(), c.old_val.clone()) {
+                (Some(new_val), Some(old_val)) => {
+                    if new_val != old_val {
+                        return Some("ChangedAvatarUrl".to_owned());
+                    }
+                }
+                (None, Some(old_val)) => {
+                    return Some("UnsetAvatarUrl".to_owned());
+                }
+                (Some(new_val), None) => {
+                    return Some("SetAvatarUrl".to_owned());
+                }
+                (None, None) => {}
+            }
+        }
+        None
+    }
+
+    pub fn avatar_url_old_val(&self) -> Option<OwnedMxcUri> {
+        self.avatar_url_change
+            .as_ref()
+            .and_then(|c| c.old_val.clone())
+    }
+
+    pub fn avatar_url_new_val(&self) -> Option<OwnedMxcUri> {
+        self.avatar_url_change
+            .as_ref()
+            .and_then(|c| c.new_val.clone())
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SimpleMembershipChange {
+    user_id: OwnedUserId,
+    change: Option<String>,
+}
+
+impl SimpleMembershipChange {
+    pub fn user_id(&self) -> OwnedUserId {
+        self.user_id.clone()
+    }
+
+    pub fn change(&self) -> Option<String> {
+        self.change.clone()
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum MsgContent {
     Text {
@@ -188,6 +303,56 @@ pub enum MsgContent {
         admin_contact: Option<String>,
         limit_type: Option<LimitType>,
     },
+    ProfileChange {
+        user_id: OwnedUserId,
+        display_name_change: Option<Change<Option<String>>>,
+        avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+    },
+    MembershipChange {
+        user_id: OwnedUserId,
+        change: Option<String>,
+    },
+}
+
+impl From<&MemberProfileChange> for MsgContent {
+    fn from(value: &MemberProfileChange) -> Self {
+        MsgContent::ProfileChange {
+            user_id: value.user_id().to_owned(),
+            display_name_change: value
+                .displayname_change()
+                .and_then(|c| Change::new(c.new.clone(), c.old.clone())),
+            avatar_url_change: value
+                .avatar_url_change()
+                .and_then(|c| Change::new(c.new.clone(), c.old.clone())),
+        }
+    }
+}
+
+impl From<&RoomMembershipChange> for MsgContent {
+    fn from(value: &RoomMembershipChange) -> Self {
+        MsgContent::MembershipChange {
+            user_id: value.user_id().to_owned(),
+            change: value.change().map(|c| match (c) {
+                SdkMembershipChange::None => "None".to_owned(),
+                SdkMembershipChange::Error => "Error".to_owned(),
+                SdkMembershipChange::Joined => "Joined".to_owned(),
+                SdkMembershipChange::Left => "Left".to_owned(),
+                SdkMembershipChange::Banned => "Banned".to_owned(),
+                SdkMembershipChange::Unbanned => "Unbanned".to_owned(),
+                SdkMembershipChange::Kicked => "Kicked".to_owned(),
+                SdkMembershipChange::Invited => "Invited".to_owned(),
+                SdkMembershipChange::KickedAndBanned => "KickedAndBanned".to_owned(),
+                SdkMembershipChange::InvitationAccepted => "InvitationAccepted".to_owned(),
+                SdkMembershipChange::InvitationRejected => "InvitationRejected".to_owned(),
+                SdkMembershipChange::InvitationRevoked => "InvitationRevoked".to_owned(),
+                SdkMembershipChange::Knocked => "Knocked".to_owned(),
+                SdkMembershipChange::KnockAccepted => "KnockAccepted".to_owned(),
+                SdkMembershipChange::KnockRetracted => "KnockRetracted".to_owned(),
+                SdkMembershipChange::KnockDenied => "KnockDenied".to_owned(),
+                SdkMembershipChange::NotImplemented => "NotImplemented".to_owned(),
+            }),
+        }
+    }
 }
 
 impl TryFrom<&NewsContent> for MsgContent {
@@ -431,6 +596,8 @@ impl MsgContent {
             MsgContent::Link { link, .. } => link.clone(),
             MsgContent::Notice { body, .. } => body.clone(),
             MsgContent::ServerNotice { body, .. } => body.clone(),
+            MsgContent::ProfileChange { .. } => "".to_owned(),
+            MsgContent::MembershipChange { .. } => "".to_owned(),
         }
     }
 
@@ -605,6 +772,31 @@ impl MsgContent {
         match self {
             MsgContent::Text { url_previews, .. } => !url_previews.is_empty(),
             _ => false,
+        }
+    }
+
+    pub fn profile_change(&self) -> Option<ProfileChange> {
+        match self {
+            MsgContent::ProfileChange {
+                user_id,
+                display_name_change,
+                avatar_url_change,
+            } => Some(ProfileChange {
+                user_id: user_id.clone(),
+                display_name_change: display_name_change.clone(),
+                avatar_url_change: avatar_url_change.clone(),
+            }),
+            _ => None,
+        }
+    }
+
+    pub fn membership_change(&self) -> Option<SimpleMembershipChange> {
+        match self {
+            MsgContent::MembershipChange { user_id, change } => Some(SimpleMembershipChange {
+                user_id: user_id.clone(),
+                change: change.clone(),
+            }),
+            _ => None,
         }
     }
 }

@@ -1115,6 +1115,43 @@ object MsgContent {
 
     /// the list of url previews 
     fn url_previews() -> Vec<UrlPreview>;
+
+    /// available when user changed his profile
+    fn profile_change() -> Option<ProfileChange>;
+
+    /// available when a user changed another user
+    fn membership_change() -> Option<SimpleMembershipChange>;
+}
+
+object ProfileChange {
+    /// The ID of the user whose profile changed
+    fn user_id() -> UserId;
+
+    /// The display name change induced by this event
+    fn display_name_change() -> Option<string>;
+
+    /// The old value of display name change
+    fn display_name_old_val() -> Option<string>;
+
+    /// The new value of display name change
+    fn display_name_new_val() -> Option<string>;
+
+    /// The avatar url change induced by this event
+    fn avatar_url_change() -> Option<string>;
+
+    /// The old value of avatar url change
+    fn avatar_url_old_val() -> Option<MxcUri>;
+
+    /// The new value of avatar url change
+    fn avatar_url_new_val() -> Option<MxcUri>;
+}
+
+object SimpleMembershipChange {
+    /// The ID of the user whose profile changed.
+    fn user_id() -> UserId;
+
+    /// The membership change induced by this event.
+    fn change() -> Option<string>;
 }
 
 object ReactionRecord {

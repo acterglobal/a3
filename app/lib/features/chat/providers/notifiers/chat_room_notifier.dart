@@ -539,6 +539,93 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             'receipts': receipts,
           },
         );
+      case 'ProfileChange': // some of m.room.member
+        ProfileChange? change = eventItem.msgContent()?.profileChange();
+        if (change == null) {
+          return types.UnsupportedMessage(
+            author: const types.User(id: 'virtual'),
+            remoteId: eventId,
+            id: UniqueKey().toString(),
+            metadata: const {'itemType': 'virtual'},
+          );
+        }
+        Map<String, dynamic> metadata = {
+          'itemType': 'event',
+          'eventType': eventType,
+        };
+        switch (change.displayNameChange()) {
+          case 'ChangedDisplayName':
+            metadata['displayName'] = {
+              'change': 'ChangedDisplayName',
+              'oldVal': change.displayNameOldVal(),
+              'newVal': change.displayNameNewVal(),
+            };
+            break;
+          case 'UnsetDisplayName':
+            metadata['displayName'] = {
+              'change': 'UnsetDisplayName',
+              'oldVal': change.displayNameOldVal(),
+            };
+            break;
+          case 'SetDisplayName':
+            metadata['displayName'] = {
+              'change': 'SetDisplayName',
+              'newVal': change.displayNameNewVal(),
+            };
+            break;
+        }
+        switch (change.avatarUrlChange()) {
+          case 'ChangedAvatarUrl':
+            metadata['avatarUrl'] = {
+              'change': 'ChangedAvatarUrl',
+              'oldVal': change.avatarUrlOldVal().toString(),
+              'newVal': change.avatarUrlNewVal().toString(),
+            };
+            break;
+          case 'UnsetAvatarUrl':
+            metadata['avatarUrl'] = {
+              'change': 'UnsetAvatarUrl',
+              'oldVal': change.avatarUrlOldVal().toString(),
+            };
+            break;
+          case 'SetAvatarUrl':
+            metadata['avatarUrl'] = {
+              'change': 'SetAvatarUrl',
+              'newVal': change.avatarUrlNewVal().toString(),
+            };
+            break;
+        }
+        return types.CustomMessage(
+          author: author,
+          createdAt: createdAt,
+          id: uniqueId,
+          remoteId: eventId,
+          metadata: metadata,
+        );
+      case 'MembershipChange': // some of m.room.member
+        SimpleMembershipChange? change =
+            eventItem.msgContent()?.membershipChange();
+        String? mode = change?.change();
+        if (mode == null) {
+          return types.UnsupportedMessage(
+            author: const types.User(id: 'virtual'),
+            remoteId: eventId,
+            id: UniqueKey().toString(),
+            metadata: const {'itemType': 'virtual'},
+          );
+        }
+        return types.CustomMessage(
+          author: author,
+          createdAt: createdAt,
+          id: uniqueId,
+          remoteId: eventId,
+          metadata: {
+            'itemType': 'event',
+            'eventType': eventType,
+            'change': mode,
+            'receipts': receipts,
+          },
+        );
     }
 
     // message event
@@ -583,27 +670,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           id: uniqueId,
           metadata: metadata,
         );
-      case 'm.room.member':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent != null) {
-          String? formattedBody = msgContent.formattedBody();
-          String body = msgContent.body(); // always exists
-          return types.CustomMessage(
-            author: author,
-            createdAt: createdAt,
-            id: uniqueId,
-            remoteId: eventId,
-            metadata: {
-              'itemType': 'event',
-              'eventType': eventType,
-              'msgType': eventItem.msgType(),
-              'body': formattedBody ?? body,
-              'eventState': eventState,
-              'receipts': receipts,
-            },
-          );
-        }
-        break;
       case 'm.room.message':
         Map<String, dynamic> reactions = {};
         for (final key in asDartStringList(eventItem.reactionKeys())) {

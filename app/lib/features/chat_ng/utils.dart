@@ -51,4 +51,4 @@ bool isStateEvent(String eventType) {
 }
 
 bool isMemberEvent(String eventType) =>
-    ['m.room.member', 'ProfileChange'].contains(eventType);
+    ['MembershipChange', 'ProfileChange'].contains(eventType);
