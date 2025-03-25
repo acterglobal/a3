@@ -2,14 +2,11 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/space/actions/convert_into_acter_space.dart';
 import 'package:acter/features/space/actions/set_space_topic.dart';
+import 'package:acter/features/space/providers/topic_provider.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-final _log = Logger('a3::space::sections::about');
 
 class AboutSection extends ConsumerWidget {
   final String spaceId;
@@ -34,7 +31,7 @@ class AboutSection extends ConsumerWidget {
                           .watch(
                             roomPermissionProvider((
                               roomId: spaceId,
-                              permission: 'CanSetTopic',
+                              permission: 'CanUpgradeToActerSpace',
                             )),
                           )
                           .valueOrNull ==
@@ -74,41 +71,31 @@ class AboutSection extends ConsumerWidget {
 
   Widget spaceDescription(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final spaceLoader = ref.watch(spaceProvider(spaceId));
-    return spaceLoader.when(
-      data: (space) {
-        final topic = space.topic();
-        return SelectionArea(
-          child: GestureDetector(
-            onTap: () async {
-              final permitted = await editDescriptionPermissionCheck(ref);
-              if (permitted && context.mounted) {
-                showEditDescriptionBottomSheet(
-                  context: context,
-                  ref: ref,
-                  spaceId: spaceId,
-                );
-              }
-            },
-            child: Text(
-              topic ?? lang.noTopicFound,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        );
-      },
-      error: (e, s) {
-        _log.severe('Failed to load space', e, s);
-        return Text(lang.failedToLoadSpace(e));
-      },
-      loading: () => Skeletonizer(child: Text(lang.loading)),
+    final topic = ref.watch(topicProvider(spaceId)).valueOrNull;
+    Widget child = Text(
+      topic ?? lang.noTopicFound,
+      style: Theme.of(context).textTheme.bodySmall,
     );
-  }
-
-  // permission check
-  Future<bool> editDescriptionPermissionCheck(WidgetRef ref) async {
-    final space = await ref.read(spaceProvider(spaceId).future);
-    final membership = await space.getMyMembership();
-    return membership.canString('CanSetTopic');
+    if (ref
+            .watch(
+              roomPermissionProvider((
+                roomId: spaceId,
+                permission: 'CanSetTopic',
+              )),
+            )
+            .valueOrNull ==
+        true) {
+      child = GestureDetector(
+        onTap: () async {
+          showEditDescriptionBottomSheet(
+            context: context,
+            ref: ref,
+            spaceId: spaceId,
+          );
+        },
+        child: child,
+      );
+    }
+    return SelectionArea(child: child);
   }
 }
