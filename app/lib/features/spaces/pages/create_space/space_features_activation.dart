@@ -96,15 +96,17 @@ class _SpaceFeaturesActivationState
               children: [
                 Text(featureDescription, style: textTheme.labelSmall),
                 if (isFeatureActivated) ...[
-                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Text('Permission level :', style: textTheme.bodySmall),
                       const SizedBox(width: 4),
-                      Text(
-                        'Admin',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
+                      TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          'Admin',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
                       ),
                     ],
