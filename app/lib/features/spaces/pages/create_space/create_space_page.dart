@@ -203,12 +203,21 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget _buildSpaceCreationConfigurationButton() {
-    return OutlinedButton(
-      onPressed:
-          () => ref
-              .read(showSpaceCreationConfigurationProvider.notifier)
-              .update((state) => true),
-      child: const Text('Configure Space'),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ListTile(
+        leading: const Icon(Atlas.gear),
+        title: const Text('Configure Space'),
+        subtitle: Text(
+          'Space visibility, Default chat, Feature activation and Permission management',
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap:
+            () => ref
+                .read(showSpaceCreationConfigurationProvider.notifier)
+                .update((state) => true),
+      ),
     );
   }
 
