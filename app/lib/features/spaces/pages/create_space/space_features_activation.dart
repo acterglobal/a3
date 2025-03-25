@@ -1,27 +1,10 @@
+import 'package:acter/features/spaces/model/space_feature_state.dart';
+import 'package:acter/features/spaces/model/space_permission_levels.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:acter/features/spaces/pages/create_space/permission_selection_bottom_sheet.dart';
-
-enum SpaceFeature { boost, story, pin, calendar, task }
-
-class FeatureState {
-  final bool isActivated;
-  final PermissionLevel permissionLevel;
-
-  FeatureState({
-    this.isActivated = false,
-    this.permissionLevel = PermissionLevel.admin,
-  });
-
-  FeatureState copyWith({bool? isActivated, PermissionLevel? permissionLevel}) {
-    return FeatureState(
-      isActivated: isActivated ?? this.isActivated,
-      permissionLevel: permissionLevel ?? this.permissionLevel,
-    );
-  }
-}
 
 final featureActivationProvider =
     StateProvider<Map<SpaceFeature, FeatureState>>(
@@ -105,62 +88,15 @@ class _SpaceFeaturesActivationState
     final permissionLevel = featureState.permissionLevel;
 
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            titleAlignment: ListTileTitleAlignment.top,
             leading: Icon(featureIcon),
             title: Text(featureName, style: textTheme.bodyMedium),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(featureDescription, style: textTheme.labelSmall),
-                if (isFeatureActivated) ...[
-                  Row(
-                    children: [
-                      Icon(Icons.lock_outline, size: 16),
-                      const SizedBox(width: 4),
-                      Text('Permission level :', style: textTheme.bodySmall),
-                      const SizedBox(width: 4),
-                      TextButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder:
-                                (context) => PermissionSelectionBottomSheet(
-                                  currentPermission: permissionLevel,
-                                  onPermissionSelected: (level) {
-                                    ref
-                                        .read(
-                                          featureActivationProvider.notifier,
-                                        )
-                                        .update((state) {
-                                          final newState = Map<
-                                            SpaceFeature,
-                                            FeatureState
-                                          >.from(state);
-                                          newState[feature] = featureState
-                                              .copyWith(permissionLevel: level);
-                                          return newState;
-                                        });
-                                  },
-                                ),
-                          );
-                        },
-                        child: Text(
-                          permissionLevel.name.toUpperCase(),
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
+            subtitle: Text(featureDescription, style: textTheme.labelSmall),
             trailing: Switch(
               value: isFeatureActivated,
               onChanged: (value) {
@@ -170,6 +106,58 @@ class _SpaceFeaturesActivationState
                   return newState;
                 });
               },
+            ),
+          ),
+          if (isFeatureActivated)
+            _buildPermissionLevel(feature, featureState, permissionLevel),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPermissionLevel(
+    SpaceFeature feature,
+    FeatureState featureState,
+    PermissionLevel permissionLevel,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.lock_outline, size: 16),
+          const SizedBox(width: 4),
+          Text('Permission level :', style: textTheme.bodySmall),
+          const SizedBox(width: 4),
+          TextButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder:
+                    (context) => PermissionSelectionBottomSheet(
+                      currentPermission: permissionLevel,
+                      onPermissionSelected: (level) {
+                        ref.read(featureActivationProvider.notifier).update((
+                          state,
+                        ) {
+                          final newState = Map<SpaceFeature, FeatureState>.from(
+                            state,
+                          );
+                          newState[feature] = featureState.copyWith(
+                            permissionLevel: level,
+                          );
+                          return newState;
+                        });
+                      },
+                    ),
+              );
+            },
+            child: Text(
+              permissionLevel.name.toUpperCase(),
+              style: textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
           ),
         ],

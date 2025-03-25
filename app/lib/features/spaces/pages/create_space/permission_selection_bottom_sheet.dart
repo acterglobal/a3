@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-enum PermissionLevel { admin, moderator, member }
+import 'package:acter/features/spaces/model/space_permission_levels.dart';
 
 class PermissionSelectionBottomSheet extends StatelessWidget {
   final PermissionLevel currentPermission;
