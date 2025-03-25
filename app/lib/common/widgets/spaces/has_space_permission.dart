@@ -1,9 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger('a3::common::spaces::has_permission');
 
 class HasSpacePermission extends ConsumerWidget {
   final String spaceId;
