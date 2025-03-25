@@ -39,7 +39,7 @@ import 'package:acter/features/space/settings/pages/index_page.dart';
 import 'package:acter/features/space/settings/pages/notification_configuration_page.dart';
 import 'package:acter/features/space/settings/pages/visibility_accessibility_page.dart';
 import 'package:acter/features/space/settings/widgets/space_settings_menu.dart';
-import 'package:acter/features/spaces/pages/create_space_page.dart';
+import 'package:acter/features/spaces/pages/create_space/create_space_page.dart';
 import 'package:acter/features/spaces/pages/space_list_page.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
 import 'package:acter/features/super_invites/pages/create_super_invite_page.dart';
