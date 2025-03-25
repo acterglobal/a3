@@ -4,13 +4,14 @@ import 'package:acter/features/room/join_rule/room_join_rule_item.dart';
 import 'package:acter/features/room/join_rule/room_join_rule_selector.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/spaces/pages/create_space/create_space_page.dart';
-import 'package:acter/l10n/generated/l10n.dart' show L10n;
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CreateSpaceConfiguration extends ConsumerStatefulWidget {
   final String? initialParentsSpaceId;
+
   const CreateSpaceConfiguration({super.key, this.initialParentsSpaceId});
 
   @override
@@ -21,51 +22,42 @@ class CreateSpaceConfiguration extends ConsumerStatefulWidget {
 class _CreateSpaceConfigurationState
     extends ConsumerState<CreateSpaceConfiguration> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
-      parentNotifier.state = widget.initialParentsSpaceId;
-
-      //Set default visibility based on the parent space selection
-      // PRIVATE : If no parent is selected
-      // SPACE VISIBLE : If parent space is selected
-      final visibleNotifier = ref.read(selectedJoinRuleProvider.notifier);
-      visibleNotifier.update(
-        (state) =>
-            widget.initialParentsSpaceId != null
-                ? RoomJoinRule.Restricted
-                : RoomJoinRule.Invite,
-      );
-      //LISTEN for changes on parent space selection
-      ref.listenManual(selectedSpaceIdProvider, (previous, next) {
-        final visibleNotifier = ref.read(selectedJoinRuleProvider.notifier);
-        visibleNotifier.update(
-          (state) =>
-              next != null ? RoomJoinRule.Restricted : RoomJoinRule.Invite,
-        );
-      });
-    });
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed:
+              () => ref
+                  .read(showSpaceCreationConfigurationProvider.notifier)
+                  .update((state) => false),
+          icon: const Icon(Atlas.arrow_left),
+        ),
+        title: const Text('Configure Space'),
+        centerTitle: true,
+      ),
+      body: buildBody(),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildParentSpace(),
-        const SizedBox(height: 20),
-        _buildVisibility(),
-        const SizedBox(height: 20),
-        _buildDefaultChatField(),
-      ],
+  Widget buildBody() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildParentSpace(),
+          const SizedBox(height: 20),
+          _buildVisibility(),
+          const SizedBox(height: 20),
+          _buildDefaultChatField(),
+        ],
+      ),
     );
   }
 
   Widget _buildDefaultChatField() {
-    final createDefaultChat = ref.watch(createDefaultChatProvider);
     return InkWell(
       onTap:
           () => ref
@@ -74,7 +66,7 @@ class _CreateSpaceConfigurationState
       child: Row(
         children: [
           Switch(
-            value: createDefaultChat,
+            value: ref.watch(createDefaultChatProvider),
             onChanged: (newValue) {
               ref
                   .read(createDefaultChatProvider.notifier)

@@ -20,12 +20,15 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::spaces::create_space');
 // user selected visibility provider
-final selectedJoinRuleProvider = StateProvider.autoDispose<RoomJoinRule?>(
+final selectedJoinRuleProvider = StateProvider<RoomJoinRule?>(
   (ref) => null,
 ); // user selected visibility provider
 
 // create default chat provider
-final createDefaultChatProvider = StateProvider.autoDispose<bool>(
+final createDefaultChatProvider = StateProvider<bool>((ref) => false);
+
+// create default chat provider
+final showSpaceCreationConfigurationProvider = StateProvider.autoDispose<bool>(
   (ref) => false,
 );
 
@@ -48,8 +51,44 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   File? spaceAvatar;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final parentNotifier = ref.read(selectedSpaceIdProvider.notifier);
+      parentNotifier.state = widget.initialParentsSpaceId;
+
+      //Set default visibility based on the parent space selection
+      // PRIVATE : If no parent is selected
+      // SPACE VISIBLE : If parent space is selected
+      final visibleNotifier = ref.read(selectedJoinRuleProvider.notifier);
+      visibleNotifier.update(
+        (state) =>
+            widget.initialParentsSpaceId != null
+                ? RoomJoinRule.Restricted
+                : RoomJoinRule.Invite,
+      );
+      //LISTEN for changes on parent space selection
+      ref.listenManual(selectedSpaceIdProvider, (previous, next) {
+        final visibleNotifier = ref.read(selectedJoinRuleProvider.notifier);
+        visibleNotifier.update(
+          (state) =>
+              next != null ? RoomJoinRule.Restricted : RoomJoinRule.Invite,
+        );
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppbar(), body: _buildBody());
+    final showSpaceCreationConfiguration = ref.watch(
+      showSpaceCreationConfigurationProvider,
+    );
+
+    return showSpaceCreationConfiguration
+        ? CreateSpaceConfiguration(
+          initialParentsSpaceId: widget.initialParentsSpaceId,
+        )
+        : Scaffold(appBar: _buildAppbar(), body: _buildBody());
   }
 
   AppBar _buildAppbar() {
@@ -78,9 +117,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
               const SizedBox(height: 20),
               _buildSpaceDescriptionTextField(),
               const SizedBox(height: 20),
-              CreateSpaceConfiguration(
-                initialParentsSpaceId: widget.initialParentsSpaceId,
-              ),
+              _buildSpaceCreationConfigurationButton(),
               const SizedBox(height: 20),
               _buildSpaceActionButtons(),
               const SizedBox(height: 20),
@@ -162,6 +199,16 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
           maxLines: 10,
         ),
       ],
+    );
+  }
+
+  Widget _buildSpaceCreationConfigurationButton() {
+    return OutlinedButton(
+      onPressed:
+          () => ref
+              .read(showSpaceCreationConfigurationProvider.notifier)
+              .update((state) => true),
+      child: const Text('Configure Space'),
     );
   }
 
