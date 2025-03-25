@@ -3,7 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final featureActivationProvider = StateProvider<bool>((ref) => false);
+enum SpaceFeature { boost, story, pin, calendar, task }
+
+final featureActivationProvider = StateProvider<Map<SpaceFeature, bool>>(
+  (ref) => {
+    SpaceFeature.boost: false,
+    SpaceFeature.story: false,
+    SpaceFeature.pin: false,
+    SpaceFeature.calendar: false,
+    SpaceFeature.task: false,
+  },
+);
 
 class SpaceFeaturesActivation extends ConsumerStatefulWidget {
   const SpaceFeaturesActivation({super.key});
@@ -30,26 +40,31 @@ class _SpaceFeaturesActivationState
         ),
         const SizedBox(height: 8),
         _buildFeatureActivation(
+          SpaceFeature.boost,
           PhosphorIcons.rocketLaunch(),
           'Boost',
           'Boost updates important to your space members',
         ),
         _buildFeatureActivation(
+          SpaceFeature.story,
           PhosphorIcons.slideshow(),
           'Story',
           'Socialize updates with your space members',
         ),
         _buildFeatureActivation(
+          SpaceFeature.pin,
           Atlas.pin,
           'Pin',
           'Pin important links and data in your space',
         ),
         _buildFeatureActivation(
+          SpaceFeature.calendar,
           Atlas.calendar,
           'Calendar',
           'Manage events in your space',
         ),
         _buildFeatureActivation(
+          SpaceFeature.task,
           Atlas.list,
           'Task',
           'Manage tasks in your space',
@@ -59,12 +74,15 @@ class _SpaceFeaturesActivationState
   }
 
   Widget _buildFeatureActivation(
+    SpaceFeature feature,
     IconData featureIcon,
     String featureName,
     String featureDescription,
   ) {
     final textTheme = Theme.of(context).textTheme;
-    final isFeatureActivated = ref.watch(featureActivationProvider);
+    final featureStates = ref.watch(featureActivationProvider);
+    final isFeatureActivated = featureStates[feature] ?? false;
+
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 6),
       child: Column(
@@ -95,11 +113,13 @@ class _SpaceFeaturesActivationState
               ],
             ),
             trailing: Switch(
-              value: ref.watch(featureActivationProvider),
+              value: isFeatureActivated,
               onChanged: (value) {
-                ref
-                    .read(featureActivationProvider.notifier)
-                    .update((state) => value);
+                ref.read(featureActivationProvider.notifier).update((state) {
+                  final newState = Map<SpaceFeature, bool>.from(state);
+                  newState[feature] = value;
+                  return newState;
+                });
               },
             ),
           ),
