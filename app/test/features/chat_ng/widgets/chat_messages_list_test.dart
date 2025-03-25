@@ -9,7 +9,6 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -196,7 +195,8 @@ void main() {
       );
 
       final chatMessagesWidget = find.byType(ChatMessages);
-      final state = tester.state(chatMessagesWidget) as dynamic;
+      final state =
+          tester.state(chatMessagesWidget) as ChatMessagesConsumerState;
 
       await state.onScroll();
 
@@ -214,7 +214,6 @@ void main() {
         loading: const ChatRoomLoadingState.loaded(),
       );
 
-      // Create a real notifier that we can update
       final notifier = ChatRoomMessagesNotifier(
         roomId: testRoomId,
         ref: MockRef(),
@@ -238,7 +237,7 @@ void main() {
 
       expect(animatedListKey.currentState?.widget.initialItemCount, equals(3));
 
-      // Verify initial message order
+      // verify initial message order
       expect(notifier.state.messageList, equals(['msg0', 'msg1', 'msg2']));
 
       // add new message
@@ -333,6 +332,61 @@ void main() {
         find.byType(AnimatedOpacity),
       );
       expect(updatedOpacityWidget.opacity, equals(0.0));
+    });
+
+    testWidgets('handles message removal correctly', (tester) async {
+      final initialMessages = List.generate(5, (index) => 'msg$index');
+
+      final notifier = ChatRoomMessagesNotifier(
+        roomId: testRoomId,
+        ref: MockRef(),
+      );
+
+      notifier.state = ChatRoomState(
+        messageList: initialMessages,
+        loading: const ChatRoomLoadingState.loaded(),
+      );
+
+      final animatedListKey = GlobalKey<AnimatedListState>();
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          chatMessagesStateProvider(testRoomId).overrideWith((ref) => notifier),
+          chat
+              .timelineStreamProvider(testRoomId)
+              .overrideWith((ref) => Future.value(MockTimelineStream())),
+          animatedListChatMessagesProvider(
+            testRoomId,
+          ).overrideWith((ref) => animatedListKey),
+        ],
+        child: MaterialApp(
+          home: Scaffold(body: ChatMessages(roomId: testRoomId)),
+        ),
+      );
+
+      await tester.pump();
+
+      // initial message count
+      expect(notifier.state.messageList.length, equals(5));
+
+      final animatedList = tester.widget<AnimatedList>(
+        find.byType(AnimatedList),
+      );
+      expect(animatedList.initialItemCount, equals(5));
+
+      // Remove a message
+      final updatedMessages = List<String>.from(initialMessages)..removeAt(2);
+      notifier.state = notifier.state.copyWith(messageList: updatedMessages);
+
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      // final message count
+      expect(notifier.state.messageList.length, equals(4));
+      expect(
+        notifier.state.messageList,
+        equals(['msg0', 'msg1', 'msg3', 'msg4']),
+      );
     });
   });
 }
