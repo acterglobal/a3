@@ -124,54 +124,57 @@ class _SpaceFeaturesActivationState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Permissions:', style: textTheme.bodySmall),
-          const SizedBox(height: 4),
+          Text(
+            'Permissions:',
+            style: textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
           ...featureState.permissions.map(
-            (permission) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.lock_outline, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${permission.displayText}:',
-                    style: textTheme.bodySmall,
-                  ),
-                  const SizedBox(width: 4),
-                  TextButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder:
-                            (context) => PermissionSelectionBottomSheet(
-                              currentPermission: permission.defaultLevel,
-                              onPermissionSelected: (level) {
-                                ref
-                                    .read(featureActivationProvider.notifier)
-                                    .update((state) {
-                                      final newState =
-                                          Map<SpaceFeature, FeatureState>.from(
-                                            state,
-                                          );
-                                      final updatedPermissions =
-                                          featureState.permissions.map((p) {
-                                            if (p.key == permission.key) {
-                                              return p.copyWith(
-                                                defaultLevel: level,
-                                              );
-                                            }
-                                            return p;
-                                          }).toList();
-                                      newState[feature] = featureState.copyWith(
-                                        permissions: updatedPermissions,
-                                      );
-                                      return newState;
-                                    });
-                              },
-                            ),
-                      );
-                    },
+            (permission) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.lock_outline, size: 16),
+                const SizedBox(width: 4),
+                Text('${permission.displayText}:', style: textTheme.bodySmall),
+                const SizedBox(width: 4),
+                InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder:
+                          (context) => PermissionSelectionBottomSheet(
+                            currentPermission: permission.defaultLevel,
+                            onPermissionSelected: (level) {
+                              ref
+                                  .read(featureActivationProvider.notifier)
+                                  .update((state) {
+                                    final newState =
+                                        Map<SpaceFeature, FeatureState>.from(
+                                          state,
+                                        );
+                                    final updatedPermissions =
+                                        featureState.permissions.map((p) {
+                                          if (p.key == permission.key) {
+                                            return p.copyWith(
+                                              defaultLevel: level,
+                                            );
+                                          }
+                                          return p;
+                                        }).toList();
+                                    newState[feature] = featureState.copyWith(
+                                      permissions: updatedPermissions,
+                                    );
+                                    return newState;
+                                  });
+                            },
+                          ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
                       permission.defaultLevel.name.toUpperCase(),
                       style: textTheme.bodySmall?.copyWith(
@@ -179,8 +182,8 @@ class _SpaceFeaturesActivationState
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
