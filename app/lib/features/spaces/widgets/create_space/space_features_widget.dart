@@ -95,7 +95,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
           ListTile(
             leading: Icon(featureIcon),
             title: Text(featureName, style: textTheme.bodyMedium),
-            subtitle: Text(featureDescription, style: textTheme.labelSmall),
+            subtitle: Text(featureDescription, style: textTheme.labelMedium),
             trailing: Switch(
               value: isFeatureActivated,
               onChanged: (value) {
