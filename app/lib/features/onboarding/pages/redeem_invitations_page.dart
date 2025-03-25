@@ -1,16 +1,22 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
+import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final tokenField = GlobalKey<FormFieldState>();
 
 class RedeemInvitationsPage extends ConsumerStatefulWidget {
-  const RedeemInvitationsPage({super.key});
+  final String username;
+  const RedeemInvitationsPage({super.key, required this.username});
 
   @override
   ConsumerState<RedeemInvitationsPage> createState() =>
@@ -20,6 +26,22 @@ class RedeemInvitationsPage extends ConsumerStatefulWidget {
 class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadToken();
+  }
+
+  Future<void> _loadToken() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final token = preferences.getString('invitation_token');
+    if (token != null && token.isNotEmpty) {
+      setState(() {
+        _tokenController.text = token;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +67,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 32),
-              child: _actionButtons(lang),
+              child: _actionButtons(context, lang),
             ),
           ],
         ),
@@ -81,8 +103,8 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
             controller: _tokenController,
             inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
             validator:
-              (val) =>
-                  val == null || val.trim().isEmpty ? lang.emptyToken : null,
+                (val) =>
+                    val == null || val.trim().isEmpty ? lang.emptyToken : null,
             decoration: InputDecoration(
               hintText: lang.inviteCode,
               suffixIcon: IconButton(
@@ -96,13 +118,19 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     );
   }
 
-  Widget _actionButtons(L10n lang) {
+  Widget _actionButtons(BuildContext context, L10n lang) {
     return Row(
       children: [
         Expanded(
-          child: OutlinedButton(onPressed: () {}, child: Text(lang.skip)),
+          child: OutlinedButton(
+            onPressed: () => context.goNamed(
+              Routes.saveUsername.name,
+              queryParameters: {'username': widget.username},
+            ),
+            child: Text(lang.skip),
+          ),
         ),
-        SizedBox(width: 22),
+        const SizedBox(width: 22),
         Expanded(
           child: ActerPrimaryActionButton(
             onPressed: () {
@@ -111,11 +139,36 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                 showNoInternetNotification(context);
                 return;
               }
+              redeemToken(context, ref, _tokenController.text.trim());
             },
             child: Text(lang.redeem),
           ),
         ),
       ],
     );
+  }
+
+  void redeemToken(BuildContext context, WidgetRef ref, String token) async {
+    final lang = L10n.of(context);
+    final superInvites = await ref.read(superInvitesProvider.future);
+
+    EasyLoading.show(status: lang.redeeming(token));
+    try {
+      final rooms = (await superInvites.redeem(token)).toList();
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showToast(lang.addedToSpacesAndChats(rooms.length));
+    } catch (e) {
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.redeemingFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }

@@ -111,7 +111,12 @@ final generalRoutes = [
     parentNavigatorKey: rootNavKey,
     name: Routes.redeemInvitations.name,
     path: Routes.redeemInvitations.route,
-    builder: (context, state) => const RedeemInvitationsPage(),
+      builder: (context, state) {
+      final username = state.uri.queryParameters['username'].expect(
+        'redeemInvitations route needs username as query param',
+      );
+      return RedeemInvitationsPage(username: username);
+    },
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,

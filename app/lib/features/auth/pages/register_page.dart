@@ -60,11 +60,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ref: ref,
       )) {
         if (context.mounted) {
-          // context.goNamed(
-          //   Routes.saveUsername.name,
-          //   queryParameters: {'username': username.text},
-          // );
-          context.goNamed(Routes.redeemInvitations.name);
+          context.goNamed(
+            Routes.redeemInvitations.name,
+            queryParameters: {'username': username.text},
+          );
         }
       }
     } catch (errorMsg) {

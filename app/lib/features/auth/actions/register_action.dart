@@ -34,7 +34,6 @@ Future<bool> register({
   if (token.isNotEmpty) {
     final SharedPreferences preferences = await sharedPrefs();
     preferences.setString('invitation_token', token);
-    print('invitation token: $token');
   } 
   return true;
 }
