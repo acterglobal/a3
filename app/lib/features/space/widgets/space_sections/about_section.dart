@@ -45,7 +45,7 @@ class AboutSection extends ConsumerWidget {
   }
 
   Widget acterSpaceInfoUI(BuildContext context, WidgetRef ref) => Padding(
-    padding: const EdgeInsets.only(right: 3),
+    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 15),
     child: Tooltip(
       message: L10n.of(context).thisIsNotAProperActerSpace,
       child: OutlinedButton.icon(
@@ -57,6 +57,9 @@ class AboutSection extends ConsumerWidget {
           );
         },
         label: Text(L10n.of(context).upgradeToActerSpace),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+        ),
         icon: const Icon(Atlas.up_arrow),
       ),
     ),
