@@ -12,11 +12,23 @@ class PermissionConfig {
     required this.displayText,
     this.defaultLevel = PermissionLevel.admin,
   });
+
+  PermissionConfig copyWith({
+    String? key,
+    String? displayText,
+    PermissionLevel? defaultLevel,
+  }) {
+    return PermissionConfig(
+      key: key ?? this.key,
+      displayText: displayText ?? this.displayText,
+      defaultLevel: defaultLevel ?? this.defaultLevel,
+    );
+  }
 }
 
 class FeatureState {
   final bool isActivated;
-  final Map<String, PermissionConfig> permissions;
+  final List<PermissionConfig> permissions;
 
   static const defaultPermissions = [
     PermissionConfig(
@@ -41,16 +53,12 @@ class FeatureState {
     ),
   ];
 
-  FeatureState({
-    this.isActivated = false,
-    Map<String, PermissionConfig>? permissions,
-  }) : permissions =
-           permissions ??
-           {for (var config in defaultPermissions) config.key: config};
+  FeatureState({this.isActivated = false, List<PermissionConfig>? permissions})
+    : permissions = permissions ?? defaultPermissions;
 
   FeatureState copyWith({
     bool? isActivated,
-    Map<String, PermissionConfig>? permissions,
+    List<PermissionConfig>? permissions,
   }) {
     return FeatureState(
       isActivated: isActivated ?? this.isActivated,

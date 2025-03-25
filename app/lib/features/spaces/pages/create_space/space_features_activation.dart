@@ -1,5 +1,4 @@
 import 'package:acter/features/spaces/model/space_feature_state.dart';
-import 'package:acter/features/spaces/model/space_permission_levels.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -127,8 +126,8 @@ class _SpaceFeaturesActivationState
         children: [
           Text('Permissions:', style: textTheme.bodySmall),
           const SizedBox(height: 4),
-          ...featureState.permissions.entries.map(
-            (entry) => Padding(
+          ...featureState.permissions.map(
+            (permission) => Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -136,7 +135,7 @@ class _SpaceFeaturesActivationState
                   Icon(Icons.lock_outline, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    '${entry.value.displayText}:',
+                    '${permission.displayText}:',
                     style: textTheme.bodySmall,
                   ),
                   const SizedBox(width: 4),
@@ -146,7 +145,7 @@ class _SpaceFeaturesActivationState
                         context: context,
                         builder:
                             (context) => PermissionSelectionBottomSheet(
-                              currentPermission: entry.value.defaultLevel,
+                              currentPermission: permission.defaultLevel,
                               onPermissionSelected: (level) {
                                 ref
                                     .read(featureActivationProvider.notifier)
@@ -156,15 +155,14 @@ class _SpaceFeaturesActivationState
                                             state,
                                           );
                                       final updatedPermissions =
-                                          Map<String, PermissionConfig>.from(
-                                            featureState.permissions,
-                                          );
-                                      updatedPermissions[entry
-                                          .key] = PermissionConfig(
-                                        key: entry.key,
-                                        displayText: entry.value.displayText,
-                                        defaultLevel: level,
-                                      );
+                                          featureState.permissions.map((p) {
+                                            if (p.key == permission.key) {
+                                              return p.copyWith(
+                                                defaultLevel: level,
+                                              );
+                                            }
+                                            return p;
+                                          }).toList();
                                       newState[feature] = featureState.copyWith(
                                         permissions: updatedPermissions,
                                       );
@@ -175,7 +173,7 @@ class _SpaceFeaturesActivationState
                       );
                     },
                     child: Text(
-                      entry.value.defaultLevel.name.toUpperCase(),
+                      permission.defaultLevel.name.toUpperCase(),
                       style: textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.secondary,
                       ),
