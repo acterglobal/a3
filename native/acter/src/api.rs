@@ -68,7 +68,7 @@ pub use acter_core::{
         UtcDateTime,
     },
     models::{
-        status::membership::{ProfileChange, MembershipChange},
+        status::membership::{MembershipChange, ProfileChange},
         ActerModel, Tag, TextMessageContent,
     },
 };
