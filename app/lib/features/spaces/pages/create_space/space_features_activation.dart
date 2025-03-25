@@ -1,23 +1,11 @@
 import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter/features/spaces/model/space_permission_levels.dart';
+import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:acter/features/spaces/pages/create_space/permission_selection_bottom_sheet.dart';
-
-final featureActivationProvider =
-    StateProvider<Map<SpaceFeature, FeatureState>>(
-      (ref) => {
-        SpaceFeature.boost: FeatureState(),
-        SpaceFeature.story: FeatureState(),
-        SpaceFeature.pin: FeatureState(),
-        SpaceFeature.calendar: FeatureState(),
-        SpaceFeature.task: FeatureState(),
-        SpaceFeature.comment: FeatureState(),
-        SpaceFeature.attachment: FeatureState(),
-      },
-    );
 
 class SpaceFeaturesActivation extends ConsumerStatefulWidget {
   const SpaceFeaturesActivation({super.key});
@@ -99,7 +87,6 @@ class _SpaceFeaturesActivationState
     final featureStates = ref.watch(featureActivationProvider);
     final featureState = featureStates[feature] ?? FeatureState();
     final isFeatureActivated = featureState.isActivated;
-    final permissionLevel = featureState.permissionLevel;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
@@ -122,55 +109,79 @@ class _SpaceFeaturesActivationState
               },
             ),
           ),
-          if (isFeatureActivated)
-            _buildPermissionLevel(feature, featureState, permissionLevel),
+          if (isFeatureActivated) _buildPermissionsList(feature, featureState),
         ],
       ),
     );
   }
 
-  Widget _buildPermissionLevel(
+  Widget _buildPermissionsList(
     SpaceFeature feature,
     FeatureState featureState,
-    PermissionLevel permissionLevel,
   ) {
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.lock_outline, size: 16),
-          const SizedBox(width: 4),
-          Text('Permission level :', style: textTheme.bodySmall),
-          const SizedBox(width: 4),
-          TextButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder:
-                    (context) => PermissionSelectionBottomSheet(
-                      currentPermission: permissionLevel,
-                      onPermissionSelected: (level) {
-                        ref.read(featureActivationProvider.notifier).update((
-                          state,
-                        ) {
-                          final newState = Map<SpaceFeature, FeatureState>.from(
-                            state,
-                          );
-                          newState[feature] = featureState.copyWith(
-                            permissionLevel: level,
-                          );
-                          return newState;
-                        });
-                      },
+          Text('Permissions:', style: textTheme.bodySmall),
+          const SizedBox(height: 4),
+          ...featureState.permissions.entries.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.lock_outline, size: 16),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${entry.value.displayText}:',
+                    style: textTheme.bodySmall,
+                  ),
+                  const SizedBox(width: 4),
+                  TextButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder:
+                            (context) => PermissionSelectionBottomSheet(
+                              currentPermission: entry.value.defaultLevel,
+                              onPermissionSelected: (level) {
+                                ref
+                                    .read(featureActivationProvider.notifier)
+                                    .update((state) {
+                                      final newState =
+                                          Map<SpaceFeature, FeatureState>.from(
+                                            state,
+                                          );
+                                      final updatedPermissions =
+                                          Map<String, PermissionConfig>.from(
+                                            featureState.permissions,
+                                          );
+                                      updatedPermissions[entry
+                                          .key] = PermissionConfig(
+                                        key: entry.key,
+                                        displayText: entry.value.displayText,
+                                        defaultLevel: level,
+                                      );
+                                      newState[feature] = featureState.copyWith(
+                                        permissions: updatedPermissions,
+                                      );
+                                      return newState;
+                                    });
+                              },
+                            ),
+                      );
+                    },
+                    child: Text(
+                      entry.value.defaultLevel.name.toUpperCase(),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
-              );
-            },
-            child: Text(
-              permissionLevel.name.toUpperCase(),
-              style: textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ],
               ),
             ),
           ),
