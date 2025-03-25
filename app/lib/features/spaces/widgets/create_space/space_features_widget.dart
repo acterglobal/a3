@@ -137,7 +137,13 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
               children: [
                 Icon(Icons.lock_outline, size: 16),
                 const SizedBox(width: 4),
-                Text('${permission.displayText}:', style: textTheme.bodySmall),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Text(
+                    '${permission.displayText}:',
+                    style: textTheme.bodySmall,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 InkWell(
                   onTap: () {
