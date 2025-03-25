@@ -38,80 +38,120 @@ class MemberUpdateEvent extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
 
-    final senderId = item.sender();
     final eventType = item.eventType();
-    final msgType = item.msgType();
-    final firstName =
+    final senderId =
         ref
             .watch(
-              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
+              memberDisplayNameProvider((
+                roomId: roomId,
+                userId: item.sender(),
+              )),
             )
-            .valueOrNull;
-    final msgContent = item.msgContent()?.body() ?? '';
+            .valueOrNull ??
+        item.sender();
 
-    return switch (eventType) {
-      'ProfileChange' => switch (msgType) {
-        'ChangedDisplayName' =>
-          '${lang.chatDisplayNameUpdate(firstName ?? senderId)} $msgContent',
-        'SetDisplayName' =>
-          '${lang.chatDisplayNameSet(firstName ?? senderId)}: $msgContent',
-        'RemoveDisplayName' => lang.chatDisplayNameUnset(firstName ?? senderId),
-        'ChangeProfileAvatar' => lang.chatUserAvatarChange(
-          firstName ?? senderId,
-        ),
-        _ => msgContent,
-      },
-      _ => switch (msgType) {
-        'Joined' =>
-          isMe
-              ? lang.chatYouJoined
-              : firstName != null
-              ? lang.chatJoinedDisplayName(firstName)
-              : lang.chatJoinedUserId(senderId),
-        'Left' =>
-          isMe ? lang.chatYouLeft : lang.chatUserLeft(firstName ?? senderId),
-        'Banned' =>
-          isMe
-              ? lang.chatYouBanned(msgContent)
-              : lang.chatUserBanned(firstName ?? senderId, msgContent),
-        'Unbanned' =>
-          isMe
-              ? lang.chatYouUnbanned(msgContent)
-              : lang.chatUserUnbanned(firstName ?? senderId, msgContent),
-        'Kicked' =>
-          isMe
-              ? lang.chatYouKicked(msgContent)
-              : lang.chatUserKicked(firstName ?? senderId, msgContent),
-        'KickedAndBanned' =>
-          isMe
-              ? lang.chatYouKickedBanned(msgContent)
-              : lang.chatUserKickedBanned(firstName ?? senderId, msgContent),
-        'InvitationAccepted' =>
-          isMe
-              ? lang.chatYouAcceptedInvite
-              : firstName != null
-              ? lang.chatInvitationAcceptedDisplayName(firstName)
-              : lang.chatInvitationAcceptedUserId(senderId),
-        'Invited' =>
-          (() {
-            final inviteeId = msgContent;
-            final inviteeName =
-                ref
-                    .watch(
-                      memberDisplayNameProvider((
-                        roomId: roomId,
-                        userId: inviteeId,
-                      )),
-                    )
-                    .valueOrNull;
-            return isMe
-                ? lang.chatYouInvited(inviteeName ?? inviteeId)
-                : firstName != null && inviteeName != null
-                ? lang.chatInvitedDisplayName(inviteeName, firstName)
-                : lang.chatInvitedUserId(inviteeId, senderId);
-          })(),
-        _ => msgContent,
-      },
-    };
+    if (eventType == 'membershipChange') {
+      final change = item.msgContent()?.membershipChange();
+      if (change == null) return '';
+      final userId =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  roomId: roomId,
+                  userId: change.userId().toString(),
+                )),
+              )
+              .valueOrNull ??
+          change.userId().toString();
+      switch (change.change()) {
+        case 'None':
+          return lang.chatMembershipNone(userId);
+        case 'Error':
+          return lang.chatMembershipError(userId);
+        case 'Joined':
+          return lang.chatMembershipJoined(userId);
+        case 'Left':
+          return lang.chatMembershipLeft(userId);
+        case 'Banned':
+          return lang.chatMembershipBanned(senderId, userId);
+        case 'Unbanned':
+          return lang.chatMembershipUnbanned(senderId, userId);
+        case 'Kicked':
+          return lang.chatMembershipKicked(senderId, userId);
+        case 'Invited':
+          return lang.chatMembershipInvited(senderId, userId);
+        case 'KickedAndBanned':
+          return lang.chatMembershipKickedAndBanned(senderId, userId);
+        case 'InvitationAccepted':
+          return lang.chatMembershipInvitationAccepted(userId);
+        case 'InvitationRejected':
+          return lang.chatMembershipInvitationRejected(userId);
+        case 'InvitationRevoked':
+          return lang.chatMembershipInvitationRevoked(userId);
+        case 'Knocked':
+          return lang.chatMembershipKnocked(senderId, userId);
+        case 'KnockAccepted':
+          return lang.chatMembershipKnockAccepted(userId);
+        case 'KnockRetracted':
+          return lang.chatMembershipKnockRetracted(userId);
+        case 'KnockDenied':
+          return lang.chatMembershipKnockDenied(userId);
+        case 'NotImplemented':
+          return lang.chatMembershipNotImplemented(userId);
+        default:
+          return lang.chatMembershipNone(userId);
+      }
+    } else if (eventType == 'profileChange') {
+      final change = item.msgContent()?.profileChange();
+      if (change == null) return '';
+      final userId =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  roomId: roomId,
+                  userId: change.userId().toString(),
+                )),
+              )
+              .valueOrNull ??
+          change.userId().toString();
+      final result = [];
+      switch (change.displayNameChange()) {
+        case 'ChangedDisplayName':
+          final text = lang.chatProfileDisplayNameChanged(
+            change.displayNameNewVal() ?? '',
+            change.displayNameOldVal() ?? '',
+            userId,
+          );
+          result.add(text);
+          break;
+        case 'UnsetDisplayName':
+          final text = lang.chatProfileDisplayNameUnset(userId);
+          result.add(text);
+          break;
+        case 'SetDisplayName':
+          final text = lang.chatProfileDisplayNameSet(
+            change.displayNameNewVal() ?? '',
+            userId,
+          );
+          result.add(text);
+          break;
+      }
+      switch (change.avatarUrlChange()) {
+        case 'ChangedAvatarUrl':
+          final text = lang.chatProfileAvatarUrlChanged(userId);
+          result.add(text);
+          break;
+        case 'UnsetAvatarUrl':
+          final text = lang.chatProfileAvatarUrlUnset(userId);
+          result.add(text);
+          break;
+        case 'SetAvatarUrl':
+          final text = lang.chatProfileAvatarUrlSet(userId);
+          result.add(text);
+          break;
+      }
+      return result.join(', ');
+    }
+    return '';
   }
 }

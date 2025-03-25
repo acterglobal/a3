@@ -67,9 +67,12 @@ pub use acter_core::{
         CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,
         UtcDateTime,
     },
-    models::{ActerModel, Tag, TextMessageContent},
+    models::{
+        status::membership::{MembershipChange, ProfileChange},
+        ActerModel, Tag, TextMessageContent,
+    },
 };
-pub use activities::{Activities, Activity, ActivityObject, MembershipChange};
+pub use activities::{Activities, Activity, ActivityObject};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
