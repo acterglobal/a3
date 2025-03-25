@@ -89,6 +89,7 @@ class _SpaceFeaturesActivationState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
+            titleAlignment: ListTileTitleAlignment.top,
             leading: Icon(featureIcon),
             title: Text(featureName, style: textTheme.bodyMedium),
             subtitle: Column(
