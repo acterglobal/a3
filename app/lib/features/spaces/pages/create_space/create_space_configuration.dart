@@ -4,6 +4,7 @@ import 'package:acter/features/room/join_rule/room_join_rule_item.dart';
 import 'package:acter/features/room/join_rule/room_join_rule_selector.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/spaces/pages/create_space/create_space_page.dart';
+import 'package:acter/features/spaces/pages/create_space/space_features_activation.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -40,19 +41,23 @@ class _CreateSpaceConfigurationState
   }
 
   Widget buildBody() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildDefaultChatField(),
-          const SizedBox(height: 24),
-          _buildParentSpace(),
-          const SizedBox(height: 24),
-          _buildVisibility(),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDefaultChatField(),
+            const SizedBox(height: 24),
+            _buildParentSpace(),
+            const SizedBox(height: 24),
+            _buildVisibility(),
+            const SizedBox(height: 24),
+            SpaceFeaturesActivation(),
+          ],
+        ),
       ),
     );
   }
