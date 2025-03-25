@@ -1,4 +1,3 @@
-
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/space/providers/topic_provider.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../../../helpers/mock_room_providers.dart';
 import '../../../../helpers/test_util.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -37,6 +37,20 @@ class MockSpace extends Mock implements Space {
 
 class MockMembership extends Mock implements Member {}
 
+class MockRoom extends Mock implements Room {
+  final String? topicText;
+  final bool canSetTopic;
+  final Member? membership;
+
+  MockRoom({this.topicText, this.canSetTopic = false, this.membership});
+
+  @override
+  String? topic() => topicText;
+
+  @override
+  Future<Member> getMyMembership() async => membership!;
+}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(FakeContext());
@@ -49,13 +63,16 @@ void main() {
 
     group('Space Description', () {
       testWidgets('renders topic when available', (tester) async {
+        final mockRoom = MockRoom(topicText: testTopic);
         await tester.pumpProviderWidget(
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             roomMembershipProvider.overrideWith(
               (ref, _) => Future.value(MockMembership()),
             ),
-            topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
+            maybeRoomProvider.overrideWith(
+              () => MockAlwaysTheSameRoomNotifier(room: mockRoom),
+            ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
         );
@@ -211,8 +228,6 @@ void main() {
         );
 
         await tester.pump();
-
-        debugDumpApp();
 
         // Find and tap the upgrade button
         // doesn't find outline button as its using the .icon variant
