@@ -99,6 +99,8 @@ class _SpaceFeaturesActivationState
                 if (isFeatureActivated) ...[
                   Row(
                     children: [
+                      Icon(Icons.lock_outline, size: 16),
+                      const SizedBox(width: 4),
                       Text('Permission level :', style: textTheme.bodySmall),
                       const SizedBox(width: 4),
                       TextButton(
