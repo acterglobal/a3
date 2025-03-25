@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
@@ -11,16 +10,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../../../helpers/test_util.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MockSpace extends Mock implements Space {
   final String id;
   final String? topicText;
   final bool canSetTopic;
+  final Member? membership;
 
   MockSpace({
     this.id = 'test-space-id',
     this.topicText,
     this.canSetTopic = false,
+    this.membership,
   });
 
   @override
@@ -28,21 +30,12 @@ class MockSpace extends Mock implements Space {
 
   @override
   String? topic() => topicText;
-}
-
-class MockMembership extends Mock implements Member {
-  final bool canSetTopic;
-
-  MockMembership({this.canSetTopic = false});
 
   @override
-  bool canString(String permission) {
-    if (permission == 'CanSetTopic') {
-      return canSetTopic;
-    }
-    return false;
-  }
+  Future<Member> getMyMembership() async => membership!;
 }
+
+class MockMembership extends Mock implements Member {}
 
 void main() {
   setUpAll(() {
@@ -59,10 +52,10 @@ void main() {
         await tester.pumpProviderWidget(
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
-            topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
-            roomPermissionProvider.overrideWith(
-              (ref, _) => Future.value(false),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(MockMembership()),
             ),
+            topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
           ],
           child: const AboutSection(spaceId: testSpaceId),
         );
@@ -78,8 +71,8 @@ void main() {
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             topicProvider.overrideWith((ref, _) => Future.value(null)),
-            roomPermissionProvider.overrideWith(
-              (ref, _) => Future.value(false),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(MockMembership()),
             ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
@@ -92,12 +85,14 @@ void main() {
       testWidgets('makes topic editable when user has permission', (
         tester,
       ) async {
+        final mockMembership = MockMembership();
+        when(() => mockMembership.canString('CanSetTopic')).thenReturn(true);
         await tester.pumpProviderWidget(
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
-            roomPermissionProvider.overrideWith(
-              (ref, p) => Future.value(p.permission == 'CanSetTopic'),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(mockMembership),
             ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
@@ -109,12 +104,14 @@ void main() {
       });
 
       testWidgets('topic is not editable without permission', (tester) async {
+        final mockMembership = MockMembership();
+        when(() => mockMembership.canString('CanSetTopic')).thenReturn(false);
         await tester.pumpProviderWidget(
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
-            roomPermissionProvider.overrideWith(
-              (ref, _) => Future.value(false),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(mockMembership),
             ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
@@ -130,14 +127,17 @@ void main() {
       testWidgets('shows upgrade button for non-acter space with permissions', (
         tester,
       ) async {
+        final mockMembership = MockMembership();
+        when(
+          () => mockMembership.canString('CanUpgradeToActerSpace'),
+        ).thenReturn(true);
         await tester.pumpProviderWidget(
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
             isActerSpace.overrideWith((ref, _) => Future.value(false)),
-            roomPermissionProvider.overrideWith(
-              (ref, p) =>
-                  Future.value(p.permission == 'CanUpgradeToActerSpace'),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(mockMembership),
             ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
@@ -149,14 +149,17 @@ void main() {
       });
 
       testWidgets('hides upgrade button for acter space', (tester) async {
+        final mockMembership = MockMembership();
+        when(
+          () => mockMembership.canString('CanUpgradeToActerSpace'),
+        ).thenReturn(false);
         await tester.pumpProviderWidget(
           overrides: [
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
             isActerSpace.overrideWith((ref, _) => Future.value(true)),
-            roomPermissionProvider.overrideWith(
-              (ref, p) =>
-                  Future.value(p.permission == 'CanUpgradeToActerSpace'),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(mockMembership),
             ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
@@ -173,9 +176,6 @@ void main() {
             spaceProvider.overrideWith((ref, _) => Future.value(MockSpace())),
             topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
             isActerSpace.overrideWith((ref, _) => Future.value(false)),
-            roomPermissionProvider.overrideWith(
-              (ref, _) => Future.value(false),
-            ),
           ],
           child: const AboutSection(spaceId: testSpaceId),
         );
@@ -183,6 +183,80 @@ void main() {
         await tester.pump();
         expect(find.text('Upgrade to Acter Space'), findsNothing);
         expect(find.byIcon(Atlas.up_arrow), findsNothing);
+      });
+
+      testWidgets('calls setActerSpaceStates when upgrade button is tapped', (
+        tester,
+      ) async {
+        final mockMembership = MockMembership();
+        final mockSpace = MockSpace(membership: mockMembership);
+        when(
+          () => mockSpace.setActerSpaceStates(),
+        ).thenAnswer((_) async => Future<bool>.value(true));
+        when(
+          () => mockMembership.canString('CanUpgradeToActerSpace'),
+        ).thenReturn(true);
+        when(() => mockMembership.canString('CanSetTopic')).thenReturn(false);
+
+        await tester.pumpProviderWidget(
+          overrides: [
+            spaceProvider.overrideWith((ref, _) => Future.value(mockSpace)),
+            topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
+            isActerSpace.overrideWith((ref, _) => Future.value(false)),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(mockMembership),
+            ),
+          ],
+          child: const AboutSection(spaceId: testSpaceId),
+        );
+
+        await tester.pump();
+
+        debugDumpApp();
+
+        // Find and tap the upgrade button
+        // doesn't find outline button as its using the .icon variant
+        final upgradeButton = find.text('Upgrade to Acter Space');
+        expect(upgradeButton, findsOneWidget);
+        await tester.tap(upgradeButton);
+        await tester.pump();
+
+        // Verify that setActerSpaceStates was called
+        verify(() => mockSpace.setActerSpaceStates()).called(1);
+        expect(EasyLoading.isShow, isTrue);
+      });
+
+      testWidgets('shows error toast when upgrade fails', (tester) async {
+        final mockSpace = MockSpace();
+        when(
+          () => mockSpace.setActerSpaceStates(),
+        ).thenThrow(Exception('Upgrade failed'));
+        final mockMembership = MockMembership();
+        when(
+          () => mockMembership.canString('CanUpgradeToActerSpace'),
+        ).thenReturn(true);
+
+        await tester.pumpProviderWidget(
+          overrides: [
+            spaceProvider.overrideWith((ref, _) => Future.value(mockSpace)),
+            topicProvider.overrideWith((ref, _) => Future.value(testTopic)),
+            isActerSpace.overrideWith((ref, _) => Future.value(false)),
+            roomMembershipProvider.overrideWith(
+              (ref, _) => Future.value(mockMembership),
+            ),
+          ],
+          child: const AboutSection(spaceId: testSpaceId),
+        );
+
+        await tester.pump();
+
+        // doesn't find outline button as its using the .icon variant
+        final upgradeButton = find.text('Upgrade to Acter Space');
+        await tester.tap(upgradeButton);
+        await tester.pump();
+
+        verify(() => mockSpace.setActerSpaceStates()).called(1);
+        expect(EasyLoading.isShow, isTrue);
       });
     });
   });
