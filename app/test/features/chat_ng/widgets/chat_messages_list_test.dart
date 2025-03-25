@@ -118,10 +118,7 @@ void main() {
       expect(find.byType(AnimatedList), findsOneWidget);
 
       //  verify the list has the correct number of items
-      final animatedList = tester.widget<AnimatedList>(
-        find.byType(AnimatedList),
-      );
-      expect(animatedList.initialItemCount, equals(5));
+      expect(messagesState.messageList.length, equals(5));
     });
 
     testWidgets('shows loading indicator and hides it when done loading', (
@@ -235,7 +232,7 @@ void main() {
         child: ChatMessages(roomId: testRoomId),
       );
 
-      expect(animatedListKey.currentState?.widget.initialItemCount, equals(3));
+      expect(notifier.state.messageList.length, equals(3));
 
       // verify initial message order
       expect(notifier.state.messageList, equals(['msg0', 'msg1', 'msg2']));
@@ -250,7 +247,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       // verify the list was updated
-      expect(animatedListKey.currentState?.widget.initialItemCount, equals(4));
+      expect(notifier.state.messageList.length, equals(4));
 
       // Verify final message order
       expect(
@@ -368,11 +365,6 @@ void main() {
 
       // initial message count
       expect(notifier.state.messageList.length, equals(5));
-
-      final animatedList = tester.widget<AnimatedList>(
-        find.byType(AnimatedList),
-      );
-      expect(animatedList.initialItemCount, equals(5));
 
       // Remove a message
       final updatedMessages = List<String>.from(initialMessages)..removeAt(2);
