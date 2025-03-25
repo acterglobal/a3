@@ -1,6 +1,6 @@
 import 'package:acter/features/spaces/model/space_permission_levels.dart';
 
-enum SpaceFeature { boost, story, pin, calendar, task }
+enum SpaceFeature { boost, story, pin, calendar, task, comment, attachment }
 
 class FeatureState {
   final bool isActivated;

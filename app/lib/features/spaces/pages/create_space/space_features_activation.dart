@@ -14,6 +14,8 @@ final featureActivationProvider =
         SpaceFeature.pin: FeatureState(),
         SpaceFeature.calendar: FeatureState(),
         SpaceFeature.task: FeatureState(),
+        SpaceFeature.comment: FeatureState(),
+        SpaceFeature.attachment: FeatureState(),
       },
     );
 
@@ -70,6 +72,18 @@ class _SpaceFeaturesActivationState
           Atlas.list,
           'Task',
           'Manage tasks in your space',
+        ),
+        _buildFeatureActivation(
+          SpaceFeature.comment,
+          Atlas.comment,
+          'Comment',
+          'Allow members to comment on space objects',
+        ),
+        _buildFeatureActivation(
+          SpaceFeature.attachment,
+          Atlas.paperclip,
+          'Attachment',
+          'Allow members to attach files to space objects',
         ),
       ],
     );
