@@ -38,21 +38,32 @@ class MemberUpdateEvent extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
 
-    final senderId = item.sender();
     final eventType = item.eventType();
-    final firstName =
+    final senderId =
         ref
             .watch(
-              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
+              memberDisplayNameProvider((
+                roomId: roomId,
+                userId: item.sender(),
+              )),
             )
-            .valueOrNull;
+            .valueOrNull ??
+        item.sender();
 
     if (eventType == 'membershipChange') {
       final change = item.msgContent()?.membershipChange();
       if (change == null) return '';
-      final mode = change.change();
-      final userId = firstName ?? change.userId().toString();
-      switch (mode) {
+      final userId =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  roomId: roomId,
+                  userId: change.userId().toString(),
+                )),
+              )
+              .valueOrNull ??
+          change.userId().toString();
+      switch (change.change()) {
         case 'None':
           return lang.chatMembershipNone(userId);
         case 'Error':
@@ -62,15 +73,15 @@ class MemberUpdateEvent extends ConsumerWidget {
         case 'Left':
           return lang.chatMembershipLeft(userId);
         case 'Banned':
-          return lang.chatMembershipBanned(userId);
+          return lang.chatMembershipBanned(senderId, userId);
         case 'Unbanned':
-          return lang.chatMembershipUnbanned(userId);
+          return lang.chatMembershipUnbanned(senderId, userId);
         case 'Kicked':
-          return lang.chatMembershipKicked(userId);
+          return lang.chatMembershipKicked(senderId, userId);
         case 'Invited':
-          return lang.chatMembershipInvited(userId);
+          return lang.chatMembershipInvited(senderId, userId);
         case 'KickedAndBanned':
-          return lang.chatMembershipKickedAndBanned(userId);
+          return lang.chatMembershipKickedAndBanned(senderId, userId);
         case 'InvitationAccepted':
           return lang.chatMembershipInvitationAccepted(userId);
         case 'InvitationRejected':
@@ -78,7 +89,7 @@ class MemberUpdateEvent extends ConsumerWidget {
         case 'InvitationRevoked':
           return lang.chatMembershipInvitationRevoked(userId);
         case 'Knocked':
-          return lang.chatMembershipKnocked(userId);
+          return lang.chatMembershipKnocked(senderId, userId);
         case 'KnockAccepted':
           return lang.chatMembershipKnockAccepted(userId);
         case 'KnockRetracted':
@@ -93,7 +104,16 @@ class MemberUpdateEvent extends ConsumerWidget {
     } else if (eventType == 'profileChange') {
       final change = item.msgContent()?.profileChange();
       if (change == null) return '';
-      final userId = firstName ?? change.userId().toString();
+      final userId =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  roomId: roomId,
+                  userId: change.userId().toString(),
+                )),
+              )
+              .valueOrNull ??
+          change.userId().toString();
       final result = [];
       switch (change.displayNameChange()) {
         case 'ChangedDisplayName':

@@ -599,13 +599,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: uniqueId,
+          roomId: roomId,
           remoteId: eventId,
           metadata: metadata,
         );
       case 'membershipChange': // some of m.room.member
         MembershipChange? change = eventItem.msgContent()?.membershipChange();
-        String? mode = change?.change();
-        if (mode == null) {
+        if (change == null) {
           return types.UnsupportedMessage(
             author: const types.User(id: 'virtual'),
             remoteId: eventId,
@@ -617,11 +617,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: uniqueId,
+          roomId: roomId,
           remoteId: eventId,
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'change': mode,
+            'change': change.change(),
+            'userId': change.userId().toString(),
             'receipts': receipts,
           },
         );
@@ -650,6 +652,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           author: author,
           createdAt: createdAt,
           id: uniqueId,
+          roomId: roomId,
           metadata: metadata,
         );
       case 'm.room.redaction':

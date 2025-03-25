@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -13,11 +14,35 @@ class MembershipUpdateWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
-    late String userId;
+    late String senderId; // he changed another user
     if (message.author.id == myUserId) {
+      senderId = lang.you;
+    } else {
+      senderId =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  roomId: message.roomId ?? '',
+                  userId: message.author.id,
+                )),
+              )
+              .valueOrNull ??
+          message.author.id;
+    }
+    late String userId; // he was changed by sender
+    if (message.metadata?['userId'] == myUserId) {
       userId = lang.you;
     } else {
-      userId = message.author.firstName ?? message.author.id;
+      userId =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  roomId: message.roomId ?? '',
+                  userId: message.metadata?['userId'],
+                )),
+              )
+              .valueOrNull ??
+          message.metadata?['userId'];
     }
     late String text;
     switch (message.metadata?['change']) {
@@ -34,19 +59,19 @@ class MembershipUpdateWidget extends ConsumerWidget {
         text = lang.chatMembershipLeft(userId);
         break;
       case 'Banned':
-        text = lang.chatMembershipBanned(userId);
+        text = lang.chatMembershipBanned(senderId, userId);
         break;
       case 'Unbanned':
-        text = lang.chatMembershipUnbanned(userId);
+        text = lang.chatMembershipUnbanned(senderId, userId);
         break;
       case 'Kicked':
-        text = lang.chatMembershipKicked(userId);
+        text = lang.chatMembershipKicked(senderId, userId);
         break;
       case 'Invited':
-        text = lang.chatMembershipInvited(userId);
+        text = lang.chatMembershipInvited(senderId, userId);
         break;
       case 'KickedAndBanned':
-        text = lang.chatMembershipKickedAndBanned(userId);
+        text = lang.chatMembershipKickedAndBanned(senderId, userId);
         break;
       case 'InvitationAccepted':
         text = lang.chatMembershipInvitationAccepted(userId);
@@ -58,7 +83,7 @@ class MembershipUpdateWidget extends ConsumerWidget {
         text = lang.chatMembershipInvitationRevoked(userId);
         break;
       case 'Knocked':
-        text = lang.chatMembershipKnocked(userId);
+        text = lang.chatMembershipKnocked(senderId, userId);
         break;
       case 'KnockAccepted':
         text = lang.chatMembershipKnockAccepted(userId);

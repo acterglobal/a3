@@ -1394,6 +1394,8 @@
   "@encryptedChatMessageInfoTitle": {},
   "chatMessageDeleted": "Mensaje borrado",
   "@chatMessageDeleted": {},
+  "chatMembershipInvited": "{senderId} invitado {userId}",
+  "@chatMembershipInvited": {},
   "chatMembershipJoined": "{userId} se unió",
   "@chatMembershipJoined": {},
   "createInviteCodeFailed": "Error al crear el código: {error}",
