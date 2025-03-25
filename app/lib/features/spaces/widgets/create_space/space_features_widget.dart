@@ -1,21 +1,20 @@
+import 'package:acter/features/spaces/actions/select_permission.dart';
 import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:acter/features/spaces/pages/create_space/permission_selection_bottom_sheet.dart';
 
-class SpaceFeaturesActivation extends ConsumerStatefulWidget {
-  const SpaceFeaturesActivation({super.key});
+class SpaceFeaturesWidget extends ConsumerStatefulWidget {
+  const SpaceFeaturesWidget({super.key});
 
   @override
-  ConsumerState<SpaceFeaturesActivation> createState() =>
-      _SpaceFeaturesActivationState();
+  ConsumerState<SpaceFeaturesWidget> createState() =>
+      _SpaceFeaturesWidgetState();
 }
 
-class _SpaceFeaturesActivationState
-    extends ConsumerState<SpaceFeaturesActivation> {
+class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -139,13 +138,13 @@ class _SpaceFeaturesActivationState
                 Icon(Icons.lock_outline, size: 16),
                 const SizedBox(width: 4),
                 Text('${permission.displayText}:', style: textTheme.bodySmall),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
                 InkWell(
                   onTap: () {
                     showModalBottomSheet(
                       context: context,
                       builder:
-                          (context) => PermissionSelectionBottomSheet(
+                          (context) => SelectPermission(
                             currentPermission: permission.defaultLevel,
                             onPermissionSelected: (level) {
                               ref
@@ -173,15 +172,18 @@ class _SpaceFeaturesActivationState
                           ),
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      permission.defaultLevel.name.toUpperCase(),
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
+                  child: Text(
+                    permission.defaultLevel.name.toUpperCase(),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ],
             ),

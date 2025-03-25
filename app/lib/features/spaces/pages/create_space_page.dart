@@ -9,7 +9,7 @@ import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/spaces/actions/create_space.dart';
 import 'package:acter/features/spaces/model/keys.dart';
-import 'package:acter/features/spaces/pages/create_space/create_space_configuration.dart';
+import 'package:acter/features/spaces/widgets/create_space/space_configuration_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +85,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
 
     return showSpaceCreationConfiguration
-        ? CreateSpaceConfiguration(
+        ? SpaceConfigurationWidget(
           initialParentsSpaceId: widget.initialParentsSpaceId,
         )
         : Scaffold(appBar: _buildAppbar(), body: _buildBody());

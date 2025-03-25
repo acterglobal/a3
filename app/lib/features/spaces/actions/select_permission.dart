@@ -1,11 +1,11 @@
+import 'package:acter/features/spaces/model/permission_config.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/features/spaces/model/space_permission_levels.dart';
 
-class PermissionSelectionBottomSheet extends StatelessWidget {
+class SelectPermission extends StatelessWidget {
   final PermissionLevel currentPermission;
   final Function(PermissionLevel) onPermissionSelected;
 
-  const PermissionSelectionBottomSheet({
+  const SelectPermission({
     super.key,
     required this.currentPermission,
     required this.onPermissionSelected,

@@ -3,25 +3,25 @@ import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/room/join_rule/room_join_rule_item.dart';
 import 'package:acter/features/room/join_rule/room_join_rule_selector.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
-import 'package:acter/features/spaces/pages/create_space/create_space_page.dart';
-import 'package:acter/features/spaces/pages/create_space/space_features_activation.dart';
+import 'package:acter/features/spaces/pages/create_space_page.dart';
+import 'package:acter/features/spaces/widgets/create_space/space_features_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CreateSpaceConfiguration extends ConsumerStatefulWidget {
+class SpaceConfigurationWidget extends ConsumerStatefulWidget {
   final String? initialParentsSpaceId;
 
-  const CreateSpaceConfiguration({super.key, this.initialParentsSpaceId});
+  const SpaceConfigurationWidget({super.key, this.initialParentsSpaceId});
 
   @override
-  ConsumerState<CreateSpaceConfiguration> createState() =>
-      _CreateSpaceConfigurationState();
+  ConsumerState<SpaceConfigurationWidget> createState() =>
+      _SpaceConfigurationWidgetState();
 }
 
-class _CreateSpaceConfigurationState
-    extends ConsumerState<CreateSpaceConfiguration> {
+class _SpaceConfigurationWidgetState
+    extends ConsumerState<SpaceConfigurationWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +55,7 @@ class _CreateSpaceConfigurationState
             const SizedBox(height: 24),
             _buildVisibility(),
             const SizedBox(height: 24),
-            SpaceFeaturesActivation(),
+            SpaceFeaturesWidget(),
           ],
         ),
       ),
