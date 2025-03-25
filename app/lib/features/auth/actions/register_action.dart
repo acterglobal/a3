@@ -1,8 +1,10 @@
 import 'package:acter/features/auth/providers/auth_providers.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final _log = Logger('a3::auth::register');
 
@@ -16,6 +18,7 @@ Future<void> _tryRedeem(SuperInvites superInvites, String token) async {
 }
 
 Future<bool> register({
+  required BuildContext context,
   required String username,
   required String password,
   required String name,
@@ -29,8 +32,9 @@ Future<bool> register({
     throw errorMsg;
   }
   if (token.isNotEmpty) {
-    final superInvites = await ref.read(superInvitesProvider.future);
-    _tryRedeem(superInvites, token);
-  }
+    final SharedPreferences preferences = await sharedPrefs();
+    preferences.setString('invitation_token', token);
+    print('invitation token: $token');
+  } 
   return true;
 }
