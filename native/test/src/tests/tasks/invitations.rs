@@ -152,6 +152,10 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     })
     .await?;
 
+    let s_invites_manager = second_user.invitations();
+    let s_invites_stream = s_invites_manager.subscribe_stream();
+    let mut s_invites_stream = s_invites_stream.fuse();
+
     let _obj_id = obj_entry.event_id().to_string();
     // this is a mention, so we need to subscribe to the room
 
@@ -206,6 +210,11 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
         assert_eq!(invite[0], second_user.user_id()?);
     } // dropping the invites
 
+    assert_eq!(s_invites_stream.next().await, Some(true)); //invite was seen by the manager
+    let object_invitations = s_invites_manager.object_invitations().await?;
+    assert_eq!(object_invitations.len(), 1);
+    assert_eq!(object_invitations[0], task.event_id().to_string());
+
     task.assign_self().await?; // this is the way we accept the task
 
     {
@@ -234,6 +243,10 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
         assert_eq!(accepted.len(), 1);
         assert_eq!(accepted[0], second_user.user_id()?);
     } // dropping the invites
+
+    assert_eq!(s_invites_stream.next().await, Some(true)); //invite was seen by the manager
+    let object_invitations = s_invites_manager.object_invitations().await?;
+    assert_eq!(object_invitations.len(), 0); // invite is gone
 
     // -- and now we decline
 
