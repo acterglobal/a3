@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final tokenField = GlobalKey<FormFieldState>();
@@ -39,6 +40,33 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     if (token != null && token.isNotEmpty) {
       setState(() {
         _tokenController.text = token;
+      });
+    }
+  }
+
+  Future<void> _scanQR(BuildContext context) async {
+    final result = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder:
+            (context) => Scaffold(
+              appBar: AppBar(title: Text(L10n.of(context).scanQrCode)),
+              body: QRCodeDartScanView(
+                scanInvertedQRCode: true,
+                intervalScan: const Duration(milliseconds: 300),
+                typeScan: TypeScan.live,
+                onCapture: (result) {
+                  if (context.mounted) {
+                    Navigator.of(context).pop(result.text);
+                  }
+                },
+              ),
+            ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        _tokenController.text = result;
       });
     }
   }
@@ -109,7 +137,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
               hintText: lang.inviteCode,
               suffixIcon: IconButton(
                 icon: const Icon(Icons.qr_code),
-                onPressed: () {},
+                onPressed: () => _scanQR(context),
               ),
             ),
           ),
