@@ -2,18 +2,37 @@ import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:acter/features/spaces/pages/create_space/permission_selection_bottom_sheet.dart';
 
 enum SpaceFeature { boost, story, pin, calendar, task }
 
-final featureActivationProvider = StateProvider<Map<SpaceFeature, bool>>(
-  (ref) => {
-    SpaceFeature.boost: false,
-    SpaceFeature.story: false,
-    SpaceFeature.pin: false,
-    SpaceFeature.calendar: false,
-    SpaceFeature.task: false,
-  },
-);
+class FeatureState {
+  final bool isActivated;
+  final PermissionLevel permissionLevel;
+
+  FeatureState({
+    this.isActivated = false,
+    this.permissionLevel = PermissionLevel.admin,
+  });
+
+  FeatureState copyWith({bool? isActivated, PermissionLevel? permissionLevel}) {
+    return FeatureState(
+      isActivated: isActivated ?? this.isActivated,
+      permissionLevel: permissionLevel ?? this.permissionLevel,
+    );
+  }
+}
+
+final featureActivationProvider =
+    StateProvider<Map<SpaceFeature, FeatureState>>(
+      (ref) => {
+        SpaceFeature.boost: FeatureState(),
+        SpaceFeature.story: FeatureState(),
+        SpaceFeature.pin: FeatureState(),
+        SpaceFeature.calendar: FeatureState(),
+        SpaceFeature.task: FeatureState(),
+      },
+    );
 
 class SpaceFeaturesActivation extends ConsumerStatefulWidget {
   const SpaceFeaturesActivation({super.key});
@@ -81,7 +100,9 @@ class _SpaceFeaturesActivationState
   ) {
     final textTheme = Theme.of(context).textTheme;
     final featureStates = ref.watch(featureActivationProvider);
-    final isFeatureActivated = featureStates[feature] ?? false;
+    final featureState = featureStates[feature] ?? FeatureState();
+    final isFeatureActivated = featureState.isActivated;
+    final permissionLevel = featureState.permissionLevel;
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 6),
@@ -104,9 +125,32 @@ class _SpaceFeaturesActivationState
                       Text('Permission level :', style: textTheme.bodySmall),
                       const SizedBox(width: 4),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder:
+                                (context) => PermissionSelectionBottomSheet(
+                                  currentPermission: permissionLevel,
+                                  onPermissionSelected: (level) {
+                                    ref
+                                        .read(
+                                          featureActivationProvider.notifier,
+                                        )
+                                        .update((state) {
+                                          final newState = Map<
+                                            SpaceFeature,
+                                            FeatureState
+                                          >.from(state);
+                                          newState[feature] = featureState
+                                              .copyWith(permissionLevel: level);
+                                          return newState;
+                                        });
+                                  },
+                                ),
+                          );
+                        },
                         child: Text(
-                          'Admin',
+                          permissionLevel.name.toUpperCase(),
                           style: textTheme.bodySmall?.copyWith(
                             color: Theme.of(context).colorScheme.secondary,
                           ),
@@ -121,8 +165,8 @@ class _SpaceFeaturesActivationState
               value: isFeatureActivated,
               onChanged: (value) {
                 ref.read(featureActivationProvider.notifier).update((state) {
-                  final newState = Map<SpaceFeature, bool>.from(state);
-                  newState[feature] = value;
+                  final newState = Map<SpaceFeature, FeatureState>.from(state);
+                  newState[feature] = featureState.copyWith(isActivated: value);
                   return newState;
                 });
               },
