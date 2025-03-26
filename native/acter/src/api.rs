@@ -32,7 +32,7 @@ mod common;
 mod convo;
 mod deep_linking;
 mod device;
-mod invitation;
+mod invitations;
 mod message;
 mod news;
 mod pins;
@@ -52,7 +52,6 @@ mod typing;
 mod utils;
 mod verification;
 
-mod invitations;
 pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
@@ -99,8 +98,7 @@ pub use convo::{
 pub use core::time::Duration as EfkDuration;
 pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
-pub use invitation::Invitation;
-pub use invitations::InvitationsManager;
+pub use invitations::{InvitationsManager, ObjectInvitationsManager, RoomInvitation};
 pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};

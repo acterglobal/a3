@@ -5,28 +5,26 @@ use ruma::UserId;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
 
-use crate::{Client, MsgContent};
+use crate::{Client, MsgContent, RUNTIME};
 use anyhow::Result;
 use matrix_sdk::Room;
 use std::ops::Deref;
 
-use super::RUNTIME;
-
 #[derive(Clone, Debug)]
-pub struct InvitationsManager {
+pub struct ObjectInvitationsManager {
     client: Client,
     room: Room,
     inner: models::InvitationsManager,
 }
 
-impl Deref for InvitationsManager {
+impl Deref for ObjectInvitationsManager {
     type Target = models::InvitationsManager;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl InvitationsManager {
+impl ObjectInvitationsManager {
     pub fn is_invited(&self) -> bool {
         let Ok(user_id) = self.client.user_id() else {
             return false;
@@ -107,21 +105,17 @@ impl InvitationsManager {
         let room = self.room.clone();
         let event_id = self.inner.event_id().to_owned();
         RUNTIME
-            .spawn(async move { InvitationsManager::new(client, room, event_id).await })
+            .spawn(async move { ObjectInvitationsManager::new(client, room, event_id).await })
             .await?
     }
 }
 
-impl InvitationsManager {
-    pub async fn new(
-        client: Client,
-        room: Room,
-        event_id: OwnedEventId,
-    ) -> Result<InvitationsManager> {
+impl ObjectInvitationsManager {
+    pub async fn new(client: Client, room: Room, event_id: OwnedEventId) -> Result<Self> {
         let inner =
             models::InvitationsManager::from_store_and_event_id(client.store(), event_id.as_ref())
                 .await;
-        Ok(InvitationsManager {
+        Ok(ObjectInvitationsManager {
             client,
             room,
             inner,

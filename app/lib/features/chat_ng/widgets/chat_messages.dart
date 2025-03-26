@@ -9,21 +9,24 @@ import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 class ChatMessages extends ConsumerStatefulWidget {
+  static const fabScrollToBottomKey = Key('chat_messages_fab_scroll_to_bottom');
   final String roomId;
   const ChatMessages({super.key, required this.roomId});
 
   @override
-  ConsumerState<ChatMessages> createState() => _ChatMessagesConsumerState();
+  ConsumerState<ChatMessages> createState() => ChatMessagesConsumerState();
 }
 
-class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
-  final ScrollController _scrollController = ScrollController(
-    keepScrollOffset: true,
+class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
+  final ScrollController _scrollController = AutoScrollController(
+    initialScrollOffset: 0.0,
   );
 
   Timer? markReadDebouce;
+  bool showScrollToBottom = false;
 
   bool get isLoading => ref.watch(
     chatMessagesStateProvider(widget.roomId).select((v) => v.loading.isLoading),
@@ -36,11 +39,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
     ref.listenManual(
       chatMessagesStateProvider(
         widget.roomId,
-      ).select((value) => value.messageList.length),
-      (_, __) {
-        if (_scrollController.hasClients &&
-            _scrollController.position.pixels >
-                _scrollController.position.maxScrollExtent - 150) {
+      ).select((value) => value.messageList),
+      (prev, current) {
+        if (prev == null && current.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) => scrollToEnd());
         }
       },
@@ -50,6 +51,7 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
 
   @override
   void dispose() {
+    markReadDebouce?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -57,9 +59,9 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   Future<void> onScroll() async {
     if (isLoading) return;
 
-    // Check if we're near the top of the list
-    if (_scrollController.position.pixels <=
-        _scrollController.position.minScrollExtent) {
+    // Check if we're near the bottom of the list (which is now the top of the chat history)
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent) {
       if (isLoading) return;
 
       // Get the notifier to load more messages
@@ -67,8 +69,8 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         chatMessagesStateProvider(widget.roomId).notifier,
       );
       await notifier.loadMore();
-    } else if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent) {
+    } else if (_scrollController.position.pixels <=
+        _scrollController.position.minScrollExtent) {
       // Unread marking support
       if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
         final roomId = widget.roomId;
@@ -86,13 +88,25 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         }
       }
     }
+
+    // Update scroll to bottom button visibility
+    final shouldShowButton =
+        _scrollController.hasClients &&
+        _scrollController.position.pixels >
+            (_scrollController.position.minScrollExtent + 5);
+
+    if (shouldShowButton != showScrollToBottom) {
+      setState(() {
+        showScrollToBottom = shouldShowButton;
+      });
+    }
   }
 
   void scrollToEnd() {
     if (!mounted || !_scrollController.hasClients) return;
 
     _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
+      _scrollController.position.minScrollExtent,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
@@ -112,7 +126,11 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         children: [
           Expanded(
             child: Stack(
-              children: [_buildMessagesList(messages), _buildScrollIndicator()],
+              children: [
+                _buildMessagesList(messages),
+                _buildScrollIndicator(),
+                _buildScrollToBottomButton(),
+              ],
             ),
           ),
         ],
@@ -126,8 +144,8 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       initialItemCount: messages.length,
       key: ref.watch(animatedListChatMessagesProvider(widget.roomId)),
       controller: _scrollController,
-      reverse: false,
-      padding: const EdgeInsets.only(top: 40),
+      reverse: true,
+      padding: const EdgeInsets.only(bottom: 40),
       itemBuilder:
           (_, index, animation) =>
               ChatEvent(roomId: widget.roomId, eventId: messages[index]),
@@ -145,6 +163,26 @@ class _ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         width: isLoading ? 14 : 0,
         child: Center(
           child: isLoading ? const CircularProgressIndicator() : null,
+        ),
+      ),
+    ),
+  );
+
+  //  scroll indicator widget
+  Widget _buildScrollToBottomButton() => Positioned(
+    key: ChatMessages.fabScrollToBottomKey,
+    bottom: 16,
+    right: 16,
+    child: AnimatedOpacity(
+      opacity: showScrollToBottom ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 200),
+      child: AnimatedScale(
+        scale: showScrollToBottom ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: FloatingActionButton(
+          mini: true,
+          onPressed: showScrollToBottom ? scrollToEnd : null,
+          child: const Icon(Icons.arrow_downward),
         ),
       ),
     ),

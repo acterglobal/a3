@@ -1,0 +1,1 @@
+- [New] : Enable encryption backup automatically up user registration.
