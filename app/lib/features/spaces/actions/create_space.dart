@@ -6,11 +6,14 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
+import 'package:acter/features/space/actions/set_acter_feature.dart';
+import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 
 final _log = Logger('a3::spaces::actions::create_space');
 
@@ -76,6 +79,10 @@ Future<String?> createSpace(
         EasyLoading.dismiss();
       }
     }
+
+    if (!context.mounted) return null;
+    await applySpaceFeatures(context, ref, roomId);
+
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to create space', e, s);
@@ -88,5 +95,44 @@ Future<String?> createSpace(
       duration: const Duration(seconds: 3),
     );
     return null;
+  }
+}
+
+Future<void> applySpaceFeatures(
+  BuildContext context,
+  WidgetRef ref,
+  String spaceId,
+) async {
+  final lang = L10n.of(context);
+  try {
+    final featureStates = ref.watch(featureActivationProvider);
+
+    final appSettingsAndMembership = await ref.watch(
+      spaceAppSettingsProvider(spaceId).future,
+    );
+    final appSettings = appSettingsAndMembership.settings;
+    final space = appSettingsAndMembership.space;
+
+    if (context.mounted) {
+      for (final entry in featureStates.entries) {
+        final feature = entry.key;
+        final state = entry.value;
+
+        final featureName = feature.name.toUpperCase();
+
+        await setActerFeatureForBuilder(
+          context,
+          appSettings.setActivatedBuilder(feature, state.isActivated),
+          space,
+          featureName,
+        );
+      }
+    }
+  } catch (e, s) {
+    _log.severe('Failed to apply features settings', e, s);
+    EasyLoading.showError(
+      lang.creatingSpaceFailed(e),
+      duration: const Duration(seconds: 3),
+    );
   }
 }

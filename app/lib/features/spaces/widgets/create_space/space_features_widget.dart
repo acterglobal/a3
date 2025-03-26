@@ -1,3 +1,4 @@
+import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/spaces/actions/select_permission.dart';
 import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
@@ -30,46 +31,34 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
         ),
         const SizedBox(height: 8),
         _buildFeatureActivation(
-          SpaceFeature.boost,
+          SpaceFeature.boosts,
           PhosphorIcons.rocketLaunch(),
           'Boost',
           'Boost updates important to your space members',
         ),
         _buildFeatureActivation(
-          SpaceFeature.story,
+          SpaceFeature.stories,
           PhosphorIcons.slideshow(),
           'Story',
           'Socialize updates with your space members',
         ),
         _buildFeatureActivation(
-          SpaceFeature.pin,
+          SpaceFeature.pins,
           Atlas.pin,
           'Pin',
           'Pin important links and data in your space',
         ),
         _buildFeatureActivation(
-          SpaceFeature.calendar,
+          SpaceFeature.events,
           Atlas.calendar,
           'Calendar',
           'Manage events in your space',
         ),
         _buildFeatureActivation(
-          SpaceFeature.task,
+          SpaceFeature.tasks,
           Atlas.list,
           'Task',
           'Manage tasks in your space',
-        ),
-        _buildFeatureActivation(
-          SpaceFeature.comment,
-          Atlas.comment,
-          'Comment',
-          'Allow members to comment on space objects',
-        ),
-        _buildFeatureActivation(
-          SpaceFeature.attachment,
-          Atlas.paperclip,
-          'Attachment',
-          'Allow members to attach files to space objects',
         ),
       ],
     );
