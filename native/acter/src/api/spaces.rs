@@ -2,7 +2,7 @@ pub mod categories;
 
 pub use acter_core::spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
-    SpaceRelations as CoreSpaceRelations,
+    SpaceRelations as CoreSpaceRelations, AppPermissionsBuilder, new_app_permissions_builder,
 };
 use acter_core::{
     error::Error, events::AnyActerEvent, models::AnyActerModel,

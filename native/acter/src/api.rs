@@ -123,7 +123,7 @@ pub use settings::{
 };
 pub use spaces::{
     new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceDiff,
+    RelationTargetType, Space, SpaceDiff, AppPermissionsBuilder, new_app_permissions_builder,
 };
 pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
 pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};

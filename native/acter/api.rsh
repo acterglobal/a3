@@ -2731,6 +2731,66 @@ object ActerUserAppSettingsBuilder {
 }
 
 
+//  ########  ######## ########  ##     ## ####  ######   ######  ####  #######  ##    ##  ######  
+//  ##     ## ##       ##     ## ###   ###  ##  ##    ## ##    ##  ##  ##     ## ###   ## ##    ## 
+//  ##     ## ##       ##     ## #### ####  ##  ##       ##        ##  ##     ## ####  ## ##       
+//  ########  ######   ########  ## ### ##  ##   ######   ######   ##  ##     ## ## ## ##  ######  
+//  ##        ##       ##   ##   ##     ##  ##        ##       ##  ##  ##     ## ##  ####       ## 
+//  ##        ##       ##    ##  ##     ##  ##  ##    ## ##    ##  ##  ##     ## ##   ### ##    ## 
+//  ##        ######## ##     ## ##     ## ####  ######   ######  ####  #######  ##    ##  ######  
+
+
+/// make app permissions builder
+fn new_app_permissions_builder() -> AppPermissionsBuilder;
+
+object AppPermissionsBuilder {
+    // whether or not News/Boosts should be activated
+    fn news(value: bool);
+    // whether or not pins should be activated
+    fn pins(value: bool);
+    // whether or not stories should be activated
+    fn stories(value: bool);
+    // whether or not calendar_events should be activated
+    fn calendar_events(value: bool);
+    // whether or not the tasks feature should be activated
+    fn tasks(value: bool);
+
+    /// specific permissions levels needed to post boosts
+    fn news_permisisons(value: u32);
+    /// specific permissions levels needed to post stories
+    fn stories_permisisons(value: u32);
+    /// specific permissions levels needed to post calender events
+    fn calendar_events_permisisons(value: u32);
+    /// specific permissions levels needed for task lists
+    fn task_lists_permisisons(value: u32);
+    /// specific permissions levels needed for tasks
+    fn tasks_permisisons(value: u32);
+    /// specific permissions levels needed for pins
+    fn pins_permisisons(value: u32);
+    /// specific permissions levels needed for comments
+    fn comments_permisisons(value: u32);
+    /// specific permissions levels needed for attachments
+    fn attachments_permisisons(value: u32);
+    /// specific permissions levels needed to rsvp
+    fn rsvp_permisisons(value: u32);
+
+    /// set level to kick a user
+    fn kick(value: u32);
+    /// set level to ban a user
+    fn ban(value: u32);
+    /// set level to ban a user
+    fn invite(value: u32);
+    /// set level to redact user content
+    fn redact(value: u32);
+
+    /// set default sending level if not specified
+    fn events_default(value: u32);
+    /// set the detault level users have when entering 
+    fn users_default(value: u32);
+    /// set the default state level needed if not specified
+    fn state_default(value: u32);
+}
+
 
 //     ###     ######   ######   #######  ##     ## ##    ## ########
 //    ## ##   ##    ## ##    ## ##     ## ##     ## ###   ##    ##
@@ -3026,6 +3086,7 @@ object CreateConvoSettingsBuilder {
 
 object CreateConvoSettings {}
 
+
 /// make space settings builder
 fn new_space_settings_builder() -> CreateSpaceSettingsBuilder;
 
@@ -3056,6 +3117,9 @@ object CreateSpaceSettingsBuilder {
     /// if the join rule is restricted or knockrestricted AND a parent is set
     /// the space will be a subspace of the parent space
     fn set_parent(value: string);
+
+    /// set the permissions for apps and events for the space creation
+    fn set_permissions(value: AppPermissionsBuilder);
 
     fn build() -> CreateSpaceSettings;
 }

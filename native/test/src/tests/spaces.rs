@@ -1,5 +1,8 @@
 use acter::api::{new_join_rule_builder, new_space_settings_builder};
-use acter_core::referencing::{IndexKey, SectionIndex};
+use acter_core::{
+    referencing::{IndexKey, SectionIndex},
+    spaces::new_app_permissions_builder,
+};
 use anyhow::{bail, Result};
 use matrix_sdk_base::ruma::events::{
     room::join_rules::{AllowRule, JoinRule, Restricted},
@@ -11,7 +14,7 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_template;
+use crate::utils::{random_user, random_user_with_template};
 
 const THREE_SPACES_TMPL: &str = r#"
 version = "0.1"
@@ -285,6 +288,177 @@ async fn create_subspace() -> Result<()> {
     })
     .await?;
 
+    Ok(())
+}
+
+#[tokio::test]
+async fn create_with_default_space_settings() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let first = spaces.pop().unwrap();
+
+    let settings = Retry::spawn(retry_strategy.clone(), || {
+        let first = first.clone();
+        async move {
+            let Some(settings) = first.app_settings_content().await? else {
+                bail!("no settings found");
+            };
+            Ok(settings)
+        }
+    })
+    .await?;
+
+    assert!(settings.news().active());
+    assert!(settings.pins().active());
+    assert!(settings.tasks().active());
+    assert!(settings.events().active());
+    assert!(settings.stories().active());
+
+    // and ensure the right
+    let power_levels = first.power_levels().await?;
+    // core features
+    assert_eq!(power_levels.news(), Some(100i64));
+    assert_eq!(power_levels.pins().unwrap_or_default(), 0);
+    assert_eq!(power_levels.tasks().unwrap_or_default(), 0);
+    assert_eq!(power_levels.task_lists().unwrap_or_default(), 0);
+
+    assert_eq!(power_levels.events().unwrap_or_default(), 0);
+    assert_eq!(power_levels.stories().unwrap_or_default(), 0);
+
+    // interactions
+    assert_eq!(power_levels.comments().unwrap_or_default(), 0);
+    assert_eq!(power_levels.attachments().unwrap_or_default(), 0);
+    assert_eq!(power_levels.rsvp().unwrap_or_default(), 0);
+
+    // default power levels
+    assert_eq!(power_levels.invite(), 0i64);
+    assert_eq!(power_levels.redact(), 50i64);
+    assert_eq!(power_levels.kick(), 50i64);
+
+    //
+    assert_eq!(power_levels.users_default(), 0i64);
+    assert_eq!(power_levels.events_default(), 0);
+    assert_eq!(power_levels.state_default(), 50i64);
+    Ok(())
+}
+
+#[tokio::test]
+async fn create_with_custom_space_settings() -> Result<()> {
+    let _ = env_logger::try_init();
+    let mut user = random_user("settigs").await?;
+    let sync_state = user.start_sync();
+    sync_state.await_has_synced_history().await?;
+
+    let mut cfg = new_space_settings_builder();
+    cfg.set_name("my space".to_owned());
+    let mut settings = new_app_permissions_builder(); // all on by default
+                                                     // we turn them all off
+    settings.news(false);
+    settings.pins(false);
+    settings.tasks(false);
+    settings.calendar_events(false);
+    settings.stories(false);
+    settings.news_permisisons(1);
+    settings.pins_permisisons(2);
+    settings.task_lists_permisisons(3);
+    settings.tasks_permisisons(4);
+    settings.calendar_events_permisisons(5);
+    settings.stories_permisisons(6);
+    settings.comments_permisisons(7);
+    settings.attachments_permisisons(8);
+    settings.rsvp_permisisons(9);
+    settings.users_default(10);
+    settings.events_default(11);
+    settings.kick(12);
+    settings.invite(13);
+    settings.redact(14);
+    settings.state_default(15);
+    cfg.set_permissions(Box::new(settings));
+
+    let settings = cfg.build()?;
+    user.create_acter_space(Box::new(settings)).await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    let fetcher_client = user.clone();
+    Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let first = spaces.pop().unwrap();
+
+    let settings = Retry::spawn(retry_strategy.clone(), || {
+        let first = first.clone();
+        async move {
+            let Some(settings) = first.app_settings_content().await? else {
+                bail!("no settings found");
+            };
+            Ok(settings)
+        }
+    })
+    .await?;
+    assert!(!settings.news().active());
+    assert!(!settings.pins().active());
+    assert!(!settings.tasks().active());
+    assert!(!settings.events().active());
+    assert!(!settings.stories().active());
+
+    // and ensure the right
+    let power_levels = first.power_levels().await?;
+    // core features
+    assert_eq!(power_levels.news(), Some(1i64));
+    assert_eq!(power_levels.pins(), Some(2i64));
+    assert_eq!(power_levels.task_lists(), Some(3i64));
+    assert_eq!(power_levels.tasks(), Some(4i64));
+
+    assert_eq!(power_levels.events(), Some(5i64));
+    assert_eq!(power_levels.stories(), Some(6i64));
+
+    // interactions
+    assert_eq!(power_levels.comments(), Some(7i64));
+    assert_eq!(power_levels.attachments(), Some(8i64));
+    assert_eq!(power_levels.rsvp(), Some(9i64));
+
+    // default power levels
+    assert_eq!(power_levels.kick(), 12i64);
+    assert_eq!(power_levels.invite(), 13i64);
+    assert_eq!(power_levels.redact(), 14i64);
+
+    //
+    assert_eq!(power_levels.users_default(), 10i64);
+    assert_eq!(power_levels.events_default(), 11i64);
+    assert_eq!(power_levels.state_default(), 15i64);
     Ok(())
 }
 
