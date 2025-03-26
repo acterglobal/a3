@@ -111,6 +111,7 @@ Future<void> applySpaceFeatures(
   final lang = L10n.of(context);
   try {
     final featureStates = ref.read(featureActivationStateProvider);
+    ref.invalidate(featureActivationStateProvider);
     final appSettingsAndMembership = await ref.read(
       spaceAppSettingsProvider(spaceId).future,
     );

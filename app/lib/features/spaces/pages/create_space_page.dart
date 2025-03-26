@@ -40,6 +40,17 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   File? spaceAvatar;
 
   @override
+  void dispose() {
+    _spaceNameController.dispose();
+    _spaceDescriptionController.dispose();
+    ref.invalidate(createDefaultChatProvider);
+    ref.invalidate(selectedSpaceIdProvider);
+    ref.invalidate(selectedJoinRuleProvider);
+    ref.invalidate(featureActivationStateProvider);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
@@ -231,15 +242,23 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Future<void> _handleCreateSpace() async {
+    final createDefaultChat = ref.read(createDefaultChatProvider);
+    final parentRoomId = ref.read(selectedSpaceIdProvider);
+    final roomJoinRule = ref.read(selectedJoinRuleProvider);
+
+    ref.invalidate(createDefaultChatProvider);
+    ref.invalidate(selectedSpaceIdProvider);
+    ref.invalidate(selectedJoinRuleProvider);
+
     final newRoomId = await createSpace(
       context,
       ref,
       name: _spaceNameController.text.trim(),
       description: _spaceDescriptionController.text.trim(),
       spaceAvatar: spaceAvatar,
-      createDefaultChat: ref.read(createDefaultChatProvider),
-      parentRoomId: ref.read(selectedSpaceIdProvider),
-      roomJoinRule: ref.read(selectedJoinRuleProvider),
+      createDefaultChat: createDefaultChat,
+      parentRoomId: parentRoomId,
+      roomJoinRule: roomJoinRule,
     );
     if (!mounted) return;
     if (newRoomId != null) {
