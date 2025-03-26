@@ -87,7 +87,7 @@ Future<String?> createSpace(
     await Future.delayed(const Duration(milliseconds: 1000));
     if (!context.mounted) return null;
     await applySpaceFeatures(context, ref, roomId);
-
+    EasyLoading.dismiss();
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to create space', e, s);
@@ -124,8 +124,6 @@ Future<void> applySpaceFeatures(
         final state = entry.value;
 
         if (state.isActivated) {
-          EasyLoading.show(status: lang.changingSettingOf(feature.name));
-
           //Activate the feature
           final builder = appSettings.setActivatedBuilder(feature, true);
           await space.updateAppSettings(builder);
@@ -135,11 +133,9 @@ Future<void> applySpaceFeatures(
 
           // Add a delay between each update to ensure they complete in sequence
           await Future.delayed(const Duration(milliseconds: 500));
-          EasyLoading.dismiss();
         }
       }
     }
-    EasyLoading.dismiss();
   } catch (e, s) {
     _log.severe('Failed to apply features settings', e, s);
     EasyLoading.showError(
