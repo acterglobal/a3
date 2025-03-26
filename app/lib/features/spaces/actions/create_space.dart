@@ -125,9 +125,12 @@ Future<void> applySpaceFeatures(
           //Activate the feature
           final builder = appSettings.setActivatedBuilder(feature, true);
           await space.updateAppSettings(builder);
-          //Set the power level to 50
+          //Set the power level based on the permission level
           final levelKey = getKeyFromFeatureName(feature, powerLevels);
-          await space.updateFeaturePowerLevels(levelKey, 50);
+          await space.updateFeaturePowerLevels(
+            levelKey,
+            state.permissions.first.permissionLevel.value,
+          );
           await Future.delayed(const Duration(seconds: 2));
           EasyLoading.dismiss();
         }

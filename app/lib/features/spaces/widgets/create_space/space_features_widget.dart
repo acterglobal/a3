@@ -140,7 +140,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
                       context: context,
                       builder:
                           (context) => SelectPermission(
-                            currentPermission: permission.defaultLevel,
+                            currentPermission: permission.permissionLevel,
                             onPermissionSelected: (level) {
                               ref
                                   .read(featureActivationProvider.notifier)
@@ -153,7 +153,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
                                         featureState.permissions.map((p) {
                                           if (p.key == permission.key) {
                                             return p.copyWith(
-                                              defaultLevel: level,
+                                              permissionLevel: level,
                                             );
                                           }
                                           return p;
@@ -168,7 +168,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
                     );
                   },
                   child: Text(
-                    permission.defaultLevel.name.toUpperCase(),
+                    permission.permissionLevel.name.toUpperCase(),
                     style: textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.secondary,
                     ),
