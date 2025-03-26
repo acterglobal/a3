@@ -3,6 +3,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
+import 'package:acter/router/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,10 @@ class InvitePage extends ConsumerWidget {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
+      leading: IconButton(
+        onPressed: () => goToSpace(context, roomId),
+        icon: const Icon(Icons.arrow_back_ios_new_outlined),
+      ),
       actions: [_buildPendingActionButton(context), const SizedBox(width: 20)],
     );
   }
