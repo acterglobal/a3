@@ -2323,5 +2323,8 @@
     "accepted": "Accepted",
     "rejected": "Declined",
     "taskLabel": "Task",
+    "getDetails": "Get Details",
+    "youInvited": "Invited to you to join {count} room",
+    "@youInvited": {},
     "@addComment": {}
 }
