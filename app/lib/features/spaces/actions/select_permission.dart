@@ -46,6 +46,10 @@ class SelectPermission extends StatelessWidget {
     final permissionColor = isSelected ? primaryColor : null;
 
     return ListTile(
+      onTap: () {
+        onPermissionSelected(level);
+        Navigator.pop(context);
+      },
       leading: Icon(permissionIcon, color: permissionColor),
       title: Text(
         level.name.toUpperCase(),

@@ -1,5 +1,6 @@
 import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/spaces/actions/select_permission.dart';
+import 'package:acter/features/spaces/model/permission_config.dart';
 import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -102,7 +103,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
   }
 
   Widget _buildPermissionsList(
-    SpaceFeature feature,
+    SpaceFeature spaceFeature,
     FeatureState featureState,
   ) {
     final textTheme = Theme.of(context).textTheme;
@@ -120,7 +121,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
           ),
           const SizedBox(height: 8),
           ...featureState.permissions.map(
-            (permission) => Row(
+            (currentPermission) => Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.lock_outline, size: 16),
@@ -128,46 +129,20 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Text(
-                    '${permission.displayText}:',
+                    '${currentPermission.displayText}:',
                     style: textTheme.bodySmall,
                   ),
                 ),
                 const SizedBox(width: 8),
                 InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder:
-                          (context) => SelectPermission(
-                            currentPermission: permission.permissionLevel,
-                            onPermissionSelected: (level) {
-                              ref
-                                  .read(featureActivationProvider.notifier)
-                                  .update((state) {
-                                    final newState =
-                                        Map<SpaceFeature, FeatureState>.from(
-                                          state,
-                                        );
-                                    final updatedPermissions =
-                                        featureState.permissions.map((p) {
-                                          if (p.key == permission.key) {
-                                            return p.copyWith(
-                                              permissionLevel: level,
-                                            );
-                                          }
-                                          return p;
-                                        }).toList();
-                                    newState[feature] = featureState.copyWith(
-                                      permissions: updatedPermissions,
-                                    );
-                                    return newState;
-                                  });
-                            },
-                          ),
-                    );
-                  },
+                  onTap:
+                      () => _changePermission(
+                        spaceFeature,
+                        featureState,
+                        currentPermission,
+                      ),
                   child: Text(
-                    permission.permissionLevel.name.toUpperCase(),
+                    currentPermission.permissionLevel.name.toUpperCase(),
                     style: textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.secondary,
                     ),
@@ -184,6 +159,36 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
           ),
         ],
       ),
+    );
+  }
+
+  void _changePermission(
+    SpaceFeature spaceFeature,
+    FeatureState featureState,
+    PermissionConfig currentPermission,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder:
+          (context) => SelectPermission(
+            currentPermission: currentPermission.permissionLevel,
+            onPermissionSelected: (level) {
+              ref.read(featureActivationProvider.notifier).update((state) {
+                final newState = Map<SpaceFeature, FeatureState>.from(state);
+                final updatedPermissions =
+                    featureState.permissions.map((p) {
+                      if (p.key == currentPermission.key) {
+                        return p.copyWith(permissionLevel: level);
+                      }
+                      return p;
+                    }).toList();
+                newState[spaceFeature] = featureState.copyWith(
+                  permissions: updatedPermissions,
+                );
+                return newState;
+              });
+            },
+          ),
     );
   }
 }
