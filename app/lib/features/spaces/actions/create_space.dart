@@ -8,6 +8,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -80,6 +81,8 @@ Future<String?> createSpace(
       }
     }
 
+    EasyLoading.show(status: 'Applying feature settings');
+    await Future.delayed(const Duration(seconds: 2));
     if (!context.mounted) return null;
     await applySpaceFeatures(context, ref, roomId);
 
@@ -105,29 +108,32 @@ Future<void> applySpaceFeatures(
 ) async {
   final lang = L10n.of(context);
   try {
-    final featureStates = ref.watch(featureActivationProvider);
-
-    final appSettingsAndMembership = await ref.watch(
+    final featureStates = ref.read(featureActivationProvider);
+    final appSettingsAndMembership = await ref.read(
       spaceAppSettingsProvider(spaceId).future,
     );
-    final appSettings = appSettingsAndMembership.settings;
     final space = appSettingsAndMembership.space;
+    final appSettings = appSettingsAndMembership.settings;
+    final powerLevels = appSettingsAndMembership.powerLevels;
 
     if (context.mounted) {
       for (final entry in featureStates.entries) {
         final feature = entry.key;
         final state = entry.value;
-
-        final featureName = feature.name.toUpperCase();
-
-        await setActerFeatureForBuilder(
-          context,
-          appSettings.setActivatedBuilder(feature, state.isActivated),
-          space,
-          featureName,
-        );
+        if (state.isActivated) {
+          EasyLoading.show(status: lang.changingSettingOf(feature.name));
+          //Activate the feature
+          final builder = appSettings.setActivatedBuilder(feature, true);
+          await space.updateAppSettings(builder);
+          //Set the power level to 50
+          final levelKey = getKeyFromFeatureName(feature, powerLevels);
+          await space.updateFeaturePowerLevels(levelKey, 50);
+          await Future.delayed(const Duration(seconds: 2));
+          EasyLoading.dismiss();
+        }
       }
     }
+    EasyLoading.dismiss();
   } catch (e, s) {
     _log.severe('Failed to apply features settings', e, s);
     EasyLoading.showError(
@@ -135,4 +141,17 @@ Future<void> applySpaceFeatures(
       duration: const Duration(seconds: 3),
     );
   }
+}
+
+String getKeyFromFeatureName(
+  SpaceFeature featureName,
+  RoomPowerLevels powerLevels,
+) {
+  return switch (featureName) {
+    SpaceFeature.boosts => powerLevels.newsKey(),
+    SpaceFeature.stories => powerLevels.storiesKey(),
+    SpaceFeature.pins => powerLevels.pinsKey(),
+    SpaceFeature.events => powerLevels.eventsKey(),
+    SpaceFeature.tasks => powerLevels.tasksKey(),
+  };
 }
