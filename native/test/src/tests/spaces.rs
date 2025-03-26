@@ -372,7 +372,7 @@ async fn create_with_custom_space_settings() -> Result<()> {
     let mut cfg = new_space_settings_builder();
     cfg.set_name("my space".to_owned());
     let mut settings = new_app_permissions_builder(); // all on by default
-                                                     // we turn them all off
+                                                      // we turn them all off
     settings.news(false);
     settings.pins(false);
     settings.tasks(false);

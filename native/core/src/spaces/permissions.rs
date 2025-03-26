@@ -51,77 +51,44 @@ impl AppPermissionsBuilder {
             settings,
             mut permissions,
         } = self;
-        if settings.news().active()
-            && !permissions
+        if settings.news().active() {
+            permissions
                 .events
-                .contains_key(&<NewsEntryEventContent as StaticEventContent>::TYPE.into())
-        {
-            // set the defaults if not given
-            permissions.events.insert(
-                <NewsEntryEventContent as StaticEventContent>::TYPE.into(),
-                Int::from(100),
-            );
+                .entry(<NewsEntryEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(100));
         }
-        if settings.stories().active()
-            && !permissions
+        if settings.stories().active() {
+            permissions
                 .events
-                .contains_key(&<StoryEventContent as StaticEventContent>::TYPE.into())
-        {
-            permissions.events.insert(
-                <StoryEventContent as StaticEventContent>::TYPE.into(),
-                Int::from(0),
-            );
+                .entry(<StoryEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(0));
         }
         if settings.events().active() {
-            if !permissions
+            permissions
                 .events
-                .contains_key(&<CalendarEventEventContent as StaticEventContent>::TYPE.into())
-            {
-                permissions.events.insert(
-                    <CalendarEventEventContent as StaticEventContent>::TYPE.into(),
-                    Int::from(0),
-                );
-            }
-            if !permissions
+                .entry(<CalendarEventEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(0));
+            permissions
                 .events
-                .contains_key(&<RsvpEventContent as StaticEventContent>::TYPE.into())
-            {
-                permissions.events.insert(
-                    <RsvpEventContent as StaticEventContent>::TYPE.into(),
-                    Int::from(0),
-                );
-            }
+                .entry(<RsvpEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(0));
         }
-        if settings.pins().active()
-            && !permissions
+        if settings.pins().active() {
+            permissions
                 .events
-                .contains_key(&<PinEventContent as StaticEventContent>::TYPE.into())
-        {
-            permissions.events.insert(
-                <PinEventContent as StaticEventContent>::TYPE.into(),
-                Int::from(0),
-            );
+                .entry(<PinEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(0));
         }
-
         if settings.tasks().active() {
-            if permissions
+            permissions
                 .events
-                .contains_key(&<TaskListEventContent as StaticEventContent>::TYPE.into())
-            {
-                permissions.events.insert(
-                    <TaskListEventContent as StaticEventContent>::TYPE.into(),
-                    Int::from(0),
-                );
-            }
-            if permissions
+                .entry(<TaskListEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(0));
+
+            permissions
                 .events
-                .contains_key(&<TaskEventContent as StaticEventContent>::TYPE.into())
-            {
-                permissions.events.insert(
-                    <TaskEventContent as StaticEventContent>::TYPE.into(),
-                    Int::from(0),
-                );
-            }
+                .entry(<TaskEventContent as StaticEventContent>::TYPE.into())
+                .or_insert_with(|| Int::from(0));
         }
         (settings, permissions)
     }
