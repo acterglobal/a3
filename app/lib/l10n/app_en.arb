@@ -2279,6 +2279,7 @@
     "pinsDes": "Pin important links and data in your space",
     "eventsDes": "Manage events in your space",
     "tasksDes": "Manage tasks in your space",
+    "permissions": "Permissions",
     "sharePin": "Share Pin",
     "selectPin": "Select Pin",
     "selectEvent": "Select Event",

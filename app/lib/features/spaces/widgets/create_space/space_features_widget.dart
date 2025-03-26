@@ -106,6 +106,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     SpaceFeature spaceFeature,
     FeatureState featureState,
   ) {
+    final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
@@ -113,7 +114,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Permissions:',
+            '${lang.permissions} :',
             style: textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
@@ -121,40 +122,10 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
           ),
           const SizedBox(height: 8),
           ...featureState.permissions.map(
-            (currentPermission) => Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.lock_outline, size: 16),
-                const SizedBox(width: 4),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(
-                    '${currentPermission.displayText}:',
-                    style: textTheme.bodySmall,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                InkWell(
-                  onTap:
-                      () => _changePermission(
-                        spaceFeature,
-                        featureState,
-                        currentPermission,
-                      ),
-                  child: Text(
-                    currentPermission.permissionLevel.name.toUpperCase(),
-                    style: textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ],
+            (permissionItem) => _buildPermissionItem(
+              permissionItem,
+              spaceFeature,
+              featureState,
             ),
           ),
         ],
@@ -162,22 +133,65 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     );
   }
 
-  void _changePermission(
+  Widget _buildPermissionItem(
+    PermissionConfig permissionItem,
     SpaceFeature spaceFeature,
     FeatureState featureState,
-    PermissionConfig currentPermission,
+  ) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.lock_outline, size: 16),
+        const SizedBox(width: 4),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            '${permissionItem.displayText}:',
+            style: textTheme.bodySmall,
+          ),
+        ),
+        const SizedBox(width: 8),
+        InkWell(
+          onTap:
+              () => _onTapChangePermission(
+                spaceFeature,
+                featureState,
+                permissionItem,
+              ),
+          child: Text(
+            permissionItem.permissionLevel.name.toUpperCase(),
+            style: textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+        Icon(
+          Icons.keyboard_arrow_down,
+          size: 16,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      ],
+    );
+  }
+
+  void _onTapChangePermission(
+    SpaceFeature spaceFeature,
+    FeatureState featureState,
+    PermissionConfig permissionItem,
   ) {
     showModalBottomSheet(
       context: context,
       builder:
           (context) => SelectPermission(
-            currentPermission: currentPermission.permissionLevel,
+            currentPermission: permissionItem.permissionLevel,
             onPermissionSelected: (level) {
               ref.read(featureActivationProvider.notifier).update((state) {
                 final newState = Map<SpaceFeature, FeatureState>.from(state);
                 final updatedPermissions =
                     featureState.permissions.map((p) {
-                      if (p.key == currentPermission.key) {
+                      if (p.key == permissionItem.key) {
                         return p.copyWith(permissionLevel: level);
                       }
                       return p;
