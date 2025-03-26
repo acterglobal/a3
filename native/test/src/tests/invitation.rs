@@ -1,50 +1,100 @@
 use anyhow::Result;
-use futures::{pin_mut, stream::StreamExt};
-use std::time::Duration;
-use tokio::time::sleep;
+use futures::StreamExt;
+use matrix_sdk::RoomState;
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 
-use crate::utils::random_user;
+use crate::utils::{random_user, random_user_with_random_convo, random_user_with_random_space};
 
 #[tokio::test]
-async fn load_pending_invitation() -> Result<()> {
+async fn chat_invitation_shows_up() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let mut sisko = random_user("loading_pending_invitation_sisko").await?;
+    let (mut sisko, room_id) = random_user_with_random_convo("cI").await?;
     let _sisko_syncer = sisko.start_sync();
 
-    let mut kyra = random_user("loading_pending_invitation_kyra").await?;
+    let mut kyra = random_user("cI").await?;
     let _kyra_syncer = kyra.start_sync();
 
-    sleep(Duration::from_secs(3)).await;
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
-    // sisko creates room and invites kyra
-    // let settings = acter::api::CreateConvoSettingsBuilder::default().build()?;
-    // let room_id = sisko.create_convo(settings).await?;
-    // println!("created room id: {}", room_id);
+    let convo = Retry::spawn(retry_strategy.clone(), || async {
+        sisko.convo(room_id.as_str().try_into()?).await
+    })
+    .await?;
 
-    // sleep(Duration::from_secs(3)).await;
+    let invites = kyra.invitations();
+    let stream = invites.subscribe_stream();
+    let mut stream = stream.fuse();
 
-    // let room = sisko.get_joined_room(room_id.as_str().try_into()?)?;
-    // let kyra_id = matrix_sdk_base::ruma::user_id!("@kyra");
-    // room.invite_user_by_id(kyra_id).await?;
+    convo.invite_user_by_id(&kyra.user_id()?).await?;
 
-    // sleep(Duration::from_secs(3)).await;
-
-    let receiver = kyra.invitations_rx();
-    pin_mut!(receiver);
-    loop {
-        match receiver.next().await {
-            Some(invitations) => {
-                println!("received: {invitations:?}");
-                break;
-            }
-            None => {
-                println!("received: none");
-            }
+    let invited = Retry::spawn(retry_strategy.clone(), || async {
+        let invited = kyra.invitations().room_invitations().await?;
+        if invited.is_empty() {
+            Err(anyhow::anyhow!("No pending invitations found"))
+        } else {
+            Ok(invited)
         }
-    }
+    })
+    .await?;
 
-    sleep(Duration::from_secs(3)).await;
+    // stream triggered
+    assert_eq!(stream.next().await, Some(true));
+
+    assert_eq!(invited.len(), 1);
+    let room = invited.first().unwrap();
+    assert_eq!(room.room_id(), room_id);
+    assert_eq!(room.state(), RoomState::Invited);
+    assert!(!room.is_space());
+    assert_eq!(room.sender_id(), sisko.user_id()?);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn space_invitation_shows_up() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let (mut sisko, room_id) = random_user_with_random_space("spI").await?;
+    let _sisko_syncer = sisko.start_sync();
+
+    let mut kyra = random_user("spI").await?;
+    let _kyra_syncer = kyra.start_sync();
+
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+
+    let space = Retry::spawn(retry_strategy.clone(), || async {
+        sisko.space(room_id.as_str().try_into()?).await
+    })
+    .await?;
+
+    let invites = kyra.invitations();
+    let stream = invites.subscribe_stream();
+    let mut stream = stream.fuse();
+    space.invite_user_by_id(&kyra.user_id()?).await?;
+
+    let invited = Retry::spawn(retry_strategy.clone(), || async {
+        let invited = kyra.invitations().room_invitations().await?;
+        if invited.is_empty() {
+            Err(anyhow::anyhow!("No pending invitations found"))
+        } else {
+            Ok(invited)
+        }
+    })
+    .await?;
+
+    // stream triggered
+    assert_eq!(stream.next().await, Some(true));
+
+    assert_eq!(invited.len(), 1);
+    let room = invited.first().unwrap();
+    assert_eq!(room.room_id(), room_id);
+    assert_eq!(room.state(), RoomState::Invited);
+    assert!(room.is_space());
+    assert_eq!(room.sender_id(), sisko.user_id()?);
 
     Ok(())
 }
