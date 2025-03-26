@@ -43,10 +43,6 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   void dispose() {
     _spaceNameController.dispose();
     _spaceDescriptionController.dispose();
-    ref.invalidate(createDefaultChatProvider);
-    ref.invalidate(selectedSpaceIdProvider);
-    ref.invalidate(selectedJoinRuleProvider);
-    ref.invalidate(featureActivationStateProvider);
     super.dispose();
   }
 
