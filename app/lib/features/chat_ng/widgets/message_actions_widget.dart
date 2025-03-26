@@ -3,7 +3,7 @@ import 'package:acter/features/chat_ng/actions/redact_message_action.dart';
 import 'package:acter/features/chat_ng/actions/report_message_action.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class MessageActionsWidget extends ConsumerWidget {
   final bool isMe;
   final bool canRedact;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   final String messageId;
   final String roomId;
   const MessageActionsWidget({

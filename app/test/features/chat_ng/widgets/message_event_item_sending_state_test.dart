@@ -2,7 +2,7 @@ import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem, EventSendState, MsgContent;
+    show EventSendState, MsgContent, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,11 +15,11 @@ class MockMsgContent extends Mock implements MsgContent {
   String body() => 'test message';
 }
 
-class MockRoomEventItem extends Mock implements RoomEventItem {
+class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String _msgType;
   final EventSendState? _sendState;
 
-  MockRoomEventItem({required String msgType, EventSendState? sendState})
+  MockTimelineEventItem({required String msgType, EventSendState? sendState})
     : _msgType = msgType,
       _sendState = sendState;
 
@@ -65,7 +65,7 @@ void main() {
 
     testWidgets('shows sending state for message being sent', (tester) async {
       final mockSendState = MockEventSendState('NotSentYet');
-      final mockItem = MockRoomEventItem(
+      final mockItem = MockTimelineEventItem(
         msgType: 'm.text',
         sendState: mockSendState,
       );
@@ -89,7 +89,7 @@ void main() {
     });
 
     testWidgets('shows sent icon for last message by user', (tester) async {
-      final mockItem = MockRoomEventItem(
+      final mockItem = MockTimelineEventItem(
         msgType: 'm.text',
         sendState: null, // No sending state
       );
@@ -112,7 +112,7 @@ void main() {
     });
 
     testWidgets('does not show sent icon for non-last message', (tester) async {
-      final mockItem = MockRoomEventItem(
+      final mockItem = MockTimelineEventItem(
         msgType: 'm.text',
         sendState: null, // No sending state
       );
@@ -137,7 +137,7 @@ void main() {
 
     testWidgets('shows error state for failed message', (tester) async {
       final mockSendState = MockEventSendState('SendingFailed', 'Test error');
-      final mockItem = MockRoomEventItem(
+      final mockItem = MockTimelineEventItem(
         msgType: 'm.text',
         sendState: mockSendState,
       );
@@ -164,7 +164,7 @@ void main() {
       tester,
     ) async {
       final mockSendState = MockEventSendState('NotSentYet');
-      final mockItem = MockRoomEventItem(
+      final mockItem = MockTimelineEventItem(
         msgType: 'm.text',
         sendState: mockSendState,
       );
@@ -191,7 +191,7 @@ void main() {
       tester,
     ) async {
       final mockSendState = MockEventSendState('UnknownState');
-      final mockItem = MockRoomEventItem(
+      final mockItem = MockTimelineEventItem(
         msgType: 'm.text',
         sendState: mockSendState,
       );

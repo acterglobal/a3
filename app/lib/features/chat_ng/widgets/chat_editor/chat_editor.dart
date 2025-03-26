@@ -13,7 +13,7 @@ import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_actions_preview.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_emoji_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +100,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
-  void _handleEditing(RoomEventItem? item) {
+  void _handleEditing(TimelineEventItem? item) {
     try {
       if (item == null) return;
       final msgContent = item.msgContent();

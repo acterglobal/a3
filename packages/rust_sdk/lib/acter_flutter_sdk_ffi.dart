@@ -5626,7 +5626,7 @@ class Api {
     return tmp7;
   }
 
-  RoomMessage? __timelineStreamGetMessageFuturePoll(
+  TimelineItem? __timelineStreamGetMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -5665,9 +5665,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomMessage");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TimelineItem");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = RoomMessage._(this, tmp13_1);
+    final tmp7 = TimelineItem._(this, tmp13_1);
     return tmp7;
   }
 
@@ -15612,7 +15612,7 @@ class Api {
     return tmp9;
   }
 
-  RoomMessageDiff? __timelineStreamMessagesStreamStreamPoll(
+  TimelineItemDiff? __timelineStreamMessagesStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -15642,9 +15642,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_RoomMessageDiff");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TimelineItemDiff");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = RoomMessageDiff._(this, tmp11_1);
+    final tmp9 = TimelineItemDiff._(this, tmp11_1);
     return tmp9;
   }
 
@@ -19336,164 +19336,166 @@ class Api {
 
   late final _eventSendStateAbort =
       _eventSendStateAbortPtr.asFunction<int Function(int)>();
-  late final _roomEventItemSenderPtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemSenderReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_sender");
+  late final _timelineEventItemSenderPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemSenderReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_sender");
 
-  late final _roomEventItemSender =
-      _roomEventItemSenderPtr
-          .asFunction<_RoomEventItemSenderReturn Function(int)>();
-  late final _roomEventItemSendStatePtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemSendStateReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_send_state");
+  late final _timelineEventItemSender =
+      _timelineEventItemSenderPtr
+          .asFunction<_TimelineEventItemSenderReturn Function(int)>();
+  late final _timelineEventItemSendStatePtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemSendStateReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_send_state");
 
-  late final _roomEventItemSendState =
-      _roomEventItemSendStatePtr
-          .asFunction<_RoomEventItemSendStateReturn Function(int)>();
-  late final _roomEventItemOriginServerTsPtr =
+  late final _timelineEventItemSendState =
+      _timelineEventItemSendStatePtr
+          .asFunction<_TimelineEventItemSendStateReturn Function(int)>();
+  late final _timelineEventItemOriginServerTsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
-        "__RoomEventItem_origin_server_ts",
+        "__TimelineEventItem_origin_server_ts",
       );
 
-  late final _roomEventItemOriginServerTs =
-      _roomEventItemOriginServerTsPtr.asFunction<int Function(int)>();
-  late final _roomEventItemEventTypePtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemEventTypeReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_event_type");
+  late final _timelineEventItemOriginServerTs =
+      _timelineEventItemOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _timelineEventItemEventTypePtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemEventTypeReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_event_type");
 
-  late final _roomEventItemEventType =
-      _roomEventItemEventTypePtr
-          .asFunction<_RoomEventItemEventTypeReturn Function(int)>();
-  late final _roomEventItemEventIdPtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemEventIdReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_event_id");
+  late final _timelineEventItemEventType =
+      _timelineEventItemEventTypePtr
+          .asFunction<_TimelineEventItemEventTypeReturn Function(int)>();
+  late final _timelineEventItemEventIdPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemEventIdReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_event_id");
 
-  late final _roomEventItemEventId =
-      _roomEventItemEventIdPtr
-          .asFunction<_RoomEventItemEventIdReturn Function(int)>();
-  late final _roomEventItemMsgTypePtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemMsgTypeReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_msg_type");
+  late final _timelineEventItemEventId =
+      _timelineEventItemEventIdPtr
+          .asFunction<_TimelineEventItemEventIdReturn Function(int)>();
+  late final _timelineEventItemMsgTypePtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemMsgTypeReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_msg_type");
 
-  late final _roomEventItemMsgType =
-      _roomEventItemMsgTypePtr
-          .asFunction<_RoomEventItemMsgTypeReturn Function(int)>();
-  late final _roomEventItemMsgContentPtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemMsgContentReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_msg_content");
+  late final _timelineEventItemMsgType =
+      _timelineEventItemMsgTypePtr
+          .asFunction<_TimelineEventItemMsgTypeReturn Function(int)>();
+  late final _timelineEventItemMsgContentPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemMsgContentReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_msg_content");
 
-  late final _roomEventItemMsgContent =
-      _roomEventItemMsgContentPtr
-          .asFunction<_RoomEventItemMsgContentReturn Function(int)>();
-  late final _roomEventItemInReplyToPtr = _lookup<
-    ffi.NativeFunction<_RoomEventItemInReplyToReturn Function(ffi.IntPtr)>
-  >("__RoomEventItem_in_reply_to");
+  late final _timelineEventItemMsgContent =
+      _timelineEventItemMsgContentPtr
+          .asFunction<_TimelineEventItemMsgContentReturn Function(int)>();
+  late final _timelineEventItemInReplyToPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_in_reply_to");
 
-  late final _roomEventItemInReplyTo =
-      _roomEventItemInReplyToPtr
-          .asFunction<_RoomEventItemInReplyToReturn Function(int)>();
-  late final _roomEventItemReadUsersPtr =
+  late final _timelineEventItemInReplyTo =
+      _timelineEventItemInReplyToPtr
+          .asFunction<_TimelineEventItemInReplyToReturn Function(int)>();
+  late final _timelineEventItemReadUsersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__RoomEventItem_read_users",
+        "__TimelineEventItem_read_users",
       );
 
-  late final _roomEventItemReadUsers =
-      _roomEventItemReadUsersPtr.asFunction<int Function(int)>();
-  late final _roomEventItemReceiptTsPtr = _lookup<
+  late final _timelineEventItemReadUsers =
+      _timelineEventItemReadUsersPtr.asFunction<int Function(int)>();
+  late final _timelineEventItemReceiptTsPtr = _lookup<
     ffi.NativeFunction<
-      _RoomEventItemReceiptTsReturn Function(
+      _TimelineEventItemReceiptTsReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
         ffi.UintPtr,
       )
     >
-  >("__RoomEventItem_receipt_ts");
+  >("__TimelineEventItem_receipt_ts");
 
-  late final _roomEventItemReceiptTs =
-      _roomEventItemReceiptTsPtr
+  late final _timelineEventItemReceiptTs =
+      _timelineEventItemReceiptTsPtr
           .asFunction<
-            _RoomEventItemReceiptTsReturn Function(int, int, int, int)
+            _TimelineEventItemReceiptTsReturn Function(int, int, int, int)
           >();
-  late final _roomEventItemReactionKeysPtr =
+  late final _timelineEventItemReactionKeysPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__RoomEventItem_reaction_keys",
+        "__TimelineEventItem_reaction_keys",
       );
 
-  late final _roomEventItemReactionKeys =
-      _roomEventItemReactionKeysPtr.asFunction<int Function(int)>();
-  late final _roomEventItemReactionRecordsPtr = _lookup<
+  late final _timelineEventItemReactionKeys =
+      _timelineEventItemReactionKeysPtr.asFunction<int Function(int)>();
+  late final _timelineEventItemReactionRecordsPtr = _lookup<
     ffi.NativeFunction<
-      _RoomEventItemReactionRecordsReturn Function(
+      _TimelineEventItemReactionRecordsReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
         ffi.UintPtr,
       )
     >
-  >("__RoomEventItem_reaction_records");
+  >("__TimelineEventItem_reaction_records");
 
-  late final _roomEventItemReactionRecords =
-      _roomEventItemReactionRecordsPtr
+  late final _timelineEventItemReactionRecords =
+      _timelineEventItemReactionRecordsPtr
           .asFunction<
-            _RoomEventItemReactionRecordsReturn Function(int, int, int, int)
+            _TimelineEventItemReactionRecordsReturn Function(int, int, int, int)
           >();
-  late final _roomEventItemIsEditablePtr =
+  late final _timelineEventItemIsEditablePtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__RoomEventItem_is_editable",
+        "__TimelineEventItem_is_editable",
       );
 
-  late final _roomEventItemIsEditable =
-      _roomEventItemIsEditablePtr.asFunction<int Function(int)>();
-  late final _roomEventItemWasEditedPtr =
+  late final _timelineEventItemIsEditable =
+      _timelineEventItemIsEditablePtr.asFunction<int Function(int)>();
+  late final _timelineEventItemWasEditedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__RoomEventItem_was_edited",
+        "__TimelineEventItem_was_edited",
       );
 
-  late final _roomEventItemWasEdited =
-      _roomEventItemWasEditedPtr.asFunction<int Function(int)>();
-  late final _roomVirtualItemEventTypePtr = _lookup<
-    ffi.NativeFunction<_RoomVirtualItemEventTypeReturn Function(ffi.IntPtr)>
-  >("__RoomVirtualItem_event_type");
+  late final _timelineEventItemWasEdited =
+      _timelineEventItemWasEditedPtr.asFunction<int Function(int)>();
+  late final _timelineVirtualItemEventTypePtr = _lookup<
+    ffi.NativeFunction<_TimelineVirtualItemEventTypeReturn Function(ffi.IntPtr)>
+  >("__TimelineVirtualItem_event_type");
 
-  late final _roomVirtualItemEventType =
-      _roomVirtualItemEventTypePtr
-          .asFunction<_RoomVirtualItemEventTypeReturn Function(int)>();
-  late final _roomVirtualItemDescriptionPtr = _lookup<
-    ffi.NativeFunction<_RoomVirtualItemDescriptionReturn Function(ffi.IntPtr)>
-  >("__RoomVirtualItem_description");
+  late final _timelineVirtualItemEventType =
+      _timelineVirtualItemEventTypePtr
+          .asFunction<_TimelineVirtualItemEventTypeReturn Function(int)>();
+  late final _timelineVirtualItemDescriptionPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineVirtualItemDescriptionReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineVirtualItem_description");
 
-  late final _roomVirtualItemDescription =
-      _roomVirtualItemDescriptionPtr
-          .asFunction<_RoomVirtualItemDescriptionReturn Function(int)>();
-  late final _roomMessageIsVirtualPtr =
+  late final _timelineVirtualItemDescription =
+      _timelineVirtualItemDescriptionPtr
+          .asFunction<_TimelineVirtualItemDescriptionReturn Function(int)>();
+  late final _timelineItemIsVirtualPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__RoomMessage_is_virtual",
+        "__TimelineItem_is_virtual",
       );
 
-  late final _roomMessageIsVirtual =
-      _roomMessageIsVirtualPtr.asFunction<int Function(int)>();
-  late final _roomMessageUniqueIdPtr = _lookup<
-    ffi.NativeFunction<_RoomMessageUniqueIdReturn Function(ffi.IntPtr)>
-  >("__RoomMessage_unique_id");
+  late final _timelineItemIsVirtual =
+      _timelineItemIsVirtualPtr.asFunction<int Function(int)>();
+  late final _timelineItemUniqueIdPtr = _lookup<
+    ffi.NativeFunction<_TimelineItemUniqueIdReturn Function(ffi.IntPtr)>
+  >("__TimelineItem_unique_id");
 
-  late final _roomMessageUniqueId =
-      _roomMessageUniqueIdPtr
-          .asFunction<_RoomMessageUniqueIdReturn Function(int)>();
-  late final _roomMessageEventItemPtr = _lookup<
-    ffi.NativeFunction<_RoomMessageEventItemReturn Function(ffi.IntPtr)>
-  >("__RoomMessage_event_item");
+  late final _timelineItemUniqueId =
+      _timelineItemUniqueIdPtr
+          .asFunction<_TimelineItemUniqueIdReturn Function(int)>();
+  late final _timelineItemEventItemPtr = _lookup<
+    ffi.NativeFunction<_TimelineItemEventItemReturn Function(ffi.IntPtr)>
+  >("__TimelineItem_event_item");
 
-  late final _roomMessageEventItem =
-      _roomMessageEventItemPtr
-          .asFunction<_RoomMessageEventItemReturn Function(int)>();
-  late final _roomMessageVirtualItemPtr = _lookup<
-    ffi.NativeFunction<_RoomMessageVirtualItemReturn Function(ffi.IntPtr)>
-  >("__RoomMessage_virtual_item");
+  late final _timelineItemEventItem =
+      _timelineItemEventItemPtr
+          .asFunction<_TimelineItemEventItemReturn Function(int)>();
+  late final _timelineItemVirtualItemPtr = _lookup<
+    ffi.NativeFunction<_TimelineItemVirtualItemReturn Function(ffi.IntPtr)>
+  >("__TimelineItem_virtual_item");
 
-  late final _roomMessageVirtualItem =
-      _roomMessageVirtualItemPtr
-          .asFunction<_RoomMessageVirtualItemReturn Function(int)>();
+  late final _timelineItemVirtualItem =
+      _timelineItemVirtualItemPtr
+          .asFunction<_TimelineItemVirtualItemReturn Function(int)>();
   late final _msgContentBodyPtr =
       _lookup<ffi.NativeFunction<_MsgContentBodyReturn Function(ffi.IntPtr)>>(
         "__MsgContent_body",
@@ -19703,34 +19705,34 @@ class Api {
 
   late final _reactionRecordSentByMe =
       _reactionRecordSentByMePtr.asFunction<int Function(int)>();
-  late final _roomMessageDiffActionPtr = _lookup<
-    ffi.NativeFunction<_RoomMessageDiffActionReturn Function(ffi.IntPtr)>
-  >("__RoomMessageDiff_action");
+  late final _timelineItemDiffActionPtr = _lookup<
+    ffi.NativeFunction<_TimelineItemDiffActionReturn Function(ffi.IntPtr)>
+  >("__TimelineItemDiff_action");
 
-  late final _roomMessageDiffAction =
-      _roomMessageDiffActionPtr
-          .asFunction<_RoomMessageDiffActionReturn Function(int)>();
-  late final _roomMessageDiffValuesPtr = _lookup<
-    ffi.NativeFunction<_RoomMessageDiffValuesReturn Function(ffi.IntPtr)>
-  >("__RoomMessageDiff_values");
+  late final _timelineItemDiffAction =
+      _timelineItemDiffActionPtr
+          .asFunction<_TimelineItemDiffActionReturn Function(int)>();
+  late final _timelineItemDiffValuesPtr = _lookup<
+    ffi.NativeFunction<_TimelineItemDiffValuesReturn Function(ffi.IntPtr)>
+  >("__TimelineItemDiff_values");
 
-  late final _roomMessageDiffValues =
-      _roomMessageDiffValuesPtr
-          .asFunction<_RoomMessageDiffValuesReturn Function(int)>();
-  late final _roomMessageDiffIndexPtr = _lookup<
-    ffi.NativeFunction<_RoomMessageDiffIndexReturn Function(ffi.IntPtr)>
-  >("__RoomMessageDiff_index");
+  late final _timelineItemDiffValues =
+      _timelineItemDiffValuesPtr
+          .asFunction<_TimelineItemDiffValuesReturn Function(int)>();
+  late final _timelineItemDiffIndexPtr = _lookup<
+    ffi.NativeFunction<_TimelineItemDiffIndexReturn Function(ffi.IntPtr)>
+  >("__TimelineItemDiff_index");
 
-  late final _roomMessageDiffIndex =
-      _roomMessageDiffIndexPtr
-          .asFunction<_RoomMessageDiffIndexReturn Function(int)>();
-  late final _roomMessageDiffValuePtr = _lookup<
-    ffi.NativeFunction<_RoomMessageDiffValueReturn Function(ffi.IntPtr)>
-  >("__RoomMessageDiff_value");
+  late final _timelineItemDiffIndex =
+      _timelineItemDiffIndexPtr
+          .asFunction<_TimelineItemDiffIndexReturn Function(int)>();
+  late final _timelineItemDiffValuePtr = _lookup<
+    ffi.NativeFunction<_TimelineItemDiffValueReturn Function(ffi.IntPtr)>
+  >("__TimelineItemDiff_value");
 
-  late final _roomMessageDiffValue =
-      _roomMessageDiffValuePtr
-          .asFunction<_RoomMessageDiffValueReturn Function(int)>();
+  late final _timelineItemDiffValue =
+      _timelineItemDiffValuePtr
+          .asFunction<_TimelineItemDiffValueReturn Function(int)>();
   late final _joinRuleBuilderJoinRulePtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -32800,60 +32802,6 @@ class Api {
   late final _ffiListReactionRecordInsert =
       _ffiListReactionRecordInsertPtr
           .asFunction<void Function(int, int, int)>();
-  FfiListRoomMessage createFfiListRoomMessage() {
-    final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
-      _ffiListRoomMessageCreate(),
-    );
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoomMessage");
-    return FfiListRoomMessage._(this, list_box);
-  }
-
-  late final _ffiListRoomMessageCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-        "__FfiListRoomMessageCreate",
-      );
-
-  late final _ffiListRoomMessageCreate =
-      _ffiListRoomMessageCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListRoomMessageLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-        "__FfiListRoomMessageLen",
-      );
-
-  late final _ffiListRoomMessageLen =
-      _ffiListRoomMessageLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListRoomMessageElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-        "__FfiListRoomMessageElementAt",
-      );
-
-  late final _ffiListRoomMessageElementAt =
-      _ffiListRoomMessageElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListRoomMessageRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-        "__FfiListRoomMessageRemove",
-      );
-
-  late final _ffiListRoomMessageRemove =
-      _ffiListRoomMessageRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListRoomMessageAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-        "__FfiListRoomMessageAdd",
-      );
-
-  late final _ffiListRoomMessageAdd =
-      _ffiListRoomMessageAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListRoomMessageInsertPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
-  >("__FfiListRoomMessageInsert");
-
-  late final _ffiListRoomMessageInsert =
-      _ffiListRoomMessageInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListRsvp createFfiListRsvp() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListRsvpCreate(),
@@ -33400,6 +33348,60 @@ class Api {
 
   late final _ffiListTaskListInsert =
       _ffiListTaskListInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListTimelineItem createFfiListTimelineItem() {
+    final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
+      _ffiListTimelineItemCreate(),
+    );
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListTimelineItem");
+    return FfiListTimelineItem._(this, list_box);
+  }
+
+  late final _ffiListTimelineItemCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+        "__FfiListTimelineItemCreate",
+      );
+
+  late final _ffiListTimelineItemCreate =
+      _ffiListTimelineItemCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListTimelineItemLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+        "__FfiListTimelineItemLen",
+      );
+
+  late final _ffiListTimelineItemLen =
+      _ffiListTimelineItemLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListTimelineItemElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__FfiListTimelineItemElementAt",
+      );
+
+  late final _ffiListTimelineItemElementAt =
+      _ffiListTimelineItemElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListTimelineItemRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__FfiListTimelineItemRemove",
+      );
+
+  late final _ffiListTimelineItemRemove =
+      _ffiListTimelineItemRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListTimelineItemAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+        "__FfiListTimelineItemAdd",
+      );
+
+  late final _ffiListTimelineItemAdd =
+      _ffiListTimelineItemAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListTimelineItemInsertPtr = _lookup<
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListTimelineItemInsert");
+
+  late final _ffiListTimelineItemInsert =
+      _ffiListTimelineItemInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListUrlPreview createFfiListUrlPreview() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListUrlPreviewCreate(),
@@ -39914,17 +39916,17 @@ class EventSendState {
 }
 
 /// A room Message metadata and content
-class RoomEventItem {
+class TimelineEventItem {
   final Api _api;
   final _Box _box;
 
-  RoomEventItem._(this._api, this._box);
+  TimelineEventItem._(this._api, this._box);
 
   /// The User, who sent that event
   String sender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemSender(tmp0);
+    final tmp1 = _api._timelineEventItemSender(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -39953,7 +39955,7 @@ class RoomEventItem {
   EventSendState? sendState() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemSendState(tmp0);
+    final tmp1 = _api._timelineEventItemSendState(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -39970,7 +39972,7 @@ class RoomEventItem {
   int originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemOriginServerTs(tmp0);
+    final tmp1 = _api._timelineEventItemOriginServerTs(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3;
     return tmp2;
@@ -39980,7 +39982,7 @@ class RoomEventItem {
   String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemEventType(tmp0);
+    final tmp1 = _api._timelineEventItemEventType(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40008,7 +40010,7 @@ class RoomEventItem {
   String? eventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemEventId(tmp0);
+    final tmp1 = _api._timelineEventItemEventId(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40040,7 +40042,7 @@ class RoomEventItem {
   String? msgType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemMsgType(tmp0);
+    final tmp1 = _api._timelineEventItemMsgType(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40072,7 +40074,7 @@ class RoomEventItem {
   MsgContent? msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemMsgContent(tmp0);
+    final tmp1 = _api._timelineEventItemMsgContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -40089,7 +40091,7 @@ class RoomEventItem {
   String? inReplyTo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemInReplyTo(tmp0);
+    final tmp1 = _api._timelineEventItemInReplyTo(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40121,7 +40123,7 @@ class RoomEventItem {
   FfiListFfiString readUsers() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemReadUsers(tmp0);
+    final tmp1 = _api._timelineEventItemReadUsers(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
@@ -40147,7 +40149,7 @@ class RoomEventItem {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._roomEventItemReceiptTs(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._timelineEventItemReceiptTs(tmp0, tmp2, tmp3, tmp4);
     final tmp7 = tmp5.arg0;
     final tmp8 = tmp5.arg1;
     if (tmp7 == 0) {
@@ -40161,7 +40163,7 @@ class RoomEventItem {
   FfiListFfiString reactionKeys() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemReactionKeys(tmp0);
+    final tmp1 = _api._timelineEventItemReactionKeys(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
@@ -40187,7 +40189,7 @@ class RoomEventItem {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._roomEventItemReactionRecords(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._timelineEventItemReactionRecords(tmp0, tmp2, tmp3, tmp4);
     final tmp7 = tmp5.arg0;
     final tmp8 = tmp5.arg1;
     if (tmp7 == 0) {
@@ -40205,7 +40207,7 @@ class RoomEventItem {
   bool isEditable() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemIsEditable(tmp0);
+    final tmp1 = _api._timelineEventItemIsEditable(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
@@ -40215,7 +40217,7 @@ class RoomEventItem {
   bool wasEdited() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemWasEdited(tmp0);
+    final tmp1 = _api._timelineEventItemWasEdited(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
@@ -40227,17 +40229,17 @@ class RoomEventItem {
   }
 }
 
-class RoomVirtualItem {
+class TimelineVirtualItem {
   final Api _api;
   final _Box _box;
 
-  RoomVirtualItem._(this._api, this._box);
+  TimelineVirtualItem._(this._api, this._box);
 
   /// DayDivider or ReadMarker
   String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomVirtualItemEventType(tmp0);
+    final tmp1 = _api._timelineVirtualItemEventType(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40265,7 +40267,7 @@ class RoomVirtualItem {
   String? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomVirtualItemDescription(tmp0);
+    final tmp1 = _api._timelineVirtualItemDescription(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40300,17 +40302,17 @@ class RoomVirtualItem {
 }
 
 /// A room Message metadata and content
-class RoomMessage {
+class TimelineItem {
   final Api _api;
   final _Box _box;
 
-  RoomMessage._(this._api, this._box);
+  TimelineItem._(this._api, this._box);
 
   /// whether it is virtual item, like read marker
   bool isVirtual() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageIsVirtual(tmp0);
+    final tmp1 = _api._timelineItemIsVirtual(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
@@ -40320,7 +40322,7 @@ class RoomMessage {
   String uniqueId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageUniqueId(tmp0);
+    final tmp1 = _api._timelineItemUniqueId(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40345,36 +40347,36 @@ class RoomMessage {
   }
 
   /// valid only if is_virtual is false
-  RoomEventItem? eventItem() {
+  TimelineEventItem? eventItem() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageEventItem(tmp0);
+    final tmp1 = _api._timelineItemEventItem(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomEventItem");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineEventItem");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomEventItem._(_api, tmp4_1);
+    final tmp2 = TimelineEventItem._(_api, tmp4_1);
     return tmp2;
   }
 
   /// valid only if is_virtual is true
-  RoomVirtualItem? virtualItem() {
+  TimelineVirtualItem? virtualItem() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageVirtualItem(tmp0);
+    final tmp1 = _api._timelineItemVirtualItem(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomVirtualItem");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineVirtualItem");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomVirtualItem._(_api, tmp4_1);
+    final tmp2 = TimelineVirtualItem._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -41038,17 +41040,17 @@ class ReactionRecord {
   }
 }
 
-class RoomMessageDiff {
+class TimelineItemDiff {
   final Api _api;
   final _Box _box;
 
-  RoomMessageDiff._(this._api, this._box);
+  TimelineItemDiff._(this._api, this._box);
 
   /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
   String action() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageDiffAction(tmp0);
+    final tmp1 = _api._timelineItemDiffAction(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -41073,19 +41075,19 @@ class RoomMessageDiff {
   }
 
   /// for Append/Reset
-  FfiListRoomMessage? values() {
+  FfiListTimelineItem? values() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageDiffValues(tmp0);
+    final tmp1 = _api._timelineItemDiffValues(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListRoomMessage");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListTimelineItem");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp5 = FfiListRoomMessage._(_api, tmp4_1);
+    final tmp5 = FfiListTimelineItem._(_api, tmp4_1);
     final tmp2 = tmp5;
     return tmp2;
   }
@@ -41094,7 +41096,7 @@ class RoomMessageDiff {
   int? index() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageDiffIndex(tmp0);
+    final tmp1 = _api._timelineItemDiffIndex(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -41105,19 +41107,19 @@ class RoomMessageDiff {
   }
 
   /// for Insert/Set/PushBack/PushFront
-  RoomMessage? value() {
+  TimelineItem? value() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageDiffValue(tmp0);
+    final tmp1 = _api._timelineItemDiffValue(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineItem");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomMessage._(_api, tmp4_1);
+    final tmp2 = TimelineItem._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -42569,7 +42571,7 @@ class TimelineStream {
   TimelineStream._(this._api, this._box);
 
   /// Fires whenever new diff found
-  Stream<RoomMessageDiff> messagesStream() {
+  Stream<TimelineItemDiff> messagesStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._timelineStreamMessagesStream(tmp0);
@@ -42589,7 +42591,7 @@ class TimelineStream {
   }
 
   /// get the specific message identified by the event_id
-  Future<RoomMessage> getMessage(String eventId) {
+  Future<TimelineItem> getMessage(String eventId) {
     final tmp1 = eventId;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43066,7 +43068,7 @@ class Convo {
   }
 
   /// The last message sent to the room
-  RoomMessage? latestMessage() {
+  TimelineItem? latestMessage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._convoLatestMessage(tmp0);
@@ -43076,9 +43078,9 @@ class Convo {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineItem");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomMessage._(_api, tmp4_1);
+    final tmp2 = TimelineItem._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -60274,7 +60276,7 @@ class _EventSendStateEventIdReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _RoomEventItemSenderReturn extends ffi.Struct {
+class _TimelineEventItemSenderReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60283,14 +60285,14 @@ class _RoomEventItemSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemSendStateReturn extends ffi.Struct {
+class _TimelineEventItemSendStateReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _RoomEventItemEventTypeReturn extends ffi.Struct {
+class _TimelineEventItemEventTypeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60299,18 +60301,7 @@ class _RoomEventItemEventTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemEventIdReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _RoomEventItemMsgTypeReturn extends ffi.Struct {
+class _TimelineEventItemEventIdReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60321,14 +60312,7 @@ class _RoomEventItemMsgTypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemMsgContentReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-}
-
-class _RoomEventItemInReplyToReturn extends ffi.Struct {
+class _TimelineEventItemMsgTypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60339,21 +60323,39 @@ class _RoomEventItemInReplyToReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomEventItemReceiptTsReturn extends ffi.Struct {
+class _TimelineEventItemMsgContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemInReplyToReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _TimelineEventItemReceiptTsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _RoomEventItemReactionRecordsReturn extends ffi.Struct {
+class _TimelineEventItemReactionRecordsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _RoomVirtualItemEventTypeReturn extends ffi.Struct {
+class _TimelineVirtualItemEventTypeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60362,7 +60364,7 @@ class _RoomVirtualItemEventTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomVirtualItemDescriptionReturn extends ffi.Struct {
+class _TimelineVirtualItemDescriptionReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60373,7 +60375,7 @@ class _RoomVirtualItemDescriptionReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomMessageUniqueIdReturn extends ffi.Struct {
+class _TimelineItemUniqueIdReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60382,14 +60384,14 @@ class _RoomMessageUniqueIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageEventItemReturn extends ffi.Struct {
+class _TimelineItemEventItemReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _RoomMessageVirtualItemReturn extends ffi.Struct {
+class _TimelineItemVirtualItemReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60592,7 +60594,7 @@ class _MembershipChangeChangeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomMessageDiffActionReturn extends ffi.Struct {
+class _TimelineItemDiffActionReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60601,21 +60603,21 @@ class _RoomMessageDiffActionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageDiffValuesReturn extends ffi.Struct {
+class _TimelineItemDiffValuesReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _RoomMessageDiffIndexReturn extends ffi.Struct {
+class _TimelineItemDiffIndexReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.UintPtr()
   external int arg1;
 }
 
-class _RoomMessageDiffValueReturn extends ffi.Struct {
+class _TimelineItemDiffValueReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -68916,69 +68918,6 @@ class FfiListReactionRecord extends Iterable<ReactionRecord>
   }
 }
 
-class FfiListRoomMessage extends Iterable<RoomMessage>
-    implements CustomIterable<RoomMessage> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListRoomMessage._(this._api, this._box);
-
-  @override
-  Iterator<RoomMessage> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListRoomMessageLen(_box.borrow());
-  }
-
-  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  RoomMessage elementAt(int index) {
-    final address = _api._ffiListRoomMessageElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return RoomMessage._(_api, reference);
-  }
-
-  RoomMessage operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  RoomMessage remove(int index) {
-    final address = _api._ffiListRoomMessageRemove(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_RoomMessage",
-    );
-    reference._finalizer = _api._registerFinalizer(reference);
-    return RoomMessage._(_api, reference);
-  }
-
-  /// The inserted element is moved into the list and must not be used again
-  /// Although you can use the "elementAt" method to get a reference to the added element
-  void add(RoomMessage element) {
-    _api._ffiListRoomMessageAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  /// The inserted element is moved into the list and must not be used again
-  /// Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, RoomMessage element) {
-    _api._ffiListRoomMessageInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
 class FfiListRsvp extends Iterable<Rsvp> implements CustomIterable<Rsvp> {
   final Api _api;
   final _Box _box;
@@ -69625,6 +69564,73 @@ class FfiListTaskList extends Iterable<TaskList>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, TaskList element) {
     _api._ffiListTaskListInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListTimelineItem extends Iterable<TimelineItem>
+    implements CustomIterable<TimelineItem> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListTimelineItem._(this._api, this._box);
+
+  @override
+  Iterator<TimelineItem> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListTimelineItemLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  TimelineItem elementAt(int index) {
+    final address = _api._ffiListTimelineItemElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return TimelineItem._(_api, reference);
+  }
+
+  TimelineItem operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  TimelineItem remove(int index) {
+    final address = _api._ffiListTimelineItemRemove(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_TimelineItem",
+    );
+    reference._finalizer = _api._registerFinalizer(reference);
+    return TimelineItem._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(TimelineItem element) {
+    _api._ffiListTimelineItemAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, TimelineItem element) {
+    _api._ffiListTimelineItemInsert(
+      _box.borrow(),
+      index,
+      element._box.borrow(),
+    );
     element._box.move();
   }
 

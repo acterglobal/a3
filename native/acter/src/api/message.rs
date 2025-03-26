@@ -20,8 +20,8 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem, TimelineItemContent,
-    TimelineItemKind, VirtualTimelineItem,
+    MembershipChange, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -91,7 +91,7 @@ impl EventSendState {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Builder)]
 #[builder(derive(Debug))]
-pub struct RoomEventItem {
+pub struct TimelineEventItem {
     #[builder(default)]
     event_id: Option<OwnedEventId>,
     #[builder(default)]
@@ -118,9 +118,9 @@ pub struct RoomEventItem {
     edited: bool,
 }
 
-impl RoomEventItem {
+impl TimelineEventItem {
     pub(crate) fn new(event: &EventTimelineItem, my_id: OwnedUserId) -> Self {
-        let mut me = RoomEventItemBuilder::default();
+        let mut me = TimelineEventItemBuilder::default();
 
         me.event_id(event.event_id().map(ToOwned::to_owned))
             .txn_id(event.transaction_id().map(ToOwned::to_owned))
@@ -159,7 +159,7 @@ impl RoomEventItem {
             .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
 
         match event.content() {
-            TimelineItemContent::Message(msg) => {
+            SdkTimelineItemContent::Message(msg) => {
                 me.event_type("m.room.message".to_owned());
                 let msg_type = msg.msgtype();
                 me.msg_type(Some(msg_type.msgtype().to_string()));
@@ -180,20 +180,20 @@ impl RoomEventItem {
                 }
                 me.edited(msg.is_edited());
             }
-            TimelineItemContent::RedactedMessage => {
+            SdkTimelineItemContent::RedactedMessage => {
                 info!("Edit event applies to a redacted message");
                 me.event_type("m.room.redaction".to_string());
             }
-            TimelineItemContent::Sticker(s) => {
+            SdkTimelineItemContent::Sticker(s) => {
                 me.event_type("m.sticker".to_string());
                 // FIXME: proper sticker support needed
                 // me.msg_content(Some(MsgContent::from(s.content())));
             }
-            TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
+            SdkTimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn’t be decrypted");
                 me.event_type("m.room.encrypted".to_string());
             }
-            TimelineItemContent::MembershipChange(m) => {
+            SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
                 me.event_type("membershipChange".to_string()); // some of m.room.member
                 let msg_content = match m.content() {
@@ -207,23 +207,23 @@ impl RoomEventItem {
                 };
                 me.msg_content(Some(msg_content));
             }
-            TimelineItemContent::ProfileChange(p) => {
+            SdkTimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event");
                 me.event_type("profileChange".to_string()); // some of m.room.member
                 let msg_content = MsgContent::from(p);
                 me.msg_content(Some(msg_content));
             }
 
-            TimelineItemContent::OtherState(s) => {
+            SdkTimelineItemContent::OtherState(s) => {
                 info!("Edit event applies to a state event");
                 me.handle_other_state(s);
             }
 
-            TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
+            SdkTimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn’t be parsed");
                 me.event_type(event_type.to_string());
             }
-            TimelineItemContent::FailedToParseState {
+            SdkTimelineItemContent::FailedToParseState {
                 event_type,
                 state_key,
                 error,
@@ -231,7 +231,7 @@ impl RoomEventItem {
                 info!("Edit event applies to state that couldn’t be parsed");
                 me.event_type(event_type.to_string());
             }
-            TimelineItemContent::Poll(s) => {
+            SdkTimelineItemContent::Poll(s) => {
                 info!("Edit event applies to a poll state");
                 me.event_type("m.poll.start".to_string());
                 if let Some(fallback) = s.fallback_text() {
@@ -239,10 +239,10 @@ impl RoomEventItem {
                     me.msg_content(Some(msg_content));
                 }
             }
-            TimelineItemContent::CallInvite => {
+            SdkTimelineItemContent::CallInvite => {
                 me.event_type("m.call_invite".to_owned());
             }
-            TimelineItemContent::CallNotify => {
+            SdkTimelineItemContent::CallNotify => {
                 me.event_type("m.call_notify".to_owned());
             }
         };
@@ -328,7 +328,7 @@ impl RoomEventItem {
     }
 }
 
-impl RoomEventItemBuilder {
+impl TimelineEventItemBuilder {
     fn handle_other_state(&mut self, state: &OtherState) {
         match state.content() {
             AnyOtherFullStateEventContent::PolicyRuleRoom(c) => {
@@ -1158,13 +1158,13 @@ impl RoomEventItemBuilder {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RoomVirtualItem {
+pub struct TimelineVirtualItem {
     event_type: String,
     description: Option<String>,
 }
 
-impl From<&VirtualTimelineItem> for RoomVirtualItem {
-    fn from(value: &VirtualTimelineItem) -> RoomVirtualItem {
+impl From<&VirtualTimelineItem> for TimelineVirtualItem {
+    fn from(value: &VirtualTimelineItem) -> TimelineVirtualItem {
         match value {
             VirtualTimelineItem::DateDivider(ts) => {
                 let description = if let Some(st) = ts.to_system_time() {
@@ -1173,12 +1173,12 @@ impl From<&VirtualTimelineItem> for RoomVirtualItem {
                 } else {
                     None
                 };
-                RoomVirtualItem {
+                TimelineVirtualItem {
                     event_type: "DayDivider".to_owned(),
                     description,
                 }
             }
-            VirtualTimelineItem::ReadMarker => RoomVirtualItem {
+            VirtualTimelineItem::ReadMarker => TimelineVirtualItem {
                 event_type: "ReadMarker".to_owned(),
                 description: None,
             },
@@ -1186,7 +1186,7 @@ impl From<&VirtualTimelineItem> for RoomVirtualItem {
     }
 }
 
-impl RoomVirtualItem {
+impl TimelineVirtualItem {
     pub fn event_type(&self) -> String {
         self.event_type.clone()
     }
@@ -1197,21 +1197,21 @@ impl RoomVirtualItem {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-enum RoomMessageContent {
-    Event(RoomEventItem),
-    Virtual(RoomVirtualItem),
+enum TimelineItemContent {
+    Event(TimelineEventItem),
+    Virtual(TimelineVirtualItem),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RoomMessage {
-    content: RoomMessageContent,
+pub struct TimelineItem {
+    content: TimelineItemContent,
     unique_id: String,
 }
 
-impl RoomMessage {
+impl TimelineItem {
     pub(crate) fn new_event_item(event_item: &EventTimelineItem, my_id: OwnedUserId) -> Self {
-        RoomMessage {
-            content: RoomMessageContent::Event(RoomEventItem::new(event_item, my_id)),
+        TimelineItem {
+            content: TimelineItemContent::Event(TimelineEventItem::new(event_item, my_id)),
             unique_id: match event_item.identifier() {
                 TimelineEventItemId::EventId(e) => e.to_string(),
                 TimelineEventItemId::TransactionId(t) => t.to_string(),
@@ -1220,15 +1220,15 @@ impl RoomMessage {
     }
 
     pub fn is_virtual(&self) -> bool {
-        if let RoomMessageContent::Virtual(content) = &self.content {
+        if let TimelineItemContent::Virtual(content) = &self.content {
             true
         } else {
             false
         }
     }
 
-    pub fn event_item(&self) -> Option<RoomEventItem> {
-        if let RoomMessageContent::Event(content) = &self.content {
+    pub fn event_item(&self) -> Option<TimelineEventItem> {
+        if let TimelineItemContent::Event(content) = &self.content {
             Some(content.clone())
         } else {
             None
@@ -1236,7 +1236,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn event_id(&self) -> Option<String> {
-        if let RoomMessageContent::Event(content) = &self.content {
+        if let TimelineItemContent::Event(content) = &self.content {
             content.event_id()
         } else {
             None
@@ -1249,21 +1249,21 @@ impl RoomMessage {
 
     pub(crate) fn event_type(&self) -> String {
         match &self.content {
-            RoomMessageContent::Event(content) => content.event_type(),
-            RoomMessageContent::Virtual(content) => content.event_type(),
+            TimelineItemContent::Event(content) => content.event_type(),
+            TimelineItemContent::Virtual(content) => content.event_type(),
         }
     }
 
     pub(crate) fn origin_server_ts(&self) -> Option<u64> {
-        if let RoomMessageContent::Event(content) = &self.content {
+        if let TimelineItemContent::Event(content) = &self.content {
             Some(content.origin_server_ts())
         } else {
             None
         }
     }
 
-    pub fn virtual_item(&self) -> Option<RoomVirtualItem> {
-        if let RoomMessageContent::Virtual(content) = &self.content {
+    pub fn virtual_item(&self) -> Option<TimelineVirtualItem> {
+        if let TimelineItemContent::Virtual(content) = &self.content {
             Some(content.clone())
         } else {
             None
@@ -1271,13 +1271,13 @@ impl RoomMessage {
     }
 }
 
-impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
-    fn from(value: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
+impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
+    fn from(value: (Arc<SdkTimelineItem>, OwnedUserId)) -> TimelineItem {
         let (item, my_id) = value;
         match item.kind() {
-            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(event_item, my_id),
-            TimelineItemKind::Virtual(virtual_item) => RoomMessage {
-                content: RoomMessageContent::Virtual(RoomVirtualItem::from(virtual_item)),
+            TimelineItemKind::Event(event_item) => TimelineItem::new_event_item(event_item, my_id),
+            TimelineItemKind::Virtual(virtual_item) => TimelineItem {
+                content: TimelineItemContent::Virtual(TimelineVirtualItem::from(virtual_item)),
                 unique_id: item.unique_id().0.clone(),
             },
         }

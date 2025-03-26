@@ -215,7 +215,7 @@ class _SubtitleWidget extends ConsumerWidget {
 
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
 
-    RoomEventItem? eventItem = latestMessage?.eventItem();
+    TimelineEventItem? eventItem = latestMessage?.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -510,7 +510,7 @@ class _TrailingWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
-    RoomEventItem? eventItem = latestMessage?.eventItem();
+    TimelineEventItem? eventItem = latestMessage?.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }

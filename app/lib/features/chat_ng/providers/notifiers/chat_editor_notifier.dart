@@ -1,6 +1,6 @@
 import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState> {
@@ -12,14 +12,14 @@ class ChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState> {
         selectedMsgItem: null,
         actionType: MessageAction.none,
       );
-  void setReplyToMessage(RoomEventItem msgItem) {
+  void setReplyToMessage(TimelineEventItem msgItem) {
     state = state.copyWith(
       selectedMsgItem: msgItem,
       actionType: MessageAction.reply,
     );
   }
 
-  void setEditMessage(RoomEventItem msgItem) {
+  void setEditMessage(TimelineEventItem msgItem) {
     state = state.copyWith(
       selectedMsgItem: msgItem,
       actionType: MessageAction.edit,

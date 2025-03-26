@@ -46,7 +46,7 @@ use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
 use urlencoding::encode;
 
-use crate::{api::api::FfiBuffer, Client, MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, Client, MsgContent, RUNTIME};
 
 pub struct Pusher {
     inner: RumaPusher,

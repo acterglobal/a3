@@ -52,7 +52,7 @@ void main() {
   group('Reactions widgets test', () {
     group('tab initialization tests', () {
       testWidgets('creates correct number of tabs', (tester) async {
-        final mockItem = MockRoomEventItem(mockSender: 'user-1');
+        final mockItem = MockTimelineEventItem(mockSender: 'user-1');
         final reactionsNotifier = StateController<List<ReactionItem>>([
           ('👍', [MockReactionRecord(createMockUserId('user-1'))]),
           (
@@ -95,7 +95,7 @@ void main() {
     });
 
     group('reaction tabs update tests', () {
-      final mockEvent = MockRoomEventItem(mockSender: 'user-1');
+      final mockEvent = MockTimelineEventItem(mockSender: 'user-1');
       final reactionsNotifier = StateController<List<ReactionItem>>([
         ('👍', [MockReactionRecord(createMockUserId('user-1'))]),
       ]);
@@ -198,7 +198,7 @@ void main() {
 
     group('user list tests', () {
       testWidgets('displays correct users count in each tab', (tester) async {
-        final mockEventItem = MockRoomEventItem(mockSender: 'user-1');
+        final mockEventItem = MockTimelineEventItem(mockSender: 'user-1');
         final reactions = [
           (
             '👍',
