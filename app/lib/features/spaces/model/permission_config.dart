@@ -1,7 +1,7 @@
 enum PermissionLevel {
   admin(100),
   moderator(50),
-  member(0);
+  everyone(0);
 
   final int value;
   const PermissionLevel(this.value);
@@ -43,14 +43,14 @@ const storyPermissions = [
   PermissionConfig(
     key: 'story-post',
     displayText: 'Who can post Stories',
-    permissionLevel: PermissionLevel.admin,
+    permissionLevel: PermissionLevel.everyone,
   ),
 ];
 const pinPermissions = [
   PermissionConfig(
     key: 'pin-post',
     displayText: 'Who can create Pins',
-    permissionLevel: PermissionLevel.admin,
+    permissionLevel: PermissionLevel.moderator,
   ),
 ];
 
@@ -58,12 +58,12 @@ const calendarPermissions = [
   PermissionConfig(
     key: 'event-post',
     displayText: 'Who can create Events',
-    permissionLevel: PermissionLevel.admin,
+    permissionLevel: PermissionLevel.moderator,
   ),
   PermissionConfig(
     key: 'event-rsvp',
     displayText: 'Who can RSVP to Events',
-    permissionLevel: PermissionLevel.admin,
+    permissionLevel: PermissionLevel.everyone,
   ),
 ];
 
@@ -76,7 +76,7 @@ const taskPermissions = [
   PermissionConfig(
     key: 'task-item-post',
     displayText: 'Who can add Task Items',
-    permissionLevel: PermissionLevel.admin,
+    permissionLevel: PermissionLevel.moderator,
   ),
 ];
 
@@ -84,7 +84,7 @@ const commentPermissions = [
   PermissionConfig(
     key: 'comment-post',
     displayText: 'Who can post Comments',
-    permissionLevel: PermissionLevel.member,
+    permissionLevel: PermissionLevel.everyone,
   ),
 ];
 
@@ -92,6 +92,6 @@ final attachmentPermissions = [
   PermissionConfig(
     key: 'attachment-post',
     displayText: 'Who can attach files',
-    permissionLevel: PermissionLevel.member,
+    permissionLevel: PermissionLevel.everyone,
   ),
 ];

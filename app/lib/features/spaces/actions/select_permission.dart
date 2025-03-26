@@ -62,8 +62,8 @@ class SelectPermission extends StatelessWidget {
   IconData getIconBasedOnPermissionLevel(PermissionLevel level) {
     return switch (level) {
       PermissionLevel.admin => Icons.admin_panel_settings,
-      PermissionLevel.moderator => Icons.groups,
-      PermissionLevel.member => Icons.person,
+      PermissionLevel.moderator => Icons.person,
+      PermissionLevel.everyone => Icons.group,
     };
   }
 }
