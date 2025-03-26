@@ -20,7 +20,7 @@ class InvitesPage extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    final invitations = ref.watch(invitationListProvider);
+    final invitations = ref.watch(invitationListProvider).valueOrNull ?? [];
     if (invitations.isEmpty) {
       return Center(
         heightFactor: 1.5,
