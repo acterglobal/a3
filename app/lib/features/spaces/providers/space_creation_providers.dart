@@ -13,7 +13,7 @@ final selectedJoinRuleProvider = StateProvider<RoomJoinRule?>(
 final createDefaultChatProvider = StateProvider<bool>((ref) => false);
 
 // create default chat provider
-final showSpaceCreationConfigurationProvider = StateProvider.autoDispose<bool>(
+final showSpaceCreationConfigurationProvider = StateProvider<bool>(
   (ref) => false,
 );
 
