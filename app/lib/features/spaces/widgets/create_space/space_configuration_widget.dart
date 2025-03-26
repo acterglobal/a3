@@ -24,6 +24,7 @@ class _SpaceConfigurationWidgetState
     extends ConsumerState<SpaceConfigurationWidget> {
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -33,14 +34,14 @@ class _SpaceConfigurationWidgetState
                   .update((state) => false),
           icon: const Icon(Atlas.arrow_left),
         ),
-        title: const Text('Configure Space'),
+        title: Text(lang.configureSpace),
         centerTitle: true,
       ),
-      body: buildBody(),
+      body: buildBody(lang),
     );
   }
 
-  Widget buildBody() {
+  Widget buildBody(L10n lang) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -49,7 +50,7 @@ class _SpaceConfigurationWidgetState
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDefaultChatField(),
+            _buildDefaultChatField(lang),
             const SizedBox(height: 24),
             _buildParentSpace(),
             const SizedBox(height: 24),
@@ -62,7 +63,7 @@ class _SpaceConfigurationWidgetState
     );
   }
 
-  Widget _buildDefaultChatField() {
+  Widget _buildDefaultChatField(L10n lang) {
     final textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap:
@@ -74,11 +75,8 @@ class _SpaceConfigurationWidgetState
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Default Chat', style: textTheme.bodyMedium),
-              Text(
-                'Configure default chat for this space.',
-                style: textTheme.labelSmall,
-              ),
+              Text(lang.defaultChat, style: textTheme.bodyMedium),
+              Text(lang.defaultChatDes, style: textTheme.labelSmall),
               const SizedBox(height: 8),
             ],
           ),
@@ -105,10 +103,7 @@ class _SpaceConfigurationWidgetState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(lang.parentSpace, style: textTheme.bodyMedium),
-        Text(
-          'Select space which you want to make as parent of this space.',
-          style: textTheme.labelSmall,
-        ),
+        Text(lang.parentSpaceDes, style: textTheme.labelSmall),
         const SizedBox(height: 8),
         SelectSpaceFormField(
           canCheck: (m) => m?.canString('CanLinkSpaces') == true,

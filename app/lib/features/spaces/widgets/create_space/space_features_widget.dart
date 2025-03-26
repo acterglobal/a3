@@ -2,6 +2,7 @@ import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/spaces/actions/select_permission.dart';
 import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,47 +19,45 @@ class SpaceFeaturesWidget extends ConsumerStatefulWidget {
 class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Space Features', style: textTheme.bodyMedium),
-        Text(
-          'Customize your experience by turning on the features that matter most to you.',
-          style: textTheme.labelSmall,
-        ),
+        Text(lang.spaceFeatures, style: textTheme.bodyMedium),
+        Text(lang.spaceFeaturesDes, style: textTheme.labelSmall),
         const SizedBox(height: 8),
         _buildFeatureActivation(
           SpaceFeature.boosts,
           PhosphorIcons.rocketLaunch(),
-          'Boost',
-          'Boost updates important to your space members',
+          lang.boosts,
+          lang.boostsDes,
         ),
         _buildFeatureActivation(
           SpaceFeature.stories,
           PhosphorIcons.slideshow(),
-          'Story',
-          'Socialize updates with your space members',
+          lang.stories,
+          lang.storeisDes,
         ),
         _buildFeatureActivation(
           SpaceFeature.pins,
           Atlas.pin,
-          'Pin',
-          'Pin important links and data in your space',
+          lang.pins,
+          lang.pinsDes,
         ),
         _buildFeatureActivation(
           SpaceFeature.events,
           Atlas.calendar,
-          'Calendar',
-          'Manage events in your space',
+          lang.events,
+          lang.eventsDes,
         ),
         _buildFeatureActivation(
           SpaceFeature.tasks,
           Atlas.list,
-          'Task',
-          'Manage tasks in your space',
+          lang.tasks,
+          lang.tasksDes,
         ),
       ],
     );

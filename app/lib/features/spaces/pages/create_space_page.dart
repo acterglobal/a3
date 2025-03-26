@@ -203,13 +203,14 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
   }
 
   Widget _buildSpaceCreationConfigurationButton() {
+    final lang = L10n.of(context);
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
         leading: const Icon(Atlas.gear),
-        title: const Text('Configure Space'),
+        title: Text(lang.configureSpace),
         subtitle: Text(
-          'Space visibility, Default chat, Feature activation and Permission management',
+          lang.configureSpaceDes,
           style: Theme.of(context).textTheme.labelSmall,
         ),
         trailing: const Icon(Icons.arrow_forward_ios),
