@@ -61,7 +61,7 @@ const calendarPermissions = [
     permissionLevel: PermissionLevel.admin,
   ),
   PermissionConfig(
-    key: 'rsvp',
+    key: 'event-rsvp',
     displayText: 'Who can RSVP to Events',
     permissionLevel: PermissionLevel.admin,
   ),

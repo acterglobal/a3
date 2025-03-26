@@ -8,6 +8,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';
+import 'package:acter/features/spaces/model/permission_config.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -120,18 +121,17 @@ Future<void> applySpaceFeatures(
       for (final entry in featureStates.entries) {
         final feature = entry.key;
         final state = entry.value;
+
         if (state.isActivated) {
           EasyLoading.show(status: lang.changingSettingOf(feature.name));
+
           //Activate the feature
           final builder = appSettings.setActivatedBuilder(feature, true);
           await space.updateAppSettings(builder);
+
           //Set the power level based on the permission level
-          final levelKey = getKeyFromFeatureName(feature, powerLevels);
-          await space.updateFeaturePowerLevels(
-            levelKey,
-            state.permissions.first.permissionLevel.value,
-          );
-          await Future.delayed(const Duration(seconds: 2));
+          await setPowerLevel(space, powerLevels, state.permissions);
+
           EasyLoading.dismiss();
         }
       }
@@ -146,15 +146,65 @@ Future<void> applySpaceFeatures(
   }
 }
 
-String getKeyFromFeatureName(
-  SpaceFeature featureName,
+Future<void> setPowerLevel(
+  Space space,
   RoomPowerLevels powerLevels,
+  List<PermissionConfig> permissions,
+) async {
+  for (final permissionEntry in permissions) {
+    PowerLevelKeyAndValue? powerLevelKeyAndValue = getPowerLevelKeyAndValue(
+      powerLevels,
+      permissionEntry,
+    );
+    if (powerLevelKeyAndValue != null) {
+      await space.updateFeaturePowerLevels(
+        powerLevelKeyAndValue.key,
+        powerLevelKeyAndValue.value,
+      );
+    }
+  }
+}
+
+class PowerLevelKeyAndValue {
+  final String key;
+  final int value;
+
+  const PowerLevelKeyAndValue({required this.key, required this.value});
+}
+
+PowerLevelKeyAndValue? getPowerLevelKeyAndValue(
+  RoomPowerLevels powerLevels,
+  PermissionConfig permissionConfig,
 ) {
-  return switch (featureName) {
-    SpaceFeature.boosts => powerLevels.newsKey(),
-    SpaceFeature.stories => powerLevels.storiesKey(),
-    SpaceFeature.pins => powerLevels.pinsKey(),
-    SpaceFeature.events => powerLevels.eventsKey(),
-    SpaceFeature.tasks => powerLevels.tasksKey(),
+  return switch (permissionConfig.key) {
+    'boost-post' => PowerLevelKeyAndValue(
+      key: powerLevels.newsKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    'story-post' => PowerLevelKeyAndValue(
+      key: powerLevels.storiesKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    'pin-post' => PowerLevelKeyAndValue(
+      key: powerLevels.pinsKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    'event-post' => PowerLevelKeyAndValue(
+      key: powerLevels.eventsKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    'event-rsvp' => PowerLevelKeyAndValue(
+      key: powerLevels.rsvpKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    'task-list-post' => PowerLevelKeyAndValue(
+      key: powerLevels.taskListsKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    'task-item-post' => PowerLevelKeyAndValue(
+      key: powerLevels.tasksKey().toString(),
+      value: permissionConfig.permissionLevel.value,
+    ),
+    _ => null,
   };
 }
