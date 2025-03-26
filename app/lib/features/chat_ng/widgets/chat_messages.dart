@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -10,6 +10,7 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:acter/features/chat_ng/widgets/typing_indicator.dart';
 
 class ChatMessages extends ConsumerStatefulWidget {
   static const fabScrollToBottomKey = Key('chat_messages_fab_scroll_to_bottom');
@@ -74,12 +75,12 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       // Unread marking support
       if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
         final roomId = widget.roomId;
-        if (ref.read(hasUnreadMessages(roomId)).valueOrNull ?? false) {
+        if (ref.read(chat.hasUnreadMessages(roomId)).valueOrNull ?? false) {
           // debounce
           markReadDebouce?.cancel();
           markReadDebouce = Timer(const Duration(milliseconds: 300), () async {
             final timeline = await ref.read(
-              timelineStreamProvider(roomId).future,
+              chat.timelineStreamProvider(roomId).future,
             );
             await timeline.markAsRead(true);
             markReadDebouce?.cancel();
@@ -119,6 +120,8 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         widget.roomId,
       ).select((value) => value.messageList),
     );
+    final typingUsers =
+        ref.watch(chatTypingEventProvider(widget.roomId)).valueOrNull ?? [];
 
     return PageStorage(
       bucket: bucketGlobal,
@@ -133,6 +136,15 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
               ],
             ),
           ),
+          // typing indicator
+          if (typingUsers.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: TypingIndicator(
+                options: TypingIndicatorOptions(typingUsers: typingUsers),
+              ),
+            ),
         ],
       ),
     );
