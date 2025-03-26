@@ -9,6 +9,7 @@ import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/spaces/actions/create_space.dart';
 import 'package:acter/features/spaces/model/keys.dart';
+import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:acter/features/spaces/widgets/create_space/space_configuration_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -19,18 +20,6 @@ import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::spaces::create_space');
-// user selected visibility provider
-final selectedJoinRuleProvider = StateProvider<RoomJoinRule?>(
-  (ref) => null,
-); // user selected visibility provider
-
-// create default chat provider
-final createDefaultChatProvider = StateProvider<bool>((ref) => false);
-
-// create default chat provider
-final showSpaceCreationConfigurationProvider = StateProvider.autoDispose<bool>(
-  (ref) => false,
-);
 
 class CreateSpacePage extends ConsumerStatefulWidget {
   static const permissionsKey = Key('create-space-permissions-key');

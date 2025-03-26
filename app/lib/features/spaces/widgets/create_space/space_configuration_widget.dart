@@ -4,6 +4,7 @@ import 'package:acter/features/room/join_rule/room_join_rule_item.dart';
 import 'package:acter/features/room/join_rule/room_join_rule_selector.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/spaces/pages/create_space_page.dart';
+import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:acter/features/spaces/widgets/create_space/space_features_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';

@@ -110,7 +110,7 @@ Future<void> applySpaceFeatures(
 ) async {
   final lang = L10n.of(context);
   try {
-    final featureStates = ref.read(featureActivationProvider);
+    final featureStates = ref.read(featureActivationStateProvider);
     final appSettingsAndMembership = await ref.read(
       spaceAppSettingsProvider(spaceId).future,
     );

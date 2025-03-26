@@ -71,7 +71,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     String featureDescription,
   ) {
     final textTheme = Theme.of(context).textTheme;
-    final featureStates = ref.watch(featureActivationProvider);
+    final featureStates = ref.watch(featureActivationStateProvider);
     final featureState = featureStates[feature] ?? FeatureActivationState();
     final isFeatureActivated = featureState.isActivated;
 
@@ -88,7 +88,9 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
             trailing: Switch(
               value: isFeatureActivated,
               onChanged: (value) {
-                ref.read(featureActivationProvider.notifier).update((state) {
+                ref.read(featureActivationStateProvider.notifier).update((
+                  state,
+                ) {
                   final newState =
                       Map<SpaceFeature, FeatureActivationState>.from(state);
                   newState[feature] = featureState.copyWith(isActivated: value);
@@ -188,7 +190,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
           (context) => SelectPermission(
             currentPermission: permissionItem.permissionLevel,
             onPermissionSelected: (level) {
-              ref.read(featureActivationProvider.notifier).update((state) {
+              ref.read(featureActivationStateProvider.notifier).update((state) {
                 final newState = Map<SpaceFeature, FeatureActivationState>.from(
                   state,
                 );
