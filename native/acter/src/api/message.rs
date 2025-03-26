@@ -1160,85 +1160,86 @@ impl RoomEventItemBuilder {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomVirtualItem {
     event_type: String,
-    desc: Option<String>,
+    description: Option<String>,
 }
 
-impl RoomVirtualItem {
-    pub(crate) fn new(event: &VirtualTimelineItem) -> Self {
-        match event {
+impl From<&VirtualTimelineItem> for RoomVirtualItem {
+    fn from(value: &VirtualTimelineItem) -> RoomVirtualItem {
+        match value {
             VirtualTimelineItem::DateDivider(ts) => {
-                let desc = if let Some(st) = ts.to_system_time() {
+                let description = if let Some(st) = ts.to_system_time() {
                     let dt: DateTime<Utc> = st.into();
                     Some(dt.format("%Y-%m-%d").to_string())
                 } else {
                     None
                 };
                 RoomVirtualItem {
-                    event_type: "DayDivider".to_string(),
-                    desc,
+                    event_type: "DayDivider".to_owned(),
+                    description,
                 }
             }
             VirtualTimelineItem::ReadMarker => RoomVirtualItem {
-                event_type: "ReadMarker".to_string(),
-                desc: None,
+                event_type: "ReadMarker".to_owned(),
+                description: None,
             },
         }
     }
+}
 
+impl RoomVirtualItem {
     pub fn event_type(&self) -> String {
         self.event_type.clone()
     }
 
-    pub fn desc(&self) -> Option<String> {
-        self.desc.clone()
+    pub fn description(&self) -> Option<String> {
+        self.description.clone()
     }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+enum RoomMessageContent {
+    Event(RoomEventItem),
+    Virtual(RoomVirtualItem),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomMessage {
-    item_type: String,
-    event_item: Option<RoomEventItem>,
-    virtual_item: Option<RoomVirtualItem>,
+    content: RoomMessageContent,
     unique_id: String,
 }
 
 impl RoomMessage {
-    pub(crate) fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
+    pub(crate) fn new_event_item(event_item: &EventTimelineItem, my_id: OwnedUserId) -> Self {
         RoomMessage {
-            item_type: "event".to_string(),
-            event_item: Some(RoomEventItem::new(event, my_id)),
-            unique_id: match event.identifier() {
+            content: RoomMessageContent::Event(RoomEventItem::new(event_item, my_id)),
+            unique_id: match event_item.identifier() {
                 TimelineEventItemId::EventId(e) => e.to_string(),
                 TimelineEventItemId::TransactionId(t) => t.to_string(),
             },
-            virtual_item: None,
         }
     }
 
-    pub(crate) fn new_virtual_item(event: &VirtualTimelineItem, unique_id: String) -> Self {
-        RoomMessage {
-            item_type: "virtual".to_string(),
-            event_item: None,
-            unique_id,
-            virtual_item: Some(RoomVirtualItem::new(event)),
+    pub fn is_virtual(&self) -> bool {
+        if let RoomMessageContent::Virtual(content) = &self.content {
+            true
+        } else {
+            false
         }
-    }
-
-    pub fn item_type(&self) -> String {
-        self.item_type.clone()
     }
 
     pub fn event_item(&self) -> Option<RoomEventItem> {
-        self.event_item.clone()
+        if let RoomMessageContent::Event(content) = &self.content {
+            Some(content.clone())
+        } else {
+            None
+        }
     }
 
     pub(crate) fn event_id(&self) -> Option<String> {
-        match &self.event_item {
-            Some(RoomEventItem {
-                event_id: Some(event_id),
-                ..
-            }) => Some(event_id.to_string()),
-            _ => None,
+        if let RoomMessageContent::Event(content) = &self.content {
+            content.event_id()
+        } else {
+            None
         }
     }
 
@@ -1247,30 +1248,38 @@ impl RoomMessage {
     }
 
     pub(crate) fn event_type(&self) -> String {
-        self.event_item
-            .as_ref()
-            .map(|e| e.event_type())
-            .unwrap_or_else(|| "virtual".to_owned()) // if we can’t find it, it is because we are a virtual event
+        match &self.content {
+            RoomMessageContent::Event(content) => content.event_type(),
+            RoomMessageContent::Virtual(content) => content.event_type(),
+        }
     }
 
     pub(crate) fn origin_server_ts(&self) -> Option<u64> {
-        self.event_item.as_ref().map(|e| e.origin_server_ts())
+        if let RoomMessageContent::Event(content) = &self.content {
+            Some(content.origin_server_ts())
+        } else {
+            None
+        }
     }
 
     pub fn virtual_item(&self) -> Option<RoomVirtualItem> {
-        self.virtual_item.clone()
+        if let RoomMessageContent::Virtual(content) = &self.content {
+            Some(content.clone())
+        } else {
+            None
+        }
     }
 }
 
 impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
-    fn from(v: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
-        let (item, user_id) = v;
-        let unique_id = item.unique_id();
+    fn from(value: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
+        let (item, my_id) = value;
         match item.kind() {
-            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(user_id, event_item),
-            TimelineItemKind::Virtual(virtual_item) => {
-                RoomMessage::new_virtual_item(virtual_item, unique_id.0.clone())
-            }
+            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(event_item, my_id),
+            TimelineItemKind::Virtual(virtual_item) => RoomMessage {
+                content: RoomMessageContent::Virtual(RoomVirtualItem::from(virtual_item)),
+                unique_id: item.unique_id().0.clone(),
+            },
         }
     }
 }

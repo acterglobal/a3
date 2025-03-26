@@ -1052,21 +1052,21 @@ object RoomVirtualItem {
     fn event_type() -> string;
 
     /// contains description text
-    fn desc() -> Option<string>;
+    fn description() -> Option<string>;
 }
 
 /// A room Message metadata and content
 object RoomMessage {
-    /// one of event/virtual
-    fn item_type() -> string;
+    /// whether it is virtual item, like read marker
+    fn is_virtual() -> bool;
 
     /// Unique ID of this event
     fn unique_id() -> string;
 
-    /// valid only if item_type is "event"
+    /// valid only if is_virtual is false
     fn event_item() -> Option<RoomEventItem>;
 
-    /// valid only if item_type is "virtual"
+    /// valid only if is_virtual is true
     fn virtual_item() -> Option<RoomVirtualItem>;
 }
 

@@ -167,12 +167,12 @@ impl Convo {
                 }
             }
             while let Some(ev) = incoming.next().await {
-                let Some(msg) = last_msg_tl.latest_event().await else {
+                let Some(tl_item) = last_msg_tl.latest_event().await else {
                     continue;
                 };
                 let room_id = latest_msg_room.room_id();
 
-                let full_event = RoomMessage::new_event_item(user_id.clone(), &msg);
+                let full_event = RoomMessage::new_event_item(&tl_item, user_id.clone());
                 set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")

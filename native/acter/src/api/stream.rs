@@ -87,10 +87,10 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let Some(tl) = timeline.item_by_event_id(&event_id).await else {
+                let Some(tl_item) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(RoomMessage::new_event_item(user_id, &tl))
+                Ok(RoomMessage::new_event_item(&tl_item, user_id))
             })
             .await?
     }

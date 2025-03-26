@@ -19459,20 +19459,20 @@ class Api {
   late final _roomVirtualItemEventType =
       _roomVirtualItemEventTypePtr
           .asFunction<_RoomVirtualItemEventTypeReturn Function(int)>();
-  late final _roomVirtualItemDescPtr = _lookup<
-    ffi.NativeFunction<_RoomVirtualItemDescReturn Function(ffi.IntPtr)>
-  >("__RoomVirtualItem_desc");
+  late final _roomVirtualItemDescriptionPtr = _lookup<
+    ffi.NativeFunction<_RoomVirtualItemDescriptionReturn Function(ffi.IntPtr)>
+  >("__RoomVirtualItem_description");
 
-  late final _roomVirtualItemDesc =
-      _roomVirtualItemDescPtr
-          .asFunction<_RoomVirtualItemDescReturn Function(int)>();
-  late final _roomMessageItemTypePtr = _lookup<
-    ffi.NativeFunction<_RoomMessageItemTypeReturn Function(ffi.IntPtr)>
-  >("__RoomMessage_item_type");
+  late final _roomVirtualItemDescription =
+      _roomVirtualItemDescriptionPtr
+          .asFunction<_RoomVirtualItemDescriptionReturn Function(int)>();
+  late final _roomMessageIsVirtualPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__RoomMessage_is_virtual",
+      );
 
-  late final _roomMessageItemType =
-      _roomMessageItemTypePtr
-          .asFunction<_RoomMessageItemTypeReturn Function(int)>();
+  late final _roomMessageIsVirtual =
+      _roomMessageIsVirtualPtr.asFunction<int Function(int)>();
   late final _roomMessageUniqueIdPtr = _lookup<
     ffi.NativeFunction<_RoomMessageUniqueIdReturn Function(ffi.IntPtr)>
   >("__RoomMessage_unique_id");
@@ -40262,10 +40262,10 @@ class RoomVirtualItem {
   }
 
   /// contains description text
-  String? desc() {
+  String? description() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomVirtualItemDesc(tmp0);
+    final tmp1 = _api._roomVirtualItemDescription(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40306,31 +40306,13 @@ class RoomMessage {
 
   RoomMessage._(this._api, this._box);
 
-  /// one of event/virtual
-  String itemType() {
+  /// whether it is virtual item, like read marker
+  bool isVirtual() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageItemType(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final tmp1 = _api._roomMessageIsVirtual(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -40362,7 +40344,7 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// valid only if item_type is "event"
+  /// valid only if is_virtual is false
   RoomEventItem? eventItem() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -40379,7 +40361,7 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// valid only if item_type is "virtual"
+  /// valid only if is_virtual is true
   RoomVirtualItem? virtualItem() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -60380,7 +60362,7 @@ class _RoomVirtualItemEventTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomVirtualItemDescReturn extends ffi.Struct {
+class _RoomVirtualItemDescriptionReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60389,15 +60371,6 @@ class _RoomVirtualItemDescReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-}
-
-class _RoomMessageItemTypeReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
 }
 
 class _RoomMessageUniqueIdReturn extends ffi.Struct {
