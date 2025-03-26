@@ -81,9 +81,7 @@ class _CreateSpacePageConsumerState extends ConsumerState<CreateSpacePage> {
     );
 
     return showSpaceCreationConfiguration
-        ? SpaceConfigurationWidget(
-          initialParentsSpaceId: widget.initialParentsSpaceId,
-        )
+        ? SpaceConfigurationWidget()
         : Scaffold(appBar: _buildAppbar(), body: _buildBody());
   }
 

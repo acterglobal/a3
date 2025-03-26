@@ -12,9 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SpaceConfigurationWidget extends ConsumerStatefulWidget {
-  final String? initialParentsSpaceId;
-
-  const SpaceConfigurationWidget({super.key, this.initialParentsSpaceId});
+  const SpaceConfigurationWidget({super.key});
 
   @override
   ConsumerState<SpaceConfigurationWidget> createState() =>
