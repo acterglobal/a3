@@ -83,7 +83,8 @@ Future<String?> createSpace(
     }
 
     EasyLoading.show(status: lang.applyingFeatureSettings);
-    await Future.delayed(const Duration(seconds: 2));
+    // Add a delay to ensure that space creation is completed
+    await Future.delayed(const Duration(milliseconds: 1000));
     if (!context.mounted) return null;
     await applySpaceFeatures(context, ref, roomId);
 
@@ -132,6 +133,8 @@ Future<void> applySpaceFeatures(
           //Set the power level based on the permission level
           await setPowerLevel(space, powerLevels, state.permissions);
 
+          // Add a delay between each update to ensure they complete in sequence
+          await Future.delayed(const Duration(milliseconds: 500));
           EasyLoading.dismiss();
         }
       }
@@ -161,6 +164,8 @@ Future<void> setPowerLevel(
         powerLevelKeyAndValue.key,
         powerLevelKeyAndValue.value,
       );
+      // Add a delay between each update to ensure they complete in sequence
+      await Future.delayed(const Duration(milliseconds: 500));
     }
   }
 }
