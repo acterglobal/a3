@@ -30,31 +30,31 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
         Text(lang.spaceFeatures, style: textTheme.bodyMedium),
         Text(lang.spaceFeaturesDes, style: textTheme.labelSmall),
         const SizedBox(height: 8),
-        _buildFeatureActivation(
+        _buildFeatureItems(
           SpaceFeature.boosts,
           PhosphorIcons.rocketLaunch(),
           lang.boosts,
           lang.boostsDes,
         ),
-        _buildFeatureActivation(
+        _buildFeatureItems(
           SpaceFeature.stories,
           PhosphorIcons.slideshow(),
           lang.stories,
           lang.storeisDes,
         ),
-        _buildFeatureActivation(
+        _buildFeatureItems(
           SpaceFeature.pins,
           Atlas.pin,
           lang.pins,
           lang.pinsDes,
         ),
-        _buildFeatureActivation(
+        _buildFeatureItems(
           SpaceFeature.events,
           Atlas.calendar,
           lang.events,
           lang.eventsDes,
         ),
-        _buildFeatureActivation(
+        _buildFeatureItems(
           SpaceFeature.tasks,
           Atlas.list,
           lang.tasks,
@@ -64,7 +64,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     );
   }
 
-  Widget _buildFeatureActivation(
+  Widget _buildFeatureItems(
     SpaceFeature feature,
     IconData featureIcon,
     String featureName,
