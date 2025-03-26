@@ -38,8 +38,8 @@ use crate::TimelineStream;
 
 use super::{
     client::Client,
-    message::TimelineItem,
     room::Room,
+    timeline::TimelineItem,
     utils::{remap_for_diff, ApiVectorDiff},
     ComposeDraft, OptionComposeDraft, RUNTIME,
 };

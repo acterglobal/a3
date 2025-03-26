@@ -23,11 +23,10 @@ use tracing::info;
 
 use crate::{Client, Room, TimelineItem, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
-
-pub mod msg_draft;
-use msg_draft::MsgContentDraft;
-pub use msg_draft::MsgDraft;
+use super::{
+    super::utils::{remap_for_diff, ApiVectorDiff},
+    msg_draft::{MsgContentDraft, MsgDraft},
+};
 
 pub type TimelineItemDiff = ApiVectorDiff<TimelineItem>;
 

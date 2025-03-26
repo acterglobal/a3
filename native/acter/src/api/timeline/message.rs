@@ -27,10 +27,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
 
-use super::{
-    common::{MsgContent, ReactionRecord},
-    RUNTIME,
-};
+use crate::{MsgContent, ReactionRecord, RUNTIME};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EventSendState {
