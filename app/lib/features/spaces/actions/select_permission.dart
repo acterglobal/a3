@@ -1,4 +1,5 @@
 import 'package:acter/features/spaces/model/permission_config.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
 class SelectPermission extends StatelessWidget {
@@ -13,6 +14,7 @@ class SelectPermission extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -23,45 +25,41 @@ class SelectPermission extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Select Permission Level',
+              lang.selectPermissionLevel,
               style: textTheme.titleMedium,
             ),
           ),
           const SizedBox(height: 16),
-          ...PermissionLevel.values.map((level) {
-            final isSelected = level == currentPermission;
-            return ListTile(
-              leading: Icon(
-                level == PermissionLevel.admin
-                    ? Icons.admin_panel_settings
-                    : level == PermissionLevel.moderator
-                    ? Icons.groups
-                    : Icons.person,
-                color:
-                    isSelected ? Theme.of(context).colorScheme.primary : null,
-              ),
-              title: Text(
-                level.name.toUpperCase(),
-                style: textTheme.bodyMedium?.copyWith(
-                  color:
-                      isSelected ? Theme.of(context).colorScheme.primary : null,
-                ),
-              ),
-              trailing:
-                  isSelected
-                      ? Icon(
-                        Icons.check,
-                        color: Theme.of(context).colorScheme.primary,
-                      )
-                      : null,
-              onTap: () {
-                onPermissionSelected(level);
-                Navigator.pop(context);
-              },
-            );
-          }),
+          ...PermissionLevel.values.map(
+            (level) => buildPermissionItem(context, level),
+          ),
         ],
       ),
     );
+  }
+
+  Widget buildPermissionItem(BuildContext context, PermissionLevel level) {
+    final textTheme = Theme.of(context).textTheme;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final isSelected = level == currentPermission;
+    final permissionIcon = getIconBasedOnPermissionLevel(level);
+    final permissionColor = isSelected ? primaryColor : null;
+
+    return ListTile(
+      leading: Icon(permissionIcon, color: permissionColor),
+      title: Text(
+        level.name.toUpperCase(),
+        style: textTheme.bodyMedium?.copyWith(color: permissionColor),
+      ),
+      trailing: isSelected ? Icon(Icons.check, color: primaryColor) : null,
+    );
+  }
+
+  IconData getIconBasedOnPermissionLevel(PermissionLevel level) {
+    return switch (level) {
+      PermissionLevel.admin => Icons.admin_panel_settings,
+      PermissionLevel.moderator => Icons.groups,
+      PermissionLevel.member => Icons.person,
+    };
   }
 }

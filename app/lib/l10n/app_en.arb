@@ -2265,6 +2265,8 @@
     "calenderWithEvents": "Calender with Events",
     "@calenderWithEvents": {},
     "inviteCodeEmptyState": "No invite codes are generated yet",
+    "applyingFeatureSettings": "Applying feature settings",
+    "selectPermissionLevel": "Select Permission Level",
     "sharePin": "Share Pin",
     "selectPin": "Select Pin",
     "selectEvent": "Select Event",

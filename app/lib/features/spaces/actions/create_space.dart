@@ -82,7 +82,7 @@ Future<String?> createSpace(
       }
     }
 
-    EasyLoading.show(status: 'Applying feature settings');
+    EasyLoading.show(status: lang.applyingFeatureSettings);
     await Future.delayed(const Duration(seconds: 2));
     if (!context.mounted) return null;
     await applySpaceFeatures(context, ref, roomId);
