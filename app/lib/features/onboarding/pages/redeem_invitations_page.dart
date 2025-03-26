@@ -281,7 +281,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       onPressed:
           _tokenController.text.isNotEmpty
               ? () {
-                if (!tokenField.currentState!.validate()) return;
+                if (!_formKey.currentState!.validate()) return;
                 if (!inCI && !ref.read(hasNetworkProvider)) {
                   showNoInternetNotification(context);
                   return;
@@ -300,7 +300,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       onPressed:
           _tokenController.text.isNotEmpty
               ? () {
-                if (!tokenField.currentState!.validate()) return;
+                if (!_formKey.currentState!.validate()) return;
                 if (!inCI && !ref.read(hasNetworkProvider)) {
                   showNoInternetNotification(context);
                   return;
