@@ -15,6 +15,18 @@ class AboutSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final showUpgradeButton =
+        ref.watch(isActerSpace(spaceId)).valueOrNull != true &&
+        ref
+                .watch(
+                  roomPermissionProvider((
+                    roomId: spaceId,
+                    permission: 'CanUpgradeToActerSpace',
+                  )),
+                )
+                .valueOrNull ==
+            true;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Card(
@@ -26,17 +38,7 @@ class AboutSection extends ConsumerWidget {
               aboutLabel(context),
               spaceDescription(context, ref),
 
-              if (ref.watch(isActerSpace(spaceId)).valueOrNull != true &&
-                  ref
-                          .watch(
-                            roomPermissionProvider((
-                              roomId: spaceId,
-                              permission: 'CanUpgradeToActerSpace',
-                            )),
-                          )
-                          .valueOrNull ==
-                      true)
-                acterSpaceInfoUI(context, ref),
+              if (showUpgradeButton) acterSpaceInfoUI(context, ref),
             ],
           ),
         ),
@@ -79,7 +81,8 @@ class AboutSection extends ConsumerWidget {
       topic ?? lang.noTopicFound,
       style: Theme.of(context).textTheme.bodySmall,
     );
-    if (ref
+    final canEdit =
+        ref
             .watch(
               roomPermissionProvider((
                 roomId: spaceId,
@@ -87,7 +90,8 @@ class AboutSection extends ConsumerWidget {
               )),
             )
             .valueOrNull ==
-        true) {
+        true;
+    if (canEdit) {
       child = GestureDetector(
         onTap: () async {
           showEditDescriptionBottomSheet(
