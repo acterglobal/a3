@@ -72,7 +72,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
   ) {
     final textTheme = Theme.of(context).textTheme;
     final featureStates = ref.watch(featureActivationProvider);
-    final featureState = featureStates[feature] ?? FeatureState();
+    final featureState = featureStates[feature] ?? FeatureActivationState();
     final isFeatureActivated = featureState.isActivated;
 
     return Card(
@@ -89,7 +89,8 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
               value: isFeatureActivated,
               onChanged: (value) {
                 ref.read(featureActivationProvider.notifier).update((state) {
-                  final newState = Map<SpaceFeature, FeatureState>.from(state);
+                  final newState =
+                      Map<SpaceFeature, FeatureActivationState>.from(state);
                   newState[feature] = featureState.copyWith(isActivated: value);
                   return newState;
                 });
@@ -104,7 +105,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
 
   Widget _buildPermissionsList(
     SpaceFeature spaceFeature,
-    FeatureState featureState,
+    FeatureActivationState featureState,
   ) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
@@ -136,7 +137,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
   Widget _buildPermissionItem(
     PermissionConfig permissionItem,
     SpaceFeature spaceFeature,
-    FeatureState featureState,
+    FeatureActivationState featureState,
   ) {
     final textTheme = Theme.of(context).textTheme;
     return Row(
@@ -178,7 +179,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
 
   void _onTapChangePermission(
     SpaceFeature spaceFeature,
-    FeatureState featureState,
+    FeatureActivationState featureState,
     PermissionConfig permissionItem,
   ) {
     showModalBottomSheet(
@@ -188,7 +189,9 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
             currentPermission: permissionItem.permissionLevel,
             onPermissionSelected: (level) {
               ref.read(featureActivationProvider.notifier).update((state) {
-                final newState = Map<SpaceFeature, FeatureState>.from(state);
+                final newState = Map<SpaceFeature, FeatureActivationState>.from(
+                  state,
+                );
                 final updatedPermissions =
                     featureState.permissions.map((p) {
                       if (p.key == permissionItem.key) {

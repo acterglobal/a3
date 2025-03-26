@@ -1,17 +1,19 @@
 import 'package:acter/features/spaces/model/permission_config.dart';
 
-class FeatureState {
+class FeatureActivationState {
   final bool isActivated;
   final List<PermissionConfig> permissions;
 
-  FeatureState({this.isActivated = false, List<PermissionConfig>? permissions})
-    : permissions = permissions ?? [];
+  FeatureActivationState({
+    this.isActivated = false,
+    List<PermissionConfig>? permissions,
+  }) : permissions = permissions ?? [];
 
-  FeatureState copyWith({
+  FeatureActivationState copyWith({
     bool? isActivated,
     List<PermissionConfig>? permissions,
   }) {
-    return FeatureState(
+    return FeatureActivationState(
       isActivated: isActivated ?? this.isActivated,
       permissions: permissions ?? this.permissions,
     );
