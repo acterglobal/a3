@@ -1,5 +1,8 @@
 use derive_builder::Builder;
-use matrix_sdk::{room::Room, ruma::events::room::join_rules::JoinRule};
+use matrix_sdk::{
+    room::Room,
+    ruma::{events::room::join_rules::JoinRule, Int},
+};
 use matrix_sdk_base::{
     ruma::{
         api::client::room::{create_room, Visibility},
@@ -18,15 +21,16 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::path::PathBuf;
 use strum::Display;
 use tracing::{error, trace};
+mod permissions;
+pub use permissions::{new_app_permissions_builder, AppPermissionsBuilder};
 
 use crate::{
     client::CoreClient,
     error::{Error, Result},
-    events::settings::ActerAppSettingsContent,
     statics::{default_acter_space_states, PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
 };
 
@@ -52,7 +56,7 @@ fn space_visibilty_default() -> Visibility {
     Visibility::Private
 }
 
-#[derive(Builder, Default, Serialize, Deserialize, Clone)]
+#[derive(Builder, Default, Clone, Deserialize)]
 pub struct CreateSpaceSettings {
     #[builder(setter(strip_option))]
     name: Option<String>,
@@ -81,9 +85,9 @@ pub struct CreateSpaceSettings {
     #[builder(setter(strip_option), default)]
     parent: Option<OwnedRoomId>,
 
-    #[builder(setter(strip_option), default = "ActerAppSettingsContent::off()")]
-    #[serde(default = "ActerAppSettingsContent::off")]
-    app_settings: ActerAppSettingsContent,
+    #[builder(default)]
+    #[serde(default)]
+    permissions: AppPermissionsBuilder,
 }
 
 // helper for built-in setters
@@ -132,6 +136,10 @@ impl CreateSpaceSettingsBuilder {
         if let Ok(parent) = RoomId::parse(value) {
             self.parent(parent);
         }
+    }
+    #[allow(clippy::boxed_local)]
+    pub fn set_permissions(&mut self, value: Box<AppPermissionsBuilder>) {
+        self.permissions(*value);
     }
 }
 
@@ -205,12 +213,21 @@ impl CoreClient {
             topic,
             avatar_uri, // remote or local
             parent,
-            app_settings,
+            permissions: permissions_builder,
             join_rule,
         } = settings;
         let mut initial_states = default_acter_space_states();
         // the space app settings as configured
-        initial_states.push(InitialStateEvent::new(app_settings).to_raw_any());
+        let (settings, mut permissions) = permissions_builder.unpack();
+        initial_states.push(InitialStateEvent::new(settings).to_raw_any());
+        // ensure that as the creator we are having the max power level
+        permissions.users.insert(
+            client
+                .user_id()
+                .expect("The client must be logged in")
+                .to_owned(),
+            Int::from(100),
+        );
 
         if let Some(avatar_uri) = avatar_uri {
             let uri = Box::<MxcUri>::from(avatar_uri.as_str());
@@ -223,7 +240,7 @@ impl CoreClient {
                 // local uri
                 let path = PathBuf::from(avatar_uri);
                 let guess = mime_guess::from_path(path.clone());
-                let content_type = guess.first().expect("don’t know mime type");
+                let content_type = guess.first().expect("don't know mime type");
                 let buf = std::fs::read(path)?;
                 let response = client.media().upload(&content_type, buf, None).await?;
 
@@ -288,6 +305,7 @@ impl CoreClient {
 
         let request = assign!(create_room::v3::Request::new(), {
             creation_content: Some(Raw::new(&content)?),
+            power_level_content_override: Some(Raw::new(&permissions)?),
             initial_state: initial_states,
             is_direct: false,
             invite: invites,

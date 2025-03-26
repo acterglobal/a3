@@ -124,6 +124,9 @@ impl RoomPowerLevels {
     pub fn events_default(&self) -> i64 {
         self.inner.events_default.into()
     }
+    pub fn state_default(&self) -> i64 {
+        self.inner.state_default.into()
+    }
     pub fn users_default(&self) -> i64 {
         self.inner.users_default.into()
     }
@@ -167,7 +170,7 @@ impl ActerAppSettings {
 impl Room {
     pub async fn app_settings(&self) -> Result<ActerAppSettings> {
         Ok(ActerAppSettings {
-            inner: self.app_settings_content().await?,
+            inner: self.app_settings_content().await?.unwrap_or_default(),
         })
     }
 
@@ -289,21 +292,16 @@ impl Room {
             .await?
     }
 
-    pub(crate) async fn app_settings_content(&self) -> Result<ActerAppSettingsContent> {
+    pub async fn app_settings_content(&self) -> Result<Option<ActerAppSettingsContent>> {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(a) = room
+                let content = room
                     .get_state_event_static::<ActerAppSettingsContent>()
                     .await?
-                {
-                    if let Ok(SyncOrStrippedState::Sync(SyncStateEvent::Original(inner))) =
-                        a.deserialize()
-                    {
-                        return Ok(inner.content);
-                    }
-                }
-                Ok(ActerAppSettingsContent::default()) // all other cases we fall back to default
+                    .context("No Settings set up")?
+                    .deserialize()?;
+                Ok(content.original_content().cloned())
             })
             .await?
     }
