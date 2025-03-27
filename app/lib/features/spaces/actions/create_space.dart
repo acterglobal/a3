@@ -55,6 +55,7 @@ Future<String?> createSpace(
       config.joinRule(roomJoinRule.name);
     }
     final permissionsBuilder = await generatePermissionsBuilder(ref, lang);
+    ref.invalidate(featureActivationStateProvider);
     if (permissionsBuilder != null) {
       config.setPermissions(permissionsBuilder);
     }
