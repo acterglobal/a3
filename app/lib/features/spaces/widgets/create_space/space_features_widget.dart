@@ -117,7 +117,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${lang.permissions} :',
+            lang.permissionsSubtitle,
             style: textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
@@ -142,6 +142,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     FeatureActivationState featureState,
   ) {
     final textTheme = Theme.of(context).textTheme;
+    final lang = L10n.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -149,10 +150,17 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
         const SizedBox(width: 4),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Text(
-            '${permissionItem.displayText}:',
-            style: textTheme.bodySmall,
-          ),
+          child: Text(switch (permissionItem.key) {
+            PermissionType.boostPost => lang.boostPermissionsDesc,
+            PermissionType.storyPost => lang.storyPermissionsDesc,
+            PermissionType.pinPost => lang.pinPermissionsDesc,
+            PermissionType.eventPost => lang.eventPermissionsDesc,
+            PermissionType.taskListPost => lang.taskListPermissionsDesc,
+            PermissionType.taskItemPost => lang.taskItemPermissionsDesc,
+            PermissionType.eventRsvp => lang.eventRsvpPermissionsDesc,
+            PermissionType.commentPost => lang.commentPermissionsDesc,
+            PermissionType.attachmentPost => lang.attachmentPermissionsDesc,
+          }, style: textTheme.bodySmall),
         ),
         const SizedBox(width: 8),
         InkWell(

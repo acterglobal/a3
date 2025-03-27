@@ -7,25 +7,33 @@ enum PermissionLevel {
   const PermissionLevel(this.value);
 }
 
+enum PermissionType {
+  boostPost,
+  storyPost,
+  pinPost,
+  eventPost,
+  taskListPost,
+  taskItemPost,
+  eventRsvp,
+  commentPost,
+  attachmentPost,
+}
+
 class PermissionConfig {
-  final String key;
-  final String displayText;
+  final PermissionType key;
   final PermissionLevel permissionLevel;
 
   const PermissionConfig({
     required this.key,
-    required this.displayText,
     this.permissionLevel = PermissionLevel.admin,
   });
 
   PermissionConfig copyWith({
-    String? key,
-    String? displayText,
+    PermissionType? key,
     PermissionLevel? permissionLevel,
   }) {
     return PermissionConfig(
       key: key ?? this.key,
-      displayText: displayText ?? this.displayText,
       permissionLevel: permissionLevel ?? this.permissionLevel,
     );
   }
@@ -33,65 +41,65 @@ class PermissionConfig {
 
 const boostPermissions = [
   PermissionConfig(
-    key: 'boost-post',
-    displayText: 'Who can post Boosts',
+    key: PermissionType.boostPost,
+    // displayText: 'Who can post Boosts',
     permissionLevel: PermissionLevel.admin,
   ),
 ];
 
 const storyPermissions = [
   PermissionConfig(
-    key: 'story-post',
-    displayText: 'Who can post Stories',
+    key: PermissionType.storyPost,
+    // displayText: 'Who can post Stories',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
 const pinPermissions = [
   PermissionConfig(
-    key: 'pin-post',
-    displayText: 'Who can create Pins',
+    key: PermissionType.pinPost,
+    // displayText: 'Who can create Pins',
     permissionLevel: PermissionLevel.moderator,
   ),
 ];
 
 const calendarPermissions = [
   PermissionConfig(
-    key: 'event-post',
-    displayText: 'Who can create Events',
+    key: PermissionType.eventPost,
+    // displayText: 'Who can create Events',
     permissionLevel: PermissionLevel.moderator,
   ),
   PermissionConfig(
-    key: 'event-rsvp',
-    displayText: 'Who can RSVP to Events',
+    key: PermissionType.eventRsvp,
+    // displayText: 'Who can RSVP to Events',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
 
 const taskPermissions = [
   PermissionConfig(
-    key: 'task-list-post',
-    displayText: 'Who can create Task Lists',
+    key: PermissionType.taskListPost,
+    // displayText: 'Who can create Task Lists',
     permissionLevel: PermissionLevel.admin,
   ),
   PermissionConfig(
-    key: 'task-item-post',
-    displayText: 'Who can add Task Items',
+    key: PermissionType.taskItemPost,
+    // displayText: 'Who can add Task Items',
     permissionLevel: PermissionLevel.moderator,
   ),
 ];
 
 const commentPermissions = [
   PermissionConfig(
-    key: 'comment-post',
-    displayText: 'Who can post Comments',
+    key: PermissionType.commentPost,
+    // displayText: 'Who can post Comments',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
 
 final attachmentPermissions = [
   PermissionConfig(
-    key: 'attachment-post',
-    displayText: 'Who can attach files',
+    key: PermissionType.attachmentPost,
+    // displayText: 'Who can attach files',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];

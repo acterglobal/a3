@@ -7,6 +7,7 @@ import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
+import 'package:acter/features/spaces/model/space_feature_state.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -54,11 +55,22 @@ Future<String?> createSpace(
     if (roomJoinRule != null) {
       config.joinRule(roomJoinRule.name);
     }
-    final permissionsBuilder = await generatePermissionsBuilder(ref, lang);
-    ref.invalidate(featureActivationStateProvider);
-    if (permissionsBuilder != null) {
-      config.setPermissions(permissionsBuilder);
+
+    final permissionsBuilder = sdk.api.newAppPermissionsBuilder();
+    final featureStates = ref.read(featureActivationStateProvider);
+    try {
+      applyPermissions(permissionsBuilder, featureStates);
+    } catch (e, s) {
+      _log.severe('Failed to apply features settings', e, s);
+      EasyLoading.showError(
+        lang.creatingSpaceFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+      return null;
     }
+
+    ref.invalidate(featureActivationStateProvider);
+    config.setPermissions(permissionsBuilder);
 
     final client = await ref.read(alwaysClientProvider.future);
     final result = await client.createActerSpace(config.build());
@@ -104,115 +116,55 @@ Future<String?> createSpace(
   }
 }
 
-Future<AppPermissionsBuilder?> generatePermissionsBuilder(
-  WidgetRef ref,
-  L10n lang,
-) async {
-  try {
-    final sdk = await ref.read(sdkProvider.future);
-    final permissionsBuilder = sdk.api.newAppPermissionsBuilder();
-    final featureStates = ref.read(featureActivationStateProvider);
+void applyPermissions(
+  AppPermissionsBuilder builder,
+  Map<SpaceFeature, FeatureActivationState> featureStates,
+) {
+  for (final entry in featureStates.entries) {
+    final feature = entry.key;
+    final state = entry.value;
+    final isActivated = state.isActivated;
 
-    for (final entry in featureStates.entries) {
-      final feature = entry.key;
-      final state = entry.value;
-      final isActivated = state.isActivated;
+    // Set feature activation
 
-      // Set feature activation
-      setFeatureActivation(permissionsBuilder, feature, isActivated);
+    final _ = switch (feature) {
+      SpaceFeature.boosts => builder.news(isActivated),
+      SpaceFeature.stories => builder.stories(isActivated),
+      SpaceFeature.pins => builder.pins(isActivated),
+      SpaceFeature.events => builder.calendarEvents(isActivated),
+      SpaceFeature.tasks => builder.tasks(isActivated),
+    };
 
-      // Set permissions for activated features
-      if (isActivated) {
-        setFeaturePermissions(permissionsBuilder, feature, state.permissions);
+    // Set permissions for activated features
+    if (isActivated) {
+      for (final permission in state.permissions) {
+        final permissionKey = permission.key;
+        final permissionLevel = permission.permissionLevel.value;
+
+        final _ = switch (permissionKey) {
+          PermissionType.boostPost => builder.newsPermisisons(permissionLevel),
+          PermissionType.storyPost => builder.storiesPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.pinPost => builder.pinsPermisisons(permissionLevel),
+          PermissionType.eventPost => builder.calendarEventsPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.taskListPost => builder.taskListsPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.taskItemPost => builder.tasksPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.eventRsvp => builder.rsvpPermisisons(permissionLevel),
+          PermissionType.commentPost => builder.commentsPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.attachmentPost => builder.attachmentsPermisisons(
+            permissionLevel,
+          ),
+        };
       }
-    }
-
-    return permissionsBuilder;
-  } catch (e, s) {
-    _log.severe('Failed to apply features settings', e, s);
-    EasyLoading.showError(
-      lang.creatingSpaceFailed(e),
-      duration: const Duration(seconds: 3),
-    );
-    return null;
-  }
-}
-
-void setFeatureActivation(
-  AppPermissionsBuilder builder,
-  SpaceFeature feature,
-  bool isActivated,
-) {
-  switch (feature) {
-    case SpaceFeature.boosts:
-      builder.news(isActivated);
-      break;
-    case SpaceFeature.stories:
-      builder.stories(isActivated);
-      break;
-    case SpaceFeature.pins:
-      builder.pins(isActivated);
-      break;
-    case SpaceFeature.events:
-      builder.calendarEvents(isActivated);
-      break;
-    case SpaceFeature.tasks:
-      builder.tasks(isActivated);
-      break;
-  }
-}
-
-void setFeaturePermissions(
-  AppPermissionsBuilder builder,
-  SpaceFeature feature,
-  List<PermissionConfig> permissions,
-) {
-  for (final permission in permissions) {
-    final permissionKey = permission.key;
-    final permissionLevel = permission.permissionLevel.value;
-
-    switch (feature) {
-      case SpaceFeature.boosts:
-        switch (permissionKey) {
-          case 'boost-post':
-            builder.newsPermisisons(permissionLevel);
-            break;
-        }
-        break;
-      case SpaceFeature.stories:
-        switch (permissionKey) {
-          case 'story-post':
-            builder.storiesPermisisons(permissionLevel);
-            break;
-        }
-        break;
-      case SpaceFeature.pins:
-        switch (permissionKey) {
-          case 'pin-post':
-            builder.pinsPermisisons(permissionLevel);
-            break;
-        }
-        break;
-      case SpaceFeature.events:
-        switch (permissionKey) {
-          case 'event-post':
-            builder.calendarEventsPermisisons(permissionLevel);
-            break;
-          case 'event-rsvp':
-            builder.rsvpPermisisons(permissionLevel);
-            break;
-        }
-        break;
-      case SpaceFeature.tasks:
-        switch (permissionKey) {
-          case 'task-list-post':
-            builder.taskListsPermisisons(permissionLevel);
-            break;
-          case 'task-item-post':
-            builder.tasksPermisisons(permissionLevel);
-            break;
-        }
-        break;
     }
   }
 }
