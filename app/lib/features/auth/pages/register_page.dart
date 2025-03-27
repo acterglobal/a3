@@ -52,7 +52,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final lang = L10n.of(context);
     try {
       if (await register(
-        context: context,
         username: username.text,
         password: password.text,
         name: name.text,
@@ -61,7 +60,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       )) {
         if (context.mounted) {
           context.goNamed(
-            Routes.redeemInvitations.name,
+            Routes.saveUsername.name,
             queryParameters: {'username': username.text},
           );
         }

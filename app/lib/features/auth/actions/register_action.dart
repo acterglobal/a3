@@ -1,6 +1,5 @@
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 final _log = Logger('a3::auth::register');
 
 Future<bool> register({
-  required BuildContext context,
   required String username,
   required String password,
   required String name,

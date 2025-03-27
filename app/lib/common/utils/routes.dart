@@ -10,8 +10,8 @@ enum Routes {
 
   // -- onboarding
   saveUsername('/saveUsername'),
-  encryptionBackup('/enableEncryptionBackup'),
   redeemInvitations('/redeemInvitations'),
+  encryptionBackup('/enableEncryptionBackup'),
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
   analyticsOptIn('/analyticsOptIn'),

@@ -2,9 +2,11 @@ import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -14,14 +16,10 @@ import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-
-final tokenField = GlobalKey<FormFieldState>();
+import 'dart:async';
 
 class RedeemInvitationsPage extends ConsumerStatefulWidget {
-  final String username;
-
-  const RedeemInvitationsPage({super.key, required this.username});
+  const RedeemInvitationsPage({super.key});
 
   @override
   ConsumerState<RedeemInvitationsPage> createState() =>
@@ -31,10 +29,9 @@ class RedeemInvitationsPage extends ConsumerStatefulWidget {
 class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
   final TextEditingController _tokenController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool showInviteInfo = false;
-  bool showRedeemButton = false;
-  bool showGetDetailsButton = true;
+  final List<String> validTokens = [];
+  Timer? _debounceTimer;
+  bool hasRedeemedAnyToken = false;
 
   @override
   void initState() {
@@ -48,13 +45,28 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     super.dispose();
   }
 
-  // Handle text changes in the token field
-  void _onTokenChanged(String token) {
-    setState(() {
-      showInviteInfo = false;
-      showRedeemButton = false;
-      showGetDetailsButton = true;
-    });
+  Future<void> _fetchAndValidateToken(String token) async {
+    if (!mounted) return;
+
+    try {
+      EasyLoading.show(status: L10n.of(context).loading);
+      await ref.watch(superInviteInfoProvider(token).future);
+      if (!validTokens.contains(token)) {
+        setState(() {
+          validTokens.insert(0, token);
+        });
+      }
+      _tokenController.clear();
+      EasyLoading.dismiss();
+    } catch (e) {
+      if (mounted) {
+        EasyLoading.showError(
+          e.toString(),
+          duration: const Duration(seconds: 2),
+          dismissOnTap: true,
+        );
+      }
+    }
   }
 
   Future<void> _loadToken() async {
@@ -64,7 +76,28 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       setState(() {
         _tokenController.text = token;
       });
+      await _fetchAndValidateToken(token);
     }
+  }
+
+  void _onTokenChanged(String token) {
+    // Cancel any previous timer
+    _debounceTimer?.cancel();
+
+    // Start a new timer
+    _debounceTimer = Timer(const Duration(milliseconds: 600), () async {
+      if (_formKey.currentState!.validate()) {
+        if (!inCI && !ref.read(hasNetworkProvider)) {
+          if (mounted) {
+            showNoInternetNotification(context);
+          }
+          return;
+        }
+
+        final currentToken = token.trim();
+        await _fetchAndValidateToken(currentToken);
+      }
+    });
   }
 
   Future<void> _scanQR(BuildContext context) async {
@@ -97,7 +130,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -115,13 +148,13 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                   const SizedBox(height: 20),
                   _buildInviteCodeInput(context, lang),
                   const SizedBox(height: 10),
-                  showInviteInfo
-                      ? _buildInviteInfo(context)
-                      : const SizedBox.shrink(),
+                  _buildInviteInfo(context),
                 ],
               ),
             ),
-            _buildNavigationButtons(context, lang),
+            const SizedBox(height: 5),
+            _buildActionButton(context, lang),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -152,7 +185,6 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
         Form(
           key: _formKey,
           child: TextFormField(
-            key: tokenField,
             controller: _tokenController,
             inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
             validator:
@@ -176,150 +208,102 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
   }
 
   Widget _buildInviteInfo(BuildContext context) {
-    final errorColor = Theme.of(context).colorScheme.error;
-    final errorStyle = Theme.of(
-      context,
-    ).textTheme.labelMedium?.copyWith(color: errorColor);
-    final lang = L10n.of(context);
-    final token = _tokenController.text.trim();
+    return Expanded(
+      child: ListView.builder(
+        itemCount: validTokens.length,
+        itemBuilder: (context, index) {
+          final token = validTokens[index];
+          final info = ref.watch(superInviteInfoProvider(token)).value;
+          if (info == null) return const SizedBox.shrink();
 
-    if (token.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return ref
-        .watch(superInviteInfoProvider(token))
-        .when(
-          data: (info) {
-            EasyLoading.dismiss();
-            setState(() {
-              showRedeemButton = true;
-              showGetDetailsButton = false;
-            });
-            return _renderInfo(context, info);
-          },
-          error: (e, s) {
-            EasyLoading.dismiss();
-            setState(() {
-              showRedeemButton = false;
-              showGetDetailsButton = true;
-            });
-            final errorStr = e.toString();
-            if (errorStr.contains('error: [404]')) {
-              return Text(
-                lang.superInvitesPreviewMissing(token),
-                style: errorStyle,
-              );
-            }
-            if (errorStr.contains('error: [403]')) {
-              return Text(lang.superInvitesDeleted(token), style: errorStyle);
-            }
-            return Text(lang.loadingFailed(e), style: errorStyle);
-          },
-          loading: () {
-            setState(() {
-              showRedeemButton = false;
-              showGetDetailsButton = true;
-            });
-            EasyLoading.show(status: lang.loading);
-            return const SizedBox.shrink();
-          },
-        );
+          return _buildInviteInfoItem(context, token, info);
+        },
+      ),
+    );
   }
 
-  Widget _renderInfo(BuildContext context, SuperInviteInfo info) {
-    final lang = L10n.of(context);
+  Widget _buildInviteInfoItem(
+    BuildContext context,
+    String token,
+    SuperInviteInfo info,
+  ) {
     final displayName = info.inviterDisplayNameStr();
     final userId = info.inviterUserIdStr();
     final inviter = displayName ?? userId;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Card(
-          margin: EdgeInsets.zero,
-          child: ListTile(
-            title: Text(inviter),
-            subtitle: Text(lang.youInvited(info.roomsCount())),
-            leading: ActerAvatar(
-              options: AvatarOptions.DM(
-                AvatarInfo(uniqueId: userId, displayName: displayName),
-                size: 18,
+    final lang = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(inviter),
+              subtitle: Text(lang.youInvited(info.roomsCount())),
+              leading: ActerAvatar(
+                options: AvatarOptions.DM(
+                  AvatarInfo(uniqueId: userId, displayName: displayName),
+                  size: 18,
+                ),
               ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  DottedBorderWidget(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                        vertical: 6,
+                      ),
+                      child: Text(token),
+                    ),
+                  ),
+                  ActerPrimaryActionButton(
+                    onPressed:
+                        info.hasRedeemed()
+                            ? null
+                            : () {
+                              if (!inCI && !ref.read(hasNetworkProvider)) {
+                                showNoInternetNotification(context);
+                                return;
+                              }
+                              redeemToken(context, ref, token);
+                            },
+                    child: Text(
+                      info.hasRedeemed() ? lang.redeemed : lang.redeem,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildNavigationButtons(BuildContext context, L10n lang) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        showGetDetailsButton
-            ? _buildGetDetailsButton(context, lang)
-            : const SizedBox.shrink(),
-        const SizedBox(height: 16),
-        showRedeemButton
-            ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildRedeemButton(context, lang),
-                const SizedBox(height: 16),
-              ],
-            )
-            : const SizedBox.shrink(),
-        if (!showRedeemButton) _buildSkipButton(context, lang),
-        const SizedBox(height: 16),
-      ],
-    );
-  }
+  Widget _buildActionButton(BuildContext context, L10n lang) {
+    if (hasRedeemedAnyToken) {
+      return ActerPrimaryActionButton(
+        onPressed: () {
+          EasyLoading.dismiss();
+          context.goNamed(Routes.encryptionBackup.name);
+        },
+        child: Text(lang.wizzardContinue, style: const TextStyle(fontSize: 16)),
+      );
+    }
 
-  Widget _buildGetDetailsButton(BuildContext context, L10n lang) {
-    return ElevatedButton(
-      onPressed:
-          _tokenController.text.isNotEmpty
-              ? () {
-                if (!_formKey.currentState!.validate()) return;
-                if (!inCI && !ref.read(hasNetworkProvider)) {
-                  showNoInternetNotification(context);
-                  return;
-                }
-                setState(() {
-                  showInviteInfo = true;
-                });
-              }
-              : null,
-      child: Text(lang.getDetails, style: const TextStyle(fontSize: 16)),
-    );
-  }
-
-  Widget _buildRedeemButton(BuildContext context, L10n lang) {
-    return ActerPrimaryActionButton(
-      onPressed:
-          _tokenController.text.isNotEmpty
-              ? () {
-                if (!_formKey.currentState!.validate()) return;
-                if (!inCI && !ref.read(hasNetworkProvider)) {
-                  showNoInternetNotification(context);
-                  return;
-                }
-                redeemToken(context, ref, _tokenController.text.trim());
-              }
-              : null,
-      child: Text(lang.redeem, style: const TextStyle(fontSize: 16)),
-    );
-  }
-
-  Widget _buildSkipButton(BuildContext context, L10n lang) {
     return OutlinedButton(
       onPressed: () {
         EasyLoading.dismiss();
-        context.goNamed(
-          Routes.saveUsername.name,
-          queryParameters: {'username': widget.username},
-        );
+        context.goNamed(Routes.encryptionBackup.name);
       },
       child: Text(lang.skip),
     );
@@ -336,11 +320,12 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
         EasyLoading.dismiss();
         return;
       }
-      EasyLoading.showToast(lang.addedToSpacesAndChats(rooms.length));
-      context.goNamed(
-          Routes.saveUsername.name,
-          queryParameters: {'username': widget.username},
-        );
+      EasyLoading.showSuccess(lang.addedToSpacesAndChats(rooms.length));
+      // Remove redeemed token from list
+      setState(() {
+        validTokens.remove(token);
+        hasRedeemedAnyToken = true;
+      });
     } catch (e) {
       if (!context.mounted) {
         EasyLoading.dismiss();

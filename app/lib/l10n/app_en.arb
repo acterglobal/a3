@@ -936,6 +936,8 @@
     "@redactionFailed": {},
     "redeem": "Redeem",
     "@redeem": {},
+    "redeemed": "Redeemed",
+    "@redeemed": {},
     "redeemingFailed": "Redeeming failed: {error}",
     "@redeemingFailed": {},
     "register": "Register",
