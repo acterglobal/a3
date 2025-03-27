@@ -14,6 +14,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
+import 'package:acter/features/spaces/model/permission_config.dart';
 
 final _log = Logger('a3::spaces::actions::create_space');
 
@@ -53,7 +54,7 @@ Future<String?> createSpace(
     if (roomJoinRule != null) {
       config.joinRule(roomJoinRule.name);
     }
-    final permissionsBuilder = await generatePermissions(ref, lang);
+    final permissionsBuilder = await generatePermissionsBuilder(ref, lang);
     if (permissionsBuilder != null) {
       config.setPermissions(permissionsBuilder);
     }
@@ -102,82 +103,24 @@ Future<String?> createSpace(
   }
 }
 
-Future<AppPermissionsBuilder?> generatePermissions(
+Future<AppPermissionsBuilder?> generatePermissionsBuilder(
   WidgetRef ref,
   L10n lang,
 ) async {
   try {
-    //Get permissions builder
     final sdk = await ref.read(sdkProvider.future);
     final permissionsBuilder = sdk.api.newAppPermissionsBuilder();
-
-    //Get feature states
     final featureStates = ref.read(featureActivationStateProvider);
 
     for (final entry in featureStates.entries) {
       final feature = entry.key;
       final state = entry.value;
 
-      switch (feature) {
-        case SpaceFeature.boosts:
-          permissionsBuilder.news(state.isActivated);
-          for (final permission in state.permissions) {
-            if (permission.key == 'boost-post') {
-              permissionsBuilder.newsPermisisons(
-                permission.permissionLevel.value,
-              );
-            }
-          }
-          break;
-        case SpaceFeature.stories:
-          permissionsBuilder.stories(state.isActivated);
-          for (final permission in state.permissions) {
-            if (permission.key == 'story-post') {
-              permissionsBuilder.storiesPermisisons(
-                permission.permissionLevel.value,
-              );
-            }
-          }
-          break;
-        case SpaceFeature.pins:
-          permissionsBuilder.pins(state.isActivated);
-          for (final permission in state.permissions) {
-            if (permission.key == 'pin-post') {
-              permissionsBuilder.pinsPermisisons(
-                permission.permissionLevel.value,
-              );
-            }
-          }
-          break;
-        case SpaceFeature.events:
-          permissionsBuilder.calendarEvents(state.isActivated);
-          for (final permission in state.permissions) {
-            if (permission.key == 'event-post') {
-              permissionsBuilder.calendarEventsPermisisons(
-                permission.permissionLevel.value,
-              );
-            } else if (permission.key == 'event-rsvp') {
-              permissionsBuilder.rsvpPermisisons(
-                permission.permissionLevel.value,
-              );
-            }
-          }
-          break;
-        case SpaceFeature.tasks:
-          permissionsBuilder.tasks(state.isActivated);
-          for (final permission in state.permissions) {
-            if (permission.key == 'task-list-post') {
-              permissionsBuilder.tasksPermisisons(
-                permission.permissionLevel.value,
-              );
-            } else if (permission.key == 'task-item-post') {
-              permissionsBuilder.tasksPermisisons(
-                permission.permissionLevel.value,
-              );
-            }
-          }
-          break;
-      }
+      // Set feature activation
+      setFeatureActivation(permissionsBuilder, feature, state.isActivated);
+
+      // Set permissions for each feature
+      setFeaturePermissions(permissionsBuilder, feature, state.permissions);
     }
 
     return permissionsBuilder;
@@ -188,5 +131,81 @@ Future<AppPermissionsBuilder?> generatePermissions(
       duration: const Duration(seconds: 3),
     );
     return null;
+  }
+}
+
+void setFeatureActivation(
+  AppPermissionsBuilder builder,
+  SpaceFeature feature,
+  bool isActivated,
+) {
+  switch (feature) {
+    case SpaceFeature.boosts:
+      builder.news(isActivated);
+      break;
+    case SpaceFeature.stories:
+      builder.stories(isActivated);
+      break;
+    case SpaceFeature.pins:
+      builder.pins(isActivated);
+      break;
+    case SpaceFeature.events:
+      builder.calendarEvents(isActivated);
+      break;
+    case SpaceFeature.tasks:
+      builder.tasks(isActivated);
+      break;
+  }
+}
+
+void setFeaturePermissions(
+  AppPermissionsBuilder builder,
+  SpaceFeature feature,
+  List<PermissionConfig> permissions,
+) {
+  for (final permission in permissions) {
+    switch (feature) {
+      case SpaceFeature.boosts:
+        switch (permission.key) {
+          case 'boost-post':
+            builder.newsPermisisons(permission.permissionLevel.value);
+            break;
+        }
+        break;
+      case SpaceFeature.stories:
+        switch (permission.key) {
+          case 'story-post':
+            builder.storiesPermisisons(permission.permissionLevel.value);
+            break;
+        }
+        break;
+      case SpaceFeature.pins:
+        switch (permission.key) {
+          case 'pin-post':
+            builder.pinsPermisisons(permission.permissionLevel.value);
+            break;
+        }
+        break;
+      case SpaceFeature.events:
+        switch (permission.key) {
+          case 'event-post':
+            builder.calendarEventsPermisisons(permission.permissionLevel.value);
+            break;
+          case 'event-rsvp':
+            builder.rsvpPermisisons(permission.permissionLevel.value);
+            break;
+        }
+        break;
+      case SpaceFeature.tasks:
+        switch (permission.key) {
+          case 'task-list-post':
+            builder.taskListsPermisisons(permission.permissionLevel.value);
+            break;
+          case 'task-item-post':
+            builder.tasksPermisisons(permission.permissionLevel.value);
+            break;
+        }
+        break;
+    }
   }
 }
