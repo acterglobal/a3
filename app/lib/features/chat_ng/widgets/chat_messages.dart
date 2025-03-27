@@ -6,7 +6,7 @@ import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
-import 'package:acter/features/chat_ng/widgets/typing_indicator.dart';
+import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';

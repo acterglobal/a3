@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'dart:async';
 
 enum TypingIndicatorMode { name, avatar, nameAndAvatar }
 
@@ -96,7 +97,7 @@ class TypingWidget extends StatelessWidget {
     } else if (mode == TypingIndicatorMode.avatar) {
       return Row(
         children: [
-          AvatarHandler(context: context, users: typingUsers, isRtl: isRtl),
+          AvatarHandler(users: typingUsers, isRtl: isRtl),
           const SizedBox(width: 4),
           AnimatedCircles(theme: theme),
         ],
@@ -104,7 +105,7 @@ class TypingWidget extends StatelessWidget {
     } else {
       return Row(
         children: [
-          AvatarHandler(context: context, users: typingUsers, isRtl: isRtl),
+          AvatarHandler(users: typingUsers, isRtl: isRtl),
           const SizedBox(width: 4),
           Flexible(
             child: Text(
@@ -122,14 +123,8 @@ class TypingWidget extends StatelessWidget {
 
 /// Multi Avatar Handler Widget.
 class AvatarHandler extends StatelessWidget {
-  const AvatarHandler({
-    super.key,
-    required this.context,
-    required this.users,
-    this.isRtl = false,
-  });
+  const AvatarHandler({super.key, required this.users, this.isRtl = false});
 
-  final BuildContext context;
   final List<AvatarInfo> users;
   final bool isRtl;
 
@@ -223,6 +218,7 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
     with TickerProviderStateMixin {
   late final List<AnimationController> _controllers;
   late final List<Animation<Offset>> _animations;
+  final List<Timer> _timers = [];
 
   @override
   void initState() {
@@ -253,16 +249,23 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
 
   void startAnimations() {
     for (int i = 0; i < _controllers.length; i++) {
-      Future.delayed(Duration(milliseconds: i * 150), () {
+      final timer = Timer(Duration(milliseconds: i * 150), () {
         if (mounted) {
           _controllers[i].repeat(reverse: true);
         }
       });
+      _timers.add(timer);
     }
   }
 
   @override
   void dispose() {
+    // Cancel any pending timers
+    for (final timer in _timers) {
+      timer.cancel();
+    }
+
+    // Dispose animation controllers
     for (final controller in _controllers) {
       controller.dispose();
     }
