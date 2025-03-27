@@ -5,33 +5,16 @@ import 'package:acter/common/themes/acter_theme.dart';
 
 enum TypingIndicatorMode { name, avatar, nameAndAvatar }
 
-enum BubbleRtlAlignment { left, right }
-
-/// Theme for the typing indicator.
-class TypingIndicatorTheme {
-  const TypingIndicatorTheme({
-    this.animatedCircleSize = 5.0,
-    this.animatedCirclesColor = Colors.grey,
-    this.multipleUserTextStyle = const TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-      color: Colors.grey,
-    ),
-  });
-
-  final double animatedCircleSize;
-  final Color animatedCirclesColor;
-  final TextStyle multipleUserTextStyle;
-}
-
 /// Options for the typing indicator.
 class TypingIndicatorOptions {
   const TypingIndicatorOptions({
     this.typingUsers = const [],
     this.customTypingWidget,
+    this.mode = TypingIndicatorMode.name,
   });
 
   final List<AvatarInfo> typingUsers;
+  final TypingIndicatorMode mode;
   final Widget? customTypingWidget;
 }
 
@@ -47,31 +30,14 @@ class TypingIndicator extends StatefulWidget {
 class _TypingIndicatorState extends State<TypingIndicator> {
   @override
   Widget build(BuildContext context) {
-    if (widget.options.typingUsers.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    // Use theme from the context
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    final theme = TypingIndicatorTheme(
-      animatedCircleSize: 5.0,
-      animatedCirclesColor: colorScheme.primary.withAlpha((0.7 * 255).toInt()),
-      multipleUserTextStyle:
-          textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurface.withAlpha((0.7 * 255).toInt()),
-            fontWeight: FontWeight.w500,
-          ) ??
-          const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey,
-          ),
-    );
+    final theme = Theme.of(context).typingIndicatorTheme;
 
     return widget.options.customTypingWidget ??
-        TypingWidget(typingUsers: widget.options.typingUsers, theme: theme);
+        TypingWidget(
+          typingUsers: widget.options.typingUsers,
+          theme: theme,
+          mode: widget.options.mode,
+        );
   }
 }
 
@@ -81,59 +47,91 @@ class TypingWidget extends StatelessWidget {
     super.key,
     required this.typingUsers,
     required this.theme,
+    this.mode = TypingIndicatorMode.nameAndAvatar,
   });
 
   final List<AvatarInfo> typingUsers;
   final TypingIndicatorTheme theme;
+  final TypingIndicatorMode mode;
 
   String _buildTypingText(List<AvatarInfo> users, L10n l10n) {
     if (users.isEmpty) return '';
     if (users.length == 1) {
-      final name = users.first.displayName;
-      return name != null ? l10n.typingUser1(name) : '';
+      final name = users.first.displayName ?? users.first.uniqueId;
+      return l10n.typingUser1(name);
     } else if (users.length == 2) {
-      final name1 = users.first.displayName;
-      final name2 = users.last.displayName;
-      return (name1 != null && name2 != null)
-          ? l10n.typingUser2(name1, name2)
-          : '';
+      final name1 = users.first.displayName ?? users.first.uniqueId;
+      final name2 = users.last.displayName ?? users.last.uniqueId;
+      return l10n.typingUser2(name1, name2);
     } else {
-      final name = users.first.displayName;
-      return name != null ? l10n.typingUserN(name, users.length - 1) : '';
+      final name = users.first.displayName ?? users.first.uniqueId;
+      return l10n.typingUserN(name, users.length - 1);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (typingUsers.isEmpty) return const SizedBox.shrink();
-
     final l10n = L10n.of(context);
     final text = _buildTypingText(typingUsers, l10n);
+    final textDirection = Directionality.of(context);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Text(
-            text,
-            style: theme.multipleUserTextStyle,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+    // Simply use the system text direction
+    final isRtl = textDirection == TextDirection.rtl;
+
+    if (mode == TypingIndicatorMode.name) {
+      return Row(
+        children: [
+          AnimatedCircles(theme: theme),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: theme.multipleUserTextStyle,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
-        ),
-        const SizedBox(width: 4),
-        AnimatedCircles(theme: theme),
-      ],
-    );
+        ],
+      );
+    } else if (mode == TypingIndicatorMode.avatar) {
+      return Row(
+        children: [
+          AvatarHandler(context: context, users: typingUsers, isRtl: isRtl),
+          const SizedBox(width: 4),
+          AnimatedCircles(theme: theme),
+        ],
+      );
+    } else {
+      return Row(
+        children: [
+          AvatarHandler(context: context, users: typingUsers, isRtl: isRtl),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              text,
+              style: theme.multipleUserTextStyle,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
 
 /// Multi Avatar Handler Widget.
 class AvatarHandler extends StatelessWidget {
-  const AvatarHandler({super.key, required this.context, required this.users});
+  const AvatarHandler({
+    super.key,
+    required this.context,
+    required this.users,
+    this.isRtl = false,
+  });
 
   final BuildContext context;
   final List<AvatarInfo> users;
+  final bool isRtl;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +139,7 @@ class AvatarHandler extends StatelessWidget {
       return const SizedBox();
     } else if (users.length == 1) {
       return Align(
-        alignment: Alignment.centerLeft,
+        alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
         child: TypingAvatar(context: context, userInfo: users.first),
       );
     } else if (users.length == 2) {
@@ -149,7 +147,8 @@ class AvatarHandler extends StatelessWidget {
         children: <Widget>[
           TypingAvatar(context: context, userInfo: users.first),
           Positioned(
-            left: 16,
+            left: isRtl ? null : 16,
+            right: isRtl ? 16 : null,
             child: TypingAvatar(context: context, userInfo: users[1]),
           ),
         ],
@@ -160,11 +159,13 @@ class AvatarHandler extends StatelessWidget {
           children: <Widget>[
             TypingAvatar(context: context, userInfo: users.first),
             Positioned(
-              left: 16,
+              left: isRtl ? null : 16,
+              right: isRtl ? 16 : null,
               child: TypingAvatar(context: context, userInfo: users[1]),
             ),
             Positioned(
-              left: 32,
+              left: isRtl ? null : 32,
+              right: isRtl ? 32 : null,
               child: CircleAvatar(
                 radius: 13,
                 backgroundColor:
@@ -204,7 +205,7 @@ class TypingAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ActerAvatar(options: AvatarOptions.DM(userInfo, size: 26));
+    return ActerAvatar(options: AvatarOptions.DM(userInfo, size: 12));
   }
 }
 
@@ -247,6 +248,10 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
     );
 
     // Start animations with staggered delays
+    startAnimations();
+  }
+
+  void startAnimations() {
     for (int i = 0; i < _controllers.length; i++) {
       Future.delayed(Duration(milliseconds: i * 150), () {
         if (mounted) {
@@ -261,6 +266,7 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
     for (final controller in _controllers) {
       controller.dispose();
     }
+
     super.dispose();
   }
 

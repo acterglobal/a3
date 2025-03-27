@@ -1,16 +1,17 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
+import 'package:acter/features/chat_ng/widgets/typing_indicator.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:acter/features/chat_ng/widgets/typing_indicator.dart';
 
 class ChatMessages extends ConsumerStatefulWidget {
   static const fabScrollToBottomKey = Key('chat_messages_fab_scroll_to_bottom');
@@ -47,6 +48,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         }
       },
     );
+
     _scrollController.addListener(onScroll);
   }
 
@@ -54,6 +56,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   void dispose() {
     markReadDebouce?.cancel();
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -120,8 +123,18 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         widget.roomId,
       ).select((value) => value.messageList),
     );
+
     final typingUsers =
-        ref.watch(chatTypingEventProvider(widget.roomId)).valueOrNull ?? [];
+        (ref.watch(chatTypingEventProvider(widget.roomId)).valueOrNull ?? [])
+            .map(
+              (userId) => ref.watch(
+                memberAvatarInfoProvider((
+                  userId: userId,
+                  roomId: widget.roomId,
+                )),
+              ),
+            )
+            .toList();
 
     return PageStorage(
       bucket: bucketGlobal,
@@ -136,8 +149,8 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
               ],
             ),
           ),
-          // typing indicator
           if (typingUsers.isNotEmpty)
+            // typing indicator
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

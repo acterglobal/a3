@@ -13,8 +13,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter/features/users/providers/user_profile_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 
 final _log = Logger('a3::chat::message_provider');
@@ -203,39 +201,15 @@ final chatEditorStateProvider =
     );
 
 final chatTypingEventProvider = StreamProvider.autoDispose
-    .family<List<AvatarInfo>, String>((ref, roomId) async* {
+    .family<List<String>, String>((ref, roomId) async* {
       final client = await ref.watch(alwaysClientProvider.future);
       final userId = ref.watch(myUserIdStrProvider);
-      yield [];
       await for (final event in client.subscribeToTypingEventStream(roomId)) {
-        final userIds =
-            event
-                .userIds()
-                .toList()
-                .map((i) => i.toString())
-                .where((id) => id != userId) // remove our User ID
-                .toList();
-
-        final avatarInfos = <AvatarInfo>[];
-        for (final id in userIds) {
-          try {
-            // Try to fetch user profile
-            final users = await client.searchUsers(id);
-            final userProfile = users.toList().firstOrNull;
-
-            if (userProfile != null) {
-              // if profile is available, use to get avatar info
-              avatarInfos.add(ref.watch(userAvatarInfoProvider(userProfile)));
-            } else {
-              // if profile is not available, use the user id to get avatar info
-              avatarInfos.add(AvatarInfo(uniqueId: id, displayName: id));
-            }
-          } catch (e) {
-            // fallback to only get basic info
-            avatarInfos.add(AvatarInfo(uniqueId: id, displayName: id));
-          }
-        }
-
-        yield avatarInfos;
+        yield event
+            .userIds()
+            .toList()
+            .map((i) => i.toString())
+            .where((i) => i != userId)
+            .toList();
       }
     });
