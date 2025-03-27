@@ -152,9 +152,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 5),
-            _buildActionButton(context, lang),
-            const SizedBox(height: 16),
+            _buildNavigationButtons(context, lang),
           ],
         ),
       ),
@@ -286,6 +284,19 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNavigationButtons(BuildContext context, L10n lang) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ...[
+          const SizedBox(height: 5),
+          _buildActionButton(context, lang),
+          const SizedBox(height: 16),
+        ],
+      ],
     );
   }
 
