@@ -116,12 +116,15 @@ Future<AppPermissionsBuilder?> generatePermissionsBuilder(
     for (final entry in featureStates.entries) {
       final feature = entry.key;
       final state = entry.value;
+      final isActivated = state.isActivated;
 
       // Set feature activation
-      setFeatureActivation(permissionsBuilder, feature, state.isActivated);
+      setFeatureActivation(permissionsBuilder, feature, isActivated);
 
-      // Set permissions for each feature
-      setFeaturePermissions(permissionsBuilder, feature, state.permissions);
+      // Set permissions for activated features
+      if (isActivated) {
+        setFeaturePermissions(permissionsBuilder, feature, state.permissions);
+      }
     }
 
     return permissionsBuilder;
@@ -165,45 +168,48 @@ void setFeaturePermissions(
   List<PermissionConfig> permissions,
 ) {
   for (final permission in permissions) {
+    final permissionKey = permission.key;
+    final permissionLevel = permission.permissionLevel.value;
+
     switch (feature) {
       case SpaceFeature.boosts:
-        switch (permission.key) {
+        switch (permissionKey) {
           case 'boost-post':
-            builder.newsPermisisons(permission.permissionLevel.value);
+            builder.newsPermisisons(permissionLevel);
             break;
         }
         break;
       case SpaceFeature.stories:
-        switch (permission.key) {
+        switch (permissionKey) {
           case 'story-post':
-            builder.storiesPermisisons(permission.permissionLevel.value);
+            builder.storiesPermisisons(permissionLevel);
             break;
         }
         break;
       case SpaceFeature.pins:
-        switch (permission.key) {
+        switch (permissionKey) {
           case 'pin-post':
-            builder.pinsPermisisons(permission.permissionLevel.value);
+            builder.pinsPermisisons(permissionLevel);
             break;
         }
         break;
       case SpaceFeature.events:
-        switch (permission.key) {
+        switch (permissionKey) {
           case 'event-post':
-            builder.calendarEventsPermisisons(permission.permissionLevel.value);
+            builder.calendarEventsPermisisons(permissionLevel);
             break;
           case 'event-rsvp':
-            builder.rsvpPermisisons(permission.permissionLevel.value);
+            builder.rsvpPermisisons(permissionLevel);
             break;
         }
         break;
       case SpaceFeature.tasks:
-        switch (permission.key) {
+        switch (permissionKey) {
           case 'task-list-post':
-            builder.taskListsPermisisons(permission.permissionLevel.value);
+            builder.taskListsPermisisons(permissionLevel);
             break;
           case 'task-item-post':
-            builder.tasksPermisisons(permission.permissionLevel.value);
+            builder.tasksPermisisons(permissionLevel);
             break;
         }
         break;
