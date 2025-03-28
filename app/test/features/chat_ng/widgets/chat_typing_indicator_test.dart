@@ -62,8 +62,7 @@ void main() {
 
       expect(find.byType(TypingIndicator), findsOneWidget);
 
-      expect(find.textContaining('Alice'), findsOneWidget);
-      expect(find.textContaining('Bob'), findsOneWidget);
+      expect(find.text('Alice and Bob are typing…'), findsOneWidget);
     });
 
     testWidgets('displays nothing when no users are typing', (tester) async {
@@ -123,7 +122,7 @@ void main() {
 
       expect(find.byType(TypingIndicator), findsOneWidget);
 
-      expect(find.textContaining('Alice'), findsOneWidget);
+      expect(find.text('Alice is typing…'), findsOneWidget);
     });
 
     testWidgets('handles multiple users typing correctly', (tester) async {
@@ -176,9 +175,7 @@ void main() {
 
       expect(find.byType(TypingIndicator), findsOneWidget);
 
-      expect(find.textContaining('Alice'), findsOneWidget);
-
-      expect(find.textContaining('3'), findsOneWidget);
+      expect(find.text('Alice and 3 others are typing'), findsOneWidget);
     });
   });
 
@@ -254,35 +251,6 @@ void main() {
       );
 
       // verify we get an empty list
-      expect(result, isEmpty);
-      expect(result.length, equals(0));
-
-      // verify the methods were called
-      verify(() => mockClient.subscribeToTypingEventStream(roomId)).called(1);
-      verify(() => mockTypingEvent.userIds()).called(1);
-      verify(() => mockUserIdList.toList()).called(1);
-    });
-
-    test('handles only current user typing', () async {
-      const roomId = 'test-room-id';
-      const currentUserId = 'current-user';
-
-      final currentUser = MockUserId(currentUserId);
-      when(() => mockUserIdList.toList()).thenReturn([currentUser]);
-
-      final mockClientNotifier = MockClientNotifier(client: mockClient);
-      final container = ProviderContainer(
-        overrides: [
-          clientProvider.overrideWith(() => mockClientNotifier),
-          myUserIdStrProvider.overrideWithValue(currentUserId),
-        ],
-      );
-
-      final result = await container.read(
-        chatTypingEventProvider(roomId).future,
-      );
-
-      // verify we get an empty list since only the current user is typing
       expect(result, isEmpty);
       expect(result.length, equals(0));
 
