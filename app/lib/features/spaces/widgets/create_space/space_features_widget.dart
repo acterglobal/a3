@@ -142,7 +142,6 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     FeatureActivationState featureState,
   ) {
     final textThemeBodySmall = Theme.of(context).textTheme.bodySmall;
-    final secondaryColor = Theme.of(context).colorScheme.secondary;
     final lang = L10n.of(context);
     final permissionDescription = _getPermissionDescription(
       lang,
@@ -152,28 +151,52 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.lock_outline, size: 16),
-          const SizedBox(width: 4),
-          Text(permissionDescription, style: textThemeBodySmall),
+          Icon(Icons.lock_outline, size: 18),
           const SizedBox(width: 8),
-          InkWell(
-            onTap:
-                () => _onTapChangePermission(
-                  spaceFeature,
-                  featureState,
-                  permissionItem,
-                ),
-            child: Text(
-              permissionItem.permissionLevel.name.toUpperCase(),
-              style: textThemeBodySmall?.copyWith(color: secondaryColor),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(permissionDescription, style: textThemeBodySmall),
+              const SizedBox(height: 4),
+              _buildPermissionOptions(
+                spaceFeature,
+                featureState,
+                permissionItem,
+              ),
+              const SizedBox(height: 6),
+            ],
           ),
-          const SizedBox(width: 4),
-          Icon(Icons.keyboard_arrow_down, size: 16, color: secondaryColor),
         ],
       ),
+    );
+  }
+
+  Widget _buildPermissionOptions(
+    SpaceFeature spaceFeature,
+    FeatureActivationState featureState,
+    PermissionConfig permissionItem,
+  ) {
+    final textThemeBodySmall = Theme.of(context).textTheme.bodySmall;
+    final secondaryColor = Theme.of(context).colorScheme.secondary;
+    return Row(
+      children: [
+        InkWell(
+          onTap:
+              () => _onTapChangePermission(
+                spaceFeature,
+                featureState,
+                permissionItem,
+              ),
+          child: Text(
+            permissionItem.permissionLevel.name.toUpperCase(),
+            style: textThemeBodySmall?.copyWith(color: secondaryColor),
+          ),
+        ),
+        const SizedBox(width: 4),
+        Icon(Icons.keyboard_arrow_down, size: 16, color: secondaryColor),
+      ],
     );
   }
 
