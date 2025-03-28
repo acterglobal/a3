@@ -8,12 +8,55 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:acter/common/widgets/typing_indicator.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
   static Key tasksLabSwitch = const Key('labs-tasks');
   static Key pinsEditorLabSwitch = const Key('labs-pins-editor');
 
   const SettingsLabsPage({super.key});
+
+  String _getModeDescription(TypingIndicatorMode mode) {
+    switch (mode) {
+      case TypingIndicatorMode.name:
+        return 'Show only names';
+      case TypingIndicatorMode.avatar:
+        return 'Show only avatars';
+      case TypingIndicatorMode.nameAndAvatar:
+        return 'Show both names and avatars';
+    }
+  }
+
+  Future<void> _setTypingIndicatorMode(
+    WidgetRef ref,
+    TypingIndicatorMode mode,
+  ) async {
+    // First disable all modes
+    await updateFeatureState(ref, LabsFeature.typingIndicatorName, false);
+    await updateFeatureState(ref, LabsFeature.typingIndicatorAvatar, false);
+    await updateFeatureState(
+      ref,
+      LabsFeature.typingIndicatorNameAndAvatar,
+      false,
+    );
+
+    // Then enable the selected mode
+    switch (mode) {
+      case TypingIndicatorMode.name:
+        await updateFeatureState(ref, LabsFeature.typingIndicatorName, true);
+        break;
+      case TypingIndicatorMode.avatar:
+        await updateFeatureState(ref, LabsFeature.typingIndicatorAvatar, true);
+        break;
+      case TypingIndicatorMode.nameAndAvatar:
+        await updateFeatureState(
+          ref,
+          LabsFeature.typingIndicatorNameAndAvatar,
+          true,
+        );
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,6 +126,25 @@ class SettingsLabsPage extends ConsumerWidget {
                       'Changes will affect after app restart',
                     );
                   },
+                ),
+                SettingsTile(
+                  title: Text('Typing Indicator Style (Next Generation Chat)'),
+                  description: Text(
+                    _getModeDescription(
+                      ref.watch(chatTypingIndicatorModeProvider),
+                    ),
+                  ),
+                  trailing: PopupMenuButton<TypingIndicatorMode>(
+                    onSelected: (mode) => _setTypingIndicatorMode(ref, mode),
+                    itemBuilder:
+                        (context) =>
+                            TypingIndicatorMode.values.map((mode) {
+                              return PopupMenuItem(
+                                value: mode,
+                                child: Text(_getModeDescription(mode)),
+                              );
+                            }).toList(),
+                  ),
                 ),
               ],
             ),

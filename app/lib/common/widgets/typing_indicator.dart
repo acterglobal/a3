@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
 enum TypingIndicatorMode { name, avatar, nameAndAvatar }
@@ -11,33 +13,29 @@ class TypingIndicatorOptions {
   const TypingIndicatorOptions({
     this.typingUsers = const [],
     this.customTypingWidget,
-    this.mode = TypingIndicatorMode.name,
+    this.mode,
   });
 
   final List<AvatarInfo> typingUsers;
-  final TypingIndicatorMode mode;
+  final TypingIndicatorMode? mode;
   final Widget? customTypingWidget;
 }
 
-class TypingIndicator extends StatefulWidget {
+class TypingIndicator extends ConsumerWidget {
   const TypingIndicator({super.key, required this.options});
 
   final TypingIndicatorOptions options;
 
   @override
-  State<TypingIndicator> createState() => _TypingIndicatorState();
-}
-
-class _TypingIndicatorState extends State<TypingIndicator> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).typingIndicatorTheme;
+    final mode = options.mode ?? ref.watch(chatTypingIndicatorModeProvider);
 
-    return widget.options.customTypingWidget ??
+    return options.customTypingWidget ??
         TypingWidget(
-          typingUsers: widget.options.typingUsers,
+          typingUsers: options.typingUsers,
           theme: theme,
-          mode: widget.options.mode,
+          mode: mode ?? TypingIndicatorMode.nameAndAvatar,
         );
   }
 }
