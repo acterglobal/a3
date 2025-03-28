@@ -187,41 +187,41 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/window_manager/macos
 
 SPEC CHECKSUMS:
-  acter_flutter_sdk: 88c2208a5e585be9da7e27c800f8ce1d7d59b452
-  app_badge_plus: 8e9d58b0b9bb6e337c80b857a4097a9444a19db2
-  app_links: afe860c55c7ef176cea7fb630a2b7d7736de591d
-  app_settings: cd21e176b56f8172043640ade81322a98896bff4
-  connectivity_plus: 4adf20a405e25b42b9c9f87feff8f4b6fde18a4e
-  device_info_plus: a56e6e74dbbd2bb92f2da12c64ddd4f67a749041
-  emoji_picker_flutter: 51ca408e289d84d1e460016b2a28721ec754fcf7
-  fc_native_video_thumbnail: ea75aa9d0f7e7b58215d2ad99ac9dddafc038bc9
-  file_picker: 7584aae6fa07a041af2b36a2655122d42f578c1a
-  file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31
+  acter_flutter_sdk: a2ce9616c3d66cc8f3ca770b6832f320b9a7ea1b
+  app_badge_plus: 6383952fd4ffa3fa5675a382e2583a6cb538cd5b
+  app_links: 86a57d95d4dec830373b8c85c21d1c59a4a5dc21
+  app_settings: 140be3a9c0fc1f681e44afe9f549ab037b3aa3a2
+  connectivity_plus: 0a976dfd033b59192912fa3c6c7b54aab5093802
+  device_info_plus: ce1b7762849d3ec103d0e0517299f2db7ad60720
+  emoji_picker_flutter: 846d4afb3368bc864a3884f02654961198bd72da
+  fc_native_video_thumbnail: ded291371a8a82c449f28bf1ff84f576de8b65c5
+  file_picker: e716a70a9fe5fd9e09ebc922d7541464289443af
+  file_selector_macos: cc3858c981fe6889f364731200d6232dac1d812d
   Firebase: 973c28133496aab0223e9ea99f0abafb9f91ad58
-  firebase_core: 3dcdf8453dfb144a023ee70f49e0463b97177f71
+  firebase_core: 1b573eac37729348cdc472516991dd7e269ae37e
   FirebaseCore: 99fe0c4b44a39f37d99e6404e02009d2db5d718d
   FirebaseCoreInternal: df24ce5af28864660ecbd13596fc8dd3a8c34629
-  flutter_local_notifications: 7e5a17a1dbc00d83dc10d43c2c4c05f2ceed233c
-  flutter_secure_storage_macos: 7f45e30f838cf2659862a4e4e3ee1c347c2b3b54
+  flutter_local_notifications: 4b427ffabf278fc6ea9484c97505e231166927a5
+  flutter_secure_storage_macos: c2754d3483d20bb207bb9e5a14f1b8e771abcdb9
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  media_kit_libs_macos_video: 85a23e549b5f480e72cae3e5634b5514bc692f65
-  media_kit_native_event_loop: a80d071c835c612fd80173e79390a50ec409f1b1
-  media_kit_video: fa6564e3799a0a28bff39442334817088b7ca758
-  package_info_plus: f0052d280d17aa382b932f399edf32507174e870
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  screen_brightness_macos: 2a3ee243f8051c340381e8e51bcedced8360f421
-  screen_retriever: 4f97c103641aab8ce183fa5af3b87029df167936
+  media_kit_libs_macos_video: b3e2bbec2eef97c285f2b1baa7963c67c753fb82
+  media_kit_native_event_loop: 81fd5b45192b72f8b5b69eaf5b540f45777eb8d5
+  media_kit_video: c75b07f14d59706c775778e4dd47dd027de8d1e5
+  package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  screen_brightness_macos: 2d6d3af2165592d9a55ffcd95b7550970e41ebda
+  screen_retriever: 59634572a57080243dd1bf715e55b6c54f241a38
   Sentry: 0f9bc9adfc0b960e7f3bb5ec67e9a3d8193f3bdb
-  sentry_flutter: f4a0466dc8855998ffd59378ec33507c7dc32d7b
-  share_plus: 510bf0af1a42cd602274b4629920c9649c52f4cc
-  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
-  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
-  tray_manager: a104b5c81b578d83f3c3d0f40a997c8b10810166
-  url_launcher_macos: 0fba8ddabfc33ce0a9afe7c5fef5aab3d8d2d673
-  video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
-  wakelock_plus: 21ddc249ac4b8d018838dbdabd65c5976c308497
-  window_manager: 1d01fa7ac65a6e6f83b965471b1a7fdd3f06166c
+  sentry_flutter: 64a43fb39ab4c7f67d8a4cad52b49e22439e58b7
+  share_plus: 1fa619de8392a4398bfaf176d441853922614e89
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
+  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
+  tray_manager: 9064e219c56d75c476e46b9a21182087930baf90
+  url_launcher_macos: c82c93949963e55b228a30115bd219499a6fe404
+  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
+  wakelock_plus: 4783562c9a43d209c458cb9b30692134af456269
+  window_manager: 3a1844359a6295ab1e47659b1a777e36773cd6e8
 
 PODFILE CHECKSUM: dac0ddf03d136db544afc27b87cc6c08492e67b9
 
