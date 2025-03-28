@@ -936,6 +936,8 @@
     "@redactionFailed": {},
     "redeem": "Redeem",
     "@redeem": {},
+    "redeemed": "Redeemed",
+    "@redeemed": {},
     "redeemingFailed": "Redeeming failed: {error}",
     "@redeemingFailed": {},
     "register": "Register",
@@ -1534,7 +1536,9 @@
     "createDM": "Create DM",
     "autoDMWhileRedeemCode": "While redeeming code, DM will be created'",
     "redeemInviteCode": "Redeem Invite Code",
-    "saveInviteCodeFailed": "Saving code failed: {error}",
+    "redeemInvitation": "Redeem Invitation", 
+    "redeemInvitationDescription": "Have you been given an invitation code? \nEnter it below",
+    "saveInviteCodeFailed": "Saving code failed: {error}", 
     "@saveInviteCodeFailed": {},
     "createInviteCodeFailed": "Creating code failed: {error}",
     "@createInviteCodeFailed": {},
@@ -2327,5 +2331,8 @@
     "accepted": "Accepted",
     "rejected": "Declined",
     "taskLabel": "Task",
+    "getDetails": "Get Details",
+    "youInvited": "Invited to you to join {count} room",
+    "@youInvited": {},
     "@addComment": {}
 }
