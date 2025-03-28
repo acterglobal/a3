@@ -8,8 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 
 import '../../../common/mock_data/mock_avatar_info.dart';
-import '../../../common/widgets/typing_indicator_test.dart';
 import '../../../helpers/test_util.dart';
+import '../providers/typing_indicator_provider_test.dart';
 
 void main() {
   group('Typing Indicator Mode Tests - Labs integration', () {

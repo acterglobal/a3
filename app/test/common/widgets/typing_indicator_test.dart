@@ -2,36 +2,13 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/labs/providers/typing_indicator_provider_test.dart';
 import '../../helpers/test_util.dart';
 import '../mock_data/mock_avatar_info.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter/features/labs/feature_flagger.dart';
-import 'package:acter/features/labs/providers/notifiers/labs_features.dart';
-
-class MockFeaturesNotifier extends SharedPrefFeaturesNotifier {
-  MockFeaturesNotifier(Ref ref) : super('test_key', ref);
-
-  @override
-  Future<void> setActive(LabsFeature f, bool active) async {
-    final currentFlags = List<FeatureFlag<LabsFeature>>.from(state.flags);
-    final existingIndex = currentFlags.indexWhere((flag) => flag.feature == f);
-
-    if (existingIndex >= 0) {
-      currentFlags[existingIndex] = FeatureFlag<LabsFeature>(
-        feature: f,
-        active: active,
-      );
-    } else {
-      currentFlags.add(FeatureFlag<LabsFeature>(feature: f, active: active));
-    }
-
-    state = Features(flags: currentFlags, defaultOn: LabsFeature.defaults);
-  }
-}
 
 void main() {
   group('Typing Indicator Widget', () {
