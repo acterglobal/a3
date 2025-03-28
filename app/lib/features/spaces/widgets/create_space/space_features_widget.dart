@@ -141,50 +141,54 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
     SpaceFeature spaceFeature,
     FeatureActivationState featureState,
   ) {
-    final textTheme = Theme.of(context).textTheme;
+    final textThemeBodySmall = Theme.of(context).textTheme.bodySmall;
+    final secondaryColor = Theme.of(context).colorScheme.secondary;
     final lang = L10n.of(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.lock_outline, size: 16),
-        const SizedBox(width: 4),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Text(switch (permissionItem.key) {
-            PermissionType.boostPost => lang.boostPermissionsDesc,
-            PermissionType.storyPost => lang.storyPermissionsDesc,
-            PermissionType.pinPost => lang.pinPermissionsDesc,
-            PermissionType.eventPost => lang.eventPermissionsDesc,
-            PermissionType.taskListPost => lang.taskListPermissionsDesc,
-            PermissionType.taskItemPost => lang.taskItemPermissionsDesc,
-            PermissionType.eventRsvp => lang.eventRsvpPermissionsDesc,
-            PermissionType.commentPost => lang.commentPermissionsDesc,
-            PermissionType.attachmentPost => lang.attachmentPermissionsDesc,
-          }, style: textTheme.bodySmall),
-        ),
-        const SizedBox(width: 8),
-        InkWell(
-          onTap:
-              () => _onTapChangePermission(
-                spaceFeature,
-                featureState,
-                permissionItem,
-              ),
-          child: Text(
-            permissionItem.permissionLevel.name.toUpperCase(),
-            style: textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.secondary,
+    final permissionDescription = _getPermissionDescription(
+      lang,
+      permissionItem.key,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.lock_outline, size: 16),
+          const SizedBox(width: 4),
+          Text(permissionDescription, style: textThemeBodySmall),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap:
+                () => _onTapChangePermission(
+                  spaceFeature,
+                  featureState,
+                  permissionItem,
+                ),
+            child: Text(
+              permissionItem.permissionLevel.name.toUpperCase(),
+              style: textThemeBodySmall?.copyWith(color: secondaryColor),
             ),
           ),
-        ),
-        const SizedBox(width: 4),
-        Icon(
-          Icons.keyboard_arrow_down,
-          size: 16,
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-      ],
+          const SizedBox(width: 4),
+          Icon(Icons.keyboard_arrow_down, size: 16, color: secondaryColor),
+        ],
+      ),
     );
+  }
+
+  String _getPermissionDescription(L10n lang, PermissionType permissionType) {
+    return switch (permissionType) {
+      PermissionType.boostPost => lang.boostPermissionsDesc,
+      PermissionType.storyPost => lang.storyPermissionsDesc,
+      PermissionType.pinPost => lang.pinPermissionsDesc,
+      PermissionType.eventPost => lang.eventPermissionsDesc,
+      PermissionType.taskListPost => lang.taskListPermissionsDesc,
+      PermissionType.taskItemPost => lang.taskItemPermissionsDesc,
+      PermissionType.eventRsvp => lang.eventRsvpPermissionsDesc,
+      PermissionType.commentPost => lang.commentPermissionsDesc,
+      PermissionType.attachmentPost => lang.attachmentPermissionsDesc,
+    };
   }
 
   void _onTapChangePermission(

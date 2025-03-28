@@ -42,7 +42,6 @@ class PermissionConfig {
 const boostPermissions = [
   PermissionConfig(
     key: PermissionType.boostPost,
-    // displayText: 'Who can post Boosts',
     permissionLevel: PermissionLevel.admin,
   ),
 ];
@@ -50,14 +49,12 @@ const boostPermissions = [
 const storyPermissions = [
   PermissionConfig(
     key: PermissionType.storyPost,
-    // displayText: 'Who can post Stories',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
 const pinPermissions = [
   PermissionConfig(
     key: PermissionType.pinPost,
-    // displayText: 'Who can create Pins',
     permissionLevel: PermissionLevel.moderator,
   ),
 ];
@@ -65,12 +62,10 @@ const pinPermissions = [
 const calendarPermissions = [
   PermissionConfig(
     key: PermissionType.eventPost,
-    // displayText: 'Who can create Events',
     permissionLevel: PermissionLevel.moderator,
   ),
   PermissionConfig(
     key: PermissionType.eventRsvp,
-    // displayText: 'Who can RSVP to Events',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
@@ -78,12 +73,10 @@ const calendarPermissions = [
 const taskPermissions = [
   PermissionConfig(
     key: PermissionType.taskListPost,
-    // displayText: 'Who can create Task Lists',
     permissionLevel: PermissionLevel.admin,
   ),
   PermissionConfig(
     key: PermissionType.taskItemPost,
-    // displayText: 'Who can add Task Items',
     permissionLevel: PermissionLevel.moderator,
   ),
 ];
@@ -91,7 +84,6 @@ const taskPermissions = [
 const commentPermissions = [
   PermissionConfig(
     key: PermissionType.commentPost,
-    // displayText: 'Who can post Comments',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
@@ -99,7 +91,6 @@ const commentPermissions = [
 final attachmentPermissions = [
   PermissionConfig(
     key: PermissionType.attachmentPost,
-    // displayText: 'Who can attach files',
     permissionLevel: PermissionLevel.everyone,
   ),
 ];
