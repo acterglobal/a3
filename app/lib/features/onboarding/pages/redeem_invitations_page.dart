@@ -101,29 +101,43 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
   }
 
   Future<void> _scanQR(BuildContext context) async {
-    final result = await Navigator.of(context).push<String>(
+    await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder:
             (context) => Scaffold(
-              appBar: AppBar(title: Text(L10n.of(context).scanQrCode)),
+              appBar: AppBar(
+                title: Text(L10n.of(context).scanQrCode),
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
               body: QRCodeDartScanView(
                 scanInvertedQRCode: true,
                 intervalScan: const Duration(milliseconds: 300),
                 typeScan: TypeScan.live,
-                onCapture: (result) {
-                  if (context.mounted) {
-                    Navigator.of(context).pop(result.text);
+                onCapture: (r) => _onCapture(context, r),
+                onCameraError: (error) {
+                  if (mounted) {
+                    EasyLoading.showError(
+                      'Failed to open camera: $error',
+                      duration: const Duration(seconds: 2),
+                    );
                   }
                 },
               ),
             ),
       ),
     );
+  }
 
-    if (result != null && mounted) {
-      setState(() {
-        _tokenController.text = result;
-      });
+  Future<void> _onCapture(BuildContext context, Result result) async {
+    if (context.mounted) {
+      final navigator = Navigator.of(context);
+      if (navigator.canPop()) {
+        navigator.pop();
+      }
+      await _fetchAndValidateToken(result.text);
     }
   }
 
