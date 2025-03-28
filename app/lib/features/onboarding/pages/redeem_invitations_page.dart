@@ -228,7 +228,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
           final info = ref.watch(superInviteInfoProvider(token)).value;
           if (info == null) return const SizedBox.shrink();
 
-          return _buildInviteInfoItem(context, token, info);
+          return _buildInviteInfoItem(context, token, info, index);
         },
       ),
     );
@@ -238,6 +238,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     BuildContext context,
     String token,
     SuperInviteInfo info,
+    int index,
   ) {
     final displayName = info.inviterDisplayNameStr();
     final userId = info.inviterUserIdStr();
@@ -277,6 +278,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                     ),
                   ),
                   ActerPrimaryActionButton(
+                    key: Key('redeem-code-$index'),
                     onPressed:
                         info.hasRedeemed()
                             ? null
