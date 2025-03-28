@@ -122,8 +122,8 @@ pub use settings::{
     StoriesSettings, TasksSettings,
 };
 pub use spaces::{
-    new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceDiff,
+    new_app_permissions_builder, new_space_settings_builder, AppPermissionsBuilder,
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space, SpaceDiff,
 };
 pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
 pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};

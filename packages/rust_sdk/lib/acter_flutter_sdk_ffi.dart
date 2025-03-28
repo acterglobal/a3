@@ -1795,6 +1795,17 @@ class Api {
     return tmp1;
   }
 
+  /// make app permissions builder
+  AppPermissionsBuilder newAppPermissionsBuilder() {
+    final tmp0 = _newAppPermissionsBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_AppPermissionsBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = AppPermissionsBuilder._(this, tmp2_1);
+    return tmp1;
+  }
+
   /// make convo settings builder
   CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     final tmp0 = _newConvoSettingsBuilder();
@@ -18212,6 +18223,12 @@ class Api {
 
   late final _newJoinRuleBuilder =
       _newJoinRuleBuilderPtr.asFunction<int Function()>();
+  late final _newAppPermissionsBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__new_app_permissions_builder");
+
+  late final _newAppPermissionsBuilder =
+      _newAppPermissionsBuilderPtr.asFunction<int Function()>();
   late final _newConvoSettingsBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
           "__new_convo_settings_builder");
@@ -27914,6 +27931,279 @@ class Api {
           int Function(
             int,
           )>();
+  late final _appPermissionsBuilderNewsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__AppPermissionsBuilder_news");
+
+  late final _appPermissionsBuilderNews =
+      _appPermissionsBuilderNewsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderPinsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__AppPermissionsBuilder_pins");
+
+  late final _appPermissionsBuilderPins =
+      _appPermissionsBuilderPinsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderStoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__AppPermissionsBuilder_stories");
+
+  late final _appPermissionsBuilderStories =
+      _appPermissionsBuilderStoriesPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderCalendarEventsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__AppPermissionsBuilder_calendar_events");
+
+  late final _appPermissionsBuilderCalendarEvents =
+      _appPermissionsBuilderCalendarEventsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderTasksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint8,
+          )>>("__AppPermissionsBuilder_tasks");
+
+  late final _appPermissionsBuilderTasks =
+      _appPermissionsBuilderTasksPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderNewsPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_news_permisisons");
+
+  late final _appPermissionsBuilderNewsPermisisons =
+      _appPermissionsBuilderNewsPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderStoriesPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_stories_permisisons");
+
+  late final _appPermissionsBuilderStoriesPermisisons =
+      _appPermissionsBuilderStoriesPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderCalendarEventsPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_calendar_events_permisisons");
+
+  late final _appPermissionsBuilderCalendarEventsPermisisons =
+      _appPermissionsBuilderCalendarEventsPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderTaskListsPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_task_lists_permisisons");
+
+  late final _appPermissionsBuilderTaskListsPermisisons =
+      _appPermissionsBuilderTaskListsPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderTasksPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_tasks_permisisons");
+
+  late final _appPermissionsBuilderTasksPermisisons =
+      _appPermissionsBuilderTasksPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderPinsPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_pins_permisisons");
+
+  late final _appPermissionsBuilderPinsPermisisons =
+      _appPermissionsBuilderPinsPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderCommentsPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_comments_permisisons");
+
+  late final _appPermissionsBuilderCommentsPermisisons =
+      _appPermissionsBuilderCommentsPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderAttachmentsPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_attachments_permisisons");
+
+  late final _appPermissionsBuilderAttachmentsPermisisons =
+      _appPermissionsBuilderAttachmentsPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderRsvpPermisisonsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_rsvp_permisisons");
+
+  late final _appPermissionsBuilderRsvpPermisisons =
+      _appPermissionsBuilderRsvpPermisisonsPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderKickPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_kick");
+
+  late final _appPermissionsBuilderKick =
+      _appPermissionsBuilderKickPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderBanPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_ban");
+
+  late final _appPermissionsBuilderBan =
+      _appPermissionsBuilderBanPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderInvitePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_invite");
+
+  late final _appPermissionsBuilderInvite =
+      _appPermissionsBuilderInvitePtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderRedactPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_redact");
+
+  late final _appPermissionsBuilderRedact =
+      _appPermissionsBuilderRedactPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderEventsDefaultPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_events_default");
+
+  late final _appPermissionsBuilderEventsDefault =
+      _appPermissionsBuilderEventsDefaultPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderUsersDefaultPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_users_default");
+
+  late final _appPermissionsBuilderUsersDefault =
+      _appPermissionsBuilderUsersDefaultPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
+  late final _appPermissionsBuilderStateDefaultPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.Uint32,
+          )>>("__AppPermissionsBuilder_state_default");
+
+  late final _appPermissionsBuilderStateDefault =
+      _appPermissionsBuilderStateDefaultPtr.asFunction<
+          void Function(
+            int,
+            int,
+          )>();
   late final _accountUserIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -29168,6 +29458,19 @@ class Api {
           void Function(
             int,
             int,
+            int,
+            int,
+          )>();
+  late final _createSpaceSettingsBuilderSetPermissionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+          )>>("__CreateSpaceSettingsBuilder_set_permissions");
+
+  late final _createSpaceSettingsBuilderSetPermissions =
+      _createSpaceSettingsBuilderSetPermissionsPtr.asFunction<
+          void Function(
             int,
             int,
           )>();
@@ -58358,6 +58661,349 @@ class ActerUserAppSettingsBuilder {
   }
 }
 
+class AppPermissionsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  AppPermissionsBuilder._(this._api, this._box);
+
+  void news(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderNews(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void pins(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderPins(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void stories(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderStories(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void calendarEvents(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderCalendarEvents(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void tasks(
+    bool value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderTasks(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed to post boosts
+  void newsPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderNewsPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed to post stories
+  void storiesPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderStoriesPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed to post calender events
+  void calendarEventsPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderCalendarEventsPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed for task lists
+  void taskListsPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderTaskListsPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed for tasks
+  void tasksPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderTasksPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed for pins
+  void pinsPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderPinsPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed for comments
+  void commentsPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderCommentsPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed for attachments
+  void attachmentsPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderAttachmentsPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// specific permissions levels needed to rsvp
+  void rsvpPermisisons(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderRsvpPermisisons(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set level to kick a user
+  void kick(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderKick(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set level to ban a user
+  void ban(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderBan(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set level to ban a user
+  void invite(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderInvite(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set level to redact user content
+  void redact(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderRedact(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set default sending level if not specified
+  void eventsDefault(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderEventsDefault(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the detault level users have when entering
+  void usersDefault(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderUsersDefault(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the default state level needed if not specified
+  void stateDefault(
+    int value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderStateDefault(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Account {
   final Api _api;
   final _Box _box;
@@ -61070,6 +61716,22 @@ class CreateSpaceSettingsBuilder {
       tmp2,
       tmp3,
       tmp4,
+    );
+    return;
+  }
+
+  /// set the permissions for apps and events for the space creation
+  void setPermissions(
+    AppPermissionsBuilder value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._createSpaceSettingsBuilderSetPermissions(
+      tmp0,
+      tmp2,
     );
     return;
   }
