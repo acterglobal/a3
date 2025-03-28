@@ -2327,5 +2327,9 @@
     "accepted": "Accepted",
     "rejected": "Declined",
     "taskLabel": "Task",
+    "invitationRevoked": "Declined Invitation of",
+    "invitationAccepted": "Accepted Invitation of",
+    "invited": "Invited", 
+    "joined": "Joined",
     "@addComment": {}
 }
