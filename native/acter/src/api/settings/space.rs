@@ -300,8 +300,7 @@ impl Room {
                     .get_state_event_static::<ActerAppSettingsContent>()
                     .await?
                 {
-                    Ok(
-                        raw.deserialize()?.original_content().cloned())
+                    Ok(raw.deserialize()?.original_content().cloned())
                 } else {
                     Ok(None)
                 }
