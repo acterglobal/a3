@@ -6,11 +6,16 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/chat/actions/create_chat.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';
+import 'package:acter/features/space/actions/set_acter_feature.dart';
+import 'package:acter/features/spaces/model/space_feature_state.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/features/spaces/providers/space_creation_providers.dart';
+import 'package:acter/features/spaces/model/permission_config.dart';
 
 final _log = Logger('a3::spaces::actions::create_space');
 
@@ -50,6 +55,23 @@ Future<String?> createSpace(
     if (roomJoinRule != null) {
       config.joinRule(roomJoinRule.name);
     }
+
+    final permissionsBuilder = sdk.api.newAppPermissionsBuilder();
+    final featureStates = ref.read(featureActivationStateProvider);
+    try {
+      applyPermissions(permissionsBuilder, featureStates);
+    } catch (e, s) {
+      _log.severe('Failed to apply features settings', e, s);
+      EasyLoading.showError(
+        lang.creatingSpaceFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+      return null;
+    }
+
+    ref.invalidate(featureActivationStateProvider);
+    config.setPermissions(permissionsBuilder);
+
     final client = await ref.read(alwaysClientProvider.future);
     final result = await client.createActerSpace(config.build());
     final roomId = result.toString();
@@ -76,6 +98,9 @@ Future<String?> createSpace(
         EasyLoading.dismiss();
       }
     }
+
+    if (!context.mounted) return null;
+    EasyLoading.dismiss();
     return roomId;
   } catch (e, s) {
     _log.severe('Failed to create space', e, s);
@@ -88,5 +113,58 @@ Future<String?> createSpace(
       duration: const Duration(seconds: 3),
     );
     return null;
+  }
+}
+
+void applyPermissions(
+  AppPermissionsBuilder builder,
+  Map<SpaceFeature, FeatureActivationState> featureStates,
+) {
+  for (final entry in featureStates.entries) {
+    final feature = entry.key;
+    final state = entry.value;
+    final isActivated = state.isActivated;
+
+    // Set feature activation
+
+    final _ = switch (feature) {
+      SpaceFeature.boosts => builder.news(isActivated),
+      SpaceFeature.stories => builder.stories(isActivated),
+      SpaceFeature.pins => builder.pins(isActivated),
+      SpaceFeature.events => builder.calendarEvents(isActivated),
+      SpaceFeature.tasks => builder.tasks(isActivated),
+    };
+
+    // Set permissions for activated features
+    if (isActivated) {
+      for (final permission in state.permissions) {
+        final permissionKey = permission.key;
+        final permissionLevel = permission.permissionLevel.value;
+
+        final _ = switch (permissionKey) {
+          PermissionType.boostPost => builder.newsPermisisons(permissionLevel),
+          PermissionType.storyPost => builder.storiesPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.pinPost => builder.pinsPermisisons(permissionLevel),
+          PermissionType.eventPost => builder.calendarEventsPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.taskListPost => builder.taskListsPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.taskItemPost => builder.tasksPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.eventRsvp => builder.rsvpPermisisons(permissionLevel),
+          PermissionType.commentPost => builder.commentsPermisisons(
+            permissionLevel,
+          ),
+          PermissionType.attachmentPost => builder.attachmentsPermisisons(
+            permissionLevel,
+          ),
+        };
+      }
+    }
   }
 }

@@ -30,10 +30,6 @@ class RoomJoinRuleItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Theme.of(context).colorScheme.onSurface),
-        borderRadius: BorderRadius.circular(10),
-      ),
       child: ListTile(
         key: spaceJoinRuleValue.map(generateKey),
         leading: Icon(iconData),

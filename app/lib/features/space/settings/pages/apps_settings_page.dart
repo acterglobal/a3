@@ -636,7 +636,7 @@ class SpaceAppsSettingsPage extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
 
-    final currentPw = powerLevels.news();
+    final currentPw = powerLevels.stories();
     final pwText =
         maxPowerLevel == 100
             ? powerLevelName(currentPw)
