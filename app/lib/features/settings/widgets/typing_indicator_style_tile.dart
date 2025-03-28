@@ -28,30 +28,46 @@ class TypingIndicatorStyleTile extends ConsumerWidget {
     TypingIndicatorMode mode,
   ) async {
     try {
+      // Update UI immediately
+      ref.read(chatTypingIndicatorModeProvider.notifier).state = mode;
+
       EasyLoading.show(status: 'Updating setting...');
 
-      // First disable all modes
-      await updateFeatureState(ref, LabsFeature.typingIndicatorName, false);
-      await updateFeatureState(ref, LabsFeature.typingIndicatorAvatar, false);
-      await updateFeatureState(
-        ref,
-        LabsFeature.typingIndicatorNameAndAvatar,
-        false,
-      );
-
-      // Then enable the selected mode
+      // Then update persistent storage
       switch (mode) {
         case TypingIndicatorMode.name:
           await updateFeatureState(ref, LabsFeature.typingIndicatorName, true);
+          await updateFeatureState(
+            ref,
+            LabsFeature.typingIndicatorAvatar,
+            false,
+          );
+          await updateFeatureState(
+            ref,
+            LabsFeature.typingIndicatorNameAndAvatar,
+            false,
+          );
           break;
         case TypingIndicatorMode.avatar:
+          await updateFeatureState(ref, LabsFeature.typingIndicatorName, false);
           await updateFeatureState(
             ref,
             LabsFeature.typingIndicatorAvatar,
             true,
           );
+          await updateFeatureState(
+            ref,
+            LabsFeature.typingIndicatorNameAndAvatar,
+            false,
+          );
           break;
         case TypingIndicatorMode.nameAndAvatar:
+          await updateFeatureState(ref, LabsFeature.typingIndicatorName, false);
+          await updateFeatureState(
+            ref,
+            LabsFeature.typingIndicatorAvatar,
+            false,
+          );
           await updateFeatureState(
             ref,
             LabsFeature.typingIndicatorNameAndAvatar,
@@ -65,6 +81,9 @@ class TypingIndicatorStyleTile extends ConsumerWidget {
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } catch (e, s) {
+      // Revert UI change on error
+      ref.invalidate(chatTypingIndicatorModeProvider);
+
       _log.severe('Failed to update typing indicator style', e, s);
       EasyLoading.showError(
         'Failed to update setting: $e',
