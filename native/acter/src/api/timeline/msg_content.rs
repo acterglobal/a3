@@ -1,9 +1,6 @@
-use acter_core::{
-    events::{
-        attachments::{AttachmentContent, FallbackAttachmentContent},
-        news::{FallbackNewsContent, NewsContent},
-    },
-    models::status::membership::{Change, MembershipChange, ProfileChange},
+use acter_core::events::{
+    attachments::{AttachmentContent, FallbackAttachmentContent},
+    news::{FallbackNewsContent, NewsContent},
 };
 use matrix_sdk_base::ruma::{
     events::room::{
@@ -18,9 +15,6 @@ use matrix_sdk_base::ruma::{
         ImageInfo, MediaSource as SdkMediaSource,
     },
     OwnedMxcUri, OwnedUserId,
-};
-use matrix_sdk_ui::timeline::{
-    MemberProfileChange, MembershipChange as SdkMembershipChange, RoomMembershipChange,
 };
 use serde::{Deserialize, Serialize};
 
@@ -60,10 +54,6 @@ pub enum MsgContent {
         geo_uri: String,
         info: Option<LocationInfo>,
     },
-    Link {
-        name: Option<String>,
-        link: String,
-    },
     Notice {
         body: String,
         formatted_body: Option<String>,
@@ -74,56 +64,6 @@ pub enum MsgContent {
         admin_contact: Option<String>,
         limit_type: Option<LimitType>,
     },
-    ProfileChange {
-        user_id: OwnedUserId,
-        display_name_change: Option<Change<Option<String>>>,
-        avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
-    },
-    MembershipChange {
-        user_id: OwnedUserId,
-        change: Option<String>,
-    },
-}
-
-impl From<&MemberProfileChange> for MsgContent {
-    fn from(value: &MemberProfileChange) -> Self {
-        MsgContent::ProfileChange {
-            user_id: value.user_id().to_owned(),
-            display_name_change: value
-                .displayname_change()
-                .and_then(|c| Change::new(c.new.clone(), c.old.clone())),
-            avatar_url_change: value
-                .avatar_url_change()
-                .and_then(|c| Change::new(c.new.clone(), c.old.clone())),
-        }
-    }
-}
-
-impl From<&RoomMembershipChange> for MsgContent {
-    fn from(value: &RoomMembershipChange) -> Self {
-        MsgContent::MembershipChange {
-            user_id: value.user_id().to_owned(),
-            change: value.change().map(|c| match (c) {
-                SdkMembershipChange::None => "None".to_owned(),
-                SdkMembershipChange::Error => "Error".to_owned(),
-                SdkMembershipChange::Joined => "Joined".to_owned(),
-                SdkMembershipChange::Left => "Left".to_owned(),
-                SdkMembershipChange::Banned => "Banned".to_owned(),
-                SdkMembershipChange::Unbanned => "Unbanned".to_owned(),
-                SdkMembershipChange::Kicked => "Kicked".to_owned(),
-                SdkMembershipChange::Invited => "Invited".to_owned(),
-                SdkMembershipChange::KickedAndBanned => "KickedAndBanned".to_owned(),
-                SdkMembershipChange::InvitationAccepted => "InvitationAccepted".to_owned(),
-                SdkMembershipChange::InvitationRejected => "InvitationRejected".to_owned(),
-                SdkMembershipChange::InvitationRevoked => "InvitationRevoked".to_owned(),
-                SdkMembershipChange::Knocked => "Knocked".to_owned(),
-                SdkMembershipChange::KnockAccepted => "KnockAccepted".to_owned(),
-                SdkMembershipChange::KnockRetracted => "KnockRetracted".to_owned(),
-                SdkMembershipChange::KnockDenied => "KnockDenied".to_owned(),
-                SdkMembershipChange::NotImplemented => "NotImplemented".to_owned(),
-            }),
-        }
-    }
 }
 
 impl TryFrom<&NewsContent> for MsgContent {
@@ -142,7 +82,6 @@ impl TryFrom<&NewsContent> for MsgContent {
             | NewsContent::File(msg_content) => Ok(MsgContent::from(msg_content)),
             NewsContent::Fallback(FallbackNewsContent::Location(msg_content))
             | NewsContent::Location(msg_content) => Ok(MsgContent::from(msg_content)),
-
             _ => Err(()),
         }
     }
@@ -252,56 +191,54 @@ impl From<&ServerNoticeMessageEventContent> for MsgContent {
 
 impl TryFrom<&AttachmentContent> for MsgContent {
     type Error = ();
+
     fn try_from(value: &AttachmentContent) -> Result<Self, Self::Error> {
-        Ok(match value {
+        match value {
             AttachmentContent::Image(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
-                MsgContent::Image {
+                Ok(MsgContent::Image {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
-                }
+                })
             }
             AttachmentContent::Audio(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
-                MsgContent::Audio {
+                Ok(MsgContent::Audio {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
                     audio: content.audio.clone(),
-                }
+                })
             }
             AttachmentContent::Video(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
-                MsgContent::Video {
+                Ok(MsgContent::Video {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
-                }
+                })
             }
             AttachmentContent::File(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
-                MsgContent::File {
+                Ok(MsgContent::File {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
                     filename: content.filename.clone(),
-                }
+                })
             }
             AttachmentContent::Location(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
-                MsgContent::Location {
+                Ok(MsgContent::Location {
                     body: content.body.clone(),
                     geo_uri: content.geo_uri.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
-                }
+                })
             }
-            AttachmentContent::Link(content) => MsgContent::Link {
-                name: content.name.clone(),
-                link: content.link.clone(),
-            },
-            AttachmentContent::Reference(_) => return Err(()),
-        })
+            AttachmentContent::Link(_) => Err(()),
+            AttachmentContent::Reference(_) => Err(()),
+        }
     }
 }
 
@@ -322,6 +259,20 @@ impl MsgContent {
         }
     }
 
+    pub fn msg_type(&self) -> String {
+        let result = match self {
+            MsgContent::Text { .. } => "m.text",
+            MsgContent::Image { .. } => "m.image",
+            MsgContent::Audio { .. } => "m.audio",
+            MsgContent::Video { .. } => "m.video",
+            MsgContent::File { .. } => "m.file",
+            MsgContent::Location { .. } => "m.location",
+            MsgContent::Notice { .. } => "m.notice",
+            MsgContent::ServerNotice { .. } => "m.server_notice",
+        };
+        result.to_owned()
+    }
+
     pub fn body(&self) -> String {
         match self {
             MsgContent::Text { body, .. } => body.clone(),
@@ -330,11 +281,8 @@ impl MsgContent {
             MsgContent::Video { body, .. } => body.clone(),
             MsgContent::File { body, .. } => body.clone(),
             MsgContent::Location { body, .. } => body.clone(),
-            MsgContent::Link { link, .. } => link.clone(),
             MsgContent::Notice { body, .. } => body.clone(),
             MsgContent::ServerNotice { body, .. } => body.clone(),
-            MsgContent::ProfileChange { .. } => "".to_owned(),
-            MsgContent::MembershipChange { .. } => "".to_owned(),
         }
     }
 
@@ -375,30 +323,26 @@ impl MsgContent {
 
     pub fn size(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
             _ => None,
         }
     }
 
     pub fn width(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(Into::into)),
             _ => None,
         }
     }
 
     pub fn height(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => {
-                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
-            }
-            MsgContent::Video { info, .. } => {
-                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
-            }
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.height.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.height.map(Into::into)),
             _ => None,
         }
     }
@@ -489,13 +433,6 @@ impl MsgContent {
         }
     }
 
-    pub fn link(&self) -> Option<String> {
-        match self {
-            MsgContent::Link { link, .. } => Some(link.clone()),
-            _ => None,
-        }
-    }
-
     pub fn url_previews(&self) -> Vec<UrlPreview> {
         match self {
             MsgContent::Text { url_previews, .. } => {
@@ -509,30 +446,6 @@ impl MsgContent {
         match self {
             MsgContent::Text { url_previews, .. } => !url_previews.is_empty(),
             _ => false,
-        }
-    }
-
-    pub fn profile_change(&self) -> Option<ProfileChange> {
-        match self {
-            MsgContent::ProfileChange {
-                user_id,
-                display_name_change,
-                avatar_url_change,
-            } => Some(ProfileChange::new(
-                user_id.clone(),
-                display_name_change.clone(),
-                avatar_url_change.clone(),
-            )),
-            _ => None,
-        }
-    }
-
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        match self {
-            MsgContent::MembershipChange { user_id, change } => {
-                Some(MembershipChange::new(user_id.clone(), change.clone()))
-            }
-            _ => None,
         }
     }
 }

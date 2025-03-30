@@ -1022,8 +1022,80 @@ object TimelineEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// covers text/image/audio/video/file/location/emote/sticker
-    fn msg_content() -> Option<MsgContent>;
+    /// covers text/image/audio/video/file/location/emote
+    fn message() -> Option<MsgContent>;
+
+    /// covers m.sticker
+    fn sticker() -> Option<Sticker>;
+
+    /// covers some of m.room.member
+    fn membership_change() -> Option<MembershipChange>;
+
+    /// covers some of m.room.member
+    fn profile_change() -> Option<ProfileChange>;
+
+    /// covers room state change
+    fn policy_rule_room() -> Option<PolicyRuleRoomContent>;
+
+    /// covers room state change
+    fn policy_rule_server() -> Option<PolicyRuleServerContent>;
+
+    /// covers room state change
+    fn policy_rule_user() -> Option<PolicyRuleUserContent>;
+
+    /// covers room state change
+    fn room_aliases() -> Option<RoomAliasesContent>;
+
+    /// covers room state change
+    fn room_avatar() -> Option<RoomAvatarContent>;
+
+    /// covers room state change
+    fn room_canonical_alias() -> Option<RoomCanonicalAliasContent>;
+
+    /// covers room state change
+    fn room_create() -> Option<RoomCreateContent>;
+
+    /// covers room state change
+    fn room_encryption() -> Option<RoomEncryptionContent>;
+
+    /// covers room state change
+    fn room_guest_access() -> Option<RoomGuestAccessContent>;
+
+    /// covers room state change
+    fn room_history_visibility() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers room state change
+    fn room_join_rules() -> Option<RoomJoinRulesContent>;
+
+    /// covers room state change
+    fn room_name() -> Option<RoomNameContent>;
+
+    /// covers room state change
+    fn room_pinned_events() -> Option<RoomPinnedEventsContent>;
+
+    /// covers room state change
+    fn room_power_levels() -> Option<RoomPowerLevelsContent>;
+
+    /// covers room state change
+    fn room_server_acl() -> Option<RoomServerAclContent>;
+
+    /// covers room state change
+    fn room_third_party_invite() -> Option<RoomThirdPartyInviteContent>;
+
+    /// covers room state change
+    fn room_tombstone() -> Option<RoomTombstoneContent>;
+
+    /// covers room state change
+    fn room_topic() -> Option<RoomTopicContent>;
+
+    /// covers room state change
+    fn space_child() -> Option<SpaceChildContent>;
+
+    /// covers room state change
+    fn space_parent() -> Option<SpaceParentContent>;
+
+    /// covers m.poll.start
+    fn poll() -> Option<PollContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -1115,12 +1187,23 @@ object MsgContent {
 
     /// the list of url previews 
     fn url_previews() -> Vec<UrlPreview>;
+}
 
-    /// available when user changed his profile
-    fn profile_change() -> Option<ProfileChange>;
+object Sticker {
+    fn body() -> string;
+    fn source() -> MediaSource;
+    fn mimetype() -> Option<string>;
+    fn size() -> Option<u64>;
+    fn width() -> Option<u64>;
+    fn height() -> Option<u64>;
+}
 
-    /// available when a user changed another user
-    fn membership_change() -> Option<MembershipChange>;
+object MembershipChange {
+    /// The ID of the user whose profile changed.
+    fn user_id() -> UserId;
+
+    /// The membership change induced by this event.
+    fn change() -> Option<string>;
 }
 
 object ProfileChange {
@@ -1146,12 +1229,8 @@ object ProfileChange {
     fn avatar_url_new_val() -> Option<MxcUri>;
 }
 
-object MembershipChange {
-    /// The ID of the user whose profile changed.
-    fn user_id() -> UserId;
-
-    /// The membership change induced by this event.
-    fn change() -> Option<string>;
+object PollContent {
+    fn fallback_text() -> Option<string>;
 }
 
 object ReactionRecord {
@@ -1192,6 +1271,224 @@ object JoinRuleBuilder {
     fn join_rule(input: string);
     fn add_room(room: string);
 }
+
+
+
+//  ########   #######   #######  ##     ##     ######  ########    ###    ######## ########     ######  ##     ##    ###    ##    ##  ######   ######## 
+//  ##     ## ##     ## ##     ## ###   ###    ##    ##    ##      ## ##      ##    ##          ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       
+//  ##     ## ##     ## ##     ## #### ####    ##          ##     ##   ##     ##    ##          ##       ##     ##  ##   ##  ####  ## ##        ##       
+//  ########  ##     ## ##     ## ## ### ##     ######     ##    ##     ##    ##    ######      ##       ######### ##     ## ## ## ## ##   #### ######   
+//  ##   ##   ##     ## ##     ## ##     ##          ##    ##    #########    ##    ##          ##       ##     ## ######### ##  #### ##    ##  ##       
+//  ##    ##  ##     ## ##     ## ##     ##    ##    ##    ##    ##     ##    ##    ##          ##    ## ##     ## ##     ## ##   ### ##    ##  ##       
+//  ##     ##  #######   #######  ##     ##     ######     ##    ##     ##    ##    ########     ######  ##     ## ##     ## ##    ##  ######   ######## 
+
+
+object PolicyRuleRoomContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleServerContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleUserContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAliasesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
+}
+
+object RoomCanonicalAliasContent {
+    fn alias_change() -> Option<string>;
+    fn alias_new_val() -> Option<string>;
+    fn alias_old_val() -> Option<string>;
+
+    fn alt_aliases_change() -> Option<string>;
+    fn alt_aliases_new_val() -> Vec<string>;
+    fn alt_aliases_old_val() -> Option<Vec<string>>;
+}
+
+object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomJoinRulesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomNameContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomPinnedEventsContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomPowerLevelsContent {
+    fn ban_change() -> Option<string>;
+    fn ban_new_val() -> i64;
+    fn ban_old_val() -> Option<i64>;
+
+    fn events_change() -> Option<string>;
+
+    fn events_default_change() -> Option<string>;
+    fn events_default_new_val() -> i64;
+    fn events_default_old_val() -> Option<i64>;
+
+    fn invite_change() -> Option<string>;
+    fn invite_new_val() -> i64;
+    fn invite_old_val() -> Option<i64>;
+
+    fn kick_change() -> Option<string>;
+    fn kick_new_val() -> i64;
+    fn kick_old_val() -> Option<i64>;
+
+    fn notifications_change() -> Option<string>;
+    fn notifications_new_val() -> i64;
+    fn notifications_old_val() -> Option<i64>;
+
+    fn redact_change() -> Option<string>;
+    fn redact_new_val() -> i64;
+    fn redact_old_val() -> Option<i64>;
+
+    fn state_default_change() -> Option<string>;
+    fn state_default_new_val() -> i64;
+    fn state_default_old_val() -> Option<i64>;
+
+    fn users_change() -> Option<string>;
+
+    fn users_default_change() -> Option<string>;
+    fn users_default_new_val() -> i64;
+    fn users_default_old_val() -> Option<i64>;
+}
+
+object RoomServerAclContent {
+    fn allow_ip_literals_change() -> Option<string>;
+    fn allow_ip_literals_new_val() -> bool;
+    fn allow_ip_literals_old_val() -> Option<bool>;
+
+    fn allow_change() -> Option<string>;
+    fn allow_new_val() -> Vec<string>;
+    fn allow_old_val() -> Option<Vec<string>>;
+
+    fn deny_change() -> Option<string>;
+    fn deny_new_val() -> Vec<string>;
+    fn deny_old_val() -> Option<Vec<string>>;
+}
+
+object RoomThirdPartyInviteContent {
+    fn display_name_change() -> Option<string>;
+    fn display_name_new_val() -> string;
+    fn display_name_old_val() -> Option<string>;
+
+    fn key_validity_url_change() -> Option<string>;
+    fn key_validity_url_new_val() -> string;
+    fn key_validity_url_old_val() -> Option<string>;
+
+    fn public_key_change() -> Option<string>;
+}
+
+object RoomTombstoneContent {
+    fn body_change() -> Option<string>;
+    fn body_new_val() -> string;
+    fn body_old_val() -> Option<string>;
+
+    fn replacement_room_change() -> Option<string>;
+    fn replacement_room_new_val() -> string;
+    fn replacement_room_old_val() -> Option<string>;
+}
+
+object RoomTopicContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object SpaceChildContent {
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn order_change() -> Option<string>;
+    fn order_new_val() -> Option<string>;
+    fn order_old_val() -> Option<string>;
+
+    fn suggested_change() -> Option<string>;
+    fn suggested_new_val() -> bool;
+    fn suggested_old_val() -> Option<bool>;
+}
+
+object SpaceParentContent {
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn canonical_change() -> Option<string>;
+    fn canonical_new_val() -> bool;
+    fn canonical_old_val() -> Option<bool>;
+}
+
 
 //  ########   #######   #######  ##     ## 
 //  ##     ## ##     ## ##     ## ###   ### 

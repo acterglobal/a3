@@ -1,7 +1,9 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/room_state.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
@@ -220,34 +222,488 @@ class _SubtitleWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    String sender = eventItem.sender();
-    String eventType = eventItem.eventType();
     final lang = L10n.of(context);
+    String myId = ref.watch(myUserIdStrProvider);
+    String senderId = eventItem.sender();
+    final dispName =
+        ref
+            .watch(
+              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
+            )
+            .valueOrNull;
+    String senderName = dispName ?? simplifyUserId(senderId) ?? senderId;
+    String eventType = eventItem.eventType();
     final textTheme = Theme.of(context).textTheme;
+
     // message event
     switch (eventType) {
+      case 'm.policy.rule.room':
+        final stateText = getStateOnPolicyRuleRoom(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.policy.rule.server':
+        final stateText = getStateOnPolicyRuleServer(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.policy.rule.user':
+        final stateText = getStateOnPolicyRuleUser(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.aliases':
+        final stateText = getStateOnRoomAliases(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.avatar':
+        final stateText = getStateOnRoomAvatar(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.canonical_alias':
+        final stateText = getStateOnRoomCanonicalAlias(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.create':
+        final stateText = getStateOnRoomCreate(
+          lang,
+          myId,
+          senderId,
+          senderName,
+        );
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.encryption':
+        final stateText = getStateOnRoomEncryption(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.guest_access':
+        final stateText = getStateOnRoomGuestAccess(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.history_visibility':
+        final stateText = getStateOnRoomHistoryVisibility(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.join_rules':
+        final stateText = getStateOnRoomJoinRules(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.name':
+        final stateText = getStateOnRoomName(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.pinned_events':
+        final stateText = getStateOnRoomPinnedEvents(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.power_levels':
+        final stateText = getStateOnRoomPowerLevels(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.server_acl':
+        final stateText = getStateOnRoomServerAcl(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.third_party_invite':
+        final stateText = getStateOnRoomThirdPartyInvite(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.tombstone':
+        final stateText = getStateOnRoomTombstone(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.room.topic':
+        final stateText = getStateOnRoomTopic(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.space.child':
+        final stateText = getStateOnSpaceChild(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      case 'm.space.parent':
+        final stateText = getStateOnSpaceParent(
+          lang,
+          eventItem,
+          myId,
+          senderId,
+          senderName,
+        );
+        if (stateText == null) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                stateText,
+                style: textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
       case 'm.call.answer':
       case 'm.call.candidates':
       case 'm.call.hangup':
       case 'm.call.invite':
-      case 'm.room.aliases':
-      case 'm.room.avatar':
-      case 'm.room.canonical_alias':
-      case 'm.room.create':
-      case 'm.room.encryption':
-      case 'm.room.guest.access':
-      case 'm.room.history_visibility':
-      case 'm.room.join.rules':
-      case 'm.room.name':
-      case 'm.room.pinned_events':
-      case 'm.room.power_levels':
-      case 'm.room.server_acl':
-      case 'm.room.third_party_invite':
-      case 'm.room.tombstone':
-      case 'm.room.topic':
-      case 'm.space.child':
-      case 'm.space.parent':
       case 'm.room.message':
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) {
+          return const SizedBox.shrink();
+        }
         switch (eventItem.msgType()) {
           case 'm.audio':
           case 'm.file':
@@ -259,10 +715,6 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            MsgContent? msgContent = eventItem.msgContent();
-            if (msgContent == null) {
-              return const SizedBox.shrink();
-            }
             String body = msgContent.body();
             String? formattedBody = msgContent.formattedBody();
             if (formattedBody != null) {
@@ -273,7 +725,7 @@ class _SubtitleWidget extends ConsumerWidget {
               children: [
                 Flexible(
                   child: Text(
-                    '${simplifyUserId(sender)}: ',
+                    '$senderName: ',
                     style: textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -295,7 +747,7 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        MsgContent? msgContent = eventItem.msgContent();
+        MsgContent? msgContent = eventItem.message();
         if (msgContent == null) {
           return const SizedBox();
         }
@@ -309,7 +761,7 @@ class _SubtitleWidget extends ConsumerWidget {
           children: [
             Flexible(
               child: Text(
-                '${simplifyUserId(sender)}: ',
+                '$senderName: ',
                 style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -330,17 +782,15 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
-        final body =
-            eventItem
-                .msgContent()
-                .expect('m.sticker should have msg content')
-                .body();
+        final sticker = eventItem.sticker();
+        if (sticker == null) return SizedBox.shrink();
+        final body = sticker.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
               child: Text(
-                '${simplifyUserId(sender)}: ',
+                '$senderName: ',
                 style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -362,7 +812,7 @@ class _SubtitleWidget extends ConsumerWidget {
           children: [
             Flexible(
               child: Text(
-                '${simplifyUserId(sender)}: ',
+                '$senderName: ',
                 style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -387,7 +837,7 @@ class _SubtitleWidget extends ConsumerWidget {
           children: [
             Flexible(
               child: Text(
-                '${simplifyUserId(sender)}: ',
+                '$senderName: ',
                 style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -406,7 +856,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        MsgContent? msgContent = eventItem.msgContent();
+        MsgContent? msgContent = eventItem.message();
         if (msgContent == null) {
           return const SizedBox();
         }
@@ -420,7 +870,7 @@ class _SubtitleWidget extends ConsumerWidget {
           children: [
             Flexible(
               child: Text(
-                '${simplifyUserId(sender)} ',
+                '$senderName: ',
                 style: textTheme.labelMedium?.copyWith(
                   fontStyle: FontStyle.italic,
                 ),
@@ -441,17 +891,15 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.poll.start':
-        final body =
-            eventItem
-                .msgContent()
-                .expect('m.poll.start should have msg content')
-                .body();
+        PollContent? content = eventItem.poll();
+        if (content == null) return const SizedBox.shrink();
+        final body = content.fallbackText() ?? '';
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
               child: Text(
-                '${simplifyUserId(sender)}: ',
+                '$senderName: ',
                 style: textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),

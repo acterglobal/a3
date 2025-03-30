@@ -1,4 +1,8 @@
+import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/room_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
@@ -37,120 +41,108 @@ class MemberUpdateEvent extends ConsumerWidget {
     TimelineEventItem item,
   ) {
     final lang = L10n.of(context);
+    final myId = ref.watch(myUserIdStrProvider);
 
     final eventType = item.eventType();
-    final senderId =
+    final senderId = item.sender();
+    final senderName =
         ref
             .watch(
-              memberDisplayNameProvider((
-                roomId: roomId,
-                userId: item.sender(),
-              )),
+              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
             )
             .valueOrNull ??
-        item.sender();
+        senderId;
 
     if (eventType == 'membershipChange') {
-      final change = item.msgContent()?.membershipChange();
-      if (change == null) return '';
-      final userId =
+      final content = item.membershipChange().expect(
+        'failed to get content of membership change',
+      );
+      final change = content.change().expect(
+        'MembershipChange should have change mode',
+      );
+      final userId = content.userId().toString();
+      final userName =
           ref
               .watch(
-                memberDisplayNameProvider((
-                  roomId: roomId,
-                  userId: change.userId().toString(),
-                )),
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
               )
               .valueOrNull ??
-          change.userId().toString();
-      switch (change.change()) {
-        case 'None':
-          return lang.chatMembershipNone(userId);
-        case 'Error':
-          return lang.chatMembershipError(userId);
-        case 'Joined':
-          return lang.chatMembershipJoined(userId);
-        case 'Left':
-          return lang.chatMembershipLeft(userId);
-        case 'Banned':
-          return lang.chatMembershipBanned(senderId, userId);
-        case 'Unbanned':
-          return lang.chatMembershipUnbanned(senderId, userId);
-        case 'Kicked':
-          return lang.chatMembershipKicked(senderId, userId);
-        case 'Invited':
-          return lang.chatMembershipInvited(senderId, userId);
-        case 'KickedAndBanned':
-          return lang.chatMembershipKickedAndBanned(senderId, userId);
-        case 'InvitationAccepted':
-          return lang.chatMembershipInvitationAccepted(userId);
-        case 'InvitationRejected':
-          return lang.chatMembershipInvitationRejected(userId);
-        case 'InvitationRevoked':
-          return lang.chatMembershipInvitationRevoked(userId);
-        case 'Knocked':
-          return lang.chatMembershipKnocked(senderId, userId);
-        case 'KnockAccepted':
-          return lang.chatMembershipKnockAccepted(userId);
-        case 'KnockRetracted':
-          return lang.chatMembershipKnockRetracted(userId);
-        case 'KnockDenied':
-          return lang.chatMembershipKnockDenied(userId);
-        case 'NotImplemented':
-          return lang.chatMembershipNotImplemented(userId);
-        default:
-          return lang.chatMembershipNone(userId);
-      }
+          simplifyUserId(userId) ??
+          userId;
+      final stateText = getStateOnMembershipChange(
+        lang,
+        change,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      );
+      if (stateText != null) return stateText;
     } else if (eventType == 'profileChange') {
-      final change = item.msgContent()?.profileChange();
-      if (change == null) return '';
-      final userId =
+      final content = item.profileChange().expect(
+        'failed to get content of profile change',
+      );
+      final userId = content.userId().toString();
+      final userName =
           ref
               .watch(
-                memberDisplayNameProvider((
-                  roomId: roomId,
-                  userId: change.userId().toString(),
-                )),
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
               )
               .valueOrNull ??
-          change.userId().toString();
-      final result = [];
-      switch (change.displayNameChange()) {
-        case 'ChangedDisplayName':
-          final text = lang.chatProfileDisplayNameChanged(
-            change.displayNameNewVal() ?? '',
-            change.displayNameOldVal() ?? '',
-            userId,
-          );
-          result.add(text);
+          simplifyUserId(userId) ??
+          userId;
+      Map<String, dynamic> metadata = {};
+      switch (content.displayNameChange()) {
+        case 'Changed':
+          metadata['displayName'] = {
+            'change': 'Changed',
+            'oldVal': content.displayNameOldVal(),
+            'newVal': content.displayNameNewVal(),
+          };
           break;
-        case 'UnsetDisplayName':
-          final text = lang.chatProfileDisplayNameUnset(userId);
-          result.add(text);
+        case 'Unset':
+          metadata['displayName'] = {
+            'change': 'Unset',
+            'oldVal': content.displayNameOldVal(),
+          };
           break;
-        case 'SetDisplayName':
-          final text = lang.chatProfileDisplayNameSet(
-            change.displayNameNewVal() ?? '',
-            userId,
-          );
-          result.add(text);
-          break;
-      }
-      switch (change.avatarUrlChange()) {
-        case 'ChangedAvatarUrl':
-          final text = lang.chatProfileAvatarUrlChanged(userId);
-          result.add(text);
-          break;
-        case 'UnsetAvatarUrl':
-          final text = lang.chatProfileAvatarUrlUnset(userId);
-          result.add(text);
-          break;
-        case 'SetAvatarUrl':
-          final text = lang.chatProfileAvatarUrlSet(userId);
-          result.add(text);
+        case 'Set':
+          metadata['displayName'] = {
+            'change': 'Set',
+            'newVal': content.displayNameNewVal(),
+          };
           break;
       }
-      return result.join(', ');
+      switch (content.avatarUrlChange()) {
+        case 'Changed':
+          metadata['avatarUrl'] = {
+            'change': 'Changed',
+            'oldVal': content.avatarUrlOldVal().toString(),
+            'newVal': content.avatarUrlNewVal().toString(),
+          };
+          break;
+        case 'Unset':
+          metadata['avatarUrl'] = {
+            'change': 'Unset',
+            'oldVal': content.avatarUrlOldVal().toString(),
+          };
+          break;
+        case 'Set':
+          metadata['avatarUrl'] = {
+            'change': 'Set',
+            'newVal': content.avatarUrlNewVal().toString(),
+          };
+          break;
+      }
+      final stateText = getStateOnProfileChange(
+        lang,
+        metadata,
+        myId,
+        userId,
+        userName,
+      );
+      if (stateText != null) return stateText;
     }
     return '';
   }

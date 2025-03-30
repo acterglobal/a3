@@ -129,7 +129,7 @@ class MessageEventItem extends ConsumerWidget {
     TimelineEventItem item,
   ) {
     final msgType = item.msgType();
-    final content = item.msgContent();
+    final content = item.message();
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
@@ -178,7 +178,7 @@ class MessageEventItem extends ConsumerWidget {
     final msgType = item.msgType();
     final repliedTo = item.inReplyTo();
     final wasEdited = item.wasEdited();
-    final content = item.msgContent().expect('cannot be null');
+    final content = item.message().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     String? displayName;
 

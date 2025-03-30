@@ -173,20 +173,21 @@ impl Activity {
                 user_id,
                 display_name_change,
                 avatar_url_change,
-            } => Some(ProfileChange::new(
-                user_id.clone(),
-                display_name_change.clone(),
-                avatar_url_change.clone(),
-            )),
+            } => Some(ProfileChange {
+                user_id: user_id.clone(),
+                display_name_change: display_name_change.clone(),
+                avatar_url_change: avatar_url_change.clone(),
+            }),
             _ => None,
         }
     }
 
     pub fn membership_change(&self) -> Option<MembershipChange> {
         match &self.inner {
-            ActivityContent::MembershipChange { user_id, change } => {
-                Some(MembershipChange::new(user_id.clone(), change.clone()))
-            }
+            ActivityContent::MembershipChange { user_id, change } => Some(MembershipChange {
+                user_id: user_id.clone(),
+                change: change.clone(),
+            }),
             _ => None,
         }
     }

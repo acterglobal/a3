@@ -135,8 +135,13 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use timeline::{
-    EventSendState, MsgContent, MsgDraft, TimelineEventItem, TimelineItem, TimelineItemDiff,
-    TimelineStream, TimelineVirtualItem,
+    EventSendState, MsgContent, MsgDraft, PolicyRuleRoomContent, PolicyRuleServerContent,
+    PolicyRuleUserContent, PollContent, RoomAliasesContent, RoomAvatarContent, RoomCanonicalAliasContent,
+    RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+    RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+    RoomServerAclContent, RoomThirdPartyInviteContent, RoomTombstoneContent, RoomTopicContent,
+    SpaceChildContent, SpaceParentContent, Sticker, TimelineEventItem, TimelineItem,
+    TimelineItemDiff, TimelineStream, TimelineVirtualItem,
 };
 pub use typing::TypingEvent;
 pub use utils::{new_vec_string_builder, VecStringBuilder};

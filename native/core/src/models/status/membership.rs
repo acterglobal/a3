@@ -1,4 +1,7 @@
-use matrix_sdk::ruma::{OwnedMxcUri, OwnedUserId};
+use matrix_sdk_base::ruma::{OwnedMxcUri, OwnedUserId};
+use matrix_sdk_ui::timeline::{
+    MemberProfileChange, MembershipChange as SdkMembershipChange, RoomMembershipChange,
+};
 use serde::{Deserialize, Serialize};
 
 // ruma_events::room::member::change::Change doesn't support serialization
@@ -22,25 +25,73 @@ impl<T: PartialEq> Change<T> {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct MembershipChange {
+    pub(crate) user_id: OwnedUserId,
+    pub(crate) change: Option<String>,
+}
+
+impl From<&RoomMembershipChange> for MembershipChange {
+    fn from(value: &RoomMembershipChange) -> Self {
+        MembershipChange {
+            user_id: value.user_id().to_owned(),
+            change: value.change().map(|c| {
+                let result = match c {
+                    SdkMembershipChange::None => "None",
+                    SdkMembershipChange::Error => "Error",
+                    SdkMembershipChange::Joined => "Joined",
+                    SdkMembershipChange::Left => "Left",
+                    SdkMembershipChange::Banned => "Banned",
+                    SdkMembershipChange::Unbanned => "Unbanned",
+                    SdkMembershipChange::Kicked => "Kicked",
+                    SdkMembershipChange::Invited => "Invited",
+                    SdkMembershipChange::KickedAndBanned => "KickedAndBanned",
+                    SdkMembershipChange::InvitationAccepted => "InvitationAccepted",
+                    SdkMembershipChange::InvitationRejected => "InvitationRejected",
+                    SdkMembershipChange::InvitationRevoked => "InvitationRevoked",
+                    SdkMembershipChange::Knocked => "Knocked",
+                    SdkMembershipChange::KnockAccepted => "KnockAccepted",
+                    SdkMembershipChange::KnockRetracted => "KnockRetracted",
+                    SdkMembershipChange::KnockDenied => "KnockDenied",
+                    SdkMembershipChange::NotImplemented => "NotImplemented",
+                };
+                result.to_owned()
+            }),
+        }
+    }
+}
+
+impl MembershipChange {
+    pub fn user_id(&self) -> OwnedUserId {
+        self.user_id.clone()
+    }
+
+    pub fn change(&self) -> Option<String> {
+        self.change.clone()
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ProfileChange {
-    user_id: OwnedUserId,
-    display_name_change: Option<Change<Option<String>>>,
-    avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+    pub(crate) user_id: OwnedUserId,
+    pub(crate) display_name_change: Option<Change<Option<String>>>,
+    pub(crate) avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+}
+
+impl From<&MemberProfileChange> for ProfileChange {
+    fn from(value: &MemberProfileChange) -> Self {
+        ProfileChange {
+            user_id: value.user_id().to_owned(),
+            display_name_change: value
+                .displayname_change()
+                .and_then(|c| Change::new(c.new.clone(), c.old.clone())),
+            avatar_url_change: value
+                .avatar_url_change()
+                .and_then(|c| Change::new(c.new.clone(), c.old.clone())),
+        }
+    }
 }
 
 impl ProfileChange {
-    pub fn new(
-        user_id: OwnedUserId,
-        display_name_change: Option<Change<Option<String>>>,
-        avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
-    ) -> Self {
-        ProfileChange {
-            user_id,
-            display_name_change,
-            avatar_url_change,
-        }
-    }
-
     pub fn user_id(&self) -> OwnedUserId {
         self.user_id.clone()
     }
@@ -50,14 +101,14 @@ impl ProfileChange {
             match (c.new_val.clone(), c.old_val.clone()) {
                 (Some(new_val), Some(old_val)) => {
                     if new_val != old_val {
-                        return Some("ChangedDisplayName".to_owned());
+                        return Some("Changed".to_owned());
                     }
                 }
-                (None, Some(_)) => {
-                    return Some("UnsetDisplayName".to_owned());
+                (None, Some(old_val)) => {
+                    return Some("Unset".to_owned());
                 }
-                (Some(_), None) => {
-                    return Some("SetDisplayName".to_owned());
+                (Some(new_val), None) => {
+                    return Some("Set".to_owned());
                 }
                 (None, None) => {}
             }
@@ -82,14 +133,14 @@ impl ProfileChange {
             match (c.new_val.clone(), c.old_val.clone()) {
                 (Some(new_val), Some(old_val)) => {
                     if new_val != old_val {
-                        return Some("ChangedAvatarUrl".to_owned());
+                        return Some("Changed".to_owned());
                     }
                 }
-                (None, Some(_)) => {
-                    return Some("UnsetAvatarUrl".to_owned());
+                (None, Some(old_val)) => {
+                    return Some("Unset".to_owned());
                 }
-                (Some(_), None) => {
-                    return Some("SetAvatarUrl".to_owned());
+                (Some(new_val), None) => {
+                    return Some("Set".to_owned());
                 }
                 (None, None) => {}
             }
@@ -107,25 +158,5 @@ impl ProfileChange {
         self.avatar_url_change
             .as_ref()
             .and_then(|c| c.new_val.clone())
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct MembershipChange {
-    user_id: OwnedUserId,
-    change: Option<String>,
-}
-
-impl MembershipChange {
-    pub fn new(user_id: OwnedUserId, change: Option<String>) -> Self {
-        MembershipChange { user_id, change }
-    }
-
-    pub fn user_id(&self) -> OwnedUserId {
-        self.user_id.clone()
-    }
-
-    pub fn change(&self) -> Option<String> {
-        self.change.clone()
     }
 }

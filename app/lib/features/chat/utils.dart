@@ -30,9 +30,9 @@ bool renderCustomMessageBubble(types.CustomMessage message) {
     case 'm.room.canonical_alias':
     case 'm.room.create':
     case 'm.room.encryption':
-    case 'm.room.guest.access':
+    case 'm.room.guest_access':
     case 'm.room.history_visibility':
-    case 'm.room.join.rules':
+    case 'm.room.join_rules':
     case 'm.room.name':
     case 'm.room.pinned_events':
     case 'm.room.power_levels':
@@ -186,8 +186,7 @@ final matrixLinks = RegExp(
   caseSensitive: false,
 );
 
-String prepareMsg(MsgContent? content) {
-  if (content == null) return '';
+String prepareMsg(MsgContent content) {
   final formatted = content.formattedBody();
   if (formatted != null) {
     return formatted;

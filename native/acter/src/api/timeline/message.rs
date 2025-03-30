@@ -1,8 +1,10 @@
-use acter_core::models::status::membership::Change;
-use anyhow::bail;
+use acter_core::{
+    models::status::membership::{MembershipChange, ProfileChange},
+    util::do_vecs_match,
+};
+use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
-use futures::stream::Any;
 use indexmap::IndexMap;
 use matrix_sdk::{room::Room, send_queue::SendHandle};
 use matrix_sdk_base::ruma::{
@@ -20,12 +22,24 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    OtherState as SdkOtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
     TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
+
+use super::{
+    room_event::{PollContent, Sticker, TimelineEventContent},
+    room_state::{
+        OtherState, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
+        RoomAliasesContent, RoomAvatarContent, RoomCanonicalAliasContent, RoomCreateContent,
+        RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+        RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+        RoomServerAclContent, RoomThirdPartyInviteContent, RoomTombstoneContent, RoomTopicContent,
+        SpaceChildContent, SpaceParentContent,
+    },
+};
 
 use crate::{MsgContent, ReactionRecord, RUNTIME};
 
@@ -75,13 +89,16 @@ impl EventSendState {
         self.event_id.clone()
     }
 
-    pub async fn abort(&self) -> anyhow::Result<bool> {
+    pub async fn abort(&self) -> Result<bool> {
         let Some(handle) = self.send_handle.clone() else {
             bail!("No send handle found");
         };
 
         RUNTIME
-            .spawn(async move { Ok(handle.abort().await?) })
+            .spawn(async move {
+                let result = handle.abort().await?;
+                Ok(result)
+            })
             .await?
     }
 }
@@ -98,11 +115,9 @@ pub struct TimelineEventItem {
     send_state: Option<EventSendState>,
     origin_server_ts: u64,
     #[builder(default)]
-    event_type: String,
-    #[builder(default)]
     msg_type: Option<String>,
     #[builder(default)]
-    msg_content: Option<MsgContent>,
+    content: Option<TimelineEventContent>,
     #[builder(default)]
     in_reply_to: Option<OwnedEventId>,
     #[builder(default)]
@@ -140,15 +155,19 @@ impl TimelineEventItem {
                     .content()
                     .reactions()
                     .iter()
-                    .map(|(u, group)| {
+                    .map(|(key, group)| {
                         (
-                            u.to_string(),
+                            key.clone(),
                             group
                                 .iter()
-                                .map(|(e, r)| {
-                                    ReactionRecord::new(e.clone(), r.timestamp, *e == my_id)
+                                .map(|(sender_id, info)| {
+                                    ReactionRecord::new(
+                                        sender_id.clone(),
+                                        info.timestamp,
+                                        *sender_id == my_id,
+                                    )
                                 })
-                                .collect::<Vec<_>>(),
+                                .collect::<Vec<ReactionRecord>>(),
                         )
                     })
                     .collect(),
@@ -157,21 +176,39 @@ impl TimelineEventItem {
 
         match event.content() {
             SdkTimelineItemContent::Message(msg) => {
-                me.event_type("m.room.message".to_owned());
                 let msg_type = msg.msgtype();
                 me.msg_type(Some(msg_type.msgtype().to_string()));
-                me.msg_content(match msg_type {
-                    MessageType::Text(content) => Some(MsgContent::from(content)),
-                    MessageType::Emote(content) => Some(MsgContent::from(content)),
-                    MessageType::Image(content) => Some(MsgContent::from(content)),
-                    MessageType::Audio(content) => Some(MsgContent::from(content)),
-                    MessageType::Video(content) => Some(MsgContent::from(content)),
-                    MessageType::File(content) => Some(MsgContent::from(content)),
-                    MessageType::Location(content) => Some(MsgContent::from(content)),
-                    MessageType::Notice(content) => Some(MsgContent::from(content)),
-                    MessageType::ServerNotice(content) => Some(MsgContent::from(content)),
+                let content = match msg_type {
+                    MessageType::Text(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::Emote(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::Image(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::Audio(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::Video(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::File(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::Location(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::Notice(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
+                    MessageType::ServerNotice(content) => {
+                        Some(TimelineEventContent::Message(MsgContent::from(content)))
+                    }
                     _ => None,
-                });
+                };
+                me.content(content);
                 if let Some(in_reply_to) = msg.in_reply_to() {
                     me.in_reply_to(Some(in_reply_to.clone().event_id));
                 }
@@ -179,46 +216,41 @@ impl TimelineEventItem {
             }
             SdkTimelineItemContent::RedactedMessage => {
                 info!("Edit event applies to a redacted message");
-                me.event_type("m.room.redaction".to_string());
+                me.content(Some(TimelineEventContent::RedactedMessage));
             }
             SdkTimelineItemContent::Sticker(s) => {
-                me.event_type("m.sticker".to_string());
                 // FIXME: proper sticker support needed
                 // me.msg_content(Some(MsgContent::from(s.content())));
+                if let Ok(c) = Sticker::try_from(s) {
+                    me.content(Some(TimelineEventContent::Sticker(c)));
+                }
             }
             SdkTimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn’t be decrypted");
-                me.event_type("m.room.encrypted".to_string());
+                me.content(Some(TimelineEventContent::UnableToDecrypt));
             }
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
-                me.event_type("membershipChange".to_string()); // some of m.room.member
-                let msg_content = match m.content() {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => MsgContent::from(m),
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("changed no membership of room member".to_owned())
-                    }
-                };
-                me.msg_content(Some(msg_content));
+                let c = MembershipChange::from(m);
+                me.content(Some(TimelineEventContent::MembershipChange(c)));
             }
             SdkTimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event");
-                me.event_type("profileChange".to_string()); // some of m.room.member
-                let msg_content = MsgContent::from(p);
-                me.msg_content(Some(msg_content));
+                let c = ProfileChange::from(p);
+                me.content(Some(TimelineEventContent::ProfileChange(c)));
             }
-
             SdkTimelineItemContent::OtherState(s) => {
                 info!("Edit event applies to a state event");
-                me.handle_other_state(s);
+                if let Some(c) = me.handle_other_state(s) {
+                    me.content(Some(TimelineEventContent::OtherState(c)));
+                }
             }
-
             SdkTimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn’t be parsed");
-                me.event_type(event_type.to_string());
+                me.content(Some(TimelineEventContent::FailedToParseMessageLike {
+                    event_type: event_type.clone(),
+                    error: error.to_string(),
+                }));
             }
             SdkTimelineItemContent::FailedToParseState {
                 event_type,
@@ -226,21 +258,22 @@ impl TimelineEventItem {
                 error,
             } => {
                 info!("Edit event applies to state that couldn’t be parsed");
-                me.event_type(event_type.to_string());
+                me.content(Some(TimelineEventContent::FailedToParseState {
+                    event_type: event_type.clone(),
+                    state_key: state_key.clone(),
+                    error: error.to_string(),
+                }));
             }
-            SdkTimelineItemContent::Poll(s) => {
+            SdkTimelineItemContent::Poll(p) => {
                 info!("Edit event applies to a poll state");
-                me.event_type("m.poll.start".to_string());
-                if let Some(fallback) = s.fallback_text() {
-                    let msg_content = MsgContent::from_text(fallback);
-                    me.msg_content(Some(msg_content));
-                }
+                let c = PollContent::from(p);
+                me.content(Some(TimelineEventContent::Poll(c)));
             }
             SdkTimelineItemContent::CallInvite => {
-                me.event_type("m.call_invite".to_owned());
+                me.content(Some(TimelineEventContent::CallInvite));
             }
             SdkTimelineItemContent::CallNotify => {
-                me.event_type("m.call_notify".to_owned());
+                me.content(Some(TimelineEventContent::CallNotify));
             }
         };
         me.build().expect("Building Room Event doesn’t fail")
@@ -263,15 +296,86 @@ impl TimelineEventItem {
     }
 
     pub fn event_type(&self) -> String {
-        self.event_type.clone()
+        if let Some(content) = &self.content {
+            return match content {
+                TimelineEventContent::Message(_) => "m.room.message".to_owned(),
+                TimelineEventContent::RedactedMessage => "m.room.redaction".to_owned(),
+                TimelineEventContent::Sticker(_) => "m.sticker".to_owned(),
+                TimelineEventContent::UnableToDecrypt => "m.room.encrypted".to_owned(),
+                TimelineEventContent::MembershipChange(_) => "membershipChange".to_owned(), // some of m.room.member
+                TimelineEventContent::ProfileChange(_) => "profileChange".to_owned(), // some of m.room.member
+                TimelineEventContent::OtherState(OtherState::PolicyRuleRoom(_)) => "m.policy.rule.room".to_owned(),
+                TimelineEventContent::OtherState(OtherState::PolicyRuleServer(_)) => "m.policy.rule.server".to_owned(),
+                TimelineEventContent::OtherState(OtherState::PolicyRuleUser(_)) => "m.policy.rule.user".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomAliases(_)) => "m.room.aliases".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomAvatar(_)) => "m.room.avatar".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomCanonicalAlias(_)) => "m.room.canonical_alias".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomCreate(_)) => "m.room.create".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomEncryption(_)) => "m.room.encryption".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomGuestAccess(_)) => "m.room.guest_access".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomHistoryVisibility(_)) => "m.room.history_visibility".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomJoinRules(_)) => "m.room.join_rules".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomName(_)) => "m.room.name".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomPinnedEvents(_)) => "m.room.pinned_events".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomPowerLevels(_)) => "m.room.power_levels".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomServerAcl(_)) => "m.room.server_acl".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomThirdPartyInvite(_)) => "m.room.third_party_invite".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomTombstone(_)) => "m.room.tombstone".to_owned(),
+                TimelineEventContent::OtherState(OtherState::RoomTopic(_)) => "m.room.topic".to_owned(),
+                TimelineEventContent::OtherState(OtherState::SpaceChild(_)) => "m.space.child".to_owned(),
+                TimelineEventContent::OtherState(OtherState::SpaceParent(_)) => "m.space.parent".to_owned(),
+                TimelineEventContent::FailedToParseMessageLike { event_type, .. } => event_type.to_string(),
+                TimelineEventContent::FailedToParseState { event_type, .. } => event_type.to_string(),
+                TimelineEventContent::Poll(_) => "m.poll.start".to_owned(),
+                TimelineEventContent::CallInvite => "m.call_invite".to_owned(),
+                TimelineEventContent::CallNotify => "m.call_notify".to_owned(),
+            };
+        }
+        "".to_owned()
     }
 
     pub fn msg_type(&self) -> Option<String> {
         self.msg_type.clone()
     }
 
-    pub fn msg_content(&self) -> Option<MsgContent> {
-        self.msg_content.clone()
+    pub fn message(&self) -> Option<MsgContent> {
+        if let Some(TimelineEventContent::Message(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn sticker(&self) -> Option<Sticker> {
+        if let Some(TimelineEventContent::Sticker(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn membership_change(&self) -> Option<MembershipChange> {
+        if let Some(TimelineEventContent::MembershipChange(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn profile_change(&self) -> Option<ProfileChange> {
+        if let Some(TimelineEventContent::ProfileChange(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn poll(&self) -> Option<PollContent> {
+        if let Some(TimelineEventContent::Poll(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
     }
 
     pub fn in_reply_to(&self) -> Option<String> {
@@ -325,831 +429,438 @@ impl TimelineEventItem {
     }
 }
 
+// room state change
+impl TimelineEventItem {
+    pub fn policy_rule_room(&self) -> Option<PolicyRuleRoomContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::PolicyRuleRoom(c))) = &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_server(&self) -> Option<PolicyRuleServerContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::PolicyRuleServer(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_user(&self) -> Option<PolicyRuleUserContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::PolicyRuleUser(c))) = &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_aliases(&self) -> Option<RoomAliasesContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomAliases(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_avatar(&self) -> Option<RoomAvatarContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomAvatar(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_canonical_alias(&self) -> Option<RoomCanonicalAliasContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomCanonicalAlias(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_create(&self) -> Option<RoomCreateContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomCreate(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_encryption(&self) -> Option<RoomEncryptionContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomEncryption(c))) = &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_guest_access(&self) -> Option<RoomGuestAccessContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomGuestAccess(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_history_visibility(&self) -> Option<RoomHistoryVisibilityContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomHistoryVisibility(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_join_rules(&self) -> Option<RoomJoinRulesContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomJoinRules(c))) = &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_name(&self) -> Option<RoomNameContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomName(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_pinned_events(&self) -> Option<RoomPinnedEventsContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomPinnedEvents(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_power_levels(&self) -> Option<RoomPowerLevelsContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomPowerLevels(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_server_acl(&self) -> Option<RoomServerAclContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomServerAcl(c))) = &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_third_party_invite(&self) -> Option<RoomThirdPartyInviteContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomThirdPartyInvite(c))) =
+            &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_tombstone(&self) -> Option<RoomTombstoneContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomTombstone(c))) = &self.content
+        {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_topic(&self) -> Option<RoomTopicContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::RoomTopic(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn space_child(&self) -> Option<SpaceChildContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::SpaceChild(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn space_parent(&self) -> Option<SpaceParentContent> {
+        if let Some(TimelineEventContent::OtherState(OtherState::SpaceParent(c))) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+}
+
 impl TimelineEventItemBuilder {
-    fn handle_other_state(&mut self, state: &OtherState) {
+    fn handle_other_state(&mut self, state: &SdkOtherState) -> Option<OtherState> {
         match state.content() {
             AnyOtherFullStateEventContent::PolicyRuleRoom(c) => {
-                self.event_type("m.policy.rule.room".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        let PolicyRuleRoomEventContent(cur) = content;
-                        if let Some(PossiblyRedactedPolicyRuleRoomEventContent(prev)) = prev_content
-                        {
-                            let mut result = vec![];
-                            if let Some(entity) = prev.entity.clone() {
-                                if entity != cur.entity {
-                                    result.push("changed entity".to_owned());
-                                }
-                            } else {
-                                result.push("added entity".to_owned());
-                            }
-                            if let Some(reason) = prev.reason.clone() {
-                                if reason != cur.reason {
-                                    result.push("changed reason".to_owned());
-                                }
-                            } else {
-                                result.push("added reason".to_owned());
-                            }
-                            if let Some(recommendation) = prev.recommendation.clone() {
-                                if recommendation.ne(&cur.recommendation) {
-                                    result.push("changed recommendation".to_owned());
-                                }
-                            } else {
-                                result.push("added recommendation".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added policy room rule".to_owned())
-                        }
+                        let c = PolicyRuleRoomContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::PolicyRuleRoom(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted policy room rule".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::PolicyRuleServer(c) => {
-                self.event_type("m.policy.rule.server".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        let PolicyRuleServerEventContent(cur) = content;
-                        if let Some(PossiblyRedactedPolicyRuleServerEventContent(prev)) =
-                            prev_content
-                        {
-                            let mut result = vec![];
-                            if let Some(entity) = prev.entity.clone() {
-                                if entity != cur.entity {
-                                    result.push("changed entity".to_owned());
-                                }
-                            } else {
-                                result.push("added entity".to_owned());
-                            }
-                            if let Some(reason) = prev.reason.clone() {
-                                if reason != cur.reason {
-                                    result.push("changed reason".to_owned());
-                                }
-                            } else {
-                                result.push("added reason".to_owned());
-                            }
-                            if let Some(recommendation) = prev.recommendation.clone() {
-                                if recommendation.ne(&cur.recommendation) {
-                                    result.push("changed recommendation".to_owned());
-                                }
-                            } else {
-                                result.push("added recommendation".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added policy server rule".to_owned())
-                        }
+                        let c = PolicyRuleServerContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::PolicyRuleServer(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted policy server rule".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::PolicyRuleUser(c) => {
-                self.event_type("m.policy.rule.user".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        let PolicyRuleUserEventContent(cur) = content;
-                        if let Some(PossiblyRedactedPolicyRuleUserEventContent(prev)) = prev_content
-                        {
-                            let mut result = vec![];
-                            if let Some(entity) = prev.entity.clone() {
-                                if entity != cur.entity {
-                                    result.push("changed entity".to_owned());
-                                }
-                            } else {
-                                result.push("added entity".to_owned());
-                            }
-                            if let Some(reason) = prev.reason.clone() {
-                                if reason != cur.reason {
-                                    result.push("changed reason".to_owned());
-                                }
-                            } else {
-                                result.push("added reason".to_owned());
-                            }
-                            if let Some(recommendation) = prev.recommendation.clone() {
-                                if recommendation.ne(&cur.recommendation) {
-                                    result.push("changed recommendation".to_owned());
-                                }
-                            } else {
-                                result.push("added recommendation".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added policy user rule".to_owned())
-                        }
+                        let c = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::PolicyRuleUser(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted policy user rule".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomAliases(c) => {
-                self.event_type("m.room.aliases".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(old) = &prev.aliases {
-                                if !do_vecs_match::<OwnedRoomAliasId>(old, &content.aliases) {
-                                    result.push("changed aliases".to_owned());
-                                }
-                                if result.is_empty() {
-                                    MsgContent::from_text("empty content".to_owned())
-                                } else {
-                                    MsgContent::from_text(result.join(", "))
-                                }
-                            } else {
-                                MsgContent::from_text("added room aliases".to_owned())
-                            }
-                        } else {
-                            MsgContent::from_text("added room aliases".to_owned())
-                        }
+                        let c = RoomAliasesContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomAliases(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room aliases".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomAvatar(c) => {
-                self.event_type("m.room.avatar".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.url.ne(&content.url) {
-                                result.push("changed url".to_owned());
-                            }
-                            match (prev.info.clone(), content.info.clone()) {
-                                (Some(old), Some(cur)) => {
-                                    if old.blurhash != cur.blurhash {
-                                        result.push("changed info blurhash".to_owned());
-                                    }
-                                    if old.height != cur.height {
-                                        result.push("changed info height".to_owned());
-                                    }
-                                    if old.mimetype != cur.mimetype {
-                                        result.push("changed info mimetype".to_owned());
-                                    }
-                                    if old.size != cur.size {
-                                        result.push("changed info size".to_owned());
-                                    }
-                                    match (old.thumbnail_info, cur.thumbnail_info) {
-                                        (Some(old_info), Some(cur_info)) => {
-                                            if old_info.height != cur_info.height {
-                                                result.push(
-                                                    "changed info thumbnail height".to_owned(),
-                                                );
-                                            }
-                                            if old_info.height != cur_info.height {
-                                                result.push(
-                                                    "changed info thumbnail height".to_owned(),
-                                                );
-                                            }
-                                            if old_info.mimetype != cur_info.mimetype {
-                                                result.push(
-                                                    "changed info thumbnail mimetype".to_owned(),
-                                                );
-                                            }
-                                            if old_info.size != cur_info.size {
-                                                result
-                                                    .push("changed info thumbnail size".to_owned());
-                                            }
-                                            if old_info.width != cur_info.width {
-                                                result.push(
-                                                    "changed info thumbnail width".to_owned(),
-                                                );
-                                            }
-                                        }
-                                        (Some(old_info), None) => {
-                                            result.push("removed info thumbnail info".to_owned());
-                                        }
-                                        (None, Some(cur_info)) => {
-                                            result.push("added info thumbnail info".to_owned());
-                                        }
-                                        (None, None) => {}
-                                    }
-                                    if old.thumbnail_url != cur.thumbnail_url {
-                                        result.push("changed info thumbnail url".to_owned());
-                                    }
-                                    if old.width != cur.width {
-                                        result.push("changed info width".to_owned());
-                                    }
-                                }
-                                (Some(old), None) => {
-                                    result.push("removed info".to_owned());
-                                }
-                                (None, Some(cur)) => {
-                                    result.push("added info".to_owned());
-                                }
-                                (None, None) => {}
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room avatar".to_owned())
-                        }
+                        let c = RoomAvatarContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomAvatar(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room avatar".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomCanonicalAlias(c) => {
-                self.event_type("m.room.canonical_alias".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.alias.ne(&content.alias) {
-                                result.push("changed alias".to_owned());
-                            }
-                            if !do_vecs_match(&prev.alt_aliases, &content.alt_aliases) {
-                                result.push("changed alt aliases".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room canonical alias".to_owned())
-                        }
+                        let c =
+                            RoomCanonicalAliasContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomCanonicalAlias(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room canonical alias".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomCreate(c) => {
-                self.event_type("m.room.create".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.federate != content.federate {
-                                result.push("changed federate".to_owned());
-                            }
-                            match (prev.predecessor.clone(), content.predecessor.clone()) {
-                                (Some(old), Some(cur)) => {
-                                    if old.event_id != cur.event_id || old.room_id != cur.room_id {
-                                        result.push("changed predecessor".to_owned());
-                                    }
-                                }
-                                (Some(old), None) => {
-                                    result.push("removed predecessor".to_owned());
-                                }
-                                (None, Some(cur)) => {
-                                    result.push("added predecessor".to_owned());
-                                }
-                                (None, None) => {}
-                            }
-                            if prev.room_type != content.room_type {
-                                result.push("changed room type".to_owned());
-                            }
-                            if prev.room_version != content.room_version {
-                                result.push("changed room version".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room create".to_owned())
-                        }
+                        let c = RoomCreateContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomCreate(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room create".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomEncryption(c) => {
-                self.event_type("m.room.encryption".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(algorithm) = prev.algorithm.clone() {
-                                if algorithm.ne(&content.algorithm) {
-                                    result.push("changed algorithm".to_owned());
-                                }
-                            } else {
-                                result.push("added algorithm".to_owned());
-                            }
-                            if prev.rotation_period_ms != content.rotation_period_ms {
-                                result.push("changed rotation period ms".to_owned());
-                            }
-                            if prev.rotation_period_msgs != content.rotation_period_msgs {
-                                result.push("changed rotation period msgs".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room encryption".to_owned())
-                        }
+                        let c = RoomEncryptionContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomEncryption(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room encryption".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomGuestAccess(c) => {
-                self.event_type("m.room.guest_access".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(old) = &prev.guest_access {
-                                if old.ne(&content.guest_access) {
-                                    result.push("changed room guest access".to_owned());
-                                }
-                            } else {
-                                result.push("added room guest access".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room guest access".to_owned())
-                        }
+                        let c = RoomGuestAccessContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomGuestAccess(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room guess access".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomHistoryVisibility(c) => {
-                self.event_type("m.room.history_visibility".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.history_visibility.ne(&content.history_visibility) {
-                                result.push(format!(
-                                    "changed '{}' -> '{}'",
-                                    prev.history_visibility.as_str(),
-                                    &content.history_visibility.as_str()
-                                ));
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.history_visibility.as_str().to_owned())
-                        }
+                        let c = RoomHistoryVisibilityContent::new(
+                            content.clone(),
+                            prev_content.clone(),
+                        );
+                        Some(OtherState::RoomHistoryVisibility(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room history visibility".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomJoinRules(c) => {
-                self.event_type("m.room.join_rules".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(old) = prev_content {
-                            let mut result = vec![];
-                            if old.join_rule.ne(&content.join_rule) {
-                                result.push(format!(
-                                    "changed '{}' -> '{}'",
-                                    old.join_rule.as_str(),
-                                    &content.join_rule.as_str()
-                                ));
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.join_rule.as_str().to_owned())
-                        }
+                        let c = RoomJoinRulesContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomJoinRules(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room join rule".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomName(c) => {
-                self.event_type("m.room.name".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        let cur = content.name.clone();
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(old) = prev.name.clone() {
-                                if old != content.name {
-                                    result.push(format!("changed '{}' -> '{}'", old, content.name));
-                                }
-                            } else {
-                                result.push(format!("set name to '{}'", content.name));
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.name.to_owned())
-                        }
+                        let c = RoomNameContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomName(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room name".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomPinnedEvents(c) => {
-                self.event_type("m.room.pinned_events".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(pinned) = prev.pinned.clone() {
-                                if !do_vecs_match::<OwnedEventId>(&pinned, &content.pinned) {
-                                    result.push("changed room pinned events".to_owned());
-                                }
-                            } else {
-                                result.push("added room pinned events".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room pinned events".to_owned())
-                        }
+                        let c = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomPinnedEvents(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room pinned events".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomPowerLevels(c) => {
-                self.event_type("m.room.power_levels".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.ban != content.ban {
-                                result.push("changed ban level".to_owned());
-                            }
-                            if prev.events.ne(&content.events) {
-                                result.push("changed events level".to_owned());
-                            }
-                            if prev.events_default != content.events_default {
-                                result.push("changed events default level".to_owned());
-                            }
-                            if prev.invite != content.invite {
-                                result.push("changed invite level".to_owned());
-                            }
-                            if prev.kick != content.kick {
-                                result.push("changed kick level".to_owned());
-                            }
-                            if prev.notifications.room != content.notifications.room {
-                                result.push("changed notifications level".to_owned());
-                            }
-                            if prev.redact != content.redact {
-                                result.push("changed redact level".to_owned());
-                            }
-                            if prev.state_default != content.state_default {
-                                result.push("changed state default level".to_owned());
-                            }
-                            if prev.users.ne(&content.users) {
-                                result.push("changed users levels".to_owned());
-                            }
-                            if prev.users_default != content.users_default {
-                                result.push("changed users default level".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room power levels".to_owned())
-                        }
+                        let c = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomPowerLevels(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room power levels".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomServerAcl(c) => {
-                self.event_type("m.room.server_acl".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if !do_vecs_match::<String>(&prev.allow, &content.allow) {
-                                result.push("changed allow list".to_owned());
-                            }
-                            if prev.allow_ip_literals != content.allow_ip_literals {
-                                result.push("changed allow ip literals".to_owned());
-                            }
-                            if !do_vecs_match::<String>(&prev.deny, &content.deny) {
-                                result.push("changed deny list".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room server acl".to_owned())
-                        }
+                        let c = RoomServerAclContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomServerAcl(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room server acl".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomThirdPartyInvite(c) => {
-                self.event_type("m.room.third_party_invite".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(display_name) = prev.display_name.clone() {
-                                if display_name != content.display_name {
-                                    result.push("changed display name of invite".to_owned());
-                                }
-                            } else {
-                                result.push("added display name of invite".to_owned());
-                            }
-                            if let Some(key_validity_url) = prev.key_validity_url.clone() {
-                                if key_validity_url != content.key_validity_url {
-                                    result.push("changed key validity url of invite".to_owned());
-                                }
-                            } else {
-                                result.push("added key validity url of invite".to_owned());
-                            }
-                            if let Some(public_key) = prev.public_key.clone() {
-                                if public_key.ne(&content.public_key) {
-                                    result.push("changed public key of invite".to_owned());
-                                }
-                            } else {
-                                result.push("added public key of invite".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room third party invite".to_owned())
-                        }
+                        let c =
+                            RoomThirdPartyInviteContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomThirdPartyInvite(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room history visibility".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomTombstone(c) => {
-                self.event_type("m.room.tombstone".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(body) = prev.body.clone() {
-                                if body != content.body {
-                                    result
-                                        .push(format!("changed '{}' -> '{}'", body, content.body));
-                                }
-                            } else {
-                                result.push(content.body.to_owned());
-                            }
-                            if let Some(replacement_room) = prev.replacement_room.clone() {
-                                if replacement_room != content.replacement_room {
-                                    result.push("changed tombstone replacement room".to_owned());
-                                }
-                            } else {
-                                result.push("added tombstone replacement room".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.body.to_owned())
-                        }
+                        let c = RoomTombstoneContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomTombstone(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room tombstone".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::RoomTopic(c) => {
-                self.event_type("m.room.topic".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(topic) = prev.topic.clone() {
-                                if topic != content.topic {
-                                    result.push(format!(
-                                        "changed '{}' -> '{}'",
-                                        topic, content.topic
-                                    ));
-                                }
-                            } else {
-                                result.push(content.topic.to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.topic.to_owned())
-                        }
+                        let c = RoomTopicContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::RoomTopic(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room topic".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::SpaceChild(c) => {
-                self.event_type("m.space.child".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            match (prev.order.clone(), content.order.clone()) {
-                                (Some(old), Some(cur)) => {
-                                    if old != cur {
-                                        result.push("changed order of space child".to_owned());
-                                    }
-                                }
-                                (Some(old), None) => {
-                                    result.push("removed order of space child".to_owned());
-                                }
-                                (None, Some(cur)) => {
-                                    result.push("added order of space child".to_owned());
-                                }
-                                (None, None) => {}
-                            }
-                            if prev.suggested != content.suggested {
-                                result.push("changed suggested of space child".to_owned());
-                            }
-                            if let Some(via) = prev.via.clone() {
-                                if !do_vecs_match(&via, &content.via) {
-                                    result.push("changed via of space child".to_owned());
-                                }
-                            } else {
-                                result.push("added via of space child".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added space child".to_owned())
-                        }
+                        let c = SpaceChildContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::SpaceChild(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted space child".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
             AnyOtherFullStateEventContent::SpaceParent(c) => {
-                self.event_type("m.space.parent".to_owned());
-                let msg_content = match c {
+                match c {
                     FullStateEventContent::Original {
                         content,
                         prev_content,
                     } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.canonical != content.canonical {
-                                result.push("changed canonical of space parent".to_owned());
-                            }
-                            if let Some(via) = prev.via.clone() {
-                                if !do_vecs_match(&via, &content.via) {
-                                    result.push("changed via of space parent".to_owned());
-                                }
-                            } else {
-                                result.push("added via of space parent".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added space parent".to_owned())
-                        }
+                        let c = SpaceParentContent::new(content.clone(), prev_content.clone());
+                        Some(OtherState::SpaceParent(c))
                     }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted space parent".to_owned())
-                    }
-                };
-                self.msg_content(Some(msg_content));
+                    FullStateEventContent::Redacted(r) => None,
+                }
             }
-            _ => {}
+            _ => None,
         }
     }
 }
@@ -1279,9 +990,4 @@ impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
             },
         }
     }
-}
-
-fn do_vecs_match<T: PartialEq>(a: &[T], b: &[T]) -> bool {
-    let matching = a.iter().zip(b.iter()).filter(|&(a, b)| a == b).count();
-    matching == a.len() && matching == b.len()
 }
