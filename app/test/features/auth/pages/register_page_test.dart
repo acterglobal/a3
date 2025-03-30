@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
-import 'package:acter/features/auth/providers/auth_providers.dart';
-import 'package:acter/features/auth/providers/notifiers/auth_notifier.dart';
+import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 import 'package:test_screenshot/test_screenshot.dart';
 
+import '../../../helpers/mock_go_router.dart';
 import '../../../helpers/test_util.dart';
+import '../../super_invites/mock_data/mock_super_invites.dart';
 
 class MockSdk extends Mock implements ActerSdk {}
 
@@ -272,13 +272,20 @@ void main() {
         );
       }
 
+      (MockGoRouter, MockNavigator) setUpRouters() {
+        final mockedGoRouter = MockGoRouter();
+        final navigator = MockNavigator();
+        when(navigator.canPop).thenReturn(true);
+        return (mockedGoRouter, navigator);
+      }
+
       testWidgets('call register with correct params', (
         WidgetTester tester,
       ) async {
         final completer = Completer<MockClient>();
         when(
           () => mockSdk.register(any(), any(), any(), any()),
-        ).thenAnswer((_) async => completer.future); // pending forever
+        ).thenAnswer((_) async => completer.future);
         await tester.pumpProviderWidget(
           overrides: providers,
           child: RegisterPage(),
@@ -299,6 +306,144 @@ void main() {
             'passworD !23',
             'Test User',
             'testtoken',
+          ),
+        ).called(1);
+      });
+
+      testWidgets('goes on after register correctly', (
+        WidgetTester tester,
+      ) async {
+        final (mockedGoRouter, mockNavigator) = setUpRouters();
+        when(
+          () => mockedGoRouter.goNamed(
+            any(),
+            queryParameters: any(named: 'queryParameters'),
+            pathParameters: any(named: 'pathParameters'),
+            extra: any(named: 'extra'),
+            fragment: any(named: 'fragment'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final client = MockClient();
+        final completer = Completer<MockClient>();
+        when(
+          () => mockSdk.register(any(), any(), any(), any()),
+        ).thenAnswer((_) async => completer.future);
+
+        await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
+          overrides: [
+            ...providers,
+            superInvitesProvider.overrideWith((ref) => MockSuperInvites()),
+          ],
+          child: RegisterPage(),
+        );
+        await submitValidForm(tester);
+
+        final submitBtn = find.byKey(RegisterPage.submitBtn);
+        expect(submitBtn, findsNothing);
+        expect(
+          find.byType(CircularProgressIndicator, skipOffstage: false),
+          findsOneWidget,
+        );
+
+        // data was passed in correctly
+        verify(
+          () => mockSdk.register(
+            'testuser',
+            'passworD !23',
+            'Test User',
+            'testtoken',
+          ),
+        ).called(1);
+
+        // now continuce
+        when(
+          () => mockSdk.currentClient,
+        ).thenReturn(client); // we also must return
+        completer.complete(client);
+        await tester.pump(); // settle the screen
+
+        verify(
+          () => mockedGoRouter.goNamed(
+            any(that: equals('saveUsername')), // forwarded to the right item
+            queryParameters: any(
+              named: 'queryParameters',
+              that: contains('username'),
+            ),
+            pathParameters: any(named: 'pathParameters'),
+            extra: any(named: 'extra'),
+            fragment: any(named: 'fragment'),
+          ),
+        ).called(1);
+      });
+
+      testWidgets('while user lost focus', (WidgetTester tester) async {
+        final (mockedGoRouter, mockNavigator) = setUpRouters();
+        when(
+          () => mockedGoRouter.goNamed(
+            any(),
+            queryParameters: any(named: 'queryParameters'),
+            pathParameters: any(named: 'pathParameters'),
+            extra: any(named: 'extra'),
+            fragment: any(named: 'fragment'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final client = MockClient();
+        final completer = Completer<MockClient>();
+        when(
+          () => mockSdk.register(any(), any(), any(), any()),
+        ).thenAnswer((_) async => completer.future);
+
+        await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
+          overrides: [
+            ...providers,
+            superInvitesProvider.overrideWith((ref) => MockSuperInvites()),
+          ],
+          child: RegisterPage(),
+        );
+        await submitValidForm(tester);
+
+        final submitBtn = find.byKey(RegisterPage.submitBtn);
+        expect(submitBtn, findsNothing);
+        expect(
+          find.byType(CircularProgressIndicator, skipOffstage: false),
+          findsOneWidget,
+        );
+
+        // data was passed in correctly
+        verify(
+          () => mockSdk.register(
+            'testuser',
+            'passworD !23',
+            'Test User',
+            'testtoken',
+          ),
+        ).called(1);
+
+        // this takes long, so the user looks away.
+
+        // now continuce
+        when(
+          () => mockSdk.currentClient,
+        ).thenReturn(client); // we also must return
+        completer.complete(client);
+        await tester.pump(); // settle the screen
+
+        verify(
+          () => mockedGoRouter.goNamed(
+            any(that: equals('saveUsername')), // forwarded to the right item
+            queryParameters: any(
+              named: 'queryParameters',
+              that: contains('username'),
+            ),
+            pathParameters: any(named: 'pathParameters'),
+            extra: any(named: 'extra'),
+            fragment: any(named: 'fragment'),
           ),
         ).called(1);
       });
