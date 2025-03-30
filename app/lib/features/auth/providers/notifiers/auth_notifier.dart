@@ -9,10 +9,9 @@ import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::auth::notifier');
 
-class AuthStateNotifier extends StateNotifier<bool> {
-  final Ref ref;
-
-  AuthStateNotifier(this.ref) : super(false);
+class AuthNotifier extends Notifier<bool> {
+  @override
+  bool build() => false; // loading state
 
   Future<void> nuke() async {
     await ActerSdk.nuke();

@@ -356,7 +356,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildSignUpButton(BuildContext context) {
-    final authState = ref.watch(authStateProvider);
+    final authState = ref.watch(authLoadingStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
