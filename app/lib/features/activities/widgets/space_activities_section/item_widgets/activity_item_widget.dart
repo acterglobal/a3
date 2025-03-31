@@ -1,6 +1,9 @@
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invitationAccepted.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invited.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/joined.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpMaybe.dart';
@@ -16,6 +19,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invitationRevoked.dart';
 
 class ActivityItemWidget extends ConsumerWidget {
   final Activity activity;
@@ -41,6 +45,10 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.taskAccept => ActivityTaskAcceptedItemWidget(activity: activity),
       PushStyles.taskDecline => ActivityTaskDeclineItemWidget(activity: activity),
       PushStyles.taskDueDateChange => ActivityTaskDueDateChangedItemWidget(activity: activity),
+      PushStyles.invitationRevoked => ActivityInvitationRevokedItemWidget(activity: activity),
+      PushStyles.invitationAccepted => ActivityInvitationAcceptedItemWidget(activity: activity),
+      PushStyles.joined => ActivityJoinedItemWidget(activity: activity),
+      PushStyles.invited => ActivityInvitedItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
   }
