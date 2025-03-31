@@ -118,7 +118,7 @@ class _CreateChatWidgetState extends ConsumerState<CreateChatPage> {
     String? description,
     List<String> selectedUsers,
   ) async {
-    final roomCreated = L10n.of(context).chatRoomCreated;
+    final roomCreated = L10n.of(context).roomStateRoomCreateYou;
     final roomIdStr = await createChat(
       context,
       ref,
