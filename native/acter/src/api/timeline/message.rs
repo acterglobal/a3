@@ -925,11 +925,7 @@ impl TimelineItem {
     }
 
     pub fn is_virtual(&self) -> bool {
-        if let TimelineItemContent::Virtual(content) = &self.content {
-            true
-        } else {
-            false
-        }
+        matches!(&self.content, TimelineItemContent::Virtual(content))
     }
 
     pub fn event_item(&self) -> Option<TimelineEventItem> {
