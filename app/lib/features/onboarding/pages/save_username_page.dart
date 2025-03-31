@@ -126,7 +126,7 @@ class SaveUsernamePage extends StatelessWidget {
           key: continueBtn,
           onPressed:
               isCopiedValue
-                  ? () => context.goNamed(Routes.encryptionBackup.name)
+                  ? () => context.goNamed(Routes.redeemInvitations.name)
                   : null,
           style: OutlinedButton.styleFrom(
             side: isCopiedValue ? null : BorderSide(color: disabledColor),

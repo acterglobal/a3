@@ -1,0 +1,1 @@
+- [Implemented] : Added a "Redeem Invitations" step to the onboarding flow, allowing users to easily redeem invitation codes.
