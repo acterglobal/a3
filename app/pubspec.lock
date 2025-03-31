@@ -1611,10 +1611,10 @@ packages:
     dependency: "direct dev"
     description:
       name: mockingjay
-      sha256: cea2f3d38d1343beb6908f0ade5724c12304ee74014fbd274b4065a4b7db6536
+      sha256: db8bed9123ca1cd13442a26c90a18cdf6f707ca79160d1c3ac3baa0f8f86cf1d
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "1.0.0"
   mocktail:
     dependency: "direct dev"
     description:

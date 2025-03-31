@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
@@ -30,7 +29,7 @@ void main() {
           isBookmarkedProvider.overrideWith((a, b) => false),
           spaceInvitedMembersProvider.overrideWith((a, b) => []),
           shouldShowSuggestedProvider.overrideWith((a, b) => false),
-          isActerSpaceForSpace.overrideWith((a, b) => false),
+          isActerSpace.overrideWith((a, b) => false),
 
           // the actual failing ones
           spaceProvider.overrideWith((a, b) {

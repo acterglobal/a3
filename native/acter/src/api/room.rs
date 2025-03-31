@@ -779,7 +779,7 @@ impl Room {
         let my_id = self.user_id()?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -902,7 +902,7 @@ impl Room {
 
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -930,7 +930,7 @@ impl Room {
 
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -952,7 +952,7 @@ impl Room {
         let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -979,7 +979,7 @@ impl Room {
         let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -1007,7 +1007,7 @@ impl Room {
         let uid = UserId::parse(user_id)?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -1308,7 +1308,7 @@ impl Room {
         let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };

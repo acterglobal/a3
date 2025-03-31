@@ -1785,6 +1785,17 @@ class Api {
     return tmp1;
   }
 
+  /// make app permissions builder
+  AppPermissionsBuilder newAppPermissionsBuilder() {
+    final tmp0 = _newAppPermissionsBuilder();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_AppPermissionsBuilder");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp1 = AppPermissionsBuilder._(this, tmp2_1);
+    return tmp1;
+  }
+
   /// make convo settings builder
   CreateConvoSettingsBuilder newConvoSettingsBuilder() {
     final tmp0 = _newConvoSettingsBuilder();
@@ -7331,7 +7342,7 @@ class Api {
     return tmp7;
   }
 
-  String? __invitationsManagerInviteFuturePoll(
+  String? __objectInvitationsManagerInviteFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -7345,7 +7356,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _invitationsManagerInviteFuturePoll(tmp1, tmp3, tmp5);
+    final tmp6 = _objectInvitationsManagerInviteFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -7391,7 +7402,7 @@ class Api {
     return tmp7;
   }
 
-  InvitationsManager? __invitationsManagerReloadFuturePoll(
+  ObjectInvitationsManager? __objectInvitationsManagerReloadFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -7405,7 +7416,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _invitationsManagerReloadFuturePoll(tmp1, tmp3, tmp5);
+    final tmp6 = _objectInvitationsManagerReloadFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -7430,9 +7441,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_InvitationsManager");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ObjectInvitationsManager");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = InvitationsManager._(this, tmp13_1);
+    final tmp7 = ObjectInvitationsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -8131,7 +8142,7 @@ class Api {
     return tmp7;
   }
 
-  InvitationsManager? __taskInvitationsFuturePoll(
+  ObjectInvitationsManager? __taskInvitationsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -8170,9 +8181,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_InvitationsManager");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ObjectInvitationsManager");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = InvitationsManager._(this, tmp13_1);
+    final tmp7 = ObjectInvitationsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -11691,6 +11702,102 @@ class Api {
     return tmp7;
   }
 
+  FfiListRoomInvitation? __invitationsManagerRoomInvitationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _invitationsManagerRoomInvitationsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListRoomInvitation");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListRoomInvitation._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiListFfiString? __invitationsManagerObjectInvitationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _invitationsManagerObjectInvitationsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListFfiString");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListFfiString._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   String? __clientRestoreTokenFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -14203,7 +14310,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __invitationAcceptFuturePoll(int boxed, int postCobject, int port) {
+  bool? __roomInvitationAcceptFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
     final tmp4 = port;
@@ -14213,7 +14320,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _invitationAcceptFuturePoll(tmp1, tmp3, tmp5);
+    final tmp6 = _roomInvitationAcceptFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -14241,7 +14348,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __invitationRejectFuturePoll(int boxed, int postCobject, int port) {
+  bool? __roomInvitationRejectFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
     final tmp4 = port;
@@ -14251,7 +14358,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _invitationRejectFuturePoll(tmp1, tmp3, tmp5);
+    final tmp6 = _roomInvitationRejectFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -15681,7 +15788,7 @@ class Api {
     return tmp9;
   }
 
-  bool? __invitationsManagerSubscribeStreamStreamPoll(
+  bool? __objectInvitationsManagerSubscribeStreamStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -15699,7 +15806,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _invitationsManagerSubscribeStreamStreamPoll(
+    final tmp8 = _objectInvitationsManagerSubscribeStreamStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -15938,6 +16045,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __invitationsManagerSubscribeStreamStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _invitationsManagerSubscribeStreamStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   ConvoDiff? __clientConvosStreamStreamPoll(
     int boxed,
     int postCobject,
@@ -15997,38 +16137,6 @@ class Api {
     final tmp11_1 = _Box(this, tmp11_0, "drop_box_SpaceDiff");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
     final tmp9 = SpaceDiff._(this, tmp11_1);
-    return tmp9;
-  }
-
-  FfiListInvitation? __clientInvitationsRxStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _clientInvitationsRxStreamPoll(tmp1, tmp3, tmp5, tmp7);
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListInvitation");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp12 = FfiListInvitation._(this, tmp11_1);
-    final tmp9 = tmp12;
     return tmp9;
   }
 
@@ -17055,6 +17163,13 @@ class Api {
 
   late final _newJoinRuleBuilder =
       _newJoinRuleBuilderPtr.asFunction<int Function()>();
+  late final _newAppPermissionsBuilderPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+        "__new_app_permissions_builder",
+      );
+
+  late final _newAppPermissionsBuilder =
+      _newAppPermissionsBuilderPtr.asFunction<int Function()>();
   late final _newConvoSettingsBuilderPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
         "__new_convo_settings_builder",
@@ -22272,50 +22387,52 @@ class Api {
 
   late final _commentsManagerReload =
       _commentsManagerReloadPtr.asFunction<int Function(int)>();
-  late final _invitationsManagerInvitedPtr =
+  late final _objectInvitationsManagerInvitedPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__InvitationsManager_invited",
+        "__ObjectInvitationsManager_invited",
       );
 
-  late final _invitationsManagerInvited =
-      _invitationsManagerInvitedPtr.asFunction<int Function(int)>();
-  late final _invitationsManagerHasInvitationsPtr =
+  late final _objectInvitationsManagerInvited =
+      _objectInvitationsManagerInvitedPtr.asFunction<int Function(int)>();
+  late final _objectInvitationsManagerHasInvitationsPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__InvitationsManager_has_invitations",
+        "__ObjectInvitationsManager_has_invitations",
       );
 
-  late final _invitationsManagerHasInvitations =
-      _invitationsManagerHasInvitationsPtr.asFunction<int Function(int)>();
-  late final _invitationsManagerIsInvitedPtr =
+  late final _objectInvitationsManagerHasInvitations =
+      _objectInvitationsManagerHasInvitationsPtr
+          .asFunction<int Function(int)>();
+  late final _objectInvitationsManagerIsInvitedPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__InvitationsManager_is_invited",
+        "__ObjectInvitationsManager_is_invited",
       );
 
-  late final _invitationsManagerIsInvited =
-      _invitationsManagerIsInvitedPtr.asFunction<int Function(int)>();
-  late final _invitationsManagerInvitePtr = _lookup<
+  late final _objectInvitationsManagerIsInvited =
+      _objectInvitationsManagerIsInvitedPtr.asFunction<int Function(int)>();
+  late final _objectInvitationsManagerInvitePtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
-  >("__InvitationsManager_invite");
+  >("__ObjectInvitationsManager_invite");
 
-  late final _invitationsManagerInvite =
-      _invitationsManagerInvitePtr
+  late final _objectInvitationsManagerInvite =
+      _objectInvitationsManagerInvitePtr
           .asFunction<int Function(int, int, int, int)>();
-  late final _invitationsManagerSubscribeStreamPtr =
+  late final _objectInvitationsManagerSubscribeStreamPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__InvitationsManager_subscribe_stream",
+        "__ObjectInvitationsManager_subscribe_stream",
       );
 
-  late final _invitationsManagerSubscribeStream =
-      _invitationsManagerSubscribeStreamPtr.asFunction<int Function(int)>();
-  late final _invitationsManagerReloadPtr =
+  late final _objectInvitationsManagerSubscribeStream =
+      _objectInvitationsManagerSubscribeStreamPtr
+          .asFunction<int Function(int)>();
+  late final _objectInvitationsManagerReloadPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__InvitationsManager_reload",
+        "__ObjectInvitationsManager_reload",
       );
 
-  late final _invitationsManagerReload =
-      _invitationsManagerReloadPtr.asFunction<int Function(int)>();
+  late final _objectInvitationsManagerReload =
+      _objectInvitationsManagerReloadPtr.asFunction<int Function(int)>();
   late final _attachmentDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__AttachmentDraft_send",
@@ -25176,6 +25293,166 @@ class Api {
 
   late final _acterUserAppSettingsBuilderSend =
       _acterUserAppSettingsBuilderSendPtr.asFunction<int Function(int)>();
+  late final _appPermissionsBuilderNewsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__AppPermissionsBuilder_news",
+      );
+
+  late final _appPermissionsBuilderNews =
+      _appPermissionsBuilderNewsPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderPinsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__AppPermissionsBuilder_pins",
+      );
+
+  late final _appPermissionsBuilderPins =
+      _appPermissionsBuilderPinsPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderStoriesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__AppPermissionsBuilder_stories",
+      );
+
+  late final _appPermissionsBuilderStories =
+      _appPermissionsBuilderStoriesPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderCalendarEventsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__AppPermissionsBuilder_calendar_events",
+      );
+
+  late final _appPermissionsBuilderCalendarEvents =
+      _appPermissionsBuilderCalendarEventsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderTasksPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__AppPermissionsBuilder_tasks",
+      );
+
+  late final _appPermissionsBuilderTasks =
+      _appPermissionsBuilderTasksPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderNewsPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_news_permisisons",
+      );
+
+  late final _appPermissionsBuilderNewsPermisisons =
+      _appPermissionsBuilderNewsPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderStoriesPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_stories_permisisons",
+      );
+
+  late final _appPermissionsBuilderStoriesPermisisons =
+      _appPermissionsBuilderStoriesPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderCalendarEventsPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_calendar_events_permisisons",
+      );
+
+  late final _appPermissionsBuilderCalendarEventsPermisisons =
+      _appPermissionsBuilderCalendarEventsPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderTaskListsPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_task_lists_permisisons",
+      );
+
+  late final _appPermissionsBuilderTaskListsPermisisons =
+      _appPermissionsBuilderTaskListsPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderTasksPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_tasks_permisisons",
+      );
+
+  late final _appPermissionsBuilderTasksPermisisons =
+      _appPermissionsBuilderTasksPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderPinsPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_pins_permisisons",
+      );
+
+  late final _appPermissionsBuilderPinsPermisisons =
+      _appPermissionsBuilderPinsPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderCommentsPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_comments_permisisons",
+      );
+
+  late final _appPermissionsBuilderCommentsPermisisons =
+      _appPermissionsBuilderCommentsPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderAttachmentsPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_attachments_permisisons",
+      );
+
+  late final _appPermissionsBuilderAttachmentsPermisisons =
+      _appPermissionsBuilderAttachmentsPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderRsvpPermisisonsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_rsvp_permisisons",
+      );
+
+  late final _appPermissionsBuilderRsvpPermisisons =
+      _appPermissionsBuilderRsvpPermisisonsPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderKickPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_kick",
+      );
+
+  late final _appPermissionsBuilderKick =
+      _appPermissionsBuilderKickPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderBanPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_ban",
+      );
+
+  late final _appPermissionsBuilderBan =
+      _appPermissionsBuilderBanPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderInvitePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_invite",
+      );
+
+  late final _appPermissionsBuilderInvite =
+      _appPermissionsBuilderInvitePtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderRedactPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_redact",
+      );
+
+  late final _appPermissionsBuilderRedact =
+      _appPermissionsBuilderRedactPtr.asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderEventsDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_events_default",
+      );
+
+  late final _appPermissionsBuilderEventsDefault =
+      _appPermissionsBuilderEventsDefaultPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderUsersDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_users_default",
+      );
+
+  late final _appPermissionsBuilderUsersDefault =
+      _appPermissionsBuilderUsersDefaultPtr
+          .asFunction<void Function(int, int)>();
+  late final _appPermissionsBuilderStateDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__AppPermissionsBuilder_state_default",
+      );
+
+  late final _appPermissionsBuilderStateDefault =
+      _appPermissionsBuilderStateDefaultPtr
+          .asFunction<void Function(int, int)>();
   late final _accountUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Account_user_id",
@@ -26018,6 +26295,14 @@ class Api {
   late final _createSpaceSettingsBuilderSetParent =
       _createSpaceSettingsBuilderSetParentPtr
           .asFunction<void Function(int, int, int, int)>();
+  late final _createSpaceSettingsBuilderSetPermissionsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+        "__CreateSpaceSettingsBuilder_set_permissions",
+      );
+
+  late final _createSpaceSettingsBuilderSetPermissions =
+      _createSpaceSettingsBuilderSetPermissionsPtr
+          .asFunction<void Function(int, int)>();
   late final _createSpaceSettingsBuilderBuildPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CreateSpaceSettingsBuilder_build",
@@ -26025,6 +26310,27 @@ class Api {
 
   late final _createSpaceSettingsBuilderBuild =
       _createSpaceSettingsBuilderBuildPtr.asFunction<int Function(int)>();
+  late final _invitationsManagerRoomInvitationsPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__InvitationsManager_room_invitations",
+      );
+
+  late final _invitationsManagerRoomInvitations =
+      _invitationsManagerRoomInvitationsPtr.asFunction<int Function(int)>();
+  late final _invitationsManagerObjectInvitationsPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__InvitationsManager_object_invitations",
+      );
+
+  late final _invitationsManagerObjectInvitations =
+      _invitationsManagerObjectInvitationsPtr.asFunction<int Function(int)>();
+  late final _invitationsManagerSubscribeStreamPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__InvitationsManager_subscribe_stream",
+      );
+
+  late final _invitationsManagerSubscribeStream =
+      _invitationsManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _clientStartSyncPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Client_start_sync",
@@ -26190,13 +26496,13 @@ class Api {
 
   late final _clientSpace =
       _clientSpacePtr.asFunction<int Function(int, int, int, int)>();
-  late final _clientInvitationsRxPtr =
+  late final _clientInvitationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__Client_invitations_rx",
+        "__Client_invitations",
       );
 
-  late final _clientInvitationsRx =
-      _clientInvitationsRxPtr.asFunction<int Function(int)>();
+  late final _clientInvitations =
+      _clientInvitationsPtr.asFunction<int Function(int)>();
   late final _clientSuggestedUsersPtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(
@@ -27279,62 +27585,55 @@ class Api {
   late final _notificationSettingsUnsubscribeObjectPush =
       _notificationSettingsUnsubscribeObjectPushPtr
           .asFunction<int Function(int, int, int, int, int, int, int, int)>();
-  late final _invitationOriginServerTsPtr = _lookup<
-    ffi.NativeFunction<_InvitationOriginServerTsReturn Function(ffi.IntPtr)>
-  >("__Invitation_origin_server_ts");
-
-  late final _invitationOriginServerTs =
-      _invitationOriginServerTsPtr
-          .asFunction<_InvitationOriginServerTsReturn Function(int)>();
-  late final _invitationIsDmPtr =
+  late final _roomInvitationIsDmPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__Invitation_is_dm",
+        "__RoomInvitation_is_dm",
       );
 
-  late final _invitationIsDm =
-      _invitationIsDmPtr.asFunction<int Function(int)>();
-  late final _invitationRoomIdStrPtr = _lookup<
-    ffi.NativeFunction<_InvitationRoomIdStrReturn Function(ffi.IntPtr)>
-  >("__Invitation_room_id_str");
+  late final _roomInvitationIsDm =
+      _roomInvitationIsDmPtr.asFunction<int Function(int)>();
+  late final _roomInvitationRoomIdStrPtr = _lookup<
+    ffi.NativeFunction<_RoomInvitationRoomIdStrReturn Function(ffi.IntPtr)>
+  >("__RoomInvitation_room_id_str");
 
-  late final _invitationRoomIdStr =
-      _invitationRoomIdStrPtr
-          .asFunction<_InvitationRoomIdStrReturn Function(int)>();
-  late final _invitationRoomPtr =
+  late final _roomInvitationRoomIdStr =
+      _roomInvitationRoomIdStrPtr
+          .asFunction<_RoomInvitationRoomIdStrReturn Function(int)>();
+  late final _roomInvitationRoomPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__Invitation_room",
+        "__RoomInvitation_room",
       );
 
-  late final _invitationRoom =
-      _invitationRoomPtr.asFunction<int Function(int)>();
-  late final _invitationSenderIdStrPtr = _lookup<
-    ffi.NativeFunction<_InvitationSenderIdStrReturn Function(ffi.IntPtr)>
-  >("__Invitation_sender_id_str");
+  late final _roomInvitationRoom =
+      _roomInvitationRoomPtr.asFunction<int Function(int)>();
+  late final _roomInvitationSenderIdStrPtr = _lookup<
+    ffi.NativeFunction<_RoomInvitationSenderIdStrReturn Function(ffi.IntPtr)>
+  >("__RoomInvitation_sender_id_str");
 
-  late final _invitationSenderIdStr =
-      _invitationSenderIdStrPtr
-          .asFunction<_InvitationSenderIdStrReturn Function(int)>();
-  late final _invitationSenderProfilePtr = _lookup<
-    ffi.NativeFunction<_InvitationSenderProfileReturn Function(ffi.IntPtr)>
-  >("__Invitation_sender_profile");
+  late final _roomInvitationSenderIdStr =
+      _roomInvitationSenderIdStrPtr
+          .asFunction<_RoomInvitationSenderIdStrReturn Function(int)>();
+  late final _roomInvitationSenderProfilePtr = _lookup<
+    ffi.NativeFunction<_RoomInvitationSenderProfileReturn Function(ffi.IntPtr)>
+  >("__RoomInvitation_sender_profile");
 
-  late final _invitationSenderProfile =
-      _invitationSenderProfilePtr
-          .asFunction<_InvitationSenderProfileReturn Function(int)>();
-  late final _invitationAcceptPtr =
+  late final _roomInvitationSenderProfile =
+      _roomInvitationSenderProfilePtr
+          .asFunction<_RoomInvitationSenderProfileReturn Function(int)>();
+  late final _roomInvitationAcceptPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__Invitation_accept",
+        "__RoomInvitation_accept",
       );
 
-  late final _invitationAccept =
-      _invitationAcceptPtr.asFunction<int Function(int)>();
-  late final _invitationRejectPtr =
+  late final _roomInvitationAccept =
+      _roomInvitationAcceptPtr.asFunction<int Function(int)>();
+  late final _roomInvitationRejectPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__Invitation_reject",
+        "__RoomInvitation_reject",
       );
 
-  late final _invitationReject =
-      _invitationRejectPtr.asFunction<int Function(int)>();
+  late final _roomInvitationReject =
+      _roomInvitationRejectPtr.asFunction<int Function(int)>();
   late final _superInvitesTokensPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__SuperInvites_tokens",
@@ -29648,35 +29947,43 @@ class Api {
           .asFunction<
             _CommentsManagerReloadFuturePollReturn Function(int, int, int)
           >();
-  late final _invitationsManagerInviteFuturePollPtr = _lookup<
+  late final _objectInvitationsManagerInviteFuturePollPtr = _lookup<
     ffi.NativeFunction<
-      _InvitationsManagerInviteFuturePollReturn Function(
+      _ObjectInvitationsManagerInviteFuturePollReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.Int64,
       )
     >
-  >("__InvitationsManager_invite_future_poll");
+  >("__ObjectInvitationsManager_invite_future_poll");
 
-  late final _invitationsManagerInviteFuturePoll =
-      _invitationsManagerInviteFuturePollPtr
+  late final _objectInvitationsManagerInviteFuturePoll =
+      _objectInvitationsManagerInviteFuturePollPtr
           .asFunction<
-            _InvitationsManagerInviteFuturePollReturn Function(int, int, int)
+            _ObjectInvitationsManagerInviteFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
           >();
-  late final _invitationsManagerReloadFuturePollPtr = _lookup<
+  late final _objectInvitationsManagerReloadFuturePollPtr = _lookup<
     ffi.NativeFunction<
-      _InvitationsManagerReloadFuturePollReturn Function(
+      _ObjectInvitationsManagerReloadFuturePollReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.Int64,
       )
     >
-  >("__InvitationsManager_reload_future_poll");
+  >("__ObjectInvitationsManager_reload_future_poll");
 
-  late final _invitationsManagerReloadFuturePoll =
-      _invitationsManagerReloadFuturePollPtr
+  late final _objectInvitationsManagerReloadFuturePoll =
+      _objectInvitationsManagerReloadFuturePollPtr
           .asFunction<
-            _InvitationsManagerReloadFuturePollReturn Function(int, int, int)
+            _ObjectInvitationsManagerReloadFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
           >();
   late final _attachmentDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -31107,6 +31414,44 @@ class Api {
   late final _pusherDeleteFuturePoll =
       _pusherDeleteFuturePollPtr
           .asFunction<_PusherDeleteFuturePollReturn Function(int, int, int)>();
+  late final _invitationsManagerRoomInvitationsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _InvitationsManagerRoomInvitationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__InvitationsManager_room_invitations_future_poll");
+
+  late final _invitationsManagerRoomInvitationsFuturePoll =
+      _invitationsManagerRoomInvitationsFuturePollPtr
+          .asFunction<
+            _InvitationsManagerRoomInvitationsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _invitationsManagerObjectInvitationsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _InvitationsManagerObjectInvitationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__InvitationsManager_object_invitations_future_poll");
+
+  late final _invitationsManagerObjectInvitationsFuturePoll =
+      _invitationsManagerObjectInvitationsFuturePollPtr
+          .asFunction<
+            _InvitationsManagerObjectInvitationsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientRestoreTokenFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _ClientRestoreTokenFuturePollReturn Function(
@@ -31942,35 +32287,35 @@ class Api {
               int,
             )
           >();
-  late final _invitationAcceptFuturePollPtr = _lookup<
+  late final _roomInvitationAcceptFuturePollPtr = _lookup<
     ffi.NativeFunction<
-      _InvitationAcceptFuturePollReturn Function(
+      _RoomInvitationAcceptFuturePollReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.Int64,
       )
     >
-  >("__Invitation_accept_future_poll");
+  >("__RoomInvitation_accept_future_poll");
 
-  late final _invitationAcceptFuturePoll =
-      _invitationAcceptFuturePollPtr
+  late final _roomInvitationAcceptFuturePoll =
+      _roomInvitationAcceptFuturePollPtr
           .asFunction<
-            _InvitationAcceptFuturePollReturn Function(int, int, int)
+            _RoomInvitationAcceptFuturePollReturn Function(int, int, int)
           >();
-  late final _invitationRejectFuturePollPtr = _lookup<
+  late final _roomInvitationRejectFuturePollPtr = _lookup<
     ffi.NativeFunction<
-      _InvitationRejectFuturePollReturn Function(
+      _RoomInvitationRejectFuturePollReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.Int64,
       )
     >
-  >("__Invitation_reject_future_poll");
+  >("__RoomInvitation_reject_future_poll");
 
-  late final _invitationRejectFuturePoll =
-      _invitationRejectFuturePollPtr
+  late final _roomInvitationRejectFuturePoll =
+      _roomInvitationRejectFuturePollPtr
           .asFunction<
-            _InvitationRejectFuturePollReturn Function(int, int, int)
+            _RoomInvitationRejectFuturePollReturn Function(int, int, int)
           >();
   late final _superInvitesTokensFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -32553,21 +32898,21 @@ class Api {
               int,
             )
           >();
-  late final _invitationsManagerSubscribeStreamStreamPollPtr = _lookup<
+  late final _objectInvitationsManagerSubscribeStreamStreamPollPtr = _lookup<
     ffi.NativeFunction<
-      _InvitationsManagerSubscribeStreamStreamPollReturn Function(
+      _ObjectInvitationsManagerSubscribeStreamStreamPollReturn Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.Int64,
         ffi.Int64,
       )
     >
-  >("__InvitationsManager_subscribe_stream_stream_poll");
+  >("__ObjectInvitationsManager_subscribe_stream_stream_poll");
 
-  late final _invitationsManagerSubscribeStreamStreamPoll =
-      _invitationsManagerSubscribeStreamStreamPollPtr
+  late final _objectInvitationsManagerSubscribeStreamStreamPoll =
+      _objectInvitationsManagerSubscribeStreamStreamPollPtr
           .asFunction<
-            _InvitationsManagerSubscribeStreamStreamPollReturn Function(
+            _ObjectInvitationsManagerSubscribeStreamStreamPollReturn Function(
               int,
               int,
               int,
@@ -32706,6 +33051,27 @@ class Api {
           .asFunction<
             _SyncStateSyncErrorRxStreamPollReturn Function(int, int, int, int)
           >();
+  late final _invitationsManagerSubscribeStreamStreamPollPtr = _lookup<
+    ffi.NativeFunction<
+      _InvitationsManagerSubscribeStreamStreamPollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+        ffi.Int64,
+      )
+    >
+  >("__InvitationsManager_subscribe_stream_stream_poll");
+
+  late final _invitationsManagerSubscribeStreamStreamPoll =
+      _invitationsManagerSubscribeStreamStreamPollPtr
+          .asFunction<
+            _InvitationsManagerSubscribeStreamStreamPollReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _clientConvosStreamStreamPollPtr = _lookup<
     ffi.NativeFunction<
       _ClientConvosStreamStreamPollReturn Function(
@@ -32737,22 +33103,6 @@ class Api {
       _clientSpacesStreamStreamPollPtr
           .asFunction<
             _ClientSpacesStreamStreamPollReturn Function(int, int, int, int)
-          >();
-  late final _clientInvitationsRxStreamPollPtr = _lookup<
-    ffi.NativeFunction<
-      _ClientInvitationsRxStreamPollReturn Function(
-        ffi.IntPtr,
-        ffi.IntPtr,
-        ffi.Int64,
-        ffi.Int64,
-      )
-    >
-  >("__Client_invitations_rx_stream_poll");
-
-  late final _clientInvitationsRxStreamPoll =
-      _clientInvitationsRxStreamPollPtr
-          .asFunction<
-            _ClientInvitationsRxStreamPollReturn Function(int, int, int, int)
           >();
   late final _clientVerificationEventRxStreamPollPtr = _lookup<
     ffi.NativeFunction<
@@ -33627,60 +33977,6 @@ class Api {
 
   late final _ffiListFfiStringInsert =
       _ffiListFfiStringInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListInvitation createFfiListInvitation() {
-    final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
-      _ffiListInvitationCreate(),
-    );
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListInvitation");
-    return FfiListInvitation._(this, list_box);
-  }
-
-  late final _ffiListInvitationCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-        "__FfiListInvitationCreate",
-      );
-
-  late final _ffiListInvitationCreate =
-      _ffiListInvitationCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListInvitationLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-        "__FfiListInvitationLen",
-      );
-
-  late final _ffiListInvitationLen =
-      _ffiListInvitationLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListInvitationElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-        "__FfiListInvitationElementAt",
-      );
-
-  late final _ffiListInvitationElementAt =
-      _ffiListInvitationElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListInvitationRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-        "__FfiListInvitationRemove",
-      );
-
-  late final _ffiListInvitationRemove =
-      _ffiListInvitationRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListInvitationAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-        "__FfiListInvitationAdd",
-      );
-
-  late final _ffiListInvitationAdd =
-      _ffiListInvitationAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListInvitationInsertPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
-  >("__FfiListInvitationInsert");
-
-  late final _ffiListInvitationInsert =
-      _ffiListInvitationInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListMember createFfiListMember() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
       _ffiListMemberCreate(),
@@ -34176,6 +34472,61 @@ class Api {
 
   late final _ffiListReactionRecordInsert =
       _ffiListReactionRecordInsertPtr
+          .asFunction<void Function(int, int, int)>();
+  FfiListRoomInvitation createFfiListRoomInvitation() {
+    final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
+      _ffiListRoomInvitationCreate(),
+    );
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoomInvitation");
+    return FfiListRoomInvitation._(this, list_box);
+  }
+
+  late final _ffiListRoomInvitationCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+        "__FfiListRoomInvitationCreate",
+      );
+
+  late final _ffiListRoomInvitationCreate =
+      _ffiListRoomInvitationCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListRoomInvitationLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+        "__FfiListRoomInvitationLen",
+      );
+
+  late final _ffiListRoomInvitationLen =
+      _ffiListRoomInvitationLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListRoomInvitationElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__FfiListRoomInvitationElementAt",
+      );
+
+  late final _ffiListRoomInvitationElementAt =
+      _ffiListRoomInvitationElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListRoomInvitationRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+        "__FfiListRoomInvitationRemove",
+      );
+
+  late final _ffiListRoomInvitationRemove =
+      _ffiListRoomInvitationRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListRoomInvitationAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+        "__FfiListRoomInvitationAdd",
+      );
+
+  late final _ffiListRoomInvitationAdd =
+      _ffiListRoomInvitationAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListRoomInvitationInsertPtr = _lookup<
+    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>
+  >("__FfiListRoomInvitationInsert");
+
+  late final _ffiListRoomInvitationInsert =
+      _ffiListRoomInvitationInsertPtr
           .asFunction<void Function(int, int, int)>();
   FfiListRsvp createFfiListRsvp() {
     final ffi.Pointer<ffi.Void> list_ptr = ffi.Pointer.fromAddress(
@@ -49412,17 +49763,17 @@ class CommentsManager {
 }
 
 /// Reference of explicit invitations to a particular item
-class InvitationsManager {
+class ObjectInvitationsManager {
   final Api _api;
   final _Box _box;
 
-  InvitationsManager._(this._api, this._box);
+  ObjectInvitationsManager._(this._api, this._box);
 
   /// Get the list of users that were invited
   FfiListFfiString invited() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationsManagerInvited(tmp0);
+    final tmp1 = _api._objectInvitationsManagerInvited(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
@@ -49436,7 +49787,7 @@ class InvitationsManager {
   bool hasInvitations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationsManagerHasInvitations(tmp0);
+    final tmp1 = _api._objectInvitationsManagerHasInvitations(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
@@ -49446,7 +49797,7 @@ class InvitationsManager {
   bool isInvited() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationsManagerIsInvited(tmp0);
+    final tmp1 = _api._objectInvitationsManagerIsInvited(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
@@ -49468,18 +49819,18 @@ class InvitationsManager {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    final tmp5 = _api._invitationsManagerInvite(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._objectInvitationsManagerInvite(tmp0, tmp2, tmp3, tmp4);
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
     final tmp7_1 = _Box(
       _api,
       tmp7_0,
-      "__InvitationsManager_invite_future_drop",
+      "__ObjectInvitationsManager_invite_future_drop",
     );
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(
       tmp7_1,
-      _api.__invitationsManagerInviteFuturePoll,
+      _api.__objectInvitationsManagerInviteFuturePoll,
     );
     return tmp6;
   }
@@ -49488,38 +49839,38 @@ class InvitationsManager {
   Stream<bool> subscribeStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationsManagerSubscribeStream(tmp0);
+    final tmp1 = _api._objectInvitationsManagerSubscribeStream(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(
       _api,
       tmp3_0,
-      "__InvitationsManager_subscribe_stream_stream_drop",
+      "__ObjectInvitationsManager_subscribe_stream_stream_drop",
     );
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeStream(
       tmp3_1,
-      _api.__invitationsManagerSubscribeStreamStreamPoll,
+      _api.__objectInvitationsManagerSubscribeStreamStreamPoll,
     );
     return tmp2;
   }
 
   /// reload the data from the database
-  Future<InvitationsManager> reload() {
+  Future<ObjectInvitationsManager> reload() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationsManagerReload(tmp0);
+    final tmp1 = _api._objectInvitationsManagerReload(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(
       _api,
       tmp3_0,
-      "__InvitationsManager_reload_future_drop",
+      "__ObjectInvitationsManager_reload_future_drop",
     );
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
       tmp3_1,
-      _api.__invitationsManagerReloadFuturePoll,
+      _api.__objectInvitationsManagerReloadFuturePoll,
     );
     return tmp2;
   }
@@ -50711,7 +51062,7 @@ class Task {
   }
 
   /// get the invitations manager for this task
-  Future<InvitationsManager> invitations() {
+  Future<ObjectInvitationsManager> invitations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskInvitations(tmp0);
@@ -56723,6 +57074,244 @@ class ActerUserAppSettingsBuilder {
   }
 }
 
+class AppPermissionsBuilder {
+  final Api _api;
+  final _Box _box;
+
+  AppPermissionsBuilder._(this._api, this._box);
+
+  void news(bool value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderNews(tmp0, tmp2);
+    return;
+  }
+
+  void pins(bool value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderPins(tmp0, tmp2);
+    return;
+  }
+
+  void stories(bool value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderStories(tmp0, tmp2);
+    return;
+  }
+
+  void calendarEvents(bool value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderCalendarEvents(tmp0, tmp2);
+    return;
+  }
+
+  void tasks(bool value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    _api._appPermissionsBuilderTasks(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed to post boosts
+  void newsPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderNewsPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed to post stories
+  void storiesPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderStoriesPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed to post calender events
+  void calendarEventsPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderCalendarEventsPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed for task lists
+  void taskListsPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderTaskListsPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed for tasks
+  void tasksPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderTasksPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed for pins
+  void pinsPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderPinsPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed for comments
+  void commentsPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderCommentsPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed for attachments
+  void attachmentsPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderAttachmentsPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// specific permissions levels needed to rsvp
+  void rsvpPermisisons(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderRsvpPermisisons(tmp0, tmp2);
+    return;
+  }
+
+  /// set level to kick a user
+  void kick(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderKick(tmp0, tmp2);
+    return;
+  }
+
+  /// set level to ban a user
+  void ban(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderBan(tmp0, tmp2);
+    return;
+  }
+
+  /// set level to ban a user
+  void invite(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderInvite(tmp0, tmp2);
+    return;
+  }
+
+  /// set level to redact user content
+  void redact(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderRedact(tmp0, tmp2);
+    return;
+  }
+
+  /// set default sending level if not specified
+  void eventsDefault(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderEventsDefault(tmp0, tmp2);
+    return;
+  }
+
+  /// set the detault level users have when entering
+  void usersDefault(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderUsersDefault(tmp0, tmp2);
+    return;
+  }
+
+  /// set the default state level needed if not specified
+  void stateDefault(int value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._appPermissionsBuilderStateDefault(tmp0, tmp2);
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Account {
   final Api _api;
   final _Box _box;
@@ -59189,6 +59778,17 @@ class CreateSpaceSettingsBuilder {
     return;
   }
 
+  /// set the permissions for apps and events for the space creation
+  void setPermissions(AppPermissionsBuilder value) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._createSpaceSettingsBuilderSetPermissions(tmp0, tmp2);
+    return;
+  }
+
   CreateSpaceSettings build() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -59212,6 +59812,78 @@ class CreateSpaceSettings {
   final _Box _box;
 
   CreateSpaceSettings._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class InvitationsManager {
+  final Api _api;
+  final _Box _box;
+
+  InvitationsManager._(this._api, this._box);
+
+  /// current set of rooms that the user is invited to
+  Future<FfiListRoomInvitation> roomInvitations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerRoomInvitations(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+      _api,
+      tmp3_0,
+      "__InvitationsManager_room_invitations_future_drop",
+    );
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+      tmp3_1,
+      _api.__invitationsManagerRoomInvitationsFuturePoll,
+    );
+    return tmp2;
+  }
+
+  /// current set of objects that the user is invited to
+  Future<FfiListFfiString> objectInvitations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerObjectInvitations(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+      _api,
+      tmp3_0,
+      "__InvitationsManager_object_invitations_future_drop",
+    );
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+      tmp3_1,
+      _api.__invitationsManagerObjectInvitationsFuturePoll,
+    );
+    return tmp2;
+  }
+
+  /// whenever an update occurs
+  Stream<bool> subscribeStream() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationsManagerSubscribeStream(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+      _api,
+      tmp3_0,
+      "__InvitationsManager_subscribe_stream_stream_drop",
+    );
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(
+      tmp3_1,
+      _api.__invitationsManagerSubscribeStreamStreamPoll,
+    );
+    return tmp2;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -59652,15 +60324,15 @@ class Client {
   }
 
   /// Get the invitation event stream
-  Stream<FfiListInvitation> invitationsRx() {
+  InvitationsManager invitations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientInvitationsRx(tmp0);
+    final tmp1 = _api._clientInvitations(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_invitations_rx_stream_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_InvitationsManager");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeStream(tmp3_1, _api.__clientInvitationsRxStreamPoll);
+    final tmp2 = InvitationsManager._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -62607,31 +63279,17 @@ class NotificationSettings {
   }
 }
 
-class Invitation {
+class RoomInvitation {
   final Api _api;
   final _Box _box;
 
-  Invitation._(this._api, this._box);
-
-  /// get the timestamp of this invitation in milliseconds
-  int? originServerTs() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._invitationOriginServerTs(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
+  RoomInvitation._(this._api, this._box);
 
   /// whether this is an invite to a DM
   bool isDm() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationIsDm(tmp0);
+    final tmp1 = _api._roomInvitationIsDm(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;
@@ -62641,7 +63299,7 @@ class Invitation {
   String roomIdStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationRoomIdStr(tmp0);
+    final tmp1 = _api._roomInvitationRoomIdStr(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -62669,7 +63327,7 @@ class Invitation {
   Room room() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationRoom(tmp0);
+    final tmp1 = _api._roomInvitationRoom(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_Room");
@@ -62682,7 +63340,7 @@ class Invitation {
   String senderIdStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationSenderIdStr(tmp0);
+    final tmp1 = _api._roomInvitationSenderIdStr(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -62710,7 +63368,7 @@ class Invitation {
   UserProfile? senderProfile() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationSenderProfile(tmp0);
+    final tmp1 = _api._roomInvitationSenderProfile(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -62727,12 +63385,12 @@ class Invitation {
   Future<bool> accept() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationAccept(tmp0);
+    final tmp1 = _api._roomInvitationAccept(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Invitation_accept_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__RoomInvitation_accept_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__invitationAcceptFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__roomInvitationAcceptFuturePoll);
     return tmp2;
   }
 
@@ -62740,12 +63398,12 @@ class Invitation {
   Future<bool> reject() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationReject(tmp0);
+    final tmp1 = _api._roomInvitationReject(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Invitation_reject_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__RoomInvitation_reject_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__invitationRejectFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__roomInvitationRejectFuturePoll);
     return tmp2;
   }
 
@@ -68971,14 +69629,7 @@ class _ClientActivitiesForObjReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _InvitationOriginServerTsReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _InvitationRoomIdStrReturn extends ffi.Struct {
+class _RoomInvitationRoomIdStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -68987,7 +69638,7 @@ class _InvitationRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _InvitationSenderIdStrReturn extends ffi.Struct {
+class _RoomInvitationSenderIdStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -68996,7 +69647,7 @@ class _InvitationSenderIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _InvitationSenderProfileReturn extends ffi.Struct {
+class _RoomInvitationSenderProfileReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -71038,7 +71689,7 @@ class _CommentsManagerReloadFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _InvitationsManagerInviteFuturePollReturn extends ffi.Struct {
+class _ObjectInvitationsManagerInviteFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -71057,7 +71708,7 @@ class _InvitationsManagerInviteFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _InvitationsManagerReloadFuturePollReturn extends ffi.Struct {
+class _ObjectInvitationsManagerReloadFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -72562,6 +73213,36 @@ class _PusherDeleteFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _InvitationsManagerRoomInvitationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _InvitationsManagerObjectInvitationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73428,7 +74109,7 @@ class _NotificationSettingsUnsubscribeObjectPushFuturePollReturn
   external int arg5;
 }
 
-class _InvitationAcceptFuturePollReturn extends ffi.Struct {
+class _RoomInvitationAcceptFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -73443,7 +74124,7 @@ class _InvitationAcceptFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _InvitationRejectFuturePollReturn extends ffi.Struct {
+class _RoomInvitationRejectFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -73909,7 +74590,8 @@ class _CommentsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _InvitationsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+class _ObjectInvitationsManagerSubscribeStreamStreamPollReturn
+    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -73969,6 +74651,13 @@ class _SyncStateSyncErrorRxStreamPollReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _InvitationsManagerSubscribeStreamStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
 class _ClientConvosStreamStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73977,13 +74666,6 @@ class _ClientConvosStreamStreamPollReturn extends ffi.Struct {
 }
 
 class _ClientSpacesStreamStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-}
-
-class _ClientInvitationsRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -74750,69 +75432,6 @@ class FfiListFfiString extends Iterable<FfiString>
   }
 }
 
-class FfiListInvitation extends Iterable<Invitation>
-    implements CustomIterable<Invitation> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListInvitation._(this._api, this._box);
-
-  @override
-  Iterator<Invitation> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListInvitationLen(_box.borrow());
-  }
-
-  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  Invitation elementAt(int index) {
-    final address = _api._ffiListInvitationElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return Invitation._(_api, reference);
-  }
-
-  Invitation operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  Invitation remove(int index) {
-    final address = _api._ffiListInvitationRemove(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Invitation",
-    );
-    reference._finalizer = _api._registerFinalizer(reference);
-    return Invitation._(_api, reference);
-  }
-
-  /// The inserted element is moved into the list and must not be used again
-  /// Although you can use the "elementAt" method to get a reference to the added element
-  void add(Invitation element) {
-    _api._ffiListInvitationAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  /// The inserted element is moved into the list and must not be used again
-  /// Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, Invitation element) {
-    _api._ffiListInvitationInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
 class FfiListMember extends Iterable<Member> implements CustomIterable<Member> {
   final Api _api;
   final _Box _box;
@@ -75386,6 +76005,73 @@ class FfiListReactionRecord extends Iterable<ReactionRecord>
   /// Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, ReactionRecord element) {
     _api._ffiListReactionRecordInsert(
+      _box.borrow(),
+      index,
+      element._box.borrow(),
+    );
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListRoomInvitation extends Iterable<RoomInvitation>
+    implements CustomIterable<RoomInvitation> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListRoomInvitation._(this._api, this._box);
+
+  @override
+  Iterator<RoomInvitation> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListRoomInvitationLen(_box.borrow());
+  }
+
+  /// List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  RoomInvitation elementAt(int index) {
+    final address = _api._ffiListRoomInvitationElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return RoomInvitation._(_api, reference);
+  }
+
+  RoomInvitation operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  RoomInvitation remove(int index) {
+    final address = _api._ffiListRoomInvitationRemove(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_RoomInvitation",
+    );
+    reference._finalizer = _api._registerFinalizer(reference);
+    return RoomInvitation._(_api, reference);
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void add(RoomInvitation element) {
+    _api._ffiListRoomInvitationAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  /// The inserted element is moved into the list and must not be used again
+  /// Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, RoomInvitation element) {
+    _api._ffiListRoomInvitationInsert(
       _box.borrow(),
       index,
       element._box.borrow(),

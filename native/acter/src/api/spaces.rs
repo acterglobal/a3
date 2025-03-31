@@ -1,7 +1,8 @@
 pub mod categories;
 
 pub use acter_core::spaces::{
-    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
+    new_app_permissions_builder, AppPermissionsBuilder, CreateSpaceSettings,
+    CreateSpaceSettingsBuilder, RelationTargetType, SpaceRelation,
     SpaceRelations as CoreSpaceRelations,
 };
 use acter_core::{

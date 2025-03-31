@@ -29,7 +29,7 @@ pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use common::*;
 pub use core::fmt::Debug;
 pub(crate) use execution::default_model_execute;
-pub use invites::{InvitationsManager, InviteStats};
+pub use invites::{InvitationsManager, InviteStats, MyInvitesManager};
 pub use meta::{can_redact, EventMeta};
 pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};

@@ -217,6 +217,19 @@ final roomMembershipProvider = FutureProvider.family<Member?, String>((
   return await room.getMyMembership();
 });
 
+typedef RoomPermission = ({String roomId, String permission});
+
+/// Get the whether the user has the given permission in the room
+final roomPermissionProvider = FutureProvider.family<bool, RoomPermission>((
+  ref,
+  permission,
+) async {
+  final membership = await ref.watch(
+    roomMembershipProvider(permission.roomId).future,
+  );
+  return membership?.canString(permission.permission) ?? false;
+});
+
 /// Get the locally configured RoomNotificationsStatus for this room
 final roomNotificationStatusProvider = FutureProvider.autoDispose
     .family<String?, String>((ref, roomId) async {

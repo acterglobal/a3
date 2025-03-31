@@ -190,7 +190,7 @@ dev_dependencies:
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
-  mockingjay: ^0.6.0
+  mockingjay: ^1.0.0
   mocktail: ^1.0.4
 
 dependency_overrides:

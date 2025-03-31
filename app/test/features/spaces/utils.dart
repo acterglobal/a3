@@ -2,7 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
-import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../helpers/mock_space_providers.dart';
@@ -19,7 +18,7 @@ List<Override> spaceOverrides() => [
   isBookmarkedProvider.overrideWith((a, b) => false),
   spaceInvitedMembersProvider.overrideWith((a, b) => []),
   shouldShowSuggestedProvider.overrideWith((a, b) => false),
-  isActerSpaceForSpace.overrideWith((a, b) => false),
+  isActerSpace.overrideWith((a, b) => false),
   suggestedSpacesProvider.overrideWith((a, b) async {
     return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
   }),

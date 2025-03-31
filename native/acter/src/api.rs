@@ -32,7 +32,7 @@ mod common;
 mod convo;
 mod deep_linking;
 mod device;
-mod invitation;
+mod invitations;
 mod news;
 mod pins;
 mod profile;
@@ -51,7 +51,6 @@ mod typing;
 mod utils;
 mod verification;
 
-mod invitations;
 pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
@@ -100,8 +99,7 @@ pub use convo::{
 pub use core::time::Duration as EfkDuration;
 pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
-pub use invitation::Invitation;
-pub use invitations::InvitationsManager;
+pub use invitations::{InvitationsManager, ObjectInvitationsManager, RoomInvitation};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
@@ -124,8 +122,8 @@ pub use settings::{
     StoriesSettings, TasksSettings,
 };
 pub use spaces::{
-    new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceDiff,
+    new_app_permissions_builder, new_space_settings_builder, AppPermissionsBuilder,
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space, SpaceDiff,
 };
 pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
 pub use super_invites::{

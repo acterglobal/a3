@@ -17,6 +17,9 @@ impl SimpleSettingWithTurnOff {
     pub fn off() -> Option<Self> {
         Some(SimpleSettingWithTurnOff { active: false })
     }
+    pub fn on() -> Option<Self> {
+        Some(SimpleSettingWithTurnOff { active: true })
+    }
     pub fn active(&self) -> bool {
         self.active
     }
@@ -36,6 +39,10 @@ impl SimpleOnOffSetting {
     pub fn off() -> Option<Self> {
         // no need, we are off by default
         None
+    }
+
+    pub fn on() -> Option<Self> {
+        Some(SimpleOnOffSetting { active: true })
     }
 
     pub fn active(&self) -> bool {
@@ -64,11 +71,11 @@ pub type EventsSettings = SimpleSettingWithTurnOff;
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Default)]
 #[ruma_event(type = "global.acter.app_settings", kind = State, state_key_type = EmptyStateKey)]
 pub struct ActerAppSettingsContent {
-    news: Option<NewsSettings>,
-    pins: Option<PinsSettings>,
-    events: Option<EventsSettings>,
-    tasks: Option<TasksSettings>,
-    stories: Option<StoriesSettings>,
+    pub(crate) news: Option<NewsSettings>,
+    pub(crate) pins: Option<PinsSettings>,
+    pub(crate) events: Option<EventsSettings>,
+    pub(crate) tasks: Option<TasksSettings>,
+    pub(crate) stories: Option<StoriesSettings>,
 }
 
 impl ActerAppSettingsContent {
@@ -95,6 +102,16 @@ impl ActerAppSettingsContent {
             events: EventsSettings::off(),
             tasks: TasksSettings::off(),
             stories: StoriesSettings::off(),
+        }
+    }
+
+    pub fn creation_defaults() -> ActerAppSettingsContent {
+        ActerAppSettingsContent {
+            news: NewsSettings::on(),
+            pins: PinsSettings::on(),
+            events: EventsSettings::on(),
+            tasks: TasksSettings::on(),
+            stories: StoriesSettings::on(),
         }
     }
 
