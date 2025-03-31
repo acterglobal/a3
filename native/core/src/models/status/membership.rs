@@ -104,10 +104,10 @@ impl ProfileChange {
                         return Some("Changed".to_owned());
                     }
                 }
-                (None, Some(old_val)) => {
+                (None, Some(_old_val)) => {
                     return Some("Unset".to_owned());
                 }
-                (Some(new_val), None) => {
+                (Some(_new_val), None) => {
                     return Some("Set".to_owned());
                 }
                 (None, None) => {}
@@ -136,10 +136,10 @@ impl ProfileChange {
                         return Some("Changed".to_owned());
                     }
                 }
-                (None, Some(old_val)) => {
+                (None, Some(_old_val)) => {
                     return Some("Unset".to_owned());
                 }
-                (Some(new_val), None) => {
+                (Some(_new_val), None) => {
                     return Some("Set".to_owned());
                 }
                 (None, None) => {}
