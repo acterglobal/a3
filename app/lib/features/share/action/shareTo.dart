@@ -56,3 +56,54 @@ Future<void> _shareTo({
     );
   }
 }
+
+Future<void> shareToOnePassword({
+  required BuildContext context,
+  required String text,
+}) async {
+  final url = 'onepassword://';
+  await _shareTo(context: context, url: url);
+}
+
+Future<void> shareToBitwarden({
+  required BuildContext context,
+  required String text,
+}) async {
+  final url = 'bitwarden://';
+  await _shareTo(context: context, url: url);
+}
+
+Future<void> shareToKeeper({
+  required BuildContext context,
+  required String text,
+}) async {
+  final url = 'keeper://';
+  await _shareTo(context: context, url: url);
+}
+
+
+Future<void> shareToLastPass({
+  required BuildContext context,
+  required String text,
+}) async {
+  final url = 'lastpass://';
+  await _shareTo(context: context, url: url);
+}
+
+Future<void> shareToEnpass({
+  required BuildContext context,
+  required String text,
+}) async {
+  final url = 'enpass://';
+  await _shareTo(context: context, url: url);
+}
+
+Future<void> shareToProtonPass({
+  required BuildContext context,
+  required String text,
+}) async {
+  final url = 'protonpass://';
+  await _shareTo(context: context, url: url);
+}
+
+

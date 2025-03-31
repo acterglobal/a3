@@ -94,5 +94,11 @@
         <package android:name="com.whatsapp"/>
         <package android:name="org.telegram.messenger"/>
         <package android:name="org.thoughtcrime.securesms"/>
+        <package android:name="io.enpass.app"/>
+        <package android:name="com.onepassword.android"/>
+        <package android:name="com.x8bit.bitwarden"/>
+        <package android:name="com.callpod.android_apps.keeper"/>
+        <package android:name="com.lastpass.lpandroid"/>
+        <package android:name="proton.android.pass"/>    
     </queries>
 </manifest>
