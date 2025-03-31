@@ -1116,7 +1116,7 @@ impl RoomServerAclContent {
     }
 
     pub fn allow_ip_literals_new_val(&self) -> bool {
-        self.content.allow_ip_literals.into()
+        self.content.allow_ip_literals
     }
 
     pub fn allow_ip_literals_old_val(&self) -> Option<bool> {
