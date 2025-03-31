@@ -1,4 +1,7 @@
-use acter_core::models::status::membership::{MembershipChange, ProfileChange};
+use acter_core::models::status::{
+    membership::{MembershipChange, ProfileChange},
+    room_state::OtherState,
+};
 use matrix_sdk_base::ruma::{
     events::{
         room::{ImageInfo, MediaSource as SdkMediaSource},
@@ -10,7 +13,7 @@ use matrix_sdk_base::ruma::{
 use matrix_sdk_ui::timeline::{Message, PollState, Sticker as SdkSticker};
 use serde::{Deserialize, Serialize};
 
-use super::{msg_content::MsgContent, room_state::OtherState};
+use super::msg_content::MsgContent;
 use crate::{MediaSource, ReactionRecord};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

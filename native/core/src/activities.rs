@@ -1,7 +1,6 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
-    events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId, OwnedMxcUri, OwnedUserId,
+    events::room::message::TextMessageEventContent, OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -13,7 +12,10 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::{Change, MembershipChange, ProfileChange},
+        status::{
+            membership::{Change, MembershipChange, ProfileChange},
+            room_state::OtherState,
+        },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -33,8 +35,7 @@ pub enum ActivityContent {
         user_id: OwnedUserId,
         change: Option<String>,
     },
-    RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    RoomState(OtherState),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -133,8 +134,7 @@ impl Activity {
         match &self.inner {
             ActivityContent::ProfileChange { .. } => "profileChange",
             ActivityContent::MembershipChange { .. } => "membershipChange",
-            ActivityContent::RoomCreate(_) => "roomCreate",
-            ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::RoomState(s) => s.event_type(),
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -208,8 +208,7 @@ impl Activity {
         match &self.inner {
             ActivityContent::ProfileChange { .. }
             | ActivityContent::MembershipChange { .. }
-            | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => None,
+            | ActivityContent::RoomState(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -305,8 +304,7 @@ impl Activity {
             }
             ActivityContent::ProfileChange { .. }
             | ActivityContent::MembershipChange { .. }
-            | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => todo!(),
+            | ActivityContent::RoomState(_) => todo!(),
         }
     }
 
@@ -349,11 +347,8 @@ impl Activity {
                 ActerSupportedRoomStatusEvents::MembershipChange { user_id, change } => Ok(
                     Self::new(meta, ActivityContent::MembershipChange { user_id, change }),
                 ),
-                ActerSupportedRoomStatusEvents::RoomCreate(c) => {
-                    Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
-                }
-                ActerSupportedRoomStatusEvents::RoomName(c) => {
-                    Ok(Self::new(meta, ActivityContent::RoomName(c)))
+                ActerSupportedRoomStatusEvents::OtherState(s) => {
+                    Ok(Self::new(meta, ActivityContent::RoomState(s)))
                 }
             },
 

@@ -66,7 +66,18 @@ pub use acter_core::{
         UtcDateTime,
     },
     models::{
-        status::membership::{MembershipChange, ProfileChange},
+        status::{
+            membership::{MembershipChange, ProfileChange},
+            room_state::{
+                PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
+                RoomAliasesContent, RoomAvatarContent, RoomCanonicalAliasContent,
+                RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent,
+                RoomHistoryVisibilityContent, RoomJoinRulesContent, RoomNameContent,
+                RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
+                RoomThirdPartyInviteContent, RoomTombstoneContent, RoomTopicContent,
+                SpaceChildContent, SpaceParentContent,
+            },
+        },
         ActerModel, Tag, TextMessageContent,
     },
 };
@@ -133,13 +144,8 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use timeline::{
-    EventSendState, MsgContent, MsgDraft, PolicyRuleRoomContent, PolicyRuleServerContent,
-    PolicyRuleUserContent, PollContent, RoomAliasesContent, RoomAvatarContent,
-    RoomCanonicalAliasContent, RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent,
-    RoomHistoryVisibilityContent, RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent,
-    RoomPowerLevelsContent, RoomServerAclContent, RoomThirdPartyInviteContent,
-    RoomTombstoneContent, RoomTopicContent, SpaceChildContent, SpaceParentContent, Sticker,
-    TimelineEventItem, TimelineItem, TimelineItemDiff, TimelineStream, TimelineVirtualItem,
+    EventSendState, MsgContent, MsgDraft, PollContent, Sticker, TimelineEventItem, TimelineItem,
+    TimelineItemDiff, TimelineStream, TimelineVirtualItem,
 };
 pub use typing::TypingEvent;
 pub use utils::{new_vec_string_builder, VecStringBuilder};

@@ -1,4 +1,3 @@
-use acter_core::util::do_vecs_match;
 use matrix_sdk_base::ruma::events::{
     policy::rule::{
         room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
@@ -33,6 +32,8 @@ use matrix_sdk_base::ruma::events::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::util::do_vecs_match;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum OtherState {
     PolicyRuleRoom(PolicyRuleRoomContent),
@@ -57,6 +58,33 @@ pub enum OtherState {
     SpaceParent(SpaceParentContent),
 }
 
+impl OtherState {
+    pub fn event_type(&self) -> &str {
+        match self {
+            OtherState::PolicyRuleRoom(_) => "m.policy.rule.room",
+            OtherState::PolicyRuleServer(_) => "m.policy.rule.server",
+            OtherState::PolicyRuleUser(_) => "m.policy.rule.user",
+            OtherState::RoomAliases(_) => "m.room.aliases",
+            OtherState::RoomAvatar(_) => "m.room.avatar",
+            OtherState::RoomCanonicalAlias(_) => "m.room.canonical_alias",
+            OtherState::RoomCreate(_) => "m.room.create",
+            OtherState::RoomEncryption(_) => "m.room.encryption",
+            OtherState::RoomGuestAccess(_) => "m.room.guest_access",
+            OtherState::RoomHistoryVisibility(_) => "m.room.history_visibility",
+            OtherState::RoomJoinRules(_) => "m.room.join_rules",
+            OtherState::RoomName(_) => "m.room.name",
+            OtherState::RoomPinnedEvents(_) => "m.room.pinned_events",
+            OtherState::RoomPowerLevels(_) => "m.room.power_levels",
+            OtherState::RoomServerAcl(_) => "m.room.server_acl",
+            OtherState::RoomThirdPartyInvite(_) => "m.room.third_party_invite",
+            OtherState::RoomTombstone(_) => "m.room.tombstone",
+            OtherState::RoomTopic(_) => "m.room.topic",
+            OtherState::SpaceChild(_) => "m.space.child",
+            OtherState::SpaceParent(_) => "m.space.parent",
+        }
+    }
+}
+
 // m.policy.rule.room
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PolicyRuleRoomContent {
@@ -65,7 +93,7 @@ pub struct PolicyRuleRoomContent {
 }
 
 impl PolicyRuleRoomContent {
-    pub(crate) fn new(
+    pub fn new(
         content: PolicyRuleRoomEventContent,
         prev_content: Option<PossiblyRedactedPolicyRuleRoomEventContent>,
     ) -> Self {
@@ -168,7 +196,7 @@ pub struct PolicyRuleServerContent {
 }
 
 impl PolicyRuleServerContent {
-    pub(crate) fn new(
+    pub fn new(
         content: PolicyRuleServerEventContent,
         prev_content: Option<PossiblyRedactedPolicyRuleServerEventContent>,
     ) -> Self {
@@ -277,7 +305,7 @@ pub struct PolicyRuleUserContent {
 }
 
 impl PolicyRuleUserContent {
-    pub(crate) fn new(
+    pub fn new(
         content: PolicyRuleUserEventContent,
         prev_content: Option<PossiblyRedactedPolicyRuleUserEventContent>,
     ) -> Self {
@@ -380,7 +408,7 @@ pub struct RoomAliasesContent {
 }
 
 impl RoomAliasesContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomAliasesEventContent,
         prev_content: Option<PossiblyRedactedRoomAliasesEventContent>,
     ) -> Self {
@@ -434,7 +462,7 @@ pub struct RoomAvatarContent {
 }
 
 impl RoomAvatarContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomAvatarEventContent,
         prev_content: Option<RoomAvatarEventContent>,
     ) -> Self {
@@ -483,7 +511,7 @@ pub struct RoomCanonicalAliasContent {
 }
 
 impl RoomCanonicalAliasContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomCanonicalAliasEventContent,
         prev_content: Option<RoomCanonicalAliasEventContent>,
     ) -> Self {
@@ -564,7 +592,7 @@ pub struct RoomCreateContent {
 }
 
 impl RoomCreateContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomCreateEventContent,
         prev_content: Option<RoomCreateEventContent>,
     ) -> Self {
@@ -583,7 +611,7 @@ pub struct RoomEncryptionContent {
 }
 
 impl RoomEncryptionContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomEncryptionEventContent,
         prev_content: Option<PossiblyRedactedRoomEncryptionEventContent>,
     ) -> Self {
@@ -628,7 +656,7 @@ pub struct RoomGuestAccessContent {
 }
 
 impl RoomGuestAccessContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomGuestAccessEventContent,
         prev_content: Option<PossiblyRedactedRoomGuestAccessEventContent>,
     ) -> Self {
@@ -673,7 +701,7 @@ pub struct RoomHistoryVisibilityContent {
 }
 
 impl RoomHistoryVisibilityContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomHistoryVisibilityEventContent,
         prev_content: Option<RoomHistoryVisibilityEventContent>,
     ) -> Self {
@@ -714,7 +742,7 @@ pub struct RoomJoinRulesContent {
 }
 
 impl RoomJoinRulesContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomJoinRulesEventContent,
         prev_content: Option<RoomJoinRulesEventContent>,
     ) -> Self {
@@ -755,7 +783,7 @@ pub struct RoomNameContent {
 }
 
 impl RoomNameContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomNameEventContent,
         prev_content: Option<PossiblyRedactedRoomNameEventContent>,
     ) -> Self {
@@ -799,7 +827,7 @@ pub struct RoomPinnedEventsContent {
 }
 
 impl RoomPinnedEventsContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomPinnedEventsEventContent,
         prev_content: Option<PossiblyRedactedRoomPinnedEventsEventContent>,
     ) -> Self {
@@ -854,7 +882,7 @@ pub struct RoomPowerLevelsContent {
 }
 
 impl RoomPowerLevelsContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomPowerLevelsEventContent,
         prev_content: Option<RoomPowerLevelsEventContent>,
     ) -> Self {
@@ -1065,7 +1093,7 @@ pub struct RoomServerAclContent {
 }
 
 impl RoomServerAclContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomServerAclEventContent,
         prev_content: Option<RoomServerAclEventContent>,
     ) -> Self {
@@ -1146,7 +1174,7 @@ pub struct RoomThirdPartyInviteContent {
 }
 
 impl RoomThirdPartyInviteContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomThirdPartyInviteEventContent,
         prev_content: Option<PossiblyRedactedRoomThirdPartyInviteEventContent>,
     ) -> Self {
@@ -1233,7 +1261,7 @@ pub struct RoomTombstoneContent {
 }
 
 impl RoomTombstoneContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomTombstoneEventContent,
         prev_content: Option<PossiblyRedactedRoomTombstoneEventContent>,
     ) -> Self {
@@ -1303,7 +1331,7 @@ pub struct RoomTopicContent {
 }
 
 impl RoomTopicContent {
-    pub(crate) fn new(
+    pub fn new(
         content: RoomTopicEventContent,
         prev_content: Option<PossiblyRedactedRoomTopicEventContent>,
     ) -> Self {
@@ -1347,7 +1375,7 @@ pub struct SpaceChildContent {
 }
 
 impl SpaceChildContent {
-    pub(crate) fn new(
+    pub fn new(
         content: SpaceChildEventContent,
         prev_content: Option<PossiblyRedactedSpaceChildEventContent>,
     ) -> Self {
@@ -1449,7 +1477,7 @@ pub struct SpaceParentContent {
 }
 
 impl SpaceParentContent {
-    pub(crate) fn new(
+    pub fn new(
         content: SpaceParentEventContent,
         prev_content: Option<PossiblyRedactedSpaceParentEventContent>,
     ) -> Self {
