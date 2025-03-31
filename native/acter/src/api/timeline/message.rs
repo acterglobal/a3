@@ -301,7 +301,66 @@ impl TimelineEventItem {
                 TimelineEventContent::UnableToDecrypt => "m.room.encrypted".to_owned(),
                 TimelineEventContent::MembershipChange(_) => "membershipChange".to_owned(), // some of m.room.member
                 TimelineEventContent::ProfileChange(_) => "profileChange".to_owned(), // some of m.room.member
-                TimelineEventContent::OtherState(s) => s.event_type().to_owned(),
+                TimelineEventContent::OtherState(OtherState::PolicyRuleRoom(_)) => {
+                    "m.policy.rule.room".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::PolicyRuleServer(_)) => {
+                    "m.policy.rule.server".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::PolicyRuleUser(_)) => {
+                    "m.policy.rule.user".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomAliases(_)) => {
+                    "m.room.aliases".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomAvatar(_)) => {
+                    "m.room.avatar".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomCanonicalAlias(_)) => {
+                    "m.room.canonical_alias".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomCreate(_)) => {
+                    "m.room.create".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomEncryption(_)) => {
+                    "m.room.encryption".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomGuestAccess(_)) => {
+                    "m.room.guest_access".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomHistoryVisibility(_)) => {
+                    "m.room.history_visibility".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomJoinRules(_)) => {
+                    "m.room.join_rules".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomName(_)) => {
+                    "m.room.name".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomPinnedEvents(_)) => {
+                    "m.room.pinned_events".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomPowerLevels(_)) => {
+                    "m.room.power_levels".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomServerAcl(_)) => {
+                    "m.room.server_acl".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomThirdPartyInvite(_)) => {
+                    "m.room.third_party_invite".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomTombstone(_)) => {
+                    "m.room.tombstone".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomTopic(_)) => {
+                    "m.room.topic".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::SpaceChild(_)) => {
+                    "m.space.child".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::SpaceParent(_)) => {
+                    "m.space.parent".to_owned()
+                }
                 TimelineEventContent::FailedToParseMessageLike { event_type, .. } => {
                     event_type.to_string()
                 }

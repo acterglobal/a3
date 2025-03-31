@@ -58,33 +58,6 @@ pub enum OtherState {
     SpaceParent(SpaceParentContent),
 }
 
-impl OtherState {
-    pub fn event_type(&self) -> &str {
-        match self {
-            OtherState::PolicyRuleRoom(_) => "m.policy.rule.room",
-            OtherState::PolicyRuleServer(_) => "m.policy.rule.server",
-            OtherState::PolicyRuleUser(_) => "m.policy.rule.user",
-            OtherState::RoomAliases(_) => "m.room.aliases",
-            OtherState::RoomAvatar(_) => "m.room.avatar",
-            OtherState::RoomCanonicalAlias(_) => "m.room.canonical_alias",
-            OtherState::RoomCreate(_) => "m.room.create",
-            OtherState::RoomEncryption(_) => "m.room.encryption",
-            OtherState::RoomGuestAccess(_) => "m.room.guest_access",
-            OtherState::RoomHistoryVisibility(_) => "m.room.history_visibility",
-            OtherState::RoomJoinRules(_) => "m.room.join_rules",
-            OtherState::RoomName(_) => "m.room.name",
-            OtherState::RoomPinnedEvents(_) => "m.room.pinned_events",
-            OtherState::RoomPowerLevels(_) => "m.room.power_levels",
-            OtherState::RoomServerAcl(_) => "m.room.server_acl",
-            OtherState::RoomThirdPartyInvite(_) => "m.room.third_party_invite",
-            OtherState::RoomTombstone(_) => "m.room.tombstone",
-            OtherState::RoomTopic(_) => "m.room.topic",
-            OtherState::SpaceChild(_) => "m.space.child",
-            OtherState::SpaceParent(_) => "m.space.parent",
-        }
-    }
-}
-
 // m.policy.rule.room
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PolicyRuleRoomContent {

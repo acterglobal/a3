@@ -134,7 +134,32 @@ impl Activity {
         match &self.inner {
             ActivityContent::ProfileChange { .. } => "profileChange",
             ActivityContent::MembershipChange { .. } => "membershipChange",
-            ActivityContent::RoomState(s) => s.event_type(),
+
+            ActivityContent::RoomState(OtherState::PolicyRuleRoom(_)) => "policyRuleRoom",
+            ActivityContent::RoomState(OtherState::PolicyRuleServer(_)) => "policyRuleServer",
+            ActivityContent::RoomState(OtherState::PolicyRuleUser(_)) => "policyRuleUser",
+            ActivityContent::RoomState(OtherState::RoomAliases(_)) => "roomAliases",
+            ActivityContent::RoomState(OtherState::RoomAvatar(_)) => "roomAvatar",
+            ActivityContent::RoomState(OtherState::RoomCanonicalAlias(_)) => "roomCanonicalAlias",
+            ActivityContent::RoomState(OtherState::RoomCreate(_)) => "roomCreate",
+            ActivityContent::RoomState(OtherState::RoomEncryption(_)) => "roomEncryption",
+            ActivityContent::RoomState(OtherState::RoomGuestAccess(_)) => "roomGuestAccess",
+            ActivityContent::RoomState(OtherState::RoomHistoryVisibility(_)) => {
+                "roomHistoryVisibility"
+            }
+            ActivityContent::RoomState(OtherState::RoomJoinRules(_)) => "roomJoinRules",
+            ActivityContent::RoomState(OtherState::RoomName(_)) => "roomName",
+            ActivityContent::RoomState(OtherState::RoomPinnedEvents(_)) => "roomPinnedEvents",
+            ActivityContent::RoomState(OtherState::RoomPowerLevels(_)) => "roomPowerLevels",
+            ActivityContent::RoomState(OtherState::RoomServerAcl(_)) => "roomServerAcl",
+            ActivityContent::RoomState(OtherState::RoomThirdPartyInvite(_)) => {
+                "roomThirdPartyInvite"
+            }
+            ActivityContent::RoomState(OtherState::RoomTombstone(_)) => "roomTombstone",
+            ActivityContent::RoomState(OtherState::RoomTopic(_)) => "roomTopic",
+            ActivityContent::RoomState(OtherState::SpaceChild(_)) => "spaceChild",
+            ActivityContent::RoomState(OtherState::SpaceParent(_)) => "spaceParent",
+
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
