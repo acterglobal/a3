@@ -304,28 +304,72 @@ impl TimelineEventItem {
                 TimelineEventContent::UnableToDecrypt => "m.room.encrypted".to_owned(),
                 TimelineEventContent::MembershipChange(_) => "membershipChange".to_owned(), // some of m.room.member
                 TimelineEventContent::ProfileChange(_) => "profileChange".to_owned(), // some of m.room.member
-                TimelineEventContent::OtherState(OtherState::PolicyRuleRoom(_)) => "m.policy.rule.room".to_owned(),
-                TimelineEventContent::OtherState(OtherState::PolicyRuleServer(_)) => "m.policy.rule.server".to_owned(),
-                TimelineEventContent::OtherState(OtherState::PolicyRuleUser(_)) => "m.policy.rule.user".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomAliases(_)) => "m.room.aliases".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomAvatar(_)) => "m.room.avatar".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomCanonicalAlias(_)) => "m.room.canonical_alias".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomCreate(_)) => "m.room.create".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomEncryption(_)) => "m.room.encryption".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomGuestAccess(_)) => "m.room.guest_access".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomHistoryVisibility(_)) => "m.room.history_visibility".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomJoinRules(_)) => "m.room.join_rules".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomName(_)) => "m.room.name".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomPinnedEvents(_)) => "m.room.pinned_events".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomPowerLevels(_)) => "m.room.power_levels".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomServerAcl(_)) => "m.room.server_acl".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomThirdPartyInvite(_)) => "m.room.third_party_invite".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomTombstone(_)) => "m.room.tombstone".to_owned(),
-                TimelineEventContent::OtherState(OtherState::RoomTopic(_)) => "m.room.topic".to_owned(),
-                TimelineEventContent::OtherState(OtherState::SpaceChild(_)) => "m.space.child".to_owned(),
-                TimelineEventContent::OtherState(OtherState::SpaceParent(_)) => "m.space.parent".to_owned(),
-                TimelineEventContent::FailedToParseMessageLike { event_type, .. } => event_type.to_string(),
-                TimelineEventContent::FailedToParseState { event_type, .. } => event_type.to_string(),
+                TimelineEventContent::OtherState(OtherState::PolicyRuleRoom(_)) => {
+                    "m.policy.rule.room".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::PolicyRuleServer(_)) => {
+                    "m.policy.rule.server".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::PolicyRuleUser(_)) => {
+                    "m.policy.rule.user".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomAliases(_)) => {
+                    "m.room.aliases".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomAvatar(_)) => {
+                    "m.room.avatar".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomCanonicalAlias(_)) => {
+                    "m.room.canonical_alias".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomCreate(_)) => {
+                    "m.room.create".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomEncryption(_)) => {
+                    "m.room.encryption".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomGuestAccess(_)) => {
+                    "m.room.guest_access".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomHistoryVisibility(_)) => {
+                    "m.room.history_visibility".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomJoinRules(_)) => {
+                    "m.room.join_rules".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomName(_)) => {
+                    "m.room.name".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomPinnedEvents(_)) => {
+                    "m.room.pinned_events".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomPowerLevels(_)) => {
+                    "m.room.power_levels".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomServerAcl(_)) => {
+                    "m.room.server_acl".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomThirdPartyInvite(_)) => {
+                    "m.room.third_party_invite".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomTombstone(_)) => {
+                    "m.room.tombstone".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::RoomTopic(_)) => {
+                    "m.room.topic".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::SpaceChild(_)) => {
+                    "m.space.child".to_owned()
+                }
+                TimelineEventContent::OtherState(OtherState::SpaceParent(_)) => {
+                    "m.space.parent".to_owned()
+                }
+                TimelineEventContent::FailedToParseMessageLike { event_type, .. } => {
+                    event_type.to_string()
+                }
+                TimelineEventContent::FailedToParseState { event_type, .. } => {
+                    event_type.to_string()
+                }
                 TimelineEventContent::Poll(_) => "m.poll.start".to_owned(),
                 TimelineEventContent::CallInvite => "m.call_invite".to_owned(),
                 TimelineEventContent::CallNotify => "m.call_notify".to_owned(),
@@ -615,251 +659,207 @@ impl TimelineEventItem {
 impl TimelineEventItemBuilder {
     fn handle_other_state(&mut self, state: &SdkOtherState) -> Option<OtherState> {
         match state.content() {
-            AnyOtherFullStateEventContent::PolicyRuleRoom(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = PolicyRuleRoomContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::PolicyRuleRoom(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+            AnyOtherFullStateEventContent::PolicyRuleRoom(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = PolicyRuleRoomContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::PolicyRuleRoom(c))
                 }
-            }
-            AnyOtherFullStateEventContent::PolicyRuleServer(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = PolicyRuleServerContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::PolicyRuleServer(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::PolicyRuleServer(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = PolicyRuleServerContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::PolicyRuleServer(c))
                 }
-            }
-            AnyOtherFullStateEventContent::PolicyRuleUser(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::PolicyRuleUser(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::PolicyRuleUser(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::PolicyRuleUser(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomAliases(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomAliasesContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomAliases(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomAliases(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomAliasesContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomAliases(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomAvatar(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomAvatarContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomAvatar(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomAvatar(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomAvatarContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomAvatar(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomCanonicalAlias(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c =
-                            RoomCanonicalAliasContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomCanonicalAlias(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomCanonicalAlias(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomCanonicalAliasContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomCanonicalAlias(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomCreate(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomCreateContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomCreate(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomCreate(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomCreateContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomCreate(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomEncryption(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomEncryptionContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomEncryption(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomEncryption(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomEncryptionContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomEncryption(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomGuestAccess(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomGuestAccessContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomGuestAccess(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomGuestAccess(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomGuestAccessContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomGuestAccess(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomHistoryVisibility(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomHistoryVisibilityContent::new(
-                            content.clone(),
-                            prev_content.clone(),
-                        );
-                        Some(OtherState::RoomHistoryVisibility(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomHistoryVisibility(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c =
+                        RoomHistoryVisibilityContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomHistoryVisibility(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomJoinRules(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomJoinRulesContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomJoinRules(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomJoinRules(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomJoinRulesContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomJoinRules(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomName(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomNameContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomName(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomName(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomNameContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomName(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomPinnedEvents(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomPinnedEvents(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomPinnedEvents(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomPinnedEvents(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomPowerLevels(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomPowerLevels(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomPowerLevels(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomPowerLevels(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomServerAcl(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomServerAclContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomServerAcl(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomServerAcl(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomServerAclContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomServerAcl(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomThirdPartyInvite(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c =
-                            RoomThirdPartyInviteContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomThirdPartyInvite(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomThirdPartyInvite(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomThirdPartyInviteContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomThirdPartyInvite(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomTombstone(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomTombstoneContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomTombstone(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomTombstone(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomTombstoneContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomTombstone(c))
                 }
-            }
-            AnyOtherFullStateEventContent::RoomTopic(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = RoomTopicContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::RoomTopic(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::RoomTopic(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = RoomTopicContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::RoomTopic(c))
                 }
-            }
-            AnyOtherFullStateEventContent::SpaceChild(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = SpaceChildContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::SpaceChild(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::SpaceChild(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = SpaceChildContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::SpaceChild(c))
                 }
-            }
-            AnyOtherFullStateEventContent::SpaceParent(c) => {
-                match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let c = SpaceParentContent::new(content.clone(), prev_content.clone());
-                        Some(OtherState::SpaceParent(c))
-                    }
-                    FullStateEventContent::Redacted(r) => None,
+                FullStateEventContent::Redacted(r) => None,
+            },
+            AnyOtherFullStateEventContent::SpaceParent(c) => match c {
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                } => {
+                    let c = SpaceParentContent::new(content.clone(), prev_content.clone());
+                    Some(OtherState::SpaceParent(c))
                 }
-            }
+                FullStateEventContent::Redacted(r) => None,
+            },
             _ => None,
         }
     }
