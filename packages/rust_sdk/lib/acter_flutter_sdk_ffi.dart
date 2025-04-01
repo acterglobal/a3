@@ -19567,20 +19567,20 @@ class Api {
 
   late final _timelineEventItemWasEdited =
       _timelineEventItemWasEditedPtr.asFunction<int Function(int)>();
-  late final _roomVirtualItemEventTypePtr = _lookup<
-    ffi.NativeFunction<_RoomVirtualItemEventTypeReturn Function(ffi.IntPtr)>
-  >("__RoomVirtualItem_event_type");
+  late final _timelineVirtualItemEventTypePtr = _lookup<
+    ffi.NativeFunction<_TimelineVirtualItemEventTypeReturn Function(ffi.IntPtr)>
+  >("__TimelineVirtualItem_event_type");
 
-  late final _roomVirtualItemEventType =
-      _roomVirtualItemEventTypePtr
-          .asFunction<_RoomVirtualItemEventTypeReturn Function(int)>();
-  late final _roomVirtualItemDescPtr = _lookup<
-    ffi.NativeFunction<_RoomVirtualItemDescReturn Function(ffi.IntPtr)>
-  >("__RoomVirtualItem_desc");
+  late final _timelineVirtualItemEventType =
+      _timelineVirtualItemEventTypePtr
+          .asFunction<_TimelineVirtualItemEventTypeReturn Function(int)>();
+  late final _timelineVirtualItemDescPtr = _lookup<
+    ffi.NativeFunction<_TimelineVirtualItemDescReturn Function(ffi.IntPtr)>
+  >("__TimelineVirtualItem_desc");
 
-  late final _roomVirtualItemDesc =
-      _roomVirtualItemDescPtr
-          .asFunction<_RoomVirtualItemDescReturn Function(int)>();
+  late final _timelineVirtualItemDesc =
+      _timelineVirtualItemDescPtr
+          .asFunction<_TimelineVirtualItemDescReturn Function(int)>();
   late final _roomMessageItemTypePtr = _lookup<
     ffi.NativeFunction<_RoomMessageItemTypeReturn Function(ffi.IntPtr)>
   >("__RoomMessage_item_type");
@@ -40523,17 +40523,17 @@ class TimelineEventItem {
   }
 }
 
-class RoomVirtualItem {
+class TimelineVirtualItem {
   final Api _api;
   final _Box _box;
 
-  RoomVirtualItem._(this._api, this._box);
+  TimelineVirtualItem._(this._api, this._box);
 
   /// DayDivider or ReadMarker
   String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomVirtualItemEventType(tmp0);
+    final tmp1 = _api._timelineVirtualItemEventType(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40561,7 +40561,7 @@ class RoomVirtualItem {
   String? desc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomVirtualItemDesc(tmp0);
+    final tmp1 = _api._timelineVirtualItemDesc(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -40676,7 +40676,7 @@ class RoomMessage {
   }
 
   /// valid only if item_type is "virtual"
-  RoomVirtualItem? virtualItem() {
+  TimelineVirtualItem? virtualItem() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageVirtualItem(tmp0);
@@ -40686,9 +40686,9 @@ class RoomMessage {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomVirtualItem");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineVirtualItem");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = RoomVirtualItem._(_api, tmp4_1);
+    final tmp2 = TimelineVirtualItem._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -60832,7 +60832,7 @@ class _TimelineEventItemReactionRecordsReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _RoomVirtualItemEventTypeReturn extends ffi.Struct {
+class _TimelineVirtualItemEventTypeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -60841,7 +60841,7 @@ class _RoomVirtualItemEventTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomVirtualItemDescReturn extends ffi.Struct {
+class _TimelineVirtualItemDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

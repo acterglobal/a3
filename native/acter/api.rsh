@@ -1047,7 +1047,7 @@ object TimelineEventItem {
     fn was_edited() -> bool;
 }
 
-object RoomVirtualItem {
+object TimelineVirtualItem {
     /// DayDivider or ReadMarker
     fn event_type() -> string;
 
@@ -1067,7 +1067,7 @@ object RoomMessage {
     fn event_item() -> Option<TimelineEventItem>;
 
     /// valid only if item_type is "virtual"
-    fn virtual_item() -> Option<RoomVirtualItem>;
+    fn virtual_item() -> Option<TimelineVirtualItem>;
 }
 
 object MsgContent {

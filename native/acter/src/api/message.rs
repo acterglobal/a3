@@ -1249,12 +1249,12 @@ impl TimelineEventItemBuilder {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RoomVirtualItem {
+pub struct TimelineVirtualItem {
     event_type: String,
     desc: Option<String>,
 }
 
-impl RoomVirtualItem {
+impl TimelineVirtualItem {
     pub(crate) fn new(event: &VirtualTimelineItem) -> Self {
         match event {
             VirtualTimelineItem::DateDivider(ts) => {
@@ -1264,12 +1264,12 @@ impl RoomVirtualItem {
                 } else {
                     None
                 };
-                RoomVirtualItem {
+                TimelineVirtualItem {
                     event_type: "DayDivider".to_string(),
                     desc,
                 }
             }
-            VirtualTimelineItem::ReadMarker => RoomVirtualItem {
+            VirtualTimelineItem::ReadMarker => TimelineVirtualItem {
                 event_type: "ReadMarker".to_string(),
                 desc: None,
             },
@@ -1289,7 +1289,7 @@ impl RoomVirtualItem {
 pub struct RoomMessage {
     item_type: String,
     event_item: Option<TimelineEventItem>,
-    virtual_item: Option<RoomVirtualItem>,
+    virtual_item: Option<TimelineVirtualItem>,
     unique_id: String,
 }
 
@@ -1311,7 +1311,7 @@ impl RoomMessage {
             item_type: "virtual".to_string(),
             event_item: None,
             unique_id,
-            virtual_item: Some(RoomVirtualItem::new(event)),
+            virtual_item: Some(TimelineVirtualItem::new(event)),
         }
     }
 
@@ -1348,7 +1348,7 @@ impl RoomMessage {
         self.event_item.as_ref().map(|e| e.origin_server_ts())
     }
 
-    pub fn virtual_item(&self) -> Option<RoomVirtualItem> {
+    pub fn virtual_item(&self) -> Option<TimelineVirtualItem> {
         self.virtual_item.clone()
     }
 }

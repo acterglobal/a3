@@ -6,7 +6,7 @@ import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomMessage, RoomVirtualItem, TimelineEventItem;
+    show RoomMessage, TimelineVirtualItem, TimelineEventItem;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -44,7 +44,7 @@ class ChatEvent extends ConsumerWidget {
     return renderEvent(ctx: context, msg: msg, item: inner, ref: ref);
   }
 
-  Widget renderVirtual(RoomMessage msg, RoomVirtualItem virtual) {
+  Widget renderVirtual(RoomMessage msg, TimelineVirtualItem virtual) {
     // TODO: virtual Objects support
     return const SizedBox.shrink();
   }

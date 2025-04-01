@@ -455,7 +455,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // maps [RoomMessage] to [types.Message].
   types.Message parseMessage(RoomMessage message) {
-    RoomVirtualItem? virtualItem = message.virtualItem();
+    TimelineVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
       switch (virtualItem.eventType()) {
         case 'ReadMarker':
