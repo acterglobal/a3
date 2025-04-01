@@ -7,16 +7,16 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EncryptionKeyManager extends ConsumerWidget {
   final String id;
-  final String password;
+  final String encryptionKey;
 
   const EncryptionKeyManager({
     super.key,
     required this.id,
-    required this.password,
+    required this.encryptionKey,
   });
 
   Future<String> _buildShareContent() async {
-    return 'id=$id-password=$password';
+    return 'id=$id-encryptionKey=$encryptionKey';
   }
 
   @override

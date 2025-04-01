@@ -152,7 +152,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
         ),
         EncryptionKeyManager(
           id: 'test',
-          password: encryptionKey,
+          encryptionKey: encryptionKey,
         ),
       ],
     );
