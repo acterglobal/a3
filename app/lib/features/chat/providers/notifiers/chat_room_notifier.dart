@@ -254,7 +254,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         if (repliedTo != null) {
           await fetchOriginalContent(repliedTo, message.id);
         }
-        RoomEventItem? eventItem = m.eventItem();
+        TimelineEventItem? eventItem = m.eventItem();
         final remoteId = message.remoteId;
         if (eventItem != null && remoteId != null) {
           await fetchMediaBinary(eventItem.msgType(), remoteId, message.id);
@@ -275,7 +275,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as RoomMessage
-    RoomEventItem orgEventItem = roomMsg.eventItem().expect(
+    TimelineEventItem orgEventItem = roomMsg.eventItem().expect(
       'room msg should have event item',
     );
     EventSendState? eventState = orgEventItem.sendState();
@@ -478,7 +478,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
 
     // If not virtual item, it should be event item
-    RoomEventItem eventItem = message.eventItem().expect(
+    TimelineEventItem eventItem = message.eventItem().expect(
       'room msg should have event item',
     );
     EventSendState? eventState;

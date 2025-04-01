@@ -6,7 +6,12 @@ import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem, MsgContent, RoomMessage, EventSendState, ReactionRecord;
+    show
+        EventSendState,
+        MsgContent,
+        ReactionRecord,
+        RoomMessage,
+        TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -32,14 +37,14 @@ class MockEventSendState extends Mock implements EventSendState {
   }
 }
 
-class MockRoomEventItem extends Mock implements RoomEventItem {
+class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String _eventType;
   final String _msgType;
   final String _sender;
   final MockMsgContent? _msgContent;
   final EventSendState? _sendState;
 
-  MockRoomEventItem({
+  MockTimelineEventItem({
     required String eventType,
     String msgType = 'm.text',
     required String sender,
@@ -72,9 +77,9 @@ class MockRoomEventItem extends Mock implements RoomEventItem {
 
 class MockRoomMessage extends Mock implements RoomMessage {
   final String _id;
-  final RoomEventItem? _eventItem;
+  final TimelineEventItem? _eventItem;
 
-  MockRoomMessage({required String id, RoomEventItem? eventItem})
+  MockRoomMessage({required String id, TimelineEventItem? eventItem})
     : _id = id,
       _eventItem = eventItem;
 
@@ -82,7 +87,7 @@ class MockRoomMessage extends Mock implements RoomMessage {
   String uniqueId() => _id;
 
   @override
-  RoomEventItem? eventItem() => _eventItem;
+  TimelineEventItem? eventItem() => _eventItem;
 }
 
 class MockReactionRecord extends Mock implements ReactionRecord {
@@ -97,12 +102,12 @@ class MockReactionRecord extends Mock implements ReactionRecord {
 void main() {
   group('ChatEvent Tests', () {
     late MockMsgContent mockContent;
-    late MockRoomEventItem mockEventItem;
+    late MockTimelineEventItem mockEventItem;
     late MockRoomMessage mockRoomMessage;
 
     setUp(() {
       mockContent = MockMsgContent(bodyText: 'Test message');
-      mockEventItem = MockRoomEventItem(
+      mockEventItem = MockTimelineEventItem(
         eventType: 'm.room.message',
         sender: 'test-user',
         msgContent: mockContent,
@@ -153,7 +158,7 @@ void main() {
     testWidgets('renders unsupported message for unknown event type', (
       tester,
     ) async {
-      final unknownEventItem = MockRoomEventItem(
+      final unknownEventItem = MockTimelineEventItem(
         eventType: 'unknown.type',
         sender: 'test-user',
       );
@@ -187,7 +192,7 @@ void main() {
     group('SendState Tests', () {
       testWidgets('shows sending state for message being sent', (tester) async {
         final mockSendState = MockEventSendState('NotSentYet');
-        final sendingEventItem = MockRoomEventItem(
+        final sendingEventItem = MockTimelineEventItem(
           eventType: 'm.room.message',
           sender: 'test-user',
           msgContent: mockContent,
@@ -219,7 +224,7 @@ void main() {
 
       testWidgets('shows error state for failed message', (tester) async {
         final mockSendState = MockEventSendState('SendingFailed', 'Test error');
-        final failedEventItem = MockRoomEventItem(
+        final failedEventItem = MockTimelineEventItem(
           eventType: 'm.room.message',
           sender: 'test-user',
           msgContent: mockContent,
@@ -253,7 +258,7 @@ void main() {
       testWidgets('shows sent icon if last message by this user', (
         tester,
       ) async {
-        final sentEventItem = MockRoomEventItem(
+        final sentEventItem = MockTimelineEventItem(
           eventType: 'm.room.message',
           sender: 'test-user',
           msgContent: mockContent,
@@ -287,7 +292,7 @@ void main() {
       testWidgets('does not show icon if last message not by this user', (
         tester,
       ) async {
-        final sentEventItem = MockRoomEventItem(
+        final sentEventItem = MockTimelineEventItem(
           eventType: 'm.room.message',
           sender: 'test-user',
           msgContent: mockContent,
@@ -321,7 +326,7 @@ void main() {
       testWidgets('does not show sent icon for non-last message', (
         tester,
       ) async {
-        final sentEventItem = MockRoomEventItem(
+        final sentEventItem = MockTimelineEventItem(
           eventType: 'm.room.message',
           sender: 'test-user',
           msgContent: mockContent,

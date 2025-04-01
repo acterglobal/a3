@@ -5,7 +5,7 @@ import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,11 +18,11 @@ import '../../chat/messages/image_message_test.dart';
 import '../../comments/mock_data/mock_message_content.dart';
 import '../diff_applier_test.dart';
 
-class MockRoomEventItem extends Mock implements RoomEventItem {
+class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String mockSender;
   final MockMsgContent? mockMsgContent;
   final String? mockMsgType;
-  MockRoomEventItem({
+  MockTimelineEventItem({
     required this.mockSender,
     this.mockMsgContent,
     this.mockMsgType,
@@ -42,15 +42,15 @@ void main() {
     group('show avatars provider tests ', () {
       final userMsgA1 = MockRoomMessage(
         id: 'A1',
-        mockEventItem: MockRoomEventItem(mockSender: 'user-1'),
+        mockEventItem: MockTimelineEventItem(mockSender: 'user-1'),
       );
       final userMsgA2 = MockRoomMessage(
         id: 'A2',
-        mockEventItem: MockRoomEventItem(mockSender: 'user-1'),
+        mockEventItem: MockTimelineEventItem(mockSender: 'user-1'),
       );
       final userMsgB1 = MockRoomMessage(
         id: 'B1',
-        mockEventItem: MockRoomEventItem(mockSender: 'user-2'),
+        mockEventItem: MockTimelineEventItem(mockSender: 'user-2'),
       );
 
       final container = ProviderContainer(

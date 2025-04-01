@@ -99,7 +99,7 @@ pub use core::time::Duration as EfkDuration;
 pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
 pub use invitations::{InvitationsManager, ObjectInvitationsManager, RoomInvitation};
-pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
+pub use message::{EventSendState, RoomMessage, RoomVirtualItem, TimelineEventItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;

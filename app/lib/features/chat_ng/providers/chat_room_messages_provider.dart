@@ -180,7 +180,7 @@ final repliedToMsgProvider = AsyncNotifierProvider.autoDispose
     });
 
 final messageReactionsProvider = StateProvider.autoDispose
-    .family<List<ReactionItem>, RoomEventItem>((ref, item) {
+    .family<List<ReactionItem>, TimelineEventItem>((ref, item) {
       List<ReactionItem> reactions = [];
 
       final reactionKeys = asDartStringList(item.reactionKeys());

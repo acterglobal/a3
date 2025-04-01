@@ -90,7 +90,7 @@ impl EventSendState {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Builder)]
 #[builder(derive(Debug))]
-pub struct RoomEventItem {
+pub struct TimelineEventItem {
     #[builder(default)]
     event_id: Option<OwnedEventId>,
     #[builder(default)]
@@ -117,9 +117,9 @@ pub struct RoomEventItem {
     edited: bool,
 }
 
-impl RoomEventItem {
+impl TimelineEventItem {
     pub(crate) fn new(event: &EventTimelineItem, my_id: OwnedUserId) -> Self {
-        let mut me = RoomEventItemBuilder::default();
+        let mut me = TimelineEventItemBuilder::default();
 
         me.event_id(event.event_id().map(ToOwned::to_owned))
             .txn_id(event.transaction_id().map(ToOwned::to_owned))
@@ -419,7 +419,7 @@ impl RoomEventItem {
     }
 }
 
-impl RoomEventItemBuilder {
+impl TimelineEventItemBuilder {
     fn handle_other_state(&mut self, state: &OtherState) {
         match state.content() {
             AnyOtherFullStateEventContent::PolicyRuleRoom(c) => {
@@ -1288,7 +1288,7 @@ impl RoomVirtualItem {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RoomMessage {
     item_type: String,
-    event_item: Option<RoomEventItem>,
+    event_item: Option<TimelineEventItem>,
     virtual_item: Option<RoomVirtualItem>,
     unique_id: String,
 }
@@ -1297,7 +1297,7 @@ impl RoomMessage {
     pub(crate) fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
         RoomMessage {
             item_type: "event".to_string(),
-            event_item: Some(RoomEventItem::new(event, my_id)),
+            event_item: Some(TimelineEventItem::new(event, my_id)),
             unique_id: match event.identifier() {
                 TimelineEventItemId::EventId(e) => e.to_string(),
                 TimelineEventItemId::TransactionId(t) => t.to_string(),
@@ -1319,13 +1319,13 @@ impl RoomMessage {
         self.item_type.clone()
     }
 
-    pub fn event_item(&self) -> Option<RoomEventItem> {
+    pub fn event_item(&self) -> Option<TimelineEventItem> {
         self.event_item.clone()
     }
 
     pub(crate) fn event_id(&self) -> Option<String> {
         match &self.event_item {
-            Some(RoomEventItem {
+            Some(TimelineEventItem {
                 event_id: Some(event_id),
                 ..
             }) => Some(event_id.to_string()),

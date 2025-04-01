@@ -30,7 +30,7 @@ class MockChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState>
 void main() {
   group('Chat editor reply/edit preview tests', () {
     final mockMsgContent = MockMsgContent(bodyText: 'Test Content Message');
-    final mockEventItem = MockRoomEventItem(
+    final mockEventItem = MockTimelineEventItem(
       mockSender: 'user-1',
       mockMsgContent: mockMsgContent,
       mockMsgType: 'm.text',

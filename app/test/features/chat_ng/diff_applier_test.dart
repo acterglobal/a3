@@ -46,7 +46,7 @@ class MockFfiListRoomMessage extends Mock implements FfiListRoomMessage {
 
 class MockRoomMessage extends Mock implements RoomMessage {
   final String id;
-  final MockRoomEventItem? mockEventItem;
+  final MockTimelineEventItem? mockEventItem;
 
   MockRoomMessage({required this.id, this.mockEventItem});
 
@@ -54,7 +54,7 @@ class MockRoomMessage extends Mock implements RoomMessage {
   String uniqueId() => id;
 
   @override
-  MockRoomEventItem? eventItem() => mockEventItem;
+  MockTimelineEventItem? eventItem() => mockEventItem;
 }
 
 class MockAnimatedListState extends Mock implements AnimatedListState {

@@ -1002,7 +1002,7 @@ object EventSendState {
 }
 
 /// A room Message metadata and content
-object RoomEventItem {
+object TimelineEventItem {
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -1064,7 +1064,7 @@ object RoomMessage {
     fn unique_id() -> string;
 
     /// valid only if item_type is "event"
-    fn event_item() -> Option<RoomEventItem>;
+    fn event_item() -> Option<TimelineEventItem>;
 
     /// valid only if item_type is "virtual"
     fn virtual_item() -> Option<RoomVirtualItem>;
