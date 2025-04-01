@@ -25,9 +25,9 @@ void main() {
       await createWidgetUnderTest(tester: tester);
 
       // Verify that all permission levels are displayed
-      expect(find.text('ADMIN'), findsOneWidget);
-      expect(find.text('MODERATOR'), findsOneWidget);
-      expect(find.text('EVERYONE'), findsOneWidget);
+      expect(find.text('Admin'), findsOneWidget);
+      expect(find.text('Moderator'), findsOneWidget);
+      expect(find.text('Everyone'), findsOneWidget);
     });
 
     testWidgets('should show correct icons for each permission level', (
@@ -61,7 +61,7 @@ void main() {
         );
 
         // Tap on the MODERATOR permission
-        await tester.tap(find.text('MODERATOR'));
+        await tester.tap(find.text('Moderator'));
         await tester.pumpAndSettle();
 
         // Verify that onPermissionSelected was called with the correct level
@@ -75,7 +75,7 @@ void main() {
       await createWidgetUnderTest(tester: tester);
 
       // Tap on any permission
-      await tester.tap(find.text('EVERYONE'));
+      await tester.tap(find.text('Everyone'));
       await tester.pumpAndSettle();
 
       // Verify that the widget was popped by checking if the widget is no longer in the tree
@@ -98,7 +98,7 @@ void main() {
       );
 
       // Find the selected permission text
-      final selectedText = find.text('MODERATOR');
+      final selectedText = find.text('Moderator');
       expect(selectedText, findsOneWidget);
 
       // Verify the text style (color should be primary color)
