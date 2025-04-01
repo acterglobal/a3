@@ -689,6 +689,7 @@
     "mobilePushNotifications": "Mobile Push Notifications",
     "@mobilePushNotifications": {},
     "moderator": "Moderator",
+    "everyone": "Everyone",
     "@moderator": {},
     "more": "More",
     "@more": {},

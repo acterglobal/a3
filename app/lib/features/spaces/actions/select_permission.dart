@@ -44,6 +44,7 @@ class SelectPermission extends StatelessWidget {
     final isSelected = level == currentPermission;
     final permissionIcon = getIconBasedOnPermissionLevel(level);
     final permissionColor = isSelected ? primaryColor : null;
+    final permissionName = getPermissionNameFromLevel(context, level);
 
     return ListTile(
       onTap: () {
@@ -52,7 +53,7 @@ class SelectPermission extends StatelessWidget {
       },
       leading: Icon(permissionIcon, color: permissionColor),
       title: Text(
-        level.name.toUpperCase(),
+        permissionName,
         style: textTheme.bodyMedium?.copyWith(color: permissionColor),
       ),
       trailing: isSelected ? Icon(Icons.check, color: primaryColor) : null,

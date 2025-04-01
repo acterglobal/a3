@@ -180,6 +180,10 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
   ) {
     final textThemeBodySmall = Theme.of(context).textTheme.bodySmall;
     final secondaryColor = Theme.of(context).colorScheme.secondary;
+    final permissionName = getPermissionNameFromLevel(
+      context,
+      permissionItem.permissionLevel,
+    );
     return Row(
       children: [
         InkWell(
@@ -190,7 +194,7 @@ class _SpaceFeaturesWidgetState extends ConsumerState<SpaceFeaturesWidget> {
                 permissionItem,
               ),
           child: Text(
-            permissionItem.permissionLevel.name.toUpperCase(),
+            permissionName,
             style: textThemeBodySmall?.copyWith(color: secondaryColor),
           ),
         ),

@@ -1,3 +1,6 @@
+import 'package:acter/l10n/generated/l10n.dart';
+import 'package:flutter/material.dart';
+
 enum PermissionLevel {
   admin(100),
   moderator(50),
@@ -5,6 +8,18 @@ enum PermissionLevel {
 
   final int value;
   const PermissionLevel(this.value);
+}
+
+String getPermissionNameFromLevel(
+  BuildContext context,
+  PermissionLevel permissionLevel,
+) {
+  final lang = L10n.of(context);
+  return switch (permissionLevel) {
+    PermissionLevel.admin => lang.admin,
+    PermissionLevel.moderator => lang.moderator,
+    PermissionLevel.everyone => lang.everyone,
+  };
 }
 
 enum PermissionType {
