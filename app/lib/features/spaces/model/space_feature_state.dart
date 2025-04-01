@@ -5,7 +5,7 @@ class FeatureActivationState {
   final List<PermissionConfig> permissions;
 
   FeatureActivationState({
-    this.isActivated = false,
+    this.isActivated = true,
     List<PermissionConfig>? permissions,
   }) : permissions = permissions ?? [];
 
