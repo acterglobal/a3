@@ -6,13 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-Future<bool> openLink(
-  WidgetRef ref,
-  String target,
-  BuildContext context,
-) async {
-  final lang = L10n.of(context);
-  return switch (ref.watch(openSystemLinkSettingsProvider)) {
+Future<bool> openLink({
+  required WidgetRef ref,
+  required String target,
+  required L10n lang,
+}) async {
+  return switch (ref.read(openSystemLinkSettingsProvider)) {
     OpenSystemLinkSetting.copy => _copyToClipboard(lang, target),
     OpenSystemLinkSetting.open => await _tryOpeningLink(lang, target),
   };
