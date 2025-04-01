@@ -14,6 +14,7 @@ enum Routes {
   encryptionBackup('/enableEncryptionBackup'),
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
+  notificationPermission('/notificationPermission'),
   analyticsOptIn('/analyticsOptIn'),
 
   // --- profile
