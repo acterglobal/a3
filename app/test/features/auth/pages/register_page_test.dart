@@ -2,19 +2,19 @@ import 'dart:async';
 
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_screenshot/test_screenshot.dart';
 
 import '../../../helpers/mock_go_router.dart';
 import '../../../helpers/test_util.dart';
-import '../../super_invites/mock_data/mock_super_invites.dart';
 
 class MockSdk extends Mock implements ActerSdk {}
 
@@ -24,16 +24,24 @@ void main() {
   group('RegisterPage', () {
     late List<Override> providers;
     late MockSdk mockSdk;
+    late MockGoRouter mockedGoRouter;
+    late MockNavigator mockNavigator;
     setUp(() {
       mockSdk = MockSdk();
+      mockedGoRouter = MockGoRouter();
+      mockNavigator = MockNavigator();
+      SharedPreferences.setMockInitialValues({});
       providers = [
         hasNetworkProvider.overrideWith((ref) => true),
         sdkProvider.overrideWith((ref) => mockSdk),
       ];
+      when(mockNavigator.canPop).thenReturn(true);
     });
 
     testWidgets('shows all required fields', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
+        navigatorOverride: mockNavigator,
+        goRouter: mockedGoRouter,
         overrides: providers,
         child: RegisterPage(),
       );
@@ -48,6 +56,8 @@ void main() {
 
     testWidgets('validates required fields', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
+        navigatorOverride: mockNavigator,
+        goRouter: mockedGoRouter,
         overrides: providers,
         child: RegisterPage(),
       );
@@ -71,6 +81,8 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpProviderWidget(
+        navigatorOverride: mockNavigator,
+        goRouter: mockedGoRouter,
         overrides: providers,
         child: RegisterPage(),
       );
@@ -97,6 +109,8 @@ void main() {
     group('validates username format', () {
       testWidgets('rejects username with spaces', (WidgetTester tester) async {
         await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
           overrides: providers,
           child: RegisterPage(),
         );
@@ -125,6 +139,8 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
           overrides: providers,
           child: RegisterPage(),
         );
@@ -152,6 +168,8 @@ void main() {
     group('validates password format', () {
       testWidgets('accepts password with spaces', (WidgetTester tester) async {
         await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
           overrides: providers,
           child: RegisterPage(),
         );
@@ -178,6 +196,8 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
           overrides: providers,
           child: RegisterPage(),
         );
@@ -204,6 +224,8 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
           overrides: providers,
           child: RegisterPage(),
         );
@@ -229,7 +251,10 @@ void main() {
     });
 
     group('goes on correctly', () {
-      Future<void> submitValidForm(WidgetTester tester) async {
+      Future<void> submitValidForm(
+        WidgetTester tester, {
+        String token = 'testtoken',
+      }) async {
         await tester.enterText(find.byKey(RegisterPage.nameField), 'Test User');
         await tester.enterText(
           find.byKey(RegisterPage.usernameField),
@@ -239,10 +264,7 @@ void main() {
           find.byKey(RegisterPage.passwordField),
           'passworD !23',
         );
-        await tester.enterText(
-          find.byKey(RegisterPage.tokenField),
-          'testtoken',
-        );
+        await tester.enterText(find.byKey(RegisterPage.tokenField), token);
         final submitBtn = find.byKey(RegisterPage.submitBtn);
         final BuildContext context = tester.element(submitBtn);
         final lang = L10n.of(context);
@@ -272,13 +294,6 @@ void main() {
         );
       }
 
-      (MockGoRouter, MockNavigator) setUpRouters() {
-        final mockedGoRouter = MockGoRouter();
-        final navigator = MockNavigator();
-        when(navigator.canPop).thenReturn(true);
-        return (mockedGoRouter, navigator);
-      }
-
       testWidgets('call register with correct params', (
         WidgetTester tester,
       ) async {
@@ -287,6 +302,8 @@ void main() {
           () => mockSdk.register(any(), any(), any(), any()),
         ).thenAnswer((_) async => completer.future);
         await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
           overrides: providers,
           child: RegisterPage(),
         );
@@ -310,10 +327,55 @@ void main() {
         ).called(1);
       });
 
+      testWidgets('shared prefs are store correctly', (
+        WidgetTester tester,
+      ) async {
+        final completer = Completer<MockClient>();
+        when(
+          () => mockSdk.register(any(), any(), any(), any()),
+        ).thenAnswer((_) async => completer.future);
+        when(() => mockedGoRouter.goNamed(any())).thenAnswer((_) async {});
+
+        await tester.pumpProviderWidget(
+          navigatorOverride: mockNavigator,
+          goRouter: mockedGoRouter,
+          overrides: providers,
+          child: RegisterPage(),
+        );
+        await submitValidForm(tester, token: 'secondary-token');
+
+        final submitBtn = find.byKey(RegisterPage.submitBtn);
+        expect(submitBtn, findsNothing);
+        expect(
+          find.byType(CircularProgressIndicator, skipOffstage: false),
+          findsOneWidget,
+        );
+
+        await tester.pump();
+
+        // data was passed in correctly
+        verify(
+          () => mockSdk.register(
+            'testuser',
+            'passworD !23',
+            'Test User',
+            'secondary-token',
+          ),
+        ).called(1);
+
+        // let it continue
+        completer.complete(MockClient());
+        await tester.pump();
+
+        // now check the prefs
+        final prefs = await sharedPrefs();
+        expect(prefs.getString('invitation_token'), 'secondary-token');
+      });
+
       testWidgets('goes on after register correctly', (
         WidgetTester tester,
       ) async {
-        final (mockedGoRouter, mockNavigator) = setUpRouters();
+        SharedPreferences.setMockInitialValues({}); //set values here
         when(
           () => mockedGoRouter.goNamed(
             any(),
@@ -333,10 +395,7 @@ void main() {
         await tester.pumpProviderWidget(
           navigatorOverride: mockNavigator,
           goRouter: mockedGoRouter,
-          overrides: [
-            ...providers,
-            superInvitesProvider.overrideWith((ref) => MockSuperInvites()),
-          ],
+          overrides: providers,
           child: RegisterPage(),
         );
         await submitValidForm(tester);
@@ -365,78 +424,16 @@ void main() {
         completer.complete(client);
         await tester.pump(); // settle the screen
 
-        verify(
-          () => mockedGoRouter.goNamed(
-            any(that: equals('saveUsername')), // forwarded to the right item
-            queryParameters: any(
-              named: 'queryParameters',
-              that: contains('username'),
-            ),
-            pathParameters: any(named: 'pathParameters'),
-            extra: any(named: 'extra'),
-            fragment: any(named: 'fragment'),
-          ),
-        ).called(1);
-      });
-
-      testWidgets('while user lost focus', (WidgetTester tester) async {
-        final (mockedGoRouter, mockNavigator) = setUpRouters();
-        when(
-          () => mockedGoRouter.goNamed(
-            any(),
-            queryParameters: any(named: 'queryParameters'),
-            pathParameters: any(named: 'pathParameters'),
-            extra: any(named: 'extra'),
-            fragment: any(named: 'fragment'),
-          ),
-        ).thenAnswer((_) async {});
-
-        final client = MockClient();
-        final completer = Completer<MockClient>();
-        when(
-          () => mockSdk.register(any(), any(), any(), any()),
-        ).thenAnswer((_) async => completer.future);
-
-        await tester.pumpProviderWidget(
-          navigatorOverride: mockNavigator,
-          goRouter: mockedGoRouter,
-          overrides: [
-            ...providers,
-            superInvitesProvider.overrideWith((ref) => MockSuperInvites()),
-          ],
-          child: RegisterPage(),
-        );
-        await submitValidForm(tester);
-
-        final submitBtn = find.byKey(RegisterPage.submitBtn);
-        expect(submitBtn, findsNothing);
         expect(
           find.byType(CircularProgressIndicator, skipOffstage: false),
-          findsOneWidget,
+          findsNothing,
         );
-
-        // data was passed in correctly
-        verify(
-          () => mockSdk.register(
-            'testuser',
-            'passworD !23',
-            'Test User',
-            'testtoken',
-          ),
-        ).called(1);
-
-        // this takes long, so the user looks away.
-
-        // now continuce
-        when(
-          () => mockSdk.currentClient,
-        ).thenReturn(client); // we also must return
-        completer.complete(client);
-        await tester.pump(); // settle the screen
 
         verify(
           () => mockedGoRouter.goNamed(
-            any(that: equals('saveUsername')), // forwarded to the right item
+            any(
+              that: equals(Routes.saveUsername.name),
+            ), // forwarded to the right item
             queryParameters: any(
               named: 'queryParameters',
               that: contains('username'),

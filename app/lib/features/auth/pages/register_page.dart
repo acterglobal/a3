@@ -43,13 +43,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
-  Future<void> handleSubmit(BuildContext context) async {
+  Future<void> handleSubmit(L10n lang, GoRouter navigator) async {
     if (!formKey.currentState!.validate()) return;
     if (!inCI && !ref.read(hasNetworkProvider)) {
-      showNoInternetNotification(context);
+      showNoInternetNotification(lang);
       return;
     }
-    final lang = L10n.of(context);
     try {
       if (await register(
         username: username.text,
@@ -58,12 +57,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         token: token.text,
         ref: ref,
       )) {
-        if (context.mounted) {
-          context.goNamed(
-            Routes.saveUsername.name,
-            queryParameters: {'username': username.text},
-          );
-        }
+        navigator.goNamed(
+          Routes.saveUsername.name,
+          queryParameters: {'username': username.text},
+        );
       }
     } catch (errorMsg) {
       EasyLoading.showError(
@@ -361,7 +358,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: RegisterPage.submitBtn,
-          onPressed: () => handleSubmit(context),
+          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
           child: Text(
             L10n.of(context).createProfile,
             style: Theme.of(context).textTheme.bodyMedium,
