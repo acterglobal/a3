@@ -1,5 +1,4 @@
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +13,17 @@ Future<bool> openLink({
   return switch (ref.read(openSystemLinkSettingsProvider)) {
     OpenSystemLinkSetting.copy => _copyToClipboard(lang, target),
     OpenSystemLinkSetting.open => await _tryOpeningLink(lang, target),
+  };
+}
+
+Future<bool> openUri({
+  required WidgetRef ref,
+  required Uri uri,
+  required L10n lang,
+}) async {
+  return switch (ref.read(openSystemLinkSettingsProvider)) {
+    OpenSystemLinkSetting.copy => _copyToClipboard(lang, uri.toString()),
+    OpenSystemLinkSetting.open => await launchUrl(uri),
   };
 }
 
