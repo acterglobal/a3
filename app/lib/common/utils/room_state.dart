@@ -109,7 +109,9 @@ String? getStateOnPolicyRuleRoom(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnPolicyRuleServer(
@@ -222,7 +224,9 @@ String? getStateOnPolicyRuleServer(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnPolicyRuleUser(
@@ -332,7 +336,9 @@ String? getStateOnPolicyRuleUser(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomAliases(
@@ -396,7 +402,9 @@ String? getStateOnRoomAvatar(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomCanonicalAlias(
@@ -468,7 +476,9 @@ String? getStateOnRoomCanonicalAlias(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String getStateOnRoomCreate(
@@ -526,7 +536,9 @@ String? getStateOnRoomEncryption(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomGuestAccess(
@@ -986,7 +998,9 @@ String? getStateOnRoomPowerLevels(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomServerAcl(
@@ -1066,7 +1080,9 @@ String? getStateOnRoomServerAcl(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomThirdPartyInvite(
@@ -1159,7 +1175,9 @@ String? getStateOnRoomThirdPartyInvite(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomTombstone(
@@ -1220,7 +1238,9 @@ String? getStateOnRoomTombstone(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnRoomTopic(
@@ -1349,7 +1369,9 @@ String? getStateOnSpaceChild(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnSpaceParent(
@@ -1407,7 +1429,9 @@ String? getStateOnSpaceParent(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
 
 String? getStateOnMembershipChange(
@@ -1607,5 +1631,7 @@ String? getStateOnProfileChange(
       break;
   }
   if (result.isEmpty) return null;
-  return result.join(', ');
+  return result.join(
+    ' ', // each item is whole sentence that ends with full stop
+  );
 }
