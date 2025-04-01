@@ -38,14 +38,14 @@ use crate::TimelineStream;
 
 use super::{
     client::Client,
-    message::RoomMessage,
+    message::TimelineItem,
     room::Room,
     utils::{remap_for_diff, ApiVectorDiff},
     ComposeDraft, OptionComposeDraft, RUNTIME,
 };
 
 pub type ConvoDiff = ApiVectorDiff<Convo>;
-type LatestMsgLock = Arc<RwLock<Option<RoomMessage>>>;
+type LatestMsgLock = Arc<RwLock<Option<TimelineItem>>>;
 
 #[derive(Clone, Debug)]
 pub struct Convo {
@@ -85,7 +85,7 @@ async fn set_latest_msg(
     client: &Client,
     room_id: &RoomId,
     lock: &LatestMsgLock,
-    new_msg: RoomMessage,
+    new_msg: TimelineItem,
 ) {
     let key = latest_message_storage_key(room_id);
     {
@@ -124,7 +124,7 @@ impl Convo {
                 .await
                 .expect("Creating a timeline builder doesn’t fail"),
         );
-        let latest_message_content: Option<RoomMessage> = client
+        let latest_message_content: Option<TimelineItem> = client
             .store()
             .get_raw(&latest_message_storage_key(inner.room_id()).as_storage_key())
             .await
@@ -148,7 +148,7 @@ impl Convo {
             let mut event_found = false;
             for msg in current.into_iter().rev() {
                 if msg.as_event().is_some() {
-                    let full_event = RoomMessage::from((msg, user_id.clone()));
+                    let full_event = TimelineItem::from((msg, user_id.clone()));
                     set_latest_msg(
                         &latest_msg_client,
                         latest_msg_room.room_id(),
@@ -172,7 +172,7 @@ impl Convo {
                 };
                 let room_id = latest_msg_room.room_id();
 
-                let full_event = RoomMessage::new_event_item(user_id.clone(), &msg);
+                let full_event = TimelineItem::new_event_item(user_id.clone(), &msg);
                 set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")
@@ -208,14 +208,14 @@ impl Convo {
         TimelineStream::new(self.inner.clone(), self.timeline.clone())
     }
 
-    pub async fn items(&self) -> Vec<RoomMessage> {
+    pub async fn items(&self) -> Vec<TimelineItem> {
         let user_id = self.client.user_id().expect("User must be logged in");
         self.timeline
             .items()
             .await
             .clone()
             .into_iter()
-            .map(|x| RoomMessage::from((x, user_id.clone())))
+            .map(|x| TimelineItem::from((x, user_id.clone())))
             .collect()
     }
 
@@ -240,7 +240,7 @@ impl Convo {
             .unwrap_or_default()
     }
 
-    pub fn latest_message(&self) -> Option<RoomMessage> {
+    pub fn latest_message(&self) -> Option<TimelineItem> {
         self.latest_message.read().map(|i| i.clone()).ok().flatten()
     }
 

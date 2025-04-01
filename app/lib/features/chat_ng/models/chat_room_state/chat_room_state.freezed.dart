@@ -629,7 +629,7 @@ abstract class _ChatRoomLoadingStateError implements ChatRoomLoadingState {
 /// @nodoc
 mixin _$ChatRoomState {
   List<String> get messageList => throw _privateConstructorUsedError;
-  Map<String, RoomMessage> get messages => throw _privateConstructorUsedError;
+  Map<String, TimelineItem> get messages => throw _privateConstructorUsedError;
   ChatRoomLoadingState get loading => throw _privateConstructorUsedError;
   bool get hasMore => throw _privateConstructorUsedError;
 
@@ -649,7 +649,7 @@ abstract class $ChatRoomStateCopyWith<$Res> {
   @useResult
   $Res call({
     List<String> messageList,
-    Map<String, RoomMessage> messages,
+    Map<String, TimelineItem> messages,
     ChatRoomLoadingState loading,
     bool hasMore,
   });
@@ -688,7 +688,7 @@ class _$ChatRoomStateCopyWithImpl<$Res, $Val extends ChatRoomState>
                 null == messages
                     ? _value.messages
                     : messages // ignore: cast_nullable_to_non_nullable
-                        as Map<String, RoomMessage>,
+                        as Map<String, TimelineItem>,
             loading:
                 null == loading
                     ? _value.loading
@@ -726,7 +726,7 @@ abstract class _$$ChatRoomStateImplCopyWith<$Res>
   @useResult
   $Res call({
     List<String> messageList,
-    Map<String, RoomMessage> messages,
+    Map<String, TimelineItem> messages,
     ChatRoomLoadingState loading,
     bool hasMore,
   });
@@ -765,7 +765,7 @@ class __$$ChatRoomStateImplCopyWithImpl<$Res>
             null == messages
                 ? _value._messages
                 : messages // ignore: cast_nullable_to_non_nullable
-                    as Map<String, RoomMessage>,
+                    as Map<String, TimelineItem>,
         loading:
             null == loading
                 ? _value.loading
@@ -786,7 +786,7 @@ class __$$ChatRoomStateImplCopyWithImpl<$Res>
 class _$ChatRoomStateImpl extends _ChatRoomState {
   const _$ChatRoomStateImpl({
     final List<String> messageList = const [],
-    final Map<String, RoomMessage> messages = const {},
+    final Map<String, TimelineItem> messages = const {},
     this.loading = const ChatRoomLoadingState.initial(),
     this.hasMore = true,
   }) : _messageList = messageList,
@@ -802,10 +802,10 @@ class _$ChatRoomStateImpl extends _ChatRoomState {
     return EqualUnmodifiableListView(_messageList);
   }
 
-  final Map<String, RoomMessage> _messages;
+  final Map<String, TimelineItem> _messages;
   @override
   @JsonKey()
-  Map<String, RoomMessage> get messages {
+  Map<String, TimelineItem> get messages {
     if (_messages is EqualUnmodifiableMapView) return _messages;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_messages);
@@ -858,7 +858,7 @@ class _$ChatRoomStateImpl extends _ChatRoomState {
 abstract class _ChatRoomState extends ChatRoomState {
   const factory _ChatRoomState({
     final List<String> messageList,
-    final Map<String, RoomMessage> messages,
+    final Map<String, TimelineItem> messages,
     final ChatRoomLoadingState loading,
     final bool hasMore,
   }) = _$ChatRoomStateImpl;
@@ -867,7 +867,7 @@ abstract class _ChatRoomState extends ChatRoomState {
   @override
   List<String> get messageList;
   @override
-  Map<String, RoomMessage> get messages;
+  Map<String, TimelineItem> get messages;
   @override
   ChatRoomLoadingState get loading;
   @override

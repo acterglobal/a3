@@ -19,8 +19,8 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem, TimelineItemContent,
-    TimelineItemKind, VirtualTimelineItem,
+    MembershipChange, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -1286,16 +1286,16 @@ impl TimelineVirtualItem {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RoomMessage {
+pub struct TimelineItem {
     item_type: String,
     event_item: Option<TimelineEventItem>,
     virtual_item: Option<TimelineVirtualItem>,
     unique_id: String,
 }
 
-impl RoomMessage {
+impl TimelineItem {
     pub(crate) fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
-        RoomMessage {
+        TimelineItem {
             item_type: "event".to_string(),
             event_item: Some(TimelineEventItem::new(event, my_id)),
             unique_id: match event.identifier() {
@@ -1307,7 +1307,7 @@ impl RoomMessage {
     }
 
     pub(crate) fn new_virtual_item(event: &VirtualTimelineItem, unique_id: String) -> Self {
-        RoomMessage {
+        TimelineItem {
             item_type: "virtual".to_string(),
             event_item: None,
             unique_id,
@@ -1353,14 +1353,16 @@ impl RoomMessage {
     }
 }
 
-impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
-    fn from(v: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
+impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
+    fn from(v: (Arc<SdkTimelineItem>, OwnedUserId)) -> TimelineItem {
         let (item, user_id) = v;
         let unique_id = item.unique_id();
         match item.kind() {
-            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(user_id, event_item),
+            TimelineItemKind::Event(event_item) => {
+                TimelineItem::new_event_item(user_id, event_item)
+            }
             TimelineItemKind::Virtual(virtual_item) => {
-                RoomMessage::new_virtual_item(virtual_item, unique_id.0.clone())
+                TimelineItem::new_virtual_item(virtual_item, unique_id.0.clone())
             }
         }
     }

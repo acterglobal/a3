@@ -1056,7 +1056,7 @@ object TimelineVirtualItem {
 }
 
 /// A room Message metadata and content
-object RoomMessage {
+object TimelineItem {
     /// one of event/virtual
     fn item_type() -> string;
 
@@ -1128,18 +1128,18 @@ object ReactionRecord {
     fn sent_by_me() -> bool;
 }
 
-object RoomMessageDiff {
+object TimelineItemDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
     /// for Append/Reset
-    fn values() -> Option<Vec<RoomMessage>>;
+    fn values() -> Option<Vec<TimelineItem>>;
 
     /// for Insert/Set/Remove
     fn index() -> Option<usize>;
 
     /// for Insert/Set/PushBack/PushFront
-    fn value() -> Option<RoomMessage>;
+    fn value() -> Option<TimelineItem>;
 }
 
 // enum RoomNotificationMode {
@@ -1373,10 +1373,10 @@ object MsgDraft {
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn messages_stream() -> Stream<RoomMessageDiff>;
+    fn messages_stream() -> Stream<TimelineItemDiff>;
 
     /// get the specific message identified by the event_id
-    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+    fn get_message(event_id: string) -> Future<Result<TimelineItem>>;
 
     /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -1455,7 +1455,7 @@ object Convo {
     fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<RoomMessage>;
+    fn latest_message() -> Option<TimelineItem>;
 
     /// Latest message timestamp or 0
     fn latest_message_ts() -> u64;

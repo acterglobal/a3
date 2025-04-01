@@ -32,7 +32,7 @@ final chatMessagesStateProvider = StateNotifierProvider.family<
   String
 >((ref, roomId) => ChatRoomMessagesNotifier(ref: ref, roomId: roomId));
 
-final chatRoomMessageProvider = StateProvider.family<RoomMessage?, RoomMsgId>((
+final chatRoomMessageProvider = StateProvider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -71,7 +71,7 @@ final renderableChatMessagesProvider = StateProvider.autoDispose
       }).toList();
     });
 
-final _getNextMessageProvider = Provider.family<RoomMessage?, RoomMsgId>((
+final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -86,7 +86,7 @@ final _getNextMessageProvider = Provider.family<RoomMessage?, RoomMsgId>((
   );
 });
 
-final _getPreviousMessageProvider = Provider.family<RoomMessage?, RoomMsgId>((
+final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {

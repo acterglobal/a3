@@ -1,4 +1,4 @@
-use acter::api::RoomMessage;
+use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -133,7 +133,7 @@ async fn edit_text_msg() -> Result<()> {
     Ok(())
 }
 
-fn match_text_msg(msg: &RoomMessage, body: &str, modified: bool) -> Option<String> {
+fn match_text_msg(msg: &TimelineItem, body: &str, modified: bool) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
@@ -293,7 +293,7 @@ async fn edit_image_msg() -> Result<()> {
 }
 
 fn match_image_msg(
-    msg: &RoomMessage,
+    msg: &TimelineItem,
     content_type: &str,
     modified: bool,
 ) -> Option<(String, String)> {

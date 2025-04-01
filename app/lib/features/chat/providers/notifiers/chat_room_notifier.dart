@@ -18,7 +18,7 @@ final _log = Logger('a3::chat::room_notifier');
 
 class PostProcessItem {
   final types.Message message;
-  final RoomMessage event;
+  final TimelineItem event;
 
   const PostProcessItem(this.event, this.message);
 }
@@ -27,8 +27,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   final Ref ref;
   final String roomId;
   late TimelineStream timeline;
-  late Stream<RoomMessageDiff> _listener;
-  late StreamSubscription<RoomMessageDiff> _poller;
+  late Stream<TimelineItemDiff> _listener;
+  late StreamSubscription<TimelineItemDiff> _poller;
 
   ChatRoomNotifier({required this.roomId, required this.ref})
     : super(const ChatRoomState()) {
@@ -119,8 +119,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     return message.metadata?['repliedTo'];
   }
 
-  // parses `RoomMessage` event to `types.Message` and updates messages list
-  Future<void> handleDiff(RoomMessageDiff diff) async {
+  // parses `TimelineItem` event to `types.Message` and updates messages list
+  Future<void> handleDiff(TimelineItemDiff diff) async {
     List<PostProcessItem> postProcessing = [];
     switch (diff.action()) {
       case 'Append':
@@ -129,7 +129,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           _log.severe('On append action, values should be available');
           return;
         }
-        List<RoomMessage> messages = values.toList();
+        List<TimelineItem> messages = values.toList();
         List<types.Message> messagesToAdd = [];
         for (final m in messages) {
           final message = parseMessage(m);
@@ -265,7 +265,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
   Future<void> fetchOriginalContent(String originalId, String msgId) async {
-    RoomMessage roomMsg;
+    TimelineItem roomMsg;
     try {
       roomMsg = await timeline.getMessage(originalId);
     } catch (e, s) {
@@ -274,7 +274,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
 
     // reply is allowed for only EventItem not VirtualItem
-    // user should be able to get original event as RoomMessage
+    // user should be able to get original event as TimelineItem
     TimelineEventItem orgEventItem = roomMsg.eventItem().expect(
       'room msg should have event item',
     );
@@ -453,8 +453,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
   }
 
-  // maps [RoomMessage] to [types.Message].
-  types.Message parseMessage(RoomMessage message) {
+  // maps [TimelineItem] to [types.Message].
+  types.Message parseMessage(TimelineItem message) {
     TimelineVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
       switch (virtualItem.eventType()) {

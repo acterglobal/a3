@@ -40,15 +40,15 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 void main() {
   group('Chat-NG messages test', () {
     group('show avatars provider tests ', () {
-      final userMsgA1 = MockRoomMessage(
+      final userMsgA1 = MockTimelineItem(
         id: 'A1',
         mockEventItem: MockTimelineEventItem(mockSender: 'user-1'),
       );
-      final userMsgA2 = MockRoomMessage(
+      final userMsgA2 = MockTimelineItem(
         id: 'A2',
         mockEventItem: MockTimelineEventItem(mockSender: 'user-1'),
       );
-      final userMsgB1 = MockRoomMessage(
+      final userMsgB1 = MockTimelineItem(
         id: 'B1',
         mockEventItem: MockTimelineEventItem(mockSender: 'user-2'),
       );

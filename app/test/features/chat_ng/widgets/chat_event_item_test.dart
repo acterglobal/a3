@@ -10,8 +10,8 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         EventSendState,
         MsgContent,
         ReactionRecord,
-        RoomMessage,
-        TimelineEventItem;
+        TimelineEventItem,
+        TimelineItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -75,11 +75,11 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   bool wasEdited() => false;
 }
 
-class MockRoomMessage extends Mock implements RoomMessage {
+class MockTimelineItem extends Mock implements TimelineItem {
   final String _id;
   final TimelineEventItem? _eventItem;
 
-  MockRoomMessage({required String id, TimelineEventItem? eventItem})
+  MockTimelineItem({required String id, TimelineEventItem? eventItem})
     : _id = id,
       _eventItem = eventItem;
 
@@ -103,7 +103,7 @@ void main() {
   group('ChatEvent Tests', () {
     late MockMsgContent mockContent;
     late MockTimelineEventItem mockEventItem;
-    late MockRoomMessage mockRoomMessage;
+    late MockTimelineItem mockTimelineItem;
 
     setUp(() {
       mockContent = MockMsgContent(bodyText: 'Test message');
@@ -112,7 +112,7 @@ void main() {
         sender: 'test-user',
         msgContent: mockContent,
       );
-      mockRoomMessage = MockRoomMessage(
+      mockTimelineItem = MockTimelineItem(
         id: 'test-message',
         eventItem: mockEventItem,
       );
@@ -125,7 +125,7 @@ void main() {
       ),
       chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
         if (roomMsgId.uniqueId == 'test-message') {
-          return mockRoomMessage;
+          return mockTimelineItem;
         }
         return null;
       }),
@@ -162,7 +162,7 @@ void main() {
         eventType: 'unknown.type',
         sender: 'test-user',
       );
-      final unknownMessage = MockRoomMessage(
+      final unknownMessage = MockTimelineItem(
         id: 'test-message',
         eventItem: unknownEventItem,
       );
@@ -198,7 +198,7 @@ void main() {
           msgContent: mockContent,
           sendState: mockSendState,
         );
-        final sendingMessage = MockRoomMessage(
+        final sendingMessage = MockTimelineItem(
           id: 'test-message',
           eventItem: sendingEventItem,
         );
@@ -230,7 +230,7 @@ void main() {
           msgContent: mockContent,
           sendState: mockSendState,
         );
-        final failedMessage = MockRoomMessage(
+        final failedMessage = MockTimelineItem(
           id: 'test-message',
           eventItem: failedEventItem,
         );
@@ -264,7 +264,7 @@ void main() {
           msgContent: mockContent,
           sendState: null, // No sending state indicates message was sent
         );
-        final sentMessage = MockRoomMessage(
+        final sentMessage = MockTimelineItem(
           id: 'test-message',
           eventItem: sentEventItem,
         );
@@ -298,7 +298,7 @@ void main() {
           msgContent: mockContent,
           sendState: null, // No sending state indicates message was sent
         );
-        final sentMessage = MockRoomMessage(
+        final sentMessage = MockTimelineItem(
           id: 'test-message',
           eventItem: sentEventItem,
         );
@@ -332,7 +332,7 @@ void main() {
           msgContent: mockContent,
           sendState: null, // No sending state indicates message was sent
         );
-        final sentMessage = MockRoomMessage(
+        final sentMessage = MockTimelineItem(
           id: 'test-message',
           eventItem: sentEventItem,
         );
@@ -375,7 +375,7 @@ void main() {
             ),
             chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
               if (roomMsgId.uniqueId == 'test-message') {
-                return mockRoomMessage;
+                return mockTimelineItem;
               }
               return null;
             }),
@@ -405,7 +405,7 @@ void main() {
             ),
             chatRoomMessageProvider.overrideWith((ref, roomMsgId) {
               if (roomMsgId.uniqueId == 'test-message') {
-                return mockRoomMessage;
+                return mockTimelineItem;
               }
               return null;
             }),

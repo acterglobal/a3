@@ -35,7 +35,7 @@ void main() {
       mockMsgContent: mockMsgContent,
       mockMsgType: 'm.text',
     );
-    final roomMsg1 = MockRoomMessage(
+    final roomMsg1 = MockTimelineItem(
       id: 'test-messageId-1',
       mockEventItem: mockEventItem,
     );

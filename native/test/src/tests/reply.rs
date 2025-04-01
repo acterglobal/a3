@@ -1,4 +1,4 @@
-use acter::api::RoomMessage;
+use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -150,7 +150,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
+fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");

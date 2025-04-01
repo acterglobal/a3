@@ -7,13 +7,13 @@ import 'package:mocktail/mocktail.dart';
 
 import 'messages/chat_message_test.dart';
 
-class MockedRoomMessageDiff extends Mock implements RoomMessageDiff {
+class MockedTimelineItemDiff extends Mock implements TimelineItemDiff {
   final String act;
   final int? idx;
-  final List<MockRoomMessage>? messages;
-  final MockRoomMessage? message;
+  final List<MockTimelineItem>? messages;
+  final MockTimelineItem? message;
 
-  MockedRoomMessageDiff({
+  MockedTimelineItemDiff({
     required this.act,
     this.idx,
     this.messages,
@@ -27,28 +27,28 @@ class MockedRoomMessageDiff extends Mock implements RoomMessageDiff {
   String action() => act;
 
   @override
-  MockFfiListRoomMessage? values() =>
-      messages != null ? MockFfiListRoomMessage(messages: messages!) : null;
+  MockFfiListTimelineItem? values() =>
+      messages != null ? MockFfiListTimelineItem(messages: messages!) : null;
 
   @override
-  MockRoomMessage? value() => message;
+  MockTimelineItem? value() => message;
 }
 
-class MockFfiListRoomMessage extends Mock implements FfiListRoomMessage {
-  final List<MockRoomMessage> messages;
+class MockFfiListTimelineItem extends Mock implements FfiListTimelineItem {
+  final List<MockTimelineItem> messages;
 
-  MockFfiListRoomMessage({required this.messages});
+  MockFfiListTimelineItem({required this.messages});
 
   @override
-  List<MockRoomMessage> toList({bool growable = false}) =>
+  List<MockTimelineItem> toList({bool growable = false}) =>
       messages.toList(growable: growable);
 }
 
-class MockRoomMessage extends Mock implements RoomMessage {
+class MockTimelineItem extends Mock implements TimelineItem {
   final String id;
   final MockTimelineEventItem? mockEventItem;
 
-  MockRoomMessage({required this.id, this.mockEventItem});
+  MockTimelineItem({required this.id, this.mockEventItem});
 
   @override
   String uniqueId() => id;
@@ -67,7 +67,7 @@ void main() {
   group('Diff Applier', () {
     group('reset', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(act: 'Reset', messages: []);
+        final mockDiff = MockedTimelineItemDiff(act: 'Reset', messages: []);
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList.length, 0);
         expect(newState.messages.length, 0);
@@ -76,14 +76,14 @@ void main() {
       test('with values', () {
         final startingState = ChatRoomState(
           messageList: ['d'],
-          messages: {'d': MockRoomMessage(id: 'd')},
+          messages: {'d': MockTimelineItem(id: 'd')},
         );
         final messages = [
-          MockRoomMessage(id: 'a'),
-          MockRoomMessage(id: 'b'),
-          MockRoomMessage(id: 'c'),
+          MockTimelineItem(id: 'a'),
+          MockTimelineItem(id: 'b'),
+          MockTimelineItem(id: 'c'),
         ];
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Reset',
           messages: messages,
         );
@@ -97,7 +97,7 @@ void main() {
 
     group('clear', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(act: 'Clear');
+        final mockDiff = MockedTimelineItemDiff(act: 'Clear');
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList.length, 0);
         expect(newState.messages.length, 0);
@@ -106,9 +106,9 @@ void main() {
       test('had values', () {
         final startingState = ChatRoomState(
           messageList: ['d'],
-          messages: {'d': MockRoomMessage(id: 'd')},
+          messages: {'d': MockTimelineItem(id: 'd')},
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'Clear');
+        final mockDiff = MockedTimelineItemDiff(act: 'Clear');
         final newState = handleDiff(startingState, null, mockDiff);
         expect(newState.messageList, []);
         expect(newState.messages.length, 0);
@@ -117,7 +117,7 @@ void main() {
 
     group('PopFront', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(act: 'PopFront');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopFront');
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList.length, 0);
         expect(newState.messages.length, 0);
@@ -127,11 +127,11 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'PopFront');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopFront');
         final newState = handleDiff(startingState, null, mockDiff);
         expect(newState.messageList, ['d']);
         expect(newState.messages.length, 1);
@@ -141,7 +141,7 @@ void main() {
 
     group('PopBack', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(act: 'PopBack');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopBack');
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList.length, 0);
         expect(newState.messages.length, 0);
@@ -151,11 +151,11 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'PopBack');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopBack');
         final newState = handleDiff(startingState, null, mockDiff);
         expect(newState.messageList, ['b']);
         expect(newState.messages.length, 1);
@@ -168,16 +168,16 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b', 'e', 'f'],
           messages: {
-            'b': MockRoomMessage(id: 'b'),
-            'd': MockRoomMessage(id: 'd'),
-            'e': MockRoomMessage(id: 'e'),
-            'f': MockRoomMessage(id: 'f'),
+            'b': MockTimelineItem(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'e': MockTimelineItem(id: 'e'),
+            'f': MockTimelineItem(id: 'f'),
           },
         );
         final newState = handleDiff(
           startingState,
           null,
-          MockedRoomMessageDiff(act: 'Remove', idx: 0),
+          MockedTimelineItemDiff(act: 'Remove', idx: 0),
         );
         // reversed
         expect(newState.messageList, ['d', 'b', 'e']);
@@ -187,7 +187,7 @@ void main() {
         final secondNew = handleDiff(
           startingState,
           null,
-          MockedRoomMessageDiff(act: 'Remove', idx: 1),
+          MockedTimelineItemDiff(act: 'Remove', idx: 1),
         );
         // reversed
         expect(secondNew.messageList, ['d', 'b', 'f']);
@@ -197,7 +197,7 @@ void main() {
         final thirdNew = handleDiff(
           startingState,
           null,
-          MockedRoomMessageDiff(act: 'Remove', idx: 2),
+          MockedTimelineItemDiff(act: 'Remove', idx: 2),
         );
         // reversed
         expect(thirdNew.messageList, ['d', 'e', 'f']);
@@ -211,18 +211,18 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['b', 'd', 'e', 'f'],
           messages: {
-            'b': MockRoomMessage(id: 'b'),
-            'd': MockRoomMessage(id: 'd'),
-            'e': MockRoomMessage(id: 'e'),
-            'f': MockRoomMessage(id: 'f'),
+            'b': MockTimelineItem(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'e': MockTimelineItem(id: 'e'),
+            'f': MockTimelineItem(id: 'f'),
           },
         );
         final newState = handleDiff(
           startingState,
           null,
-          MockedRoomMessageDiff(
+          MockedTimelineItemDiff(
             act: 'Append',
-            messages: [MockRoomMessage(id: 'g'), MockRoomMessage(id: 'h')],
+            messages: [MockTimelineItem(id: 'g'), MockTimelineItem(id: 'h')],
           ),
         );
         // reversed
@@ -233,9 +233,9 @@ void main() {
         final secondState = handleDiff(
           startingState,
           null,
-          MockedRoomMessageDiff(
+          MockedTimelineItemDiff(
             act: 'Append',
-            messages: [MockRoomMessage(id: 'a')],
+            messages: [MockTimelineItem(id: 'a')],
           ),
         );
         // reversed
@@ -247,9 +247,9 @@ void main() {
 
     group('PushBack', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushBack',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList, ['a']);
@@ -260,13 +260,13 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushBack',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(startingState, null, mockDiff);
         // reversed
@@ -277,9 +277,9 @@ void main() {
 
     group('PushFront', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushFront',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList, ['a']);
@@ -290,13 +290,13 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushFront',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(startingState, null, mockDiff);
         // reversed
@@ -307,10 +307,10 @@ void main() {
 
     group('Insert', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Insert',
           idx: 0,
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList, ['a']);
@@ -321,14 +321,14 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Insert',
           idx: 1,
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(startingState, null, mockDiff);
         expect(newState.messageList, ['d', 'a', 'b']);
@@ -338,10 +338,10 @@ void main() {
 
     group('Set', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Set',
           idx: 0,
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList, ['a']);
@@ -352,15 +352,15 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'a', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'a': MockRoomMessage(id: 'a'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'a': MockTimelineItem(id: 'a'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Set',
           idx: 1,
-          message: MockRoomMessage(id: 'a1'),
+          message: MockTimelineItem(id: 'a1'),
         );
         final newState = handleDiff(startingState, null, mockDiff);
         expect(newState.messageList, ['d', 'a1', 'b']);
@@ -370,7 +370,7 @@ void main() {
 
     group('Truncate', () {
       test('on empty', () {
-        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 0);
+        final mockDiff = MockedTimelineItemDiff(act: 'Truncate', idx: 0);
         final newState = handleDiff(const ChatRoomState(), null, mockDiff);
         expect(newState.messageList, []);
         expect(newState.messages.length, 0);
@@ -380,13 +380,13 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'a', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'a': MockRoomMessage(id: 'a'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'a': MockTimelineItem(id: 'a'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
         // reversed
-        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 2);
+        final mockDiff = MockedTimelineItemDiff(act: 'Truncate', idx: 2);
         final newState = handleDiff(startingState, null, mockDiff);
 
         expect(newState.messageList, ['d']);
@@ -399,7 +399,7 @@ void main() {
     group('reset', () {
       testWidgets('on empty', (t) async {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(act: 'Reset', messages: []);
+        final mockDiff = MockedTimelineItemDiff(act: 'Reset', messages: []);
         final newState = handleDiff(
           const ChatRoomState(),
           mockAnimatedState,
@@ -415,14 +415,14 @@ void main() {
         final mockAnimatedState = MockAnimatedListState();
         final startingState = ChatRoomState(
           messageList: ['d'],
-          messages: {'d': MockRoomMessage(id: 'd')},
+          messages: {'d': MockTimelineItem(id: 'd')},
         );
         final messages = [
-          MockRoomMessage(id: 'a'),
-          MockRoomMessage(id: 'b'),
-          MockRoomMessage(id: 'c'),
+          MockTimelineItem(id: 'a'),
+          MockTimelineItem(id: 'b'),
+          MockTimelineItem(id: 'c'),
         ];
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Reset',
           messages: messages,
         );
@@ -439,7 +439,7 @@ void main() {
     group('clear', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(act: 'Clear');
+        final mockDiff = MockedTimelineItemDiff(act: 'Clear');
         final newState = handleDiff(
           const ChatRoomState(),
           mockAnimatedState,
@@ -457,9 +457,9 @@ void main() {
         final mockAnimatedState = MockAnimatedListState();
         final startingState = ChatRoomState(
           messageList: ['d'],
-          messages: {'d': MockRoomMessage(id: 'd')},
+          messages: {'d': MockTimelineItem(id: 'd')},
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'Clear');
+        final mockDiff = MockedTimelineItemDiff(act: 'Clear');
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         expect(newState.messageList, []);
         expect(newState.messages.length, 0);
@@ -471,7 +471,7 @@ void main() {
     group('PopFront', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(act: 'PopFront');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopFront');
         final newState = handleDiff(
           const ChatRoomState(),
           mockAnimatedState,
@@ -489,11 +489,11 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'PopFront');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopFront');
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         // reversed
         expect(newState.messageList, ['d']);
@@ -512,7 +512,7 @@ void main() {
     group('PopBack', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(act: 'PopBack');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopBack');
         final newState = handleDiff(
           const ChatRoomState(),
           mockAnimatedState,
@@ -531,11 +531,11 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'PopBack');
+        final mockDiff = MockedTimelineItemDiff(act: 'PopBack');
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         // reversed
         expect(newState.messageList, ['b']);
@@ -557,16 +557,16 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b', 'e', 'f'],
           messages: {
-            'b': MockRoomMessage(id: 'b'),
-            'd': MockRoomMessage(id: 'd'),
-            'e': MockRoomMessage(id: 'e'),
-            'f': MockRoomMessage(id: 'f'),
+            'b': MockTimelineItem(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'e': MockTimelineItem(id: 'e'),
+            'f': MockTimelineItem(id: 'f'),
           },
         );
         final newState = handleDiff(
           startingState,
           mockAnimatedState,
-          MockedRoomMessageDiff(act: 'Remove', idx: 0),
+          MockedTimelineItemDiff(act: 'Remove', idx: 0),
         );
         // reversed
         expect(newState.messageList, ['d', 'b', 'e']);
@@ -584,7 +584,7 @@ void main() {
         final secondNew = handleDiff(
           startingState,
           mockAnimatedState,
-          MockedRoomMessageDiff(act: 'Remove', idx: 1),
+          MockedTimelineItemDiff(act: 'Remove', idx: 1),
         );
         // reversed
         expect(secondNew.messageList, ['d', 'b', 'f']);
@@ -603,7 +603,7 @@ void main() {
         final thirdNew = handleDiff(
           startingState,
           mockAnimatedState,
-          MockedRoomMessageDiff(act: 'Remove', idx: 2),
+          MockedTimelineItemDiff(act: 'Remove', idx: 2),
         );
         // reversed
         expect(thirdNew.messageList, ['d', 'e', 'f']);
@@ -625,18 +625,18 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['b', 'd', 'e', 'f'],
           messages: {
-            'b': MockRoomMessage(id: 'b'),
-            'd': MockRoomMessage(id: 'd'),
-            'e': MockRoomMessage(id: 'e'),
-            'f': MockRoomMessage(id: 'f'),
+            'b': MockTimelineItem(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'e': MockTimelineItem(id: 'e'),
+            'f': MockTimelineItem(id: 'f'),
           },
         );
         final newState = handleDiff(
           startingState,
           mockAnimatedState,
-          MockedRoomMessageDiff(
+          MockedTimelineItemDiff(
             act: 'Append',
-            messages: [MockRoomMessage(id: 'g'), MockRoomMessage(id: 'h')],
+            messages: [MockTimelineItem(id: 'g'), MockTimelineItem(id: 'h')],
           ),
         );
         // reversed
@@ -655,9 +655,9 @@ void main() {
         final secondState = handleDiff(
           startingState,
           mockAnimatedState,
-          MockedRoomMessageDiff(
+          MockedTimelineItemDiff(
             act: 'Append',
-            messages: [MockRoomMessage(id: 'a')],
+            messages: [MockTimelineItem(id: 'a')],
           ),
         );
         expect(secondState.messageList, ['a', 'b', 'd', 'e', 'f']);
@@ -675,9 +675,9 @@ void main() {
     group('PushBack', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushBack',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(
           const ChatRoomState(),
@@ -699,13 +699,13 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushBack',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         // reversed
@@ -724,9 +724,9 @@ void main() {
     group('PushFront', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushFront',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(
           const ChatRoomState(),
@@ -748,13 +748,13 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'PushFront',
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         expect(newState.messageList, ['d', 'b', 'a']);
@@ -771,10 +771,10 @@ void main() {
     group('Insert', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Insert',
           idx: 0,
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(
           const ChatRoomState(),
@@ -796,14 +796,14 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Insert',
           idx: 1,
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         expect(newState.messageList, ['d', 'a', 'b']);
@@ -820,10 +820,10 @@ void main() {
     group('Set', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Set',
           idx: 0,
-          message: MockRoomMessage(id: 'a'),
+          message: MockTimelineItem(id: 'a'),
         );
         final newState = handleDiff(
           const ChatRoomState(),
@@ -845,15 +845,15 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'a', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'a': MockRoomMessage(id: 'a'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'a': MockTimelineItem(id: 'a'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(
+        final mockDiff = MockedTimelineItemDiff(
           act: 'Set',
           idx: 1,
-          message: MockRoomMessage(id: 'a1'),
+          message: MockTimelineItem(id: 'a1'),
         );
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         expect(newState.messageList, ['d', 'a1', 'b']);
@@ -867,7 +867,7 @@ void main() {
     group('Truncate', () {
       test('on empty', () {
         final mockAnimatedState = MockAnimatedListState();
-        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 0);
+        final mockDiff = MockedTimelineItemDiff(act: 'Truncate', idx: 0);
         final newState = handleDiff(
           const ChatRoomState(),
           mockAnimatedState,
@@ -882,12 +882,12 @@ void main() {
         final startingState = ChatRoomState(
           messageList: ['d', 'a', 'b'],
           messages: {
-            'd': MockRoomMessage(id: 'd'),
-            'a': MockRoomMessage(id: 'a'),
-            'b': MockRoomMessage(id: 'b'),
+            'd': MockTimelineItem(id: 'd'),
+            'a': MockTimelineItem(id: 'a'),
+            'b': MockTimelineItem(id: 'b'),
           },
         );
-        final mockDiff = MockedRoomMessageDiff(act: 'Truncate', idx: 2);
+        final mockDiff = MockedTimelineItemDiff(act: 'Truncate', idx: 2);
         final newState = handleDiff(startingState, mockAnimatedState, mockDiff);
         // reversed
         expect(newState.messageList, ['d']);
