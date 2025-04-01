@@ -61,7 +61,8 @@ Future<void> shareToOnePassword({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'onepassword://';
+  final url =
+      'onepassword://create?title=${Uri.encodeComponent("Acter Backup")}&text=${Uri.encodeComponent(text)}';
   await _shareTo(context: context, url: url);
 }
 
@@ -69,7 +70,11 @@ Future<void> shareToBitwarden({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'bitwarden://';
+  final url =
+      'bitwarden://add-item?'
+      'type=note&'
+      'name=${Uri.encodeComponent("Acter Backup")}&'
+      'notes=${Uri.encodeComponent(text)}';
   await _shareTo(context: context, url: url);
 }
 
@@ -77,16 +82,24 @@ Future<void> shareToKeeper({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'keeper://';
+  final url =
+      'keeper://add?'
+      'title=${Uri.encodeComponent("Acter Backup")}&'
+      'notes=${Uri.encodeComponent(text)}&'
+      'type=note';
   await _shareTo(context: context, url: url);
 }
-
 
 Future<void> shareToLastPass({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'lastpass://';
+  final url =
+      'lastpass://create?'
+      'type=note&'
+      'name=${Uri.encodeComponent("Acter Backup")}&'
+      'notes=${Uri.encodeComponent(text)}&'
+      'source=Acter';
   await _shareTo(context: context, url: url);
 }
 
@@ -94,7 +107,11 @@ Future<void> shareToEnpass({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'enpass://';
+  final url =
+      'enpass://add?'
+      'title=${Uri.encodeComponent("Acter Backup")}&'
+      'note=${Uri.encodeComponent(text)}&'
+      'category=secure-note';
   await _shareTo(context: context, url: url);
 }
 
@@ -102,8 +119,15 @@ Future<void> shareToProtonPass({
   required BuildContext context,
   required String text,
 }) async {
-  final url = 'protonpass://';
+  final url =
+      Platform.isAndroid
+          ? 'ch.protonmail.pass://add?' 
+              'type=note&' 
+              'title=${Uri.encodeComponent("Acter Backup")}&' 
+              'note=${Uri.encodeComponent(text)}'
+          : 'protonpass://add?' 
+              'type=note&' 
+              'title=${Uri.encodeComponent("Acter Backup")}&' 
+              'note=${Uri.encodeComponent(text)}';
   await _shareTo(context: context, url: url);
 }
-
-
