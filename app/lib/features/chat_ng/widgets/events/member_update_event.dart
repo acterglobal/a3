@@ -1,14 +1,18 @@
+import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/room_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MemberUpdateEvent extends ConsumerWidget {
   final bool isMe;
   final String roomId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   const MemberUpdateEvent({
     super.key,
     required this.isMe,
@@ -34,84 +38,112 @@ class MemberUpdateEvent extends ConsumerWidget {
   String getStateEventStr(
     BuildContext context,
     WidgetRef ref,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
     final lang = L10n.of(context);
+    final myId = ref.watch(myUserIdStrProvider);
 
-    final senderId = item.sender();
     final eventType = item.eventType();
-    final msgType = item.msgType();
-    final firstName =
+    final senderId = item.sender();
+    final senderName =
         ref
             .watch(
               memberDisplayNameProvider((roomId: roomId, userId: senderId)),
             )
-            .valueOrNull;
-    final msgContent = item.msgContent()?.body() ?? '';
+            .valueOrNull ??
+        senderId;
 
-    return switch (eventType) {
-      'ProfileChange' => switch (msgType) {
-        'ChangedDisplayName' =>
-          '${lang.chatDisplayNameUpdate(firstName ?? senderId)} $msgContent',
-        'SetDisplayName' =>
-          '${lang.chatDisplayNameSet(firstName ?? senderId)}: $msgContent',
-        'RemoveDisplayName' => lang.chatDisplayNameUnset(firstName ?? senderId),
-        'ChangeProfileAvatar' => lang.chatUserAvatarChange(
-          firstName ?? senderId,
-        ),
-        _ => msgContent,
-      },
-      _ => switch (msgType) {
-        'Joined' =>
-          isMe
-              ? lang.chatYouJoined
-              : firstName != null
-              ? lang.chatJoinedDisplayName(firstName)
-              : lang.chatJoinedUserId(senderId),
-        'Left' =>
-          isMe ? lang.chatYouLeft : lang.chatUserLeft(firstName ?? senderId),
-        'Banned' =>
-          isMe
-              ? lang.chatYouBanned(msgContent)
-              : lang.chatUserBanned(firstName ?? senderId, msgContent),
-        'Unbanned' =>
-          isMe
-              ? lang.chatYouUnbanned(msgContent)
-              : lang.chatUserUnbanned(firstName ?? senderId, msgContent),
-        'Kicked' =>
-          isMe
-              ? lang.chatYouKicked(msgContent)
-              : lang.chatUserKicked(firstName ?? senderId, msgContent),
-        'KickedAndBanned' =>
-          isMe
-              ? lang.chatYouKickedBanned(msgContent)
-              : lang.chatUserKickedBanned(firstName ?? senderId, msgContent),
-        'InvitationAccepted' =>
-          isMe
-              ? lang.chatYouAcceptedInvite
-              : firstName != null
-              ? lang.chatInvitationAcceptedDisplayName(firstName)
-              : lang.chatInvitationAcceptedUserId(senderId),
-        'Invited' =>
-          (() {
-            final inviteeId = msgContent;
-            final inviteeName =
-                ref
-                    .watch(
-                      memberDisplayNameProvider((
-                        roomId: roomId,
-                        userId: inviteeId,
-                      )),
-                    )
-                    .valueOrNull;
-            return isMe
-                ? lang.chatYouInvited(inviteeName ?? inviteeId)
-                : firstName != null && inviteeName != null
-                ? lang.chatInvitedDisplayName(inviteeName, firstName)
-                : lang.chatInvitedUserId(inviteeId, senderId);
-          })(),
-        _ => msgContent,
-      },
-    };
+    if (eventType == 'membershipChange') {
+      final content = item.membershipChange().expect(
+        'failed to get content of membership change',
+      );
+      final change = content.change().expect(
+        'MembershipChange should have change mode',
+      );
+      final userId = content.userId().toString();
+      final userName =
+          ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
+              )
+              .valueOrNull ??
+          simplifyUserId(userId) ??
+          userId;
+      final stateText = getStateOnMembershipChange(
+        lang,
+        change,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      );
+      if (stateText != null) return stateText;
+    } else if (eventType == 'profileChange') {
+      final content = item.profileChange().expect(
+        'failed to get content of profile change',
+      );
+      final userId = content.userId().toString();
+      final userName =
+          ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
+              )
+              .valueOrNull ??
+          simplifyUserId(userId) ??
+          userId;
+      Map<String, dynamic> metadata = {};
+      switch (content.displayNameChange()) {
+        case 'Changed':
+          metadata['displayName'] = {
+            'change': 'Changed',
+            'oldVal': content.displayNameOldVal(),
+            'newVal': content.displayNameNewVal(),
+          };
+          break;
+        case 'Unset':
+          metadata['displayName'] = {
+            'change': 'Unset',
+            'oldVal': content.displayNameOldVal(),
+          };
+          break;
+        case 'Set':
+          metadata['displayName'] = {
+            'change': 'Set',
+            'newVal': content.displayNameNewVal(),
+          };
+          break;
+      }
+      switch (content.avatarUrlChange()) {
+        case 'Changed':
+          metadata['avatarUrl'] = {
+            'change': 'Changed',
+            'oldVal': content.avatarUrlOldVal().toString(),
+            'newVal': content.avatarUrlNewVal().toString(),
+          };
+          break;
+        case 'Unset':
+          metadata['avatarUrl'] = {
+            'change': 'Unset',
+            'oldVal': content.avatarUrlOldVal().toString(),
+          };
+          break;
+        case 'Set':
+          metadata['avatarUrl'] = {
+            'change': 'Set',
+            'newVal': content.avatarUrlNewVal().toString(),
+          };
+          break;
+      }
+      final stateText = getStateOnProfileChange(
+        lang,
+        metadata,
+        myId,
+        userId,
+        userName,
+      );
+      if (stateText != null) return stateText;
+    }
+    return '';
   }
 }

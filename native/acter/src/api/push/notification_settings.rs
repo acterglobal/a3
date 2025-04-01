@@ -49,7 +49,7 @@ use urlencoding::encode;
 
 use crate::Client;
 
-use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, MsgContent, RUNTIME};
 
 pub(crate) fn room_notification_mode_name(input: &RoomNotificationMode) -> String {
     match input {

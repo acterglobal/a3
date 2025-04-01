@@ -1002,7 +1002,7 @@ object EventSendState {
 }
 
 /// A room Message metadata and content
-object RoomEventItem {
+object TimelineEventItem {
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -1022,8 +1022,80 @@ object RoomEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// covers text/image/audio/video/file/location/emote/sticker
-    fn msg_content() -> Option<MsgContent>;
+    /// covers text/image/audio/video/file/location/emote
+    fn message() -> Option<MsgContent>;
+
+    /// covers m.sticker
+    fn sticker() -> Option<Sticker>;
+
+    /// covers some of m.room.member
+    fn membership_change() -> Option<MembershipChange>;
+
+    /// covers some of m.room.member
+    fn profile_change() -> Option<ProfileChange>;
+
+    /// covers room state change
+    fn policy_rule_room() -> Option<PolicyRuleRoomContent>;
+
+    /// covers room state change
+    fn policy_rule_server() -> Option<PolicyRuleServerContent>;
+
+    /// covers room state change
+    fn policy_rule_user() -> Option<PolicyRuleUserContent>;
+
+    /// covers room state change
+    fn room_aliases() -> Option<RoomAliasesContent>;
+
+    /// covers room state change
+    fn room_avatar() -> Option<RoomAvatarContent>;
+
+    /// covers room state change
+    fn room_canonical_alias() -> Option<RoomCanonicalAliasContent>;
+
+    /// covers room state change
+    fn room_create() -> Option<RoomCreateContent>;
+
+    /// covers room state change
+    fn room_encryption() -> Option<RoomEncryptionContent>;
+
+    /// covers room state change
+    fn room_guest_access() -> Option<RoomGuestAccessContent>;
+
+    /// covers room state change
+    fn room_history_visibility() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers room state change
+    fn room_join_rules() -> Option<RoomJoinRulesContent>;
+
+    /// covers room state change
+    fn room_name() -> Option<RoomNameContent>;
+
+    /// covers room state change
+    fn room_pinned_events() -> Option<RoomPinnedEventsContent>;
+
+    /// covers room state change
+    fn room_power_levels() -> Option<RoomPowerLevelsContent>;
+
+    /// covers room state change
+    fn room_server_acl() -> Option<RoomServerAclContent>;
+
+    /// covers room state change
+    fn room_third_party_invite() -> Option<RoomThirdPartyInviteContent>;
+
+    /// covers room state change
+    fn room_tombstone() -> Option<RoomTombstoneContent>;
+
+    /// covers room state change
+    fn room_topic() -> Option<RoomTopicContent>;
+
+    /// covers room state change
+    fn space_child() -> Option<SpaceChildContent>;
+
+    /// covers room state change
+    fn space_parent() -> Option<SpaceParentContent>;
+
+    /// covers m.poll.start
+    fn poll() -> Option<PollContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -1047,27 +1119,27 @@ object RoomEventItem {
     fn was_edited() -> bool;
 }
 
-object RoomVirtualItem {
+object TimelineVirtualItem {
     /// DayDivider or ReadMarker
     fn event_type() -> string;
 
     /// contains description text
-    fn desc() -> Option<string>;
+    fn description() -> Option<string>;
 }
 
 /// A room Message metadata and content
-object RoomMessage {
-    /// one of event/virtual
-    fn item_type() -> string;
+object TimelineItem {
+    /// whether it is virtual item, like read marker
+    fn is_virtual() -> bool;
 
     /// Unique ID of this event
     fn unique_id() -> string;
 
-    /// valid only if item_type is "event"
-    fn event_item() -> Option<RoomEventItem>;
+    /// valid only if is_virtual is false
+    fn event_item() -> Option<TimelineEventItem>;
 
-    /// valid only if item_type is "virtual"
-    fn virtual_item() -> Option<RoomVirtualItem>;
+    /// valid only if is_virtual is true
+    fn virtual_item() -> Option<TimelineVirtualItem>;
 }
 
 object MsgContent {
@@ -1117,6 +1189,50 @@ object MsgContent {
     fn url_previews() -> Vec<UrlPreview>;
 }
 
+object Sticker {
+    fn body() -> string;
+    fn source() -> MediaSource;
+    fn mimetype() -> Option<string>;
+    fn size() -> Option<u64>;
+    fn width() -> Option<u64>;
+    fn height() -> Option<u64>;
+}
+
+object MembershipChange {
+    /// The ID of the user whose profile changed.
+    fn user_id() -> UserId;
+
+    /// The membership change induced by this event.
+    fn change() -> Option<string>;
+}
+
+object ProfileChange {
+    /// The ID of the user whose profile changed
+    fn user_id() -> UserId;
+
+    /// The display name change induced by this event
+    fn display_name_change() -> Option<string>;
+
+    /// The old value of display name change
+    fn display_name_old_val() -> Option<string>;
+
+    /// The new value of display name change
+    fn display_name_new_val() -> Option<string>;
+
+    /// The avatar url change induced by this event
+    fn avatar_url_change() -> Option<string>;
+
+    /// The old value of avatar url change
+    fn avatar_url_old_val() -> Option<MxcUri>;
+
+    /// The new value of avatar url change
+    fn avatar_url_new_val() -> Option<MxcUri>;
+}
+
+object PollContent {
+    fn fallback_text() -> Option<string>;
+}
+
 object ReactionRecord {
     /// who sent reaction
     fn sender_id() -> UserId;
@@ -1128,18 +1244,18 @@ object ReactionRecord {
     fn sent_by_me() -> bool;
 }
 
-object RoomMessageDiff {
+object TimelineItemDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
     /// for Append/Reset
-    fn values() -> Option<Vec<RoomMessage>>;
+    fn values() -> Option<Vec<TimelineItem>>;
 
     /// for Insert/Set/Remove
     fn index() -> Option<usize>;
 
     /// for Insert/Set/PushBack/PushFront
-    fn value() -> Option<RoomMessage>;
+    fn value() -> Option<TimelineItem>;
 }
 
 // enum RoomNotificationMode {
@@ -1156,13 +1272,230 @@ object JoinRuleBuilder {
     fn add_room(room: string);
 }
 
-//  ########   #######   #######  ##     ##
-//  ##     ## ##     ## ##     ## ###   ###
-//  ##     ## ##     ## ##     ## #### ####
-//  ########  ##     ## ##     ## ## ### ##
-//  ##   ##   ##     ## ##     ## ##     ##
-//  ##    ##  ##     ## ##     ## ##     ##
-//  ##     ##  #######   #######  ##     ##
+
+//  ########   #######   #######  ##     ##     ######  ########    ###    ######## ########     ######  ##     ##    ###    ##    ##  ######   ######## 
+//  ##     ## ##     ## ##     ## ###   ###    ##    ##    ##      ## ##      ##    ##          ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       
+//  ##     ## ##     ## ##     ## #### ####    ##          ##     ##   ##     ##    ##          ##       ##     ##  ##   ##  ####  ## ##        ##       
+//  ########  ##     ## ##     ## ## ### ##     ######     ##    ##     ##    ##    ######      ##       ######### ##     ## ## ## ## ##   #### ######   
+//  ##   ##   ##     ## ##     ## ##     ##          ##    ##    #########    ##    ##          ##       ##     ## ######### ##  #### ##    ##  ##       
+//  ##    ##  ##     ## ##     ## ##     ##    ##    ##    ##    ##     ##    ##    ##          ##    ## ##     ## ##     ## ##   ### ##    ##  ##       
+//  ##     ##  #######   #######  ##     ##     ######     ##    ##     ##    ##    ########     ######  ##     ## ##     ## ##    ##  ######   ######## 
+
+
+object PolicyRuleRoomContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleServerContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleUserContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAliasesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
+}
+
+object RoomCanonicalAliasContent {
+    fn alias_change() -> Option<string>;
+    fn alias_new_val() -> Option<string>;
+    fn alias_old_val() -> Option<string>;
+
+    fn alt_aliases_change() -> Option<string>;
+    fn alt_aliases_new_val() -> Vec<string>;
+    fn alt_aliases_old_val() -> Option<Vec<string>>;
+}
+
+object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomJoinRulesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomNameContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomPinnedEventsContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomPowerLevelsContent {
+    fn ban_change() -> Option<string>;
+    fn ban_new_val() -> i64;
+    fn ban_old_val() -> Option<i64>;
+
+    fn events_change() -> Option<string>;
+
+    fn events_default_change() -> Option<string>;
+    fn events_default_new_val() -> i64;
+    fn events_default_old_val() -> Option<i64>;
+
+    fn invite_change() -> Option<string>;
+    fn invite_new_val() -> i64;
+    fn invite_old_val() -> Option<i64>;
+
+    fn kick_change() -> Option<string>;
+    fn kick_new_val() -> i64;
+    fn kick_old_val() -> Option<i64>;
+
+    fn notifications_change() -> Option<string>;
+    fn notifications_new_val() -> i64;
+    fn notifications_old_val() -> Option<i64>;
+
+    fn redact_change() -> Option<string>;
+    fn redact_new_val() -> i64;
+    fn redact_old_val() -> Option<i64>;
+
+    fn state_default_change() -> Option<string>;
+    fn state_default_new_val() -> i64;
+    fn state_default_old_val() -> Option<i64>;
+
+    fn users_change() -> Option<string>;
+
+    fn users_default_change() -> Option<string>;
+    fn users_default_new_val() -> i64;
+    fn users_default_old_val() -> Option<i64>;
+}
+
+object RoomServerAclContent {
+    fn allow_ip_literals_change() -> Option<string>;
+    fn allow_ip_literals_new_val() -> bool;
+    fn allow_ip_literals_old_val() -> Option<bool>;
+
+    fn allow_change() -> Option<string>;
+    fn allow_new_val() -> Vec<string>;
+    fn allow_old_val() -> Option<Vec<string>>;
+
+    fn deny_change() -> Option<string>;
+    fn deny_new_val() -> Vec<string>;
+    fn deny_old_val() -> Option<Vec<string>>;
+}
+
+object RoomThirdPartyInviteContent {
+    fn display_name_change() -> Option<string>;
+    fn display_name_new_val() -> string;
+    fn display_name_old_val() -> Option<string>;
+
+    fn key_validity_url_change() -> Option<string>;
+    fn key_validity_url_new_val() -> string;
+    fn key_validity_url_old_val() -> Option<string>;
+
+    fn public_key_change() -> Option<string>;
+}
+
+object RoomTombstoneContent {
+    fn body_change() -> Option<string>;
+    fn body_new_val() -> string;
+    fn body_old_val() -> Option<string>;
+
+    fn replacement_room_change() -> Option<string>;
+    fn replacement_room_new_val() -> string;
+    fn replacement_room_old_val() -> Option<string>;
+}
+
+object RoomTopicContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object SpaceChildContent {
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn order_change() -> Option<string>;
+    fn order_new_val() -> Option<string>;
+    fn order_old_val() -> Option<string>;
+
+    fn suggested_change() -> Option<string>;
+    fn suggested_new_val() -> bool;
+    fn suggested_old_val() -> Option<bool>;
+}
+
+object SpaceParentContent {
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn canonical_change() -> Option<string>;
+    fn canonical_new_val() -> bool;
+    fn canonical_old_val() -> Option<bool>;
+}
+
+
+//  ########   #######   #######  ##     ## 
+//  ##     ## ##     ## ##     ## ###   ### 
+//  ##     ## ##     ## ##     ## #### #### 
+//  ########  ##     ## ##     ## ## ### ## 
+//  ##   ##   ##     ## ##     ## ##     ## 
+//  ##    ##  ##     ## ##     ## ##     ## 
+//  ##     ##  #######   #######  ##     ## 
 
 
 /// Generic Room Properties
@@ -1373,10 +1706,10 @@ object MsgDraft {
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn messages_stream() -> Stream<RoomMessageDiff>;
+    fn messages_stream() -> Stream<TimelineItemDiff>;
 
     /// get the specific message identified by the event_id
-    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+    fn get_message(event_id: string) -> Future<Result<TimelineItem>>;
 
     /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -1455,7 +1788,7 @@ object Convo {
     fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<RoomMessage>;
+    fn latest_message() -> Option<TimelineItem>;
 
     /// Latest message timestamp or 0
     fn latest_message_ts() -> u64;
@@ -2266,20 +2599,6 @@ object ActerAppSettingsBuilder {
 //  ######### ##          ##     ##   ##   ##   ##     ##     ##  ##             ##
 //  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ##
 //  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######
-
-object MembershipChange {
-    /// user_id of the member that has changed
-    fn user_id_str() -> string;
-
-    /// avatar_url of the member that has changed
-    fn avatar_url() -> Option<string>;
-
-    /// display_name of the member that has changed
-    fn display_name() -> Option<string>;
-
-    /// reason if any was provided
-    fn reason() -> Option<string>;
-}
 
 object ActivityObject {
     fn type_str() -> string;

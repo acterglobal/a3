@@ -66,7 +66,7 @@ use super::{
     deep_linking::RefDetails,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
-use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
+use crate::{OptionBuffer, OptionString, ThumbnailSize, UserProfile, RUNTIME};
 pub use account_data::UserRoomSettings;
 pub use preview::RoomPreview;
 

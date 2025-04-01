@@ -1,14 +1,18 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/room_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
 class RoomUpdateEvent extends ConsumerWidget {
   final bool isMe;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   final String roomId;
+
   const RoomUpdateEvent({
     super.key,
     required this.isMe,
@@ -19,97 +23,169 @@ class RoomUpdateEvent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-
+    final stateText = getStateEventStr(context, ref, item);
+    if (stateText == null) return SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
-      child: Text(
-        getStateEventStr(context, ref, item),
-        style: textTheme.labelSmall,
-      ),
+      child: Text(stateText, style: textTheme.labelSmall),
     );
   }
 
-  String getStateEventStr(
+  String? getStateEventStr(
     BuildContext context,
     WidgetRef ref,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
     final lang = L10n.of(context);
+    String myId = ref.watch(myUserIdStrProvider);
 
     final senderId = item.sender();
     final eventType = item.eventType();
-    final firstName =
+    final senderName =
         ref
             .watch(
               memberDisplayNameProvider((roomId: roomId, userId: senderId)),
             )
-            .valueOrNull;
-    final msgContent = item.msgContent()?.body() ?? '';
+            .valueOrNull ??
+        simplifyUserId(senderId) ??
+        senderId;
 
     return switch (eventType) {
-      'm.room.create' =>
-        isMe
-            ? lang.chatYouRoomCreate
-            : lang.chatRoomCreate(firstName ?? senderId),
-      'm.room.join_rules' =>
-        isMe
-            ? '${lang.chatYouUpdateJoinRules}: $msgContent'
-            : '${lang.chatUpdateJoinRules(firstName ?? senderId)}: $msgContent',
-      'm.room.power_levels' =>
-        isMe
-            ? lang.chatYouUpdatePowerLevels
-            : lang.chatUpdatePowerLevels(firstName ?? senderId),
-      'm.room.name' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomName}: $msgContent'
-            : '${lang.chatUpdateRoomName(firstName ?? senderId)}: $msgContent',
-      'm.room.topic' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
-            : '${lang.chatUpdateRoomTopic(firstName ?? senderId)}: $msgContent',
-      'm.room.avatar' =>
-        isMe
-            ? lang.chatYouUpdateRoomAvatar
-            : lang.chatUpdateRoomAvatar(firstName ?? senderId),
-      'm.room.aliases' =>
-        isMe
-            ? lang.chatYouUpdateRoomAliases
-            : lang.chatUpdateRoomAliases(firstName ?? senderId),
-      'm.room.canonical_alias' =>
-        isMe
-            ? lang.chatYouUpdateRoomCanonicalAlias
-            : lang.chatUpdateRoomCanonicalAlias(firstName ?? senderId),
-      'm.room.history_visibility' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
-            : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
-      'm.room.encryption' =>
-        isMe
-            ? lang.chatYouUpdateRoomEncryption
-            : lang.chatUpdateRoomEncryption(firstName ?? senderId),
-      'm.room.guest_access' =>
-        isMe
-            ? lang.chatYouUpdateRoomGuestAccess
-            : lang.chatUpdateRoomGuestAccess(firstName ?? senderId),
-      'm.room.third_party_invite' =>
-        isMe
-            ? lang.chatYouUpdateRoomThirdPartyInvite
-            : lang.chatUpdateRoomThirdPartyInvite(firstName ?? senderId),
-      'm.room.server_acl' => lang.chatUpdateRoomServerAcl,
-      'm.room.tombstone' => '${lang.chatUpdateRoomTombstone}: $msgContent',
-      'm.room.pinned_events' =>
-        isMe
-            ? lang.chatYouUpdateRoomPinnedEvents
-            : lang.chatUpdateRoomPinnedEvents(firstName ?? senderId),
-      'm.space.parent' =>
-        isMe
-            ? lang.chatYouUpdateSpaceParent
-            : lang.chatUpdateSpaceParent(firstName ?? senderId),
-      'm.space.child' =>
-        isMe
-            ? lang.chatYouUpdateSpaceChildren
-            : lang.chatUpdateSpaceChildren(firstName ?? senderId),
-      _ => msgContent,
+      'm.policy.rule.room' => getStateOnPolicyRuleRoom(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.policy.rule.server' => getStateOnPolicyRuleServer(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.policy.rule.user' => getStateOnPolicyRuleUser(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.aliases' => getStateOnRoomAliases(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.avatar' => getStateOnRoomAvatar(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.canonical_alias' => getStateOnRoomCanonicalAlias(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.create' => getStateOnRoomCreate(lang, myId, senderId, senderName),
+      'm.room.encryption' => getStateOnRoomEncryption(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.guest_access' => getStateOnRoomGuestAccess(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.history_visibility' => getStateOnRoomHistoryVisibility(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.join_rules' => getStateOnRoomJoinRules(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.name' => getStateOnRoomName(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.pinned_events' => getStateOnRoomPinnedEvents(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.power_levels' => getStateOnRoomPowerLevels(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.server_acl' => getStateOnRoomServerAcl(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.third_party_invite' => getStateOnRoomThirdPartyInvite(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.tombstone' => getStateOnRoomTombstone(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.room.topic' => getStateOnRoomTopic(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.space.child' => getStateOnSpaceChild(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      'm.space.parent' => getStateOnSpaceParent(
+        lang,
+        item,
+        myId,
+        senderId,
+        senderName,
+      ),
+      _ => null,
     };
   }
 }

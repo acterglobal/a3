@@ -49,7 +49,7 @@ use urlencoding::encode;
 
 use super::{NotificationItem, NotificationSettings, Pusher};
 
-use crate::{api::api::FfiBuffer, Client, MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, Client, MsgContent, RUNTIME};
 
 impl Client {
     pub async fn get_notification_item(

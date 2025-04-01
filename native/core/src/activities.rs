@@ -1,7 +1,6 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
-    events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId, OwnedUserId,
+    events::room::message::TextMessageEventContent, OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -13,8 +12,11 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::MembershipChange, ActerModel, ActerSupportedRoomStatusEvents,
-        AnyActerModel, EventMeta, Task,
+        status::{
+            membership::{Change, MembershipChange, ProfileChange},
+            room_state::OtherState,
+        },
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
 };
@@ -24,9 +26,16 @@ pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
-    MembershipChange(MembershipChange),
-    RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    ProfileChange {
+        user_id: OwnedUserId,
+        display_name_change: Option<Change<Option<String>>>,
+        avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
+    },
+    MembershipChange {
+        user_id: OwnedUserId,
+        change: Option<String>,
+    },
+    RoomState(OtherState),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -123,9 +132,34 @@ impl Activity {
 
     pub fn type_str(&self) -> String {
         match &self.inner {
-            ActivityContent::MembershipChange(c) => c.as_str(),
-            ActivityContent::RoomCreate(_) => "roomCreate",
-            ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::ProfileChange { .. } => "profileChange",
+            ActivityContent::MembershipChange { .. } => "membershipChange",
+
+            ActivityContent::RoomState(OtherState::PolicyRuleRoom(_)) => "policyRuleRoom",
+            ActivityContent::RoomState(OtherState::PolicyRuleServer(_)) => "policyRuleServer",
+            ActivityContent::RoomState(OtherState::PolicyRuleUser(_)) => "policyRuleUser",
+            ActivityContent::RoomState(OtherState::RoomAliases(_)) => "roomAliases",
+            ActivityContent::RoomState(OtherState::RoomAvatar(_)) => "roomAvatar",
+            ActivityContent::RoomState(OtherState::RoomCanonicalAlias(_)) => "roomCanonicalAlias",
+            ActivityContent::RoomState(OtherState::RoomCreate(_)) => "roomCreate",
+            ActivityContent::RoomState(OtherState::RoomEncryption(_)) => "roomEncryption",
+            ActivityContent::RoomState(OtherState::RoomGuestAccess(_)) => "roomGuestAccess",
+            ActivityContent::RoomState(OtherState::RoomHistoryVisibility(_)) => {
+                "roomHistoryVisibility"
+            }
+            ActivityContent::RoomState(OtherState::RoomJoinRules(_)) => "roomJoinRules",
+            ActivityContent::RoomState(OtherState::RoomName(_)) => "roomName",
+            ActivityContent::RoomState(OtherState::RoomPinnedEvents(_)) => "roomPinnedEvents",
+            ActivityContent::RoomState(OtherState::RoomPowerLevels(_)) => "roomPowerLevels",
+            ActivityContent::RoomState(OtherState::RoomServerAcl(_)) => "roomServerAcl",
+            ActivityContent::RoomState(OtherState::RoomThirdPartyInvite(_)) => {
+                "roomThirdPartyInvite"
+            }
+            ActivityContent::RoomState(OtherState::RoomTombstone(_)) => "roomTombstone",
+            ActivityContent::RoomState(OtherState::RoomTopic(_)) => "roomTopic",
+            ActivityContent::RoomState(OtherState::SpaceChild(_)) => "spaceChild",
+            ActivityContent::RoomState(OtherState::SpaceParent(_)) => "spaceParent",
+
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -158,13 +192,29 @@ impl Activity {
         .to_owned()
     }
 
+    pub fn profile_change(&self) -> Option<ProfileChange> {
+        match &self.inner {
+            ActivityContent::ProfileChange {
+                user_id,
+                display_name_change,
+                avatar_url_change,
+            } => Some(ProfileChange {
+                user_id: user_id.clone(),
+                display_name_change: display_name_change.clone(),
+                avatar_url_change: avatar_url_change.clone(),
+            }),
+            _ => None,
+        }
+    }
+
     pub fn membership_change(&self) -> Option<MembershipChange> {
-        #[allow(irrefutable_let_patterns)]
-        let ActivityContent::MembershipChange(c) = &self.inner
-        else {
-            return None;
-        };
-        Some(c.clone())
+        match &self.inner {
+            ActivityContent::MembershipChange { user_id, change } => Some(MembershipChange {
+                user_id: user_id.clone(),
+                change: change.clone(),
+            }),
+            _ => None,
+        }
     }
 
     pub fn event_meta(&self) -> &EventMeta {
@@ -181,9 +231,9 @@ impl Activity {
 
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
-            ActivityContent::MembershipChange(_)
-            | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => None,
+            ActivityContent::ProfileChange { .. }
+            | ActivityContent::MembershipChange { .. }
+            | ActivityContent::RoomState(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -277,9 +327,9 @@ impl Activity {
             ActivityContent::TaskAdd { object, .. } => {
                 format!("/tasks/{}/{}", object.object_id_str(), self.meta.event_id)
             }
-            ActivityContent::MembershipChange(_)
-            | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => todo!(),
+            ActivityContent::ProfileChange { .. }
+            | ActivityContent::MembershipChange { .. }
+            | ActivityContent::RoomState(_) => todo!(),
         }
     }
 
@@ -307,14 +357,23 @@ impl Activity {
         let meta = mdl.event_meta().clone();
         match mdl {
             AnyActerModel::RoomStatus(s) => match s.inner {
-                ActerSupportedRoomStatusEvents::MembershipChange(c) => {
-                    Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
-                }
-                ActerSupportedRoomStatusEvents::RoomCreate(c) => {
-                    Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
-                }
-                ActerSupportedRoomStatusEvents::RoomName(c) => {
-                    Ok(Self::new(meta, ActivityContent::RoomName(c)))
+                ActerSupportedRoomStatusEvents::ProfileChange {
+                    user_id,
+                    display_name_change,
+                    avatar_url_change,
+                } => Ok(Self::new(
+                    meta,
+                    ActivityContent::ProfileChange {
+                        user_id,
+                        display_name_change,
+                        avatar_url_change,
+                    },
+                )),
+                ActerSupportedRoomStatusEvents::MembershipChange { user_id, change } => Ok(
+                    Self::new(meta, ActivityContent::MembershipChange { user_id, change }),
+                ),
+                ActerSupportedRoomStatusEvents::OtherState(s) => {
+                    Ok(Self::new(meta, ActivityContent::RoomState(s)))
                 }
             },
 

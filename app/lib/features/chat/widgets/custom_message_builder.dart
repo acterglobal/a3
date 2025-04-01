@@ -27,7 +27,8 @@ class CustomMessageBuilder extends StatelessWidget {
     switch (message.metadata?['eventType']) {
       case 'm.room.encrypted':
         return const EncryptedMessageWidget();
-      case 'm.room.member':
+      case 'profileChange':
+      case 'membershipChange':
         return MembershipUpdateWidget(message: message);
       case 'm.room.message':
         if (message.metadata?['msgType'] == 'm.location') {
@@ -54,9 +55,9 @@ class CustomMessageBuilder extends StatelessWidget {
       case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
-      case 'm.room.guest.access':
+      case 'm.room.guest_access':
       case 'm.room.history_visibility':
-      case 'm.room.join.rules':
+      case 'm.room.join_rules':
       case 'm.room.name':
       case 'm.room.pinned_events':
       case 'm.room.power_levels':

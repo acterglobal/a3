@@ -1,37 +1,16 @@
-use std::ops::Deref;
-
 pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
-    activities::Activity as CoreActivity,
-    events::news::{FallbackNewsContent, NewsContent},
-    models::{status::membership::MembershipChange as CoreMembershipChange, ActerModel},
+    activities::{Activity as CoreActivity, ActivityContent},
+    models::{status::membership::MembershipChange, ActerModel},
     referencing::IndexKey,
 };
 use futures::{FutureExt, Stream, StreamExt};
-use matrix_sdk::ruma::{EventId, OwnedEventId, OwnedRoomId, RoomId};
+use matrix_sdk::ruma::{EventId, RoomId};
+use std::ops::Deref;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::wrappers::BroadcastStream;
 
 use super::{Client, MsgContent, RefDetails, RUNTIME};
-
-use acter_core::activities::ActivityContent;
-#[derive(Clone, Debug)]
-pub struct MembershipChange(CoreMembershipChange);
-
-impl MembershipChange {
-    pub fn user_id_str(&self) -> String {
-        self.0.user_id.to_string()
-    }
-    pub fn display_name(&self) -> Option<String> {
-        self.0.display_name.clone()
-    }
-    pub fn avatar_url(&self) -> Option<String> {
-        self.0.avatar_url.as_ref().map(|a| a.to_string())
-    }
-    pub fn reason(&self) -> Option<String> {
-        self.0.reason.clone()
-    }
-}
 
 #[derive(Clone, Debug)]
 pub struct Activity {
@@ -45,7 +24,7 @@ impl Activity {
     }
 
     pub fn membership_change(&self) -> Option<MembershipChange> {
-        self.inner.membership_change().map(MembershipChange)
+        self.inner.membership_change()
     }
 
     pub fn sender_id_str(&self) -> String {

@@ -1,4 +1,8 @@
+import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/room_state.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -13,44 +17,90 @@ class MembershipUpdateWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
-    late String textMsg;
-    final msgType = message.metadata?['msgType'];
-    final firstName = message.author.firstName;
-    if (msgType == 'Joined') {
-      if (message.author.id == myUserId) {
-        textMsg = lang.chatYouJoined;
-      } else if (firstName != null) {
-        textMsg = lang.chatJoinedDisplayName(firstName);
-      } else {
-        textMsg = lang.chatJoinedUserId(message.author.id);
-      }
-    } else if (msgType == 'InvitationAccepted') {
-      if (message.author.id == myUserId) {
-        textMsg = lang.chatYouAcceptedInvite;
-      } else if (firstName != null) {
-        textMsg = lang.chatInvitationAcceptedDisplayName(firstName);
-      } else {
-        textMsg = lang.chatInvitationAcceptedUserId(message.author.id);
-      }
-    } else if (msgType == 'Invited') {
-      if (message.author.id == myUserId) {
-        textMsg = lang.chatYouInvited('');
-      } else if (firstName != null) {
-        textMsg = lang.chatInvitedDisplayName(firstName, '');
-      } else {
-        textMsg = lang.chatInvitedUserId(message.author.id, '');
-      }
-    } else {
-      textMsg = message.metadata?['body'] ?? '';
-    }
-    return Container(
-      padding: const EdgeInsets.only(left: 10, bottom: 5),
-      child: RichText(
-        text: TextSpan(
-          text: textMsg,
-          style: Theme.of(context).textTheme.labelSmall,
-        ),
-      ),
+    final roomId = message.roomId.expect(
+      'MembershipChange should have room id',
     );
+    final eventType = message.metadata?['eventType'];
+    final senderName =
+        ref
+            .watch(
+              memberDisplayNameProvider((
+                roomId: roomId,
+                userId: message.author.id,
+              )),
+            )
+            .valueOrNull ??
+        simplifyUserId(message.author.id) ??
+        message.author.id;
+    if (eventType == 'membershipChange') {
+      final userId = message.metadata?['userId'].expect(
+        'MembershipChange should have user id',
+      );
+      final userName =
+          ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
+              )
+              .valueOrNull ??
+          simplifyUserId(userId) ??
+          userId;
+      final change = message.metadata?['change'].expect(
+        'MembershipChange should have change mode',
+      );
+      String? stateText = getStateOnMembershipChange(
+        lang,
+        change,
+        myUserId,
+        message.author.id,
+        senderName,
+        userId,
+        userName,
+      );
+      if (stateText != null) {
+        return Container(
+          padding: const EdgeInsets.only(left: 10, bottom: 5),
+          child: RichText(
+            text: TextSpan(
+              text: stateText,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+          ),
+        );
+      }
+    } else if (eventType == 'profileChange') {
+      final metadata = message.metadata.expect(
+        'ProfileChange should have metadata',
+      );
+      final userId = metadata['userId'].expect(
+        'ProfileChange should have user id',
+      );
+      final userName =
+          ref
+              .watch(
+                memberDisplayNameProvider((roomId: roomId, userId: userId)),
+              )
+              .valueOrNull ??
+          simplifyUserId(userId) ??
+          userId;
+      String? stateText = getStateOnProfileChange(
+        lang,
+        metadata,
+        myUserId,
+        userId,
+        userName,
+      );
+      if (stateText != null) {
+        return Container(
+          padding: const EdgeInsets.only(left: 10, bottom: 5),
+          child: RichText(
+            text: TextSpan(
+              text: stateText,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+          ),
+        );
+      }
+    }
+    return const SizedBox.shrink();
   }
 }
