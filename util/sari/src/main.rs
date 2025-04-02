@@ -1,6 +1,5 @@
 use anyhow::Result;
 use clap::Parser;
-use std::{io::Write, path::PathBuf};
 
 mod commands;
     

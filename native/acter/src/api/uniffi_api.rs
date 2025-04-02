@@ -16,7 +16,7 @@ pub enum ActerError {
 }
 
 #[derive(Debug, uniffi::Record)]
-pub struct NotificationItem {
+pub struct UniffiNotificationItem {
     pub title: String,
     pub push_style: String,
     pub target_url: String,
@@ -31,8 +31,8 @@ pub struct NotificationItem {
     pub is_noisy: Option<bool>,
 }
 
-impl NotificationItem {
-    async fn from(value: ApiNotificationItem, temp_dir: String) -> NotificationItem {
+impl UniffiNotificationItem {
+    async fn from(value: ApiNotificationItem, temp_dir: String) -> UniffiNotificationItem {
         let image_path = if value.has_image() {
             value.image_path(temp_dir).await.ok()
         } else {
@@ -102,7 +102,7 @@ impl NotificationItem {
             }
         }
 
-        NotificationItem {
+        UniffiNotificationItem {
             title: msg_title,
             body: short_msg,
             push_style,
@@ -122,9 +122,9 @@ pub async fn get_notification_item(
     restore_token: String,
     room_id: String,
     event_id: String,
-) -> uniffi::Result<NotificationItem, ActerError> {
+) -> Result<UniffiNotificationItem, ActerError> {
     let client = login_with_token(base_path, media_cache_path, restore_token).await?;
-    Ok(NotificationItem::from(
+    Ok(UniffiNotificationItem::from(
         client.get_notification_item(room_id, event_id).await?,
         temp_dir,
     )
