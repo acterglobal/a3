@@ -1295,7 +1295,6 @@ enum TimelineItemContent {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TimelineItem {
-    item_type: String,
     content: TimelineItemContent,
     unique_id: String,
 }
@@ -1303,7 +1302,6 @@ pub struct TimelineItem {
 impl TimelineItem {
     pub(crate) fn new_event_item(event: &EventTimelineItem, my_id: OwnedUserId) -> Self {
         TimelineItem {
-            item_type: "event".to_string(),
             content: TimelineItemContent::Event(TimelineEventItem::new(event, my_id)),
             unique_id: match event.identifier() {
                 TimelineEventItemId::EventId(e) => e.to_string(),
@@ -1313,7 +1311,10 @@ impl TimelineItem {
     }
 
     pub fn item_type(&self) -> String {
-        self.item_type.clone()
+        match &self.content {
+            TimelineItemContent::Event(content) => "event".to_owned(),
+            TimelineItemContent::Virtual(content) => "virtual".to_owned(),
+        }
     }
 
     pub fn event_item(&self) -> Option<TimelineEventItem> {
@@ -1368,7 +1369,6 @@ impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
                 TimelineItem::new_event_item(event_item, user_id)
             }
             TimelineItemKind::Virtual(virtual_item) => TimelineItem {
-                item_type: "virtual".to_owned(),
                 content: TimelineItemContent::Virtual(TimelineVirtualItem::from(virtual_item)),
                 unique_id: item.unique_id().0.clone(),
             },
