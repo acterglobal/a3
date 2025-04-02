@@ -4,8 +4,8 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:acter/features/notifications/providers/notifiers/notification_permission_notifier.dart';
 
 class NotificationPermissionPage extends ConsumerWidget {
   const NotificationPermissionPage({super.key});
@@ -64,7 +64,12 @@ class NotificationPermissionPage extends ConsumerWidget {
                 iconColor: Theme.of(context).colorScheme.error,
               ),
               const SizedBox(height: 20),
-              _buildActionButton(context, lang, ref),
+              _buildActionButton(
+                context,
+                lang,
+                ref,
+                textStyle: textTheme.bodyMedium,
+              ),
               const Spacer(),
             ],
           ),
@@ -100,20 +105,85 @@ class NotificationPermissionPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, L10n lang, WidgetRef ref) {
+  Widget _buildActionButton(
+    BuildContext context,
+    L10n lang,
+    WidgetRef ref, {
+    TextStyle? textStyle,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () {},
+          onPressed: () async {
+            // Request notification permission on button press
+            await _requestNotificationPermission(context, textStyle: textStyle);
+          },
           child: Text(
             lang.allowPermission,
-            style: const TextStyle(fontSize: 16),
           ),
         ),
         const SizedBox(height: 20),
-        OutlinedButton(onPressed: () {}, child: Text(lang.askAgain)),
+        OutlinedButton(
+          onPressed: () async {
+            if (context.mounted) {
+              // Permission is granted or restricted, proceed accordingly
+              context.goNamed(Routes.main.name);
+            }
+          },
+          child: Text(lang.askAgain),
+        ),
       ],
     );
+  }
+
+  Future<void> _requestNotificationPermission(
+    BuildContext context, {
+    TextStyle? textStyle,
+  }) async {
+    final status = await Permission.notification.request();
+
+    if (status.isGranted) {
+      // Permission granted, navigate back to the main page or proceed with further actions
+      if (context.mounted) {
+        context.goNamed(Routes.main.name);
+      }
+    } else if (status.isDenied) {
+      // If permission is denied, show the option to ask again\
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Notification permission denied.')),
+        );
+      }
+    } else if (status.isPermanentlyDenied) {
+      // If permission is permanently denied, show option to go to settings
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Permission permanently denied. You can enable it in settings.',                  
+                  style: textStyle,
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => openAppSettings(),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text('Go to Settings', style: textStyle?.copyWith(color: Theme.of(context).colorScheme.primary)),
+                ),
+              ],
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+          ),
+        );
+      }
+    }
   }
 }
