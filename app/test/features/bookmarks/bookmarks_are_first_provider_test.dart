@@ -21,7 +21,7 @@ void main() {
       List<String> bookmarksLists = ['2', '1', '3'];
       final container = ProviderContainer(
         overrides: [
-          pinListProvider.overrideWith(() => mockedPinsList),
+          pinListProvider.overrideWith((r, a) => Future.value(mockedPinsList)),
           bookmarkByTypeProvider.overrideWith(
             (a, b) => (b == BookmarkType.pins) ? bookmarksLists : [],
           ),

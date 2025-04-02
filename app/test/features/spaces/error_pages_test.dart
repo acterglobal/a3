@@ -2,7 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
-import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,12 +39,12 @@ void main() {
             }
             return MockSpace();
           }),
-          tabsProvider.overrideWith((ref, id) async {
-            await ref.watch(
-              spaceProvider(id).future,
-            ); // let this fail internally
-            return [];
-          }),
+          // tabsProvider.overrideWith((ref, id) async {
+          //   await ref.watch(
+          //     spaceProvider(id).future,
+          //   ); // let this fail internally
+          //   return [];
+          // }),
         ],
         child: const SpaceDetailsPage(spaceId: '!spaceId'),
       );

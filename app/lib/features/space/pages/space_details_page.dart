@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -10,7 +9,6 @@ import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
-import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/other_chats_section.dart';
@@ -126,50 +124,30 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spaceBodyUI() {
-    final tabsLoader = ref.watch(tabsProvider(widget.spaceId));
-    return tabsLoader.when(
-      skipLoadingOnReload: true,
-      data: (tabs) {
-        return ScrollableListTabScroller(
-          headerKey: SpaceDetailsPage.headerKey,
-          itemCount: tabs.length,
-          itemPositionsListener: itemPositionsListener,
+    final tabs = ref.watch(tabsProvider(widget.spaceId));
+    return ScrollableListTabScroller(
+      headerKey: SpaceDetailsPage.headerKey,
+      itemCount: tabs.length,
+      itemPositionsListener: itemPositionsListener,
 
-          //Space Details Header UI
-          headerContainerBuilder:
-              (context, menuBarWidget) => spaceHeaderUI(menuBarWidget),
+      //Space Details Header UI
+      headerContainerBuilder:
+          (context, menuBarWidget) => spaceHeaderUI(menuBarWidget),
 
-          //Space Details Tab Menu UI
-          tabBuilder:
-              (context, index, active) =>
-                  spaceTabMenuUI(context, tabs[index], active),
+      //Space Details Tab Menu UI
+      tabBuilder:
+          (context, index, active) =>
+              spaceTabMenuUI(context, tabs[index], active),
 
-          //Space Details Page UI
-          itemBuilder: (context, index) => spacePageUI(tabs[index]),
+      //Space Details Page UI
+      itemBuilder: (context, index) => spacePageUI(tabs[index]),
 
-          // we allow this to be refreshed by over-pulling
-          onRefresh: () async {
-            await Future.wait([
-              ref.refresh(spaceProvider(widget.spaceId).future),
-              ref.refresh(maybeRoomProvider(widget.spaceId).future),
-            ]);
-          },
-        );
-      },
-      error: (e, s) => loadingError(e, s),
-      loading: () => const SpaceDetailsSkeletons(),
-    );
-  }
-
-  Widget loadingError(Object error, StackTrace stack) {
-    _log.severe('Failed to load tabs in space', error, stack);
-    return ErrorPage(
-      background: const SpaceDetailsSkeletons(),
-      error: error,
-      stack: stack,
-      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
-      onRetryTap: () {
-        ref.invalidate(spaceProvider(widget.spaceId));
+      // we allow this to be refreshed by over-pulling
+      onRefresh: () async {
+        await Future.wait([
+          ref.refresh(spaceProvider(widget.spaceId).future),
+          ref.refresh(maybeRoomProvider(widget.spaceId).future),
+        ]);
       },
     );
   }

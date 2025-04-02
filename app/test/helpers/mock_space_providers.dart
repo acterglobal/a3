@@ -19,16 +19,20 @@ class MockRoomAvatarInfoNotifier extends FamilyNotifier<AvatarInfo, String>
 class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
     with Mock
     implements AsyncMaybeSpaceNotifier {
-  bool shouldFail = true;
+  bool shouldFail;
+
+  RetryMockAsyncSpaceNotifier({this.mockSpace, this.shouldFail = true});
+
+  final Space? mockSpace;
 
   @override
-  Future<MockSpace> build(String arg) async {
+  Future<Space> build(String arg) async {
     if (shouldFail) {
       // toggle failure so the retry works
       shouldFail = !shouldFail;
       throw 'Expected fail: Space not loaded';
     }
-    return MockSpace();
+    return mockSpace ?? MockSpace();
   }
 }
 
