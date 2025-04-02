@@ -12,7 +12,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -20,7 +20,7 @@ import 'package:swipe_to/swipe_to.dart';
 class MessageEventItem extends ConsumerWidget {
   final String roomId;
   final String messageId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   final bool isMe;
   final bool canRedact;
   final bool isFirstMessageBySender;
@@ -71,7 +71,7 @@ class MessageEventItem extends ConsumerWidget {
     );
   }
 
-  void _handleReplySwipe(WidgetRef ref, RoomEventItem item) {
+  void _handleReplySwipe(WidgetRef ref, TimelineEventItem item) {
     ref.read(chatEditorStateProvider.notifier).setReplyToMessage(item);
   }
 
@@ -80,7 +80,7 @@ class MessageEventItem extends ConsumerWidget {
     WidgetRef ref,
     String roomId,
     String messageId,
-    RoomEventItem item,
+    TimelineEventItem item,
     bool isMe,
   ) {
     final messageWidget = buildMsgEventItem(
@@ -109,7 +109,7 @@ class MessageEventItem extends ConsumerWidget {
   Widget _buildReactionsList(
     String roomId,
     String messageId,
-    RoomEventItem item,
+    TimelineEventItem item,
     bool isMe,
   ) {
     return Padding(
@@ -126,7 +126,7 @@ class MessageEventItem extends ConsumerWidget {
     WidgetRef ref,
     String roomId,
     String messageId,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
@@ -173,7 +173,7 @@ class MessageEventItem extends ConsumerWidget {
   Widget buildTextMsgEvent(
     BuildContext context,
     WidgetRef ref,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
     final msgType = item.msgType();
     final repliedTo = item.inReplyTo();

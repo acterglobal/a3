@@ -4,7 +4,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show Client, Convo, ConvoDiff, RoomMessage;
+    show Client, Convo, ConvoDiff, TimelineItem;
 import 'package:acter_notifify/util.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -40,17 +40,18 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   }
 }
 
-class AsyncLatestMsgNotifier extends FamilyAsyncNotifier<RoomMessage?, String> {
+class AsyncLatestMsgNotifier
+    extends FamilyAsyncNotifier<TimelineItem?, String> {
   late Stream<bool> _listener;
   late StreamSubscription<bool> _poller;
 
-  FutureOr<RoomMessage?> _refresh(String roomId) async {
+  FutureOr<TimelineItem?> _refresh(String roomId) async {
     final convo = await ref.read(chatProvider(roomId).future);
     return convo?.latestMessage();
   }
 
   @override
-  FutureOr<RoomMessage?> build(String arg) async {
+  FutureOr<TimelineItem?> build(String arg) async {
     final roomId = arg;
     final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeRoomParamStream(roomId, 'latest_message');

@@ -1,13 +1,13 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
 class RoomUpdateEvent extends ConsumerWidget {
   final bool isMe;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   final String roomId;
   const RoomUpdateEvent({
     super.key,
@@ -32,7 +32,7 @@ class RoomUpdateEvent extends ConsumerWidget {
   String getStateEventStr(
     BuildContext context,
     WidgetRef ref,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
     final lang = L10n.of(context);
 

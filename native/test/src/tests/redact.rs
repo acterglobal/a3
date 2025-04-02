@@ -1,4 +1,4 @@
-use acter::api::RoomMessage;
+use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, FutureExt, StreamExt};
@@ -116,7 +116,7 @@ async fn message_redaction() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &RoomMessage, body: &str) -> Option<String> {
+fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {

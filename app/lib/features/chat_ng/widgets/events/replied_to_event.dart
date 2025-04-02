@@ -8,14 +8,14 @@ import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RepliedToEvent extends StatelessWidget {
   final String roomId;
   final String messageId;
-  final RoomEventItem replyEventItem;
+  final TimelineEventItem replyEventItem;
   const RepliedToEvent({
     super.key,
     required this.roomId,
@@ -50,7 +50,7 @@ class RepliedToEvent extends StatelessWidget {
     BuildContext context,
     WidgetRef ref,
     String roomId,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
     final replyProfile = ref.watch(
       memberAvatarInfoProvider((userId: item.sender(), roomId: roomId)),
@@ -74,7 +74,7 @@ class RepliedToEvent extends StatelessWidget {
 class OriginalEventItem extends ConsumerWidget {
   final String roomId;
   final String messageId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   const OriginalEventItem({
     super.key,
     required this.roomId,
@@ -104,7 +104,7 @@ class OriginalEventItem extends ConsumerWidget {
   Widget buildReplyMsgEventItem(
     String roomId,
     String messageId,
-    RoomEventItem item,
+    TimelineEventItem item,
     bool isUser,
   ) {
     final msgType = item.msgType();

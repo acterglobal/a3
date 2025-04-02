@@ -19,8 +19,8 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem, TimelineItemContent,
-    TimelineItemKind, VirtualTimelineItem,
+    MembershipChange, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -90,7 +90,7 @@ impl EventSendState {
 
 #[derive(Clone, Debug, Serialize, Deserialize, Builder)]
 #[builder(derive(Debug))]
-pub struct RoomEventItem {
+pub struct TimelineEventItem {
     #[builder(default)]
     event_id: Option<OwnedEventId>,
     #[builder(default)]
@@ -117,9 +117,9 @@ pub struct RoomEventItem {
     edited: bool,
 }
 
-impl RoomEventItem {
+impl TimelineEventItem {
     pub(crate) fn new(event: &EventTimelineItem, my_id: OwnedUserId) -> Self {
-        let mut me = RoomEventItemBuilder::default();
+        let mut me = TimelineEventItemBuilder::default();
 
         me.event_id(event.event_id().map(ToOwned::to_owned))
             .txn_id(event.transaction_id().map(ToOwned::to_owned))
@@ -419,7 +419,7 @@ impl RoomEventItem {
     }
 }
 
-impl RoomEventItemBuilder {
+impl TimelineEventItemBuilder {
     fn handle_other_state(&mut self, state: &OtherState) {
         match state.content() {
             AnyOtherFullStateEventContent::PolicyRuleRoom(c) => {
@@ -1249,12 +1249,12 @@ impl RoomEventItemBuilder {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RoomVirtualItem {
+pub struct TimelineVirtualItem {
     event_type: String,
     desc: Option<String>,
 }
 
-impl RoomVirtualItem {
+impl TimelineVirtualItem {
     pub(crate) fn new(event: &VirtualTimelineItem) -> Self {
         match event {
             VirtualTimelineItem::DateDivider(ts) => {
@@ -1264,12 +1264,12 @@ impl RoomVirtualItem {
                 } else {
                     None
                 };
-                RoomVirtualItem {
+                TimelineVirtualItem {
                     event_type: "DayDivider".to_string(),
                     desc,
                 }
             }
-            VirtualTimelineItem::ReadMarker => RoomVirtualItem {
+            VirtualTimelineItem::ReadMarker => TimelineVirtualItem {
                 event_type: "ReadMarker".to_string(),
                 desc: None,
             },
@@ -1286,18 +1286,18 @@ impl RoomVirtualItem {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct RoomMessage {
+pub struct TimelineItem {
     item_type: String,
-    event_item: Option<RoomEventItem>,
-    virtual_item: Option<RoomVirtualItem>,
+    event_item: Option<TimelineEventItem>,
+    virtual_item: Option<TimelineVirtualItem>,
     unique_id: String,
 }
 
-impl RoomMessage {
+impl TimelineItem {
     pub(crate) fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
-        RoomMessage {
+        TimelineItem {
             item_type: "event".to_string(),
-            event_item: Some(RoomEventItem::new(event, my_id)),
+            event_item: Some(TimelineEventItem::new(event, my_id)),
             unique_id: match event.identifier() {
                 TimelineEventItemId::EventId(e) => e.to_string(),
                 TimelineEventItemId::TransactionId(t) => t.to_string(),
@@ -1307,11 +1307,11 @@ impl RoomMessage {
     }
 
     pub(crate) fn new_virtual_item(event: &VirtualTimelineItem, unique_id: String) -> Self {
-        RoomMessage {
+        TimelineItem {
             item_type: "virtual".to_string(),
             event_item: None,
             unique_id,
-            virtual_item: Some(RoomVirtualItem::new(event)),
+            virtual_item: Some(TimelineVirtualItem::new(event)),
         }
     }
 
@@ -1319,13 +1319,13 @@ impl RoomMessage {
         self.item_type.clone()
     }
 
-    pub fn event_item(&self) -> Option<RoomEventItem> {
+    pub fn event_item(&self) -> Option<TimelineEventItem> {
         self.event_item.clone()
     }
 
     pub(crate) fn event_id(&self) -> Option<String> {
         match &self.event_item {
-            Some(RoomEventItem {
+            Some(TimelineEventItem {
                 event_id: Some(event_id),
                 ..
             }) => Some(event_id.to_string()),
@@ -1348,19 +1348,21 @@ impl RoomMessage {
         self.event_item.as_ref().map(|e| e.origin_server_ts())
     }
 
-    pub fn virtual_item(&self) -> Option<RoomVirtualItem> {
+    pub fn virtual_item(&self) -> Option<TimelineVirtualItem> {
         self.virtual_item.clone()
     }
 }
 
-impl From<(Arc<TimelineItem>, OwnedUserId)> for RoomMessage {
-    fn from(v: (Arc<TimelineItem>, OwnedUserId)) -> RoomMessage {
+impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
+    fn from(v: (Arc<SdkTimelineItem>, OwnedUserId)) -> TimelineItem {
         let (item, user_id) = v;
         let unique_id = item.unique_id();
         match item.kind() {
-            TimelineItemKind::Event(event_item) => RoomMessage::new_event_item(user_id, event_item),
+            TimelineItemKind::Event(event_item) => {
+                TimelineItem::new_event_item(user_id, event_item)
+            }
             TimelineItemKind::Virtual(virtual_item) => {
-                RoomMessage::new_virtual_item(virtual_item, unique_id.0.clone())
+                TimelineItem::new_virtual_item(virtual_item, unique_id.0.clone())
             }
         }
     }

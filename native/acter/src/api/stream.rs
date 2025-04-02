@@ -21,7 +21,7 @@ use matrix_sdk_ui::timeline::{Timeline, TimelineEventItemId};
 use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
-use crate::{Client, Room, RoomMessage, RUNTIME};
+use crate::{Client, Room, TimelineItem, RUNTIME};
 
 use super::utils::{remap_for_diff, ApiVectorDiff};
 
@@ -29,7 +29,7 @@ pub mod msg_draft;
 use msg_draft::MsgContentDraft;
 pub use msg_draft::MsgDraft;
 
-pub type RoomMessageDiff = ApiVectorDiff<RoomMessage>;
+pub type TimelineItemDiff = ApiVectorDiff<TimelineItem>;
 
 #[derive(Clone)]
 pub struct TimelineStream {
@@ -42,7 +42,7 @@ impl TimelineStream {
         TimelineStream { room, timeline }
     }
 
-    pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
+    pub fn messages_stream(&self) -> impl Stream<Item = TimelineItemDiff> {
         let timeline = self.timeline.clone();
         let user_id = self
             .room
@@ -54,11 +54,11 @@ impl TimelineStream {
 
         async_stream::stream! {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-            yield RoomMessageDiff::current_items(timeline_items.clone().into_iter().map(|x| RoomMessage::from((x, user_id.clone()))).collect());
+            yield TimelineItemDiff::current_items(timeline_items.clone().into_iter().map(|x| TimelineItem::from((x, user_id.clone()))).collect());
 
             let mut remap = timeline_stream.map(|diff| diff.into_iter().map(|d| remap_for_diff(
                 d,
-                |x| RoomMessage::from((x, user_id.clone())),
+                |x| TimelineItem::from((x, user_id.clone())),
             )).collect::<Vec<_>>()
             );
 
@@ -79,7 +79,7 @@ impl TimelineStream {
             .await??)
     }
 
-    pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
+    pub async fn get_message(&self, event_id: String) -> Result<TimelineItem> {
         let event_id = OwnedEventId::try_from(event_id)?;
 
         let timeline = self.timeline.clone();
@@ -90,7 +90,7 @@ impl TimelineStream {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(RoomMessage::new_event_item(user_id, &tl))
+                Ok(TimelineItem::new_event_item(user_id, &tl))
             })
             .await?
     }
