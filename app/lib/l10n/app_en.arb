@@ -2362,6 +2362,10 @@
     "taskLabel": "Task",
     "getDetails": "Get Details",
     "youInvited": "Invited to you to join {count} room",
+    "allowPermission": "Allow Permission",
+    "askAgain": "Ask again later",
+    "calendarSync": "Sync into Device Calendar",
+    "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
     "@youInvited": {},
     "@addComment": {}
 }
