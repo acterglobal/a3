@@ -1,8 +1,11 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:acter/features/notifications/providers/notifiers/notification_permission_notifier.dart';
 
 class NotificationPermissionPage extends ConsumerWidget {
   const NotificationPermissionPage({super.key});
@@ -16,7 +19,7 @@ class NotificationPermissionPage extends ConsumerWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.close),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.goNamed(Routes.main.name),
             tooltip: 'Close',
           ),
         ],
@@ -31,14 +34,14 @@ class NotificationPermissionPage extends ConsumerWidget {
               const Spacer(),
               Icon(
                 PhosphorIcons.bell(),
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 100,
               ),
               const SizedBox(height: 20),
               Text(
                 lang.pushNotification,
                 style: textTheme.headlineMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -61,7 +64,7 @@ class NotificationPermissionPage extends ConsumerWidget {
                 iconColor: Theme.of(context).colorScheme.error,
               ),
               const SizedBox(height: 20),
-              _buildActionButton(context, lang),
+              _buildActionButton(context, lang, ref),
               const Spacer(),
             ],
           ),
@@ -97,7 +100,7 @@ class NotificationPermissionPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, L10n lang) {
+  Widget _buildActionButton(BuildContext context, L10n lang, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
