@@ -172,7 +172,7 @@ impl Convo {
                 };
                 let room_id = latest_msg_room.room_id();
 
-                let full_event = TimelineItem::new_event_item(user_id.clone(), &msg);
+                let full_event = TimelineItem::new_event_item(&msg, user_id.clone());
                 set_latest_msg(&latest_msg_client, room_id, &last_msg_lock_tl, full_event).await;
             }
             warn!(room_id=?latest_msg_room.room_id(), "Timeline stopped")

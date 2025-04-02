@@ -90,7 +90,7 @@ impl TimelineStream {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(TimelineItem::new_event_item(user_id, &tl))
+                Ok(TimelineItem::new_event_item(&tl, user_id))
             })
             .await?
     }
