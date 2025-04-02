@@ -1310,10 +1310,10 @@ impl TimelineItem {
         }
     }
 
-    pub fn item_type(&self) -> String {
+    pub fn is_virtual(&self) -> bool {
         match &self.content {
-            TimelineItemContent::Event(content) => "event".to_owned(),
-            TimelineItemContent::Virtual(content) => "virtual".to_owned(),
+            TimelineItemContent::Event(content) => false,
+            TimelineItemContent::Virtual(content) => true,
         }
     }
 

@@ -152,7 +152,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
 
 fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
-    if msg.item_type() == "event" {
+    if !msg.is_virtual() {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {
             if msg_content.body() == body {
