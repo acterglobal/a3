@@ -192,6 +192,8 @@ args = [
     "--target",
     "${CARGO_BUILD_TARGET}",
     "-Zbuild-std",
+    "--features",
+    "uniffi",
 ]
 
 [tasks.cargo-build-release]
@@ -203,7 +205,9 @@ args = [
     "--target",
     "${CARGO_BUILD_TARGET}",
     "-Zbuild-std",
-    "--release"
+    "--features",
+    "uniffi",
+    "--release",
 ]
 
 [tasks.cargo-build-uniffi-dev]

@@ -3,12 +3,16 @@ resolver = "2"
 members = [
   "native/*",
   "util/mr_minutes"
-]
+, "util/sari"]
 
 default-members = ["native/acter"]
 
 [workspace.package]
 rust-version = "1.85"
+
+[workspace.dependencies.uniffi-dart]
+git = "https://github.com/acterglobal/uniffi-dart"
+branch = "ben-ffi-next"
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
