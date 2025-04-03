@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
@@ -172,6 +173,9 @@ class UploadAvatarPage extends ConsumerWidget {
       onPressed: () async {
         if (context.mounted) {
           await handleNotificationPermission(context);
+        }
+        if (context.mounted) {
+          await handleCalendarPermission(context);
         }
         if (context.mounted) {
           context.goNamed(Routes.analyticsOptIn.name);

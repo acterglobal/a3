@@ -1,59 +1,56 @@
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
-import 'package:acter/l10n/generated/l10n.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'dart:math';
 
-class CalendarSyncPermissionPage extends ConsumerWidget {
-  const CalendarSyncPermissionPage({super.key});
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/calendar_sync/calendar_sync.dart';
+import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class CalendarSyncPermissionWidget extends StatelessWidget {
+  const CalendarSyncPermissionWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context, lang, textTheme, ref),
-    );
-  }
-
-  // AppBar for the calendar Permission Page
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      actions: [
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () => context.goNamed(Routes.main.name),
-          tooltip: 'Close',
-        ),
-      ],
-    );
-  }
-
-  // Body content of the calendar Permission Page
-  Widget _buildBody(
-    BuildContext context,
-    L10n lang,
-    TextTheme textTheme,
-    WidgetRef ref,
-  ) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Stack(
           children: [
-             const Spacer(),
-            _buildIcon(context),
-            const SizedBox(height: 20),
-            _buildTitleText(context, lang, textTheme),
-            const SizedBox(height: 20),
-            _buildDescriptionText(lang, textTheme),
-            const SizedBox(height: 40),
-            _buildActionButton(context, lang, ref, textTheme),
-            const Spacer(),
+            // Close button at the top right
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
+              ),
+            ),
+            // Main content centered
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildIcon(context),
+                      const SizedBox(height: 20),
+                      _buildTitleText(context, lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildDescriptionText(lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildActionButton(context, lang, textTheme),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -93,22 +90,37 @@ class CalendarSyncPermissionPage extends ConsumerWidget {
   Widget _buildActionButton(
     BuildContext context,
     L10n lang,
-    WidgetRef ref,
     TextTheme textTheme,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () async {},
+          onPressed: () async {
+            final SharedPreferences preferences = await sharedPrefs();
+
+            final hasPermission = await deviceCalendar.hasPermissions();
+
+            if (hasPermission.data == false) {
+              final requesting = await deviceCalendar.requestPermissions();
+              if (requesting.data == false) {
+                await preferences.setBool(rejectionKey, true);
+                return;
+              }
+              else {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              }
+            }
+          },
           child: Text(lang.allowPermission),
         ),
         const SizedBox(height: 20),
         OutlinedButton(
           onPressed: () {
             if (context.mounted) {
-              // Navigate back to main page
-              context.goNamed(Routes.main.name);
+              Navigator.pop(context);
             }
           },
           child: Text(lang.askAgain),

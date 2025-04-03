@@ -10,7 +10,6 @@ import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
-import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';

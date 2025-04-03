@@ -70,12 +70,6 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
       _log.warning('user previously rejected calendar sync. quitting');
       return;
     }
-    final requesting = await deviceCalendar.requestPermissions();
-    if (requesting.data == false) {
-      await preferences.setBool(rejectionKey, true);
-      _log.warning('user rejected calendar sync. quitting');
-      return;
-    }
   }
   // FOR DEBUGGING CLEAR Acter CALENDARS VIA:
   // await clearActerCalendars();
