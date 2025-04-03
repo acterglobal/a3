@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 export './acter_flutter_sdk_ffi.dart' show Client;
+export './acter.dart';
 
 final _log = Logger('a3::sdk');
 
