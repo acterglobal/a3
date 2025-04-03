@@ -2358,6 +2358,7 @@
   "reOpened": "Re-opened",
   "completed": "Completed",
   "accepted": "Accepted",
+  "declined": "Declined",
   "taskLabel": "Task",
   "getDetails": "Get Details",
   "youInvited": "Invited to you to join {count} room",

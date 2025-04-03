@@ -12,7 +12,7 @@ class ActivityTaskDeclineItemWidget extends StatelessWidget {
     final activityObject = activity.object();
     return ActivityUserCentricItemContainerWidget(
       actionIcon: Icons.close,
-      actionTitle: L10n.of(context).rejected,
+      actionTitle: L10n.of(context).declined,
       actionIconColor: Colors.red.shade400,
       activityObject: activityObject,
       userId: activity.senderIdStr(),
