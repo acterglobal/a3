@@ -75,7 +75,7 @@ impl OptionRsvpStatus {
     }
 
     pub fn status_str(&self) -> Option<String> {
-        self.status.as_ref().map(|x| x.to_string())
+        self.status.as_ref().map(ToString::to_string)
     }
 }
 #[derive(Clone)]
@@ -117,15 +117,15 @@ impl ThumbnailInfo {
     }
 
     pub fn size(&self) -> Option<u64> {
-        self.inner.size.map(|x| x.into())
+        self.inner.size.map(Into::into)
     }
 
     pub fn width(&self) -> Option<u64> {
-        self.inner.width.map(|x| x.into())
+        self.inner.width.map(Into::into)
     }
 
     pub fn height(&self) -> Option<u64> {
-        self.inner.height.map(|x| x.into())
+        self.inner.height.map(Into::into)
     }
 }
 

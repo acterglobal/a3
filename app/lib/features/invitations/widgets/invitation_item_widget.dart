@@ -164,8 +164,10 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
     final client = await ref.read(alwaysClientProvider.future);
     try {
       await widget.invitation.accept();
+      ref.invalidate(invitationListProvider);
     } catch (e, s) {
       _log.severe('Failure accepting invite', e, s);
+      ref.invalidate(invitationListProvider);
       if (!context.mounted) {
         EasyLoading.dismiss();
         return;

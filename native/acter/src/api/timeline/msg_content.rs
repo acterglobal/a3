@@ -317,30 +317,26 @@ impl MsgContent {
 
     pub fn size(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
             _ => None,
         }
     }
 
     pub fn width(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(Into::into)),
             _ => None,
         }
     }
 
     pub fn height(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => {
-                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
-            }
-            MsgContent::Video { info, .. } => {
-                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
-            }
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.height.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.height.map(Into::into)),
             _ => None,
         }
     }

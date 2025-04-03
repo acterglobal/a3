@@ -89,7 +89,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       if (_formKey.currentState!.validate()) {
         if (!inCI && !ref.read(hasNetworkProvider)) {
           if (mounted) {
-            showNoInternetNotification(context);
+            showNoInternetNotification(L10n.of(context));
           }
           return;
         }
@@ -284,7 +284,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                             ? null
                             : () {
                               if (!inCI && !ref.read(hasNetworkProvider)) {
-                                showNoInternetNotification(context);
+                                showNoInternetNotification(L10n.of(context));
                                 return;
                               }
                               redeemToken(context, ref, token);

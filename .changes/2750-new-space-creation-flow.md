@@ -1,0 +1,1 @@
+- [Enhancement] : You can now configure space features activations and it's relevant permission at the time of space creation itself.

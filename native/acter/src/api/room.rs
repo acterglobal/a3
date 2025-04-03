@@ -436,7 +436,7 @@ impl SpaceHierarchyRoomInfo {
     }
 
     pub fn avatar_url_str(&self) -> Option<String> {
-        self.avatar_url().map(|a| a.to_string())
+        self.chunk.avatar_url.as_deref().map(ToString::to_string)
     }
 
     /// The join rule of the room.
@@ -471,7 +471,12 @@ impl SpaceHierarchyRoomInfo {
     pub fn via_server_names(&self) -> Vec<String> {
         for v in &self.chunk.children_state {
             let Ok(h) = v.deserialize() else { continue };
-            return h.content.via.into_iter().map(|s| s.to_string()).collect();
+            return h
+                .content
+                .via
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<String>>();
         }
         vec![]
     }
@@ -667,7 +672,7 @@ impl Room {
             .client()
             .user_id()
             .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     pub async fn space_relations(&self) -> Result<SpaceRelations> {
