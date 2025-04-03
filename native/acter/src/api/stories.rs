@@ -30,9 +30,10 @@ use crate::MsgDraft;
 use super::{
     api::FfiBuffer,
     client::Client,
-    common::{MsgContent, ThumbnailSize},
+    common::ThumbnailSize,
     deep_linking::{ObjRef, RefDetails},
     spaces::Space,
+    timeline::MsgContent,
     RUNTIME,
 };
 

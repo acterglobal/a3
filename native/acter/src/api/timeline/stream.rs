@@ -23,11 +23,10 @@ use tracing::info;
 
 use crate::{Client, Room, TimelineItem, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
-
-pub mod msg_draft;
-use msg_draft::MsgContentDraft;
-pub use msg_draft::MsgDraft;
+use super::{
+    super::utils::{remap_for_diff, ApiVectorDiff},
+    msg_draft::{MsgContentDraft, MsgDraft},
+};
 
 pub type TimelineItemDiff = ApiVectorDiff<TimelineItem>;
 
@@ -90,7 +89,7 @@ impl TimelineStream {
                 let Some(tl) = timeline.item_by_event_id(&event_id).await else {
                     bail!("Event not found")
                 };
-                Ok(TimelineItem::new_event_item(user_id, &tl))
+                Ok(TimelineItem::new_event_item(&tl, user_id))
             })
             .await?
     }
