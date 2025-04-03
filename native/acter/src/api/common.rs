@@ -108,6 +108,14 @@ pub struct MediaSource {
     pub(crate) inner: SdkMediaSource,
 }
 
+impl From<&SdkMediaSource> for MediaSource {
+    fn from(value: &SdkMediaSource) -> Self {
+        MediaSource {
+            inner: value.clone(),
+        }
+    }
+}
+
 impl MediaSource {
     pub fn url(&self) -> String {
         match self.inner.clone() {
@@ -120,6 +128,14 @@ impl MediaSource {
 #[derive(Clone)]
 pub struct ThumbnailInfo {
     inner: SdkThumbnailInfo,
+}
+
+impl From<&SdkThumbnailInfo> for ThumbnailInfo {
+    fn from(value: &SdkThumbnailInfo) -> Self {
+        ThumbnailInfo {
+            inner: value.clone(),
+        }
+    }
 }
 
 impl ThumbnailInfo {
@@ -216,7 +232,7 @@ impl From<&TextMessageEventContent> for MsgContent {
     fn from(value: &TextMessageEventContent) -> Self {
         MsgContent::Text {
             body: value.body.clone(),
-            formatted_body: value.formatted.clone().map(|x| x.body),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
             url_previews: value.url_previews.clone().unwrap_or_default(),
         }
     }
@@ -226,7 +242,7 @@ impl From<TextMessageEventContent> for MsgContent {
     fn from(value: TextMessageEventContent) -> Self {
         MsgContent::Text {
             body: value.body,
-            formatted_body: value.formatted.map(|x| x.body),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
             url_previews: value.url_previews.clone().unwrap_or_default(),
         }
     }
@@ -237,7 +253,7 @@ impl From<&ImageMessageEventContent> for MsgContent {
         MsgContent::Image {
             body: value.body.clone(),
             source: value.source.clone(),
-            info: value.info.as_ref().map(|x| *x.clone()),
+            info: value.info.clone().map(Box::into_inner),
         }
     }
 }
@@ -247,7 +263,7 @@ impl From<&AudioMessageEventContent> for MsgContent {
         MsgContent::Audio {
             body: value.body.clone(),
             source: value.source.clone(),
-            info: value.info.as_ref().map(|x| *x.clone()),
+            info: value.info.clone().map(Box::into_inner),
             audio: value.audio.clone(),
         }
     }
@@ -258,7 +274,7 @@ impl From<&VideoMessageEventContent> for MsgContent {
         MsgContent::Video {
             body: value.body.clone(),
             source: value.source.clone(),
-            info: value.info.as_ref().map(|x| *x.clone()),
+            info: value.info.clone().map(Box::into_inner),
         }
     }
 }
@@ -268,7 +284,7 @@ impl From<&FileMessageEventContent> for MsgContent {
         MsgContent::File {
             body: value.body.clone(),
             source: value.source.clone(),
-            info: value.info.as_ref().map(|x| *x.clone()),
+            info: value.info.clone().map(Box::into_inner),
             filename: value.filename.clone(),
         }
     }
@@ -279,7 +295,7 @@ impl From<&LocationMessageEventContent> for MsgContent {
         MsgContent::Location {
             body: value.body.clone(),
             geo_uri: value.geo_uri.clone(),
-            info: value.info.as_ref().map(|x| *x.clone()),
+            info: value.info.clone().map(Box::into_inner),
         }
     }
 }
@@ -288,7 +304,7 @@ impl From<&EmoteMessageEventContent> for MsgContent {
     fn from(value: &EmoteMessageEventContent) -> Self {
         MsgContent::Text {
             body: value.body.clone(),
-            formatted_body: value.formatted.clone().map(|x| x.body),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
             url_previews: Default::default(),
         }
     }
@@ -298,7 +314,7 @@ impl From<&NoticeMessageEventContent> for MsgContent {
     fn from(value: &NoticeMessageEventContent) -> Self {
         MsgContent::Notice {
             body: value.body.clone(),
-            formatted_body: value.formatted.clone().map(|x| x.body),
+            formatted_body: value.formatted.as_ref().map(|x| x.body.clone()),
         }
     }
 }
@@ -323,7 +339,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                 MsgContent::Image {
                     body: content.body.clone(),
                     source: content.source.clone(),
-                    info: content.info.as_ref().map(|x| *x.clone()),
+                    info: content.info.clone().map(Box::into_inner),
                 }
             }
             AttachmentContent::Audio(content)
@@ -331,7 +347,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                 MsgContent::Audio {
                     body: content.body.clone(),
                     source: content.source.clone(),
-                    info: content.info.as_ref().map(|x| *x.clone()),
+                    info: content.info.clone().map(Box::into_inner),
                     audio: content.audio.clone(),
                 }
             }
@@ -340,7 +356,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                 MsgContent::Video {
                     body: content.body.clone(),
                     source: content.source.clone(),
-                    info: content.info.as_ref().map(|x| *x.clone()),
+                    info: content.info.clone().map(Box::into_inner),
                 }
             }
             AttachmentContent::File(content)
@@ -348,7 +364,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                 MsgContent::File {
                     body: content.body.clone(),
                     source: content.source.clone(),
-                    info: content.info.as_ref().map(|x| *x.clone()),
+                    info: content.info.clone().map(Box::into_inner),
                     filename: content.filename.clone(),
                 }
             }
@@ -357,7 +373,7 @@ impl TryFrom<&AttachmentContent> for MsgContent {
                 MsgContent::Location {
                     body: content.body.clone(),
                     geo_uri: content.geo_uri.clone(),
-                    info: content.info.as_ref().map(|x| *x.clone()),
+                    info: content.info.clone().map(Box::into_inner),
                 }
             }
             AttachmentContent::Link(content) => MsgContent::Link {
@@ -497,52 +513,36 @@ impl MsgContent {
 
     pub fn thumbnail_source(&self) -> Option<MediaSource> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_source
-                    .as_ref()
-                    .map(|y| MediaSource { inner: y.clone() })
-            }),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_source
-                    .as_ref()
-                    .map(|y| MediaSource { inner: y.clone() })
-            }),
-            MsgContent::File { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_source
-                    .as_ref()
-                    .map(|y| MediaSource { inner: y.clone() })
-            }),
-            MsgContent::Location { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_source
-                    .as_ref()
-                    .map(|y| MediaSource { inner: y.clone() })
-            }),
+            MsgContent::Image { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_source.as_ref().map(MediaSource::from)),
+            MsgContent::Video { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_source.as_ref().map(MediaSource::from)),
+            MsgContent::File { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_source.as_ref().map(MediaSource::from)),
+            MsgContent::Location { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_source.as_ref().map(MediaSource::from)),
             _ => None,
         }
     }
 
     pub fn thumbnail_info(&self) -> Option<ThumbnailInfo> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_info
-                    .as_ref()
-                    .map(|y| ThumbnailInfo { inner: *y.clone() })
-            }),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_info
-                    .as_ref()
-                    .map(|y| ThumbnailInfo { inner: *y.clone() })
-            }),
-            MsgContent::File { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_info
-                    .as_ref()
-                    .map(|y| ThumbnailInfo { inner: *y.clone() })
-            }),
-            MsgContent::Location { info, .. } => info.as_ref().and_then(|x| {
-                x.thumbnail_info
-                    .as_ref()
-                    .map(|y| ThumbnailInfo { inner: *y.clone() })
-            }),
+            MsgContent::Image { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_info.as_deref().map(ThumbnailInfo::from)),
+            MsgContent::Video { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_info.as_deref().map(ThumbnailInfo::from)),
+            MsgContent::File { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_info.as_deref().map(ThumbnailInfo::from)),
+            MsgContent::Location { info, .. } => info
+                .as_ref()
+                .and_then(|x| x.thumbnail_info.as_deref().map(ThumbnailInfo::from)),
             _ => None,
         }
     }

@@ -213,7 +213,6 @@ impl Convo {
         self.timeline
             .items()
             .await
-            .clone()
             .into_iter()
             .map(|x| TimelineItem::from((x, user_id.clone())))
             .collect()
