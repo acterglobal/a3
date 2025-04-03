@@ -1057,16 +1057,16 @@ object TimelineVirtualItem {
 
 /// A room Message metadata and content
 object TimelineItem {
-    /// one of event/virtual
-    fn item_type() -> string;
+    /// true if virtual, false if event
+    fn is_virtual() -> bool;
 
     /// Unique ID of this event
     fn unique_id() -> string;
 
-    /// valid only if item_type is "event"
+    /// valid only if is_virtual = false
     fn event_item() -> Option<TimelineEventItem>;
 
-    /// valid only if item_type is "virtual"
+    /// valid only if is_virtual = true
     fn virtual_item() -> Option<TimelineVirtualItem>;
 }
 
