@@ -196,56 +196,57 @@ impl From<&ServerNoticeMessageEventContent> for MsgContent {
 
 impl TryFrom<&AttachmentContent> for MsgContent {
     type Error = ();
+
     fn try_from(value: &AttachmentContent) -> Result<Self, Self::Error> {
-        Ok(match value {
+        match value {
             AttachmentContent::Image(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
-                MsgContent::Image {
+                Ok(MsgContent::Image {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
-                }
+                })
             }
             AttachmentContent::Audio(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Audio(content)) => {
-                MsgContent::Audio {
+                Ok(MsgContent::Audio {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
                     audio: content.audio.clone(),
-                }
+                })
             }
             AttachmentContent::Video(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Video(content)) => {
-                MsgContent::Video {
+                Ok(MsgContent::Video {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
-                }
+                })
             }
             AttachmentContent::File(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::File(content)) => {
-                MsgContent::File {
+                Ok(MsgContent::File {
                     body: content.body.clone(),
                     source: content.source.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
                     filename: content.filename.clone(),
-                }
+                })
             }
             AttachmentContent::Location(content)
             | AttachmentContent::Fallback(FallbackAttachmentContent::Location(content)) => {
-                MsgContent::Location {
+                Ok(MsgContent::Location {
                     body: content.body.clone(),
                     geo_uri: content.geo_uri.clone(),
                     info: content.info.as_ref().map(|x| *x.clone()),
-                }
+                })
             }
-            AttachmentContent::Link(content) => MsgContent::Link {
+            AttachmentContent::Link(content) => Ok(MsgContent::Link {
                 name: content.name.clone(),
                 link: content.link.clone(),
-            },
-            AttachmentContent::Reference(_) => return Err(()),
-        })
+            }),
+            AttachmentContent::Reference(_) => Err(()),
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-use anyhow::bail;
+use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use futures::stream::Any;
@@ -75,13 +75,15 @@ impl EventSendState {
         self.event_id.clone()
     }
 
-    pub async fn abort(&self) -> anyhow::Result<bool> {
+    pub async fn abort(&self) -> Result<bool> {
         let Some(handle) = self.send_handle.clone() else {
             bail!("No send handle found");
         };
-
         RUNTIME
-            .spawn(async move { Ok(handle.abort().await?) })
+            .spawn(async move {
+                let result = handle.abort().await?;
+                Ok(result)
+            })
             .await?
     }
 }
@@ -140,15 +142,19 @@ impl TimelineEventItem {
                     .content()
                     .reactions()
                     .iter()
-                    .map(|(u, group)| {
+                    .map(|(key, group)| {
                         (
-                            u.to_string(),
+                            key.clone(),
                             group
                                 .iter()
-                                .map(|(e, r)| {
-                                    ReactionRecord::new(e.clone(), r.timestamp, *e == my_id)
+                                .map(|(sender_id, info)| {
+                                    ReactionRecord::new(
+                                        sender_id.clone(),
+                                        info.timestamp,
+                                        *sender_id == my_id,
+                                    )
                                 })
-                                .collect::<Vec<_>>(),
+                                .collect::<Vec<ReactionRecord>>(),
                         )
                     })
                     .collect(),
