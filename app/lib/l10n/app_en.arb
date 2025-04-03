@@ -2371,6 +2371,8 @@
   "allowPermission": "Allow Permission",
   "askAgain": "Ask again later",
   "spam": "No marketing spam",
+  "calendarSync": "Sync into Device Calendar",
+  "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {},
   "@addComment": {}
