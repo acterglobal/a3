@@ -308,7 +308,7 @@ impl Client {
             .client()
             .user_id()
             .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     fn user_id_ref(&self) -> Option<&UserId> {
@@ -517,7 +517,7 @@ impl Client {
             .client()
             .device_id()
             .context("DeviceId not found")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

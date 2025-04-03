@@ -672,7 +672,7 @@ impl Room {
             .client()
             .user_id()
             .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     pub async fn space_relations(&self) -> Result<SpaceRelations> {
