@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -168,7 +169,14 @@ class UploadAvatarPage extends ConsumerWidget {
   Widget _buildSkipActionButton(BuildContext context) {
     return OutlinedButton(
       key: UploadAvatarPage.skipBtn,
-      onPressed: () => context.goNamed(Routes.analyticsOptIn.name),
+      onPressed: () async {
+        if (context.mounted) {
+          await handleNotificationPermission(context);
+        }
+        if (context.mounted) {
+          context.goNamed(Routes.analyticsOptIn.name);
+        }
+      },
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,
