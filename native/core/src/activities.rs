@@ -287,7 +287,10 @@ impl Activity {
         let ActivityContent::ObjectInvitation { ref invitees, .. } = self.content() else {
             return vec![];
         };
-        invitees.iter().map(|i| i.to_string()).collect()
+        invitees
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 
     pub fn task_list_id_str(&self) -> Option<String> {
