@@ -104,12 +104,6 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.calendarSyncPermission.name,
-    path: Routes.calendarSyncPermission.route,
-    builder: (context, state) => const CalendarSyncPermissionPage(),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
     name: Routes.encryptionBackup.name,
     path: Routes.encryptionBackup.route,
     builder: (context, state) => const EncryptionBackupPage(),
