@@ -228,9 +228,9 @@ impl CalendarEvent {
                 let users = manager
                     .users_at_status_typed(RsvpStatus::Yes)
                     .await?
-                    .into_iter()
-                    .map(|u| u.to_string())
-                    .collect();
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<String>>();
                 Ok(users)
             })
             .await?

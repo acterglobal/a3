@@ -355,7 +355,7 @@ async fn request_verification_handler(
                 );
                 let methods = our_methods
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>()
                     .join(",");
                 msg.set_content("our_methods".to_string(), methods);
@@ -379,7 +379,7 @@ async fn request_verification_handler(
                 );
                 let methods = their_methods
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>()
                     .join(",");
                 msg.set_content("their_methods".to_string(), methods);
@@ -408,13 +408,13 @@ async fn request_verification_handler(
                 );
                 let methods = their_methods
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>()
                     .join(",");
                 msg.set_content("their_methods".to_string(), methods);
                 let methods = our_methods
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>()
                     .join(",");
                 msg.set_content("our_methods".to_string(), methods);
@@ -590,7 +590,7 @@ async fn sas_verification_handler(
                 let key_agreement_protocols = protocols
                     .key_agreement_protocols
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>();
                 msg.set_content(
                     "key_agreement_protocols".to_string(),
@@ -599,13 +599,13 @@ async fn sas_verification_handler(
                 let hashes = protocols
                     .hashes
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>();
                 msg.set_content("hashes".to_string(), hashes.join(","));
                 let message_authentication_codes = protocols
                     .message_authentication_codes
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>();
                 msg.set_content(
                     "message_authentication_codes".to_string(),
@@ -614,7 +614,7 @@ async fn sas_verification_handler(
                 let short_authentication_string = protocols
                     .short_authentication_string
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>();
                 msg.set_content(
                     "short_authentication_string".to_string(),
@@ -643,7 +643,7 @@ async fn sas_verification_handler(
                 let short_auth_string = accepted_protocols
                     .short_auth_string
                     .iter()
-                    .map(|x| x.to_string())
+                    .map(ToString::to_string)
                     .collect::<Vec<String>>();
                 msg.set_content("short_auth_string".to_string(), short_auth_string.join(","));
                 if let Err(e) = controller.event_tx.send(msg) {
@@ -763,7 +763,7 @@ impl VerificationController {
                             .content
                             .methods
                             .iter()
-                            .map(|x| x.to_string())
+                            .map(ToString::to_string)
                             .collect::<Vec<String>>();
                         msg.set_content("methods".to_string(), methods.join(","));
                         msg.set_content(
@@ -793,7 +793,7 @@ impl VerificationController {
                             .content
                             .methods
                             .iter()
-                            .map(|x| x.to_string())
+                            .map(ToString::to_string)
                             .collect::<Vec<String>>();
                         msg.set_content("methods".to_string(), methods.join(","));
                         if let Err(e) = me.event_tx.send(msg) {
@@ -820,7 +820,7 @@ impl VerificationController {
                                 let key_agreement_protocols = content
                                     .key_agreement_protocols
                                     .iter()
-                                    .map(|x| x.to_string())
+                                    .map(ToString::to_string)
                                     .collect::<Vec<String>>();
                                 msg.set_content(
                                     "key_agreement_protocols".to_string(),
@@ -829,13 +829,13 @@ impl VerificationController {
                                 let hashes = content
                                     .hashes
                                     .iter()
-                                    .map(|x| x.to_string())
+                                    .map(ToString::to_string)
                                     .collect::<Vec<String>>();
                                 msg.set_content("hashes".to_string(), hashes.join(","));
                                 let message_authentication_codes = content
                                     .message_authentication_codes
                                     .iter()
-                                    .map(|x| x.to_string())
+                                    .map(ToString::to_string)
                                     .collect::<Vec<String>>();
                                 msg.set_content(
                                     "message_authentication_codes".to_string(),
@@ -844,7 +844,7 @@ impl VerificationController {
                                 let short_authentication_string = content
                                     .short_authentication_string
                                     .iter()
-                                    .map(|x| x.to_string())
+                                    .map(ToString::to_string)
                                     .collect::<Vec<String>>();
                                 msg.set_content(
                                     "short_authentication_string".to_string(),

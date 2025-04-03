@@ -86,7 +86,7 @@ impl OptionRsvpStatus {
     }
 
     pub fn status_str(&self) -> Option<String> {
-        self.status.as_ref().map(|x| x.to_string())
+        self.status.as_ref().map(ToString::to_string)
     }
 }
 #[derive(Clone)]

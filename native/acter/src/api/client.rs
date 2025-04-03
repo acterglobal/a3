@@ -140,7 +140,7 @@ impl Client {
         }
 
         path.to_str()
-            .map(|s| s.to_string())
+            .map(ToOwned::to_owned)
             .context("Path was generated from strings. Must be string")
     }
 

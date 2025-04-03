@@ -26,7 +26,7 @@ impl MembershipChange {
         self.0.display_name.clone()
     }
     pub fn avatar_url(&self) -> Option<String> {
-        self.0.avatar_url.as_ref().map(|a| a.to_string())
+        self.0.avatar_url.as_ref().map(ToString::to_string)
     }
     pub fn reason(&self) -> Option<String> {
         self.0.reason.clone()

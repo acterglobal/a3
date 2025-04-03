@@ -369,7 +369,7 @@ impl TimelineEventItem {
     }
 
     pub fn in_reply_to(&self) -> Option<String> {
-        self.in_reply_to.as_ref().map(|x| x.to_string())
+        self.in_reply_to.as_ref().map(ToString::to_string)
     }
 
     pub fn read_users(&self) -> Vec<String> {
