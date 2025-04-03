@@ -15,8 +15,8 @@ class ChatRoomMessagesNotifier extends StateNotifier<ChatRoomState> {
   final String roomId;
   late GlobalKey<AnimatedListState> _listState;
   late TimelineStream timeline;
-  late Stream<RoomMessageDiff> _listener;
-  late StreamSubscription<RoomMessageDiff> _poller;
+  late Stream<TimelineItemDiff> _listener;
+  late StreamSubscription<TimelineItemDiff> _poller;
 
   ChatRoomMessagesNotifier({required this.roomId, required this.ref})
     : super(const ChatRoomState()) {
@@ -81,13 +81,13 @@ class ChatRoomMessagesNotifier extends StateNotifier<ChatRoomState> {
 ChatRoomState handleDiff(
   ChatRoomState state, // the current state
   AnimatedListState? animatedList, // the animated list connected to this state
-  RoomMessageDiff diff, // the diff to apply
+  TimelineItemDiff diff, // the diff to apply
 ) {
   final action = diff.action();
   // the diff is applied in reverse order as the animated list is provided to UI in reverse .i.e. for improved scrolling
   switch (action) {
     case 'Append':
-      List<RoomMessage> incoming =
+      List<TimelineItem> incoming =
           diff.values().expect('append diff must contain values').toList();
 
       final messageList = state.messageList.toList();
@@ -106,7 +106,7 @@ ChatRoomState handleDiff(
       return state.copyWith(messageList: messageList, messages: messages);
 
     case 'Set': // used to update UnableToDecrypt message
-      RoomMessage m = diff.value().expect('set diff must contain value');
+      TimelineItem m = diff.value().expect('set diff must contain value');
       final index = diff.index().expect('set diff must contain index');
 
       final reversedIndex =
@@ -128,7 +128,7 @@ ChatRoomState handleDiff(
 
       return state.copyWith(messageList: messageList, messages: messages);
     case 'Insert':
-      RoomMessage m = diff.value().expect('insert diff must contain value');
+      TimelineItem m = diff.value().expect('insert diff must contain value');
       final index = diff.index().expect('insert diff must contain index');
 
       final reversedIndex =
@@ -142,7 +142,7 @@ ChatRoomState handleDiff(
           state.messageList.isEmpty ? 0 : state.messageList.length - 1 - index;
       return state.copyWithRemovedMessageAt(reversedIndex, animatedList);
     case 'PushBack':
-      RoomMessage m = diff.value().expect('push back diff must contain value');
+      TimelineItem m = diff.value().expect('push back diff must contain value');
 
       if (state.messageList.isEmpty) {
         final uniqueId = m.uniqueId();
@@ -152,7 +152,9 @@ ChatRoomState handleDiff(
 
       return state.copyWithNewMessageAt(0, m, animatedList);
     case 'PushFront':
-      RoomMessage m = diff.value().expect('push front diff must contain value');
+      TimelineItem m = diff.value().expect(
+        'push front diff must contain value',
+      );
 
       return state.copyWithNewMessageAt(
         state.messageList.length,
@@ -176,11 +178,11 @@ ChatRoomState handleDiff(
       }
       return state.copyWith(messageList: [], messages: {});
     case 'Reset':
-      List<RoomMessage> incoming =
+      List<TimelineItem> incoming =
           diff.values().expect('reset diff must contain values').toList();
 
       final (messageList, messages) = incoming.fold(
-        (List<String>.empty(growable: true), <String, RoomMessage>{}),
+        (List<String>.empty(growable: true), <String, TimelineItem>{}),
         (val, m) {
           final (list, map) = val;
           final uniqueId = m.uniqueId();

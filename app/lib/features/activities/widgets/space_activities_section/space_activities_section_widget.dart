@@ -27,9 +27,9 @@ Widget? buildSpaceActivitiesSectionWidget(BuildContext context, WidgetRef ref) {
           trailing: const Icon(Icons.arrow_forward_ios),
           onTap:
               () => openLink(
-                ref,
-                'https://github.com/acterglobal/a3/issues/2597',
-                context,
+                ref: ref,
+                target: 'https://github.com/acterglobal/a3/issues/2597',
+                lang: L10n.of(context),
               ),
         ),
       ),

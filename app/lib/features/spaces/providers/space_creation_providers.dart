@@ -10,7 +10,7 @@ final selectedJoinRuleProvider = StateProvider<RoomJoinRule?>(
 ); // user selected visibility provider
 
 // create default chat provider
-final createDefaultChatProvider = StateProvider<bool>((ref) => false);
+final createDefaultChatProvider = StateProvider<bool>((ref) => true);
 
 // create default chat provider
 final showSpaceCreationConfigurationProvider = StateProvider<bool>(

@@ -103,7 +103,7 @@ impl UserProfile {
 
     pub fn display_name(&self) -> Option<String> {
         match self {
-            UserProfile::Member((member, _v)) => member.display_name().map(|x| x.to_string()),
+            UserProfile::Member((member, _v)) => member.display_name().map(ToString::to_string),
             UserProfile::PublicProfile(public_profile) => public_profile.inner.display_name.clone(),
         }
     }

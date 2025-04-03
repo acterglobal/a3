@@ -1,4 +1,4 @@
-use acter::api::RoomMessage;
+use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -186,7 +186,7 @@ async fn video_blurhash_support() -> Result<()> {
     Ok(())
 }
 
-fn match_media_msg(msg: &RoomMessage, content_type: &str, body: &str) -> Option<Option<String>> {
+fn match_media_msg(msg: &TimelineItem, content_type: &str, body: &str) -> Option<Option<String>> {
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
         if let Some(msg_content) = event_item.msg_content() {

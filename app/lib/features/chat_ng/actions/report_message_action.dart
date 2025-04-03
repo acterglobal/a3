@@ -1,12 +1,12 @@
 import 'package:acter/common/actions/report_content.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
 Future<void> reportMessageAction(
   BuildContext context,
-  RoomEventItem item,
+  TimelineEventItem item,
   String messageId,
   String roomId,
 ) async {

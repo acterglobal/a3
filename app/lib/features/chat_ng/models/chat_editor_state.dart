@@ -1,10 +1,10 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 
 enum MessageAction { none, reply, edit }
 
 class ChatEditorState {
-  final RoomEventItem? selectedMsgItem;
+  final TimelineEventItem? selectedMsgItem;
   final MessageAction actionType;
 
   const ChatEditorState({
@@ -16,7 +16,7 @@ class ChatEditorState {
   bool get isEditing => actionType == MessageAction.edit;
 
   ChatEditorState copyWith({
-    RoomEventItem? selectedMsgItem,
+    TimelineEventItem? selectedMsgItem,
     MessageAction? actionType,
   }) {
     return ChatEditorState(

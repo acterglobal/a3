@@ -1,4 +1,4 @@
-use acter::api::{ActerModel, MediaSource, RoomMessage, ThumbnailInfo};
+use acter::api::{ActerModel, MediaSource, ThumbnailInfo, TimelineItem};
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -239,7 +239,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
 }
 
 fn match_media_msg(
-    msg: &RoomMessage,
+    msg: &TimelineItem,
     content_type: &str,
     body: &str,
 ) -> Option<(Option<MediaSource>, Option<ThumbnailInfo>)> {

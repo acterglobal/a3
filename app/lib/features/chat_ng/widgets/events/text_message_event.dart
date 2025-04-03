@@ -1,15 +1,18 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/text_parser.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown/markdown.dart' as md;
 
 enum TextMessageType { regular, reply, emoji, notice }
 
-class TextMessageEvent extends StatelessWidget {
+class TextMessageEvent extends ConsumerWidget {
   final String roomId;
   final MsgContent content;
   final TextMessageType _type;
@@ -94,7 +97,7 @@ class TextMessageEvent extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final chatTheme = Theme.of(context).chatTheme;
     final colorScheme = Theme.of(context).colorScheme;
@@ -144,6 +147,9 @@ class TextMessageEvent extends StatelessWidget {
               ),
           renderNewlines: true,
           maxLines: _type == TextMessageType.reply ? 2 : null,
+          onLinkTap: (Uri uri) {
+            openUri(ref: ref, uri: uri, lang: L10n.of(context));
+          },
           defaultTextStyle: textTheme.bodySmall?.copyWith(
             color:
                 _type == TextMessageType.notice
