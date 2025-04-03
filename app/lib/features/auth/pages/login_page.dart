@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
@@ -209,6 +210,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
+      if (context.mounted) {
+        await handleNotificationPermission(context);
+      }
       if (context.mounted) {
         // no message means, login was successful.
         context.goNamed(Routes.analyticsOptIn.name);

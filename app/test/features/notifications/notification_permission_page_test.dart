@@ -8,7 +8,7 @@ import '../../helpers/test_util.dart';
 void main() {
   testWidgets('renders correctly with all UI elements', (tester) async {
     // Initialize the widget
-    await tester.pumpProviderWidget(child: const NotificationPermissionPage());
+    await tester.pumpProviderWidget(child: const NotificationPermissionWidget());
 
     // Wait for animations and async operations
     await tester.pumpAndSettle();

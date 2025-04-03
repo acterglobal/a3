@@ -1,65 +1,40 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class NotificationPermissionPage extends ConsumerWidget {
-  const NotificationPermissionPage({super.key});
+class NotificationPermissionWidget extends StatelessWidget {
+  const NotificationPermissionWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildBody(context, lang, textTheme, ref),
-    );
-  }
-
-  // AppBar for the Notification Permission Page
-  AppBar _buildAppBar(BuildContext context) {
-    return AppBar(
-      actions: [
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () => context.goNamed(Routes.main.name),
-          tooltip: 'Close',
-        ),
-      ],
-    );
-  }
-
-  // Body content of the Notification Permission Page
-  Widget _buildBody(
-    BuildContext context,
-    L10n lang,
-    TextTheme textTheme,
-    WidgetRef ref,
-  ) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 20),
-              _buildIcon(context),
-              const SizedBox(height: 20),
-              _buildTitleText(context, lang, textTheme),
-              const SizedBox(height: 20),
-              _buildDescriptionText(lang, textTheme),
-              const SizedBox(height: 20),
-              _buildStuffItems(context, lang),
-              const SizedBox(height: 20),
-              _buildActionButton(context, lang, ref, textTheme),
-              const SizedBox(height: 20),
-            ],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildIcon(context),
+                  const SizedBox(height: 20),
+                  _buildTitleText(context, lang, textTheme),
+                  const SizedBox(height: 20),
+                  _buildDescriptionText(lang, textTheme),
+                  const SizedBox(height: 20),
+                  _buildStuffItems(context, lang),
+                  const SizedBox(height: 20),
+                  _buildActionButton(context, lang, textTheme),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -68,10 +43,21 @@ class NotificationPermissionPage extends ConsumerWidget {
 
   // Icon at the top of the page
   Widget _buildIcon(BuildContext context) {
-    return Icon(
-      PhosphorIcons.bell(),
-      color: Theme.of(context).colorScheme.primary,
-      size: 100,
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.close),
+          ),
+        ),
+        Icon(
+          PhosphorIcons.bell(),
+          color: Theme.of(context).colorScheme.primary,
+          size: 100,
+        ),
+      ],
     );
   }
 
@@ -105,17 +91,20 @@ class NotificationPermissionPage extends ConsumerWidget {
       lang.subscribeTo,
     ];
 
-    List<Widget> itemWidgets = stuffItems.map((item) {
-      return buildStuffItem(text: item, context: context);
-    }).toList();
+    List<Widget> itemWidgets =
+        stuffItems.map((item) {
+          return buildStuffItem(text: item, context: context);
+        }).toList();
 
     // Add the spam item with a custom icon and color
-    itemWidgets.add(buildStuffItem(
-      icon: Icons.cancel_outlined,
-      text: lang.spam,
-      context: context,
-      iconColor: Theme.of(context).colorScheme.error,
-    ));
+    itemWidgets.add(
+      buildStuffItem(
+        icon: Icons.cancel_outlined,
+        text: lang.spam,
+        context: context,
+        iconColor: Theme.of(context).colorScheme.error,
+      ),
+    );
 
     return Column(children: itemWidgets);
   }
@@ -159,7 +148,6 @@ class NotificationPermissionPage extends ConsumerWidget {
   Widget _buildActionButton(
     BuildContext context,
     L10n lang,
-    WidgetRef ref,
     TextTheme textTheme,
   ) {
     return Column(
@@ -168,7 +156,10 @@ class NotificationPermissionPage extends ConsumerWidget {
         ActerPrimaryActionButton(
           onPressed: () async {
             // Request notification permission on button press
-            await _requestNotificationPermission(context, textStyle: textTheme.bodyMedium);
+            await _requestNotificationPermission(
+              context,
+              textStyle: textTheme.bodyMedium,
+            );
           },
           child: Text(lang.allowPermission),
         ),
@@ -176,8 +167,7 @@ class NotificationPermissionPage extends ConsumerWidget {
         OutlinedButton(
           onPressed: () {
             if (context.mounted) {
-              // Navigate back to main page
-              context.goNamed(Routes.main.name);
+              Navigator.pop(context);
             }
           },
           child: Text(lang.askAgain),
@@ -194,9 +184,8 @@ class NotificationPermissionPage extends ConsumerWidget {
     final status = await Permission.notification.request();
 
     if (status.isGranted) {
-      // Permission granted, navigate to main page
       if (context.mounted) {
-        context.goNamed(Routes.main.name);
+        Navigator.pop(context);
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar
