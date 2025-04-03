@@ -98,9 +98,6 @@ enum Routes {
   settingsLabs('/settings/labs'),
   settingsChat('/settings/chat'),
   chatListShowcase('/settings/chat/chat-list-showcase'),
-  chatMessagesShowcase(
-    '/settings/chat/chat-list-showcase/chat-messages-showcase',
-  ),
   settingsCalendar('/settings/calendar'),
   settingsCustomizations('/settings/customizations'),
   settingSessions('/settings/sessions'),

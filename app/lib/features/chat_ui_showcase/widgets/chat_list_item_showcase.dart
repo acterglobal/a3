@@ -1,9 +1,7 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_convo_data.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ChatListItemShowcase extends StatelessWidget {
@@ -16,7 +14,6 @@ class ChatListItemShowcase extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(horizontal: 16),
       dense: true,
       leading: _buildLeading(context),
-      onTap: () => context.pushNamed(Routes.chatMessagesShowcase.name),
       title: _buildChatTitle(context),
       subtitle: _buildChatSubtitle(context),
     );
