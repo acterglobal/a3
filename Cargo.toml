@@ -42,6 +42,16 @@ git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
 default-features = false
 
+# [workspace.dependencies.matrix-sdk-ffi]
+# git = "https://github.com/matrix-org/matrix-rust-sdk"
+# rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+# default-features = false
+
+[workspace.dependencies.matrix-sdk-ffi-macros]
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+default-features = false
+
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
@@ -85,4 +95,5 @@ codegen-units = 1
 strip = true  # Automatically strip symbols from the binary.
 
 [patch.crates-io]
+async-compat = { git = "https://github.com/element-hq/async-compat", rev = "5a27c8b290f1f1dcfc0c4ec22c464e38528aa591" }
 const_panic = { git = "https://github.com/jplatte/const_panic", rev = "9024a4cb3eac45c1d2d980f17aaee287b17be498" }
