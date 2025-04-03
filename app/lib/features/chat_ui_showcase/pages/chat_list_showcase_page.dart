@@ -13,7 +13,7 @@ class ChatListShowcasePage extends StatelessWidget {
     final lang = L10n.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(lang.chatUIShowcase),
+        title: Text(lang.chat),
         actions: [PlusIconWidget(onPressed: () {})],
       ),
       body: Column(
