@@ -201,22 +201,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> handleSubmit(BuildContext context) async {
+
+    if (!context.mounted) return;
+
     if (!formKey.currentState!.validate()) return;
+
     if (!inCI && !ref.read(hasNetworkProvider)) {
       showNoInternetNotification(context);
       return;
     }
+
     final authNotifier = ref.read(authStateProvider.notifier);
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
-      if (context.mounted) {
-        await handleNotificationPermission(context);
-      }
-      if (context.mounted) {
-        // no message means, login was successful.
-        context.goNamed(Routes.analyticsOptIn.name);
-      }
+       await handleNotificationPermission(context);
+       context.goNamed(Routes.analyticsOptIn.name);
     } else {
       _log.severe('Failed to login', loginSuccess);
       if (!context.mounted) return;
