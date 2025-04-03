@@ -210,20 +210,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
-      // Store the route name to navigate to after permission check
-      final routeToNavigate = Routes.analyticsOptIn.name;
-
       // Check if context is still valid
       if (!mounted) return;
-
-      // Request notification permission
       await handleNotificationPermission(context);
-
-      // Check if context is still valid after async operation
       if (!mounted) return;
-
-      // Navigate to the stored route
-      navigator.goNamed(routeToNavigate);
+      navigator.goNamed( Routes.analyticsOptIn.name);
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));
