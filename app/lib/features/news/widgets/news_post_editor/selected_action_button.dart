@@ -146,7 +146,7 @@ class SelectedActionButton extends ConsumerWidget {
       child: Card(
         child: ListTile(
           leading: const Icon(Atlas.link),
-          onTap: () => openLink(ref, uri, context),
+          onTap: () => openLink(ref: ref, target: uri, lang: L10n.of(context)),
           title: Text(
             refDetail.title() ?? L10n.of(context).unknown,
             maxLines: 2,

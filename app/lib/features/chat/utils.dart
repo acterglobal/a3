@@ -6,6 +6,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
@@ -352,7 +353,7 @@ Future<void> onMessageLinkTap(
     ///If link is other than matrix room link
     ///Then open it on browser
     else {
-      await openLink(ref, uri.toString(), context);
+      await openLink(ref: ref, target: uri.toString(), lang: L10n.of(context));
     }
   }
 }

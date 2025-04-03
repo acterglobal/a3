@@ -52,7 +52,7 @@ class FakeLinkAttachmentItem extends ConsumerWidget {
       ),
       child: ListTile(
         leading: const Icon(Atlas.link),
-        onTap: () => openLink(ref, link, context),
+        onTap: () => openLink(ref: ref, target: link, lang: L10n.of(context)),
         title: Text(
           link,
           maxLines: 2,

@@ -2613,6 +2613,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.8"
+  test_screenshot:
+    dependency: "direct dev"
+    description:
+      name: test_screenshot
+      sha256: c441e0249f3094b373e7456eddd345256543a11b8315370c1da029c2ac40e734
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   time:
     dependency: transitive
     description:

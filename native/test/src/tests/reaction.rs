@@ -1,4 +1,4 @@
-use acter::api::{RoomMessage, RoomMessageDiff};
+use acter::api::{TimelineItem, TimelineItemDiff};
 use anyhow::{bail, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt, Stream};
@@ -7,10 +7,10 @@ use tracing::{info, warn};
 
 use crate::utils::{accept_all_invites, random_users_with_random_convo, wait_for_convo_joined};
 
-type MessageMatchesTest = dyn Fn(&RoomMessage) -> bool;
+type MessageMatchesTest = dyn Fn(&TimelineItem) -> bool;
 
 async fn wait_for_message(
-    stream: impl Stream<Item = RoomMessageDiff>,
+    stream: impl Stream<Item = TimelineItemDiff>,
     match_test: &MessageMatchesTest,
     error: &'static str,
 ) -> Result<(String, String)> {
@@ -175,7 +175,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     Ok(())
 }
 
-fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<String> {
+fn match_text_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");
@@ -191,7 +191,7 @@ fn match_text_msg(msg: &RoomMessage, body: &str) -> Option<String> {
     None
 }
 
-fn match_msg_reaction(msg: &RoomMessage, body: &str, key: String) -> bool {
+fn match_msg_reaction(msg: &TimelineItem, body: &str, key: String) -> bool {
     info!("match room msg - {:?}", msg.clone());
     if msg.item_type() == "event" {
         let event_item = msg.event_item().expect("room msg should have event item");

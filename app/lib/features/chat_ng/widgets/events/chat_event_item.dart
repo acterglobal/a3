@@ -6,13 +6,13 @@ import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 
 class ChatEventItem extends StatelessWidget {
   final String roomId;
   final String messageId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   final bool isMe;
   final bool canRedact;
   final bool isFirstMessageBySender;

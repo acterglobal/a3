@@ -165,7 +165,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: LoginPageKeys.submitBtn,
-          onPressed: () => handleSubmit(context),
+          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
           child: Text(
             L10n.of(context).logIn,
             style: Theme.of(context).textTheme.bodyMedium,
@@ -200,26 +200,25 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  Future<void> handleSubmit(BuildContext context) async {
-
-    if (!context.mounted) return;
-
+  Future<void> handleSubmit(L10n lang, GoRouter navigator) async {
     if (!formKey.currentState!.validate()) return;
-
     if (!inCI && !ref.read(hasNetworkProvider)) {
-      showNoInternetNotification(context);
+      showNoInternetNotification(lang);
       return;
     }
-
     final authNotifier = ref.read(authStateProvider.notifier);
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
-       await handleNotificationPermission(context);
-       context.goNamed(Routes.analyticsOptIn.name);
+      if (context.mounted) {
+        await handleNotificationPermission(context);
+      }
+      if (context.mounted) {
+        // no message means, login was successful.
+        context.goNamed(Routes.analyticsOptIn.name);
+      }
     } else {
       _log.severe('Failed to login', loginSuccess);
-      if (!context.mounted) return;
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));
     }
   }
