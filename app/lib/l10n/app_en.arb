@@ -2367,5 +2367,15 @@
     "calendarSync": "Sync into Device Calendar",
     "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
     "@youInvited": {},
+    "pushNotification": "Push Notification",
+    "pushNotificationDesc": "To ensure you don't miss anything important, Acter needs to be able to sent you push Notifications. Don't worry, we only sent you stuff you care about:",
+    "directInvitation": "Direct Invitations",
+    "msgFromChat": "Messages from your chat",
+    "boostFromPeers": "Boosts from your peers",
+    "commentOnThings": "Comment on your things",
+    "subscribeTo": "Things you actively subscribe to",
+    "allowPermission": "Allow Permission",
+    "askAgain": "Ask again later",
+    "spam": "No marketing spam",
     "@addComment": {}
 }
