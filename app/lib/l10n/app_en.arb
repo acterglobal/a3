@@ -2278,6 +2278,8 @@
   "@pinImportantInformation": {},
   "calenderWithEvents": "Calender with Events",
   "@calenderWithEvents": {},
+  "chatUIShowcase": "Chat UI Show-case",
+  "chatUIShowcaseDes": "Showcase the user interface and overall chat experience with sample data",
   "inviteCodeEmptyState": "No invite codes are generated yet",
   "applyingFeatureSettings": "Applying feature settings",
   "selectPermissionLevel": "Select Permission Level",
