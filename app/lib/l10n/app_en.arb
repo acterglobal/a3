@@ -2322,6 +2322,8 @@
     "copy": "copy",
     "qr": "QR",
     "newBoost": "New\nBoost",
+    "chatUIShowcase": "Chat UI Show-case",
+    "chatUIShowcaseDes": "Showcase the user interface and overall chat experience with sample data",
     "addComment": "Add Comment",
     "references": "References",
     "removeReference": "Remove Reference",

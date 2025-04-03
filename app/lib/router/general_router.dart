@@ -11,6 +11,7 @@ import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
+import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
 import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
@@ -262,6 +263,16 @@ final generalRoutes = [
               initialPage: page,
             ),
           );
+    },
+  ),
+
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.chatListShowcase.name,
+    path: Routes.chatListShowcase.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return MaterialPage(key: state.pageKey, child: ChatListShowcasePage());
     },
   ),
   GoRoute(
