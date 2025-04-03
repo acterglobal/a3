@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
