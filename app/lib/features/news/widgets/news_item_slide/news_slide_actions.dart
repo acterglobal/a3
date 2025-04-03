@@ -93,7 +93,7 @@ class UpdateSlideActions extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.link),
-          onTap: () => openLink(ref, uri, context),
+          onTap: () => openLink(ref: ref, target: uri, lang: L10n.of(context)),
           title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
           subtitle: Text(
             uri,
@@ -107,7 +107,7 @@ class UpdateSlideActions extends ConsumerWidget {
       return Card(
         child: ListTile(
           leading: const Icon(Atlas.link),
-          onTap: () => openLink(ref, uri, context),
+          onTap: () => openLink(ref: ref, target: uri, lang: L10n.of(context)),
           title: Text(
             uri,
             maxLines: 2,

@@ -99,7 +99,7 @@ pub use core::time::Duration as EfkDuration;
 pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
 pub use invitations::{InvitationsManager, ObjectInvitationsManager, RoomInvitation};
-pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
+pub use message::{EventSendState, TimelineEventItem, TimelineItem, TimelineVirtualItem};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
@@ -126,7 +126,7 @@ pub use spaces::{
     CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space, SpaceDiff,
 };
 pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
-pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
+pub use stream::{MsgDraft, TimelineItemDiff, TimelineStream};
 pub use super_invites::{
     SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
 };

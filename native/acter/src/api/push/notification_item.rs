@@ -55,7 +55,7 @@ use urlencoding::encode;
 
 use crate::{Client, Rsvp};
 
-use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, MsgContent, RUNTIME};
 
 #[derive(Debug, Clone)]
 pub struct NotificationSender {

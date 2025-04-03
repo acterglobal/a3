@@ -3,14 +3,14 @@ import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dar
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_detail_sheet.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ReactionsList extends ConsumerWidget {
   final String roomId;
   final String messageId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   const ReactionsList({
     super.key,
     required this.roomId,

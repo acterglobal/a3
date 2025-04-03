@@ -529,9 +529,9 @@ impl Task {
     pub fn assignees_str(&self) -> Vec<String> {
         self.content
             .assignees()
-            .into_iter()
-            .map(|a| a.to_string())
-            .collect()
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 
     pub fn priority(&self) -> Option<u8> {
