@@ -8,6 +8,120 @@ import "dart:isolate";
 import "dart:typed_data";
 import "package:ffi/ffi.dart";
 
+class UniffiNotificationItem {
+  final String title;final String pushStyle;final String targetUrl;final String? body;final String? threadId;final String? imagePath;final bool? isNoisy;
+
+  UniffiNotificationItem._(this.title,this.pushStyle,this.targetUrl,this.body,this.threadId,this.imagePath,this.isNoisy,);
+}
+
+class FfiConverterUniffiNotificationItem {
+  static UniffiNotificationItem lift( RustBuffer buf) {
+    return FfiConverterUniffiNotificationItem.read(buf.asUint8List()).value;
+  }
+
+  static LiftRetVal<UniffiNotificationItem> read( Uint8List buf) {
+    int new_offset = 0;
+
+    final title_lifted = FfiConverterString.read(Uint8List.view(buf.buffer, new_offset));
+    final title = title_lifted.value;
+    new_offset += title_lifted.bytesRead;final pushStyle_lifted = FfiConverterString.read(Uint8List.view(buf.buffer, new_offset));
+    final pushStyle = pushStyle_lifted.value;
+    new_offset += pushStyle_lifted.bytesRead;final targetUrl_lifted = FfiConverterString.read(Uint8List.view(buf.buffer, new_offset));
+    final targetUrl = targetUrl_lifted.value;
+    new_offset += targetUrl_lifted.bytesRead;final body_lifted = FfiConverterOptionalString.read(Uint8List.view(buf.buffer, new_offset));
+    final body = body_lifted.value;
+    new_offset += body_lifted.bytesRead;final threadId_lifted = FfiConverterOptionalString.read(Uint8List.view(buf.buffer, new_offset));
+    final threadId = threadId_lifted.value;
+    new_offset += threadId_lifted.bytesRead;final imagePath_lifted = FfiConverterOptionalString.read(Uint8List.view(buf.buffer, new_offset));
+    final imagePath = imagePath_lifted.value;
+    new_offset += imagePath_lifted.bytesRead;final isNoisy_lifted = FfiConverterOptionalBool.read(Uint8List.view(buf.buffer, new_offset));
+    final isNoisy = isNoisy_lifted.value;
+    new_offset += isNoisy_lifted.bytesRead;
+    return LiftRetVal(UniffiNotificationItem._(
+      title,pushStyle,targetUrl,body,threadId,imagePath,isNoisy,
+    ), new_offset);
+  }
+
+  static RustBuffer lower( UniffiNotificationItem value) {
+    final total_length = FfiConverterString.allocationSize(value.title) +FfiConverterString.allocationSize(value.pushStyle) +FfiConverterString.allocationSize(value.targetUrl) +FfiConverterOptionalString.allocationSize(value.body) +FfiConverterOptionalString.allocationSize(value.threadId) +FfiConverterOptionalString.allocationSize(value.imagePath) +FfiConverterOptionalBool.allocationSize(value.isNoisy) + 0;
+    final buf = Uint8List(total_length);
+    write(value, buf);
+    return toRustBuffer(buf);
+  }
+
+  static int write( UniffiNotificationItem value, Uint8List buf) {
+    int new_offset = buf.offsetInBytes;
+
+    new_offset += FfiConverterString.write(value.title, Uint8List.view(buf.buffer, new_offset));new_offset += FfiConverterString.write(value.pushStyle, Uint8List.view(buf.buffer, new_offset));new_offset += FfiConverterString.write(value.targetUrl, Uint8List.view(buf.buffer, new_offset));new_offset += FfiConverterOptionalString.write(value.body, Uint8List.view(buf.buffer, new_offset));new_offset += FfiConverterOptionalString.write(value.threadId, Uint8List.view(buf.buffer, new_offset));new_offset += FfiConverterOptionalString.write(value.imagePath, Uint8List.view(buf.buffer, new_offset));new_offset += FfiConverterOptionalBool.write(value.isNoisy, Uint8List.view(buf.buffer, new_offset));
+    return new_offset;
+  }
+
+  static int allocationSize(UniffiNotificationItem value) {
+    return FfiConverterString.allocationSize(value.title) +FfiConverterString.allocationSize(value.pushStyle) +FfiConverterString.allocationSize(value.targetUrl) +FfiConverterOptionalString.allocationSize(value.body) +FfiConverterOptionalString.allocationSize(value.threadId) +FfiConverterOptionalString.allocationSize(value.imagePath) +FfiConverterOptionalBool.allocationSize(value.isNoisy) + 0;
+  }
+}
+
+enum ActerError {
+  disconnect,unknown,anyhow,
+  ;
+}
+
+class FfiConverterActerError {
+  static ActerError lift( RustBuffer buffer) {
+    final index = buffer.asUint8List().buffer.asByteData().getInt32(0);
+    switch(index) {
+      case 1:
+        return ActerError.disconnect;
+      case 2:
+        return ActerError.unknown;
+      case 3:
+        return ActerError.anyhow;
+      default:
+        throw UniffiInternalError(UniffiInternalError.unexpectedEnumCase, "Unable to determine enum variant");
+    }
+  }
+
+  static RustBuffer lower( ActerError input) {
+    return toRustBuffer(createUint8ListFromInt(input.index + 1));
+  }
+}
+final _UniffiClientFinalizer = Finalizer<Pointer<Void>>((ptr) {
+  rustCall((status) => _UniffiLib.instance.uniffi_acter_fn_free_unifficlient(ptr, status));
+});
+
+class UniffiClient {
+  final Pointer<Void> _ptr;
+
+  UniffiClient._(this._ptr) {
+    _UniffiClientFinalizer.attach(this, _ptr, detach: this);
+  }
+
+  factory UniffiClient.lift(Pointer<Void> ptr) {
+    return UniffiClient._(ptr);
+  }
+
+  Pointer<Void> uniffiClonePointer() {
+    return rustCall((status) => _UniffiLib.instance.uniffi_acter_fn_clone_unifficlient(_ptr, status));
+  }
+
+  void dispose() {
+    _UniffiClientFinalizer.detach(this);
+    rustCall((status) => _UniffiLib.instance.uniffi_acter_fn_free_unifficlient(_ptr, status));
+  }
+
+  UniffiClient cloned() {
+    return rustCall((status) => UniffiClient.lift(_UniffiLib.instance.uniffi_acter_fn_method_unifficlient_cloned(
+      uniffiClonePointer(),
+       status
+    )));
+  }String userId() {
+    return rustCall((status) => FfiConverterString.lift(_UniffiLib.instance.uniffi_acter_fn_method_unifficlient_user_id(
+      uniffiClonePointer(),
+       status
+    )));
+  }
+}
+
 class UniffiInternalError implements Exception {
   static const int bufferOverflow = 0;
   static const int incompleteData = 1;
@@ -210,7 +324,55 @@ Uint8List createUint8ListFromInt(int value) {
   return uint8List;
 }
 
-class FfiConverterString {
+class FfiConverterOptionalString {
+
+  static String? lift( RustBuffer buf) {
+    return FfiConverterOptionalString.read(buf.asUint8List()).value;
+  }
+
+  static LiftRetVal<String?> read( Uint8List buf) {
+    if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0){
+      return LiftRetVal(null, 1);
+    }
+    return FfiConverterString.read(Uint8List.view(buf.buffer, buf.offsetInBytes + 1)).copyWithOffset(1);
+  }
+
+  static int allocationSize([String? value]) {
+    if (value == null) {
+      return 1;
+    }
+    return FfiConverterString.allocationSize(value) + 1;
+  }
+
+  static RustBuffer lower( String? value) {
+    if (value == null) {
+      return toRustBuffer(Uint8List.fromList([0]));
+    }
+
+    final length = FfiConverterOptionalString.allocationSize(value);
+
+    final Pointer<Uint8> frameData = calloc<Uint8>(length);
+    final buf = frameData.asTypedList(length);
+
+    FfiConverterOptionalString.write(value, buf);
+
+    final bytes = calloc<ForeignBytes>();
+    bytes.ref.len = length;
+    bytes.ref.data = frameData;
+    return RustBuffer.fromBytes(bytes.ref);
+  }
+
+  static int write( String? value, Uint8List buf) {
+    if (value == null) {
+      buf[0] = 0;
+      return 1;
+    }
+
+    buf[0] = 1;
+
+    return FfiConverterString.write(value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) + 1;
+  }
+}class FfiConverterString {
   static String lift( RustBuffer buf) {
 
     return utf8.decoder.convert(buf.asUint8List());
@@ -236,6 +398,80 @@ class FfiConverterString {
     buf.buffer.asByteData(buf.offsetInBytes).setInt32(0, list.length);
     buf.setAll(4, list);
     return list.length + 4;
+  }
+}class FfiConverterOptionalBool {
+
+  static bool? lift( RustBuffer buf) {
+    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
+  }
+
+  static LiftRetVal<bool?> read( Uint8List buf) {
+    if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0){
+      return LiftRetVal(null, 1);
+    }
+    return FfiConverterBool.read(Uint8List.view(buf.buffer, buf.offsetInBytes + 1)).copyWithOffset(1);
+  }
+
+  static int allocationSize([bool? value]) {
+    if (value == null) {
+      return 1;
+    }
+    return FfiConverterBool.allocationSize(value) + 1;
+  }
+
+  static RustBuffer lower( bool? value) {
+    if (value == null) {
+      return toRustBuffer(Uint8List.fromList([0]));
+    }
+
+    final length = FfiConverterOptionalBool.allocationSize(value);
+
+    final Pointer<Uint8> frameData = calloc<Uint8>(length);
+    final buf = frameData.asTypedList(length);
+
+    FfiConverterOptionalBool.write(value, buf);
+
+    final bytes = calloc<ForeignBytes>();
+    bytes.ref.len = length;
+    bytes.ref.data = frameData;
+    return RustBuffer.fromBytes(bytes.ref);
+  }
+
+  static int write( bool? value, Uint8List buf) {
+    if (value == null) {
+      buf[0] = 0;
+      return 1;
+    }
+
+    buf[0] = 1;
+
+    return FfiConverterBool.write(value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) + 1;
+  }
+}class FfiConverterBool {
+
+  static bool lift( int value) {
+    return value == 1;
+  }
+
+  static int lower( bool value) {
+    return value ? 1 :0;
+  }
+
+  static LiftRetVal<bool> read( Uint8List buf) {
+    return LiftRetVal(FfiConverterBool.lift(buf.first), 1);
+  }
+
+  static RustBuffer lowerIntoRustBuffer( bool value) {
+    return toRustBuffer(Uint8List.fromList([FfiConverterBool.lower(value)]));
+  }
+
+  static int allocationSize([bool value = false]) {
+    return 1;
+  }
+
+  static int write( bool value, Uint8List buf) {
+    buf.setAll(0, [value ? 1 : 0]);
+    return allocationSize();
   }
 }
 
@@ -292,6 +528,18 @@ Future<T> uniffiRustCallAsync<T, F>(
   }
 }
 
+Future<UniffiNotificationItem> getNotificationItem(String basePath,String mediaCachePath,String tempDir,String restoreToken,String roomId,String eventId,) {
+  return uniffiRustCallAsync(
+    () => _UniffiLib.instance.uniffi_acter_fn_func_get_notification_item(
+      FfiConverterString.lower(basePath),FfiConverterString.lower(mediaCachePath),FfiConverterString.lower(tempDir),FfiConverterString.lower(restoreToken),FfiConverterString.lower(roomId),FfiConverterString.lower(eventId),
+    ),
+    _UniffiLib.instance.ffi_acter_rust_future_poll_rust_buffer,
+    _UniffiLib.instance.ffi_acter_rust_future_complete_rust_buffer,
+    _UniffiLib.instance.ffi_acter_rust_future_free_rust_buffer,
+    FfiConverterUniffiNotificationItem.lift,
+  );
+}
+
 class _UniffiLib {
   _UniffiLib._();
 
@@ -308,7 +556,22 @@ class _UniffiLib {
 
   static final _UniffiLib instance = _UniffiLib._();
 
-  late final RustBuffer Function(int,Pointer<RustCallStatus>) ffi_acter_rustbuffer_alloc = _dylib.lookupFunction<
+  late final Pointer<Void> Function(Pointer<Void>,Pointer<RustCallStatus>) uniffi_acter_fn_clone_unifficlient = _dylib.lookupFunction<
+    Pointer<Void> Function(Pointer<Void>,Pointer<RustCallStatus>),
+    Pointer<Void> Function(Pointer<Void>,Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_clone_unifficlient");late final void Function(Pointer<Void>,Pointer<RustCallStatus>) uniffi_acter_fn_free_unifficlient = _dylib.lookupFunction<
+    Void Function(Pointer<Void>,Pointer<RustCallStatus>),
+    void Function(Pointer<Void>,Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_free_unifficlient");late final Pointer<Void> Function(Pointer<Void>,Pointer<RustCallStatus>) uniffi_acter_fn_method_unifficlient_cloned = _dylib.lookupFunction<
+    Pointer<Void> Function(Pointer<Void>,Pointer<RustCallStatus>),
+    Pointer<Void> Function(Pointer<Void>,Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_method_unifficlient_cloned");late final RustBuffer Function(Pointer<Void>,Pointer<RustCallStatus>) uniffi_acter_fn_method_unifficlient_user_id = _dylib.lookupFunction<
+    RustBuffer Function(Pointer<Void>,Pointer<RustCallStatus>),
+    RustBuffer Function(Pointer<Void>,Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_method_unifficlient_user_id");late final int Function(RustBuffer,RustBuffer,RustBuffer,RustBuffer,RustBuffer,RustBuffer,) uniffi_acter_fn_func_get_notification_item = _dylib.lookupFunction<
+    Uint64 Function(RustBuffer,RustBuffer,RustBuffer,RustBuffer,RustBuffer,RustBuffer,),
+    int Function(RustBuffer,RustBuffer,RustBuffer,RustBuffer,RustBuffer,RustBuffer,)
+  >("uniffi_acter_fn_func_get_notification_item");late final RustBuffer Function(int,Pointer<RustCallStatus>) ffi_acter_rustbuffer_alloc = _dylib.lookupFunction<
     RustBuffer Function(Uint64,Pointer<RustCallStatus>),
     RustBuffer Function(int,Pointer<RustCallStatus>)
   >("ffi_acter_rustbuffer_alloc");late final RustBuffer Function(ForeignBytes,Pointer<RustCallStatus>) ffi_acter_rustbuffer_from_bytes = _dylib.lookupFunction<
@@ -476,20 +739,37 @@ class _UniffiLib {
   >("ffi_acter_rust_future_free_void");late final void Function(int,Pointer<RustCallStatus>) ffi_acter_rust_future_complete_void = _dylib.lookupFunction<
     Void Function(Uint64,Pointer<RustCallStatus>),
     void Function(int,Pointer<RustCallStatus>)
-  >("ffi_acter_rust_future_complete_void");late final int Function() ffi_acter_uniffi_contract_version = _dylib.lookupFunction<
+  >("ffi_acter_rust_future_complete_void");late final int Function() uniffi_acter_checksum_func_get_notification_item = _dylib.lookupFunction<
+    Uint16 Function(),
+    int Function()
+  >("uniffi_acter_checksum_func_get_notification_item");late final int Function() uniffi_acter_checksum_method_unifficlient_cloned = _dylib.lookupFunction<
+    Uint16 Function(),
+    int Function()
+  >("uniffi_acter_checksum_method_unifficlient_cloned");late final int Function() uniffi_acter_checksum_method_unifficlient_user_id = _dylib.lookupFunction<
+    Uint16 Function(),
+    int Function()
+  >("uniffi_acter_checksum_method_unifficlient_user_id");late final int Function() ffi_acter_uniffi_contract_version = _dylib.lookupFunction<
     Uint32 Function(),
     int Function()
   >("ffi_acter_uniffi_contract_version");
 
   static void _checkApiVersion() {
-    final bindingsVersion = 29;
+    final bindingsVersion = 26;
     final scaffoldingVersion = _UniffiLib.instance.ffi_acter_uniffi_contract_version();
     if (bindingsVersion != scaffoldingVersion) {
       throw UniffiInternalError.panicked("UniFFI contract version mismatch: bindings version \$bindingsVersion, scaffolding version \$scaffoldingVersion");
     }
   }
 
-  static void _checkApiChecksums() {}
+  static void _checkApiChecksums() {
+    if (_UniffiLib.instance.uniffi_acter_checksum_func_get_notification_item() != 20285) {
+      throw UniffiInternalError.panicked("UniFFI API checksum mismatch");
+    }if (_UniffiLib.instance.uniffi_acter_checksum_method_unifficlient_cloned() != 14372) {
+      throw UniffiInternalError.panicked("UniFFI API checksum mismatch");
+    }if (_UniffiLib.instance.uniffi_acter_checksum_method_unifficlient_user_id() != 57780) {
+      throw UniffiInternalError.panicked("UniFFI API checksum mismatch");
+    }
+  }
 }
 
 void initialize() {
