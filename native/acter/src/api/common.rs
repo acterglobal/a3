@@ -97,6 +97,14 @@ pub struct MediaSource {
     pub(crate) inner: SdkMediaSource,
 }
 
+impl From<&SdkMediaSource> for MediaSource {
+    fn from(value: &SdkMediaSource) -> Self {
+        MediaSource {
+            inner: value.clone(),
+        }
+    }
+}
+
 impl MediaSource {
     pub fn url(&self) -> String {
         match self.inner.clone() {
@@ -109,6 +117,14 @@ impl MediaSource {
 #[derive(Clone)]
 pub struct ThumbnailInfo {
     pub(crate) inner: SdkThumbnailInfo,
+}
+
+impl From<&SdkThumbnailInfo> for ThumbnailInfo {
+    fn from(value: &SdkThumbnailInfo) -> Self {
+        ThumbnailInfo {
+            inner: value.clone(),
+        }
+    }
 }
 
 impl ThumbnailInfo {

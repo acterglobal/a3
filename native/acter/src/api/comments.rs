@@ -22,16 +22,16 @@ use super::{client::Client, RUNTIME};
 
 impl Client {
     pub async fn wait_for_comment(&self, key: String, timeout: Option<u8>) -> Result<Comment> {
-        let me = self.clone();
+        let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Comment(comment) = me.wait_for(key.clone(), timeout).await?
+                let AnyActerModel::Comment(comment) = client.wait_for(key.clone(), timeout).await?
                 else {
                     bail!("{key} is not a comment");
                 };
-                let room = me.room_by_id_typed(&comment.meta.room_id)?;
+                let room = client.room_by_id_typed(&comment.meta.room_id)?;
                 Ok(Comment {
-                    client: me.clone(),
+                    client,
                     room,
                     inner: comment,
                 })
