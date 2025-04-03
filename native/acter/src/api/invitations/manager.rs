@@ -69,7 +69,11 @@ impl InvitationsManager {
         Ok(RUNTIME
             .spawn(async move {
                 let manager = MyInvitesManager::load(core.store()).await;
-                manager.invited_to().iter().map(|s| s.to_string()).collect()
+                manager
+                    .invited_to()
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect()
             })
             .await?)
     }

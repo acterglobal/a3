@@ -86,7 +86,7 @@ impl OptionRsvpStatus {
     }
 
     pub fn status_str(&self) -> Option<String> {
-        self.status.as_ref().map(|x| x.to_string())
+        self.status.as_ref().map(ToString::to_string)
     }
 }
 #[derive(Clone)]
@@ -128,15 +128,15 @@ impl ThumbnailInfo {
     }
 
     pub fn size(&self) -> Option<u64> {
-        self.inner.size.map(|x| x.into())
+        self.inner.size.map(Into::into)
     }
 
     pub fn width(&self) -> Option<u64> {
-        self.inner.width.map(|x| x.into())
+        self.inner.width.map(Into::into)
     }
 
     pub fn height(&self) -> Option<u64> {
-        self.inner.height.map(|x| x.into())
+        self.inner.height.map(Into::into)
     }
 }
 
@@ -471,30 +471,26 @@ impl MsgContent {
 
     pub fn size(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
-            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::Audio { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
+            MsgContent::File { info, .. } => info.as_ref().and_then(|x| x.size.map(Into::into)),
             _ => None,
         }
     }
 
     pub fn width(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
-            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(|x| x.into())),
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.width.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.width.map(Into::into)),
             _ => None,
         }
     }
 
     pub fn height(&self) -> Option<u64> {
         match self {
-            MsgContent::Image { info, .. } => {
-                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
-            }
-            MsgContent::Video { info, .. } => {
-                info.as_ref().and_then(|x| x.height.map(|x| x.into()))
-            }
+            MsgContent::Image { info, .. } => info.as_ref().and_then(|x| x.height.map(Into::into)),
+            MsgContent::Video { info, .. } => info.as_ref().and_then(|x| x.height.map(Into::into)),
             _ => None,
         }
     }
