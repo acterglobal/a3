@@ -47,7 +47,7 @@ impl PublicSearchResultItem {
     }
 
     pub fn canonical_alias_str(&self) -> Option<String> {
-        self.chunk.canonical_alias.as_ref().map(|a| a.to_string())
+        self.chunk.canonical_alias.as_ref().map(ToString::to_string)
     }
 
     pub fn num_joined_members(&self) -> u64 {
@@ -67,7 +67,7 @@ impl PublicSearchResultItem {
     }
 
     pub fn avatar_url_str(&self) -> Option<String> {
-        self.chunk.avatar_url.as_ref().map(|a| a.to_string())
+        self.chunk.avatar_url.as_ref().map(ToString::to_string)
     }
 
     pub fn has_avatar(&self) -> bool {

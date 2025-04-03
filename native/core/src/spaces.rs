@@ -174,7 +174,10 @@ impl SpaceRelation {
     }
 
     pub fn via(&self) -> Vec<String> {
-        self.via.iter().map(|x| x.to_string()).collect()
+        self.via
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 }
 

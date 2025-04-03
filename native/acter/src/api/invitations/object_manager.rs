@@ -56,7 +56,7 @@ impl ObjectInvitationsManager {
         self.inner
             .invited()
             .iter()
-            .map(|id| id.to_string())
+            .map(ToString::to_string)
             .collect()
     }
 
@@ -64,7 +64,7 @@ impl ObjectInvitationsManager {
         self.inner
             .accepted()
             .iter()
-            .map(|id| id.to_string())
+            .map(ToString::to_string)
             .collect()
     }
 
@@ -72,7 +72,7 @@ impl ObjectInvitationsManager {
         self.inner
             .declined()
             .iter()
-            .map(|id| id.to_string())
+            .map(ToString::to_string)
             .collect()
     }
 

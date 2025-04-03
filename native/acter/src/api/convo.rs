@@ -287,7 +287,7 @@ impl Convo {
             .room
             .direct_targets()
             .iter()
-            .map(|f| f.to_string())
+            .map(ToString::to_string)
             .collect()
     }
 
