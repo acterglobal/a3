@@ -37,8 +37,8 @@ class ChatSettingsPage extends ConsumerWidget {
                   onToggle: (newVal) {},
                 ),
                 CustomSettingsTile(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Card(
+                    margin: EdgeInsets.zero,
                     child: ListTile(
                       onTap:
                           () => context.pushNamed(Routes.chatListShowcase.name),
