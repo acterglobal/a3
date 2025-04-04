@@ -1,5 +1,5 @@
 class MockConvo {
-  final String roomId;
+  final String? roomId;
   final bool isDM;
   final String displayName;
   final String lastMessage;

@@ -1,4 +1,5 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/last_message.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/typing_indicator.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/unread_count.dart';
@@ -6,12 +7,12 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class ChatListItem extends StatelessWidget {
-  final String roomId;
-  final bool isDM;
+class ChatListItemContainerWidget extends StatelessWidget {
+  final String? roomId;
   final String displayName;
   final String lastMessage;
-  final int lastMessageTimestamp;
+  final int? lastMessageTimestamp;
+  final bool isDM;
   final String? lastMessageSenderDisplayName;
   final bool isUnread;
   final int unreadCount;
@@ -19,14 +20,15 @@ class ChatListItem extends StatelessWidget {
   final List<String>? typingUsers;
   final bool isMuted;
   final bool isBookmarked;
+  final Function()? onTap;
 
-  const ChatListItem({
+  const ChatListItemContainerWidget({
     super.key,
-    required this.roomId,
-    required this.isDM,
+    this.roomId,
     required this.displayName,
     required this.lastMessage,
-    required this.lastMessageTimestamp,
+    required this.isDM,
+    this.lastMessageTimestamp,
     this.lastMessageSenderDisplayName,
     this.isUnread = false,
     this.unreadCount = 0,
@@ -34,6 +36,7 @@ class ChatListItem extends StatelessWidget {
     this.typingUsers,
     this.isMuted = false,
     this.isBookmarked = false,
+    this.onTap,
   });
 
   @override
@@ -41,14 +44,18 @@ class ChatListItem extends StatelessWidget {
     return ListTile(
       dense: true,
       contentPadding: EdgeInsets.zero,
-      leading: _buildChatAvatar(context),
+      onTap: onTap,
+      leading:
+          roomId == null
+              ? _buildChatAvatar(context)
+              : RoomAvatar(roomId: roomId!, showParents: true),
       title: _buildChatTitle(context),
       subtitle: _buildChatSubtitle(context),
     );
   }
 
   Widget _buildChatAvatar(BuildContext context) {
-    final avatarInfo = AvatarInfo(uniqueId: roomId);
+    final avatarInfo = AvatarInfo(uniqueId: 'roomId');
 
     final avatarOptions =
         isDM ? AvatarOptions.DM(avatarInfo) : AvatarOptions(avatarInfo);
@@ -64,25 +71,30 @@ class ChatListItem extends StatelessWidget {
     return Row(
       children: [
         //Show chat title
-        Text(
-          displayName,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Spacer(),
-
-        //Show last message timestamp
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+        Expanded(
           child: Text(
-            jiffyTime(context, lastMessageTimestamp),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: timeColor,
-              fontSize: 12,
+            displayName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
+        SizedBox(width: 12),
+
+        //Show last message timestamp
+        if (lastMessageTimestamp != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              jiffyTime(context, lastMessageTimestamp!),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: timeColor,
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -95,7 +107,7 @@ class ChatListItem extends StatelessWidget {
             ? TypingIndicator(users: typingUsers ?? [])
             : LastMessage(
               message: lastMessage,
-              senderName: isDM ? null : lastMessageSenderDisplayName,
+              senderName: lastMessageSenderDisplayName,
             ),
         Spacer(),
 
