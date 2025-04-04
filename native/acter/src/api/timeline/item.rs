@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
 
-use super::{MsgContent, PollContent, Sticker, TimelineEventContent};
+use super::{MsgContent, PollContent, Sticker, TimelineEventContent, UnableToDecrypt};
 use crate::{ReactionRecord, RUNTIME};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -187,7 +187,9 @@ impl TimelineEventItem {
             SdkTimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn’t be decrypted");
                 me.event_type("m.room.encrypted".to_string());
-                me.content(Some(TimelineEventContent::UnableToDecrypt));
+                if let Ok(utd) = UnableToDecrypt::try_from(encrypted_msg) {
+                    me.content(Some(TimelineEventContent::UnableToDecrypt(utd)));
+                }
             }
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
@@ -387,6 +389,14 @@ impl TimelineEventItem {
 
     pub fn poll(&self) -> Option<PollContent> {
         if let Some(TimelineEventContent::Poll(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn unable_to_decrypt(&self) -> Option<UnableToDecrypt> {
+        if let Some(TimelineEventContent::UnableToDecrypt(c)) = &self.content {
             Some(c.clone())
         } else {
             None

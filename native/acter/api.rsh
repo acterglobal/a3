@@ -1031,6 +1031,9 @@ object TimelineEventItem {
     /// covers m.poll.start
     fn poll() -> Option<PollContent>;
 
+    /// covers m.room.encrypted
+    fn unable_to_decrypt() -> Option<UnableToDecrypt>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1134,6 +1137,12 @@ object Sticker {
 
 object PollContent {
     fn fallback_text() -> Option<string>;
+}
+
+object UnableToDecrypt {
+    fn enc_mode() -> string;
+    fn sender_key() -> Option<string>;
+    fn session_id() -> Option<string>;
 }
 
 object ReactionRecord {

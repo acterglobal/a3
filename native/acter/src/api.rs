@@ -131,7 +131,7 @@ pub use tasks::{
 };
 pub use timeline::{
     EventSendState, MsgContent, MsgDraft, PollContent, Sticker, TimelineEventItem, TimelineItem,
-    TimelineItemDiff, TimelineStream, TimelineVirtualItem,
+    TimelineItemDiff, TimelineStream, TimelineVirtualItem, UnableToDecrypt,
 };
 pub use typing::TypingEvent;
 pub use utils::{new_vec_string_builder, VecStringBuilder};

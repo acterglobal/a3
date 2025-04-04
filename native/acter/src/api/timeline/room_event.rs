@@ -1,9 +1,12 @@
-use matrix_sdk_base::ruma::events::{
-    room::{message::MessageType, ImageInfo, MediaSource as SdkMediaSource},
-    sticker::StickerMediaSource,
-    MessageLikeEventType, StateEventType,
+use matrix_sdk_base::ruma::{
+    events::{
+        room::{message::MessageType, ImageInfo, MediaSource as SdkMediaSource},
+        sticker::StickerMediaSource,
+        MessageLikeEventType, StateEventType,
+    },
+    OwnedDeviceId,
 };
-use matrix_sdk_ui::timeline::{PollState, Sticker as SdkSticker};
+use matrix_sdk_ui::timeline::{EncryptedMessage, PollState, Sticker as SdkSticker};
 use serde::{Deserialize, Serialize};
 
 use super::MsgContent;
@@ -14,7 +17,7 @@ pub enum TimelineEventContent {
     Message(MsgContent),
     RedactedMessage,
     Sticker(Sticker),
-    UnableToDecrypt,
+    UnableToDecrypt(UnableToDecrypt),
     FailedToParseMessageLike {
         event_type: MessageLikeEventType,
         error: String,
@@ -137,5 +140,46 @@ impl From<&PollState> for PollContent {
 impl PollContent {
     pub fn fallback_text(&self) -> Option<String> {
         self.fallback_text.clone()
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UnableToDecrypt {
+    enc_mode: String,
+    sender_key: Option<String>,
+    session_id: Option<String>,
+}
+
+impl TryFrom<&EncryptedMessage> for UnableToDecrypt {
+    type Error = ();
+
+    fn try_from(value: &EncryptedMessage) -> Result<Self, Self::Error> {
+        match value {
+            EncryptedMessage::OlmV1Curve25519AesSha2 { sender_key } => Ok(UnableToDecrypt {
+                enc_mode: "OlmV1Curve25519AesSha2".to_owned(),
+                sender_key: Some(sender_key.clone()),
+                session_id: None,
+            }),
+            EncryptedMessage::MegolmV1AesSha2 { session_id, cause, .. } => Ok(UnableToDecrypt {
+                enc_mode: "MegolmV1AesSha2".to_owned(),
+                sender_key: None,
+                session_id: Some(session_id.clone()),
+            }),
+            EncryptedMessage::Unknown => Err(()),
+        }
+    }
+}
+
+impl UnableToDecrypt {
+    pub fn enc_mode(&self) -> String {
+        self.enc_mode.clone()
+    }
+
+    pub fn sender_key(&self) -> Option<String> {
+        self.sender_key.clone()
+    }
+
+    pub fn session_id(&self) -> Option<String> {
+        self.session_id.clone()
     }
 }

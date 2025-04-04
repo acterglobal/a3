@@ -19556,6 +19556,15 @@ class Api {
   late final _timelineEventItemPoll =
       _timelineEventItemPollPtr
           .asFunction<_TimelineEventItemPollReturn Function(int)>();
+  late final _timelineEventItemUnableToDecryptPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemUnableToDecryptReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_unable_to_decrypt");
+
+  late final _timelineEventItemUnableToDecrypt =
+      _timelineEventItemUnableToDecryptPtr
+          .asFunction<_TimelineEventItemUnableToDecryptReturn Function(int)>();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -19818,6 +19827,27 @@ class Api {
   late final _pollContentFallbackText =
       _pollContentFallbackTextPtr
           .asFunction<_PollContentFallbackTextReturn Function(int)>();
+  late final _unableToDecryptEncModePtr = _lookup<
+    ffi.NativeFunction<_UnableToDecryptEncModeReturn Function(ffi.IntPtr)>
+  >("__UnableToDecrypt_enc_mode");
+
+  late final _unableToDecryptEncMode =
+      _unableToDecryptEncModePtr
+          .asFunction<_UnableToDecryptEncModeReturn Function(int)>();
+  late final _unableToDecryptSenderKeyPtr = _lookup<
+    ffi.NativeFunction<_UnableToDecryptSenderKeyReturn Function(ffi.IntPtr)>
+  >("__UnableToDecrypt_sender_key");
+
+  late final _unableToDecryptSenderKey =
+      _unableToDecryptSenderKeyPtr
+          .asFunction<_UnableToDecryptSenderKeyReturn Function(int)>();
+  late final _unableToDecryptSessionIdPtr = _lookup<
+    ffi.NativeFunction<_UnableToDecryptSessionIdReturn Function(ffi.IntPtr)>
+  >("__UnableToDecrypt_session_id");
+
+  late final _unableToDecryptSessionId =
+      _unableToDecryptSessionIdPtr
+          .asFunction<_UnableToDecryptSessionIdReturn Function(int)>();
   late final _reactionRecordSenderIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__ReactionRecord_sender_id",
@@ -40551,6 +40581,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.encrypted
+  UnableToDecrypt? unableToDecrypt() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemUnableToDecrypt(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UnableToDecrypt");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UnableToDecrypt._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -41312,6 +41359,107 @@ class PollContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._pollContentFallbackText(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class UnableToDecrypt {
+  final Api _api;
+  final _Box _box;
+
+  UnableToDecrypt._(this._api, this._box);
+
+  String encMode() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._unableToDecryptEncMode(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? senderKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._unableToDecryptSenderKey(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? sessionId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._unableToDecryptSessionId(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -61189,6 +61337,13 @@ class _TimelineEventItemPollReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemUnableToDecryptReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61412,6 +61567,37 @@ class _StickerHeightReturn extends ffi.Struct {
 }
 
 class _PollContentFallbackTextReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _UnableToDecryptEncModeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _UnableToDecryptSenderKeyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _UnableToDecryptSessionIdReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
