@@ -105,6 +105,8 @@ class ChatItemWidget extends ConsumerWidget {
     switch (eventItem?.eventType()) {
       case 'm.room.encrypted':
         return lang.failedToDecryptMessage;
+      case 'm.room.redaction':
+        return lang.thisMessageHasBeenDeleted;
       default:
         final msgContent = eventItem?.msgContent();
         return msgContent?.body() ?? '';
