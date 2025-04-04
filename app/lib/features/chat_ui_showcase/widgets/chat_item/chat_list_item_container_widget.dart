@@ -101,14 +101,16 @@ class ChatListItemContainerWidget extends StatelessWidget {
     return Row(
       children: [
         //Show typing indicator if it is typing else show last message
-        typingUsers != null && typingUsers!.isNotEmpty
-            ? TypingIndicator(isDM: isDM, users: typingUsers!)
-            : LastMessage(
-              isUnread: isUnread,
-              message: lastMessage,
-              senderName: isDM ? null : lastMessageSenderDisplayName,
-            ),
-        Spacer(),
+        Expanded(
+          child:
+              typingUsers != null && typingUsers!.isNotEmpty
+                  ? TypingIndicator(isDM: isDM, users: typingUsers!)
+                  : LastMessage(
+                    isUnread: isUnread,
+                    message: lastMessage,
+                    senderName: isDM ? null : lastMessageSenderDisplayName,
+                  ),
+        ),
 
         //Show bookmarked icon if it is bookmarked
         if (isBookmarked)

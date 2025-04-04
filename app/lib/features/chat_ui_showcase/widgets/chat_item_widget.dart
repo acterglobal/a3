@@ -5,6 +5,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/chat_list_item_container_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,9 +17,10 @@ class ChatItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final displayName = _getDisplayName(ref);
     final lastMessageTimestamp = _getLastMessageTimestamp(ref);
-    final lastMessage = _getLastMessage(ref);
+    final lastMessage = _getLastMessage(lang, ref);
     final lastMessageSenderName = _getLastMessageSenderName(ref);
     final isMuted = _getIsMuted(ref);
     final isBookmarked = _getIsBookmarked(ref);
@@ -96,11 +98,16 @@ class ChatItemWidget extends ConsumerWidget {
     return simplifyUserId(sender ?? '') ?? '';
   }
 
-  String _getLastMessage(WidgetRef ref) {
+  String _getLastMessage(L10n lang, WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
     final TimelineEventItem? eventItem = latestMessage?.eventItem();
-    final lastMessage = eventItem?.msgContent();
-    String body = lastMessage?.body() ?? '';
-    return body;
+
+    switch (eventItem?.eventType()) {
+      case 'm.room.encrypted':
+        return lang.failedToDecryptMessage;
+      default:
+        final msgContent = eventItem?.msgContent();
+        return msgContent?.body() ?? '';
+    }
   }
 }

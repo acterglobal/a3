@@ -20,7 +20,7 @@ class LastMessage extends StatelessWidget {
 
     final text =
         senderName != null && message.isNotEmpty
-            ? '$senderName : $message'
+            ? '$senderName: $message'
             : message;
 
     return Text(
