@@ -19493,13 +19493,27 @@ class Api {
   late final _timelineEventItemMsgType =
       _timelineEventItemMsgTypePtr
           .asFunction<_TimelineEventItemMsgTypeReturn Function(int)>();
-  late final _timelineEventItemMsgContentPtr = _lookup<
-    ffi.NativeFunction<_TimelineEventItemMsgContentReturn Function(ffi.IntPtr)>
-  >("__TimelineEventItem_msg_content");
+  late final _timelineEventItemMessagePtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemMessageReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_message");
 
-  late final _timelineEventItemMsgContent =
-      _timelineEventItemMsgContentPtr
-          .asFunction<_TimelineEventItemMsgContentReturn Function(int)>();
+  late final _timelineEventItemMessage =
+      _timelineEventItemMessagePtr
+          .asFunction<_TimelineEventItemMessageReturn Function(int)>();
+  late final _timelineEventItemStickerPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemStickerReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_sticker");
+
+  late final _timelineEventItemSticker =
+      _timelineEventItemStickerPtr
+          .asFunction<_TimelineEventItemStickerReturn Function(int)>();
+  late final _timelineEventItemPollPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemPollReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_poll");
+
+  late final _timelineEventItemPoll =
+      _timelineEventItemPollPtr
+          .asFunction<_TimelineEventItemPollReturn Function(int)>();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -19714,6 +19728,54 @@ class Api {
 
   late final _msgContentUrlPreviews =
       _msgContentUrlPreviewsPtr.asFunction<int Function(int)>();
+  late final _stickerBodyPtr =
+      _lookup<ffi.NativeFunction<_StickerBodyReturn Function(ffi.IntPtr)>>(
+        "__Sticker_body",
+      );
+
+  late final _stickerBody =
+      _stickerBodyPtr.asFunction<_StickerBodyReturn Function(int)>();
+  late final _stickerSourcePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__Sticker_source",
+      );
+
+  late final _stickerSource = _stickerSourcePtr.asFunction<int Function(int)>();
+  late final _stickerMimetypePtr =
+      _lookup<ffi.NativeFunction<_StickerMimetypeReturn Function(ffi.IntPtr)>>(
+        "__Sticker_mimetype",
+      );
+
+  late final _stickerMimetype =
+      _stickerMimetypePtr.asFunction<_StickerMimetypeReturn Function(int)>();
+  late final _stickerSizePtr =
+      _lookup<ffi.NativeFunction<_StickerSizeReturn Function(ffi.IntPtr)>>(
+        "__Sticker_size",
+      );
+
+  late final _stickerSize =
+      _stickerSizePtr.asFunction<_StickerSizeReturn Function(int)>();
+  late final _stickerWidthPtr =
+      _lookup<ffi.NativeFunction<_StickerWidthReturn Function(ffi.IntPtr)>>(
+        "__Sticker_width",
+      );
+
+  late final _stickerWidth =
+      _stickerWidthPtr.asFunction<_StickerWidthReturn Function(int)>();
+  late final _stickerHeightPtr =
+      _lookup<ffi.NativeFunction<_StickerHeightReturn Function(ffi.IntPtr)>>(
+        "__Sticker_height",
+      );
+
+  late final _stickerHeight =
+      _stickerHeightPtr.asFunction<_StickerHeightReturn Function(int)>();
+  late final _pollContentFallbackTextPtr = _lookup<
+    ffi.NativeFunction<_PollContentFallbackTextReturn Function(ffi.IntPtr)>
+  >("__PollContent_fallback_text");
+
+  late final _pollContentFallbackText =
+      _pollContentFallbackTextPtr
+          .asFunction<_PollContentFallbackTextReturn Function(int)>();
   late final _reactionRecordSenderIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__ReactionRecord_sender_id",
@@ -40364,11 +40426,11 @@ class TimelineEventItem {
     return tmp2;
   }
 
-  /// covers text/image/audio/video/file/location/emote/sticker
-  MsgContent? msgContent() {
+  /// covers text/image/audio/video/file/location/emote
+  MsgContent? message() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemMsgContent(tmp0);
+    final tmp1 = _api._timelineEventItemMessage(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -40378,6 +40440,40 @@ class TimelineEventItem {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = MsgContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.sticker
+  Sticker? sticker() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemSticker(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Sticker");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Sticker._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.poll.start
+  PollContent? poll() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemPoll(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PollContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PollContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -41002,6 +41098,170 @@ class MsgContent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp4 = FfiListUrlPreview._(_api, tmp3_1);
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Sticker {
+  final Api _api;
+  final _Box _box;
+
+  Sticker._(this._api, this._box);
+
+  String body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._stickerBody(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  MediaSource source() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._stickerSource(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_MediaSource");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = MediaSource._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  String? mimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._stickerMimetype(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int? size() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._stickerSize(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  int? width() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._stickerWidth(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  int? height() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._stickerHeight(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PollContent {
+  final Api _api;
+  final _Box _box;
+
+  PollContent._(this._api, this._box);
+
+  String? fallbackText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pollContentFallbackText(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -60782,7 +61042,21 @@ class _TimelineEventItemMsgTypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TimelineEventItemMsgContentReturn extends ffi.Struct {
+class _TimelineEventItemMessageReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemStickerReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -60960,6 +61234,58 @@ class _MsgContentFilenameReturn extends ffi.Struct {
 }
 
 class _MsgContentGeoUriReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _StickerBodyReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _StickerMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _StickerSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _StickerWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _StickerHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _PollContentFallbackTextReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

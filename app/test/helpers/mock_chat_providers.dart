@@ -46,7 +46,11 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   }
 
   @override
-  Future<void> fetchOriginalContent(String originalId, String replyId) {
+  Future<void> fetchOriginalContent(
+    String originalId,
+    String replyId,
+    Convo convo,
+  ) {
     // TODO: implement fetchOriginalContent
     throw UnimplementedError();
   }
@@ -58,7 +62,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   }
 
   @override
-  Future<void> handleDiff(TimelineItemDiff diff) {
+  Future<void> handleDiff(TimelineItemDiff diff, Convo convo) {
     // TODO: implement handleDiff
     throw UnimplementedError();
   }
@@ -92,7 +96,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   }
 
   @override
-  Message parseMessage(TimelineItem message) {
+  Message parseMessage(TimelineItem message, Convo convo) {
     // TODO: implement parseMessage
     throw UnimplementedError();
   }
