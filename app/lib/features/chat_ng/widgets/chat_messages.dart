@@ -203,6 +203,7 @@ Widget _buildTypingIndicator(WidgetRef ref, String roomId) {
             ),
           )
           .toList();
+
   if (typingUsers.isEmpty) return const SizedBox.shrink();
   return Positioned(
     bottom: 16,

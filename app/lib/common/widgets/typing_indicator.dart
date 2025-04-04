@@ -61,6 +61,8 @@ class TypingWidget extends StatelessWidget {
     final text = _buildTypingText(typingUsers, l10n);
 
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         AvatarHandler(users: typingUsers),
         const SizedBox(width: 4),
@@ -72,11 +74,8 @@ class TypingWidget extends StatelessWidget {
             maxLines: 1,
           ),
         ),
-        const SizedBox(width: 2),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: AnimatedCircles(theme: theme),
-        ),
+        const SizedBox(width: 4),
+        AnimatedCircles(theme: theme),
       ],
     );
   }
@@ -99,18 +98,22 @@ class AvatarHandler extends StatelessWidget {
         child: TypingAvatar(context: context, userInfo: users.first),
       );
     } else if (users.length == 2) {
-      return Stack(
-        children: <Widget>[
-          TypingAvatar(context: context, userInfo: users.first),
-          Positioned(
-            left: isRtl ? null : 16,
-            right: isRtl ? 16 : null,
-            child: TypingAvatar(context: context, userInfo: users[1]),
-          ),
-        ],
+      return SizedBox(
+        width: 44,
+        child: Stack(
+          children: <Widget>[
+            TypingAvatar(context: context, userInfo: users.first),
+            Positioned(
+              left: isRtl ? null : 16,
+              right: isRtl ? 16 : null,
+              child: TypingAvatar(context: context, userInfo: users[1]),
+            ),
+          ],
+        ),
       );
     } else {
       return SizedBox(
+        width: 58,
         child: Stack(
           children: <Widget>[
             TypingAvatar(context: context, userInfo: users.first),
@@ -123,7 +126,7 @@ class AvatarHandler extends StatelessWidget {
               left: isRtl ? null : 32,
               right: isRtl ? 32 : null,
               child: CircleAvatar(
-                radius: 13,
+                radius: 12,
                 backgroundColor:
                     Theme.of(
                       context,
@@ -135,9 +138,9 @@ class AvatarHandler extends StatelessWidget {
                         Theme.of(
                           context,
                         ).chatTheme.typingIndicatorTheme.countTextColor,
+                    fontSize: 10,
                   ),
                   textAlign: TextAlign.center,
-                  textScaler: const TextScaler.linear(0.7),
                 ),
               ),
             ),
