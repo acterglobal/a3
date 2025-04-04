@@ -104,6 +104,11 @@ class CalendarSyncPermissionWidget extends StatelessWidget {
               final requesting = await deviceCalendar.requestPermissions();
               if (requesting.data == false) {
                 await preferences.setBool(rejectionKey, true);
+                if(context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(lang.notificationDenied)),
+                  );
+                }
                 return;
               }
               else {

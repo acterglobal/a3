@@ -123,14 +123,11 @@ class NotificationPermissionWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Icon(
+          Icon(
               icon ?? PhosphorIcons.checkCircle(),
               color: iconColor ?? Theme.of(context).colorScheme.secondary,
-            ),
           ),
-          SizedBox(width: spacing),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
@@ -158,6 +155,7 @@ class NotificationPermissionWidget extends StatelessWidget {
             // Request notification permission on button press
             await _requestNotificationPermission(
               context,
+              lang: lang,
               textStyle: textTheme.bodyMedium,
             );
           },
@@ -179,6 +177,7 @@ class NotificationPermissionWidget extends StatelessWidget {
   // Request notification permission
   Future<void> _requestNotificationPermission(
     BuildContext context, {
+    required L10n lang,
     TextStyle? textStyle,
   }) async {
     final status = await Permission.notification.request();
@@ -191,7 +190,7 @@ class NotificationPermissionWidget extends StatelessWidget {
       // Permission denied, show a snack bar
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Notification permission denied.')),
+          SnackBar(content: Text(lang.notificationDenied)),
         );
       }
     } else if (status.isPermanentlyDenied) {
@@ -204,7 +203,7 @@ class NotificationPermissionWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Permission permanently denied. You can enable it in settings.',
+                  lang.permissionPermantlyDenied,
                   style: textStyle,
                 ),
                 const SizedBox(height: 8),
@@ -216,7 +215,7 @@ class NotificationPermissionWidget extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    'Go to Settings',
+                    lang.goToSettings,
                     style: textStyle?.copyWith(
                       color: Theme.of(context).colorScheme.primary,
                     ),
