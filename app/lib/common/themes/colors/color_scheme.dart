@@ -8,7 +8,7 @@ Color secondaryColor = const Color(0xFF74A64D);
 Color greyColor = Colors.grey.shade800;
 Color surfaceColor = const Color(0xff181c1f);
 Color backgroundColor = const Color(0xff0d0f11);
-
+Color surfaceTintColor = Colors.white70;
 //On colors
 Color whiteColor = Colors.white;
 Color warningColor = Colors.amber;
@@ -39,6 +39,9 @@ var colorScheme = ColorScheme.dark(
   //Surface
   surface: surfaceColor,
   onSurface: whiteColor,
+
+  //Surface Tint
+  surfaceTint: surfaceTintColor,
 );
 
 extension CustomColorScheme on ColorScheme {

@@ -8,6 +8,7 @@ class MockConvo {
   final bool isUnread;
   final int unreadCount;
   final bool isTyping;
+  final List<String>? typingUsers;
   final bool isMuted;
   final bool isBookmarked;
 
@@ -21,6 +22,7 @@ class MockConvo {
     this.isUnread = false,
     this.unreadCount = 0,
     this.isTyping = false,
+    this.typingUsers,
     this.isMuted = false,
     this.isBookmarked = false,
   });
@@ -48,6 +50,7 @@ final mockConvo2 = MockConvo(
   isUnread: true,
   unreadCount: 2,
   isTyping: true,
+  typingUsers: ['Smith'],
   isMuted: true,
 );
 
@@ -71,6 +74,8 @@ final mockConvo4 = MockConvo(
   lastMessageSenderDisplayName: 'Diana Smith',
   isMuted: true,
   isBookmarked: true,
+  isTyping: true,
+  typingUsers: ['Kumar', 'Ben'],
 );
 
 final mockConvo5 = MockConvo(

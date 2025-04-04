@@ -1,7 +1,7 @@
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_convo_list.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_list_item_showcase.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_list_item.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -27,13 +27,28 @@ class ChatListShowcasePage extends StatelessWidget {
 
   Widget _buildChatListUI() {
     return ListView.separated(
+      padding: EdgeInsets.symmetric(horizontal: 16),
       separatorBuilder: (context, index) {
         return Divider(color: Theme.of(context).unselectedWidgetColor);
       },
       itemCount: mockConvoList.length,
-      itemBuilder:
-          (context, index) =>
-              ChatListItemShowcase(mockConvo: mockConvoList[index]),
+      itemBuilder: (context, index) {
+        final mockConvo = mockConvoList[index];
+        return ChatListItem(
+          roomId: mockConvo.roomId,
+          isDM: mockConvo.isDM,
+          displayName: mockConvo.displayName,
+          lastMessage: mockConvo.lastMessage,
+          lastMessageTimestamp: mockConvo.lastMessageTimestamp,
+          lastMessageSenderDisplayName: mockConvo.lastMessageSenderDisplayName,
+          isUnread: mockConvo.isUnread,
+          unreadCount: mockConvo.unreadCount,
+          isTyping: mockConvo.isTyping,
+          typingUsers: mockConvo.typingUsers,
+          isMuted: mockConvo.isMuted,
+          isBookmarked: mockConvo.isBookmarked,
+        );
+      },
     );
   }
 }
