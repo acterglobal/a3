@@ -1,0 +1,2 @@
+- [Labs] Chat NG:
+  - [fix] sending empty messages from chat editor when the content field is empty. Now editor checks for valid content present before sending.

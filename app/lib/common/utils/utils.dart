@@ -175,3 +175,19 @@ extension ColorUtils on Color {
     return (alpha << 24) | (red << 16) | (green << 8) | blue;
   }
 }
+
+/// html requires to have some kind of structure even when document is empty, so check for that
+bool hasValidEditorContent({required String plainText, required String html}) {
+  if (plainText.trim().isEmpty) return false;
+  if (html.isEmpty) return false;
+
+  final hasOnlyStructure =
+      html
+          .replaceAll(RegExp(r'<br\s*/?>|<p\s*></p>|<p\s*>\s*</p>'), '')
+          .replaceAll(RegExp(r'<[^>]*>'), '')
+          .replaceAll('&nbsp;', ' ')
+          .trim()
+          .isEmpty;
+
+  return !hasOnlyStructure;
+}
