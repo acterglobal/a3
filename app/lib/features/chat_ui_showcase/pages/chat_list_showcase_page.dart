@@ -42,7 +42,6 @@ class ChatListShowcasePage extends StatelessWidget {
           lastMessageSenderDisplayName: mockConvo.lastMessageSenderDisplayName,
           isUnread: mockConvo.isUnread,
           unreadCount: mockConvo.unreadCount,
-          isTyping: mockConvo.isTyping,
           typingUsers: mockConvo.typingUsers,
           isMuted: mockConvo.isMuted,
           isBookmarked: mockConvo.isBookmarked,

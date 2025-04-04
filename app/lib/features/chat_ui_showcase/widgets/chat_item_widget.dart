@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/chat_list_item_container_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class ChatItemWidget extends ConsumerWidget {
     final isMuted = _getIsMuted(ref);
     final isBookmarked = _getIsBookmarked(ref);
     final isDM = _getIsDM(ref);
+    final typingUsers = _getTypingUsers(ref);
 
     return ChatListItemContainerWidget(
       roomId: roomId,
@@ -27,8 +29,14 @@ class ChatItemWidget extends ConsumerWidget {
       isDM: isDM,
       isMuted: isMuted,
       isBookmarked: isBookmarked,
+      typingUsers: typingUsers,
       onTap: onTap,
     );
+  }
+
+  List<String> _getTypingUsers(WidgetRef ref) {
+    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
+    return users?.map((user) => user.id).toList() ?? [];
   }
 
   bool _getIsDM(WidgetRef ref) {

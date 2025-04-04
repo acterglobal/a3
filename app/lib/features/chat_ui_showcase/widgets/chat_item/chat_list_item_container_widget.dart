@@ -16,7 +16,6 @@ class ChatListItemContainerWidget extends StatelessWidget {
   final String? lastMessageSenderDisplayName;
   final bool isUnread;
   final int unreadCount;
-  final bool isTyping;
   final List<String>? typingUsers;
   final bool isMuted;
   final bool isBookmarked;
@@ -32,7 +31,6 @@ class ChatListItemContainerWidget extends StatelessWidget {
     this.lastMessageSenderDisplayName,
     this.isUnread = false,
     this.unreadCount = 0,
-    this.isTyping = false,
     this.typingUsers,
     this.isMuted = false,
     this.isBookmarked = false,
@@ -103,8 +101,8 @@ class ChatListItemContainerWidget extends StatelessWidget {
     return Row(
       children: [
         //Show typing indicator if it is typing else show last message
-        isTyping
-            ? TypingIndicator(users: typingUsers ?? [])
+        typingUsers != null && typingUsers!.isNotEmpty
+            ? TypingIndicator(isDM: isDM, users: typingUsers!)
             : LastMessage(
               message: lastMessage,
               senderName: lastMessageSenderDisplayName,
