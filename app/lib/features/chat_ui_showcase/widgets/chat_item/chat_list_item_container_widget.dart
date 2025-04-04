@@ -104,6 +104,7 @@ class ChatListItemContainerWidget extends StatelessWidget {
         typingUsers != null && typingUsers!.isNotEmpty
             ? TypingIndicator(isDM: isDM, users: typingUsers!)
             : LastMessage(
+              isUnread: isUnread,
               message: lastMessage,
               senderName: lastMessageSenderDisplayName,
             ),

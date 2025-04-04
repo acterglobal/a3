@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class LastMessage extends StatelessWidget {
+  final bool isUnread;
   final String message;
   final String? senderName;
 
   const LastMessage({
     super.key,
+    this.isUnread = false,
     required this.message,
     required this.senderName,
   });
@@ -13,7 +15,8 @@ class LastMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textColor = theme.colorScheme.surfaceTint;
+    final textColor =
+        isUnread ? theme.colorScheme.secondary : theme.colorScheme.surfaceTint;
 
     final text = senderName != null ? '$senderName: $message' : message;
 
