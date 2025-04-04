@@ -2,6 +2,7 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/env.g.dart';
@@ -147,12 +148,18 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingsCalendar),
               ),
-              onTap: () {
-                if (!isFullPage && context.isLargeScreen) {
-                  context.pushReplacementNamed(Routes.settingsCalendar.name);
-                } else {
-                  context.pushNamed(Routes.settingsCalendar.name);
+              onTap: () async {
+                final hasPermission = await handleCalendarPermission(
+                  context,
+                );
+                if (hasPermission && context.mounted) {
+                  if (!isFullPage && context.isLargeScreen) {
+                    context.pushReplacementNamed(Routes.settingsCalendar.name);
+                  } else {
+                    context.pushNamed(Routes.settingsCalendar.name);
+                  }
                 }
+              
               },
             ),
             MenuItemWidget(

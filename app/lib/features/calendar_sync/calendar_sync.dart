@@ -8,14 +8,14 @@ import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.d
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 final _log = Logger('a3::calendar_sync');
 
 final bool isSupportedPlatform = Platform.isAndroid || Platform.isIOS;
+
 typedef IdMapping = (String acterId, String localId);
 
 class CalendarSyncFailed extends Error {}
@@ -61,22 +61,10 @@ Future<void> initCalendarSync({bool ignoreRejection = false}) async {
     _log.warning('Calendar Sync not available on this device');
     return;
   }
-  final SharedPreferences preferences = await sharedPrefs();
 
   final hasPermission = await deviceCalendar.hasPermissions();
+  if (hasPermission.data == false) return;
 
-  if (hasPermission.data == false) {
-    if (!ignoreRejection && preferences.getBool(rejectionKey) == true) {
-      _log.warning('user previously rejected calendar sync. quitting');
-      return;
-    }
-    final requesting = await deviceCalendar.requestPermissions();
-    if (requesting.data == false) {
-      await preferences.setBool(rejectionKey, true);
-      _log.warning('user rejected calendar sync. quitting');
-      return;
-    }
-  }
   // FOR DEBUGGING CLEAR Acter CALENDARS VIA:
   // await clearActerCalendars();
 

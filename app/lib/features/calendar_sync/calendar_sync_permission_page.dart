@@ -1,41 +1,54 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class NotificationPermissionWidget extends StatelessWidget {
-  const NotificationPermissionWidget({super.key});
+class CalendarSyncPermissionWidget extends ConsumerWidget {
+  const CalendarSyncPermissionWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildIcon(context),
-                  const SizedBox(height: 20),
-                  _buildTitleText(context, lang, textTheme),
-                  const SizedBox(height: 20),
-                  _buildDescriptionText(lang, textTheme),
-                  const SizedBox(height: 20),
-                  _buildStuffItems(context, lang),
-                  const SizedBox(height: 20),
-                  _buildActionButton(context, lang, textTheme),
-                  const SizedBox(height: 20),
-                ],
+        child: Stack(
+          children: [
+            // Close button at the top right
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
               ),
             ),
-          ),
+            // Main content centered
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildIcon(context),
+                      const SizedBox(height: 20),
+                      _buildTitleText(context, lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildDescriptionText(lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildActionButton(context, lang, textTheme, ref),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -43,28 +56,17 @@ class NotificationPermissionWidget extends StatelessWidget {
 
   // Icon at the top of the page
   Widget _buildIcon(BuildContext context) {
-    return Column(
-      children: [
-        Align(
-          alignment: Alignment.topRight,
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.close),
-          ),
-        ),
-        Icon(
-          PhosphorIcons.bell(),
-          color: Theme.of(context).colorScheme.primary,
-          size: 100,
-        ),
-      ],
+    return Icon(
+      Icons.calendar_month_rounded,
+      color: Theme.of(context).colorScheme.primary,
+      size: 100,
     );
   }
 
   // Title text for the page
   Widget _buildTitleText(BuildContext context, L10n lang, TextTheme textTheme) {
     return Text(
-      lang.pushNotification,
+      lang.calendarSync,
       style: textTheme.headlineMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface,
       ),
@@ -75,69 +77,9 @@ class NotificationPermissionWidget extends StatelessWidget {
   // Description text for the page
   Widget _buildDescriptionText(L10n lang, TextTheme textTheme) {
     return Text(
-      lang.pushNotificationDesc,
+      lang.calendarSyncDesc,
       style: textTheme.bodyMedium,
       textAlign: TextAlign.center,
-    );
-  }
-
-  // Build the list of "stuff items" for the page
-  Widget _buildStuffItems(BuildContext context, L10n lang) {
-    final stuffItems = [
-      lang.directInvitation,
-      lang.msgFromChat,
-      lang.boostFromPeers,
-      lang.commentOnThings,
-      lang.subscribeTo,
-    ];
-
-    List<Widget> itemWidgets =
-        stuffItems.map((item) {
-          return buildStuffItem(text: item, context: context);
-        }).toList();
-
-    // Add the spam item with a custom icon and color
-    itemWidgets.add(
-      buildStuffItem(
-        icon: Icons.cancel_outlined,
-        text: lang.spam,
-        context: context,
-        iconColor: Theme.of(context).colorScheme.error,
-      ),
-    );
-
-    return Column(children: itemWidgets);
-  }
-
-  // Builds each item in the list of notifications
-  Widget buildStuffItem({
-    required BuildContext context,
-    IconData? icon,
-    required String text,
-    double spacing = 10,
-    Color? iconColor,
-    TextStyle? textStyle,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15, left: 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-              icon ?? PhosphorIcons.checkCircle(),
-              color: iconColor ?? Theme.of(context).colorScheme.secondary,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: textStyle ?? Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.left,
-              softWrap: true,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -146,14 +88,15 @@ class NotificationPermissionWidget extends StatelessWidget {
     BuildContext context,
     L10n lang,
     TextTheme textTheme,
+    WidgetRef ref,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
           onPressed: () async {
-            // Request notification permission on button press
-            await _requestNotificationPermission(
+            // Request Calendar Sync permission on button press
+            await _requestCalendarSyncPermission(
               context,
               lang: lang,
               textStyle: textTheme.bodyMedium,
@@ -174,13 +117,13 @@ class NotificationPermissionWidget extends StatelessWidget {
     );
   }
 
-  // Request notification permission
-  Future<void> _requestNotificationPermission(
+   // Request calendar sync permission
+  Future<void> _requestCalendarSyncPermission(
     BuildContext context, {
     required L10n lang,
     TextStyle? textStyle,
   }) async {
-    final status = await Permission.notification.request();
+    final status = await Permission.calendarFullAccess.request();
 
     if (status.isGranted) {
       if (context.mounted) {
@@ -190,7 +133,7 @@ class NotificationPermissionWidget extends StatelessWidget {
       // Permission denied, show a snack bar
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(lang.notificationDenied)),
+          SnackBar(content: Text(lang.calendarPermissionDenied)),
         );
       }
     } else if (status.isPermanentlyDenied) {

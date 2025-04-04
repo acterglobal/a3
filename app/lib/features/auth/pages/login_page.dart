@@ -3,6 +3,7 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
@@ -213,6 +214,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // Check if context is still valid
       if (!mounted) return;
       await handleNotificationPermission(context);
+      if (!mounted) return;
+      await handleCalendarPermission(context);
       if (!mounted) return;
       navigator.goNamed( Routes.analyticsOptIn.name);
     } else {
