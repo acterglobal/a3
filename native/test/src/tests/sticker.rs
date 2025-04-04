@@ -92,7 +92,9 @@ async fn test_sticker() -> Result<()> {
     }
     let img_url = img_url.context("Even after 30 seconds, image msg not received")?;
 
-    timeline.send_sticker("kingfisher".to_owned(), img_url.clone()).await?;
+    timeline
+        .send_sticker("kingfisher".to_owned(), img_url.clone())
+        .await?;
 
     // sticker event may reach via pushback action or reset action
     i = 30;
@@ -117,7 +119,10 @@ async fn test_sticker() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
                         if let Some((event_id, url)) = match_sticker_event(value) {
-                            assert_eq!(url, img_url, "sticker url should be equal to image msg uri");
+                            assert_eq!(
+                                url, img_url,
+                                "sticker url should be equal to image msg uri",
+                            );
                             info!("=================== {}", &url);
                             info!("=================== {}", &img_url);
                             sticker_event_id = Some(event_id);
@@ -135,7 +140,10 @@ async fn test_sticker() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(sticker_event_id.is_some(), "Even after 30 seconds, sticker event not received");
+    assert!(
+        sticker_event_id.is_some(),
+        "Even after 30 seconds, sticker event not received",
+    );
 
     Ok(())
 }
@@ -148,11 +156,15 @@ fn match_image_msg(msg: &TimelineItem, content_type: &str) -> Option<(String, St
     let Some(msg_content) = event_item.message() else {
         return None;
     };
-    let mimetype = msg_content.mimetype().expect("room msg should have mimetype");
+    let mimetype = msg_content
+        .mimetype()
+        .expect("room msg should have mimetype");
     if mimetype != content_type {
         return None;
     }
-    let source = msg_content.source().expect("image msg should have media source");
+    let source = msg_content
+        .source()
+        .expect("image msg should have media source");
     Some((msg_content.body(), source.url()))
 }
 
