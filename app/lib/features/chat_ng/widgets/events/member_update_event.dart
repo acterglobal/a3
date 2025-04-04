@@ -47,7 +47,7 @@ class MemberUpdateEvent extends ConsumerWidget {
               memberDisplayNameProvider((roomId: roomId, userId: senderId)),
             )
             .valueOrNull;
-    final msgContent = item.msgContent()?.body() ?? '';
+    final msgContent = item.message()?.body() ?? '';
 
     return switch (eventType) {
       'ProfileChange' => switch (msgType) {

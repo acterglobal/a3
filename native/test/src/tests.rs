@@ -20,6 +20,7 @@ mod reply;
 mod room;
 mod rsvp;
 mod spaces;
+mod sticker;
 mod stories;
 mod super_invites;
 mod sync;

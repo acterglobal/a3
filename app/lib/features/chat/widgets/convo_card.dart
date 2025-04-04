@@ -259,7 +259,7 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            MsgContent? msgContent = eventItem.msgContent();
+            MsgContent? msgContent = eventItem.message();
             if (msgContent == null) {
               return const SizedBox.shrink();
             }
@@ -295,7 +295,7 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        MsgContent? msgContent = eventItem.msgContent();
+        MsgContent? msgContent = eventItem.message();
         if (msgContent == null) {
           return const SizedBox();
         }
@@ -332,7 +332,7 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.sticker':
         final body =
             eventItem
-                .msgContent()
+                .sticker()
                 .expect('m.sticker should have msg content')
                 .body();
         return Row(
@@ -406,7 +406,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.room.member':
-        MsgContent? msgContent = eventItem.msgContent();
+        MsgContent? msgContent = eventItem.message();
         if (msgContent == null) {
           return const SizedBox();
         }
@@ -443,9 +443,9 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.poll.start':
         final body =
             eventItem
-                .msgContent()
+                .poll()
                 .expect('m.poll.start should have msg content')
-                .body();
+                .fallbackText();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -460,7 +460,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                body,
+                body ?? '',
                 style: textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),

@@ -33,7 +33,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   String eventType() => 'm.room.message';
 
   @override
-  MsgContent? msgContent() => MockMsgContent();
+  MsgContent? message() => MockMsgContent();
 
   @override
   bool wasEdited() => false;
