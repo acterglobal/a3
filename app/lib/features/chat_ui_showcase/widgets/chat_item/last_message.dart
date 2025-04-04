@@ -26,7 +26,7 @@ class LastMessage extends StatelessWidget {
     return Text(
       text,
       style: theme.textTheme.bodySmall?.copyWith(
-        fontWeight: FontWeight.w300,
+        fontWeight: FontWeight.w400,
         color: textColor,
         fontSize: 13,
       ),
