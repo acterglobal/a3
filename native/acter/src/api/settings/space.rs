@@ -296,12 +296,14 @@ impl Room {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let content = room
+                if let Some(raw) = room
                     .get_state_event_static::<ActerAppSettingsContent>()
                     .await?
-                    .context("No Settings set up")?
-                    .deserialize()?;
-                Ok(content.original_content().cloned())
+                {
+                    Ok(raw.deserialize()?.original_content().cloned())
+                } else {
+                    Ok(None)
+                }
             })
             .await?
     }

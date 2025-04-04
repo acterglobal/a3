@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,7 +13,7 @@ void messageActions({
   required Widget messageWidget,
   required bool isMe,
   required bool canRedact,
-  required RoomEventItem item,
+  required TimelineEventItem item,
   required String messageId,
   required String roomId,
 }) async {

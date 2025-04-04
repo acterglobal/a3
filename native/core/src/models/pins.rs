@@ -24,8 +24,8 @@ impl Deref for Pin {
 }
 
 impl Pin {
-    pub fn title(&self) -> &String {
-        &self.inner.title
+    pub fn title(&self) -> String {
+        self.inner.title.clone()
     }
 
     pub fn room_id(&self) -> &RoomId {

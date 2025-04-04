@@ -363,7 +363,9 @@ impl RefDetails {
             | RefDetails::TaskList { room_id, .. }
             | RefDetails::Pin { room_id, .. }
             | RefDetails::News { room_id, .. }
-            | RefDetails::CalendarEvent { room_id, .. } => room_id.as_ref().map(|p| p.to_string()),
+            | RefDetails::CalendarEvent { room_id, .. } => {
+                room_id.as_ref().map(ToString::to_string)
+            }
         }
     }
 
@@ -375,7 +377,9 @@ impl RefDetails {
             | RefDetails::TaskList { via, .. }
             | RefDetails::Pin { via, .. }
             | RefDetails::News { via, .. }
-            | RefDetails::CalendarEvent { via, .. } => via.iter().map(|s| s.to_string()).collect(),
+            | RefDetails::CalendarEvent { via, .. } => {
+                via.iter().map(ToString::to_string).collect::<Vec<String>>()
+            }
         }
     }
 
@@ -458,7 +462,7 @@ impl ObjRef {
     }
 
     pub fn position_str(&self) -> Option<String> {
-        self.position.as_ref().map(|p| p.to_string())
+        self.position.as_ref().map(ToString::to_string)
     }
 
     pub fn ref_details(&self) -> RefDetails {

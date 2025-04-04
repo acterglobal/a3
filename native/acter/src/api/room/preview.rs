@@ -28,7 +28,7 @@ impl RoomPreview {
     }
 
     pub fn avatar_url_str(&self) -> Option<String> {
-        self.inner.avatar_url.as_ref().map(|s| s.to_string())
+        self.inner.avatar_url.as_ref().map(ToString::to_string)
     }
 
     pub fn has_avatar(&self) -> bool {
@@ -36,7 +36,7 @@ impl RoomPreview {
     }
 
     pub fn canonical_alias_str(&self) -> Option<String> {
-        self.inner.canonical_alias.as_ref().map(|s| s.to_string())
+        self.inner.canonical_alias.as_ref().map(ToString::to_string)
     }
 
     pub fn room_type_str(&self) -> String {

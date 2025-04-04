@@ -36,7 +36,7 @@ impl ActerUserAppSettings {
             .chat
             .auto_download
             .as_ref()
-            .map(|a| a.to_string())
+            .map(ToString::to_string)
     }
 
     pub fn typing_notice(&self) -> Option<bool> {
