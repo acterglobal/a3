@@ -37,7 +37,7 @@ class CalendarSettingsPage extends ConsumerWidget {
                   onToggle: (newVal) async {
                     ref.read(isCalendarSyncActiveProvider.notifier).set(newVal);
                     if (newVal) {
-                      await initCalendarSync(ignoreRejection: true);
+                      await initCalendarSync(context,lang, ignoreRejection: true);
                       EasyLoading.showToast('Acter Calendars synced');
                     } else {
                       await clearActerCalendars();

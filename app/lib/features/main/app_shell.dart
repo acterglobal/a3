@@ -71,8 +71,7 @@ class AppShellState extends ConsumerState<AppShell> {
 
     // these want to be sure to execute in order
     await _initNotifications();
-    // calendar sync
-    await _initCalendarSync();
+
   }
 
   Future<void> _initProviders() async {
@@ -107,20 +106,6 @@ class AppShellState extends ConsumerState<AppShell> {
       final newClient = next.valueOrNull;
       if (newClient != null) {
         _initPushForClient(newClient);
-      }
-    });
-  }
-
-  Future<void> _initCalendarSync() async {
-    final client = await ref.read(clientProvider.future);
-    if (client != null) {
-      // calendar sync only works if we have a client
-      await initCalendarSync();
-    }
-    ref.listenManual(clientProvider, (previous, next) {
-      final newClient = next.valueOrNull;
-      if (newClient != null) {
-        initCalendarSync();
       }
     });
   }

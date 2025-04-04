@@ -2376,6 +2376,7 @@
   "goToSettings": "Go to Settings",
   "calendarPermissionDenied": "Calendar permission denied",
   "calendarSync": "Sync into Device Calendar",
+  "userHasNotAllowed": "The user has not allowed this application to modify their calendar",
   "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {},

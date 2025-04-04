@@ -1,16 +1,15 @@
-
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CalendarSyncPermissionWidget extends StatelessWidget {
+class CalendarSyncPermissionWidget extends ConsumerWidget {
   const CalendarSyncPermissionWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
 
@@ -43,7 +42,7 @@ class CalendarSyncPermissionWidget extends StatelessWidget {
                       const SizedBox(height: 20),
                       _buildDescriptionText(lang, textTheme),
                       const SizedBox(height: 20),
-                      _buildActionButton(context, lang, textTheme),
+                      _buildActionButton(context, lang, textTheme, ref),
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -90,33 +89,14 @@ class CalendarSyncPermissionWidget extends StatelessWidget {
     BuildContext context,
     L10n lang,
     TextTheme textTheme,
+    WidgetRef ref,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
           onPressed: () async {
-            final SharedPreferences preferences = await sharedPrefs();
-
-            final hasPermission = await deviceCalendar.hasPermissions();
-
-            if (hasPermission.data == false) {
-              final requesting = await deviceCalendar.requestPermissions();
-              if (requesting.data == false) {
-                await preferences.setBool(rejectionKey, true);
-                if(context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(lang.notificationDenied)),
-                  );
-                }
-                return;
-              }
-              else {
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              }
-            }
+            await _initCalendarSync(context, lang, ref);
           },
           child: Text(lang.allowPermission),
         ),
@@ -131,5 +111,25 @@ class CalendarSyncPermissionWidget extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _initCalendarSync(
+    BuildContext context,
+    L10n lang,
+    WidgetRef ref,
+  ) async {
+    final client = await ref.read(clientProvider.future);
+    if (client != null) {
+      // calendar sync only works if we have a client
+      if (context.mounted) {
+        await initCalendarSync(context, lang);
+      }
+    }
+    ref.listenManual(clientProvider, (previous, next) {
+      final newClient = next.valueOrNull;
+      if (newClient != null) {
+        initCalendarSync(context, lang);
+      }
+    });
   }
 }
