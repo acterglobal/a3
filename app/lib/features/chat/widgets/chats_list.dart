@@ -7,6 +7,7 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -90,7 +91,22 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderList(BuildContext context, List<String> chats) {
-    return _AnimatedChatsList(entries: chats, onSelected: onSelected);
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      separatorBuilder: (context, index) {
+        return Divider(color: Theme.of(context).unselectedWidgetColor);
+      },
+      itemCount: chats.length,
+      itemBuilder: (context, index) {
+        final roomId = chats[index];
+        return ChatItemWidget(
+          roomId: roomId,
+          onTap: () => onSelected?.call(roomId),
+        );
+      },
+    );
+
+    // return _AnimatedChatsList(entries: chats, onSelected: onSelected);
   }
 }
 
