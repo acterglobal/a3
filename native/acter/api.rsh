@@ -1416,6 +1416,9 @@ object TimelineStream {
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
+
+    /// send sticker using already uploaded image uri
+    fn send_sticker(body: string, uri: string) -> Future<Result<bool>>;
 }
 
 
