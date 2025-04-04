@@ -1,5 +1,7 @@
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_item/last_message.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/typing_indicator.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_item/unread_count.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -61,6 +63,7 @@ class ChatListItem extends StatelessWidget {
 
     return Row(
       children: [
+        //Show chat title
         Text(
           displayName,
           style: theme.textTheme.bodyMedium?.copyWith(
@@ -68,6 +71,8 @@ class ChatListItem extends StatelessWidget {
           ),
         ),
         Spacer(),
+
+        //Show last message timestamp
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
@@ -83,59 +88,41 @@ class ChatListItem extends StatelessWidget {
   }
 
   Widget _buildChatSubtitle(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       children: [
+        //Show typing indicator if it is typing else show last message
         isTyping
             ? TypingIndicator(users: typingUsers ?? [])
-            : _buildLastMessageInfo(context),
+            : LastMessage(
+              message: lastMessage,
+              senderName: isDM ? null : lastMessageSenderDisplayName,
+            ),
         Spacer(),
+
+        //Show bookmarked icon if it is bookmarked
         if (isBookmarked)
-          Icon(
-            PhosphorIcons.bookmarkSimple(),
-            size: 20,
-            color: theme.textTheme.labelMedium?.color,
+          _builIconContainer(
+            _builInfoIconItem(context, PhosphorIcons.bookmarkSimple()),
           ),
 
-        if (isMuted) ...[
-          SizedBox(width: 6),
-          Icon(
-            PhosphorIcons.bellSlash(),
-            size: 20,
-            color: theme.textTheme.labelMedium?.color,
+        //Show muted icon if it is muted
+        if (isMuted)
+          _builIconContainer(
+            _builInfoIconItem(context, PhosphorIcons.bellSlash()),
           ),
-        ],
 
-        if (isUnread) ...[
-          SizedBox(width: 6),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.secondary,
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Text(
-              unreadCount.toString(),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ],
+        //Show unread count if it is unread
+        if (isUnread) _builIconContainer(UnreadCount(count: unreadCount)),
       ],
     );
   }
 
-  Widget _buildLastMessageInfo(BuildContext context) {
+  Widget _builInfoIconItem(BuildContext context, IconData icon) {
     final theme = Theme.of(context);
-    final textColor = theme.colorScheme.surfaceTint;
+    return Icon(icon, size: 20, color: theme.textTheme.labelMedium?.color);
+  }
 
-    final text =
-        isDM ? lastMessage : '$lastMessageSenderDisplayName: $lastMessage';
-    return Text(
-      text,
-      style: theme.textTheme.bodySmall?.copyWith(color: textColor),
-    );
+  Widget _builIconContainer(Widget child) {
+    return Row(children: [SizedBox(width: 6), child]);
   }
 }
