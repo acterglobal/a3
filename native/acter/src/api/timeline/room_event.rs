@@ -160,7 +160,9 @@ impl TryFrom<&EncryptedMessage> for UnableToDecrypt {
                 sender_key: Some(sender_key.clone()),
                 session_id: None,
             }),
-            EncryptedMessage::MegolmV1AesSha2 { session_id, cause, .. } => Ok(UnableToDecrypt {
+            EncryptedMessage::MegolmV1AesSha2 {
+                session_id, cause, ..
+            } => Ok(UnableToDecrypt {
                 enc_mode: "MegolmV1AesSha2".to_owned(),
                 sender_key: None,
                 session_id: Some(session_id.clone()),
