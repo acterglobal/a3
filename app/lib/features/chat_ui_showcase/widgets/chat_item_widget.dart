@@ -103,13 +103,39 @@ class ChatItemWidget extends ConsumerWidget {
     final TimelineEventItem? eventItem = latestMessage?.eventItem();
 
     switch (eventItem?.eventType()) {
+      case 'm.call.answer':
+      case 'm.call.candidates':
+      case 'm.call.hangup':
+      case 'm.call.invite':
+      case 'm.room.aliases':
+      case 'm.room.avatar':
+      case 'm.room.canonical_alias':
+      case 'm.room.create':
+      case 'm.room.encryption':
+      case 'm.room.guest.access':
+      case 'm.room.history_visibility':
+      case 'm.room.join.rules':
+      case 'm.room.name':
+      case 'm.room.pinned_events':
+      case 'm.room.power_levels':
+      case 'm.room.server_acl':
+      case 'm.room.third_party_invite':
+      case 'm.room.tombstone':
+      case 'm.room.topic':
+      case 'm.space.child':
+      case 'm.reaction':
+      case 'm.sticker':
+      case 'm.room.member':
+      case 'm.space.parent':
+      case 'm.room.message':
+        final msgContent = eventItem?.msgContent();
+        return msgContent?.body() ?? '';
       case 'm.room.encrypted':
         return lang.failedToDecryptMessage;
       case 'm.room.redaction':
         return lang.thisMessageHasBeenDeleted;
       default:
-        final msgContent = eventItem?.msgContent();
-        return msgContent?.body() ?? '';
+        return '';
     }
   }
 }
