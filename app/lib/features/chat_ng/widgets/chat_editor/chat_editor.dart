@@ -323,11 +323,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     scrollController: scrollController,
     editorPadding: const EdgeInsets.symmetric(horizontal: 10),
     onChanged: (body, html) {
-      if (html != null) {
-        widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-      } else {
-        widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-      }
+      final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
+      widget.onTyping?.call(isTyping);
     },
   );
 
