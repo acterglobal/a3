@@ -74,9 +74,7 @@ class ChatListItemContainerWidget extends StatelessWidget {
             displayName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: theme.textTheme.bodyMedium,
           ),
         ),
         SizedBox(width: 12),

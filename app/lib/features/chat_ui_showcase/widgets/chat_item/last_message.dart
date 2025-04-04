@@ -25,7 +25,11 @@ class LastMessage extends StatelessWidget {
 
     return Text(
       text,
-      style: theme.textTheme.bodySmall?.copyWith(color: textColor),
+      style: theme.textTheme.bodySmall?.copyWith(
+        fontWeight: FontWeight.w300,
+        color: textColor,
+        fontSize: 13,
+      ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
