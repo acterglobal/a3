@@ -18,20 +18,30 @@ class LastMessage extends StatelessWidget {
     final textColor =
         isUnread ? theme.colorScheme.secondary : theme.colorScheme.surfaceTint;
 
-    final text =
-        senderName != null && message.isNotEmpty
-            ? '$senderName: $message'
-            : message;
-
-    return Text(
-      text,
-      style: theme.textTheme.bodySmall?.copyWith(
-        fontWeight: FontWeight.w400,
-        color: textColor,
-        fontSize: 13,
-      ),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+    return Row(
+      children: [
+        if (senderName != null)
+          Text(
+            '$senderName : ',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: textColor,
+              fontSize: 14,
+            ),
+          ),
+        Expanded(
+          child: Text(
+            message,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w400,
+              color: textColor,
+              fontSize: 13,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }
