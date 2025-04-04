@@ -124,7 +124,7 @@ impl Attachment {
         RUNTIME
             .spawn(async move {
                 // get file extension from msg info
-                let (request, mut filename) = match thumb_size.clone() {
+                let (request, mut filename) = match &thumb_size {
                     Some(thumb_size) => match evt_content {
                         AttachmentContent::Image(content) | AttachmentContent::Fallback(FallbackAttachmentContent::Image(content)) => {
                             let request = content
@@ -133,12 +133,12 @@ impl Attachment {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
                                         format!("{}-thumbnail.{}", evt_id, ext)
@@ -153,12 +153,12 @@ impl Attachment {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
                                         format!("{}-thumbnail.{}", evt_id, ext)
@@ -173,12 +173,12 @@ impl Attachment {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
                                         format!("{}-thumbnail.{}", evt_id, ext)
@@ -193,13 +193,13 @@ impl Attachment {
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.thumbnail_info)
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.thumbnail_info.as_ref())
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype).map(|ext| {
                                         format!("{}-thumbnail.{}", evt_id, ext)
@@ -217,8 +217,8 @@ impl Attachment {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
                                         .map(|ext| format!("{}.{}", evt_id, ext))
@@ -232,8 +232,8 @@ impl Attachment {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
                                         .map(|ext| format!("{}.{}", evt_id, ext))
@@ -247,8 +247,8 @@ impl Attachment {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
                                         .map(|ext| format!("{}.{}",evt_id, ext))
@@ -262,8 +262,8 @@ impl Attachment {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_ref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
                                         .map(|ext| format!("{}.{}", evt_id, ext))
@@ -281,11 +281,12 @@ impl Attachment {
                 // infer file extension via parsing of file binary
                 if filename.is_none() {
                     if let Some(kind) = infer::get(&data) {
-                        filename = Some(if thumb_size.clone().is_some() {
+                        let fname = if thumb_size.is_some() {
                             format!("{}-thumbnail.{}", evt_id, kind.extension())
                         } else {
                             format!("{}.{}", evt_id, kind.extension())
-                        });
+                        };
+                        filename = Some(fname);
                     }
                 }
                 let mut path = PathBuf::from(dir_path.clone());
@@ -544,7 +545,6 @@ impl AttachmentsManager {
 
     pub async fn content_draft(&self, base_draft: Box<MsgDraft>) -> Result<AttachmentDraft> {
         let room = self.room.clone();
-        let client = self.client.deref().clone();
 
         let content = RUNTIME
             .spawn(async move {
@@ -555,9 +555,9 @@ impl AttachmentsManager {
                 }
             })
             .await??;
-
         let mut builder = self.inner.draft_builder();
         builder.content(content);
+
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),
@@ -566,13 +566,10 @@ impl AttachmentsManager {
     }
 
     pub async fn link_draft(&self, url: String, name: Option<String>) -> Result<AttachmentDraft> {
-        let room = self.room.clone();
-        let client = self.client.deref().clone();
-
         let content = AttachmentContent::Link(LinkAttachmentContent { link: url, name });
-
         let mut builder = self.inner.draft_builder();
         builder.content(content);
+
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),
@@ -581,13 +578,10 @@ impl AttachmentsManager {
     }
 
     pub async fn reference_draft(&self, ref_details: Box<RefDetails>) -> Result<AttachmentDraft> {
-        let room = self.room.clone();
-        let client = self.client.deref().clone();
-
         let content = AttachmentContent::Reference((*ref_details).deref().clone());
-
         let mut builder = self.inner.draft_builder();
         builder.content(content);
+
         Ok(AttachmentDraft {
             client: self.client.clone(),
             room: self.room.clone(),

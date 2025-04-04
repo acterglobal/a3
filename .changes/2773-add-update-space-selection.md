@@ -1,1 +1,0 @@
-- [Fixes] : If you are creating update (Boost OR Story) from space detail page, then now you find relevant space as selection default during posting.

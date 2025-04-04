@@ -224,9 +224,8 @@ impl Client {
                 let user_profiles = resp
                     .results
                     .into_iter()
-                    .map(|inner| {
-                        UserProfile::from_search(PublicProfile::new(inner, client.clone()))
-                    })
+                    .map(|inner| PublicProfile::new(inner, client.clone()))
+                    .map(UserProfile::from_search)
                     .collect();
                 Ok(user_profiles)
             })
