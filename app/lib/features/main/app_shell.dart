@@ -11,7 +11,6 @@ import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
-import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/cross_signing/widgets/cross_signing.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
