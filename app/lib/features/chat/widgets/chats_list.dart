@@ -91,6 +91,7 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderList(BuildContext context, List<String> chats) {
+    // return _AnimatedChatsList(entries: chats, onSelected: onSelected);
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 16),
       separatorBuilder: (context, index) {
@@ -105,8 +106,6 @@ class ChatsList extends ConsumerWidget {
         );
       },
     );
-
-    // return _AnimatedChatsList(entries: chats, onSelected: onSelected);
   }
 }
 
