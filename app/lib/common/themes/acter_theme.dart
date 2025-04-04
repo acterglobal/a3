@@ -39,7 +39,7 @@ class TypingIndicatorTheme {
 
   const TypingIndicatorTheme({
     required this.animatedCirclesColor,
-    this.animatedCircleSize = 5.0,
+    this.animatedCircleSize = 6.0,
     required this.multipleUserTextStyle,
     required this.countAvatarColor,
     required this.countTextColor,

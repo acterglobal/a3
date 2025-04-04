@@ -8,7 +8,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:acter/features/settings/widgets/typing_indicator_style_tile.dart';
 
 class SettingsLabsPage extends ConsumerWidget {
   static Key tasksLabSwitch = const Key('labs-tasks');
@@ -85,7 +84,6 @@ class SettingsLabsPage extends ConsumerWidget {
                     );
                   },
                 ),
-                CustomSettingsTile(child: const TypingIndicatorStyleTile()),
               ],
             ),
             SettingsSection(

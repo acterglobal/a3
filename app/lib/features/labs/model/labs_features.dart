@@ -11,9 +11,6 @@ enum LabsFeature {
   // specific features
   chatUnread,
   chatNG,
-  typingIndicatorName,
-  typingIndicatorAvatar,
-  typingIndicatorNameAndAvatar,
 
   // system features
   encryptionBackup,

@@ -5,6 +5,7 @@ import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dar
 import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TypingEvent, FfiListUserId;
 import 'package:flutter/material.dart';
@@ -62,7 +63,7 @@ void main() {
 
       expect(find.byType(TypingIndicator), findsOneWidget);
 
-      expect(find.text('Alice and Bob are typing…'), findsOneWidget);
+      expect(find.text('Alice and Bob are typing'), findsOneWidget);
     });
 
     testWidgets('displays nothing when no users are typing', (tester) async {
@@ -121,8 +122,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.byType(TypingIndicator), findsOneWidget);
-
-      expect(find.text('Alice is typing…'), findsOneWidget);
+      expect(find.byType(ActerAvatar), findsOneWidget);
+      expect(find.text('Alice is typing'), findsOneWidget);
+      expect(find.byType(AnimatedCircles), findsOneWidget);
     });
 
     testWidgets('handles multiple users typing correctly', (tester) async {
@@ -133,27 +135,28 @@ void main() {
           (ref, arg) => Stream.value(['user1', 'user2', 'user3', 'user4']),
         ),
         memberAvatarInfoProvider.overrideWith((ref, info) {
-          switch (info.userId) {
-            case 'user1':
-              return MockAvatarInfo(
-                uniqueId: 'user1',
-                mockDisplayName: 'Alice',
-              );
-            case 'user2':
-              return MockAvatarInfo(uniqueId: 'user2', mockDisplayName: 'Bob');
-            case 'user3':
-              return MockAvatarInfo(
-                uniqueId: 'user3',
-                mockDisplayName: 'Charlie',
-              );
-            case 'user4':
-              return MockAvatarInfo(uniqueId: 'user4', mockDisplayName: 'Dave');
-            default:
-              return MockAvatarInfo(
-                uniqueId: info.userId,
-                mockDisplayName: info.userId,
-              );
-          }
+          return switch (info.userId) {
+            'user1' => MockAvatarInfo(
+              uniqueId: 'user1',
+              mockDisplayName: 'Alice',
+            ),
+            'user2' => MockAvatarInfo(
+              uniqueId: 'user2',
+              mockDisplayName: 'Bob',
+            ),
+            'user3' => MockAvatarInfo(
+              uniqueId: 'user3',
+              mockDisplayName: 'Charlie',
+            ),
+            'user4' => MockAvatarInfo(
+              uniqueId: 'user4',
+              mockDisplayName: 'Dave',
+            ),
+            _ => MockAvatarInfo(
+              uniqueId: info.userId,
+              mockDisplayName: info.userId,
+            ),
+          };
         }),
       ];
 
@@ -174,8 +177,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.byType(TypingIndicator), findsOneWidget);
-
+      expect(find.byType(ActerAvatar), findsNWidgets(2));
+      expect(find.text('2'), findsOneWidget);
       expect(find.text('Alice and 3 others are typing'), findsOneWidget);
+      expect(find.byType(AnimatedCircles), findsOneWidget);
     });
   });
 

@@ -124,18 +124,6 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       ).select((value) => value.messageList),
     );
 
-    final typingUsers =
-        (ref.watch(chatTypingEventProvider(widget.roomId)).valueOrNull ?? [])
-            .map(
-              (userId) => ref.watch(
-                memberAvatarInfoProvider((
-                  userId: userId,
-                  roomId: widget.roomId,
-                )),
-              ),
-            )
-            .toList();
-
     return PageStorage(
       bucket: bucketGlobal,
       child: Column(
@@ -146,18 +134,10 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
                 _buildMessagesList(messages),
                 _buildScrollIndicator(),
                 _buildScrollToBottomButton(),
+                _buildTypingIndicator(ref, widget.roomId),
               ],
             ),
           ),
-          if (typingUsers.isNotEmpty)
-            // typing indicator
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: TypingIndicator(
-                options: TypingIndicatorOptions(typingUsers: typingUsers),
-              ),
-            ),
         ],
       ),
     );
@@ -210,6 +190,26 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
           child: const Icon(Icons.arrow_downward),
         ),
       ),
+    ),
+  );
+}
+
+Widget _buildTypingIndicator(WidgetRef ref, String roomId) {
+  final typingUsers =
+      (ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [])
+          .map(
+            (userId) => ref.watch(
+              memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+            ),
+          )
+          .toList();
+  if (typingUsers.isEmpty) return const SizedBox.shrink();
+  return Positioned(
+    bottom: 16,
+    left: 16,
+    right: 0,
+    child: TypingIndicator(
+      options: TypingIndicatorOptions(typingUsers: typingUsers),
     ),
   );
 }

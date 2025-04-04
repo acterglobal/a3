@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/common/themes/acter_theme.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
@@ -10,15 +9,9 @@ enum TypingIndicatorMode { name, avatar, nameAndAvatar }
 
 /// Options for the typing indicator.
 class TypingIndicatorOptions {
-  const TypingIndicatorOptions({
-    this.typingUsers = const [],
-    this.customTypingWidget,
-    this.mode,
-  });
+  const TypingIndicatorOptions({this.typingUsers = const []});
 
   final List<AvatarInfo> typingUsers;
-  final TypingIndicatorMode? mode;
-  final Widget? customTypingWidget;
 }
 
 class TypingIndicator extends ConsumerWidget {
@@ -29,14 +22,8 @@ class TypingIndicator extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).typingIndicatorTheme;
-    final mode = options.mode ?? ref.watch(chatTypingIndicatorModeProvider);
 
-    return options.customTypingWidget ??
-        TypingWidget(
-          typingUsers: options.typingUsers,
-          theme: theme,
-          mode: mode ?? TypingIndicatorMode.nameAndAvatar,
-        );
+    return TypingWidget(typingUsers: options.typingUsers, theme: theme);
   }
 }
 
@@ -72,62 +59,38 @@ class TypingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final text = _buildTypingText(typingUsers, l10n);
-    final textDirection = Directionality.of(context);
 
-    // Simply use the system text direction
-    final isRtl = textDirection == TextDirection.rtl;
-
-    if (mode == TypingIndicatorMode.name) {
-      return Row(
-        children: [
-          AnimatedCircles(theme: theme),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              text,
-              style: theme.multipleUserTextStyle,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
+    return Row(
+      children: [
+        AvatarHandler(users: typingUsers),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            text,
+            style: theme.multipleUserTextStyle,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
-        ],
-      );
-    } else if (mode == TypingIndicatorMode.avatar) {
-      return Row(
-        children: [
-          AvatarHandler(users: typingUsers, isRtl: isRtl),
-          const SizedBox(width: 4),
-          AnimatedCircles(theme: theme),
-        ],
-      );
-    } else {
-      return Row(
-        children: [
-          AvatarHandler(users: typingUsers, isRtl: isRtl),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              text,
-              style: theme.multipleUserTextStyle,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ),
-        ],
-      );
-    }
+        ),
+        const SizedBox(width: 2),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: AnimatedCircles(theme: theme),
+        ),
+      ],
+    );
   }
 }
 
 /// Multi Avatar Handler Widget.
 class AvatarHandler extends StatelessWidget {
-  const AvatarHandler({super.key, required this.users, this.isRtl = false});
+  const AvatarHandler({super.key, required this.users});
 
   final List<AvatarInfo> users;
-  final bool isRtl;
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     if (users.isEmpty) {
       return const SizedBox();
     } else if (users.length == 1) {

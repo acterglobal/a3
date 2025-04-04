@@ -5,7 +5,6 @@ import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/notifiers/labs_features.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/widgets/typing_indicator.dart';
 
 const labsKey = 'a3.labs';
 
@@ -51,18 +50,3 @@ Future<bool> updateFeatureState(
   await ref.read(featuresProvider.notifier).setActive(f, value);
   return ref.read(isActiveProvider(f));
 }
-
-final chatTypingIndicatorModeProvider = StateProvider<TypingIndicatorMode>((
-  ref,
-) {
-  if (ref.watch(isActiveProvider(LabsFeature.typingIndicatorName))) {
-    return TypingIndicatorMode.name;
-  } else if (ref.watch(isActiveProvider(LabsFeature.typingIndicatorAvatar))) {
-    return TypingIndicatorMode.avatar;
-  } else if (ref.watch(
-    isActiveProvider(LabsFeature.typingIndicatorNameAndAvatar),
-  )) {
-    return TypingIndicatorMode.nameAndAvatar;
-  }
-  return TypingIndicatorMode.nameAndAvatar;
-});
