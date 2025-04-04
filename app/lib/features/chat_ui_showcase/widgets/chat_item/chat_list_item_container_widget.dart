@@ -106,7 +106,7 @@ class ChatListItemContainerWidget extends StatelessWidget {
             : LastMessage(
               isUnread: isUnread,
               message: lastMessage,
-              senderName: lastMessageSenderDisplayName,
+              senderName: isDM ? null : lastMessageSenderDisplayName,
             ),
         Spacer(),
 

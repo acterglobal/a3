@@ -18,7 +18,10 @@ class LastMessage extends StatelessWidget {
     final textColor =
         isUnread ? theme.colorScheme.secondary : theme.colorScheme.surfaceTint;
 
-    final text = senderName != null ? '$senderName: $message' : message;
+    final text =
+        senderName != null && message.isNotEmpty
+            ? '$senderName : $message'
+            : message;
 
     return Text(
       text,

@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/chat_list_item_container_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
@@ -18,6 +19,7 @@ class ChatItemWidget extends ConsumerWidget {
     final displayName = _getDisplayName(ref);
     final lastMessageTimestamp = _getLastMessageTimestamp(ref);
     final lastMessage = _getLastMessage(ref);
+    final lastMessageSenderName = _getLastMessageSenderName(ref);
     final isMuted = _getIsMuted(ref);
     final isBookmarked = _getIsBookmarked(ref);
     final isDM = _getIsDM(ref);
@@ -30,6 +32,7 @@ class ChatItemWidget extends ConsumerWidget {
       displayName: displayName,
       lastMessage: lastMessage,
       lastMessageTimestamp: lastMessageTimestamp,
+      lastMessageSenderDisplayName: lastMessageSenderName,
       isDM: isDM,
       isMuted: isMuted,
       isBookmarked: isBookmarked,
@@ -86,11 +89,18 @@ class ChatItemWidget extends ConsumerWidget {
     return lastMessageTimestamp;
   }
 
+  String _getLastMessageSenderName(WidgetRef ref) {
+    final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
+    final TimelineEventItem? eventItem = latestMessage?.eventItem();
+    final sender = eventItem?.sender();
+    return simplifyUserId(sender ?? '') ?? '';
+  }
+
   String _getLastMessage(WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
     final TimelineEventItem? eventItem = latestMessage?.eventItem();
     final lastMessage = eventItem?.msgContent();
-    final body = lastMessage?.body();
-    return body ?? '';
+    String body = lastMessage?.body() ?? '';
+    return body;
   }
 }
