@@ -17,7 +17,7 @@ class ChatItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final displayName = _getDisplayName(ref);
     final lastMessageTimestamp = _getLastMessageTimestamp(ref);
-    final lastMessage = 'Hello, how are you?';
+    final lastMessage = _getLastMessage(ref);
     final isMuted = _getIsMuted(ref);
     final isBookmarked = _getIsBookmarked(ref);
     final isDM = _getIsDM(ref);
@@ -84,5 +84,13 @@ class ChatItemWidget extends ConsumerWidget {
     final TimelineEventItem? eventItem = latestMessage?.eventItem();
     final lastMessageTimestamp = eventItem?.originServerTs();
     return lastMessageTimestamp;
+  }
+
+  String _getLastMessage(WidgetRef ref) {
+    final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
+    final TimelineEventItem? eventItem = latestMessage?.eventItem();
+    final lastMessage = eventItem?.msgContent();
+    final body = lastMessage?.body();
+    return body ?? '';
   }
 }
