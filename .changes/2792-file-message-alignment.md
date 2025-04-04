@@ -1,0 +1,2 @@
+- [Labs] Chat NG:
+  - [fix] file messages now correctly appears on user's own side of the chat.
