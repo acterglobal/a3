@@ -1,9 +1,8 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/calendar_sync/calendar_sync.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CalendarSyncPermissionWidget extends ConsumerWidget {
   const CalendarSyncPermissionWidget({super.key});
@@ -96,7 +95,12 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
       children: [
         ActerPrimaryActionButton(
           onPressed: () async {
-            await _initCalendarSync(context, lang, ref);
+            // Request Calendar Sync permission on button press
+            await _requestCalendarSyncPermission(
+              context,
+              lang: lang,
+              textStyle: textTheme.bodyMedium,
+            );
           },
           child: Text(lang.allowPermission),
         ),
@@ -113,23 +117,59 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
     );
   }
 
-  Future<void> _initCalendarSync(
-    BuildContext context,
-    L10n lang,
-    WidgetRef ref,
-  ) async {
-    final client = await ref.read(clientProvider.future);
-    if (client != null) {
-      // calendar sync only works if we have a client
+   // Request calendar sync permission
+  Future<void> _requestCalendarSyncPermission(
+    BuildContext context, {
+    required L10n lang,
+    TextStyle? textStyle,
+  }) async {
+    final status = await Permission.calendarFullAccess.request();
+
+    if (status.isGranted) {
       if (context.mounted) {
-        await initCalendarSync(context, lang);
+        Navigator.pop(context);
+      }
+    } else if (status.isDenied) {
+      // Permission denied, show a snack bar
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(lang.calendarPermissionDenied)),
+        );
+      }
+    } else if (status.isPermanentlyDenied) {
+      // Permission permanently denied, show option to go to settings
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  lang.permissionPermantlyDenied,
+                  style: textStyle,
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => openAppSettings(),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    lang.goToSettings,
+                    style: textStyle?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+          ),
+        );
       }
     }
-    ref.listenManual(clientProvider, (previous, next) {
-      final newClient = next.valueOrNull;
-      if (newClient != null) {
-        initCalendarSync(context, lang);
-      }
-    });
   }
 }

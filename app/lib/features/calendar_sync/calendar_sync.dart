@@ -5,14 +5,12 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/calendar_sync/providers/calendar_sync_active_provider.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 final _log = Logger('a3::calendar_sync');
 
@@ -54,11 +52,7 @@ T? _logError<T>(Result<T> result, String msg, {bool doThrow = false}) {
   return result.data;
 }
 
-Future<void> initCalendarSync(
-  BuildContext context,
-  L10n lang, {
-  bool ignoreRejection = false,
-}) async {
+Future<void> initCalendarSync({bool ignoreRejection = false}) async {
   if (!await _isEnabled()) {
     _log.warning('Calendar Sync disabled');
     return;
@@ -67,59 +61,28 @@ Future<void> initCalendarSync(
     _log.warning('Calendar Sync not available on this device');
     return;
   }
-  final SharedPreferences preferences = await sharedPrefs();
 
-  try {
-    final hasPermission = await deviceCalendar.hasPermissions();
+  final hasPermission = await deviceCalendar.hasPermissions();
+  if (hasPermission.data == false) return;
 
-    if (hasPermission.data == false) {
-      final requesting = await deviceCalendar.requestPermissions();
-      if (requesting.data == false) {
-        await preferences.setBool(rejectionKey, true);
-        _log.warning('user rejected calendar sync. quitting');
-        return;
-      } else {
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      }
+  // FOR DEBUGGING CLEAR Acter CALENDARS VIA:
+  // await clearActerCalendars();
 
-      // Double check permissions after requesting
-      final recheckPermission = await deviceCalendar.hasPermissions();
-      if (recheckPermission.data == false) {
-        _log.warning('Calendar permissions still not granted after request');
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(lang.userHasNotAllowed)));
-        }
-        await preferences.setBool(rejectionKey, true);
-        return;
-      }
+  final calendarId = await _getOrCreateCalendar();
+  // clear if it existed before
+  _subscription?.close();
+  // start listening
+  _subscription = mainProviderContainer.listen(eventsToSyncProvider, (
+    prev,
+    next,
+  ) async {
+    final events = next.valueOrNull;
+    if (events == null) {
+      _log.info('ignoring state change without value');
+      return;
     }
-
-    // FOR DEBUGGING CLEAR Acter CALENDARS VIA:
-    // await clearActerCalendars();
-
-    final calendarId = await _getOrCreateCalendar();
-    // clear if it existed before
-    _subscription?.close();
-    // start listening
-    _subscription = mainProviderContainer.listen(eventsToSyncProvider, (
-      prev,
-      next,
-    ) async {
-      final events = next.valueOrNull;
-      if (events == null) {
-        _log.info('ignoring state change without value');
-        return;
-      }
-      scheduleRefresh(calendarId, events);
-    }, fireImmediately: true);
-  } catch (e, stackTrace) {
-    _log.severe('Failed to initialize calendar sync', e, stackTrace);
-    rethrow;
-  }
+    scheduleRefresh(calendarId, events);
+  }, fireImmediately: true);
 }
 
 Completer<void>? _completer;
