@@ -5,7 +5,6 @@ class MockConvo {
   final String lastMessage;
   final int lastMessageTimestamp;
   final String? lastMessageSenderDisplayName;
-  final bool isUnread;
   final int unreadCount;
   final List<String>? typingUsers;
   final bool isMuted;
@@ -18,7 +17,6 @@ class MockConvo {
     required this.lastMessage,
     required this.lastMessageTimestamp,
     this.lastMessageSenderDisplayName,
-    this.isUnread = false,
     this.unreadCount = 0,
     this.typingUsers,
     this.isMuted = false,
@@ -32,7 +30,6 @@ final mockConvo1 = MockConvo(
   displayName: 'John Doe',
   lastMessage: 'Hello, how are you?',
   lastMessageTimestamp: 1743698332000,
-  isUnread: true,
   unreadCount: 1,
   isMuted: true,
   isBookmarked: true,
@@ -45,7 +42,6 @@ final mockConvo2 = MockConvo(
   lastMessage: 'Hello, how are you?',
   lastMessageTimestamp: 1743699332000,
   lastMessageSenderDisplayName: 'Smith',
-  isUnread: true,
   unreadCount: 2,
   typingUsers: ['Smith'],
   isMuted: true,
@@ -58,7 +54,6 @@ final mockConvo3 = MockConvo(
   lastMessage: 'Hello, how are you?',
   lastMessageTimestamp: 1743700332000,
   lastMessageSenderDisplayName: 'Benjamin',
-  isUnread: true,
   unreadCount: 2,
 );
 
@@ -133,7 +128,6 @@ final mockConvo11 = MockConvo(
   displayName: 'Alex Thompson',
   lastMessage: 'See you at the meeting',
   lastMessageTimestamp: 1743708332000,
-  isUnread: false,
 );
 
 final mockConvo12 = MockConvo(
@@ -142,7 +136,6 @@ final mockConvo12 = MockConvo(
   displayName: 'Marketing Team',
   lastMessage: 'Campaign approved',
   lastMessageTimestamp: 1743709332000,
-  isUnread: false,
   lastMessageSenderDisplayName: 'Marketing Lead',
 );
 
@@ -152,7 +145,6 @@ final mockConvo13 = MockConvo(
   displayName: 'Lisa Park',
   lastMessage: 'Document reviewed',
   lastMessageTimestamp: 1743710332000,
-  isUnread: false,
 );
 
 final mockConvo14 = MockConvo(
@@ -161,7 +153,6 @@ final mockConvo14 = MockConvo(
   displayName: 'Product Feedback',
   lastMessage: 'New feature requests',
   lastMessageTimestamp: 1743711332000,
-  isUnread: false,
   lastMessageSenderDisplayName: 'Product Manager',
 );
 
@@ -171,5 +162,4 @@ final mockConvo15 = MockConvo(
   displayName: 'David Miller',
   lastMessage: 'Task completed',
   lastMessageTimestamp: 1743712332000,
-  isUnread: false,
 );

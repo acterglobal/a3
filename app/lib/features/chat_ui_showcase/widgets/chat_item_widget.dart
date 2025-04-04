@@ -2,6 +2,8 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/chat_list_item_container_widget.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,8 @@ class ChatItemWidget extends ConsumerWidget {
     final isBookmarked = _getIsBookmarked(ref);
     final isDM = _getIsDM(ref);
     final typingUsers = _getTypingUsers(ref);
+    final unreadCount = _getUnreadCount(ref);
+    final isUnread = _isUnread(ref);
 
     return ChatListItemContainerWidget(
       roomId: roomId,
@@ -30,8 +34,24 @@ class ChatItemWidget extends ConsumerWidget {
       isMuted: isMuted,
       isBookmarked: isBookmarked,
       typingUsers: typingUsers,
+      unreadCount: unreadCount,
+      isUnread: isUnread,
       onTap: onTap,
     );
+  }
+
+  bool _isUnread(WidgetRef ref) {
+    if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) return false;
+    return ref.watch(hasUnreadMessages(roomId)).valueOrNull ?? false;
+  }
+
+  int? _getUnreadCount(WidgetRef ref) {
+    if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) return null;
+
+    final unreadCount = ref.watch(unreadCountersProvider(roomId)).valueOrNull;
+    if (unreadCount == null) return null;
+    final (notifications, mentions, messages) = unreadCount;
+    return notifications;
   }
 
   List<String> _getTypingUsers(WidgetRef ref) {

@@ -15,7 +15,7 @@ class ChatListItemContainerWidget extends StatelessWidget {
   final bool isDM;
   final String? lastMessageSenderDisplayName;
   final bool isUnread;
-  final int unreadCount;
+  final int? unreadCount;
   final List<String>? typingUsers;
   final bool isMuted;
   final bool isBookmarked;
