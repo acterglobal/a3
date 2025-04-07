@@ -35,8 +35,6 @@ class AnalyticsOptInPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(),
-              _buildCloseButton(context),
-              const SizedBox(height: 10),
               _buildTitleText(context, lang, textTheme),
               const SizedBox(height: 10),
               _buildDescriptionText(lang, textTheme),
@@ -44,23 +42,12 @@ class AnalyticsOptInPage extends ConsumerWidget {
               _buildMoreDetails(context, lang, textTheme),
               const SizedBox(height: 10),
               _buildCrashAnalytics(context, ref, textTheme),
-              const SizedBox(height: 40),
-              _buildActionButton(context),
+              const SizedBox(height: 30),
+              _buildActionButton(context, lang),
               const Spacer(),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // widget for close button
-  Widget _buildCloseButton(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: IconButton(
-        onPressed: () => Navigator.pop(context),
-        icon: const Icon(Icons.close),
       ),
     );
   }
@@ -115,14 +102,26 @@ class AnalyticsOptInPage extends ConsumerWidget {
 
     return Column(
       children: [
-        _buildSwitchOption(lang.togglleAll, allowReportSending, () async {
-          final newValue = !allowReportSending;
-          await setCanReportToSentry(newValue);
-          await _setAnalyticsPreference(basicTelemetryPref, newValue);
-          await _setAnalyticsPreference(appAnalyticsPref, newValue);
-          await _setAnalyticsPreference(researchPref, newValue);
-          ref.invalidate(allowSentryReportingProvider);
-        }, context),
+        FutureBuilder<bool>(
+          future: Future.wait([
+            _getAnalyticsPreference(basicTelemetryPref),
+            _getAnalyticsPreference(appAnalyticsPref),
+            _getAnalyticsPreference(researchPref),
+          ]).then(
+            (values) => values.every((value) => value) && allowReportSending,
+          ),
+          builder: (context, snapshot) {
+            final allEnabled = snapshot.data ?? isNightly;
+            return _buildSwitchOption(lang.togglleAll, allEnabled, () async {
+              final newValue = !allEnabled;
+              await setCanReportToSentry(newValue);
+              await _setAnalyticsPreference(basicTelemetryPref, newValue);
+              await _setAnalyticsPreference(appAnalyticsPref, newValue);
+              await _setAnalyticsPreference(researchPref, newValue);
+              ref.invalidate(allowSentryReportingProvider);
+            }, context);
+          },
+        ),
         _buildCrashAnalyticsCard(
           lang.sendCrashReportsTitle,
           lang.sendCrashReportsInfo,
@@ -193,7 +192,6 @@ class AnalyticsOptInPage extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(top: 10),
       child: ListTile(
-        onTap: () => onToggle(!value),
         title: Text(title),
         subtitle: Text(
           subtitle,
@@ -225,10 +223,6 @@ class AnalyticsOptInPage extends ConsumerWidget {
         return Card(
           margin: const EdgeInsets.only(top: 10),
           child: ListTile(
-            onTap: () async {
-              await _setAnalyticsPreference(prefKey, !value);
-              ref.invalidate(allowSentryReportingProvider);
-            },
             title: Text(title),
             subtitle: Text(
               subtitle,
@@ -263,14 +257,24 @@ class AnalyticsOptInPage extends ConsumerWidget {
   }
 
   // Action button to proceed
-  Widget _buildActionButton(BuildContext context) {
-    return ActerPrimaryActionButton(
-      key: AnalyticsOptInPage.continueBtn,
-      onPressed: () => context.goNamed(Routes.main.name),
-      child: Text(
-        L10n.of(context).wizzardContinue,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
+  Widget _buildActionButton(BuildContext context, L10n lang) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ActerPrimaryActionButton(
+          key: AnalyticsOptInPage.continueBtn,
+          onPressed: () => context.goNamed(Routes.main.name),
+          child: Text(
+            lang.wizzardContinue,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        const SizedBox(height: 15),
+        OutlinedButton(
+          onPressed: () => context.goNamed(Routes.main.name),
+          child: Text(lang.skip),
+        ),
+      ],
     );
   }
 }
