@@ -16,12 +16,7 @@ class ChatListShowcasePage extends StatelessWidget {
         title: Text(lang.chat),
         actions: [PlusIconWidget(onPressed: () {})],
       ),
-      body: Column(
-        children: [
-          ActerSearchWidget(onChanged: (value) {}, onClear: () {}),
-          Expanded(child: _buildChatListUI()),
-        ],
-      ),
+      body: _buildChatListUI(),
     );
   }
 
@@ -41,6 +36,7 @@ class ChatListShowcasePage extends StatelessWidget {
           lastMessageTimestamp: mockConvo.lastMessageTimestamp,
           lastMessageSenderDisplayName: mockConvo.lastMessageSenderDisplayName,
           isUnread: mockConvo.unreadCount > 0,
+          unreadCount: mockConvo.unreadCount,
           typingUsers: mockConvo.typingUsers,
           isMuted: mockConvo.isMuted,
           isBookmarked: mockConvo.isBookmarked,

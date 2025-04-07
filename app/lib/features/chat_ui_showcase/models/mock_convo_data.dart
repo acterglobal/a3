@@ -29,7 +29,7 @@ final mockConvo1 = MockConvo(
   isDM: true,
   displayName: 'John Doe',
   lastMessage: 'Hello, how are you?',
-  lastMessageTimestamp: 1743698332000,
+  lastMessageTimestamp: 1744018801000,
   unreadCount: 1,
   isMuted: true,
   isBookmarked: true,
@@ -66,7 +66,6 @@ final mockConvo4 = MockConvo(
   lastMessageSenderDisplayName: 'Diana Smith',
   isMuted: true,
   isBookmarked: true,
-  typingUsers: ['Kumar', 'Ben'],
 );
 
 final mockConvo5 = MockConvo(
@@ -93,6 +92,7 @@ final mockConvo7 = MockConvo(
   lastMessage: 'Meeting notes attached',
   lastMessageTimestamp: 1743704332000,
   lastMessageSenderDisplayName: 'John Doe',
+  typingUsers: ['Kumar', 'Ben'],
 );
 
 final mockConvo8 = MockConvo(
