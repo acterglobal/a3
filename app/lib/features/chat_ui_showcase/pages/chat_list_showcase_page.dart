@@ -1,4 +1,3 @@
-import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_convo_list.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/chat_list_item_container_widget.dart';
