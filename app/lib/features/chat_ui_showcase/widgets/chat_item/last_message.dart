@@ -16,7 +16,7 @@ class LastMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textColor =
-        isUnread ? theme.colorScheme.secondary : theme.colorScheme.surfaceTint;
+        isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
 
     return Row(
       children: [

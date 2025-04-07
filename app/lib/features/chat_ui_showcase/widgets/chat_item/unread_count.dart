@@ -12,7 +12,7 @@ class UnreadCount extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondary,
+        color: theme.colorScheme.primary,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(

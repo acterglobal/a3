@@ -11,7 +11,7 @@ class TypingIndicator extends StatelessWidget {
     if (users.isEmpty) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
-    final secondaryColor = theme.colorScheme.secondary;
+    final secondaryColor = theme.colorScheme.surfaceTint;
     final text = _getTypingText(context);
 
     return Text(

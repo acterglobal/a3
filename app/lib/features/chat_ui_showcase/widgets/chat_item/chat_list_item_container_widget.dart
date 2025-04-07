@@ -64,7 +64,7 @@ class ChatListItemContainerWidget extends StatelessWidget {
   Widget _buildChatTitle(BuildContext context) {
     final theme = Theme.of(context);
     final timeColor =
-        isUnread ? theme.colorScheme.secondary : theme.colorScheme.surfaceTint;
+        isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
 
     return Row(
       children: [
