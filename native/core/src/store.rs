@@ -42,6 +42,14 @@ impl Store {
         get_from_store(self.client.clone(), key).await
     }
 
+    pub async fn delete_key(&self, key: &str) -> Result<()> {
+        self.client
+            .store()
+            .remove_custom_value(format!("acter:{key}").as_bytes())
+            .await?;
+        Ok(())
+    }
+
     pub fn user_id(&self) -> &UserId {
         &self.user_id
     }

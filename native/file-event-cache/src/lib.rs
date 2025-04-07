@@ -99,7 +99,7 @@ where
         self.inner
             .try_take_leased_lock(lease_duration_ms, key, holder)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     async fn handle_linked_chunk_updates(
@@ -110,7 +110,7 @@ where
         self.inner
             .handle_linked_chunk_updates(room_id, updates)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     async fn load_all_chunks(
@@ -120,7 +120,7 @@ where
         self.inner
             .load_all_chunks(room_id)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     async fn load_last_chunk(
@@ -136,7 +136,7 @@ where
         self.inner
             .load_last_chunk(room_id)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     async fn load_previous_chunk(
@@ -147,7 +147,7 @@ where
         self.inner
             .load_previous_chunk(room_id, before_chunk_identifier)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     #[instrument(skip_all)]
@@ -235,7 +235,7 @@ where
         self.inner
             .set_media_retention_policy(policy)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
     async fn set_ignore_media_retention_policy(
         &self,
@@ -245,7 +245,7 @@ where
         self.inner
             .set_ignore_media_retention_policy(request, ignore_policy)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
@@ -270,7 +270,7 @@ where
         self.inner
             .filter_duplicated_events(room_id, events)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 
     async fn find_event(
@@ -281,7 +281,7 @@ where
         self.inner
             .find_event(room_id, event_id)
             .await
-            .map_err(|e| e.into())
+            .map_err(Into::into)
     }
 }
 

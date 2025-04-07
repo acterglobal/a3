@@ -17,10 +17,16 @@ final supportedActivityTypes = [
   PushStyles.rsvpYes,
   PushStyles.rsvpMaybe,
   PushStyles.rsvpNo,
+  PushStyles.taskAdd,
+  PushStyles.taskComplete,
+  PushStyles.taskReOpen,
+  PushStyles.taskAccept,
+  PushStyles.taskDecline,
+  PushStyles.taskDueDateChange,
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {
-  final invitations = ref.watch(invitationListProvider);
+  final invitations = ref.watch(invitationListProvider).valueOrNull ?? [];
   if (invitations.isNotEmpty) {
     return UrgencyBadge.urgent;
   }

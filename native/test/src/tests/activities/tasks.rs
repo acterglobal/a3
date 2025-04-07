@@ -65,6 +65,7 @@ async fn task_creation_activity() -> Result<()> {
 
     let activity = user.activity(task.event_id_str()).await?;
     assert_eq!(activity.type_str(), "taskAdd");
+    assert_eq!(activity.title().unwrap(), "Check the weather");
     // on task add the "object" is our list this happened on
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");

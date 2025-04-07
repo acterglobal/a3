@@ -3,6 +3,7 @@ pub mod bookmarks;
 pub mod calendar;
 pub mod comments;
 mod common;
+pub mod explicit_invites;
 pub mod news;
 pub mod pins;
 pub mod read_receipt;
@@ -55,6 +56,7 @@ pub enum AnyActerEvent {
 
     Reaction(reaction::ReactionEvent),
     ReadReceipt(read_receipt::ReadReceiptEvent),
+    ExplicitInvite(explicit_invites::ExplicitInviteEvent),
     Rsvp(rsvp::RsvpEvent),
 
     // Regular Matrix / Ruma Event
@@ -64,7 +66,6 @@ pub enum AnyActerEvent {
 impl AnyActerEvent {
     pub fn room_id(&self) -> &RoomId {
         match &self {
-            Self::Attachment(e) => e.room_id(),
             AnyActerEvent::CalendarEvent(e) => e.room_id(),
             AnyActerEvent::CalendarEventUpdate(e) => e.room_id(),
             AnyActerEvent::Pin(e) => e.room_id(),
@@ -81,10 +82,12 @@ impl AnyActerEvent {
             AnyActerEvent::TaskSelfUnassign(e) => e.room_id(),
             AnyActerEvent::Comment(e) => e.room_id(),
             AnyActerEvent::CommentUpdate(e) => e.room_id(),
+            AnyActerEvent::Attachment(e) => e.room_id(),
             AnyActerEvent::AttachmentUpdate(e) => e.room_id(),
             AnyActerEvent::Reaction(e) => e.room_id(),
             AnyActerEvent::ReadReceipt(e) => e.room_id(),
             AnyActerEvent::Rsvp(e) => e.room_id(),
+            AnyActerEvent::ExplicitInvite(e) => e.room_id(),
             AnyActerEvent::RegularTimelineEvent(e) => e.room_id(),
         }
     }
@@ -143,6 +146,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     .map_err(D::Error::custom)?;
                 Ok(Self::StoryUpdate(event))
             }
+
             tasks::TaskListEventContent::TYPE => {
                 let event = smart_serde_json::from_str::<tasks::TaskListEvent>(json.get())
                     .map_err(D::Error::custom)?;
@@ -170,7 +174,6 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                     .map_err(D::Error::custom)?;
                 Ok(Self::TaskSelfAssign(event))
             }
-
             tasks::TaskSelfUnassignEventContent::TYPE => {
                 let event = smart_serde_json::from_str::<tasks::TaskSelfUnassignEvent>(json.get())
                     .map_err(D::Error::custom)?;
@@ -212,6 +215,13 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
                 >(json.get())
                 .map_err(D::Error::custom)?;
                 Ok(Self::ReadReceipt(event))
+            }
+
+            explicit_invites::ExplicitInviteEventContent::TYPE => {
+                let event =
+                    smart_serde_json::from_str::<explicit_invites::ExplicitInviteEvent>(json.get())
+                        .map_err(D::Error::custom)?;
+                Ok(Self::ExplicitInvite(event))
             }
 
             reaction::ReactionEventContent::TYPE => {
@@ -262,7 +272,7 @@ impl<'de> serde::Deserialize<'de> for AnyActerEvent {
 }
 
 #[derive(Clone, Debug)]
-pub enum SyncAnyActerEvent {
+pub enum AnySyncActerEvent {
     CalendarEvent(calendar::SyncCalendarEventEvent),
     CalendarEventUpdate(calendar::SyncCalendarEventUpdateEvent),
 
@@ -280,6 +290,7 @@ pub enum SyncAnyActerEvent {
 
     Task(tasks::SyncTaskEvent),
     TaskUpdate(tasks::SyncTaskUpdateEvent),
+
     TaskSelfAssign(tasks::SyncTaskSelfAssignEvent),
     TaskSelfUnassign(tasks::SyncTaskSelfUnassignEvent),
 
@@ -292,13 +303,13 @@ pub enum SyncAnyActerEvent {
 
     Reaction(reaction::SyncReactionEvent),
     ReadReceipt(read_receipt::SyncReadReceiptEvent),
+    ExplicitInvite(explicit_invites::SyncExplicitInviteEvent),
     Rsvp(rsvp::SyncRsvpEvent),
-
     // Regular Matrix / Ruma Event
     RegularTimelineEvent(AnySyncTimelineEvent),
 }
 
-impl SyncAnyActerEvent {
+impl AnySyncActerEvent {
     /// Convert this sync event into a full event (one with a `room_id` field).
     pub fn into_full_any_acter_event(self, room_id: OwnedRoomId) -> AnyActerEvent {
         match self {
@@ -329,6 +340,7 @@ impl SyncAnyActerEvent {
             Self::Reaction(e) => AnyActerEvent::Reaction(e.into_full_event(room_id)),
             Self::ReadReceipt(e) => AnyActerEvent::ReadReceipt(e.into_full_event(room_id)),
             Self::Rsvp(e) => AnyActerEvent::Rsvp(e.into_full_event(room_id)),
+            Self::ExplicitInvite(e) => AnyActerEvent::ExplicitInvite(e.into_full_event(room_id)),
             Self::RegularTimelineEvent(e) => {
                 AnyActerEvent::RegularTimelineEvent(e.into_full_event(room_id))
             }
@@ -336,7 +348,7 @@ impl SyncAnyActerEvent {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
+impl<'de> serde::Deserialize<'de> for AnySyncActerEvent {
     fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -422,7 +434,6 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                         .map_err(D::Error::custom)?;
                 Ok(Self::TaskSelfAssign(event))
             }
-
             tasks::TaskSelfUnassignEventContent::TYPE => {
                 let event =
                     smart_serde_json::from_str::<tasks::SyncTaskSelfUnassignEvent>(json.get())
@@ -470,6 +481,15 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                 Ok(Self::ReadReceipt(event))
             }
 
+            explicit_invites::ExplicitInviteEventContent::TYPE => {
+                let event =
+                    smart_serde_json::from_str::<explicit_invites::SyncExplicitInviteEvent>(
+                        json.get(),
+                    )
+                    .map_err(D::Error::custom)?;
+                Ok(Self::ExplicitInvite(event))
+            }
+
             reaction::ReactionEventContent::TYPE => {
                 let event = ::matrix_sdk_base::ruma::exports::serde_json::from_str::<
                     reaction::SyncReactionEvent,
@@ -509,6 +529,7 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
                             rsvp::RsvpEventContent::TYPE,
                             read_receipt::ReadReceiptEventContent::TYPE,
                             reaction::ReactionEventContent::TYPE,
+                            explicit_invites::ExplicitInviteEventContent::TYPE,
                         ],
                     ))
                 }
@@ -517,7 +538,7 @@ impl<'de> serde::Deserialize<'de> for SyncAnyActerEvent {
     }
 }
 
-impl SyncEvent for SyncAnyActerEvent {
+impl SyncEvent for AnySyncActerEvent {
     const KIND: HandlerKind = HandlerKind::Timeline;
     const TYPE: Option<&'static str> = None;
 }

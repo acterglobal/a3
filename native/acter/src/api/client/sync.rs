@@ -1,5 +1,5 @@
 use acter_core::{
-    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel,
+    events::AnySyncActerEvent, executor::Executor, models::AnyActerModel,
     referencing::ExecuteReference, spaces::is_acter_space,
 };
 use anyhow::Result;
@@ -246,7 +246,7 @@ impl Client {
 
         // Any
         self.add_event_handler(
-            |ev: SyncAnyActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+            |ev: AnySyncActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
                 let room_id = room.room_id().to_owned();
                 let acter_event = ev.into_full_any_acter_event(room_id);
                 AnyActerModel::execute(&executor, acter_event).await;
@@ -364,7 +364,6 @@ impl Client {
         let executor = self.executor().clone();
         let client = self.core.client().clone();
 
-        self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
 
         self.verification_controller
@@ -374,7 +373,6 @@ impl Client {
         // in order to avoid this issue, comment out sync event
         self.verification_controller.add_sync_event_handler(&client);
 
-        let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
 
         RUNTIME
@@ -442,7 +440,6 @@ impl Client {
                         {
                             info!("received first sync");
                             trace!(user_id=?client.user_id(), "initial synced");
-                            invitation_controller.load_invitations().await;
                             info!("first sync - 333333 - {:?}", start.elapsed());
 
                             initial.store(false, Ordering::SeqCst);

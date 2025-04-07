@@ -38,15 +38,15 @@ use crate::TimelineStream;
 
 use super::{
     client::Client,
-    common::OptionRoomMessage,
-    message::RoomMessage,
+    common::OptionTimelineItem,
     room::Room,
+    timeline::TimelineItem,
     utils::{remap_for_diff, ApiVectorDiff},
     ComposeDraft, OptionComposeDraft, RUNTIME,
 };
 
 pub type ConvoDiff = ApiVectorDiff<Convo>;
-type LatestMsgLock = Arc<RwLock<Option<RoomMessage>>>;
+type LatestMsgLock = Arc<RwLock<Option<TimelineItem>>>;
 
 #[derive(Clone, Debug)]
 pub struct Convo {
@@ -85,7 +85,7 @@ impl Convo {
             .await?
     }
 
-    pub async fn items(&self) -> Result<Vec<RoomMessage>> {
+    pub async fn items(&self) -> Result<Vec<TimelineItem>> {
         let sync_controller = self.client.sync_controller.clone();
         let room_id = self.inner.room.room_id().to_owned();
         let my_id = self.client.user_id()?;
@@ -100,7 +100,7 @@ impl Convo {
                     .items()
                     .await
                     .into_iter()
-                    .map(|x| RoomMessage::from((x, my_id.clone())))
+                    .map(|x| TimelineItem::from((x, my_id.clone())))
                     .collect();
                 Ok(tl_items)
             })
@@ -137,7 +137,7 @@ impl Convo {
             .await?
     }
 
-    pub async fn latest_message(&self) -> Result<OptionRoomMessage> {
+    pub async fn latest_message(&self) -> Result<OptionTimelineItem> {
         let client = self.client.clone();
         let room_id = self.inner.room.room_id().to_owned();
         RUNTIME
@@ -146,7 +146,7 @@ impl Convo {
                 let info = room_infos
                     .get(&room_id)
                     .context("room info not inited yet")?;
-                Ok(OptionRoomMessage::new(info.latest_msg()))
+                Ok(OptionTimelineItem::new(info.latest_msg()))
             })
             .await?
     }
@@ -196,7 +196,7 @@ impl Convo {
             .room
             .direct_targets()
             .iter()
-            .map(|f| f.to_string())
+            .map(ToString::to_string)
             .collect()
     }
 

@@ -10,6 +10,7 @@ import 'package:acter_notifify/model/push_styles.dart';
 import 'package:acter_notifify/processing/description.dart';
 import 'package:acter_notifify/processing/event.dart';
 import 'package:acter_notifify/processing/object_creation.dart';
+import 'package:acter_notifify/processing/object_invitation.dart';
 import 'package:acter_notifify/processing/object_other_changes.dart';
 import 'package:acter_notifify/processing/object_redaction.dart';
 import 'package:acter_notifify/processing/reaction.dart';
@@ -123,6 +124,8 @@ Future<String> deviceName() async {
         titleAndBodyForObjectDescriptionChange(notification),
       PushStyles.creation => titleAndBodyForObjectCreation(notification),
       PushStyles.redaction => titleAndBodyForObjectRedaction(notification),
+      PushStyles.objectInvitation =>
+        titleAndBodyForObjectInvitation(notification),
       PushStyles.otherChanges =>
         titleAndBodyForObjectOtherChanges(notification),
       _ => _fallbackTitleAndBody(notification),

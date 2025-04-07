@@ -63,7 +63,7 @@ class SelectSpaceFormField extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (!useCompactView)
+                        if (!useCompactView && title?.isNotEmpty == true)
                           Text(
                             title ?? lang.space,
                             style: Theme.of(context).textTheme.bodyMedium,

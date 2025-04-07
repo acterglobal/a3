@@ -161,7 +161,11 @@ class MsgContentAttachmentItem extends ConsumerWidget {
   ) async {
     // Open attachment link
     if (attachmentType == AttachmentType.link) {
-      await openLink(ref, attachment.link() ?? '', context);
+      await openLink(
+        ref: ref,
+        target: attachment.link() ?? '',
+        lang: L10n.of(context),
+      );
     } else if (mediaFile == null) {
       // If attachment is media then check media is downloaded
       // If attachment not downloaded

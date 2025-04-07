@@ -49,7 +49,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   @override
   Future<void> fetchOriginalContent(
     String originalId,
-    RoomMessage originalRoomMsg,
+    TimelineItem originalRoomMsg,
     types.Message msg,
   ) {
     // TODO: implement fetchOriginalContent
@@ -63,7 +63,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   }
 
   @override
-  Future<void> handleDiff(RoomMessageDiff diff) {
+  Future<void> handleDiff(TimelineItemDiff diff) {
     // TODO: implement handleDiff
     throw UnimplementedError();
   }
@@ -97,7 +97,7 @@ class MockChatRoomNotifier extends StateNotifier<ChatRoomState>
   }
 
   @override
-  Message parseMessage(RoomMessage message) {
+  Message parseMessage(TimelineItem message) {
     // TODO: implement parseMessage
     throw UnimplementedError();
   }
@@ -153,11 +153,11 @@ class MockAsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String>
 }
 
 class MockAsyncLatestMsgNotifier
-    extends FamilyAsyncNotifier<RoomMessage?, String>
+    extends FamilyAsyncNotifier<TimelineItem?, String>
     with Mock
     implements AsyncLatestMsgNotifier {
   @override
-  FutureOr<RoomMessage?> build(String arg) {
+  FutureOr<TimelineItem?> build(String arg) {
     return null;
   }
 }

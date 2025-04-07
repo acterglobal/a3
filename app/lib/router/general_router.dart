@@ -18,7 +18,9 @@ import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/news/pages/add_news/add_news_page.dart';
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
+import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
+import 'package:acter/features/onboarding/pages/redeem_invitations_page.dart';
 import 'package:acter/features/onboarding/pages/save_username_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
@@ -98,6 +100,18 @@ final generalRoutes = [
     name: Routes.analyticsOptIn.name,
     path: Routes.analyticsOptIn.route,
     builder: (context, state) => const AnalyticsOptInPage(),
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.encryptionBackup.name,
+    path: Routes.encryptionBackup.route,
+    builder: (context, state) => const EncryptionBackupPage(),
+  ),
+  GoRoute(
+    parentNavigatorKey: rootNavKey,
+    name: Routes.redeemInvitations.name,
+    path: Routes.redeemInvitations.route,
+    builder: (context, state) => const RedeemInvitationsPage(),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,

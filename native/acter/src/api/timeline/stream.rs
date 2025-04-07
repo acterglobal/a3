@@ -19,20 +19,19 @@ use matrix_sdk_base::{
 };
 use matrix_sdk_ui::{
     eyeball_im::VectorDiff,
-    timeline::{Timeline, TimelineEventItemId, TimelineItem},
+    timeline::{Timeline, TimelineEventItemId, TimelineItem as SdkTimelineItem},
 };
 use std::{ops::Deref, sync::Arc};
 use tracing::{error, info};
 
-use crate::{Client, Room, RoomMessage, RUNTIME};
+use crate::{Client, Room, TimelineItem, RUNTIME};
 
-use super::utils::{remap_for_diff, ApiVectorDiff};
+use super::{
+    super::utils::{remap_for_diff, ApiVectorDiff},
+    msg_draft::{MsgContentDraft, MsgDraft},
+};
 
-pub mod msg_draft;
-use msg_draft::MsgContentDraft;
-pub use msg_draft::MsgDraft;
-
-pub type RoomMessageDiff = ApiVectorDiff<RoomMessage>;
+pub type TimelineItemDiff = ApiVectorDiff<TimelineItem>;
 
 #[derive(Clone)]
 pub struct TimelineStream {
@@ -45,7 +44,7 @@ impl TimelineStream {
         TimelineStream { room, timeline }
     }
 
-    pub fn messages_stream(&self) -> impl Stream<Item = RoomMessageDiff> {
+    pub fn messages_stream(&self) -> impl Stream<Item = TimelineItemDiff> {
         let timeline = self.timeline.clone();
         let my_id = self
             .room
@@ -59,9 +58,9 @@ impl TimelineStream {
             let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
             let values = timeline_items
                 .into_iter()
-                .map(|x| RoomMessage::from((x, my_id.clone())))
-                .collect::<Vec<RoomMessage>>();
-            yield RoomMessageDiff::current_items(values);
+                .map(|x| TimelineItem::from((x, my_id.clone())))
+                .collect::<Vec<TimelineItem>>();
+            yield TimelineItemDiff::current_items(values);
 
             while let Some(diffs) = timeline_stream.next().await {
                 for diff in diffs {
@@ -73,8 +72,8 @@ impl TimelineStream {
                             }
                             let items = values
                                 .into_iter()
-                                .map(|x| RoomMessage::from((x, my_id.clone())))
-                                .collect::<Vec<RoomMessage>>();
+                                .map(|x| TimelineItem::from((x, my_id.clone())))
+                                .collect::<Vec<TimelineItem>>();
                             ApiVectorDiff {
                                 action: "Append".to_string(),
                                 values: Some(items),
@@ -98,7 +97,7 @@ impl TimelineStream {
                                 action: "Insert".to_string(),
                                 values: None,
                                 index: Some(index),
-                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
                             }
                         }
                         VectorDiff::PopBack => {
@@ -126,7 +125,7 @@ impl TimelineStream {
                                 action: "PushBack".to_string(),
                                 values: None,
                                 index: None,
-                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
                             }
                         }
                         VectorDiff::PushFront { value } => {
@@ -136,7 +135,7 @@ impl TimelineStream {
                                 action: "PushFront".to_string(),
                                 values: None,
                                 index: None,
-                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
                             }
                         }
                         VectorDiff::Remove { index } => {
@@ -155,8 +154,8 @@ impl TimelineStream {
                             }
                             let items = values
                                 .into_iter()
-                                .map(|x| RoomMessage::from((x, my_id.clone())))
-                                .collect::<Vec<RoomMessage>>();
+                                .map(|x| TimelineItem::from((x, my_id.clone())))
+                                .collect::<Vec<TimelineItem>>();
                             ApiVectorDiff {
                                 action: "Reset".to_string(),
                                 values: Some(items),
@@ -171,7 +170,7 @@ impl TimelineStream {
                                 action: "Set".to_string(),
                                 values: None,
                                 index: Some(index),
-                                value: Some(RoomMessage::from((value, my_id.clone()))),
+                                value: Some(TimelineItem::from((value, my_id.clone()))),
                             }
                         }
                         VectorDiff::Truncate { length } => {
@@ -202,7 +201,7 @@ impl TimelineStream {
             .await?
     }
 
-    pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
+    pub async fn get_message(&self, event_id: String) -> Result<TimelineItem> {
         let event_id = OwnedEventId::try_from(event_id)?;
         let timeline = self.timeline.clone();
         let my_id = self.room.user_id()?;
@@ -213,7 +212,7 @@ impl TimelineStream {
                     .item_by_event_id(&event_id)
                     .await
                     .context("Event not found")?;
-                Ok(RoomMessage::new_event_item(my_id, &tl))
+                Ok(TimelineItem::new_event_item(&tl, my_id))
             })
             .await?
     }
@@ -439,7 +438,10 @@ impl Client {
     }
 }
 
-async fn fetch_details_for_event(item: Arc<TimelineItem>, timeline: Arc<Timeline>) -> Result<bool> {
+async fn fetch_details_for_event(
+    item: Arc<SdkTimelineItem>,
+    timeline: Arc<Timeline>,
+) -> Result<bool> {
     RUNTIME
         .spawn(async move {
             if let Some(event) = item.as_event() {

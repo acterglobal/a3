@@ -565,8 +565,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ben-fix-event-color-type
-      resolved-ref: "56522f0b513056b764be2425b3dae4d29ece7863"
+      ref: "2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5"
+      resolved-ref: "2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5"
       url: "https://github.com/acterglobal/device_calendar"
     source: git
     version: "4.3.1"
@@ -1611,10 +1611,10 @@ packages:
     dependency: "direct dev"
     description:
       name: mockingjay
-      sha256: cea2f3d38d1343beb6908f0ade5724c12304ee74014fbd274b4065a4b7db6536
+      sha256: db8bed9123ca1cd13442a26c90a18cdf6f707ca79160d1c3ac3baa0f8f86cf1d
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "1.0.0"
   mocktail:
     dependency: "direct dev"
     description:
@@ -2613,6 +2613,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.8"
+  test_screenshot:
+    dependency: "direct dev"
+    description:
+      name: test_screenshot
+      sha256: c441e0249f3094b373e7456eddd345256543a11b8315370c1da029c2ac40e734
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   time:
     dependency: transitive
     description:

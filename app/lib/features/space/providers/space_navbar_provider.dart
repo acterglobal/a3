@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum TabEntry {
   overview,
-  news,
+  updates,
   pins,
   tasks,
   events,
@@ -36,10 +36,10 @@ final tabsProvider = FutureProvider.family<List<TabEntry>, String>((
   if ((await space.isActerSpace()) == true) {
     final appSettings = await space.appSettings();
 
-    if (appSettings.news().active()) {
+    if (appSettings.news().active() || appSettings.stories().active()) {
       final updateList = await ref.watch(updateListProvider(spaceId).future);
       if (updateList.isNotEmpty) {
-        tabs.add(TabEntry.news);
+        tabs.add(TabEntry.updates);
       }
     }
 

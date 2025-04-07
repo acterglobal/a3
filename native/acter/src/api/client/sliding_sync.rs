@@ -16,7 +16,7 @@ use matrix_sdk_ui::{
     eyeball_im::{ObservableVector, VectorDiff},
     room_list_service,
     sync_service::{State, SyncService},
-    timeline::{Timeline as SdkTimeline, TimelineItem},
+    timeline::{Timeline as SdkTimeline, TimelineItem as SdkTimelineItem},
 };
 use std::{
     cmp::Ordering,
@@ -37,7 +37,7 @@ use tracing::{error, info, trace, warn};
 
 use super::{
     super::{
-        message::RoomMessage,
+        timeline::TimelineItem,
         utils::{remap_for_diff, ApiVectorDiff},
         RUNTIME,
     },
@@ -63,7 +63,7 @@ pub(crate) struct ExtraRoomInfo {
     is_dm: Option<bool>,
 
     /// Latest message if exists, used in chat room list
-    latest_msg: Option<RoomMessage>,
+    latest_msg: Option<TimelineItem>,
 }
 
 impl ExtraRoomInfo {
@@ -71,7 +71,7 @@ impl ExtraRoomInfo {
         self.display_name.clone()
     }
 
-    pub fn latest_msg(&self) -> Option<RoomMessage> {
+    pub fn latest_msg(&self) -> Option<TimelineItem> {
         self.latest_msg.clone()
     }
 }
@@ -456,7 +456,7 @@ impl Client {
 
     async fn load_latest_message(&self, room_id: &RoomId) -> bool {
         let key = latest_message_storage_key(room_id).as_storage_key();
-        let latest_message = self.store().get_raw::<RoomMessage>(&key).await.ok();
+        let latest_message = self.store().get_raw::<TimelineItem>(&key).await.ok();
         if latest_message.is_none() {
             return false;
         }
@@ -467,14 +467,14 @@ impl Client {
         true
     }
 
-    async fn save_latest_message(&self, room_id: &RoomId, item: Arc<TimelineItem>) -> bool {
+    async fn save_latest_message(&self, room_id: &RoomId, item: Arc<SdkTimelineItem>) -> bool {
         if item.as_event().is_none() {
             return false;
         }
         let Ok(my_id) = self.user_id() else {
             return false;
         };
-        let new_msg = RoomMessage::from((item, my_id));
+        let new_msg = TimelineItem::from((item, my_id));
         let mut room_infos = self.sync_controller.room_infos.write().await;
         let Some(room_info) = (*room_infos).get_mut(room_id) else {
             return false;

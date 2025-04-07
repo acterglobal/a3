@@ -6,7 +6,7 @@ use matrix_sdk_base::{
 use std::{cmp::Ordering, ops::Deref, sync::Arc};
 
 use crate::{
-    Client, ComposeDraft, OptionComposeDraft, OptionRoomMessage, Room, RoomMessage, TimelineStream,
+    Client, ComposeDraft, OptionComposeDraft, OptionTimelineItem, Room, TimelineItem, TimelineStream,
     RUNTIME,
 };
 
@@ -47,7 +47,7 @@ impl SimpleConvo {
             .await?
     }
 
-    pub async fn items(&self) -> Result<Vec<RoomMessage>> {
+    pub async fn items(&self) -> Result<Vec<TimelineItem>> {
         let client = self.client.clone();
         let room_id = self.inner.room.room_id().to_owned();
         RUNTIME
@@ -62,7 +62,7 @@ impl SimpleConvo {
                     .items()
                     .await
                     .into_iter()
-                    .map(|x| RoomMessage::from((x, user_id.clone())))
+                    .map(|x| TimelineItem::from((x, user_id.clone())))
                     .collect();
                 Ok(tl_items)
             })
@@ -99,7 +99,7 @@ impl SimpleConvo {
             .await?
     }
 
-    pub async fn latest_message(&self) -> Result<OptionRoomMessage> {
+    pub async fn latest_message(&self) -> Result<OptionTimelineItem> {
         let client = self.client.clone();
         let room_id = self.inner.room.room_id().to_owned();
         RUNTIME
@@ -108,7 +108,7 @@ impl SimpleConvo {
                 let info = room_infos
                     .get(&room_id)
                     .context("room info not inited yet")?;
-                Ok(OptionRoomMessage::new(info.latest_msg()))
+                Ok(OptionTimelineItem::new(info.latest_msg()))
             })
             .await?
     }

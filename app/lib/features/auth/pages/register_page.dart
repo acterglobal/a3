@@ -43,13 +43,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   final usernamePattern = RegExp(r'^[a-z0-9._=\-/]+$');
 
-  Future<void> handleSubmit(BuildContext context) async {
+  Future<void> handleSubmit(L10n lang, GoRouter navigator) async {
     if (!formKey.currentState!.validate()) return;
     if (!inCI && !ref.read(hasNetworkProvider)) {
-      showNoInternetNotification(context);
+      showNoInternetNotification(lang);
       return;
     }
-    final lang = L10n.of(context);
     try {
       if (await register(
         username: username.text,
@@ -58,12 +57,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         token: token.text,
         ref: ref,
       )) {
-        if (context.mounted) {
-          context.goNamed(
-            Routes.saveUsername.name,
-            queryParameters: {'username': username.text},
-          );
-        }
+        navigator.goNamed(
+          Routes.saveUsername.name,
+          queryParameters: {'username': username.text},
+        );
       }
     } catch (errorMsg) {
       EasyLoading.showError(
@@ -76,9 +73,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [_buildAppBar(context), _buildRegisterPage(context)],
-      ),
+      appBar: _buildAppBar(context),
+      body: _buildRegisterPage(context),
     );
   }
 
@@ -97,34 +93,32 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildRegisterPage(BuildContext context) {
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildHeadlineText(context),
-                const SizedBox(height: 50),
-                _buildNameInputField(context),
-                const SizedBox(height: 12),
-                _buildUsernameInputField(context),
-                const SizedBox(height: 12),
-                _buildPasswordInputField(context),
-                const SizedBox(height: 24),
-                _buildTokenInputField(context),
-                const SizedBox(height: 40),
-                _buildTermsAcceptText(context),
-                const SizedBox(height: 20),
-                _buildSignUpButton(context),
-                const SizedBox(height: 12),
-                _buildLoginAccountButton(context),
-                const SizedBox(height: 30),
-              ],
-            ),
+    return SingleChildScrollView(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildHeadlineText(context),
+              const SizedBox(height: 50),
+              _buildNameInputField(context),
+              const SizedBox(height: 12),
+              _buildUsernameInputField(context),
+              const SizedBox(height: 12),
+              _buildPasswordInputField(context),
+              const SizedBox(height: 24),
+              _buildTokenInputField(context),
+              const SizedBox(height: 40),
+              _buildTermsAcceptText(context),
+              const SizedBox(height: 20),
+              _buildSignUpButton(context),
+              const SizedBox(height: 12),
+              _buildLoginAccountButton(context),
+              const SizedBox(height: 30),
+            ],
           ),
         ),
       ),
@@ -180,17 +174,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           key: RegisterPage.usernameField,
           controller: username,
           decoration: InputDecoration(hintText: lang.hintMessageUsername),
-          inputFormatters: [
-            TextInputFormatter.withFunction((
-              TextEditingValue oldValue,
-              TextEditingValue newValue,
-            ) {
-              return newValue.text.isEmpty ||
-                      usernamePattern.hasMatch(newValue.text)
-                  ? newValue
-                  : oldValue;
-            }),
-          ],
           style: Theme.of(context).textTheme.labelLarge,
           // required field, space not allowed
           validator: (val) {
@@ -199,7 +182,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             }
             final cleanedVal = val.trim().toLowerCase();
             if (!usernamePattern.hasMatch(cleanedVal)) {
-              return 'Username may only contain letters a-z, numbers and any of  ._=-/';
+              return lang.invalidUsernameFormat;
             }
             return null;
           },
@@ -230,11 +213,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ),
           ),
           obscureText: !_passwordVisible,
-          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
           style: Theme.of(context).textTheme.labelLarge,
-          // required field, space allowed
-          validator:
-              (val) => val == null || val.isEmpty ? lang.emptyPassword : null,
+          // required field
+          validator: (val) {
+            if (val == null || val.isEmpty) {
+              return lang.emptyPassword;
+            }
+            final trimmed = val.trim();
+            if (trimmed.length != val.length) {
+              return lang.passwordHasSpacesAtEnds;
+            }
+            return null;
+          },
         ),
       ],
     );
@@ -246,8 +236,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: Text(lang.inviteCode)),
+            Text(lang.inviteCode),
             IconButton(
               onPressed: showInviteCodeDialog,
               icon: const Icon(Atlas.question_chat, size: 20),
@@ -362,12 +353,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   }
 
   Widget _buildSignUpButton(BuildContext context) {
-    final authState = ref.watch(authStateProvider);
+    final authState = ref.watch(authLoadingStateProvider);
     return authState
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: RegisterPage.submitBtn,
-          onPressed: () => handleSubmit(context),
+          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
           child: Text(
             L10n.of(context).createProfile,
             style: Theme.of(context).textTheme.bodyMedium,
@@ -377,16 +368,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Widget _buildLoginAccountButton(BuildContext context) {
     final lang = L10n.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(lang.haveProfile, style: Theme.of(context).textTheme.bodyMedium),
-        ActerInlineTextButton(
-          key: Keys.loginBtn,
-          onPressed: () => context.goNamed(Routes.authLogin.name),
-          child: Text(lang.logIn),
-        ),
-      ],
+    return Align(
+      alignment: Alignment.center,
+      child: Wrap(
+        children: [
+          Text(lang.haveProfile, style: Theme.of(context).textTheme.bodyMedium),
+          ActerInlineTextButton(
+            key: Keys.loginBtn,
+            onPressed: () => context.goNamed(Routes.authLogin.name),
+            child: Text(lang.logIn),
+          ),
+        ],
+      ),
     );
   }
 }

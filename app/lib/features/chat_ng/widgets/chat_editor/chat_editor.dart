@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -13,7 +14,7 @@ import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_actions_preview.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_emoji_picker.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +101,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
-  void _handleEditing(RoomEventItem? item) {
+  void _handleEditing(TimelineEventItem? item) {
     try {
       if (item == null) return;
       final msgContent = item.msgContent();
@@ -121,11 +122,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   void _editorUpdate(Transaction data) {
-    // check if actual document content is empty
-    final state = data.document.root.children.every(
-      (node) => node.delta?.toPlainText().isEmpty ?? true,
-    );
-    _isInputEmptyNotifier.value = state;
+    final plainText = textEditorState.intoMarkdown();
+    final html = textEditorState.intoHtml();
+
+    _isInputEmptyNotifier.value =
+        !hasValidEditorContent(plainText: plainText, html: html);
+
     _debounceTimer?.cancel();
     // delay operation to avoid excessive re-writes
     _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
@@ -323,11 +325,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     scrollController: scrollController,
     editorPadding: const EdgeInsets.symmetric(horizontal: 10),
     onChanged: (body, html) {
-      if (html != null) {
-        widget.onTyping?.map((cb) => cb(html.isNotEmpty));
-      } else {
-        widget.onTyping?.map((cb) => cb(body.isNotEmpty));
-      }
+      final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
+      widget.onTyping?.call(isTyping);
     },
   );
 

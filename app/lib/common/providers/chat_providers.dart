@@ -12,7 +12,7 @@ final chatProvider =
 // Chat Providers
 
 final latestMessageProvider =
-    AsyncNotifierProvider.family<AsyncLatestMsgNotifier, RoomMessage?, String>(
+    AsyncNotifierProvider.family<AsyncLatestMsgNotifier, TimelineItem?, String>(
       () => AsyncLatestMsgNotifier(),
     );
 

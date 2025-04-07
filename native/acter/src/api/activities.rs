@@ -26,7 +26,7 @@ impl MembershipChange {
         self.0.display_name.clone()
     }
     pub fn avatar_url(&self) -> Option<String> {
-        self.0.avatar_url.as_ref().map(|a| a.to_string())
+        self.0.avatar_url.as_ref().map(ToString::to_string)
     }
     pub fn reason(&self) -> Option<String> {
         self.0.reason.clone()
@@ -73,7 +73,7 @@ impl Activity {
     pub fn msg_content(&self) -> Option<MsgContent> {
         match self.inner.content() {
             ActivityContent::DescriptionChange { content, .. } => {
-                content.as_ref().map(|e| MsgContent::from(e.clone()))
+                content.as_ref().map(MsgContent::from)
             }
             ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
             ActivityContent::Boost {
@@ -82,6 +82,13 @@ impl Activity {
             } => MsgContent::try_from(first_slide).ok(),
             _ => None,
         }
+    }
+
+    pub fn mentions_you(&self) -> bool {
+        let Ok(user_id) = self.client.user_id() else {
+            return false;
+        };
+        self.inner.whom().contains(&user_id.to_string())
     }
 }
 
