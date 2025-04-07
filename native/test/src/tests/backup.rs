@@ -152,7 +152,7 @@ async fn key_is_kept_and_reset() -> Result<()> {
 
     // enabled backup stores the key
     let (mut user, _room_id) = random_user_with_random_convo("recovering_message").await?;
-    let _state_sync = user.start_sync();
+    let _state_sync = user.start_sync().await?;
 
     let backup_manager = user.backup_manager();
     let backup_pass = backup_manager.enable().await?;

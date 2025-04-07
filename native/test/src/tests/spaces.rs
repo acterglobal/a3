@@ -366,7 +366,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 async fn create_with_custom_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
     let mut user = random_user("settigs").await?;
-    let sync_state = user.start_sync();
+    let sync_state = user.start_sync().await?;
     sync_state.await_has_synced_history().await?;
 
     let mut cfg = new_space_settings_builder();
