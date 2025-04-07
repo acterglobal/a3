@@ -4,10 +4,15 @@ import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+const basicTelemetryPref = 'basicTelemetry';
+const appAnalyticsPref = 'appAnalytics';
+const researchPref = 'research';
 
 class AnalyticsOptInPage extends ConsumerWidget {
   static const continueBtn = Key('analytics-continue-btn');
@@ -81,7 +86,11 @@ class AnalyticsOptInPage extends ConsumerWidget {
   }
 
   // widget for "More Details" text
-  Widget _buildMoreDetails(BuildContext context, L10n lang, TextTheme textTheme) {
+  Widget _buildMoreDetails(
+    BuildContext context,
+    L10n lang,
+    TextTheme textTheme,
+  ) {
     return Text(
       lang.analyticsMoreDetails,
       style: textTheme.bodyMedium?.copyWith(
@@ -95,54 +104,78 @@ class AnalyticsOptInPage extends ConsumerWidget {
   }
 
   // Refactored crash analytics section with toggle functionality
-  Widget _buildCrashAnalytics(BuildContext context, WidgetRef ref, TextTheme textTheme) {
+  Widget _buildCrashAnalytics(
+    BuildContext context,
+    WidgetRef ref,
+    TextTheme textTheme,
+  ) {
     final lang = L10n.of(context);
-    final allowReportSending = ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
- 
-    void toggle(bool? input) {
-      setCanReportToSentry(input ?? !allowReportSending);
-      ref.invalidate(allowSentryReportingProvider);
-    }
+    final allowReportSending =
+        ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
 
     return Column(
       children: [
-        _buildSwitchOption(
-          lang.togglleAll,
-          allowReportSending,
-          () => toggle(null),
-          context,
-        ),
+        _buildSwitchOption(lang.togglleAll, allowReportSending, () async {
+          final newValue = !allowReportSending;
+          await setCanReportToSentry(newValue);
+          await _setAnalyticsPreference(basicTelemetryPref, newValue);
+          await _setAnalyticsPreference(appAnalyticsPref, newValue);
+          await _setAnalyticsPreference(researchPref, newValue);
+          ref.invalidate(allowSentryReportingProvider);
+        }, context),
         _buildCrashAnalyticsCard(
           lang.sendCrashReportsTitle,
           lang.sendCrashReportsInfo,
           allowReportSending,
-          toggle,
+          (value) async {
+            await setCanReportToSentry(value);
+            ref.invalidate(allowSentryReportingProvider);
+          },
           context,
           textTheme,
         ),
-        _buildCrashAnalyticsCard(
+        _buildAnalyticsCard(
           lang.basicTelemetry,
           lang.basicTelemetryInfo,
-          allowReportSending,
-          toggle,
+          basicTelemetryPref,
           context,
           textTheme,
+          ref,
         ),
-        _buildCrashAnalyticsCard(
+        _buildAnalyticsCard(
           lang.appAnalytics,
           lang.appAnalyticsInfo,
-          allowReportSending,
-          toggle,
+          appAnalyticsPref,
           context,
           textTheme,
+          ref,
         ),
-        _buildCrashAnalyticsCard(
+        _buildAnalyticsCard(
           lang.research,
           lang.researchInfo,
-          allowReportSending,
-          toggle,
+          researchPref,
           context,
           textTheme,
+          ref,
+        ),
+      ],
+    );
+  }
+
+  // Reusable widget for switch toggle option without card
+  Widget _buildSwitchOption(
+    String text,
+    bool value,
+    Future<void> Function() onToggle,
+    BuildContext context,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Text(text),
+        Transform.scale(
+          scale: 0.6,
+          child: Switch(value: value, onChanged: (_) => onToggle()),
         ),
       ],
     );
@@ -153,14 +186,14 @@ class AnalyticsOptInPage extends ConsumerWidget {
     String title,
     String subtitle,
     bool value,
-    void Function(bool?) toggle,
+    Future<void> Function(bool) onToggle,
     BuildContext context,
     TextTheme textTheme,
   ) {
     return Card(
       margin: const EdgeInsets.only(top: 10),
       child: ListTile(
-        onTap: () => toggle(null),
+        onTap: () => onToggle(!value),
         title: Text(title),
         subtitle: Text(
           subtitle,
@@ -170,35 +203,63 @@ class AnalyticsOptInPage extends ConsumerWidget {
         ),
         trailing: Transform.scale(
           scale: 0.6,
-          child: Switch(
-            value: value,
-            onChanged: (value) => toggle(value),
-          ),
+          child: Switch(value: value, onChanged: onToggle),
         ),
       ),
     );
   }
 
-  // Reusable widget for switch toggle option without card
-  Widget _buildSwitchOption(
-    String text,
-    bool value,
-    VoidCallback onToggle,
+  // widget for analytics card with separate preference
+  Widget _buildAnalyticsCard(
+    String title,
+    String subtitle,
+    String prefKey,
     BuildContext context,
+    TextTheme textTheme,
+    WidgetRef ref,
   ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Text(text),
-        Transform.scale(
-          scale: 0.6,
-          child: Switch(
-            value: value,
-            onChanged: (value) => onToggle(),
+    return FutureBuilder<bool>(
+      future: _getAnalyticsPreference(prefKey),
+      builder: (context, snapshot) {
+        final value = snapshot.data ?? isNightly;
+        return Card(
+          margin: const EdgeInsets.only(top: 10),
+          child: ListTile(
+            onTap: () async {
+              await _setAnalyticsPreference(prefKey, !value);
+              ref.invalidate(allowSentryReportingProvider);
+            },
+            title: Text(title),
+            subtitle: Text(
+              subtitle,
+              style: textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            trailing: Transform.scale(
+              scale: 0.6,
+              child: Switch(
+                value: value,
+                onChanged: (newValue) async {
+                  await _setAnalyticsPreference(prefKey, newValue);
+                  ref.invalidate(allowSentryReportingProvider);
+                },
+              ),
+            ),
           ),
-        ),
-      ],
+        );
+      },
     );
+  }
+
+  Future<bool> _getAnalyticsPreference(String prefKey) async {
+    final prefs = await sharedPrefs();
+    return prefs.getBool(prefKey) ?? isNightly;
+  }
+
+  Future<void> _setAnalyticsPreference(String prefKey, bool value) async {
+    final prefs = await sharedPrefs();
+    await prefs.setBool(prefKey, value);
   }
 
   // Action button to proceed
