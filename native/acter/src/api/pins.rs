@@ -48,7 +48,6 @@ impl Client {
     }
 
     pub async fn pins(&self) -> Result<Vec<Pin>> {
-        let me = self.clone();
         Ok(self
             .models_of_list_with_room(IndexKey::Section(SectionIndex::Pins))
             .await?
@@ -61,7 +60,6 @@ impl Client {
     }
 
     pub async fn pin(&self, pin_id: String) -> Result<Pin> {
-        let me = self.clone();
         self.model_with_room(EventId::parse(pin_id)?)
             .await
             .map(|(inner, room)| Pin {
@@ -74,16 +72,16 @@ impl Client {
 
 impl Space {
     pub async fn pins(&self) -> Result<Vec<Pin>> {
-        let client = self.client.clone();
         let room = self.room.clone();
-        Ok(client
+        Ok(self
+            .client
             .models_of_list_with_room_under_check(
                 IndexKey::RoomSection(room.room_id().to_owned(), SectionIndex::Pins),
                 move |_r| Ok(room.clone()),
             )
             .await?
             .map(|(inner, room)| Pin {
-                client: client.clone(),
+                client: self.client.clone(),
                 room,
                 content: inner,
             })
@@ -150,7 +148,7 @@ impl Pin {
         self.content
             .content
             .as_ref()
-            .and_then(|t| t.formatted.clone().map(|f| f.body))
+            .and_then(|t| t.formatted.as_ref().map(|f| f.body.clone()))
     }
 
     pub fn content(&self) -> Option<MsgContent> {

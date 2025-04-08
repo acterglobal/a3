@@ -30,9 +30,10 @@ use crate::MsgDraft;
 use super::{
     api::FfiBuffer,
     client::Client,
-    common::{MsgContent, ThumbnailSize},
+    common::ThumbnailSize,
     deep_linking::{ObjRef, RefDetails},
     spaces::Space,
+    timeline::MsgContent,
     RUNTIME,
 };
 
@@ -45,7 +46,7 @@ impl Client {
                     bail!("{key} is not a news");
                 };
                 let room = me.room_by_id_typed(content.room_id())?;
-                Ok(Story::new(me.clone(), room, content))
+                Ok(Story::new(me, room, content))
             })
             .await?
     }

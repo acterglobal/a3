@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -25,6 +26,11 @@ Future<void> sendMessageAction({
   final lang = L10n.of(context);
   final body = textEditorState.intoMarkdown();
   final html = textEditorState.intoHtml();
+
+  if (!hasValidEditorContent(plainText: body, html: html)) {
+    return;
+  }
+
   final bodyProcessedText = textEditorState.mentionsParsedText(body, null);
   ref.read(chatInputProvider.notifier).startSending();
   try {

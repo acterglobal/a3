@@ -798,7 +798,7 @@ impl Room {
                     .context("Unable to find me in room")?;
                 Ok(Member {
                     member,
-                    room: me.clone(),
+                    room: me,
                     acter_app_settings,
                 })
             })
@@ -1026,8 +1026,8 @@ impl Room {
                     .context("Unable to find user in room")?;
                 Ok(Member {
                     member,
-                    room: me.clone(),
-                    acter_app_settings: acter_app_settings.clone(),
+                    room: me,
+                    acter_app_settings,
                 })
             })
             .await?
@@ -1162,40 +1162,48 @@ impl Room {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
                             MessageType::Image(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             MessageType::Video(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             MessageType::File(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             MessageType::Location(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             _ => {
                                 bail!("Not an Image, Location, Video or Regular file.")
@@ -1350,7 +1358,7 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.core.client().clone();
-        let evt_id = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(&event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1360,86 +1368,82 @@ impl Room {
                     .as_original()
                     .context("Unable to get original msg")?;
                 // get file extension from msg info
-                let (request, mut filename) = match thumb_size.clone() {
+                let (request, mut filename) = match thumb_size.as_ref() {
                     Some(thumb_size) => match &original.content.msgtype {
                         MessageType::Image(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
                         MessageType::Video(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
                         MessageType::File(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
                         MessageType::Location(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.thumbnail_info)
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.thumbnail_info.as_deref())
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
@@ -1453,11 +1457,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1468,11 +1472,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1483,11 +1487,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1498,11 +1502,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1517,14 +1521,15 @@ impl Room {
                 // infer file extension via parsing of file binary
                 if filename.is_none() {
                     if let Some(kind) = infer::get(&data) {
-                        filename = Some(if thumb_size.clone().is_some() {
-                            format!("{}-thumbnail.{}", event_id.clone(), kind.extension())
+                        let fname = if thumb_size.is_some() {
+                            format!("{}-thumbnail.{}", &event_id, kind.extension())
                         } else {
-                            format!("{}.{}", event_id.clone(), kind.extension())
-                        });
+                            format!("{}.{}", &event_id, kind.extension())
+                        };
+                        filename = Some(fname);
                     }
                 }
-                let mut path = PathBuf::from(dir_path.clone());
+                let mut path = PathBuf::from(dir_path);
                 path.push(filename.unwrap_or_else(|| event_id.clone()));
                 let mut file = std::fs::File::create(path.clone())?;
                 file.write_all(&data)?;
@@ -1556,7 +1561,7 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.core.client().clone();
-        let evt_id = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(&event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1689,6 +1694,7 @@ impl Room {
         let my_id = self.user_id()?;
         let event_id = EventId::parse(event_id)?;
         let sender_id = UserId::parse(sender_id)?;
+        let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
@@ -1700,13 +1706,7 @@ impl Room {
                 if !permitted {
                     bail!("No permissions to redact this message");
                 }
-                let response = room
-                    .redact(
-                        &event_id,
-                        reason.as_deref(),
-                        txn_id.map(OwnedTransactionId::from),
-                    )
-                    .await?;
+                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 Ok(response.event_id)
             })
             .await?
