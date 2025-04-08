@@ -8,6 +8,7 @@ import 'package:acter/features/chat_ui_showcase/widgets/chat_item/bookmark_icon_
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/mute_icon_widget.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/typing_indicator.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/unread_count_widget.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,9 +31,33 @@ class ChatItemWidget extends ConsumerWidget {
       dense: true,
       contentPadding: EdgeInsets.zero,
       onTap: onTap,
-      leading: RoomAvatar(roomId: roomId, showParents: true),
+      leading: _buildChatLeading(context),
       title: _buildChatTitle(context),
       subtitle: _buildChatSubtitle(context, ref),
+    );
+  }
+
+  Widget _buildChatLeading(BuildContext context) {
+    if (mockChatItem == null) {
+      return RoomAvatar(roomId: roomId, showParents: true);
+    }
+
+    //Mock avatar
+    return ActerAvatar(
+      options:
+          mockChatItem!.isDM
+              ? AvatarOptions.DM(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: mockChatItem!.displayName,
+                ),
+              )
+              : AvatarOptions(
+                AvatarInfo(
+                  uniqueId: roomId,
+                  displayName: mockChatItem!.displayName,
+                ),
+              ),
     );
   }
 
