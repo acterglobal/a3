@@ -29,13 +29,7 @@ class UnreadCountWidget extends ConsumerWidget {
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.circular(100),
       ),
-      child: Text(
-        unreadCount.toString(),
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSurface,
-          fontSize: 13,
-        ),
-      ),
+      child: Text(unreadCount.toString(), style: theme.textTheme.bodySmall),
     );
   }
 
