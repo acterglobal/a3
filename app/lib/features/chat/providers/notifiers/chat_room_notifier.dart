@@ -37,12 +37,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _init() async {
     try {
-      final convo = await ref.read(chatProvider(roomId).future);
-      if (convo == null) throw RoomNotFound();
       timeline = await ref.read(timelineStreamProvider(roomId).future);
       _listener = timeline.messagesStream(); // keep it resident in memory
       _poller = _listener.listen(
-        (diff) => handleDiff(diff, convo),
+        handleDiff,
         onError: (e, s) {
           _log.severe('msg stream errored', e, s);
         },
@@ -122,7 +120,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // parses `TimelineItem` event to `types.Message` and updates messages list
-  Future<void> handleDiff(TimelineItemDiff diff, Convo convo) async {
+  Future<void> handleDiff(TimelineItemDiff diff) async {
     List<PostProcessItem> postProcessing = [];
     switch (diff.action()) {
       case 'Append':
@@ -134,7 +132,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         List<TimelineItem> messages = values.toList();
         List<types.Message> messagesToAdd = [];
         for (final m in messages) {
-          final message = parseMessage(m, convo);
+          final message = parseMessage(m);
           messagesToAdd.add(message);
           postProcessing.add(PostProcessItem(m, message));
         }
@@ -155,7 +153,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           _log.severe('On set action, index should be available');
           return;
         }
-        final message = parseMessage(value, convo);
+        final message = parseMessage(value);
         replaceMessageAt(index, message);
         postProcessing.add(PostProcessItem(value, message));
         break;
@@ -170,7 +168,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           _log.severe('On insert action, index should be available');
           return;
         }
-        final message = parseMessage(value, convo);
+        final message = parseMessage(value);
         insertMessage(index, message);
         postProcessing.add(PostProcessItem(value, message));
         break;
@@ -188,7 +186,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           _log.severe('On push back action, value should be available');
           return;
         }
-        final message = parseMessage(value, convo);
+        final message = parseMessage(value);
         final newList = messagesCopy();
         newList.add(message);
         setMessages(newList);
@@ -200,7 +198,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           _log.severe('On push front action, value should be available');
           return;
         }
-        final message = parseMessage(value, convo);
+        final message = parseMessage(value);
         insertMessage(0, message);
         postProcessing.add(PostProcessItem(value, message));
         break;
@@ -225,7 +223,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         List<types.Message> newList = [];
         for (final m in values.toList()) {
-          final message = parseMessage(m, convo);
+          final message = parseMessage(m);
           newList.add(message);
           postProcessing.add(PostProcessItem(m, message));
         }
@@ -254,7 +252,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         final m = p.event;
         final repliedTo = getRepliedTo(message);
         if (repliedTo != null) {
-          await fetchOriginalContent(repliedTo, message.id, convo);
+          await fetchOriginalContent(repliedTo, message.id);
         }
         TimelineEventItem? eventItem = m.eventItem();
         final remoteId = message.remoteId;
@@ -266,11 +264,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // fetch original content media for reply msg, i.e. text/image/file etc.
-  Future<void> fetchOriginalContent(
-    String originalId,
-    String msgId,
-    Convo convo,
-  ) async {
+  Future<void> fetchOriginalContent(String originalId, String msgId) async {
     TimelineItem roomMsg;
     try {
       roomMsg = await timeline.getMessage(originalId);
@@ -348,6 +342,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             );
             break;
           case 'm.image':
+            final convo = await ref.read(chatProvider(roomId).future);
+            if (convo == null) {
+              throw RoomNotFound();
+            }
             convo.mediaBinary(originalId, null).then((data) {
               repliedToContent['base64'] = base64Encode(data.asTypedList());
             });
@@ -440,7 +438,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   // maps [TimelineItem] to [types.Message].
-  types.Message parseMessage(TimelineItem message, Convo convo) {
+  types.Message parseMessage(TimelineItem message) {
     TimelineVirtualItem? virtualItem = message.virtualItem();
     if (virtualItem != null) {
       switch (virtualItem.eventType()) {
@@ -808,8 +806,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.sticker':
-        Sticker? sticker = eventItem.sticker();
-        if (sticker == null) break;
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) break;
         Map<String, dynamic> receipts = {};
         for (final userId in asDartStringList(eventItem.readUsers())) {
           final ts = eventItem.receiptTs(userId);
@@ -823,21 +821,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         Map<String, dynamic> metadata = {
           'itemType': 'event',
           'eventType': eventType,
-          'name': sticker.body(),
-          'size': sticker.size() ?? 0,
-          'width': sticker.width()?.toDouble(),
-          'height': sticker.height()?.toDouble(),
+          'name': msgContent.body(),
+          'size': msgContent.size() ?? 0,
+          'width': msgContent.width()?.toDouble(),
+          'height': msgContent.height()?.toDouble(),
           'base64': '',
           'eventState': eventState,
           'receipts': receipts,
           'was_edited': wasEdited,
           'isEditable': isEditable,
         };
-        if (eventId != null) {
-          convo.mediaBinary(eventId, null).then((data) {
-            metadata['base64'] = base64Encode(data.asTypedList());
-          });
-        }
         if (inReplyTo != null) {
           metadata['repliedTo'] = inReplyTo;
         }
@@ -852,9 +845,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'm.poll.start':
-        PollContent? poll = eventItem.poll();
-        if (poll == null) break;
-        String? body = poll.fallbackText();
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) break;
+        String body = msgContent.body();
         return types.CustomMessage(
           author: author,
           remoteId: eventId,

@@ -130,8 +130,8 @@ pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
 };
 pub use timeline::{
-    EventSendState, MsgContent, MsgDraft, PollContent, Sticker, TimelineEventItem, TimelineItem,
-    TimelineItemDiff, TimelineStream, TimelineVirtualItem, UnableToDecrypt,
+    EventSendState, MsgContent, MsgDraft, TimelineEventItem, TimelineItem, TimelineItemDiff,
+    TimelineStream, TimelineVirtualItem,
 };
 pub use typing::TypingEvent;
 pub use utils::{new_vec_string_builder, VecStringBuilder};

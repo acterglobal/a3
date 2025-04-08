@@ -332,7 +332,7 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.sticker':
         final body =
             eventItem
-                .sticker()
+                .message()
                 .expect('m.sticker should have msg content')
                 .body();
         return Row(
@@ -443,9 +443,9 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.poll.start':
         final body =
             eventItem
-                .poll()
+                .message()
                 .expect('m.poll.start should have msg content')
-                .fallbackText();
+                .body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -460,7 +460,7 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
             Flexible(
               child: Text(
-                body ?? '',
+                body,
                 style: textTheme.labelMedium,
                 overflow: TextOverflow.ellipsis,
               ),

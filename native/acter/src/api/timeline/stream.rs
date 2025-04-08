@@ -1,20 +1,18 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::room::{edit::EditedContent, Receipts};
+use matrix_sdk::room::edit::EditedContent;
 use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
         assign,
         events::{
-            receipt::ReceiptThread,
             room::{
                 message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
                 ImageInfo,
             },
-            sticker::StickerEventContent,
-            AnyMessageLikeEventContent, MessageLikeEventType,
+            MessageLikeEventType,
         },
-        EventId, OwnedEventId, OwnedMxcUri, OwnedTransactionId,
+        EventId, OwnedEventId, OwnedTransactionId,
     },
     RoomState,
 };
@@ -235,35 +233,6 @@ impl TimelineStream {
                     bail!("No permissions to send reaction in this room");
                 }
                 timeline.toggle_reaction(&unique_id, &key).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn send_sticker(&self, body: String, uri: String) -> Result<bool> {
-        if !self.is_joined() {
-            bail!("Unable to send sticker in a room we are not in");
-        }
-        let room = self.room.clone();
-        let my_id = self.room.user_id()?;
-        let timeline = self.timeline.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let permitted = room
-                    .can_user_send_message(&my_id, MessageLikeEventType::Sticker)
-                    .await?;
-                if !permitted {
-                    bail!("No permissions to send sticker in this room");
-                }
-                let uri = OwnedMxcUri::from(uri);
-                if let Err(e) = uri.validate() {
-                    bail!("Invalid uri: {}", e.to_string());
-                }
-                let content = StickerEventContent::new(body, ImageInfo::new(), uri);
-                timeline
-                    .send(AnyMessageLikeEventContent::Sticker(content))
-                    .await?;
                 Ok(true)
             })
             .await?

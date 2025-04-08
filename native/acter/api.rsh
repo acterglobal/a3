@@ -1025,15 +1025,6 @@ object TimelineEventItem {
     /// covers text/image/audio/video/file/location/emote
     fn message() -> Option<MsgContent>;
 
-    /// covers m.sticker
-    fn sticker() -> Option<Sticker>;
-
-    /// covers m.poll.start
-    fn poll() -> Option<PollContent>;
-
-    /// covers m.room.encrypted
-    fn unable_to_decrypt() -> Option<UnableToDecrypt>;
-
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1124,25 +1115,6 @@ object MsgContent {
 
     /// the list of url previews
     fn url_previews() -> Vec<UrlPreview>;
-}
-
-object Sticker {
-    fn body() -> string;
-    fn source() -> MediaSource;
-    fn mimetype() -> Option<string>;
-    fn size() -> Option<u64>;
-    fn width() -> Option<u64>;
-    fn height() -> Option<u64>;
-}
-
-object PollContent {
-    fn fallback_text() -> Option<string>;
-}
-
-object UnableToDecrypt {
-    fn enc_mode() -> string;
-    fn sender_key() -> Option<string>;
-    fn session_id() -> Option<string>;
 }
 
 object ReactionRecord {
@@ -1425,9 +1397,6 @@ object TimelineStream {
     /// send reaction to event
     /// if sent twice, reaction is redacted
     fn toggle_reaction(event_id: string, key: string) -> Future<Result<bool>>;
-
-    /// send sticker using already uploaded image uri
-    fn send_sticker(body: string, uri: string) -> Future<Result<bool>>;
 }
 
 

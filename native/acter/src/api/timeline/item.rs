@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
 
-use super::{MsgContent, PollContent, Sticker, TimelineEventContent, UnableToDecrypt};
+use super::{MsgContent, TimelineEventContent};
 use crate::{ReactionRecord, RUNTIME};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -175,21 +175,15 @@ impl TimelineEventItem {
             SdkTimelineItemContent::RedactedMessage => {
                 info!("Edit event applies to a redacted message");
                 me.event_type("m.room.redaction".to_string());
-                me.content(Some(TimelineEventContent::RedactedMessage));
             }
             SdkTimelineItemContent::Sticker(s) => {
                 me.event_type("m.sticker".to_string());
                 // FIXME: proper sticker support needed
-                if let Ok(c) = Sticker::try_from(s) {
-                    me.content(Some(TimelineEventContent::Sticker(c)));
-                }
+                // me.msg_content(Some(MsgContent::from(s.content())));
             }
             SdkTimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn’t be decrypted");
                 me.event_type("m.room.encrypted".to_string());
-                if let Ok(utd) = UnableToDecrypt::try_from(encrypted_msg) {
-                    me.content(Some(TimelineEventContent::UnableToDecrypt(utd)));
-                }
             }
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
@@ -312,10 +306,6 @@ impl TimelineEventItem {
             SdkTimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn’t be parsed");
                 me.event_type(event_type.to_string());
-                me.content(Some(TimelineEventContent::FailedToParseMessageLike {
-                    event_type: event_type.clone(),
-                    error: error.to_string(),
-                }));
             }
             SdkTimelineItemContent::FailedToParseState {
                 event_type,
@@ -324,24 +314,20 @@ impl TimelineEventItem {
             } => {
                 info!("Edit event applies to state that couldn’t be parsed");
                 me.event_type(event_type.to_string());
-                me.content(Some(TimelineEventContent::FailedToParseState {
-                    event_type: event_type.clone(),
-                    state_key: state_key.clone(),
-                    error: error.to_string(),
-                }));
             }
             SdkTimelineItemContent::Poll(s) => {
                 info!("Edit event applies to a poll state");
                 me.event_type("m.poll.start".to_string());
-                me.content(Some(TimelineEventContent::Poll(PollContent::from(s))));
+                if let Some(fallback) = s.fallback_text() {
+                    let msg_content = MsgContent::from_text(fallback);
+                    me.content(Some(TimelineEventContent::Message(msg_content)));
+                }
             }
             SdkTimelineItemContent::CallInvite => {
                 me.event_type("m.call_invite".to_owned());
-                me.content(Some(TimelineEventContent::CallInvite));
             }
             SdkTimelineItemContent::CallNotify => {
                 me.event_type("m.call_notify".to_owned());
-                me.content(Some(TimelineEventContent::CallNotify));
             }
         };
         me.build().expect("Building Room Event doesn’t fail")
@@ -373,30 +359,6 @@ impl TimelineEventItem {
 
     pub fn message(&self) -> Option<MsgContent> {
         if let Some(TimelineEventContent::Message(c)) = &self.content {
-            Some(c.clone())
-        } else {
-            None
-        }
-    }
-
-    pub fn sticker(&self) -> Option<Sticker> {
-        if let Some(TimelineEventContent::Sticker(c)) = &self.content {
-            Some(c.clone())
-        } else {
-            None
-        }
-    }
-
-    pub fn poll(&self) -> Option<PollContent> {
-        if let Some(TimelineEventContent::Poll(c)) = &self.content {
-            Some(c.clone())
-        } else {
-            None
-        }
-    }
-
-    pub fn unable_to_decrypt(&self) -> Option<UnableToDecrypt> {
-        if let Some(TimelineEventContent::UnableToDecrypt(c)) = &self.content {
             Some(c.clone())
         } else {
             None
