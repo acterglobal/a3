@@ -76,8 +76,9 @@ class ChatItemWidget extends ConsumerWidget {
           roomId: roomId,
           mockLastMessageTimestamp: mockChatItem?.lastMessage.originServerTs(),
           mockIsUnread:
-              mockChatItem?.unreadCount != null &&
-              mockChatItem!.unreadCount > 0,
+              (mockChatItem != null && mockChatItem!.unreadCount > 0)
+                  ? true
+                  : null,
         ),
       ],
     );
@@ -99,7 +100,9 @@ class ChatItemWidget extends ConsumerWidget {
                     roomId: roomId,
                     mockLastMessage: mockChatItem?.lastMessage,
                     mockIsUnread:
-                        mockChatItem != null && mockChatItem!.unreadCount > 0,
+                        (mockChatItem != null && mockChatItem!.unreadCount > 0)
+                            ? true
+                            : null,
                   ),
         ),
         BookmarkIconWidget(
