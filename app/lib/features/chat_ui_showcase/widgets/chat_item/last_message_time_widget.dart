@@ -1,23 +1,33 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LastMessageTimeWidget extends ConsumerWidget {
   final String roomId;
+  final bool? mockIsUnread;
   final int? mockLastMessageTimestamp;
 
   const LastMessageTimeWidget({
     super.key,
     required this.roomId,
+    this.mockIsUnread,
     this.mockLastMessageTimestamp,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final timeColor = theme.colorScheme.surfaceTint;
+
+    final isUnread = mockIsUnread ?? _isUnread(ref);
+
+    final timeColor =
+        isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
+
     final lastMessageTimestamp =
         mockLastMessageTimestamp ?? _getLastMessageTimestamp(ref);
 
@@ -30,6 +40,11 @@ class LastMessageTimeWidget extends ConsumerWidget {
         fontSize: 12,
       ),
     );
+  }
+
+  bool _isUnread(WidgetRef ref) {
+    if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) return false;
+    return ref.watch(hasUnreadMessages(roomId)).valueOrNull ?? false;
   }
 
   int? _getLastMessageTimestamp(WidgetRef ref) {

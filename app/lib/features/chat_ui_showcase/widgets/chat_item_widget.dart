@@ -75,6 +75,9 @@ class ChatItemWidget extends ConsumerWidget {
         LastMessageTimeWidget(
           roomId: roomId,
           mockLastMessageTimestamp: mockChatItem?.lastMessage.originServerTs(),
+          mockIsUnread:
+              mockChatItem?.unreadCount != null &&
+              mockChatItem!.unreadCount > 0,
         ),
       ],
     );
