@@ -38,9 +38,10 @@ Future<void> sendMessageAction({
     onTyping?.map((cb) => cb(false));
 
     // make the actual draft
+    final chatEditorState = ref.read(chatEditorStateProvider);
     final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
-    if (html.isNotEmpty) {
+    if (html.isNotEmpty && !chatEditorState.isEditing) {
       final htmlProcessedText = textEditorState.mentionsParsedText(body, html);
       draft = client.textHtmlDraft(htmlProcessedText.$1, bodyProcessedText.$1);
       if (htmlProcessedText.$2.isNotEmpty) {
@@ -58,7 +59,6 @@ Future<void> sendMessageAction({
     }
 
     // actually send it out
-    final chatEditorState = ref.read(chatEditorStateProvider);
     final stream = await ref.read(timelineStreamProvider(roomId).future);
 
     if (chatEditorState.isReplying) {
