@@ -363,6 +363,7 @@ impl Client {
                     new_ui_rooms.insert(ui_room.room_id().to_owned(), ui_room.clone());
                 }
 
+                drop(prev_ui_rooms); // release ui_rooms read lock prior to ui_rooms write lock
                 ui_rooms.write().await.extend(new_ui_rooms);
                 timelines.write().await.extend(new_timelines);
 
