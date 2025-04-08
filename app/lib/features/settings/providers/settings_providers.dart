@@ -10,6 +10,10 @@ final allowSentryReportingProvider = FutureProvider(
   (ref) => getCanReportToSentry(),
 );
 
+final allowMatomoAnalyticsProvider = FutureProvider(
+  (ref) => getMatomoAnalyticsEnabled(),
+);
+
 final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
   (ref) => LocaleNotifier(),
 );

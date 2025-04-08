@@ -11,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 const basicTelemetryPref = 'basicTelemetry';
-const appAnalyticsPref = 'appAnalytics';
 const researchPref = 'research';
 
 class AnalyticsOptInPage extends ConsumerWidget {
@@ -102,25 +101,31 @@ class AnalyticsOptInPage extends ConsumerWidget {
     final allowReportSending =
         ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
 
+    final matomoAnalyticsEnabled =
+        ref.watch(allowMatomoAnalyticsProvider).valueOrNull ?? false;
+
     return Column(
       children: [
         FutureBuilder<bool>(
           future: Future.wait([
             _getAnalyticsPreference(basicTelemetryPref),
-            _getAnalyticsPreference(appAnalyticsPref),
             _getAnalyticsPreference(researchPref),
           ]).then(
-            (values) => values.every((value) => value) && allowReportSending,
+            (values) =>
+                values.every((value) => value) &&
+                allowReportSending &&
+                matomoAnalyticsEnabled,
           ),
           builder: (context, snapshot) {
             final allEnabled = snapshot.data ?? isNightly;
             return _buildSwitchOption(lang.togglleAll, allEnabled, () async {
               final newValue = !allEnabled;
               await setCanReportToSentry(newValue);
+              await setMatomoAnalyticsEnabled(newValue);
               await _setAnalyticsPreference(basicTelemetryPref, newValue);
-              await _setAnalyticsPreference(appAnalyticsPref, newValue);
               await _setAnalyticsPreference(researchPref, newValue);
               ref.invalidate(allowSentryReportingProvider);
+              ref.invalidate(allowMatomoAnalyticsProvider);
             }, context);
           },
         ),
@@ -143,13 +148,16 @@ class AnalyticsOptInPage extends ConsumerWidget {
           textTheme,
           ref,
         ),
-        _buildAnalyticsCard(
+        _buildCrashAnalyticsCard(
           lang.appAnalytics,
           lang.appAnalyticsInfo,
-          appAnalyticsPref,
+          matomoAnalyticsEnabled,
+          (value) async {
+            await setMatomoAnalyticsEnabled(value);
+            ref.invalidate(allowMatomoAnalyticsProvider);
+          },
           context,
           textTheme,
-          ref,
         ),
         _buildAnalyticsCard(
           lang.research,
@@ -238,6 +246,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
                 value: value,
                 onChanged: (newValue) async {
                   await _setAnalyticsPreference(prefKey, newValue);
+                  ref.invalidate(allowMatomoAnalyticsProvider);
                   ref.invalidate(allowSentryReportingProvider);
                 },
               ),
