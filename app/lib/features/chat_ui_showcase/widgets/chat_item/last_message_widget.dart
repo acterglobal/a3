@@ -57,7 +57,6 @@ class LastMessageWidget extends ConsumerWidget {
           child: Text(
             message,
             style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w400,
               color: textColor,
               fontSize: 13,
             ),
