@@ -5,12 +5,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MuteIconWidget extends ConsumerWidget {
   final String roomId;
-  const MuteIconWidget({super.key, required this.roomId});
+  final bool? mockIsMuted;
+
+  const MuteIconWidget({super.key, required this.roomId, this.mockIsMuted});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isMutedProvider = ref.watch(roomIsMutedProvider(roomId));
-    final isMuted = isMutedProvider.valueOrNull ?? false;
+    final isMuted = mockIsMuted ?? _isMuted(ref);
 
     if (!isMuted) return const SizedBox.shrink();
 
@@ -22,5 +23,10 @@ class MuteIconWidget extends ConsumerWidget {
         color: Theme.of(context).colorScheme.surfaceTint,
       ),
     );
+  }
+
+  bool _isMuted(WidgetRef ref) {
+    final isMutedProvider = ref.watch(roomIsMutedProvider(roomId));
+    return isMutedProvider.valueOrNull ?? false;
   }
 }

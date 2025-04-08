@@ -1,13 +1,20 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ui_showcase/models/mock_user.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TypingIndicator extends ConsumerWidget {
   final String roomId;
+  final List<MockUser>? mockTypingUsers;
 
-  const TypingIndicator({super.key, required this.roomId});
+  const TypingIndicator({
+    super.key,
+    required this.roomId,
+    this.mockTypingUsers,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,9 +43,11 @@ class TypingIndicator extends ConsumerWidget {
     return lang.typingUserN(users[0], {users.length - 1});
   }
 
-  List<String> _getTypingUsers(WidgetRef ref) {
+  List<User> _getTypingUsers(WidgetRef ref) {
+    if (mockTypingUsers != null) return mockTypingUsers!;
+
     final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    return users?.map((user) => user.id).toList() ?? [];
+    return users ?? [];
   }
 
   bool _getIsDM(WidgetRef ref) {

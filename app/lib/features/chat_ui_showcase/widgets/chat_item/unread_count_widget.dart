@@ -6,40 +6,51 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UnreadCountWidget extends ConsumerWidget {
   final String roomId;
+  final int? mockUnreadCount;
 
-  const UnreadCountWidget({super.key, required this.roomId});
+  const UnreadCountWidget({
+    super.key,
+    required this.roomId,
+    this.mockUnreadCount,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //If unread count is not enabled, return a SizedBox.shrink()
-    if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
-      return SizedBox.shrink();
-    }
-
-    //Get the unread count for the room
-    final unreadCount = ref.watch(unreadCountersProvider(roomId)).valueOrNull;
-    if (unreadCount == null) return SizedBox.shrink();
-    final (notifications, mentions, messages) = unreadCount;
-
-    //If the unread count is 0, return a SizedBox.shrink()
-    if (notifications == 0) return const SizedBox.shrink();
+    final unreadCount = mockUnreadCount ?? _getUnreadCount(ref);
 
     //If the unread count is not 0, return a Container with the unread count
+    if (unreadCount == 0) return const SizedBox.shrink();
+
     final theme = Theme.of(context);
     return Container(
-      margin: EdgeInsets.only(left: 4),
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      margin: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
-        notifications.toString(),
+        unreadCount.toString(),
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurface,
           fontSize: 13,
         ),
       ),
     );
+  }
+
+  int _getUnreadCount(WidgetRef ref) {
+    //If unread count is not enabled, return a SizedBox.shrink()
+    if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
+      return 0;
+    }
+
+    //Get the unread count for the room
+    final unreadCountData =
+        ref.watch(unreadCountersProvider(roomId)).valueOrNull;
+    if (unreadCountData == null) return 0;
+    final (notifications, mentions, messages) = unreadCountData;
+
+    return notifications;
   }
 }

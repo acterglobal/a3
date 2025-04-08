@@ -25,9 +25,12 @@ class ChatListShowcasePage extends StatelessWidget {
       separatorBuilder: (context, index) {
         return Divider(color: Theme.of(context).unselectedWidgetColor);
       },
-      itemCount: mockConvoList.length,
+      itemCount: mockChatList.length,
       itemBuilder: (context, index) {
-        return ChatItemWidget(roomId: 'roomId');
+        return ChatItemWidget(
+          roomId: mockChatList[index].roomId,
+          mockChatItem: mockChatList[index],
+        );
       },
     );
   }
