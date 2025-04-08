@@ -65,6 +65,7 @@ class ChatItemWidget extends ConsumerWidget {
                   ? TypingIndicator(
                     roomId: roomId,
                     mockTypingUsers: typingUsers,
+                    mockIsDM: mockChatItem?.isDM,
                   )
                   : LastMessageWidget(
                     roomId: roomId,

@@ -49,7 +49,7 @@ final mockChatItem2 = MockChatItem(
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
   unreadCount: 2,
-  typingUsers: [MockUser(mockFirstName: 'Smith')],
+  typingUsers: [MockUser(mockUserId: 'User-1')],
   isMuted: true,
 );
 
@@ -90,7 +90,7 @@ final mockChatItem5 = MockChatItem(
     mockOriginServerTs: 1743702332000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
-  typingUsers: [MockUser(mockFirstName: 'Kumar')],
+  typingUsers: [MockUser(mockUserId: 'User-1')],
 );
 
 final mockChatItem6 = MockChatItem(
@@ -115,10 +115,7 @@ final mockChatItem7 = MockChatItem(
     mockOriginServerTs: 1743704332000,
     mockMsgContent: MockMsgContent(mockBody: 'Meeting notes attached'),
   ),
-  typingUsers: [
-    MockUser(mockFirstName: 'Kumar'),
-    MockUser(mockFirstName: 'Ben'),
-  ],
+  typingUsers: [MockUser(mockUserId: 'User-1'), MockUser(mockUserId: 'User-2')],
 );
 
 final mockChatItem8 = MockChatItem(

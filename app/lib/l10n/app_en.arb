@@ -1188,7 +1188,6 @@
   "@thisWillAllowThemToContactYouAgain": {},
   "title": "Title",
   "@title": {},
-  "typing": "typing...",
   "typingUser1": "{user} is typing",
   "@typingUser1": {},
   "typingUser2": "{user1} and {user2} are typing",
