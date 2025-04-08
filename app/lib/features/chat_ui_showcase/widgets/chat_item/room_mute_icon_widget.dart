@@ -12,7 +12,7 @@ class RoomMuteIconWidget extends ConsumerWidget {
     final isMutedProvider = ref.watch(roomIsMutedProvider(roomId));
     final isMuted = isMutedProvider.valueOrNull ?? false;
 
-    if (isMuted) return const SizedBox.shrink();
+    if (!isMuted) return const SizedBox.shrink();
 
     return Icon(
       PhosphorIcons.bellSlash(),

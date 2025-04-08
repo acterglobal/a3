@@ -12,7 +12,7 @@ class RoomBookmarkIconWidget extends ConsumerWidget {
     final isBookmarkedProvider = ref.watch(isConvoBookmarked(roomId));
     final isBookmarked = isBookmarkedProvider.valueOrNull ?? false;
 
-    if (isBookmarked) return const SizedBox.shrink();
+    if (!isBookmarked) return const SizedBox.shrink();
 
     return Icon(
       PhosphorIcons.bookmarkSimple(),
