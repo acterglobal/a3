@@ -4,10 +4,10 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RoomTypingIndicator extends ConsumerWidget {
+class TypingIndicator extends ConsumerWidget {
   final String roomId;
 
-  const RoomTypingIndicator({super.key, required this.roomId});
+  const TypingIndicator({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

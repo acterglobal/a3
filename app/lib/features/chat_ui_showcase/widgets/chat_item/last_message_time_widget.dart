@@ -4,9 +4,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RoomLastMessageTimeWidget extends ConsumerWidget {
+class LastMessageTimeWidget extends ConsumerWidget {
   final String roomId;
-  const RoomLastMessageTimeWidget({super.key, required this.roomId});
+  const LastMessageTimeWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

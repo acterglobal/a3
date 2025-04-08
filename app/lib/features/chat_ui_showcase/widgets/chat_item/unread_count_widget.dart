@@ -4,10 +4,10 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RoomUnreadCountWidget extends ConsumerWidget {
+class UnreadCountWidget extends ConsumerWidget {
   final String roomId;
 
-  const RoomUnreadCountWidget({super.key, required this.roomId});
+  const UnreadCountWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

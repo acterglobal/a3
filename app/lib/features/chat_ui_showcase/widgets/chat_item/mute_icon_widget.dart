@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class RoomMuteIconWidget extends ConsumerWidget {
+class MuteIconWidget extends ConsumerWidget {
   final String roomId;
-  const RoomMuteIconWidget({super.key, required this.roomId});
+  const MuteIconWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

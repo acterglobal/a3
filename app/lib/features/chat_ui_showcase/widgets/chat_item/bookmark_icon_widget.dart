@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class RoomBookmarkIconWidget extends ConsumerWidget {
+class BookmarkIconWidget extends ConsumerWidget {
   final String roomId;
-  const RoomBookmarkIconWidget({super.key, required this.roomId});
+  const BookmarkIconWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
