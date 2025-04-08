@@ -1504,7 +1504,7 @@ packages:
     source: hosted
     version: "0.11.1"
   matomo_tracker:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: matomo_tracker
       sha256: "8706ca29389b836929415a52c3e6e94aaf8e37ceca23407ee215716fdb83466d"
