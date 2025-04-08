@@ -130,6 +130,7 @@ class MessageEventItem extends ConsumerWidget {
   ) {
     final msgType = item.msgType();
     final content = item.message();
+    final wasEdited = item.wasEdited();
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
@@ -153,11 +154,27 @@ class MessageEventItem extends ConsumerWidget {
         ),
       ),
       'm.file' => alignedWidget(
-        FileMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-        ),
+        isMe
+            ? ChatBubble.me(
+              context: context,
+              isLastMessageBySender: isLastMessageBySender,
+              isEdited: wasEdited,
+              child: FileMessageEvent(
+                roomId: roomId,
+                messageId: messageId,
+                content: content,
+              ),
+            )
+            : ChatBubble(
+              context: context,
+              isLastMessageBySender: isLastMessageBySender,
+              isEdited: wasEdited,
+              child: FileMessageEvent(
+                roomId: roomId,
+                messageId: messageId,
+                content: content,
+              ),
+            ),
       ),
       _ => _buildUnsupportedMessage(msgType),
     };
