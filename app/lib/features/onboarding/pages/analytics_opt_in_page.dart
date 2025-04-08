@@ -31,21 +31,23 @@ class AnalyticsOptInPage extends ConsumerWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              _buildTitleText(context, lang, textTheme),
-              const SizedBox(height: 10),
-              _buildDescriptionText(lang, textTheme),
-              const SizedBox(height: 30),
-              _buildMoreDetails(context, lang, textTheme),
-              const SizedBox(height: 10),
-              _buildCrashAnalytics(context, ref, textTheme),
-              const SizedBox(height: 30),
-              _buildActionButton(context, lang),
-              const Spacer(),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                _buildTitleText(context, lang, textTheme),
+                const SizedBox(height: 10),
+                _buildDescriptionText(lang, textTheme),
+                const SizedBox(height: 30),
+                _buildMoreDetails(context, lang, textTheme),
+                const SizedBox(height: 10),
+                _buildCrashAnalytics(context, ref, textTheme),
+                const SizedBox(height: 30),
+                _buildActionButton(context, lang),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
