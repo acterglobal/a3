@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_timeline_event_item.dart';
@@ -13,12 +14,14 @@ class LastMessageWidget extends ConsumerWidget {
   final String roomId;
   final MockTimelineEventItem? mockLastMessage;
   final bool? mockIsUnread;
+  final bool? mockIsDM;
 
   const LastMessageWidget({
     super.key,
     required this.roomId,
     this.mockLastMessage,
     this.mockIsUnread,
+    this.mockIsDM,
   });
 
   @override
@@ -26,9 +29,10 @@ class LastMessageWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     final theme = Theme.of(context);
 
-    final isUnread = mockIsUnread ?? _isUnread(ref);
     final TimelineEventItem? eventItem =
         mockLastMessage ?? _getLatestMessage(ref);
+    final isUnread = mockIsUnread ?? _isUnread(ref);
+    final isDM = mockIsDM ?? _getIsDM(ref);
 
     final textColor =
         isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
@@ -37,7 +41,7 @@ class LastMessageWidget extends ConsumerWidget {
 
     return Row(
       children: [
-        if (senderName != null)
+        if (senderName != null && !isDM)
           Text(
             '$senderName : ',
             style: theme.textTheme.bodySmall?.copyWith(
@@ -62,6 +66,11 @@ class LastMessageWidget extends ConsumerWidget {
     );
   }
 
+  bool _getIsDM(WidgetRef ref) {
+    final isDM = ref.watch(isDirectChatProvider(roomId));
+    return isDM.valueOrNull ?? false;
+  }
+
   TimelineEventItem? _getLatestMessage(WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
     return latestMessage?.eventItem();
@@ -73,6 +82,8 @@ class LastMessageWidget extends ConsumerWidget {
   }
 
   String? _getLastMessageSenderName(TimelineEventItem? eventItem) {
+    if (mockLastMessage != null) return mockLastMessage?.sender();
+
     final sender = eventItem?.sender();
     if (sender == null) return null;
     final senderName = simplifyUserId(sender);

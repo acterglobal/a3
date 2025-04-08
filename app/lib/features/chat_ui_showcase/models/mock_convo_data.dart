@@ -29,7 +29,7 @@ final mockChatItem1 = MockChatItem(
   displayName: 'John Doe',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-1',
-    mockSenderId: 'sender-1',
+    mockSenderId: 'John Doe',
     mockOriginServerTs: 1744018801000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
@@ -44,12 +44,12 @@ final mockChatItem2 = MockChatItem(
   displayName: 'Social Media',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-2',
-    mockSenderId: 'sender-2',
+    mockSenderId: 'Sarah Wilson',
     mockOriginServerTs: 1743699332000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
   unreadCount: 2,
-  typingUsers: [MockUser(mockUserId: 'User-1')],
+  typingUsers: [MockUser(mockUserId: 'Michael Chen')],
   isMuted: true,
 );
 
@@ -59,7 +59,7 @@ final mockChatItem3 = MockChatItem(
   displayName: 'Acter Tech',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-3',
-    mockSenderId: 'sender-3',
+    mockSenderId: 'Emma Davis',
     mockOriginServerTs: 1743700332000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
@@ -72,7 +72,7 @@ final mockChatItem4 = MockChatItem(
   displayName: 'Acter Team',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-4',
-    mockSenderId: 'sender-4',
+    mockSenderId: 'Alex Thompson',
     mockOriginServerTs: 1743701332000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
@@ -86,11 +86,11 @@ final mockChatItem5 = MockChatItem(
   displayName: 'Kumarpalsinh Rana',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-5',
-    mockSenderId: 'sender-5',
+    mockSenderId: 'Lisa Park',
     mockOriginServerTs: 1743702332000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
-  typingUsers: [MockUser(mockUserId: 'User-1')],
+  typingUsers: [MockUser(mockUserId: 'David Miller')],
 );
 
 final mockChatItem6 = MockChatItem(
@@ -99,7 +99,7 @@ final mockChatItem6 = MockChatItem(
   displayName: 'Sarah Wilson',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-6',
-    mockSenderId: 'sender-6',
+    mockSenderId: 'Robert Johnson',
     mockOriginServerTs: 1743703332000,
     mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
   ),
@@ -111,11 +111,14 @@ final mockChatItem7 = MockChatItem(
   displayName: 'Project Alpha',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-7',
-    mockSenderId: 'sender-7',
+    mockSenderId: 'Jennifer Lee',
     mockOriginServerTs: 1743704332000,
     mockMsgContent: MockMsgContent(mockBody: 'Meeting notes attached'),
   ),
-  typingUsers: [MockUser(mockUserId: 'User-1'), MockUser(mockUserId: 'User-2')],
+  typingUsers: [
+    MockUser(mockUserId: 'James Wilson'),
+    MockUser(mockUserId: 'Patricia Brown'),
+  ],
 );
 
 final mockChatItem8 = MockChatItem(
@@ -124,7 +127,7 @@ final mockChatItem8 = MockChatItem(
   displayName: 'Michael Chen',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-8',
-    mockSenderId: 'sender-8',
+    mockSenderId: 'Michael Chen',
     mockOriginServerTs: 1743705332000,
     mockMsgContent: MockMsgContent(mockBody: 'Thanks for the help!'),
   ),
@@ -137,7 +140,7 @@ final mockChatItem9 = MockChatItem(
   displayName: 'Team Updates',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-9',
-    mockSenderId: 'sender-9',
+    mockSenderId: 'Emily Taylor',
     mockOriginServerTs: 1743706332000,
     mockMsgContent: MockMsgContent(mockBody: 'New features deployed'),
   ),
@@ -150,7 +153,7 @@ final mockChatItem10 = MockChatItem(
   displayName: 'Emma Davis',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-10',
-    mockSenderId: 'sender-10',
+    mockSenderId: 'Emma Davis',
     mockOriginServerTs: 1743707332000,
     mockMsgContent: MockMsgContent(mockBody: "Let me know when you're free"),
   ),
@@ -162,7 +165,7 @@ final mockChatItem11 = MockChatItem(
   displayName: 'Alex Thompson',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-11',
-    mockSenderId: 'sender-11',
+    mockSenderId: 'Alex Thompson',
     mockOriginServerTs: 1743708332000,
     mockMsgContent: MockMsgContent(mockBody: 'See you at the meeting'),
   ),
@@ -174,7 +177,7 @@ final mockChatItem12 = MockChatItem(
   displayName: 'Marketing Team',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-12',
-    mockSenderId: 'sender-12',
+    mockSenderId: 'Christopher Anderson',
     mockOriginServerTs: 1743709332000,
     mockMsgContent: MockMsgContent(mockBody: 'Campaign approved'),
   ),
@@ -186,7 +189,7 @@ final mockChatItem13 = MockChatItem(
   displayName: 'Lisa Park',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-13',
-    mockSenderId: 'sender-13',
+    mockSenderId: 'Lisa Park',
     mockOriginServerTs: 1743710332000,
     mockMsgContent: MockMsgContent(mockBody: 'Document reviewed'),
   ),
@@ -198,7 +201,7 @@ final mockChatItem14 = MockChatItem(
   displayName: 'Product Feedback',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-14',
-    mockSenderId: 'sender-14',
+    mockSenderId: 'Daniel Martinez',
     mockOriginServerTs: 1743711332000,
     mockMsgContent: MockMsgContent(mockBody: 'New feature requests'),
   ),
@@ -210,7 +213,7 @@ final mockChatItem15 = MockChatItem(
   displayName: 'David Miller',
   lastMessage: MockTimelineEventItem(
     mockEventId: 'event-15z',
-    mockSenderId: 'sender-15',
+    mockSenderId: 'David Miller',
     mockOriginServerTs: 1743712332000,
     mockMsgContent: MockMsgContent(mockBody: 'Task completed'),
   ),
