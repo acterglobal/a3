@@ -14,10 +14,13 @@ class MuteIconWidget extends ConsumerWidget {
 
     if (!isMuted) return const SizedBox.shrink();
 
-    return Icon(
-      PhosphorIcons.bellSlash(),
-      size: 20,
-      color: Theme.of(context).colorScheme.surfaceTint,
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Icon(
+        PhosphorIcons.bellSlash(),
+        size: 20,
+        color: Theme.of(context).colorScheme.surfaceTint,
+      ),
     );
   }
 }

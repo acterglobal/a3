@@ -27,6 +27,7 @@ class UnreadCountWidget extends ConsumerWidget {
     //If the unread count is not 0, return a Container with the unread count
     final theme = Theme.of(context);
     return Container(
+      margin: EdgeInsets.only(left: 4),
       padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,

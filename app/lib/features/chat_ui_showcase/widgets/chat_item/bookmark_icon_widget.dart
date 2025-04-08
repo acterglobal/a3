@@ -14,10 +14,13 @@ class BookmarkIconWidget extends ConsumerWidget {
 
     if (!isBookmarked) return const SizedBox.shrink();
 
-    return Icon(
-      PhosphorIcons.bookmarkSimple(),
-      size: 20,
-      color: Theme.of(context).colorScheme.surfaceTint,
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Icon(
+        PhosphorIcons.bookmarkSimple(),
+        size: 20,
+        color: Theme.of(context).colorScheme.surfaceTint,
+      ),
     );
   }
 }
