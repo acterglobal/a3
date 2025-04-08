@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_convo_list.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_list_item_container_widget.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_list_item_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
