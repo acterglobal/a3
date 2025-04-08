@@ -38,7 +38,7 @@ class ChatSettingsPage extends ConsumerWidget {
                   initialValue: false,
                   onToggle: (newVal) {},
                 ),
-                if (isNightly || isDevBuild)
+                if (includeChatShowcase)
                   CustomSettingsTile(
                     child: Card(
                       margin: EdgeInsets.zero,
