@@ -9,9 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logging/logging.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const basicTelemetryPref = 'basicTelemetry';
 const researchPref = 'research';
+
+final _log = Logger('AnalyticsOptInPage');
 
 class AnalyticsOptInPage extends ConsumerWidget {
   static const continueBtn = Key('analytics-continue-btn');
@@ -79,15 +83,21 @@ class AnalyticsOptInPage extends ConsumerWidget {
     L10n lang,
     TextTheme textTheme,
   ) {
-    return Text(
-      lang.analyticsMoreDetails,
-      style: textTheme.bodyMedium?.copyWith(
-        decoration: TextDecoration.underline,
-        decorationColor: Theme.of(context).colorScheme.primary,
-        decorationThickness: 2,
-        color: Theme.of(context).colorScheme.primary,
+    return GestureDetector(
+      onTap: () async {
+        await _handleMoreDetailsTap(context);
+      },
+
+      child: Text(
+        lang.analyticsMoreDetails,
+        style: textTheme.bodyMedium?.copyWith(
+          decoration: TextDecoration.underline,
+          decorationColor: Theme.of(context).colorScheme.primary,
+          decorationThickness: 2,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        textAlign: TextAlign.center,
       ),
-      textAlign: TextAlign.center,
     );
   }
 
@@ -287,5 +297,17 @@ class AnalyticsOptInPage extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// Handles the tap action for the "More Details" link.
+  Future<void> _handleMoreDetailsTap(BuildContext context) async {
+    final url = Uri.parse(
+      'https://acter.global/faq/in-app-tracking-analytics/',
+    );
+    try {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      _log.severe('Could not launch URL: $e');
+    }
   }
 }

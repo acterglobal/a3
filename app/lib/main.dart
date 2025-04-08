@@ -93,9 +93,8 @@ Future<void> _startAppInner(
     }, appRunner: () => runApp(wrappedApp));
   } else if (withMatomo) {
     await MatomoTracker.instance.initialize(
-      siteId: Env.matomoSiteId,
-      url: Env.matomoUrl,
-      visitorId: null, // Optional: Set if you want to track specific users
+      siteId: '',
+      url: '',
     );
 
     // Set Matomo tracking based on user preference
