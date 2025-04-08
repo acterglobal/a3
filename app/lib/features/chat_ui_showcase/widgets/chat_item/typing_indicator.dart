@@ -21,46 +21,55 @@ class TypingIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final typingUsers = mockTypingUsers ?? _getTypingUsers(ref);
-    if (typingUsers.isEmpty) return const SizedBox.shrink();
-
     final theme = Theme.of(context);
-    final secondaryColor = theme.colorScheme.onSurface;
-    final text = _getTypingText(context, ref, typingUsers);
 
+    //Get the typing users and the typing text
+    final typingUsers = mockTypingUsers ?? _getTypingUsers(ref);
+    final typingText = _getTypingText(context, ref, typingUsers);
+    if (typingText.isEmpty) return const SizedBox.shrink();
+
+    //Animated circles
+    final animatedCircles = Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: AnimatedCircles(theme: theme.typingIndicatorTheme),
+    );
+
+    //If it's a DM, return the animated circles
+    final isDM = mockIsDM ?? _getIsDM(ref);
+    if (isDM == true) return animatedCircles;
+
+    //Show the typing text with the animated circles
     return Row(
       children: [
-        if (text.isNotEmpty) ...[
-          Text(
-            text,
-            style: theme.textTheme.bodySmall?.copyWith(color: secondaryColor),
+        Text(
+          typingText,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.primary,
           ),
-          const SizedBox(width: 4),
-        ],
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: AnimatedCircles(theme: theme.typingIndicatorTheme),
         ),
+        const SizedBox(width: 4),
+        animatedCircles,
       ],
     );
   }
 
   String _getTypingText(BuildContext context, ref, List<User> typingUsers) {
     final lang = L10n.of(context);
-    final isDM = mockIsDM ?? _getIsDM(ref);
 
-    if (isDM) return '';
-
+    //If there are no typing users, return an empty string
     if (typingUsers.isEmpty) return '';
 
+    //If there is only one typing user, show the user's name
     if (typingUsers.length == 1) {
       final name = _getDisplayNameFromUserId(typingUsers.first.id, ref);
       return lang.typingUser1(name);
     } else if (typingUsers.length == 2) {
+      //If there are two typing users, show the users' names
       final name1 = _getDisplayNameFromUserId(typingUsers.first.id, ref);
       final name2 = _getDisplayNameFromUserId(typingUsers.last.id, ref);
       return lang.typingUser2(name1, name2);
     } else {
+      //If there are more than two typing users, show the first user's name and the number of users
       final name = _getDisplayNameFromUserId(typingUsers.first.id, ref);
       return lang.typingUserN(name, typingUsers.length - 1);
     }
