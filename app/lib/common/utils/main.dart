@@ -36,8 +36,8 @@ Future<bool> setMatomoAnalyticsEnabled(bool input) async {
   final prefs = await sharedPrefs();
   await prefs.setBool(matomoAnalytics, input);
 
-  // Update the Matomo opt-out setting
-  MatomoTracker.instance.setOptOut(optOut: !input);
+  // Update the Matomo opt-out setting(when we add the siteId and url)
+  // MatomoTracker.instance.setOptOut(optOut: !input);
 
   return getMatomoAnalyticsEnabled();
 }

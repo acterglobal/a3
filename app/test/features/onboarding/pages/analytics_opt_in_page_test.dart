@@ -21,7 +21,10 @@ void main() {
       });
 
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -45,7 +48,10 @@ void main() {
       });
 
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -53,7 +59,7 @@ void main() {
       await tester.pumpAndSettle();
       // Find the Toggle All switch
       final toggleAllText = find.text('Toggle All');
-      expect(
+      expect( 
         toggleAllText,
         findsOneWidget,
         reason: 'Toggle All text not found',
@@ -103,7 +109,10 @@ void main() {
       });
 
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -150,7 +159,10 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -214,7 +226,10 @@ void main() {
       });
 
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -269,7 +284,10 @@ void main() {
       });
 
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => false)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => false),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -325,7 +343,10 @@ void main() {
       });
 
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -394,7 +415,10 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -422,7 +446,10 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
@@ -446,7 +473,10 @@ void main() {
       WidgetTester tester,
     ) async {
       await tester.pumpProviderWidget(
-        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        overrides: [
+          allowSentryReportingProvider.overrideWith((ref) => true),
+          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+        ],
         child: AnalyticsOptInPage(),
       );
 
