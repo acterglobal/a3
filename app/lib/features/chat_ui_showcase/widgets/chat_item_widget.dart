@@ -87,9 +87,7 @@ class ChatItemWidget extends ConsumerWidget {
   }
 
   List<User>? _getTypingUsers(WidgetRef ref) {
-    if (mockChatItem?.typingUsers != null) {
-      return mockChatItem?.typingUsers;
-    }
+    if (mockChatItem != null) return mockChatItem?.typingUsers;
 
     final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
     return users;
