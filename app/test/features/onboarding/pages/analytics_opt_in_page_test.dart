@@ -389,5 +389,79 @@ void main() {
             'Toggle All switch should be disabled after toggling an individual switch',
       );
     });
+
+    testWidgets('Continue button is present and clickable', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpProviderWidget(
+        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        child: AnalyticsOptInPage(),
+      );
+
+      // Wait for the FutureBuilder to complete
+      await tester.pumpAndSettle();
+
+      // Find the continue button
+      final continueButton = find.byKey(AnalyticsOptInPage.continueBtn);
+      expect(
+        continueButton,
+        findsOneWidget,
+        reason: 'Continue button not found',
+      );
+
+      // Verify it's a PrimaryActionButton
+      final buttonWidget = tester.widget<ElevatedButton>(continueButton);
+      expect(
+        buttonWidget,
+        isNotNull,
+        reason: 'Continue button should be an ElevatedButton',
+      );
+    });
+
+    testWidgets('Skip button is present and clickable', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpProviderWidget(
+        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        child: AnalyticsOptInPage(),
+      );
+
+      // Wait for the FutureBuilder to complete
+      await tester.pumpAndSettle();
+
+      // Find the skip button
+      final skipButton = find.byType(OutlinedButton);
+      expect(skipButton, findsOneWidget, reason: 'Skip button not found');
+
+      // Verify it's an OutlinedButton
+      final buttonWidget = tester.widget<OutlinedButton>(skipButton);
+      expect(
+        buttonWidget,
+        isNotNull,
+        reason: 'Skip button should be an OutlinedButton',
+      );
+    });
+
+    testWidgets('More Details link is present and clickable', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpProviderWidget(
+        overrides: [allowSentryReportingProvider.overrideWith((ref) => true)],
+        child: AnalyticsOptInPage(),
+      );
+
+      // Wait for the FutureBuilder to complete
+      await tester.pumpAndSettle();
+
+      // Find the more details text
+      final moreDetailsText = find.text(
+        'More details and further ways to contribute.',
+      );
+      expect(moreDetailsText, findsOneWidget);
+
+      // Verify it's a Text widget with the correct style
+      final textWidget = tester.widget<Text>(moreDetailsText);
+      expect(textWidget.style?.decoration, TextDecoration.underline);
+    });
   });
 }
