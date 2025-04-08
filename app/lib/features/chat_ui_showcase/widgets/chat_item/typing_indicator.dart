@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/models/mock_user.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -8,22 +7,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TypingIndicator extends ConsumerWidget {
   final String roomId;
-  final List<MockUser>? mockTypingUsers;
+  final List<User>? mockTypingUsers;
+  final bool? mockIsDM;
 
   const TypingIndicator({
     super.key,
     required this.roomId,
     this.mockTypingUsers,
+    this.mockIsDM,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    if (users == null || users.isEmpty) return const SizedBox.shrink();
+    final typingUsers = mockTypingUsers ?? _getTypingUsers(ref);
+    if (typingUsers.isEmpty) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
     final secondaryColor = theme.colorScheme.surfaceTint;
-    final text = _getTypingText(context, ref);
+    final text = _getTypingText(context, ref, typingUsers);
 
     return Text(
       text,
@@ -31,21 +32,20 @@ class TypingIndicator extends ConsumerWidget {
     );
   }
 
-  String _getTypingText(BuildContext context, WidgetRef ref) {
+  String _getTypingText(BuildContext context, ref, List<User> typingUsers) {
     final lang = L10n.of(context);
-    final isDM = _getIsDM(ref);
-    final users = _getTypingUsers(ref);
+    final isDM = mockIsDM ?? _getIsDM(ref);
 
     if (isDM) return lang.typing;
 
-    if (users.length == 1) return lang.typingUser1(users[0]);
-    if (users.length == 2) return lang.typingUser2(users[0], users[1]);
-    return lang.typingUserN(users[0], {users.length - 1});
+    if (typingUsers.length == 1) return lang.typingUser1(typingUsers[0]);
+    if (typingUsers.length == 2) {
+      return lang.typingUser2(typingUsers[0], typingUsers[1]);
+    }
+    return lang.typingUserN(typingUsers[0], {typingUsers.length - 1});
   }
 
   List<User> _getTypingUsers(WidgetRef ref) {
-    if (mockTypingUsers != null) return mockTypingUsers!;
-
     final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
     return users ?? [];
   }

@@ -61,10 +61,10 @@ class ChatItemWidget extends ConsumerWidget {
       children: [
         Expanded(
           child:
-              typingUsers != null
+              typingUsers.isNotEmpty
                   ? TypingIndicator(
                     roomId: roomId,
-                    mockTypingUsers: mockChatItem?.typingUsers,
+                    mockTypingUsers: typingUsers,
                   )
                   : LastMessageWidget(
                     roomId: roomId,
@@ -86,10 +86,10 @@ class ChatItemWidget extends ConsumerWidget {
     );
   }
 
-  List<User>? _getTypingUsers(WidgetRef ref) {
-    if (mockChatItem != null) return mockChatItem?.typingUsers;
+  List<User> _getTypingUsers(WidgetRef ref) {
+    if (mockChatItem != null) return mockChatItem!.typingUsers ?? [];
 
     final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    return users;
+    return users ?? [];
   }
 }
