@@ -27,19 +27,7 @@ class ChatListShowcasePage extends StatelessWidget {
       },
       itemCount: mockConvoList.length,
       itemBuilder: (context, index) {
-        final mockConvo = mockConvoList[index];
-        return ChatListItemContainerWidget(
-          isDM: mockConvo.isDM,
-          displayName: mockConvo.displayName,
-          lastMessage: mockConvo.lastMessage,
-          lastMessageTimestamp: mockConvo.lastMessageTimestamp,
-          lastMessageSenderDisplayName: mockConvo.lastMessageSenderDisplayName,
-          isUnread: mockConvo.unreadCount > 0,
-          unreadCount: mockConvo.unreadCount,
-          typingUsers: mockConvo.typingUsers,
-          isMuted: mockConvo.isMuted,
-          isBookmarked: mockConvo.isBookmarked,
-        );
+        return ChatListItemContainerWidget(roomId: 'roomId');
       },
     );
   }
