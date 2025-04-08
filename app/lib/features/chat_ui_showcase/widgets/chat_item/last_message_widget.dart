@@ -36,7 +36,10 @@ class LastMessageWidget extends ConsumerWidget {
 
     final textColor =
         isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
-    final senderName = _getLastMessageSenderName(eventItem);
+    final senderName =
+        mockLastMessage != null
+            ? mockLastMessage?.sender()
+            : _getLastMessageSenderName(eventItem);
     final message = _getLastMessage(lang, eventItem);
 
     return Row(
@@ -82,8 +85,6 @@ class LastMessageWidget extends ConsumerWidget {
   }
 
   String? _getLastMessageSenderName(TimelineEventItem? eventItem) {
-    if (mockLastMessage != null) return mockLastMessage?.sender();
-
     final sender = eventItem?.sender();
     if (sender == null) return null;
     final senderName = simplifyUserId(sender);
