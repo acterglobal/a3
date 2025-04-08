@@ -8,11 +8,11 @@ import 'package:acter/features/chat_ui_showcase/widgets/chat_item/typing_indicat
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/unread_count_widget.dart';
 import 'package:flutter/material.dart';
 
-class ChatListItemWidget extends StatelessWidget {
+class ChatItemWidget extends StatelessWidget {
   final String roomId;
   final Function()? onTap;
 
-  const ChatListItemWidget({super.key, required this.roomId, this.onTap});
+  const ChatItemWidget({super.key, required this.roomId, this.onTap});
 
   @override
   Widget build(BuildContext context) {
