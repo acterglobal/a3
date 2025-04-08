@@ -15,7 +15,6 @@ enum Routes {
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
   analyticsOptIn('/analyticsOptIn'),
-  desktopSetup('/desktopSetup'),
   
   // --- profile
   myProfile('/profile'),

@@ -104,12 +104,6 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.desktopSetup.name,
-    path: Routes.desktopSetup.route,
-    builder: (context, state) => const DesktopSetupPage(),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
     name: Routes.encryptionBackup.name,
     path: Routes.encryptionBackup.route,
     builder: (context, state) => const EncryptionBackupPage(),

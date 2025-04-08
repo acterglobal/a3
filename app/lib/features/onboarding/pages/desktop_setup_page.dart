@@ -23,26 +23,39 @@ class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildIcon(context),
-                  const SizedBox(height: 20),
-                  _buildTitleText(context, lang, textTheme),
-                  const SizedBox(height: 20),
-                  _buildDescriptionText(lang, textTheme),
-                  const SizedBox(height: 20),
-                  _buildActivateFeatures(context, lang, textTheme),
-                  const SizedBox(height: 20),
-                  _buildActionButton(context, lang, textTheme),
-                ],
+        child: Stack(
+          children: [
+            // Close button at the top right
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
               ),
             ),
-          ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildIcon(context),
+                      const SizedBox(height: 20),
+                      _buildTitleText(context, lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildDescriptionText(lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildActivateFeatures(context, lang, textTheme),
+                      const SizedBox(height: 20),
+                      _buildActionButton(context, lang, textTheme),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
