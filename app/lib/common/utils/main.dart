@@ -1,7 +1,6 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:matomo_tracker/matomo_tracker.dart';
 
 const canReportSentry = 'allowToReportToSentry';
 const matomoAnalytics = 'appAnalytics';
