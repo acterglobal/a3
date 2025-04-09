@@ -4,7 +4,10 @@ pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
     activities::Activity as CoreActivity,
     events::news::{FallbackNewsContent, NewsContent},
-    models::{status::membership::MembershipChange as CoreMembershipChange, ActerModel},
+    models::{
+        status::{MembershipChange, ProfileChange},
+        ActerModel,
+    },
     referencing::IndexKey,
 };
 use futures::{FutureExt, Stream, StreamExt};
@@ -15,23 +18,6 @@ use tokio_stream::wrappers::BroadcastStream;
 use super::{Client, MsgContent, RefDetails, RUNTIME};
 
 use acter_core::activities::ActivityContent;
-#[derive(Clone, Debug)]
-pub struct MembershipChange(CoreMembershipChange);
-
-impl MembershipChange {
-    pub fn user_id_str(&self) -> String {
-        self.0.user_id.to_string()
-    }
-    pub fn display_name(&self) -> Option<String> {
-        self.0.display_name.clone()
-    }
-    pub fn avatar_url(&self) -> Option<String> {
-        self.0.avatar_url.as_ref().map(ToString::to_string)
-    }
-    pub fn reason(&self) -> Option<String> {
-        self.0.reason.clone()
-    }
-}
 
 #[derive(Clone, Debug)]
 pub struct Activity {
@@ -42,10 +28,6 @@ pub struct Activity {
 impl Activity {
     pub fn content(&self) -> &ActivityContent {
         self.inner.content()
-    }
-
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        self.inner.membership_change().map(MembershipChange)
     }
 
     pub fn sender_id_str(&self) -> String {
@@ -82,6 +64,14 @@ impl Activity {
             } => MsgContent::try_from(first_slide).ok(),
             _ => None,
         }
+    }
+
+    pub fn membership_change(&self) -> Option<MembershipChange> {
+        self.inner.membership_change()
+    }
+
+    pub fn profile_change(&self) -> Option<ProfileChange> {
+        self.inner.profile_change()
     }
 
     pub fn mentions_you(&self) -> bool {

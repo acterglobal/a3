@@ -1,3 +1,7 @@
+use acter_core::{
+    models::status::{MembershipChange, ProfileChange},
+    util::do_vecs_match,
+};
 use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
@@ -19,7 +23,7 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
     TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
@@ -187,115 +191,16 @@ impl TimelineEventItem {
             }
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
-                me.event_type("m.room.member".to_string());
-                let fallback = match m.change() {
-                    Some(MembershipChange::None) => {
-                        me.msg_type(Some("None".to_string()));
-                        "not changed membership".to_string()
-                    }
-                    Some(MembershipChange::Error) => {
-                        me.msg_type(Some("Error".to_string()));
-                        "error in membership change".to_string()
-                    }
-                    Some(MembershipChange::Joined) => {
-                        me.msg_type(Some("Joined".to_string()));
-                        "joined".to_string()
-                    }
-                    Some(MembershipChange::Left) => {
-                        me.msg_type(Some("Left".to_string()));
-                        "left".to_string()
-                    }
-                    Some(MembershipChange::Banned) => {
-                        me.msg_type(Some("Banned".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::Unbanned) => {
-                        me.msg_type(Some("Unbanned".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::Kicked) => {
-                        me.msg_type(Some("Kicked".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::Invited) => {
-                        me.msg_type(Some("Invited".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::KickedAndBanned) => {
-                        me.msg_type(Some("KickedAndBanned".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::InvitationAccepted) => {
-                        me.msg_type(Some("InvitationAccepted".to_string()));
-                        "accepted invitation".to_string()
-                    }
-                    Some(MembershipChange::InvitationRejected) => {
-                        me.msg_type(Some("InvitationRejected".to_string()));
-                        "rejected invitation".to_string()
-                    }
-                    Some(MembershipChange::InvitationRevoked) => {
-                        me.msg_type(Some("InvitationRevoked".to_string()));
-                        "revoked invitation".to_string()
-                    }
-                    Some(MembershipChange::Knocked) => {
-                        me.msg_type(Some("Knocked".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::KnockAccepted) => {
-                        me.msg_type(Some("KnockAccepted".to_string()));
-                        "accepted knock".to_string()
-                    }
-                    Some(MembershipChange::KnockRetracted) => {
-                        me.msg_type(Some("KnockRetracted".to_string()));
-                        "retracted knock".to_string()
-                    }
-                    Some(MembershipChange::KnockDenied) => {
-                        me.msg_type(Some("KnockDenied".to_string()));
-                        "denied knock".to_string()
-                    }
-                    Some(MembershipChange::NotImplemented) => {
-                        me.msg_type(Some("NotImplemented".to_string()));
-                        "not implemented change".to_string()
-                    }
-                    None => "unknown error".to_string(),
-                };
-                let msg_content = MsgContent::from_text(fallback);
-                me.content(Some(TimelineEventContent::Message(msg_content)));
+                me.event_type("MembershipChange".to_string());
+                if let Ok(content) = MembershipChange::try_from(m) {
+                    me.content(Some(TimelineEventContent::MembershipChange(content)));
+                }
             }
             SdkTimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event");
                 me.event_type("ProfileChange".to_string());
-                if let Some(change) = p.displayname_change() {
-                    let msg_content = match (&change.old, &change.new) {
-                        (Some(old), Some(new)) => {
-                            me.msg_type(Some(("ChangedDisplayName").to_string()));
-                            MsgContent::from_text(format!("{old} -> {new}"))
-                        }
-                        (None, Some(new)) => {
-                            me.msg_type(Some(("SetDisplayName").to_string()));
-                            MsgContent::from_text(new.to_string())
-                        }
-                        (Some(_), None) => {
-                            me.msg_type(Some(("RemoveDisplayName").to_string()));
-                            MsgContent::from_text("removed display name".to_string())
-                        }
-                        (None, None) => {
-                            // why would that ever happen?
-                            MsgContent::from_text("kept name unset".to_string())
-                        }
-                    };
-                    me.content(Some(TimelineEventContent::Message(msg_content)));
-                }
-                if let Some(change) = p.avatar_url_change() {
-                    if let Some(uri) = change.new.as_ref() {
-                        me.msg_type(Some(("ChangeProfileAvatar").to_string()));
-                        let msg_content = MsgContent::from_image(
-                            "updated profile avatar".to_string(),
-                            uri.clone(),
-                        );
-                        me.content(Some(TimelineEventContent::Message(msg_content)));
-                    }
-                }
+                let content = ProfileChange::from(p);
+                me.content(Some(TimelineEventContent::ProfileChange(content)));
             }
 
             SdkTimelineItemContent::OtherState(s) => {
@@ -359,6 +264,22 @@ impl TimelineEventItem {
 
     pub fn message(&self) -> Option<MsgContent> {
         if let Some(TimelineEventContent::Message(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn membership_change(&self) -> Option<MembershipChange> {
+        if let Some(TimelineEventContent::MembershipChange(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn profile_change(&self) -> Option<ProfileChange> {
+        if let Some(TimelineEventContent::ProfileChange(c)) = &self.content {
             Some(c.clone())
         } else {
             None
@@ -1371,9 +1292,4 @@ impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
             },
         }
     }
-}
-
-fn do_vecs_match<T: PartialEq>(a: &[T], b: &[T]) -> bool {
-    let matching = a.iter().zip(b.iter()).filter(|&(a, b)| a == b).count();
-    matching == a.len() && matching == b.len()
 }

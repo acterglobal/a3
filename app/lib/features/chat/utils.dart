@@ -46,12 +46,16 @@ bool renderCustomMessageBubble(types.CustomMessage message) {
     case 'm.poll.start':
       // supported if we have a body
       return message.metadata?['body'] != null;
-    case 'm.room.member':
-      if (message.metadata?['msgType'] == 'None') {
-        // not a change we want to show
-        return false;
+    case 'MembershipChange':
+      return true;
+    case 'ProfileChange':
+      if (message.metadata?.containsKey('displayName') == true) {
+        return true;
       }
-      return message.metadata?['body'] != null;
+      if (message.metadata?.containsKey('avatarUrl') == true) {
+        return true;
+      }
+      return false;
     case 'm.call.answer':
     case 'm.call.candidates':
     case 'm.call.hangup':

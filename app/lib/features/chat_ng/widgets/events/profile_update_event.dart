@@ -5,16 +5,16 @@ import 'package:acter/common/utils/room_state.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show MembershipChange, TimelineEventItem;
+    show ProfileChange, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MemberUpdateEvent extends ConsumerWidget {
+class ProfileUpdateEvent extends ConsumerWidget {
   final bool isMe;
   final String roomId;
   final TimelineEventItem item;
 
-  const MemberUpdateEvent({
+  const ProfileUpdateEvent({
     super.key,
     required this.isMe,
     required this.roomId,
@@ -43,17 +43,8 @@ class MemberUpdateEvent extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final myUserId = ref.read(myUserIdStrProvider);
-    final senderId = item.sender();
-    final senderName =
-        ref
-            .watch(
-              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
-            )
-            .valueOrNull ??
-        simplifyUserId(senderId) ??
-        senderId;
-    MembershipChange content = item.membershipChange().expect(
-      'failed to get content of membership change',
+    ProfileChange content = item.profileChange().expect(
+      'failed to get content of profile change',
     );
     final userId = content.userId().toString();
     final userName =
@@ -62,14 +53,23 @@ class MemberUpdateEvent extends ConsumerWidget {
             .valueOrNull ??
         simplifyUserId(userId) ??
         userId;
-    return getStateOnMembershipChange(
-      lang,
-      content.change(),
-      myUserId,
-      senderId,
-      senderName,
-      userId,
-      userName,
-    );
+    Map<String, dynamic> metadata = {};
+    final displayNameChange = content.displayNameChange();
+    if (displayNameChange != null) {
+      metadata['displayName'] = {
+        'change': displayNameChange,
+        'newVal': content.displayNameNewVal(),
+        'oldVal': content.displayNameOldVal(),
+      };
+    }
+    final avatarUrlChange = content.avatarUrlChange();
+    if (avatarUrlChange != null) {
+      metadata['avatarUrl'] = {
+        'change': avatarUrlChange,
+        'newVal': content.avatarUrlNewVal().map((url) => url.toString()),
+        'oldVal': content.avatarUrlOldVal().map((url) => url.toString()),
+      };
+    }
+    return getStateOnProfileChange(lang, metadata, myUserId, userId, userName);
   }
 }

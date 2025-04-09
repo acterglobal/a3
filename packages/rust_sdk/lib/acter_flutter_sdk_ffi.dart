@@ -19500,6 +19500,24 @@ class Api {
   late final _timelineEventItemMessage =
       _timelineEventItemMessagePtr
           .asFunction<_TimelineEventItemMessageReturn Function(int)>();
+  late final _timelineEventItemMembershipChangePtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemMembershipChangeReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_membership_change");
+
+  late final _timelineEventItemMembershipChange =
+      _timelineEventItemMembershipChangePtr
+          .asFunction<_TimelineEventItemMembershipChangeReturn Function(int)>();
+  late final _timelineEventItemProfileChangePtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemProfileChangeReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_profile_change");
+
+  late final _timelineEventItemProfileChange =
+      _timelineEventItemProfileChangePtr
+          .asFunction<_TimelineEventItemProfileChangeReturn Function(int)>();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -19714,6 +19732,75 @@ class Api {
 
   late final _msgContentUrlPreviews =
       _msgContentUrlPreviewsPtr.asFunction<int Function(int)>();
+  late final _membershipChangeUserIdPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__MembershipChange_user_id",
+      );
+
+  late final _membershipChangeUserId =
+      _membershipChangeUserIdPtr.asFunction<int Function(int)>();
+  late final _membershipChangeChangePtr = _lookup<
+    ffi.NativeFunction<_MembershipChangeChangeReturn Function(ffi.IntPtr)>
+  >("__MembershipChange_change");
+
+  late final _membershipChangeChange =
+      _membershipChangeChangePtr
+          .asFunction<_MembershipChangeChangeReturn Function(int)>();
+  late final _profileChangeUserIdPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__ProfileChange_user_id",
+      );
+
+  late final _profileChangeUserId =
+      _profileChangeUserIdPtr.asFunction<int Function(int)>();
+  late final _profileChangeDisplayNameChangePtr = _lookup<
+    ffi.NativeFunction<
+      _ProfileChangeDisplayNameChangeReturn Function(ffi.IntPtr)
+    >
+  >("__ProfileChange_display_name_change");
+
+  late final _profileChangeDisplayNameChange =
+      _profileChangeDisplayNameChangePtr
+          .asFunction<_ProfileChangeDisplayNameChangeReturn Function(int)>();
+  late final _profileChangeDisplayNameOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _ProfileChangeDisplayNameOldValReturn Function(ffi.IntPtr)
+    >
+  >("__ProfileChange_display_name_old_val");
+
+  late final _profileChangeDisplayNameOldVal =
+      _profileChangeDisplayNameOldValPtr
+          .asFunction<_ProfileChangeDisplayNameOldValReturn Function(int)>();
+  late final _profileChangeDisplayNameNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _ProfileChangeDisplayNameNewValReturn Function(ffi.IntPtr)
+    >
+  >("__ProfileChange_display_name_new_val");
+
+  late final _profileChangeDisplayNameNewVal =
+      _profileChangeDisplayNameNewValPtr
+          .asFunction<_ProfileChangeDisplayNameNewValReturn Function(int)>();
+  late final _profileChangeAvatarUrlChangePtr = _lookup<
+    ffi.NativeFunction<_ProfileChangeAvatarUrlChangeReturn Function(ffi.IntPtr)>
+  >("__ProfileChange_avatar_url_change");
+
+  late final _profileChangeAvatarUrlChange =
+      _profileChangeAvatarUrlChangePtr
+          .asFunction<_ProfileChangeAvatarUrlChangeReturn Function(int)>();
+  late final _profileChangeAvatarUrlOldValPtr = _lookup<
+    ffi.NativeFunction<_ProfileChangeAvatarUrlOldValReturn Function(ffi.IntPtr)>
+  >("__ProfileChange_avatar_url_old_val");
+
+  late final _profileChangeAvatarUrlOldVal =
+      _profileChangeAvatarUrlOldValPtr
+          .asFunction<_ProfileChangeAvatarUrlOldValReturn Function(int)>();
+  late final _profileChangeAvatarUrlNewValPtr = _lookup<
+    ffi.NativeFunction<_ProfileChangeAvatarUrlNewValReturn Function(ffi.IntPtr)>
+  >("__ProfileChange_avatar_url_new_val");
+
+  late final _profileChangeAvatarUrlNewVal =
+      _profileChangeAvatarUrlNewValPtr
+          .asFunction<_ProfileChangeAvatarUrlNewValReturn Function(int)>();
   late final _reactionRecordSenderIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__ReactionRecord_sender_id",
@@ -22818,34 +22905,6 @@ class Api {
   late final _acterAppSettingsBuilderTasks =
       _acterAppSettingsBuilderTasksPtr
           .asFunction<void Function(int, int, int)>();
-  late final _membershipChangeUserIdStrPtr = _lookup<
-    ffi.NativeFunction<_MembershipChangeUserIdStrReturn Function(ffi.IntPtr)>
-  >("__MembershipChange_user_id_str");
-
-  late final _membershipChangeUserIdStr =
-      _membershipChangeUserIdStrPtr
-          .asFunction<_MembershipChangeUserIdStrReturn Function(int)>();
-  late final _membershipChangeAvatarUrlPtr = _lookup<
-    ffi.NativeFunction<_MembershipChangeAvatarUrlReturn Function(ffi.IntPtr)>
-  >("__MembershipChange_avatar_url");
-
-  late final _membershipChangeAvatarUrl =
-      _membershipChangeAvatarUrlPtr
-          .asFunction<_MembershipChangeAvatarUrlReturn Function(int)>();
-  late final _membershipChangeDisplayNamePtr = _lookup<
-    ffi.NativeFunction<_MembershipChangeDisplayNameReturn Function(ffi.IntPtr)>
-  >("__MembershipChange_display_name");
-
-  late final _membershipChangeDisplayName =
-      _membershipChangeDisplayNamePtr
-          .asFunction<_MembershipChangeDisplayNameReturn Function(int)>();
-  late final _membershipChangeReasonPtr = _lookup<
-    ffi.NativeFunction<_MembershipChangeReasonReturn Function(ffi.IntPtr)>
-  >("__MembershipChange_reason");
-
-  late final _membershipChangeReason =
-      _membershipChangeReasonPtr
-          .asFunction<_MembershipChangeReasonReturn Function(int)>();
   late final _activityObjectTypeStrPtr = _lookup<
     ffi.NativeFunction<_ActivityObjectTypeStrReturn Function(ffi.IntPtr)>
   >("__ActivityObject_type_str");
@@ -22923,13 +22982,6 @@ class Api {
   late final _activitySubTypeStr =
       _activitySubTypeStrPtr
           .asFunction<_ActivitySubTypeStrReturn Function(int)>();
-  late final _activityMembershipChangePtr = _lookup<
-    ffi.NativeFunction<_ActivityMembershipChangeReturn Function(ffi.IntPtr)>
-  >("__Activity_membership_change");
-
-  late final _activityMembershipChange =
-      _activityMembershipChangePtr
-          .asFunction<_ActivityMembershipChangeReturn Function(int)>();
   late final _activityRefDetailsPtr = _lookup<
     ffi.NativeFunction<_ActivityRefDetailsReturn Function(ffi.IntPtr)>
   >("__Activity_ref_details");
@@ -22979,6 +23031,20 @@ class Api {
   late final _activityMsgContent =
       _activityMsgContentPtr
           .asFunction<_ActivityMsgContentReturn Function(int)>();
+  late final _activityMembershipChangePtr = _lookup<
+    ffi.NativeFunction<_ActivityMembershipChangeReturn Function(ffi.IntPtr)>
+  >("__Activity_membership_change");
+
+  late final _activityMembershipChange =
+      _activityMembershipChangePtr
+          .asFunction<_ActivityMembershipChangeReturn Function(int)>();
+  late final _activityProfileChangePtr = _lookup<
+    ffi.NativeFunction<_ActivityProfileChangeReturn Function(ffi.IntPtr)>
+  >("__Activity_profile_change");
+
+  late final _activityProfileChange =
+      _activityProfileChangePtr
+          .asFunction<_ActivityProfileChangeReturn Function(int)>();
   late final _activityReactionKeyPtr = _lookup<
     ffi.NativeFunction<_ActivityReactionKeyReturn Function(ffi.IntPtr)>
   >("__Activity_reaction_key");
@@ -40381,6 +40447,40 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers some of m.room.member
+  MembershipChange? membershipChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemMembershipChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MembershipChange._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers some of m.room.member
+  ProfileChange? profileChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemProfileChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ProfileChange");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ProfileChange._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -41002,6 +41102,246 @@ class MsgContent {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp4 = FfiListUrlPreview._(_api, tmp3_1);
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class MembershipChange {
+  final Api _api;
+  final _Box _box;
+
+  MembershipChange._(this._api, this._box);
+
+  /// The ID of the user whose profile changed.
+  UserId userId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._membershipChangeUserId(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// The membership change induced by this event.
+  String change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._membershipChangeChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ProfileChange {
+  final Api _api;
+  final _Box _box;
+
+  ProfileChange._(this._api, this._box);
+
+  /// The ID of the user whose profile changed
+  UserId userId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeUserId(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// The display name change induced by this event
+  String? displayNameChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeDisplayNameChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// The old value of display name change
+  String? displayNameOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeDisplayNameOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// The new value of display name change
+  String? displayNameNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeDisplayNameNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// The avatar url change induced by this event
+  String? avatarUrlChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeAvatarUrlChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// The old value of avatar url change
+  MxcUri? avatarUrlOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeAvatarUrlOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MxcUri");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MxcUri._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// The new value of avatar url change
+  MxcUri? avatarUrlNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._profileChangeAvatarUrlNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MxcUri");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MxcUri._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -48584,142 +48924,6 @@ class ActerAppSettingsBuilder {
   }
 }
 
-class MembershipChange {
-  final Api _api;
-  final _Box _box;
-
-  MembershipChange._(this._api, this._box);
-
-  /// user_id of the member that has changed
-  String userIdStr() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._membershipChangeUserIdStr(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// avatar_url of the member that has changed
-  String? avatarUrl() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._membershipChangeAvatarUrl(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// display_name of the member that has changed
-  String? displayName() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._membershipChangeDisplayName(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// reason if any was provided
-  String? reason() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._membershipChangeReason(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class ActivityObject {
   final Api _api;
   final _Box _box;
@@ -49038,23 +49242,6 @@ class Activity {
     return tmp2;
   }
 
-  /// the details of this membership change activity
-  MembershipChange? membershipChange() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._activityMembershipChange(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MembershipChange._(_api, tmp4_1);
-    return tmp2;
-  }
-
   /// if the added information is a reference
   RefDetails? refDetails() {
     var tmp0 = 0;
@@ -49227,6 +49414,40 @@ class Activity {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = MsgContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// the details of this membership change activity
+  MembershipChange? membershipChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityMembershipChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MembershipChange._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// the details of this profile change activity
+  ProfileChange? profileChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityProfileChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ProfileChange");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ProfileChange._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -60789,6 +61010,20 @@ class _TimelineEventItemMessageReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemMembershipChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemProfileChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -60968,6 +61203,73 @@ class _MsgContentGeoUriReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _MembershipChangeChangeReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _ProfileChangeDisplayNameChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _ProfileChangeDisplayNameOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _ProfileChangeDisplayNameNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _ProfileChangeAvatarUrlChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _ProfileChangeAvatarUrlOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ProfileChangeAvatarUrlNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
 }
 
 class _TimelineItemDiffActionReturn extends ffi.Struct {
@@ -61801,48 +62103,6 @@ class _SimpleSettingWithTurnOffBuilderBuildReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _MembershipChangeUserIdStrReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _MembershipChangeAvatarUrlReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _MembershipChangeDisplayNameReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _MembershipChangeReasonReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
 class _ActivityObjectTypeStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -61939,13 +62199,6 @@ class _ActivitySubTypeStrReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ActivityMembershipChangeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-}
-
 class _ActivityRefDetailsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -62003,6 +62256,20 @@ class _ActivityTitleReturn extends ffi.Struct {
 }
 
 class _ActivityMsgContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityMembershipChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityProfileChangeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

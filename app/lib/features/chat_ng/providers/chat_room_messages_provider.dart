@@ -17,7 +17,8 @@ import 'package:acter/features/home/providers/client_providers.dart';
 
 final _log = Logger('a3::chat::message_provider');
 const _supportedTypes = [
-  'm.room.member',
+  'MembershipChange',
+  'ProfileChange',
   'm.room.message',
   'm.room.redaction',
   'm.room.encrypted',

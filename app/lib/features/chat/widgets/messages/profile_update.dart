@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MembershipUpdateWidget extends ConsumerWidget {
+class ProfileUpdateWidget extends ConsumerWidget {
   final CustomMessage message;
 
-  const MembershipUpdateWidget({super.key, required this.message});
+  const ProfileUpdateWidget({super.key, required this.message});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,29 +20,20 @@ class MembershipUpdateWidget extends ConsumerWidget {
     String roomId = message.roomId.expect(
       'failed to get room id of membership change',
     );
-    String change = message.metadata?['change'];
-    String senderId = message.author.id;
-    final senderName =
-        ref
-            .watch(
-              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
-            )
-            .valueOrNull ??
-        simplifyUserId(senderId) ??
-        senderId;
-    String userId = message.metadata?['userId'];
+    final metadata = message.metadata.expect(
+      'failed to get metadata of profile change',
+    );
+    String userId = metadata['userId'];
     final userName =
         ref
             .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
             .valueOrNull ??
         simplifyUserId(userId) ??
         userId;
-    String? body = getStateOnMembershipChange(
+    String? body = getStateOnProfileChange(
       lang,
-      change,
+      metadata,
       myUserId,
-      senderId,
-      senderName,
       userId,
       userName,
     );

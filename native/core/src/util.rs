@@ -21,3 +21,8 @@ pub(crate) fn is_zero(num: &u32) -> bool {
 pub(crate) fn is_false(val: &bool) -> bool {
     !(*val)
 }
+
+pub fn do_vecs_match<T: PartialEq>(a: &[T], b: &[T]) -> bool {
+    let matching = a.iter().zip(b.iter()).filter(|&(a, b)| a == b).count();
+    matching == a.len() && matching == b.len()
+}

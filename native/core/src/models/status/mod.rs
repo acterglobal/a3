@@ -1,26 +1,30 @@
-use std::ops::Deref;
-
 use matrix_sdk::ruma::{
-    events::{room::create::RoomCreateEventContent, AnyStateEvent, AnyTimelineEvent, StateEvent},
+    events::{
+        room::{create::RoomCreateEventContent, member::MembershipChange as MChange},
+        AnyStateEvent, AnyTimelineEvent, StateEvent,
+    },
     OwnedEventId, UserId,
 };
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 
-pub mod membership;
-pub mod profile;
+mod membership;
+mod profile;
 
 use crate::{
     events::AnyActerEvent,
     referencing::{ExecuteReference, IndexKey},
 };
-use membership::MembershipChange;
+pub use membership::MembershipChange;
+pub use profile::{Change, ProfileChange};
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ActerSupportedRoomStatusEvents {
-    RoomCreate(RoomCreateEventContent),
     MembershipChange(MembershipChange),
+    ProfileChange(ProfileChange),
+    RoomCreate(RoomCreateEventContent),
     RoomName(String),
 }
 
@@ -62,20 +66,43 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
                 meta,
             }),
-            AnyStateEvent::RoomMember(StateEvent::Original(inner)) => inner
-                .membership_change()
-                .try_into()
-                .map(|change| RoomStatus {
-                    inner: ActerSupportedRoomStatusEvents::MembershipChange(MembershipChange {
-                        change,
-                        user_id: inner.state_key.clone(),
-                        display_name: inner.content.displayname.clone(),
-                        avatar_url: inner.content.avatar_url.clone(),
-                        reason: inner.content.reason.clone(),
-                    }),
+            AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {
+                let membership_change = inner.content.membership_change(
+                    inner.prev_content().map(|c| c.details()),
+                    &inner.sender,
+                    &inner.state_key,
+                );
+                let inner_status = if let MChange::ProfileChanged {
+                    displayname_change,
+                    avatar_url_change,
+                } = membership_change
+                {
+                    let change = ProfileChange::new(
+                        inner.sender.clone(),
+                        displayname_change.map(|c| Change {
+                            new_val: c.new.map(ToOwned::to_owned),
+                            old_val: c.old.map(ToOwned::to_owned),
+                        }),
+                        avatar_url_change.map(|c| Change {
+                            new_val: c.new.map(ToOwned::to_owned),
+                            old_val: c.old.map(ToOwned::to_owned),
+                        }),
+                    );
+                    ActerSupportedRoomStatusEvents::ProfileChange(change)
+                } else {
+                    if let Ok(change) =
+                        MembershipChange::try_from((membership_change, inner.sender.clone()))
+                    {
+                        ActerSupportedRoomStatusEvents::MembershipChange(change)
+                    } else {
+                        return Err(make_err(event));
+                    }
+                };
+                Ok(RoomStatus {
+                    inner: inner_status,
                     meta,
                 })
-                .map_err(|_| make_err(event)),
+            }
             _ => Err(make_err(event)),
         }
     }

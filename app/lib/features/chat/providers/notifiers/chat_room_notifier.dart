@@ -564,24 +564,60 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           id: uniqueId,
           metadata: metadata,
         );
-      case 'm.room.member':
-        MsgContent? msgContent = eventItem.message();
-        if (msgContent == null) break;
-        String? formattedBody = msgContent.formattedBody();
-        String body = msgContent.body(); // always exists
+      case 'MembershipChange':
+        MembershipChange content = eventItem.membershipChange().expect(
+          'failed to get content of membership change',
+        );
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
           id: uniqueId,
+          roomId: roomId,
           remoteId: eventId,
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
             'msgType': eventItem.msgType(),
-            'body': formattedBody ?? body,
             'eventState': eventState,
             'receipts': receipts,
+            'change': content.change(),
+            'userId': content.userId().toString(),
           },
+        );
+      case 'ProfileChange':
+        ProfileChange content = eventItem.profileChange().expect(
+          'failed to get content of profile change',
+        );
+        final metadata = {
+          'itemType': 'event',
+          'eventType': eventType,
+          'msgType': eventItem.msgType(),
+          'eventState': eventState,
+          'receipts': receipts,
+        };
+        final displayNameChange = content.displayNameChange();
+        if (displayNameChange != null) {
+          metadata['displayName'] = {
+            'change': displayNameChange,
+            'newVal': content.displayNameNewVal(),
+            'oldVal': content.displayNameOldVal(),
+          };
+        }
+        final avatarUrlChange = content.avatarUrlChange();
+        if (avatarUrlChange != null) {
+          metadata['avatarUrl'] = {
+            'change': avatarUrlChange,
+            'newVal': content.avatarUrlNewVal().map((url) => url.toString()),
+            'oldVal': content.avatarUrlOldVal().map((url) => url.toString()),
+          };
+        }
+        return types.CustomMessage(
+          author: author,
+          createdAt: createdAt,
+          id: uniqueId,
+          roomId: roomId,
+          remoteId: eventId,
+          metadata: metadata,
         );
       case 'm.room.message':
         MsgContent? msgContent = eventItem.message();

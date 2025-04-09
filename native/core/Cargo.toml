@@ -64,6 +64,9 @@ default-features = false
 workspace = true
 default-features = false
 
+[dependencies.matrix-sdk-ui]
+workspace = true
+
 [dev-dependencies]
 anyhow = "1.0.79"
 env_logger = { workspace = true }
