@@ -34,14 +34,14 @@ class TypingIndicator extends ConsumerWidget {
     //Show the typing text with the animated circles
     return Row(
       children: [
+        animatedCircles,
+        const SizedBox(width: 4),
         Text(
           typingText,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.primary,
           ),
         ),
-        const SizedBox(width: 4),
-        animatedCircles,
       ],
     );
   }
