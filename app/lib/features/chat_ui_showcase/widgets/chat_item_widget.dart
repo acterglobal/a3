@@ -23,7 +23,7 @@ class ChatItemWidget extends ConsumerWidget {
       dense: true,
       contentPadding: EdgeInsets.zero,
       onTap: onTap,
-      leading: RoomAvatar(roomId: roomId, showParents: true),
+      //  leading: RoomAvatar(roomId: roomId, showParents: true),
       title: _buildChatTitle(context),
       subtitle: _buildChatSubtitle(context, ref),
     );
@@ -44,12 +44,12 @@ class ChatItemWidget extends ConsumerWidget {
     final typingUsers = _getTypingUsers(ref);
     return Row(
       children: [
-        Expanded(
-          child:
-              typingUsers.isNotEmpty
-                  ? TypingIndicator(roomId: roomId)
-                  : LastMessageWidget(roomId: roomId),
-        ),
+        // Expanded(
+        //   child:
+        //       typingUsers.isNotEmpty
+        //           ? TypingIndicator(roomId: roomId)
+        //           : LastMessageWidget(roomId: roomId),
+        // ),
         BookmarkIconWidget(roomId: roomId),
         MuteIconWidget(roomId: roomId),
         UnreadCountWidget(roomId: roomId),

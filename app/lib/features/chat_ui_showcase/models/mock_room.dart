@@ -12,13 +12,22 @@ class MockOptionString extends Mock implements OptionString {
 
 class MockRoom extends Mock implements Room {
   final String mockRoomId;
-  final Future<OptionString> mockDisplayName;
+  final String mockDisplayName;
+  final String mockNotificationMode;
 
-  MockRoom({required this.mockRoomId, required this.mockDisplayName});
+  MockRoom({
+    required this.mockRoomId,
+    required this.mockDisplayName,
+    this.mockNotificationMode = 'default',
+  });
 
   @override
   String roomIdStr() => mockRoomId;
 
   @override
-  Future<OptionString> displayName() => mockDisplayName;
+  Future<OptionString> displayName() =>
+      Future.value(MockOptionString(mockText: mockDisplayName));
+
+  @override
+  Future<String> notificationMode() => Future.value(mockNotificationMode);
 }
