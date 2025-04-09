@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ Future<bool> handleCalendarPermission(BuildContext context) async {
     if (context.mounted) {
       return await _handleCalendarPermission(context);
     }
+  }
+  if (isDesktop) {
+    return true;
   }
   return false;
 }
