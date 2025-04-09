@@ -238,6 +238,13 @@ jobs:
           keychain add-certificates
 
           xcode-project use-profiles
+      - name: 'Remove old iOS SDK'
+        if: matrix.target == 'ios'
+        run: |
+            # just delete them
+            rm -rf /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17*
+            # confirm
+            xcodebuild -showsdks
 
       - name: Setup MacOS keychain
         if: matrix.target == 'macos'
