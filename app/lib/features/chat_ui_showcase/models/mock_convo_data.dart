@@ -59,7 +59,7 @@ final mockChatItem1 = createMockChatItem(
   unreadMessages: 2,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1710000000000, // March 7, 2024
+    mockOriginServerTs: 1744182966000, // April 9, 2025
     mockMsgContent: MockMsgContent(mockBody: 'Hey, whats the update?'),
   ),
 );
@@ -81,7 +81,7 @@ final mockChatItem2 = createMockChatItem(
   unreadMessages: 2,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@sarah:acter.global',
-    mockOriginServerTs: 1709900000000, // March 6, 2024
+    mockOriginServerTs: 1744096566000, // April 8, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
     ),
@@ -105,7 +105,7 @@ final mockChatItem3 = createMockChatItem(
   unreadMessages: 2,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@robert:acter.global',
-    mockOriginServerTs: 1709800000000, // March 5, 2024
+    mockOriginServerTs: 1744010166000, // April 7, 2025
     mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
   ),
 );
@@ -127,7 +127,7 @@ final mockChatItem4 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emma:acter.global',
-    mockOriginServerTs: 1709700000000, // March 4, 2024
+    mockOriginServerTs: 1743923766000, // April 6, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'UI components updated. Please review.',
     ),
@@ -150,7 +150,7 @@ final mockChatItem5 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@michael:acter.global',
-    mockOriginServerTs: 1709600000000, // March 3, 2024
+    mockOriginServerTs: 1743837366000, // April 5, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'Can we schedule a quick sync about the API changes?',
     ),
@@ -169,7 +169,7 @@ final mockChatItem6 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@sarah:acter.global',
-    mockOriginServerTs: 1709500000000, // March 2, 2024
+    mockOriginServerTs: 1743750966000, // April 4, 2025
     mockMsgContent: MockMsgContent(
       mockBody:
           'The meeting notes are ready. I\'ve highlighted the action items.',
@@ -194,7 +194,7 @@ final mockChatItem7 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@jennifer:acter.global',
-    mockOriginServerTs: 1709400000000, // March 1, 2024
+    mockOriginServerTs: 1743664566000, // April 3, 2025
     mockMsgContent: MockMsgContent(mockBody: 'Sprint retro tomorrow at 11 AM.'),
   ),
 );
@@ -211,7 +211,7 @@ final mockChatItem8 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@lisa:acter.global',
-    mockOriginServerTs: 1709300000000, // February 29, 2024
+    mockOriginServerTs: 1743578166000, // April 2, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'The documentation is updated with the latest API changes.',
     ),
@@ -235,7 +235,7 @@ final mockChatItem9 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1709200000000, // February 28, 2024
+    mockOriginServerTs: 1743491766000, // April 1, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'New features deployed. Monitor for issues.',
     ),
@@ -258,7 +258,7 @@ final mockChatItem10 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emma:acter.global',
-    mockOriginServerTs: 1709100000000, // February 27, 2024
+    mockOriginServerTs: 1743405366000, // March 31, 2025
     mockMsgContent: MockMsgContent(
       mockBody:
           'Let me know when you\'re free to discuss the design system updates.',
@@ -278,7 +278,7 @@ final mockChatItem11 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@alex:acter.global',
-    mockOriginServerTs: 1709000000000, // February 26, 2024
+    mockOriginServerTs: 1743318966000, // March 30, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'See you at the team meeting tomorrow at 10 AM.',
     ),
@@ -302,7 +302,7 @@ final mockChatItem12 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@christopher:acter.global',
-    mockOriginServerTs: 1708900000000, // February 25, 2024
+    mockOriginServerTs: 1743232566000, // March 29, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'Campaign approved. Launch next week.',
     ),
@@ -321,7 +321,7 @@ final mockChatItem13 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@lisa:acter.global',
-    mockOriginServerTs: 1708800000000, // February 24, 2024
+    mockOriginServerTs: 1743146166000, // March 28, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'Document reviewed and approved. Ready for implementation.',
     ),
@@ -345,7 +345,7 @@ final mockChatItem14 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@daniel:acter.global',
-    mockOriginServerTs: 1708700000000, // February 23, 2024
+    mockOriginServerTs: 1743059766000, // March 27, 2025
     mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
   ),
 );
@@ -362,7 +362,7 @@ final mockChatItem15 = createMockChatItem(
   unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1708600000000, // February 22, 2024
+    mockOriginServerTs: 1742973366000, // March 26, 2025
     mockMsgContent: MockMsgContent(
       mockBody: 'Task completed and merged to main branch.',
     ),
