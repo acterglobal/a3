@@ -14,19 +14,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ChatItemWidget extends ConsumerWidget {
   final String roomId;
   final Function()? onTap;
+  final Animation<double>? animation;
 
-  const ChatItemWidget({super.key, required this.roomId, this.onTap});
+  const ChatItemWidget({
+    super.key,
+    required this.roomId,
+    this.onTap,
+    this.animation,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
+    final inner = ListTile(
+      key: Key('chat-item-widget-$roomId'),
       dense: true,
-      contentPadding: EdgeInsets.zero,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       onTap: onTap,
       leading: RoomAvatar(roomId: roomId, showParents: true),
       title: _buildChatTitle(context),
       subtitle: _buildChatSubtitle(context, ref),
     );
+
+    return animation != null
+        ? SizeTransition(sizeFactor: animation!, child: inner)
+        : inner;
   }
 
   Widget _buildChatTitle(BuildContext context) {

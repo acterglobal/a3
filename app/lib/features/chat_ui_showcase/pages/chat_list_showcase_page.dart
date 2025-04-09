@@ -1,6 +1,6 @@
 import 'package:acter/common/widgets/plus_icon_widget.dart';
+import 'package:acter/features/chat/widgets/chats_list.dart';
 import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -15,20 +15,9 @@ class ChatListShowcasePage extends StatelessWidget {
         title: Text(lang.chat),
         actions: [PlusIconWidget(onPressed: () {})],
       ),
-      body: _buildChatListUI(),
-    );
-  }
-
-  Widget _buildChatListUI() {
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      separatorBuilder: (context, index) {
-        return Divider(color: Theme.of(context).unselectedWidgetColor);
-      },
-      itemCount: mockChatList.length,
-      itemBuilder: (context, index) {
-        return ChatItemWidget(roomId: mockChatList[index].roomId);
-      },
+      body: AnimatedChatsList(
+        entries: mockChatList.map((e) => e.roomId).toList(),
+      ),
     );
   }
 }

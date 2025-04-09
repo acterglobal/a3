@@ -6,7 +6,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -90,21 +90,21 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderList(BuildContext context, List<String> chats) {
-    return _AnimatedChatsList(entries: chats, onSelected: onSelected);
+    return AnimatedChatsList(entries: chats, onSelected: onSelected);
   }
 }
 
-class _AnimatedChatsList extends StatefulWidget {
+class AnimatedChatsList extends StatefulWidget {
   final Function(String)? onSelected;
   final List<String> entries;
 
-  const _AnimatedChatsList({required this.entries, this.onSelected});
+  const AnimatedChatsList({super.key, required this.entries, this.onSelected});
 
   @override
-  __AnimatedChatsListState createState() => __AnimatedChatsListState();
+  AnimatedChatsListState createState() => AnimatedChatsListState();
 }
 
-class __AnimatedChatsListState extends State<_AnimatedChatsList> {
+class AnimatedChatsListState extends State<AnimatedChatsList> {
   late GlobalKey<AnimatedListState> _listKey;
   late List<String> _currentList;
 
@@ -120,11 +120,11 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
   }
 
   @override
-  void didUpdateWidget(_AnimatedChatsList oldWidget) {
+  void didUpdateWidget(AnimatedChatsList oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_listKey.currentState == null) {
       _log.fine('no state, hard reset');
-      // we can ignore the diffing as we aren’t live, just reset
+      // we can ignore the diffing as we aren't live, just reset
       setState(_reset);
       return;
     } else {
@@ -163,7 +163,8 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     _log.fine('insert $pos: $data');
     _currentList.insert(pos, data);
     _listKey.currentState.map(
-      (curState) => curState.insertItem(pos),
+      (curState) =>
+          curState.insertItem(pos, duration: const Duration(milliseconds: 300)),
       orElse: () => _log.fine('we are not'),
     );
   }
@@ -184,7 +185,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     BuildContext context,
     Animation<double> animation,
   ) {
-    return ConvoCard(
+    return ChatItemWidget(
       animation: animation,
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
@@ -207,7 +208,7 @@ class __AnimatedChatsListState extends State<_AnimatedChatsList> {
     }
     final roomId = _currentList[index];
     _log.fine('render $roomId');
-    return ConvoCard(
+    return ChatItemWidget(
       animation: animation,
       key: Key('convo-card-$roomId'),
       roomId: roomId,
