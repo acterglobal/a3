@@ -5,7 +5,9 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:collection/collection.dart';
@@ -44,7 +46,8 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
 typedef MentionParsedText = (String, List<MentionAttributes>);
 
 extension ActerEditorStateHelpers on EditorState {
-  MentionParsedText mentionsParsedText(String plainText, String? htmlText) {
+  // helper to parse mentions to markdown/html format
+  MentionParsedText toMentionText(String plainText, String? htmlText) {
     List<MentionAttributes> mentionAttributes = [];
 
     // Get the base text
@@ -67,7 +70,10 @@ extension ActerEditorStateHelpers on EditorState {
                 htmlText != null
                     ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
                     : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
-            processedText = processedText.replaceFirst('‖', replacement);
+            processedText = processedText.replaceFirst(
+              userMentionMarker,
+              replacement,
+            );
             mentionAttributes.add(mention);
           }
         }
@@ -84,6 +90,91 @@ extension ActerEditorStateHelpers on EditorState {
     }
 
     return (processedText.trimRight(), mentionAttributes);
+  }
+
+  void toMentionPills(String body, Node targetNode) {
+    String text = body;
+    final userMatches = userMentionRegExp.allMatches(text);
+    List<(int, int, String, String, MentionType)> allMentions = [];
+
+    for (final match in userMatches) {
+      final displayName = match.group(1);
+      final userId = match.group(2);
+      if (userId != null && displayName != null) {
+        allMentions.add((
+          match.start,
+          match.end,
+          userId,
+          displayName,
+          MentionType.user,
+        ));
+      }
+    }
+
+    bool hasMentions = allMentions.isNotEmpty;
+    if (!hasMentions) {
+      // no mentions found,insert plain text and return as it is
+      final transaction = this.transaction;
+      transaction.replaceText(targetNode, 0, 0, text);
+      apply(transaction);
+      return;
+    }
+    // else continue with processing mentions
+    // sort positions in reverse order to avoid index shifting
+    allMentions.sort((a, b) => b.$1.compareTo(a.$1));
+
+    // replace all matches with markers
+    for (final mention in allMentions) {
+      final start = mention.$1;
+      final end = mention.$2;
+
+      if (start >= 0 && end <= text.length && start < end) {
+        text = text.replaceRange(start, end, userMentionMarker);
+      }
+    }
+
+    final transaction = this.transaction;
+    transaction.replaceText(targetNode, 0, 0, text);
+    apply(transaction);
+
+    final targetNodeText = targetNode.delta?.toPlainText() ?? '';
+
+    // find all marker positions
+    final markerPositions = <int>[];
+    for (int i = 0; i < targetNodeText.length; i++) {
+      if (targetNodeText[i] == userMentionMarker) {
+        markerPositions.add(i);
+      }
+    }
+
+    // now apply attributes
+    if (markerPositions.isNotEmpty) {
+      for (int i = 0; i < allMentions.length; i++) {
+        if (i >= markerPositions.length) break;
+
+        final (_, _, mentionId, displayName, type) = allMentions[i];
+        final position = markerPositions[i];
+        final typeStr =
+            type == MentionType.user ? userMentionChar : roomMentionChar;
+
+        final replaceTransaction = this.transaction;
+        replaceTransaction.replaceText(
+          targetNode,
+          position,
+          1,
+          userMentionMarker,
+          attributes: {
+            typeStr: MentionAttributes(
+              type: type,
+              mentionId: mentionId,
+              displayName: displayName,
+            ),
+            'inline': true,
+          },
+        );
+        apply(replaceTransaction);
+      }
+    }
   }
 
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {

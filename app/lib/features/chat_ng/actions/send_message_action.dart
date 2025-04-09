@@ -31,7 +31,7 @@ Future<void> sendMessageAction({
     return;
   }
 
-  final bodyProcessedText = textEditorState.mentionsParsedText(body, null);
+  final bodyProcessedText = textEditorState.toMentionText(body, null);
   ref.read(chatInputProvider.notifier).startSending();
   try {
     // end the typing notification
@@ -41,8 +41,8 @@ Future<void> sendMessageAction({
     final chatEditorState = ref.read(chatEditorStateProvider);
     final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
-    if (html.isNotEmpty && !chatEditorState.isEditing) {
-      final htmlProcessedText = textEditorState.mentionsParsedText(body, html);
+    if (html.isNotEmpty) {
+      final htmlProcessedText = textEditorState.toMentionText(body, html);
       draft = client.textHtmlDraft(htmlProcessedText.$1, bodyProcessedText.$1);
       if (htmlProcessedText.$2.isNotEmpty) {
         for (MentionAttributes m in htmlProcessedText.$2) {
