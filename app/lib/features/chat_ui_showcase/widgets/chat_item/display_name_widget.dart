@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DisplayNameWidget extends ConsumerWidget {
   final String roomId;
@@ -10,20 +11,25 @@ class DisplayNameWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayName = _getDisplayName(ref);
+    final displayNameProvider = ref.watch(roomDisplayNameProvider(roomId));
+    return displayNameProvider.when(
+      data: (displayName) => _renderDisplayName(context, displayName),
+      error: (e, s) => const SizedBox.shrink(),
+      loading:
+          () =>
+              Skeletonizer(child: _renderDisplayName(context, 'Display Name')),
+    );
+  }
 
-    if (displayName.isEmpty) return const SizedBox.shrink();
-
+  Widget _renderDisplayName(BuildContext context, String? displayName) {
+    if (displayName == null || displayName.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Text(
       displayName,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: style ?? Theme.of(context).textTheme.bodyMedium,
     );
-  }
-
-  String _getDisplayName(WidgetRef ref) {
-    final displayNameProvider = ref.watch(roomDisplayNameProvider(roomId));
-    return displayNameProvider.valueOrNull ?? roomId;
   }
 }

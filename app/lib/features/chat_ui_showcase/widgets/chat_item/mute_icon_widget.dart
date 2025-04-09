@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MuteIconWidget extends ConsumerWidget {
   final String roomId;
@@ -10,8 +11,16 @@ class MuteIconWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isMuted = _isMuted(ref);
+    final isMutedProvider = ref.watch(roomIsMutedProvider(roomId));
 
+    return isMutedProvider.when(
+      data: (isMuted) => _renderMuted(context, isMuted),
+      error: (e, s) => const SizedBox.shrink(),
+      loading: () => Skeletonizer(child: _renderMuted(context, true)),
+    );
+  }
+
+  Widget _renderMuted(BuildContext context, bool isMuted) {
     if (!isMuted) return const SizedBox.shrink();
 
     return Padding(
@@ -22,10 +31,5 @@ class MuteIconWidget extends ConsumerWidget {
         color: Theme.of(context).colorScheme.surfaceTint,
       ),
     );
-  }
-
-  bool _isMuted(WidgetRef ref) {
-    final isMutedProvider = ref.watch(roomIsMutedProvider(roomId));
-    return isMutedProvider.valueOrNull ?? false;
   }
 }

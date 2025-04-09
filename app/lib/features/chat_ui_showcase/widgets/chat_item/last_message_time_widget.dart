@@ -6,6 +6,7 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class LastMessageTimeWidget extends ConsumerWidget {
   final String roomId;
@@ -14,19 +15,31 @@ class LastMessageTimeWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lastMessageProvider = ref.watch(latestMessageProvider(roomId));
+
+    return lastMessageProvider.when(
+      data:
+          (timelineItem) => _renderLastMessageTime(context, ref, timelineItem),
+      error: (e, s) => const SizedBox.shrink(),
+      loading: () => Skeletonizer(child: Text('Today')),
+    );
+  }
+
+  Widget _renderLastMessageTime(
+    BuildContext context,
+    WidgetRef ref,
+    TimelineItem? timelineItem,
+  ) {
     final theme = Theme.of(context);
-
     final isUnread = _isUnread(ref);
-
     final timeColor =
         isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
 
-    final lastMessageTimestamp = _getLastMessageTimestamp(ref);
-
-    if (lastMessageTimestamp == null) return const SizedBox.shrink();
+    final eventItem = timelineItem?.eventItem();
+    if (eventItem == null) return const SizedBox.shrink();
 
     return Text(
-      jiffyTime(context, lastMessageTimestamp),
+      jiffyTime(context, eventItem.originServerTs()),
       style: theme.textTheme.bodySmall?.copyWith(
         color: timeColor,
         fontSize: 12,
@@ -37,12 +50,5 @@ class LastMessageTimeWidget extends ConsumerWidget {
   bool _isUnread(WidgetRef ref) {
     if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) return false;
     return ref.watch(hasUnreadMessages(roomId)).valueOrNull ?? false;
-  }
-
-  int? _getLastMessageTimestamp(WidgetRef ref) {
-    final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
-    final TimelineEventItem? eventItem = latestMessage?.eventItem();
-    final lastMessageTimestamp = eventItem?.originServerTs();
-    return lastMessageTimestamp;
   }
 }

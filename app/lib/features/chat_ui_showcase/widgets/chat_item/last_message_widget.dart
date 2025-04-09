@@ -8,6 +8,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class LastMessageWidget extends ConsumerWidget {
   final String roomId;
@@ -16,17 +17,29 @@ class LastMessageWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lastMessageProvider = ref.watch(latestMessageProvider(roomId));
+
+    return lastMessageProvider.when(
+      data: (timelineItem) => _renderLastMessage(context, ref, timelineItem),
+      error: (e, s) => const SizedBox.shrink(),
+      loading: () => Skeletonizer(child: Text('Loading...')),
+    );
+  }
+
+  Widget _renderLastMessage(
+    BuildContext context,
+    WidgetRef ref,
+    TimelineItem? timelineItem,
+  ) {
     final lang = L10n.of(context);
     final theme = Theme.of(context);
-
-    final TimelineEventItem? eventItem = _getLatestMessage(ref);
-    final isUnread = _isUnread(ref);
     final isDM = _getIsDM(ref);
-
+    final isUnread = _isUnread(ref);
     final textColor =
         isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
-    final senderName = _getLastMessageSenderName(eventItem);
-    final message = _getLastMessage(lang, eventItem);
+
+    final senderName = _getLastMessageSenderName(timelineItem?.eventItem());
+    final message = _getLastMessage(lang, timelineItem?.eventItem());
 
     return RichText(
       text: TextSpan(
@@ -57,11 +70,6 @@ class LastMessageWidget extends ConsumerWidget {
   bool _getIsDM(WidgetRef ref) {
     final isDM = ref.watch(isDirectChatProvider(roomId));
     return isDM.valueOrNull ?? false;
-  }
-
-  TimelineEventItem? _getLatestMessage(WidgetRef ref) {
-    final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
-    return latestMessage?.eventItem();
   }
 
   bool _isUnread(WidgetRef ref) {
