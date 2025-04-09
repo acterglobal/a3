@@ -218,7 +218,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!mounted) return;
       await handleCalendarPermission(context);
       if (!mounted) return;
-      handleAnalyticsOptIn(context);
+      await handleAnalyticsOptIn(context);
+      if (!mounted) return;
+      context.goNamed(Routes.main.name);
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));

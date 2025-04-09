@@ -46,6 +46,8 @@
   "allReactionsCount": "All {total}",
   "alreadyConfirmed": "Already confirmed",
   "@alreadyConfirmed": {},
+  "telemetryAnalytics": "Telemetry & Analytics",
+  "@telemetryAnalytics": {},
   "analyticsTitle": "Contribute to Acter",
   "@analyticsTitle": {},
   "analyticsDescription": "Building Acter is a Community effort. A very simple way of contributing is for sending telemetry and crash reports to Acter.",
