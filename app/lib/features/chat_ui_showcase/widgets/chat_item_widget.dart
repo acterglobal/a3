@@ -44,7 +44,7 @@ class ChatItemWidget extends ConsumerWidget {
       selectedTileColor: Theme.of(context).colorScheme.primary,
       key: Key('chat-item-widget-$roomId'),
       dense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       onTap: onTap,
       leading: RoomAvatar(roomId: roomId, showParents: true),
       title: _buildChatTitle(context),
