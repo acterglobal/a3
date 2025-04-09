@@ -60,9 +60,7 @@ final mockChatItem1 = createMockChatItem(
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emily:acter.global',
     mockOriginServerTs: 1710000000000, // March 7, 2024
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Hey, did you get a chance to review the design mockups?',
-    ),
+    mockMsgContent: MockMsgContent(mockBody: 'Hey, whats the update?'),
   ),
 );
 
@@ -85,8 +83,7 @@ final mockChatItem2 = createMockChatItem(
     mockSenderId: '@sarah:acter.global',
     mockOriginServerTs: 1709900000000, // March 6, 2024
     mockMsgContent: MockMsgContent(
-      mockBody:
-          'The new feature deployment is scheduled for tomorrow at 2 PM. Please review the checklist.',
+      mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
     ),
   ),
 );
@@ -109,9 +106,7 @@ final mockChatItem3 = createMockChatItem(
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@robert:acter.global',
     mockOriginServerTs: 1709800000000, // March 5, 2024
-    mockMsgContent: MockMsgContent(
-      mockBody: 'The CI/CD pipeline is now fixed. All tests are passing.',
-    ),
+    mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
   ),
 );
 
@@ -134,8 +129,7 @@ final mockChatItem4 = createMockChatItem(
     mockSenderId: '@emma:acter.global',
     mockOriginServerTs: 1709700000000, // March 4, 2024
     mockMsgContent: MockMsgContent(
-      mockBody:
-          'I\'ve updated the UI components based on the feedback. Please review the latest version.',
+      mockBody: 'UI components updated. Please review.',
     ),
   ),
 );
@@ -201,9 +195,7 @@ final mockChatItem7 = createMockChatItem(
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@jennifer:acter.global',
     mockOriginServerTs: 1709400000000, // March 1, 2024
-    mockMsgContent: MockMsgContent(
-      mockBody: 'The sprint retrospective is scheduled for tomorrow at 11 AM.',
-    ),
+    mockMsgContent: MockMsgContent(mockBody: 'Sprint retro tomorrow at 11 AM.'),
   ),
 );
 
@@ -245,8 +237,7 @@ final mockChatItem9 = createMockChatItem(
     mockSenderId: '@emily:acter.global',
     mockOriginServerTs: 1709200000000, // February 28, 2024
     mockMsgContent: MockMsgContent(
-      mockBody:
-          'New features deployed to production. Please monitor for any issues.',
+      mockBody: 'New features deployed. Monitor for issues.',
     ),
   ),
 );
@@ -313,8 +304,7 @@ final mockChatItem12 = createMockChatItem(
     mockSenderId: '@christopher:acter.global',
     mockOriginServerTs: 1708900000000, // February 25, 2024
     mockMsgContent: MockMsgContent(
-      mockBody:
-          'The new campaign has been approved. Launch scheduled for next week.',
+      mockBody: 'Campaign approved. Launch next week.',
     ),
   ),
 );
@@ -356,10 +346,7 @@ final mockChatItem14 = createMockChatItem(
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@daniel:acter.global',
     mockOriginServerTs: 1708700000000, // February 23, 2024
-    mockMsgContent: MockMsgContent(
-      mockBody:
-          'New feature requests from customer feedback have been prioritized.',
-    ),
+    mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
   ),
 );
 

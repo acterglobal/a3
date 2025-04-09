@@ -28,29 +28,29 @@ class LastMessageWidget extends ConsumerWidget {
     final senderName = _getLastMessageSenderName(eventItem);
     final message = _getLastMessage(lang, eventItem);
 
-    return Row(
-      children: [
-        if (senderName != null && !isDM)
-          Text(
-            '$senderName : ',
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: textColor,
-              fontSize: 14,
+    return RichText(
+      text: TextSpan(
+        children: [
+          if (senderName != null && !isDM)
+            TextSpan(
+              text: '$senderName : ',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: textColor,
+                fontSize: 14,
+              ),
             ),
-          ),
-        Expanded(
-          child: Text(
-            message,
+          TextSpan(
+            text: message,
             style: theme.textTheme.bodySmall?.copyWith(
               color: textColor,
               fontSize: 13,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-      ],
+        ],
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -73,7 +73,8 @@ class LastMessageWidget extends ConsumerWidget {
     final sender = eventItem?.sender();
     if (sender == null) return null;
     final senderName = simplifyUserId(sender);
-    return senderName;
+    if (senderName == null || senderName.isEmpty) return null;
+    return senderName[0].toUpperCase() + senderName.substring(1);
   }
 
   String _getLastMessage(L10n lang, TimelineEventItem? eventItem) {
