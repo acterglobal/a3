@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/chat_ui_showcase/models/mock_convo_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Convo, ConvoDiff, TimelineItem;
@@ -19,6 +21,13 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   @override
   FutureOr<Convo?> build(String arg) async {
     final roomId = arg;
+
+    // if we are in chat showcase mode, return a mock convo
+    if (includeChatShowcase) {
+      return mockConvoList.firstWhere((convo) => convo.getRoomIdStr() == arg);
+    }
+
+    // otherwise, get the convo from the client
     final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeRoomStream(
       roomId,

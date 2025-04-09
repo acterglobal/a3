@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/chat_ui_showcase/models/mock_convo_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Client, Room;
@@ -25,6 +27,12 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
 
   @override
   Future<Room?> build(String arg) async {
+    // if we are in chat showcase mode, return a mock room
+    if (includeChatShowcase) {
+      return mockRoomList.firstWhere((room) => room.roomIdStr() == arg);
+    }
+
+    // otherwise, get the room from the client
     final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeRoomStream(arg); // keep it resident in memory
     _poller = _listener.listen(
