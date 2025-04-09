@@ -21,9 +21,15 @@ class AnalyticsPreferencesNotifier extends StateNotifier<Map<String, bool>> {
     state = preferences;
   }
 
-  Future<void> setPreference(String key, bool value) async {
+  Future<void> setPreference(String key, bool value, WidgetRef ref) async {
+    final newState = Map<String, bool>.from(state);
+    newState[key] = value;
+    state = newState;
     await setAnalyticsPreference(key, value);
-    state = {...state, key: value};
+    // Handle Matomo analytics separately
+    if (key == matomoAnalytics) {
+      await setMatomoAnalytics(value, ref);
+    } 
   }
 }
 

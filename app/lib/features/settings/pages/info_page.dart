@@ -99,7 +99,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 SettingsTile.switchTile(
                   initialValue: allowReportSending,
                   onToggle: (newVal) {
-                    ref.read(analyticsPreferencesProvider.notifier).setPreference(canReportSentry, newVal);
+                    ref.read(analyticsPreferencesProvider.notifier).setPreference(canReportSentry, newVal, ref);
                   },
                   title: Text(lang.sendCrashReportsTitle),
                   description: Text(lang.sendCrashReportsInfo),

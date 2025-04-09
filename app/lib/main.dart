@@ -80,26 +80,26 @@ Future<void> _startAppInner(
     child: app,
   );
 
-  if (withSentry) {
-    await SentryFlutter.init((options) {
-      // we use the dart-define default env for the default stuff.
-      options.dsn = Env.sentryDsn;
-      options.environment = Env.sentryEnvironment;
-      options.release = Env.sentryRelease;
+  if (withSentry || withMatomo) {
+    if (withSentry) {
+      await SentryFlutter.init((options) {
+        // we use the dart-define default env for the default stuff.
+        options.dsn = Env.sentryDsn;
+        options.environment = Env.sentryEnvironment;
+        options.release = Env.sentryRelease;
 
-      // allows us to check whether the user has activated tracing
-      // and prevent reporting otherwise.
-      options.beforeSend = sentryBeforeSend;
-    }, appRunner: () => runApp(wrappedApp));
-  } else if (withMatomo) {
-    await MatomoTracker.instance.initialize(
-      siteId: '',
-      url: '',
-    );
-
-    // Set Matomo tracking based on user preference
-    final analyticsEnabled = await getAnalyticsPreference(matomoAnalytics);
-    MatomoTracker.instance.setOptOut(optOut: !analyticsEnabled);
+        // allows us to check whether the user has activated tracing
+        // and prevent reporting otherwise.
+        options.beforeSend = sentryBeforeSend;
+      }, appRunner: () => runApp(wrappedApp));
+    }
+    if (withMatomo) {
+      await MatomoTracker.instance.initialize(
+        siteId: Env.matomoSiteId,
+        url: Env.matomoUrl,
+      );
+      runApp(wrappedApp);
+    }
   } else {
     runApp(wrappedApp);
   }
