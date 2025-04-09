@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/chat/widgets/chat_list_widget.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,9 +66,9 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(
-        find.byType(ConvoCard),
+        find.byType(ChatItemWidget),
         findsNWidgets(3),
-        reason: 'Should find 3 ConvoCard widgets',
+        reason: 'Should find 3 ChatItemWidget widgets',
       );
     });
   });
