@@ -78,7 +78,7 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 } = membership_change
                 {
                     let change = ProfileChange::new(
-                        inner.sender.clone(),
+                        inner.state_key.clone(),
                         displayname_change.map(|c| Change {
                             new_val: c.new.map(ToOwned::to_owned),
                             old_val: c.old.map(ToOwned::to_owned),
@@ -90,7 +90,7 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                     );
                     ActerSupportedRoomStatusEvents::ProfileChange(change)
                 } else if let Ok(change) =
-                    MembershipChange::try_from((membership_change, inner.sender.clone()))
+                    MembershipChange::try_from((membership_change, inner.state_key.clone()))
                 {
                     ActerSupportedRoomStatusEvents::MembershipChange(change)
                 } else {
