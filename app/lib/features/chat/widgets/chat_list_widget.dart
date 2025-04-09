@@ -63,10 +63,13 @@ class ChatListWidget extends ConsumerWidget {
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         final roomId = chatList[index].getRoomIdStr();
-        return ChatItemWidget(
-          showSelectedIndication: false,
-          roomId: roomId,
-          onTap: () => goToChat(context, roomId),
+        return Card(
+          margin: EdgeInsets.only(bottom: 16),
+          child: ChatItemWidget(
+            showSelectedIndication: false,
+            roomId: roomId,
+            onTap: () => goToChat(context, roomId),
+          ),
         );
       },
     );
