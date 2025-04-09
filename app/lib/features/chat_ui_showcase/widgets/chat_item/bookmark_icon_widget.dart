@@ -1,8 +1,11 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat-item::bookmark-icon-widget');
 
 class BookmarkIconWidget extends ConsumerWidget {
   final String roomId;
@@ -15,7 +18,10 @@ class BookmarkIconWidget extends ConsumerWidget {
 
     return isBookmarkedProvider.when(
       data: (isBookmarked) => _renderBookmarked(context, isBookmarked),
-      error: (e, s) => const SizedBox.shrink(),
+      error: (e, s) {
+        _log.severe('Failed to load isBookmarked', e, s);
+        return const SizedBox.shrink();
+      },
       loading: () => Skeletonizer(child: _renderBookmarked(context, false)),
     );
   }

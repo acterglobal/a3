@@ -8,7 +8,10 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat-item::last-message-widget');
 
 class LastMessageWidget extends ConsumerWidget {
   final String roomId;
@@ -21,7 +24,10 @@ class LastMessageWidget extends ConsumerWidget {
 
     return lastMessageProvider.when(
       data: (timelineItem) => _renderLastMessage(context, ref, timelineItem),
-      error: (e, s) => const SizedBox.shrink(),
+      error: (e, s) {
+        _log.severe('Failed to load last message', e, s);
+        return const SizedBox.shrink();
+      },
       loading: () => Skeletonizer(child: Text('Loading...')),
     );
   }

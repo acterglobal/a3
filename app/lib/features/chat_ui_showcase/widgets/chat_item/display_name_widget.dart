@@ -1,7 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+final _log = Logger('a3::chat-item::display-name-widget');
 
 class DisplayNameWidget extends ConsumerWidget {
   final String roomId;
@@ -14,7 +17,10 @@ class DisplayNameWidget extends ConsumerWidget {
     final displayNameProvider = ref.watch(roomDisplayNameProvider(roomId));
     return displayNameProvider.when(
       data: (displayName) => _renderDisplayName(context, displayName),
-      error: (e, s) => const SizedBox.shrink(),
+      error: (e, s) {
+        _log.severe('Failed to load displayName', e, s);
+        return const SizedBox.shrink();
+      },
       loading:
           () =>
               Skeletonizer(child: _renderDisplayName(context, 'Display Name')),
