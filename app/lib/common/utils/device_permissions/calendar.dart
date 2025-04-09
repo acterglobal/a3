@@ -11,7 +11,9 @@ Future<bool> handleCalendarPermission(BuildContext context) async {
       return await _handleCalendarPermission(context);
     }
   }
-  if (isDesktop) return true;
+  if (isDesktop) {
+    return true;
+  }
   return false;
 }
 

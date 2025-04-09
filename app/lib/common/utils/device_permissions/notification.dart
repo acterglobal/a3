@@ -21,7 +21,9 @@ Future<bool> handleNotificationPermission(BuildContext context) async {
       return await _handleNotificationPermission(context);
     }
   }
-  if (isDesktop) return true;
+  if (isDesktop) {
+    return true;
+  }
   return false;
 }
 
