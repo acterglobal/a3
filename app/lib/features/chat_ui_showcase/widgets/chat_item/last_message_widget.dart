@@ -2,7 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/models/mock_timeline_event_item.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -12,34 +11,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LastMessageWidget extends ConsumerWidget {
   final String roomId;
-  final MockTimelineEventItem? mockLastMessage;
-  final bool? mockIsUnread;
-  final bool? mockIsDM;
 
-  const LastMessageWidget({
-    super.key,
-    required this.roomId,
-    this.mockLastMessage,
-    this.mockIsUnread,
-    this.mockIsDM,
-  });
+  const LastMessageWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final theme = Theme.of(context);
 
-    final TimelineEventItem? eventItem =
-        mockLastMessage ?? _getLatestMessage(ref);
-    final isUnread = mockIsUnread ?? _isUnread(ref);
-    final isDM = mockIsDM ?? _getIsDM(ref);
+    final TimelineEventItem? eventItem = _getLatestMessage(ref);
+    final isUnread = _isUnread(ref);
+    final isDM = _getIsDM(ref);
 
     final textColor =
         isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
-    final senderName =
-        mockLastMessage != null
-            ? mockLastMessage?.sender()
-            : _getLastMessageSenderName(eventItem);
+    final senderName = _getLastMessageSenderName(eventItem);
     final message = _getLastMessage(lang, eventItem);
 
     return Row(

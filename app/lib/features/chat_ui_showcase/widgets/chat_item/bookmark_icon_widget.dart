@@ -5,17 +5,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class BookmarkIconWidget extends ConsumerWidget {
   final String roomId;
-  final bool? mockIsBookmarked;
 
-  const BookmarkIconWidget({
-    super.key,
-    required this.roomId,
-    this.mockIsBookmarked,
-  });
+  const BookmarkIconWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isBookmarked = mockIsBookmarked ?? _isBookmarked(ref);
+    final isBookmarked = _isBookmarked(ref);
 
     if (!isBookmarked) return const SizedBox.shrink();
 

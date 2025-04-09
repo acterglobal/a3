@@ -6,17 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UnreadCountWidget extends ConsumerWidget {
   final String roomId;
-  final int? mockUnreadCount;
 
-  const UnreadCountWidget({
-    super.key,
-    required this.roomId,
-    this.mockUnreadCount,
-  });
+  const UnreadCountWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final unreadCount = mockUnreadCount ?? _getUnreadCount(ref);
+    final unreadCount = _getUnreadCount(ref);
 
     //If the unread count is not 0, return a Container with the unread count
     if (unreadCount == 0) return const SizedBox.shrink();

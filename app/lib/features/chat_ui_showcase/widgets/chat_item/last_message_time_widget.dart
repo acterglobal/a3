@@ -9,27 +9,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LastMessageTimeWidget extends ConsumerWidget {
   final String roomId;
-  final bool? mockIsUnread;
-  final int? mockLastMessageTimestamp;
 
-  const LastMessageTimeWidget({
-    super.key,
-    required this.roomId,
-    this.mockIsUnread,
-    this.mockLastMessageTimestamp,
-  });
+  const LastMessageTimeWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
-    final isUnread = mockIsUnread ?? _isUnread(ref);
+    final isUnread = _isUnread(ref);
 
     final timeColor =
         isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
 
-    final lastMessageTimestamp =
-        mockLastMessageTimestamp ?? _getLastMessageTimestamp(ref);
+    final lastMessageTimestamp = _getLastMessageTimestamp(ref);
 
     if (lastMessageTimestamp == null) return const SizedBox.shrink();
 

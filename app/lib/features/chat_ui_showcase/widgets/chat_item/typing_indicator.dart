@@ -9,22 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TypingIndicator extends ConsumerWidget {
   final String roomId;
-  final List<User>? mockTypingUsers;
-  final bool? mockIsDM;
 
-  const TypingIndicator({
-    super.key,
-    required this.roomId,
-    this.mockTypingUsers,
-    this.mockIsDM,
-  });
+  const TypingIndicator({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     //Get the typing users and the typing text
-    final typingUsers = mockTypingUsers ?? _getTypingUsers(ref);
+    final typingUsers = _getTypingUsers(ref);
     final typingText = _getTypingText(context, ref, typingUsers);
     if (typingText.isEmpty) return const SizedBox.shrink();
 
@@ -35,7 +28,7 @@ class TypingIndicator extends ConsumerWidget {
     );
 
     //If it's a DM, return the animated circles
-    final isDM = mockIsDM ?? _getIsDM(ref);
+    final isDM = _getIsDM(ref);
     if (isDM == true) return animatedCircles;
 
     //Show the typing text with the animated circles

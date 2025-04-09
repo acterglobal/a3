@@ -1,23 +1,17 @@
-import 'package:acter/features/chat_ui_showcase/models/mock_convo_data.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_room.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_convo.dart';
 
-final List<MockChatItem> mockChatList = [
-  mockChatItem1,
-  mockChatItem2,
-  mockChatItem3,
-  mockChatItem4,
-  mockChatItem5,
-  mockChatItem6,
-  mockChatItem7,
-  mockChatItem8,
-  mockChatItem9,
-  mockChatItem10,
-  mockChatItem11,
-  mockChatItem12,
-  mockChatItem13,
-  mockChatItem14,
-  mockChatItem15,
+final List<String> mockChatList = [
+  'mock-room-1',
+  'mock-room-2',
+  'mock-room-3',
+  'mock-room-4',
+  'mock-room-5',
+  'mock-room-6',
+  'mock-room-7',
+  'mock-room-8',
+  'mock-room-9',
+  'mock-room-10',
 ];
 
 final List<MockRoom> mockRoomList = [

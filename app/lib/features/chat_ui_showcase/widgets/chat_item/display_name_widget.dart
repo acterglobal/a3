@@ -4,19 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DisplayNameWidget extends ConsumerWidget {
   final String roomId;
-  final String? mockDisplayName;
   final TextStyle? style;
 
-  const DisplayNameWidget({
-    super.key,
-    required this.roomId,
-    this.mockDisplayName,
-    this.style,
-  });
+  const DisplayNameWidget({super.key, required this.roomId, this.style});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final displayName = mockDisplayName ?? _getDisplayName(ref);
+    final displayName = _getDisplayName(ref);
 
     return Text(
       displayName,

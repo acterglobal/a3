@@ -5,13 +5,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MuteIconWidget extends ConsumerWidget {
   final String roomId;
-  final bool? mockIsMuted;
 
-  const MuteIconWidget({super.key, required this.roomId, this.mockIsMuted});
+  const MuteIconWidget({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isMuted = mockIsMuted ?? _isMuted(ref);
+    final isMuted = _isMuted(ref);
 
     if (!isMuted) return const SizedBox.shrink();
 
