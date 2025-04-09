@@ -49,7 +49,11 @@ impl ProfileChange {
         display_name_change: Option<Change<Option<String>>>,
         avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
     ) -> Self {
-        ProfileChange { user_id, display_name_change, avatar_url_change }
+        ProfileChange {
+            user_id,
+            display_name_change,
+            avatar_url_change,
+        }
     }
 
     pub fn user_id(&self) -> OwnedUserId {

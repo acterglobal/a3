@@ -89,14 +89,12 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                         }),
                     );
                     ActerSupportedRoomStatusEvents::ProfileChange(change)
+                } else if let Ok(change) =
+                    MembershipChange::try_from((membership_change, inner.sender.clone()))
+                {
+                    ActerSupportedRoomStatusEvents::MembershipChange(change)
                 } else {
-                    if let Ok(change) =
-                        MembershipChange::try_from((membership_change, inner.sender.clone()))
-                    {
-                        ActerSupportedRoomStatusEvents::MembershipChange(change)
-                    } else {
-                        return Err(make_err(event));
-                    }
+                    return Err(make_err(event));
                 };
                 Ok(RoomStatus {
                     inner: inner_status,
