@@ -6,13 +6,31 @@ import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final allowSentryReportingProvider = FutureProvider(
-  (ref) => getCanReportToSentry(),
-);
+class AnalyticsPreferencesNotifier extends StateNotifier<Map<String, bool>> {
+  AnalyticsPreferencesNotifier() : super({}) {
+    _loadPreferences();
+  }
 
-final allowMatomoAnalyticsProvider = FutureProvider(
-  (ref) => getMatomoAnalyticsEnabled(),
-);
+  Future<void> _loadPreferences() async {
+    final preferences = {
+      canReportSentry: await getAnalyticsPreference(canReportSentry),
+      matomoAnalytics: await getAnalyticsPreference(matomoAnalytics),
+      basicTelemetry: await getAnalyticsPreference(basicTelemetry),
+      research: await getAnalyticsPreference(research),
+    };
+    state = preferences;
+  }
+
+  Future<void> setPreference(String key, bool value) async {
+    await setAnalyticsPreference(key, value);
+    state = {...state, key: value};
+  }
+}
+
+final analyticsPreferencesProvider =
+    StateNotifierProvider<AnalyticsPreferencesNotifier, Map<String, bool>>(
+      (ref) => AnalyticsPreferencesNotifier(),
+    );
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
   (ref) => LocaleNotifier(),

@@ -50,7 +50,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     final devIdDigest =
         deviceId != null ? sha1.convert(utf8.encode(deviceId)) : 'none';
     final allowReportSending =
-        ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
+        ref.watch(analyticsPreferencesProvider)[canReportSentry] ?? isNightly;
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -99,8 +99,7 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 SettingsTile.switchTile(
                   initialValue: allowReportSending,
                   onToggle: (newVal) {
-                    setCanReportToSentry(newVal);
-                    ref.invalidate(allowSentryReportingProvider);
+                    ref.read(analyticsPreferencesProvider.notifier).setPreference(canReportSentry, newVal);
                   },
                   title: Text(lang.sendCrashReportsTitle),
                   description: Text(lang.sendCrashReportsInfo),

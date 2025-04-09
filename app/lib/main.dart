@@ -98,7 +98,7 @@ Future<void> _startAppInner(
     );
 
     // Set Matomo tracking based on user preference
-    final analyticsEnabled = await getMatomoAnalyticsEnabled();
+    final analyticsEnabled = await getAnalyticsPreference(matomoAnalytics);
     MatomoTracker.instance.setOptOut(optOut: !analyticsEnabled);
   } else {
     runApp(wrappedApp);

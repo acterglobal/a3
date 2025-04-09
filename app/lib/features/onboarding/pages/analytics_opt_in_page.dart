@@ -5,13 +5,9 @@ import 'package:acter/common/utils/main.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-const basicTelemetryPref = 'basicTelemetry';
-const researchPref = 'research';
 
 class AnalyticsOptInWidget extends ConsumerWidget {
   static const continueBtn = Key('analytics-continue-btn');
@@ -42,7 +38,7 @@ class AnalyticsOptInWidget extends ConsumerWidget {
                 const SizedBox(height: 30),
                 _buildMoreDetails(context, lang, textTheme, ref),
                 const SizedBox(height: 10),
-                _buildCrashAnalytics(context, ref, textTheme),
+                _buildTelemetryAnalytics(context, ref),
                 const SizedBox(height: 30),
                 _buildActionButton(context, lang),
                 const SizedBox(height: 20),
@@ -93,7 +89,12 @@ class AnalyticsOptInWidget extends ConsumerWidget {
   ) {
     final primaryColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
-      onTap: () => openLink(ref: ref, target: Env.analyticsMoreDetailsUrl, lang: L10n.of(context)),
+      onTap:
+          () => openLink(
+            ref: ref,
+            target: Env.analyticsMoreDetailsUrl,
+            lang: L10n.of(context),
+          ),
       child: Text(
         lang.analyticsMoreDetails,
         style: textTheme.bodyMedium?.copyWith(
@@ -108,87 +109,84 @@ class AnalyticsOptInWidget extends ConsumerWidget {
   }
 
   // Refactored crash analytics section with toggle functionality
-  Widget _buildCrashAnalytics(
+  Widget _buildTelemetryAnalytics(
     BuildContext context,
     WidgetRef ref,
-    TextTheme textTheme,
   ) {
     final lang = L10n.of(context);
-    final allowReportSending =
-        ref.watch(allowSentryReportingProvider).valueOrNull ?? isNightly;
+    final preferences = ref.watch(analyticsPreferencesProvider);
 
-    final matomoAnalyticsEnabled =
-        ref.watch(allowMatomoAnalyticsProvider).valueOrNull ?? false;
+    final allowReportSending = preferences[canReportSentry] ?? isNightly;
+    final matomoAnalyticsEnabled = preferences[matomoAnalytics] ?? isNightly;
+    final basicTelemetryEnabled = preferences[basicTelemetry] ?? isNightly;
+    final researchEnabled = preferences[research] ?? isNightly;
+
+    final allEnabled =
+        allowReportSending &&
+        matomoAnalyticsEnabled &&
+        basicTelemetryEnabled &&
+        researchEnabled;
 
     return Column(
       children: [
-        FutureBuilder<bool>(
-          future: Future.wait([
-            _getAnalyticsPreference(basicTelemetryPref),
-            _getAnalyticsPreference(researchPref),
-          ]).then(
-            (values) =>
-                values.every((value) => value) &&
-                allowReportSending &&
-                matomoAnalyticsEnabled,
-          ),
-          builder: (context, snapshot) {
-            final allEnabled = snapshot.data ?? isNightly;
-            return _buildSwitchOption(lang.togglleAll, allEnabled, () async {
-              final newValue = !allEnabled;
-              await setCanReportToSentry(newValue);
-              await setMatomoAnalyticsEnabled(newValue);
-              await _setAnalyticsPreference(basicTelemetryPref, newValue);
-              await _setAnalyticsPreference(researchPref, newValue);
-              ref.invalidate(allowSentryReportingProvider);
-              ref.invalidate(allowMatomoAnalyticsProvider);
-            }, context);
-          },
-        ),
-        _buildCrashAnalyticsCard(
+        _buildToggleAllOption(lang.togglleAll, allEnabled, () async {
+          final newValue = !allEnabled;
+          final telemetryAnalyticsNotifier = ref.read(analyticsPreferencesProvider.notifier);
+          await telemetryAnalyticsNotifier.setPreference(canReportSentry, newValue);
+          await telemetryAnalyticsNotifier.setPreference(matomoAnalytics, newValue);
+          await telemetryAnalyticsNotifier.setPreference(basicTelemetry, newValue);
+          await telemetryAnalyticsNotifier.setPreference(research, newValue);
+        }, context),
+        _buildAnalyticsCard(
+          context,
           lang.sendCrashReportsTitle,
           lang.sendCrashReportsInfo,
           allowReportSending,
           (value) async {
-            await setCanReportToSentry(value);
-            ref.invalidate(allowSentryReportingProvider);
+            await ref
+                .read(analyticsPreferencesProvider.notifier)
+                .setPreference(canReportSentry, value);
           },
-          context,
-          textTheme,
         ),
         _buildAnalyticsCard(
+          context,
           lang.basicTelemetry,
           lang.basicTelemetryInfo,
-          basicTelemetryPref,
-          context,
-          textTheme,
-          ref,
+          basicTelemetryEnabled,
+          (value) async {
+            await ref
+                .read(analyticsPreferencesProvider.notifier)
+                .setPreference(basicTelemetry, value);
+          },
         ),
-        _buildCrashAnalyticsCard(
+        _buildAnalyticsCard(
+          context,
           lang.appAnalytics,
           lang.appAnalyticsInfo,
           matomoAnalyticsEnabled,
           (value) async {
-            await setMatomoAnalyticsEnabled(value);
-            ref.invalidate(allowMatomoAnalyticsProvider);
+            await ref
+                .read(analyticsPreferencesProvider.notifier)
+                .setPreference(matomoAnalytics, value);
           },
-          context,
-          textTheme,
         ),
         _buildAnalyticsCard(
+          context,
           lang.research,
           lang.researchInfo,
-          researchPref,
-          context,
-          textTheme,
-          ref,
+          researchEnabled,
+          (value) async {
+            await ref
+                .read(analyticsPreferencesProvider.notifier)
+                .setPreference(research, value);
+          },
         ),
       ],
     );
   }
 
   // Reusable widget for switch toggle option without card
-  Widget _buildSwitchOption(
+  Widget _buildToggleAllOption(
     String text,
     bool value,
     Future<void> Function() onToggle,
@@ -206,15 +204,15 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     );
   }
 
-  // widget for switch toggle card
-  Widget _buildCrashAnalyticsCard(
+  // widget for analytics card with separate preference
+  Widget _buildAnalyticsCard(
+    BuildContext context,
     String title,
     String subtitle,
     bool value,
     Future<void> Function(bool) onToggle,
-    BuildContext context,
-    TextTheme textTheme,
   ) {
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsets.only(top: 10),
       child: ListTile(
@@ -231,56 +229,6 @@ class AnalyticsOptInWidget extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  // widget for analytics card with separate preference
-  Widget _buildAnalyticsCard(
-    String title,
-    String subtitle,
-    String prefKey,
-    BuildContext context,
-    TextTheme textTheme,
-    WidgetRef ref,
-  ) {
-    return FutureBuilder<bool>(
-      future: _getAnalyticsPreference(prefKey),
-      builder: (context, snapshot) {
-        final value = snapshot.data ?? isNightly;
-        return Card(
-          margin: const EdgeInsets.only(top: 10),
-          child: ListTile(
-            title: Text(title),
-            subtitle: Text(
-              subtitle,
-              style: textTheme.labelMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            trailing: Transform.scale(
-              scale: 0.6,
-              child: Switch(
-                value: value,
-                onChanged: (newValue) async {
-                  await _setAnalyticsPreference(prefKey, newValue);
-                  ref.invalidate(allowMatomoAnalyticsProvider);
-                  ref.invalidate(allowSentryReportingProvider);
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<bool> _getAnalyticsPreference(String prefKey) async {
-    final prefs = await sharedPrefs();
-    return prefs.getBool(prefKey) ?? isNightly;
-  }
-
-  Future<void> _setAnalyticsPreference(String prefKey, bool value) async {
-    final prefs = await sharedPrefs();
-    await prefs.setBool(prefKey, value);
   }
 
   // Action button to proceed
