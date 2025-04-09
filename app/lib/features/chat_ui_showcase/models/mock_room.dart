@@ -2,24 +2,23 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockOptionString extends Mock implements OptionString {
-  final String? _text;
+  final String? mockText;
 
-  MockOptionString(this._text);
+  MockOptionString({this.mockText});
 
   @override
-  String? text() => _text;
+  String? text() => mockText;
 }
 
 class MockRoom extends Mock implements Room {
-  final String? _mockRoomId;
-  final Future<OptionString>? _mockDisplayName;
+  final String mockRoomId;
+  final Future<OptionString> mockDisplayName;
 
-  MockRoom(this._mockRoomId, this._mockDisplayName);
-
-  @override
-  String roomIdStr() => _mockRoomId ?? 'room-id';
+  MockRoom({required this.mockRoomId, required this.mockDisplayName});
 
   @override
-  Future<OptionString> displayName() =>
-      _mockDisplayName ?? Future.value(MockOptionString('Room Name'));
+  String roomIdStr() => mockRoomId;
+
+  @override
+  Future<OptionString> displayName() => mockDisplayName;
 }

@@ -15,21 +15,42 @@ final List<String> mockChatList = [
 ];
 
 final List<MockRoom> mockRoomList = [
-  MockRoom('mock-room-1', Future.value(MockOptionString('Mock Room 1'))),
-  MockRoom('mock-room-2', Future.value(MockOptionString('Mock Room 2'))),
-  MockRoom('mock-room-3', Future.value(MockOptionString('Mock Room 3'))),
-  MockRoom('mock-room-4', Future.value(MockOptionString('Mock Room 4'))),
-  MockRoom('mock-room-5', Future.value(MockOptionString('Mock Room 5'))),
-  MockRoom('mock-room-6', Future.value(MockOptionString('Mock Room 6'))),
-  MockRoom('mock-room-7', Future.value(MockOptionString('Mock Room 7'))),
+  MockRoom(
+    mockRoomId: 'mock-room-1',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 1')),
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-2',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 2')),
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-3',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 3')),
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-4',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 4')),
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-5',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 5')),
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-6',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 6')),
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-7',
+    mockDisplayName: Future.value(MockOptionString(mockText: 'Mock Room 7')),
+  ),
 ];
 
 final List<MockConvo> mockConvoList = [
-  MockConvo('mock-room-1'),
-  MockConvo('mock-room-2'),
-  MockConvo('mock-room-3'),
-  MockConvo('mock-room-4'),
-  MockConvo('mock-room-5'),
-  MockConvo('mock-room-6'),
-  MockConvo('mock-room-7'),
+  MockConvo(mockConvoId: 'mock-room-1'),
+  MockConvo(mockConvoId: 'mock-room-2'),
+  MockConvo(mockConvoId: 'mock-room-3'),
+  MockConvo(mockConvoId: 'mock-room-4'),
+  MockConvo(mockConvoId: 'mock-room-5'),
+  MockConvo(mockConvoId: 'mock-room-6'),
+  MockConvo(mockConvoId: 'mock-room-7'),
 ];

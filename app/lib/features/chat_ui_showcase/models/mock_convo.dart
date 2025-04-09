@@ -2,10 +2,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockConvo extends Mock implements Convo {
-  final String? _mockConvoId;
+  final String mockConvoId;
 
-  MockConvo(this._mockConvoId);
+  MockConvo({required this.mockConvoId});
 
   @override
-  String getRoomIdStr() => _mockConvoId ?? 'convo-id';
+  String getRoomIdStr() => mockConvoId;
 }
