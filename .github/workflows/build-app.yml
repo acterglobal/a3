@@ -34,6 +34,9 @@ on:
         required: false
         type: string
 
+env:
+  IOS_XCODE_TARGET: 16.1
+
 jobs:
   build-app:
     environment: release
@@ -238,11 +241,11 @@ jobs:
           keychain add-certificates
 
           xcode-project use-profiles
-      - name: 'Remove old iOS SDK'
+      - name: 'Select XCode $IOS_XCODE_TARGET'
         if: matrix.target == 'ios'
         run: |
             # just delete them
-            rm -rf /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17*
+            sudo xcode-select --switch /Applications/Xcode_${{ IOS_XCODE_TARGET }}.app
             # confirm
             xcodebuild -showsdks
 
