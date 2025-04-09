@@ -5,7 +5,9 @@ use matrix_sdk::ruma::{
     OwnedEventId, UserId,
 };
 use serde::{Deserialize, Serialize};
+
 pub mod membership;
+pub mod profile;
 
 use crate::{
     events::AnyActerEvent,
