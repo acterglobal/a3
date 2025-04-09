@@ -243,7 +243,7 @@ jobs:
         if: matrix.target == 'ios'
         run: |
             # just delete them
-            sudo xcode-select --switch /Applications/Xcode_${{ IOS_XCODE_TARGET }}.app
+            sudo xcode-select --switch /Applications/Xcode_${{ env.IOS_XCODE_TARGET }}.app
             # confirm
             xcodebuild -showsdks
 
