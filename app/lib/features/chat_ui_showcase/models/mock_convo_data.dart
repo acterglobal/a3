@@ -138,6 +138,7 @@ final mockChatItem5 = createMockChatItem(
     '@ben:acter.global',
   ],
   isDm: true,
+  isBookmarked: true,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@michael:acter.global',
     mockOriginServerTs: 1743837366000, // April 5, 2025
