@@ -16,30 +16,30 @@ class MockChatItem {
 MockChatItem createMockChatItem({
   required String roomId,
   required String displayName,
-  required String notificationMode,
-  required List<String> activeMembersIds,
-  required bool isDm,
-  required bool isBookmarked,
-  required int unreadNotificationCount,
-  required int unreadMentions,
-  required int unreadMessages,
-  required MockTimelineEventItem timelineEventItem,
+  String? notificationMode,
+  List<String>? activeMembersIds,
+  bool? isDm,
+  bool? isBookmarked,
+  int? unreadNotificationCount,
+  int? unreadMentions,
+  int? unreadMessages,
+  MockTimelineEventItem? timelineEventItem,
 }) {
   return MockChatItem(
     roomId: roomId,
     mockRoom: MockRoom(
       mockRoomId: roomId,
       mockDisplayName: displayName,
-      mockNotificationMode: notificationMode,
-      mockActiveMembersIds: activeMembersIds,
+      mockNotificationMode: notificationMode ?? 'all',
+      mockActiveMembersIds: activeMembersIds ?? [],
     ),
     mockConvo: MockConvo(
       mockConvoId: roomId,
-      mockIsDm: isDm,
-      mockIsBookmarked: isBookmarked,
-      mockNumUnreadNotificationCount: unreadNotificationCount,
-      mockNumUnreadMentions: unreadMentions,
-      mockNumUnreadMessages: unreadMessages,
+      mockIsDm: isDm ?? false,
+      mockIsBookmarked: isBookmarked ?? false,
+      mockNumUnreadNotificationCount: unreadNotificationCount ?? 0,
+      mockNumUnreadMentions: unreadMentions ?? 0,
+      mockNumUnreadMessages: unreadMessages ?? 0,
       mockTimelineItem: MockTimelineItem(
         mockTimelineEventItem: timelineEventItem,
       ),
@@ -74,10 +74,7 @@ final mockChatItem2 = createMockChatItem(
     '@lisa:acter.global',
     '@alex:acter.global',
   ],
-  isDm: false,
-  isBookmarked: false,
   unreadNotificationCount: 2,
-  unreadMentions: 0,
   unreadMessages: 2,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@sarah:acter.global',
@@ -91,18 +88,12 @@ final mockChatItem2 = createMockChatItem(
 final mockChatItem3 = createMockChatItem(
   roomId: 'mock-room-3',
   displayName: 'Engineering',
-  notificationMode: 'all',
   activeMembersIds: [
     '@robert:acter.global',
     '@jennifer:acter.global',
     '@david:acter.global',
     '@patricia:acter.global',
   ],
-  isDm: false,
-  isBookmarked: false,
-  unreadNotificationCount: 2,
-  unreadMentions: 0,
-  unreadMessages: 2,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@robert:acter.global',
     mockOriginServerTs: 1744010166000, // April 7, 2025
@@ -114,17 +105,15 @@ final mockChatItem4 = createMockChatItem(
   roomId: 'mock-room-4',
   displayName: 'Design Review',
   notificationMode: 'muted',
+  unreadNotificationCount: 2,
+  unreadMessages: 2,
   activeMembersIds: [
     '@emma:acter.global',
     '@christopher:acter.global',
     '@daniel:acter.global',
     '@james:acter.global',
   ],
-  isDm: false,
   isBookmarked: true,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emma:acter.global',
     mockOriginServerTs: 1743923766000, // April 6, 2025
@@ -137,17 +126,12 @@ final mockChatItem4 = createMockChatItem(
 final mockChatItem5 = createMockChatItem(
   roomId: 'mock-room-5',
   displayName: 'Michael, Kumarpalsinh & Ben',
-  notificationMode: 'all',
   activeMembersIds: [
     '@michael:acter.global',
     '@kumarpalsinh:acter.global',
     '@ben:acter.global',
   ],
   isDm: true,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@michael:acter.global',
     mockOriginServerTs: 1743837366000, // April 5, 2025
@@ -160,13 +144,8 @@ final mockChatItem5 = createMockChatItem(
 final mockChatItem6 = createMockChatItem(
   roomId: 'mock-room-6',
   displayName: 'Sarah Wilson',
-  notificationMode: 'all',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@sarah:acter.global',
     mockOriginServerTs: 1743750966000, // April 4, 2025
@@ -180,18 +159,12 @@ final mockChatItem6 = createMockChatItem(
 final mockChatItem7 = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
-  notificationMode: 'all',
   activeMembersIds: [
     '@jennifer:acter.global',
     '@james:acter.global',
     '@patricia:acter.global',
     '@david:acter.global',
   ],
-  isDm: false,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@jennifer:acter.global',
     mockOriginServerTs: 1743664566000, // April 3, 2025
@@ -202,13 +175,9 @@ final mockChatItem7 = createMockChatItem(
 final mockChatItem8 = createMockChatItem(
   roomId: 'mock-room-8',
   displayName: 'Lisa Park',
-  notificationMode: 'all',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
   isBookmarked: true,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@lisa:acter.global',
     mockOriginServerTs: 1743578166000, // April 2, 2025
@@ -221,18 +190,13 @@ final mockChatItem8 = createMockChatItem(
 final mockChatItem9 = createMockChatItem(
   roomId: 'mock-room-9',
   displayName: 'Team Updates',
-  notificationMode: 'all',
   activeMembersIds: [
     '@emily:acter.global',
     '@alex:acter.global',
     '@christopher:acter.global',
     '@daniel:acter.global',
   ],
-  isDm: false,
   isBookmarked: true,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emily:acter.global',
     mockOriginServerTs: 1743491766000, // April 1, 2025
@@ -245,17 +209,12 @@ final mockChatItem9 = createMockChatItem(
 final mockChatItem10 = createMockChatItem(
   roomId: 'mock-room-10',
   displayName: 'Emma, Kumarpalsinh & Ben',
-  notificationMode: 'all',
   activeMembersIds: [
     '@emma:acter.global',
     '@kumarpalsinh:acter.global',
     '@ben:acter.global',
   ],
   isDm: true,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@emma:acter.global',
     mockOriginServerTs: 1743405366000, // March 31, 2025
@@ -269,13 +228,8 @@ final mockChatItem10 = createMockChatItem(
 final mockChatItem11 = createMockChatItem(
   roomId: 'mock-room-11',
   displayName: 'Alex Thompson',
-  notificationMode: 'all',
   activeMembersIds: ['@alex:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@alex:acter.global',
     mockOriginServerTs: 1743318966000, // March 30, 2025
@@ -288,18 +242,12 @@ final mockChatItem11 = createMockChatItem(
 final mockChatItem12 = createMockChatItem(
   roomId: 'mock-room-12',
   displayName: 'Marketing Team',
-  notificationMode: 'all',
   activeMembersIds: [
     '@christopher:acter.global',
     '@daniel:acter.global',
     '@james:acter.global',
     '@patricia:acter.global',
   ],
-  isDm: false,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@christopher:acter.global',
     mockOriginServerTs: 1743232566000, // March 29, 2025
@@ -312,13 +260,8 @@ final mockChatItem12 = createMockChatItem(
 final mockChatItem13 = createMockChatItem(
   roomId: 'mock-room-13',
   displayName: 'Lisa Park',
-  notificationMode: 'all',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@lisa:acter.global',
     mockOriginServerTs: 1743146166000, // March 28, 2025
@@ -331,18 +274,12 @@ final mockChatItem13 = createMockChatItem(
 final mockChatItem14 = createMockChatItem(
   roomId: 'mock-room-14',
   displayName: 'Product Feedback',
-  notificationMode: 'all',
   activeMembersIds: [
     '@daniel:acter.global',
     '@james:acter.global',
     '@patricia:acter.global',
     '@david:acter.global',
   ],
-  isDm: false,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@daniel:acter.global',
     mockOriginServerTs: 1743059766000, // March 27, 2025
@@ -353,13 +290,8 @@ final mockChatItem14 = createMockChatItem(
 final mockChatItem15 = createMockChatItem(
   roomId: 'mock-room-15',
   displayName: 'David Miller',
-  notificationMode: 'all',
   activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  isBookmarked: false,
-  unreadNotificationCount: 0,
-  unreadMentions: 0,
-  unreadMessages: 0,
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@david:acter.global',
     mockOriginServerTs: 1742973366000, // March 26, 2025
