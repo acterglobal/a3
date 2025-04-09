@@ -43,6 +43,14 @@ final List<MockConvo> mockConvoList = [
     mockNumUnreadNotificationCount: 4,
     mockNumUnreadMentions: 2,
     mockNumUnreadMessages: 2,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-1',
+        mockSenderId: 'mock-sender-1',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-2',
@@ -51,12 +59,40 @@ final List<MockConvo> mockConvoList = [
     mockNumUnreadNotificationCount: 1,
     mockNumUnreadMentions: 1,
     mockNumUnreadMessages: 1,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-2',
+        mockSenderId: 'mock-sender-2',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
-  MockConvo(mockConvoId: 'mock-room-3', mockIsDm: true, mockIsBookmarked: true),
+  MockConvo(
+    mockConvoId: 'mock-room-3',
+    mockIsDm: true,
+    mockIsBookmarked: true,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-3',
+        mockSenderId: 'mock-sender-3',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
+  ),
   MockConvo(
     mockConvoId: 'mock-room-4',
     mockIsDm: false,
     mockIsBookmarked: false,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-4',
+        mockSenderId: 'mock-sender-4',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-5',
@@ -65,30 +101,76 @@ final List<MockConvo> mockConvoList = [
     mockNumUnreadNotificationCount: 3,
     mockNumUnreadMentions: 3,
     mockNumUnreadMessages: 3,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-5',
+        mockSenderId: 'mock-sender-5',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-6',
     mockIsDm: false,
     mockIsBookmarked: false,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-6',
+        mockSenderId: 'mock-sender-6',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-7',
     mockIsDm: false,
     mockIsBookmarked: false,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-7',
+        mockSenderId: 'mock-sender-7',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-8',
     mockIsDm: true,
     mockIsBookmarked: false,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-8',
+        mockSenderId: 'mock-sender-8',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-9',
     mockIsDm: false,
     mockIsBookmarked: false,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-9',
+        mockSenderId: 'mock-sender-9',
+        mockOriginServerTs: 1744018801000,
+        mockMsgContent: MockMsgContent(),
+      ),
+    ),
   ),
   MockConvo(
     mockConvoId: 'mock-room-10',
     mockIsDm: false,
     mockIsBookmarked: false,
+    mockTimelineItem: MockTimelineItem(
+      mockTimelineEventItem: MockTimelineEventItem(
+        mockEventId: 'mock-event-10',
+        mockSenderId: 'mock-sender-10',
+      ),
+    ),
   ),
 ];
