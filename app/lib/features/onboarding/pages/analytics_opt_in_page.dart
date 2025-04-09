@@ -1,19 +1,17 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/main.dart';
+import 'package:acter/config/env.g.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 const basicTelemetryPref = 'basicTelemetry';
 const researchPref = 'research';
-
-final _log = Logger('AnalyticsOptInPage');
 
 class AnalyticsOptInWidget extends ConsumerWidget {
   static const continueBtn = Key('analytics-continue-btn');
@@ -42,7 +40,7 @@ class AnalyticsOptInWidget extends ConsumerWidget {
                 const SizedBox(height: 10),
                 _buildDescriptionText(lang, textTheme),
                 const SizedBox(height: 30),
-                _buildMoreDetails(context, lang, textTheme),
+                _buildMoreDetails(context, lang, textTheme, ref),
                 const SizedBox(height: 10),
                 _buildCrashAnalytics(context, ref, textTheme),
                 const SizedBox(height: 30),
@@ -91,19 +89,18 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     BuildContext context,
     L10n lang,
     TextTheme textTheme,
+    WidgetRef ref,
   ) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
-      onTap: () async {
-        await _handleMoreDetailsTap(context);
-      },
-
+      onTap: () => openLink(ref: ref, target: Env.analyticsMoreDetailsUrl, lang: L10n.of(context)),
       child: Text(
         lang.analyticsMoreDetails,
         style: textTheme.bodyMedium?.copyWith(
           decoration: TextDecoration.underline,
-          decorationColor: Theme.of(context).colorScheme.primary,
+          decorationColor: primaryColor,
           decorationThickness: 2,
-          color: Theme.of(context).colorScheme.primary,
+          color: primaryColor,
         ),
         textAlign: TextAlign.center,
       ),
@@ -300,17 +297,5 @@ class AnalyticsOptInWidget extends ConsumerWidget {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
-  }
-
-  /// Handles the tap action for the "More Details" link.
-  Future<void> _handleMoreDetailsTap(BuildContext context) async {
-    final url = Uri.parse(
-      'https://acter.global/faq/in-app-tracking-analytics/',
-    );
-    try {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      _log.severe('Could not launch URL: $e');
-    }
   }
 }
