@@ -1,6 +1,6 @@
-import 'package:acter/features/chat_ui_showcase/models/mock_convo.dart';
-import 'package:acter/features/chat_ui_showcase/models/mock_room.dart';
-import 'package:acter/features/chat_ui_showcase/models/mock_user.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_room.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_user.dart';
 
 class MockChatItem {
   final String roomId;
