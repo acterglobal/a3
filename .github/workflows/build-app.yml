@@ -34,9 +34,6 @@ on:
         required: false
         type: string
 
-env:
-  IOS_XCODE_TARGET: 16.1
-
 jobs:
   build-app:
     environment: release
@@ -50,6 +47,7 @@ jobs:
       APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       BUNDLE_ID: 'global.acter.a3'
+      IOS_XCODE_TARGET: '16.1'
 
     strategy:
       matrix:
