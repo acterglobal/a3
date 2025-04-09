@@ -25,7 +25,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Verify initial state of toggles
@@ -52,7 +52,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -113,7 +113,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -163,7 +163,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -230,7 +230,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -288,7 +288,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => false),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -347,7 +347,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -419,14 +419,14 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
       await tester.pumpAndSettle();
 
       // Find the continue button
-      final continueButton = find.byKey(AnalyticsOptInPage.continueBtn);
+      final continueButton = find.byKey(AnalyticsOptInWidget.continueBtn);
       expect(
         continueButton,
         findsOneWidget,
@@ -450,7 +450,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
@@ -477,7 +477,7 @@ void main() {
           allowSentryReportingProvider.overrideWith((ref) => true),
           allowMatomoAnalyticsProvider.overrideWith((ref) => true),
         ],
-        child: AnalyticsOptInPage(),
+        child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete

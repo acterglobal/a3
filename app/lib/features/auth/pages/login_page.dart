@@ -5,6 +5,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/utils/device_permissions/notification.dart';
+import 'package:acter/common/utils/device_permissions/telemetry_analytics.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
@@ -217,7 +218,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!mounted) return;
       await handleCalendarPermission(context);
       if (!mounted) return;
-      navigator.goNamed( Routes.analyticsOptIn.name);
+      handleAnalyticsOptIn(context);
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));

@@ -17,10 +17,10 @@ const researchPref = 'research';
 
 final _log = Logger('AnalyticsOptInPage');
 
-class AnalyticsOptInPage extends ConsumerWidget {
+class AnalyticsOptInWidget extends ConsumerWidget {
   static const continueBtn = Key('analytics-continue-btn');
 
-  const AnalyticsOptInPage({super.key});
+  const AnalyticsOptInWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -283,7 +283,7 @@ class AnalyticsOptInPage extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          key: AnalyticsOptInPage.continueBtn,
+          key: AnalyticsOptInWidget.continueBtn,
           onPressed: () => context.goNamed(Routes.main.name),
           child: Text(
             lang.wizzardContinue,
