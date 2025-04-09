@@ -91,21 +91,7 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderList(BuildContext context, List<String> chats) {
-    // return _AnimatedChatsList(entries: chats, onSelected: onSelected);
-    return ListView.separated(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      separatorBuilder: (context, index) {
-        return Divider(color: Theme.of(context).unselectedWidgetColor);
-      },
-      itemCount: chats.length,
-      itemBuilder: (context, index) {
-        final roomId = chats[index];
-        return ChatItemWidget(
-          roomId: roomId,
-          onTap: () => onSelected?.call(roomId),
-        );
-      },
-    );
+    return _AnimatedChatsList(entries: chats, onSelected: onSelected);
   }
 }
 
