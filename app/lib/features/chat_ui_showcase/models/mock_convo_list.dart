@@ -19,20 +19,117 @@ final List<MockRoom> mockRoomList = [
     mockRoomId: 'mock-room-1',
     mockDisplayName: 'Mock Room 1',
     mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+    ],
   ),
   MockRoom(
     mockRoomId: 'mock-room-2',
     mockDisplayName: 'Mock Room 2',
     mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
   ),
-  MockRoom(mockRoomId: 'mock-room-3', mockDisplayName: 'Mock Room 3'),
-  MockRoom(mockRoomId: 'mock-room-4', mockDisplayName: 'Mock Room 4'),
-  MockRoom(mockRoomId: 'mock-room-5', mockDisplayName: 'Mock Room 5'),
-  MockRoom(mockRoomId: 'mock-room-6', mockDisplayName: 'Mock Room 6'),
-  MockRoom(mockRoomId: 'mock-room-7', mockDisplayName: 'Mock Room 7'),
-  MockRoom(mockRoomId: 'mock-room-8', mockDisplayName: 'Mock Room 8'),
-  MockRoom(mockRoomId: 'mock-room-9', mockDisplayName: 'Mock Room 9'),
-  MockRoom(mockRoomId: 'mock-room-10', mockDisplayName: 'Mock Room 10'),
+  MockRoom(
+    mockRoomId: 'mock-room-3',
+    mockDisplayName: 'Mock Room 3',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-4',
+    mockDisplayName: 'Mock Room 4',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-5',
+    mockDisplayName: 'Mock Room 5',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-6',
+    mockDisplayName: 'Mock Room 6',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-6',
+    mockDisplayName: 'Mock Room 6',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-7',
+    mockDisplayName: 'Mock Room 7',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-8',
+    mockDisplayName: 'Mock Room 8',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-9',
+    mockDisplayName: 'Mock Room 9',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
+  MockRoom(
+    mockRoomId: 'mock-room-10',
+    mockDisplayName: 'Mock Room 10',
+    mockNotificationMode: 'muted',
+    mockActiveMembersIds: [
+      '@mock-member-1:acter.global',
+      '@mock-member-2:acter.global',
+      '@mock-member-3:acter.global',
+      '@mock-member-4:acter.global',
+    ],
+  ),
 ];
 
 final List<MockConvo> mockConvoList = [
@@ -46,7 +143,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-1',
-        mockSenderId: 'mock-sender-1',
+        mockSenderId: '@mock-sender-1:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hello, how are you?'),
       ),
@@ -62,7 +159,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-2',
-        mockSenderId: 'mock-sender-2',
+        mockSenderId: '@mock-sender-2:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -75,7 +172,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-3',
-        mockSenderId: 'mock-sender-3',
+        mockSenderId: '@mock-sender-3:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -88,7 +185,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-4',
-        mockSenderId: 'mock-sender-4',
+        mockSenderId: '@mock-sender-4:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -96,7 +193,7 @@ final List<MockConvo> mockConvoList = [
   ),
   MockConvo(
     mockConvoId: 'mock-room-5',
-    mockIsDm: true,
+    mockIsDm: false,
     mockIsBookmarked: true,
     mockNumUnreadNotificationCount: 3,
     mockNumUnreadMentions: 3,
@@ -104,7 +201,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-5',
-        mockSenderId: 'mock-sender-5',
+        mockSenderId: '@mock-sender-5:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -112,12 +209,12 @@ final List<MockConvo> mockConvoList = [
   ),
   MockConvo(
     mockConvoId: 'mock-room-6',
-    mockIsDm: false,
+    mockIsDm: true,
     mockIsBookmarked: false,
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-6',
-        mockSenderId: 'mock-sender-6',
+        mockSenderId: '@mock-sender-6:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -130,7 +227,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-7',
-        mockSenderId: 'mock-sender-7',
+        mockSenderId: '@mock-sender-7:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -138,12 +235,12 @@ final List<MockConvo> mockConvoList = [
   ),
   MockConvo(
     mockConvoId: 'mock-room-8',
-    mockIsDm: true,
+    mockIsDm: false,
     mockIsBookmarked: false,
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-8',
-        mockSenderId: 'mock-sender-8',
+        mockSenderId: '@mock-sender-8:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -156,7 +253,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-9',
-        mockSenderId: 'mock-sender-9',
+        mockSenderId: '@mock-sender-9:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
@@ -169,7 +266,7 @@ final List<MockConvo> mockConvoList = [
     mockTimelineItem: MockTimelineItem(
       mockTimelineEventItem: MockTimelineEventItem(
         mockEventId: 'mock-event-10',
-        mockSenderId: 'mock-sender-10',
+        mockSenderId: '@mock-sender-10:acter.global',
         mockOriginServerTs: 1744018801000,
         mockMsgContent: MockMsgContent(mockBody: 'Hey, whats up?'),
       ),
