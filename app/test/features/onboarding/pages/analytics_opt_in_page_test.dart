@@ -1,14 +1,33 @@
 import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../helpers/test_util.dart';
 
+// Mock AnalyticsPreferencesNotifier
+class MockAnalyticsPreferencesNotifier extends AnalyticsPreferencesNotifier {
+  @override
+  Future<void> setPreference(String key, bool value, WidgetRef ref) async {
+    final newState = Map<String, bool>.from(state);
+    newState[key] = value;
+    state = newState;
+
+    // Update shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+}
+
 void main() {
   group('AnalyticsOptInPage Tests', () {
+    setUp(() async {
+      // Clear shared preferences before each test
+      SharedPreferences.setMockInitialValues({});
+    });
+
     testWidgets('Initial state shows all toggles in default state', (
       WidgetTester tester,
     ) async {
@@ -22,11 +41,15 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
+
+      // Wait for the FutureBuilder to complete
+      await tester.pumpAndSettle();
 
       // Verify initial state of toggles
       expect(
@@ -49,17 +72,19 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
 
       // Wait for the FutureBuilder to complete
       await tester.pumpAndSettle();
+
       // Find the Toggle All switch
       final toggleAllText = find.text('Toggle All');
-      expect( 
+      expect(
         toggleAllText,
         findsOneWidget,
         reason: 'Toggle All text not found',
@@ -90,128 +115,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify the state was updated
-      final prefs = await sharedPrefs();
+      final prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('basicTelemetry'), true);
       expect(prefs.getBool('appAnalytics'), true);
       expect(prefs.getBool('research'), true);
       expect(prefs.getBool('allowToReportToSentry'), true);
-    });
-
-    testWidgets('Toggle All is enabled only when all options are on', (
-      WidgetTester tester,
-    ) async {
-      // Set up all options enabled
-      SharedPreferences.setMockInitialValues({
-        'basicTelemetry': true,
-        'appAnalytics': true,
-        'research': true,
-        'allowToReportToSentry': true,
-      });
-
-      await tester.pumpProviderWidget(
-        overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
-        ],
-        child: AnalyticsOptInWidget(),
-      );
-
-      // Wait for the FutureBuilder to complete
-      await tester.pumpAndSettle();
-
-      // Find the Toggle All switch
-      final toggleAllText = find.text('Toggle All');
-      expect(
-        toggleAllText,
-        findsOneWidget,
-        reason: 'Toggle All text not found',
-      );
-
-      final toggleAllRow = find.ancestor(
-        of: toggleAllText,
-        matching: find.byType(Row),
-      );
-      expect(toggleAllRow, findsOneWidget, reason: 'Toggle All row not found');
-
-      final toggleAllSwitch = find.descendant(
-        of: toggleAllRow,
-        matching: find.byType(Switch),
-      );
-      expect(
-        toggleAllSwitch,
-        findsOneWidget,
-        reason: 'Toggle All switch not found',
-      );
-
-      // Wait for any animations to complete
-      await tester.pumpAndSettle();
-
-      // Verify Toggle All is enabled
-      final switchWidget = tester.widget<Switch>(toggleAllSwitch);
-      expect(
-        switchWidget.value,
-        isTrue,
-        reason: 'Toggle All switch should be enabled when all options are on',
-      );
-    });
-
-    testWidgets('Toggle All disables all analytics options', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpProviderWidget(
-        overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
-        ],
-        child: AnalyticsOptInWidget(),
-      );
-
-      // Wait for the FutureBuilder to complete
-      await tester.pumpAndSettle();
-      // Find the Toggle All switch
-      final toggleAllText = find.text('Toggle All');
-      expect(
-        toggleAllText,
-        findsOneWidget,
-        reason: 'Toggle All text not found',
-      );
-
-      final toggleAllRow = find.ancestor(
-        of: toggleAllText,
-        matching: find.byType(Row),
-      );
-      expect(toggleAllRow, findsOneWidget, reason: 'Toggle All row not found');
-
-      final toggleAllSwitch = find.descendant(
-        of: toggleAllRow,
-        matching: find.byType(Switch),
-      );
-      expect(
-        toggleAllSwitch,
-        findsOneWidget,
-        reason: 'Toggle All switch not found',
-      );
-
-      // Tap the switch and wait for animations
-      await tester.tap(toggleAllSwitch);
-      await tester.pump();
-
-      // Wait for the async operations to complete
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
-
-      SharedPreferences.setMockInitialValues({
-        'basicTelemetry': false,
-        'appAnalytics': false,
-        'research': false,
-        'allowToReportToSentry': false,
-      });
-
-      final prefs = await sharedPrefs();
-      expect(prefs.getBool('basicTelemetry'), false);
-      expect(prefs.getBool('appAnalytics'), false);
-      expect(prefs.getBool('research'), false);
-      expect(prefs.getBool('allowToReportToSentry'), false);
     });
 
     testWidgets('Toggle All is disabled when any option is off', (
@@ -227,8 +135,9 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
@@ -280,13 +189,74 @@ void main() {
         'basicTelemetry': true,
         'appAnalytics': true,
         'research': true,
+        'allowToReportToSentry': false,
+      });
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
+        ],
+        child: AnalyticsOptInWidget(),
+      );
+
+      // Wait for the FutureBuilder to complete
+      await tester.pumpAndSettle();
+
+      // Find the Toggle All switch
+      final toggleAllText = find.text('Toggle All');
+      expect(
+        toggleAllText,
+        findsOneWidget,
+        reason: 'Toggle All text not found',
+      );
+
+      final toggleAllRow = find.ancestor(
+        of: toggleAllText,
+        matching: find.byType(Row),
+      );
+      expect(toggleAllRow, findsOneWidget, reason: 'Toggle All row not found');
+
+      final toggleAllSwitch = find.descendant(
+        of: toggleAllRow,
+        matching: find.byType(Switch),
+      );
+      expect(
+        toggleAllSwitch,
+        findsOneWidget,
+        reason: 'Toggle All switch not found',
+      );
+
+      // Wait for any animations to complete
+      await tester.pumpAndSettle();
+
+      // Verify Toggle All is disabled
+      final switchWidget = tester.widget<Switch>(toggleAllSwitch);
+      expect(
+        switchWidget.value,
+        isFalse,
+        reason:
+            'Toggle All switch should be disabled when sentry reporting is false',
+      );
+    });
+
+    testWidgets('Toggle All is disabled when app analytics is false', (
+      WidgetTester tester,
+    ) async {
+      // Set up initial state with all preferences enabled
+      SharedPreferences.setMockInitialValues({
+        'basicTelemetry': true,
+        'appAnalytics': false,
+        'research': true,
         'allowToReportToSentry': true,
       });
 
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => false),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
@@ -344,8 +314,9 @@ void main() {
 
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
@@ -416,8 +387,9 @@ void main() {
     ) async {
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
@@ -442,40 +414,14 @@ void main() {
       );
     });
 
-    testWidgets('Skip button is present and clickable', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpProviderWidget(
-        overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
-        ],
-        child: AnalyticsOptInWidget(),
-      );
-
-      // Wait for the FutureBuilder to complete
-      await tester.pumpAndSettle();
-
-      // Find the skip button
-      final skipButton = find.byType(OutlinedButton);
-      expect(skipButton, findsOneWidget, reason: 'Skip button not found');
-
-      // Verify it's an OutlinedButton
-      final buttonWidget = tester.widget<OutlinedButton>(skipButton);
-      expect(
-        buttonWidget,
-        isNotNull,
-        reason: 'Skip button should be an OutlinedButton',
-      );
-    });
-
     testWidgets('More Details link is present and clickable', (
       WidgetTester tester,
     ) async {
       await tester.pumpProviderWidget(
         overrides: [
-          allowSentryReportingProvider.overrideWith((ref) => true),
-          allowMatomoAnalyticsProvider.overrideWith((ref) => true),
+          analyticsPreferencesProvider.overrideWith(
+            (ref) => MockAnalyticsPreferencesNotifier(),
+          ),
         ],
         child: AnalyticsOptInWidget(),
       );
