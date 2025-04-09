@@ -23,7 +23,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
     final roomId = arg;
 
     // if we are in chat showcase mode, return a mock convo
-    if (includeChatShowcase) {
+    if (includeChatShowcase && mockChatList.contains(arg)) {
       return mockConvoList.firstWhere((convo) => convo.getRoomIdStr() == arg);
     }
 
