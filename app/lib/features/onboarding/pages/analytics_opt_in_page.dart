@@ -1,14 +1,12 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/main.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -38,6 +36,7 @@ class AnalyticsOptInWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _buildIcon(context),
                 const SizedBox(height: 20),
                 _buildTitleText(context, lang, textTheme),
                 const SizedBox(height: 10),
@@ -53,6 +52,16 @@ class AnalyticsOptInWidget extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildIcon(BuildContext context) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.close),
       ),
     );
   }
@@ -279,23 +288,17 @@ class AnalyticsOptInWidget extends ConsumerWidget {
 
   // Action button to proceed
   Widget _buildActionButton(BuildContext context, L10n lang) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ActerPrimaryActionButton(
-          key: AnalyticsOptInWidget.continueBtn,
-          onPressed: () => context.goNamed(Routes.main.name),
-          child: Text(
-            lang.wizzardContinue,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ),
-        const SizedBox(height: 15),
-        OutlinedButton(
-          onPressed: () => context.goNamed(Routes.main.name),
-          child: Text(lang.skip),
-        ),
-      ],
+    return ActerPrimaryActionButton(
+      key: AnalyticsOptInWidget.continueBtn,
+      onPressed: () {
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+      child: Text(
+        lang.wizzardContinue,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
     );
   }
 
