@@ -7,7 +7,6 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
