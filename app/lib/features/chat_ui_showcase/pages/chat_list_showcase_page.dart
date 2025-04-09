@@ -27,7 +27,7 @@ class ChatListShowcasePage extends StatelessWidget {
       },
       itemCount: mockChatList.length,
       itemBuilder: (context, index) {
-        return ChatItemWidget(roomId: mockChatList[index]);
+        return ChatItemWidget(roomId: mockChatList[index].roomId);
       },
     );
   }
