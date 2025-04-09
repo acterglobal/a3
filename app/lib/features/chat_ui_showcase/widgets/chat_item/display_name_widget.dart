@@ -12,6 +12,8 @@ class DisplayNameWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final displayName = _getDisplayName(ref);
 
+    if (displayName.isEmpty) return const SizedBox.shrink();
+
     return Text(
       displayName,
       maxLines: 1,

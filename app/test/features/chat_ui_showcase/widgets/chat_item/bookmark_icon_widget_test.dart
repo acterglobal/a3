@@ -3,8 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
-import '../../../../../helpers/test_util.dart';
+import '../../../../helpers/test_util.dart';
 
 void main() {
   group('BookmarkIconWidget Tests', () {
@@ -13,10 +12,7 @@ void main() {
       bool isBookmarked = true,
     }) async {
       await tester.pumpProviderWidget(
-        overrides: [
-          isConvoBookmarked.overrideWith((a, b) => isBookmarked),
-          roomDisplayNameProvider.overrideWith((a, b) => 'Space Name'),
-        ],
+        overrides: [isConvoBookmarked.overrideWith((a, b) => isBookmarked)],
         child: BookmarkIconWidget(roomId: 'mock-room-1'),
       );
       // Wait for the async provider to load
