@@ -21,7 +21,7 @@ class ChatItemWidget extends ConsumerWidget {
   const ChatItemWidget({
     super.key,
     required this.roomId,
-    this.showSelectedIndication = false,
+    this.showSelectedIndication = true,
     this.onTap,
     this.animation,
   });
