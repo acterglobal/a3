@@ -1,0 +1,1 @@
+- [Fix] - Enable Notifications and Calendar Settings for Desktop by Default.
