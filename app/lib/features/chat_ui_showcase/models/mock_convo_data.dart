@@ -1,15 +1,18 @@
 import 'package:acter/features/chat_ui_showcase/models/mock_convo.dart';
 import 'package:acter/features/chat_ui_showcase/models/mock_room.dart';
+import 'package:acter/features/chat_ui_showcase/models/mock_user.dart';
 
 class MockChatItem {
   final String roomId;
   final MockRoom mockRoom;
   final MockConvo mockConvo;
+  final List<MockUser>? typingUsers;
 
   MockChatItem({
     required this.roomId,
     required this.mockRoom,
     required this.mockConvo,
+    required this.typingUsers,
   });
 }
 
@@ -23,10 +26,12 @@ MockChatItem createMockChatItem({
   int? unreadNotificationCount,
   int? unreadMentions,
   int? unreadMessages,
+  List<MockUser>? typingUsers,
   MockTimelineEventItem? timelineEventItem,
 }) {
   return MockChatItem(
     roomId: roomId,
+    typingUsers: typingUsers,
     mockRoom: MockRoom(
       mockRoomId: roomId,
       mockDisplayName: displayName,
@@ -76,6 +81,7 @@ final mockChatItem2 = createMockChatItem(
   ],
   unreadNotificationCount: 2,
   unreadMessages: 2,
+  typingUsers: [MockUser(mockDisplayName: 'Emily')],
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@sarah:acter.global',
     mockOriginServerTs: 1744096566000, // April 8, 2025
@@ -146,6 +152,7 @@ final mockChatItem6 = createMockChatItem(
   displayName: 'Sarah Wilson',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
+  typingUsers: [MockUser(mockDisplayName: 'Sarah')],
   timelineEventItem: MockTimelineEventItem(
     mockSenderId: '@sarah:acter.global',
     mockOriginServerTs: 1743750966000, // April 4, 2025
@@ -159,6 +166,11 @@ final mockChatItem6 = createMockChatItem(
 final mockChatItem7 = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
+  typingUsers: [
+    MockUser(mockDisplayName: 'Jennifer'),
+    MockUser(mockDisplayName: 'James'),
+    MockUser(mockDisplayName: 'David'),
+  ],
   activeMembersIds: [
     '@jennifer:acter.global',
     '@james:acter.global',
