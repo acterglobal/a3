@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/display_name_widget.dart';
@@ -13,19 +14,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatItemWidget extends ConsumerWidget {
   final String roomId;
+  final bool showSelectedIndication;
   final Function()? onTap;
   final Animation<double>? animation;
 
   const ChatItemWidget({
     super.key,
     required this.roomId,
+    this.showSelectedIndication = false,
     this.onTap,
     this.animation,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final inner = ListTile(
+    final inner = _buildChatItem(context, ref);
+
+    return animation != null
+        ? SizeTransition(sizeFactor: animation!, child: inner)
+        : inner;
+  }
+
+  Widget _buildChatItem(BuildContext context, WidgetRef ref) {
+    final isChatSelected =
+        showSelectedIndication && roomId == ref.watch(selectedChatIdProvider);
+
+    return ListTile(
+      selected: isChatSelected,
+      selectedTileColor: Theme.of(context).colorScheme.primary,
       key: Key('chat-item-widget-$roomId'),
       dense: true,
       contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -34,10 +50,6 @@ class ChatItemWidget extends ConsumerWidget {
       title: _buildChatTitle(context),
       subtitle: _buildChatSubtitle(context, ref),
     );
-
-    return animation != null
-        ? SizeTransition(sizeFactor: animation!, child: inner)
-        : inner;
   }
 
   Widget _buildChatTitle(BuildContext context) {
