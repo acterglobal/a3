@@ -16,13 +16,15 @@ tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
 dart = []
 uniffi = ["dep:uniffi", "dep:thiserror"]
+ffi-next = ["dep:uniffi-dart"]
 proxyman = ["dep:reqwest", "dep:openssl"]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }
 # ffi-gen = { path = "../../../ffi-gen" }
 cbindgen = "0.28.0"
-uniffi = { version = "0.29.0", features = [ "build" ] }
+uniffi = { version = "0.29.1", features = [ "build" ] }
+uniffi-dart = { workspace = true, features = ["build"], optional = true }
 
 [dependencies]
 anyhow = "1.0.79"
@@ -62,7 +64,7 @@ urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"] }
 
 # for uniffi support
-uniffi = { version = "0.26.1", features = ["cli"], optional = true }
+uniffi = { version = "0.29.1", features = ["cli"], optional = true }
 thiserror = { version = "2.0.11", optional = true }
 
 # for proxyman support
@@ -78,6 +80,9 @@ console-subscriber = { version = "0.4.1", optional = true }
 # not used directly but needed to enable specific features from ruma
 ruma = { workspace = true, features = ["api", "html", "rand", "unstable-msc2448", "unstable-msc2965", "unstable-msc3930", "unstable-msc3245-v1-compat"] }
 ruma-common = { workspace = true, features = ["client"] }
+
+# for ffi-next support
+# uniffi-dart = { workspace = true, optional = true }
 
 [dev-dependencies]
 tempfile = "3.9.0"
