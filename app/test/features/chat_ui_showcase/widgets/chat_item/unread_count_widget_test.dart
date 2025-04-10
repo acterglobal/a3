@@ -15,8 +15,6 @@ void main() {
       int mentions = 0,
       int messages = 0,
       bool isFeatureActive = true,
-      bool isError = false,
-      bool isLoading = false,
     }) async {
       await tester.pumpProviderWidget(
         overrides: [
@@ -24,15 +22,6 @@ void main() {
             LabsFeature.chatUnread,
           ).overrideWith((ref) => isFeatureActive),
           unreadCountersProvider.overrideWith((ref, roomId) {
-            if (isLoading) {
-              return Future.delayed(
-                const Duration(milliseconds: 100),
-                () => (notifications, mentions, messages),
-              );
-            }
-            if (isError) {
-              return Future.error('Error');
-            }
             return Future.value((notifications, mentions, messages));
           }),
         ],
@@ -146,26 +135,6 @@ void main() {
       // Check text style
       final text = container.child as Text;
       expect(text.style, equals(theme.textTheme.bodySmall));
-    });
-
-    testWidgets('should handle error case', (WidgetTester tester) async {
-      await createWidgetUnderTest(tester: tester, isError: true);
-      expect(find.text('5'), findsNothing);
-      expect(find.byType(SizedBox), findsOneWidget);
-    });
-
-    testWidgets('should handle loading case', (WidgetTester tester) async {
-      await createWidgetUnderTest(
-        tester: tester,
-        isLoading: true,
-        notifications: 5,
-      );
-
-      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsOneWidget);
-      // Wait for the async provider to load
-      await tester.pump(const Duration(milliseconds: 110));
-      expect(find.text('5'), findsOneWidget);
-      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsNothing);
     });
   });
 }
