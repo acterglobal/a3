@@ -6,8 +6,8 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
+import 'package:acter/common/widgets/html_editor/services/constants.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:collection/collection.dart';
@@ -92,8 +92,7 @@ extension ActerEditorStateHelpers on EditorState {
     return (processedText.trimRight(), mentionAttributes);
   }
 
-  void toMentionPills(String body, Node targetNode) {
-    String text = body;
+  void toMentionPills(String text, Node targetNode) {
     final userMatches = userMentionRegExp.allMatches(text);
     List<(int, int, String, String, MentionType)> allMentions = [];
 

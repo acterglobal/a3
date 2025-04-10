@@ -2,11 +2,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const userMentionMarker = '‖';
-final userMentionRegExp = RegExp(
-  r'\[@([^\]]+)\]\(https:\/\/matrix\.to\/#\/(@[^)]+)\)',
-);
-
 Future<void> saveMsgDraft(
   String text,
   String? htmlText,
