@@ -18,10 +18,10 @@ class ProfileUpdateWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
     String roomId = message.roomId.expect(
-      'failed to get room id of membership change',
+      'room id should be specified in custom message for profile change',
     );
     final metadata = message.metadata.expect(
-      'failed to get metadata of profile change',
+      'metadata should be specified in custom message for profile change',
     );
     String userId = metadata['userId'];
     final userName =

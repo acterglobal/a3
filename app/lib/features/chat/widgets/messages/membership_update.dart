@@ -18,7 +18,7 @@ class MembershipUpdateWidget extends ConsumerWidget {
     final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
     String roomId = message.roomId.expect(
-      'failed to get room id of membership change',
+      'room id should be specified in custom message for membership change',
     );
     String change = message.metadata?['change'];
     String senderId = message.author.id;
