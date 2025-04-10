@@ -190,14 +190,14 @@ impl TimelineEventItem {
                 me.event_type("m.room.encrypted".to_string());
             }
             SdkTimelineItemContent::MembershipChange(m) => {
-                info!("Edit event applies to a state event");
+                info!("Edit event applies to membership change event");
                 me.event_type("MembershipChange".to_string());
                 if let Ok(content) = MembershipContent::try_from(m) {
                     me.content(Some(TimelineEventContent::MembershipChange(content)));
                 }
             }
             SdkTimelineItemContent::ProfileChange(p) => {
-                info!("Edit event applies to a state event");
+                info!("Edit event applies to profile change event");
                 me.event_type("ProfileChange".to_string());
                 let content = ProfileContent::from(p);
                 me.content(Some(TimelineEventContent::ProfileChange(content)));
