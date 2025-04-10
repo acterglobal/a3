@@ -168,6 +168,8 @@ dependencies:
   android_intent_plus: ^5.2.2
   collection: ^1.18.0
   preload_page_view: ^0.2.0
+  # Matomo Analytics
+  matomo_tracker: ^5.1.0
 
 dev_dependencies:
   flutter_test:

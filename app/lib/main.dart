@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
@@ -33,7 +34,7 @@ void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
-    await _startAppInner(makeApp(), true);
+    await _startAppInner(makeApp(), true, true);
   }
 }
 
@@ -42,14 +43,18 @@ Widget makeApp() {
 }
 
 Future<void> startAppForTesting(Widget app) async {
-  // make sure our test isn’t distracted by the onboarding wizzards
+  // make sure our test isn't distracted by the onboarding wizzards
   setCreateOrJoinSpaceTutorialAsViewed();
   setBottomNavigationTutorialsAsViewed();
   setSpaceOverviewTutorialsAsViewed();
-  return await _startAppInner(app, false);
+  return await _startAppInner(app, false, false);
 }
 
-Future<void> _startAppInner(Widget app, bool withSentry) async {
+Future<void> _startAppInner(
+  Widget app,
+  bool withSentry,
+  bool withMatomo,
+) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
@@ -75,6 +80,12 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
     child: app,
   );
 
+  if (withMatomo) {
+    await MatomoTracker.instance.initialize(
+      siteId: Env.matomoSiteId,
+      url: Env.matomoUrl,
+    );
+  }
   if (withSentry) {
     await SentryFlutter.init((options) {
       // we use the dart-define default env for the default stuff.

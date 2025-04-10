@@ -9,9 +9,38 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final desktopFeaturesProvider = StateProvider<bool>((ref) => false);
 
-final allowSentryReportingProvider = FutureProvider(
-  (ref) => getCanReportToSentry(),
-);
+
+class AnalyticsPreferencesNotifier extends StateNotifier<Map<String, bool>> {
+  AnalyticsPreferencesNotifier() : super({}) {
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    final preferences = {
+      canReportSentry: await getAnalyticsPreference(canReportSentry),
+      matomoAnalytics: await getAnalyticsPreference(matomoAnalytics),
+      basicTelemetry: await getAnalyticsPreference(basicTelemetry),
+      research: await getAnalyticsPreference(research),
+    };
+    state = preferences;
+  }
+
+  Future<void> setPreference(String key, bool value, WidgetRef ref) async {
+    final newState = Map<String, bool>.from(state);
+    newState[key] = value;
+    state = newState;
+    await setAnalyticsPreference(key, value);
+    // Handle Matomo analytics separately
+    if (key == matomoAnalytics) {
+      await setMatomoAnalytics(value, ref);
+    }
+  }
+}
+
+final analyticsPreferencesProvider =
+    StateNotifierProvider<AnalyticsPreferencesNotifier, Map<String, bool>>(
+      (ref) => AnalyticsPreferencesNotifier(),
+    );
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
   (ref) => LocaleNotifier(),
