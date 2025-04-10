@@ -3,6 +3,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../helpers/test_util.dart';
 
@@ -11,9 +12,24 @@ void main() {
     Future<void> createWidgetUnderTest({
       required WidgetTester tester,
       bool isBookmarked = true,
+      bool isError = false,
+      bool isLoading = false,
     }) async {
       await tester.pumpProviderWidget(
-        overrides: [isConvoBookmarked.overrideWith((a, b) => isBookmarked)],
+        overrides: [
+          isConvoBookmarked.overrideWith((a, b) {
+            if (isLoading) {
+              return Future.delayed(
+                const Duration(milliseconds: 100),
+                () => isBookmarked,
+              );
+            }
+            if (isError) {
+              return Future.error('Error');
+            }
+            return Future.value(isBookmarked);
+          }),
+        ],
         child: BookmarkIconWidget(roomId: 'mock-room-1'),
       );
       // Wait for the async provider to load
@@ -33,6 +49,26 @@ void main() {
       await createWidgetUnderTest(tester: tester, isBookmarked: false);
       expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsNothing);
       expect(find.byType(SizedBox), findsOneWidget);
+    });
+
+    testWidgets('should handle error case', (WidgetTester tester) async {
+      await createWidgetUnderTest(tester: tester, isError: true);
+      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsNothing);
+      expect(find.byType(SizedBox), findsOneWidget);
+    });
+
+    testWidgets('should handle loading case', (WidgetTester tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        isLoading: true,
+        isBookmarked: true,
+      );
+      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsNothing);
+      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsOneWidget);
+      // Wait for the async provider to load
+      await tester.pump(const Duration(milliseconds: 110));
+      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsOneWidget);
+      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsNothing);
     });
   });
 }

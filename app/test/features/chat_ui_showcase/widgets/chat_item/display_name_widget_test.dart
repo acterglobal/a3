@@ -2,6 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat_ui_showcase/widgets/chat_item/display_name_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../helpers/test_util.dart';
 
 void main() {
@@ -10,10 +11,23 @@ void main() {
       required WidgetTester tester,
       required String displayName,
       TextStyle? style,
+      bool isError = false,
+      bool isLoading = false,
     }) async {
       await tester.pumpProviderWidget(
         overrides: [
-          roomDisplayNameProvider.overrideWith((a, b) => displayName),
+          roomDisplayNameProvider.overrideWith((a, b) {
+            if (isLoading) {
+              return Future.delayed(
+                const Duration(milliseconds: 100),
+                () => displayName,
+              );
+            }
+            if (isError) {
+              return Future.error('Error');
+            }
+            return displayName;
+          }),
         ],
         child: DisplayNameWidget(roomId: 'mock-room-1', style: style),
       );
@@ -27,14 +41,6 @@ void main() {
       await createWidgetUnderTest(tester: tester, displayName: 'Space Name');
       expect(find.text('Space Name'), findsOneWidget);
       expect(find.byType(SizedBox), findsNothing);
-    });
-
-    testWidgets('should show SizedBox when display name is empty', (
-      WidgetTester tester,
-    ) async {
-      await createWidgetUnderTest(tester: tester, displayName: '');
-      expect(find.text('Space Name'), findsNothing);
-      expect(find.byType(SizedBox), findsOneWidget);
     });
 
     testWidgets('should have maxLines set to 1', (WidgetTester tester) async {
@@ -78,6 +84,30 @@ void main() {
       );
       final textWidget = tester.widget<Text>(find.text('Space Name'));
       expect(textWidget.style, equals(customStyle));
+    });
+
+    testWidgets('should handle error case', (WidgetTester tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        displayName: 'Space Name',
+        isError: true,
+      );
+      expect(find.text('Space Name'), findsNothing);
+      expect(find.byType(SizedBox), findsOneWidget);
+    });
+
+    testWidgets('should handle loading case', (WidgetTester tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        displayName: 'Space Name',
+        isLoading: true,
+      );
+      expect(find.text('Space Name'), findsNothing);
+      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsOneWidget);
+      // Wait for the async provider to load
+      await tester.pump(const Duration(milliseconds: 110));
+      expect(find.text('Space Name'), findsOneWidget);
+      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsNothing);
     });
   });
 }
