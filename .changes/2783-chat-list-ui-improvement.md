@@ -1,1 +1,1 @@
-- [Improvement] : Improve chat list design
+- [Improvement] : Improve chat list design with better indication of mute, bookmark, notificiation count and other related data.
