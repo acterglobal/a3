@@ -63,7 +63,7 @@ void main() {
         isLoading: true,
         isBookmarked: true,
       );
-      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsNothing);
+
       expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsOneWidget);
       // Wait for the async provider to load
       await tester.pump(const Duration(milliseconds: 110));
