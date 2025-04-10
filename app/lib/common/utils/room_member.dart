@@ -127,14 +127,14 @@ String? getStateOnProfileChange(
       if (userId == myId) {
         return lang.chatProfileDisplayNameYouChanged(newVal);
       } else {
-        return lang.chatProfileDisplayNameOtherChanged(newVal, oldVal);
+        return lang.chatProfileDisplayNameOtherChanged(oldVal, newVal);
       }
     case 'Set':
       String newVal = metadata['displayName']['newVal'];
       if (userId == myId) {
         return lang.chatProfileDisplayNameYouSet(newVal);
       } else {
-        return lang.chatProfileDisplayNameOtherSet(newVal, userId);
+        return lang.chatProfileDisplayNameOtherSet(userId, newVal);
       }
     case 'Unset':
       if (userId == myId) {
