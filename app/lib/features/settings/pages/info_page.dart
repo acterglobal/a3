@@ -4,14 +4,11 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/main.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:crypto/crypto.dart';
@@ -49,8 +46,6 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
     final deviceId = ref.watch(deviceIdProvider).valueOrNull;
     final devIdDigest =
         deviceId != null ? sha1.convert(utf8.encode(deviceId)) : 'none';
-    final allowReportSending =
-        ref.watch(analyticsPreferencesProvider)[canReportSentry] ?? isNightly;
     return WithSidebar(
       sidebar: const SettingsPage(),
       child: Scaffold(
@@ -96,14 +91,6 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 ),
               ),
               tiles: <SettingsTile>[
-                SettingsTile.switchTile(
-                  initialValue: allowReportSending,
-                  onToggle: (newVal) {
-                    ref.read(analyticsPreferencesProvider.notifier).setPreference(canReportSentry, newVal, ref);
-                  },
-                  title: Text(lang.sendCrashReportsTitle),
-                  description: Text(lang.sendCrashReportsInfo),
-                ),
                 SettingsTile(
                   title: Text(lang.version, style: textTheme.bodyMedium),
                   value: const Text(Env.rageshakeAppVersion),

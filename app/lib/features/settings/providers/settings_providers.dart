@@ -1,42 +1,9 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
-import 'package:acter/common/utils/main.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class AnalyticsPreferencesNotifier extends StateNotifier<Map<String, bool>> {
-  AnalyticsPreferencesNotifier() : super({}) {
-    _loadPreferences();
-  }
-
-  Future<void> _loadPreferences() async {
-    final preferences = {
-      canReportSentry: await getAnalyticsPreference(canReportSentry),
-      matomoAnalytics: await getAnalyticsPreference(matomoAnalytics),
-      basicTelemetry: await getAnalyticsPreference(basicTelemetry),
-      research: await getAnalyticsPreference(research),
-    };
-    state = preferences;
-  }
-
-  Future<void> setPreference(String key, bool value, WidgetRef ref) async {
-    final newState = Map<String, bool>.from(state);
-    newState[key] = value;
-    state = newState;
-    await setAnalyticsPreference(key, value);
-    // Handle Matomo analytics separately
-    if (key == matomoAnalytics) {
-      await setMatomoAnalytics(value, ref);
-    } 
-  }
-}
-
-final analyticsPreferencesProvider =
-    StateNotifierProvider<AnalyticsPreferencesNotifier, Map<String, bool>>(
-      (ref) => AnalyticsPreferencesNotifier(),
-    );
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, String>(
   (ref) => LocaleNotifier(),
