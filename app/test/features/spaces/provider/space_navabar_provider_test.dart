@@ -45,7 +45,7 @@ void main() {
         expect(next, equals([TabEntry.overview, TabEntry.members]));
       });
 
-      test('shows only members if nothing exists', () async {
+      test('shows it even if only members exists', () async {
         // Override the allActivitiesProvider to return our mock activities
         container = ProviderContainer(
           overrides: [
@@ -56,7 +56,7 @@ void main() {
 
         await container.pump();
         final next = container.read(tabsProvider(testSpaceId));
-        expect(next, equals([TabEntry.members]));
+        expect(next, equals([TabEntry.overview, TabEntry.members]));
       });
 
       group('updates', () {
@@ -417,7 +417,7 @@ void main() {
         expect(next, contains(TabEntry.members));
       });
 
-      test('shows only members if nothing exists', () async {
+      test('shows overview and members even without a topic ', () async {
         // Override the allActivitiesProvider to return our mock activities
         container = ProviderContainer(
           overrides: [
@@ -428,7 +428,7 @@ void main() {
 
         await container.pump();
         final next = container.read(tabsProvider(testSpaceId));
-        expect(next, equals([TabEntry.members]));
+        expect(next, equals([TabEntry.overview, TabEntry.members]));
       });
     });
   });
