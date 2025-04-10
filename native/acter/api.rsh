@@ -1026,10 +1026,10 @@ object TimelineEventItem {
     fn message() -> Option<MsgContent>;
 
     /// covers some of m.room.member
-    fn membership_change() -> Option<MembershipChange>;
+    fn membership_content() -> Option<MembershipContent>;
 
     /// covers some of m.room.member
-    fn profile_change() -> Option<ProfileChange>;
+    fn profile_content() -> Option<ProfileContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -1123,7 +1123,7 @@ object MsgContent {
     fn url_previews() -> Vec<UrlPreview>;
 }
 
-object MembershipChange {
+object MembershipContent {
     /// The ID of the user whose profile changed.
     fn user_id() -> UserId;
 
@@ -1131,7 +1131,7 @@ object MembershipChange {
     fn change() -> string;
 }
 
-object ProfileChange {
+object ProfileContent {
     /// The ID of the user whose profile changed
     fn user_id() -> UserId;
 
@@ -2358,10 +2358,10 @@ object Activity {
     fn msg_content() -> Option<MsgContent>;
 
     /// the details of this membership change activity
-    fn membership_change() -> Option<MembershipChange>;
+    fn membership_content() -> Option<MembershipContent>;
 
     /// the details of this profile change activity
-    fn profile_change() -> Option<ProfileChange>;
+    fn profile_content() -> Option<ProfileContent>;
 
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;

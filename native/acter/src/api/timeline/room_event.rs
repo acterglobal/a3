@@ -1,4 +1,4 @@
-use acter_core::models::status::{MembershipChange, ProfileChange};
+use acter_core::models::status::{MembershipContent, ProfileContent};
 use matrix_sdk_base::ruma::events::room::message::MessageType;
 use serde::{Deserialize, Serialize};
 
@@ -8,8 +8,8 @@ use crate::MediaSource;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum TimelineEventContent {
     Message(MsgContent),
-    MembershipChange(MembershipChange),
-    ProfileChange(ProfileChange),
+    MembershipChange(MembershipContent),
+    ProfileChange(ProfileContent),
 }
 
 impl TryFrom<&MessageType> for TimelineEventContent {

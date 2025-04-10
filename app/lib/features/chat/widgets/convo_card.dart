@@ -418,7 +418,7 @@ class _SubtitleWidget extends ConsumerWidget {
                 .valueOrNull ??
             simplifyUserId(senderId) ??
             senderId;
-        MembershipChange content = eventItem.membershipChange().expect(
+        MembershipContent content = eventItem.membershipContent().expect(
           'failed to get content of membership change',
         );
         final userId = content.userId().toString();
@@ -455,7 +455,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'ProfileChange':
-        ProfileChange content = eventItem.profileChange().expect(
+        ProfileContent content = eventItem.profileContent().expect(
           'failed to get content of profile change',
         );
         final userId = content.userId().toString();

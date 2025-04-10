@@ -5,12 +5,12 @@ use matrix_sdk_ui::timeline::{MembershipChange as SdkMembershipChange, RoomMembe
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct MembershipChange {
+pub struct MembershipContent {
     user_id: OwnedUserId,
     change: String,
 }
 
-impl TryFrom<&RoomMembershipChange> for MembershipChange {
+impl TryFrom<&RoomMembershipChange> for MembershipContent {
     type Error = ();
 
     fn try_from(value: &RoomMembershipChange) -> Result<Self, Self::Error> {
@@ -36,14 +36,14 @@ impl TryFrom<&RoomMembershipChange> for MembershipChange {
                 return Err(());
             }
         };
-        Ok(MembershipChange {
+        Ok(MembershipContent {
             user_id: value.user_id().to_owned(),
             change: change.to_owned(),
         })
     }
 }
 
-impl TryFrom<(RumaMembershipChange<'_>, OwnedUserId)> for MembershipChange {
+impl TryFrom<(RumaMembershipChange<'_>, OwnedUserId)> for MembershipContent {
     type Error = ();
 
     fn try_from(value: (RumaMembershipChange<'_>, OwnedUserId)) -> Result<Self, Self::Error> {
@@ -71,14 +71,14 @@ impl TryFrom<(RumaMembershipChange<'_>, OwnedUserId)> for MembershipChange {
                 return Err(());
             }
         };
-        Ok(MembershipChange {
+        Ok(MembershipContent {
             user_id,
             change: change.to_owned(),
         })
     }
 }
 
-impl MembershipChange {
+impl MembershipContent {
     pub fn user_id(&self) -> OwnedUserId {
         self.user_id.clone()
     }

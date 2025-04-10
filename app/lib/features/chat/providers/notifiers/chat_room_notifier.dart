@@ -565,7 +565,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'MembershipChange':
-        MembershipChange content = eventItem.membershipChange().expect(
+        MembershipContent content = eventItem.membershipContent().expect(
           'failed to get content of membership change',
         );
         return types.CustomMessage(
@@ -585,7 +585,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           },
         );
       case 'ProfileChange':
-        ProfileChange content = eventItem.profileChange().expect(
+        ProfileContent content = eventItem.profileContent().expect(
           'failed to get content of profile change',
         );
         final metadata = {

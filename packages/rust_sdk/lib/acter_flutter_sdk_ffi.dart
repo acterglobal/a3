@@ -19500,24 +19500,26 @@ class Api {
   late final _timelineEventItemMessage =
       _timelineEventItemMessagePtr
           .asFunction<_TimelineEventItemMessageReturn Function(int)>();
-  late final _timelineEventItemMembershipChangePtr = _lookup<
+  late final _timelineEventItemMembershipContentPtr = _lookup<
     ffi.NativeFunction<
-      _TimelineEventItemMembershipChangeReturn Function(ffi.IntPtr)
+      _TimelineEventItemMembershipContentReturn Function(ffi.IntPtr)
     >
-  >("__TimelineEventItem_membership_change");
+  >("__TimelineEventItem_membership_content");
 
-  late final _timelineEventItemMembershipChange =
-      _timelineEventItemMembershipChangePtr
-          .asFunction<_TimelineEventItemMembershipChangeReturn Function(int)>();
-  late final _timelineEventItemProfileChangePtr = _lookup<
+  late final _timelineEventItemMembershipContent =
+      _timelineEventItemMembershipContentPtr
+          .asFunction<
+            _TimelineEventItemMembershipContentReturn Function(int)
+          >();
+  late final _timelineEventItemProfileContentPtr = _lookup<
     ffi.NativeFunction<
-      _TimelineEventItemProfileChangeReturn Function(ffi.IntPtr)
+      _TimelineEventItemProfileContentReturn Function(ffi.IntPtr)
     >
-  >("__TimelineEventItem_profile_change");
+  >("__TimelineEventItem_profile_content");
 
-  late final _timelineEventItemProfileChange =
-      _timelineEventItemProfileChangePtr
-          .asFunction<_TimelineEventItemProfileChangeReturn Function(int)>();
+  late final _timelineEventItemProfileContent =
+      _timelineEventItemProfileContentPtr
+          .asFunction<_TimelineEventItemProfileContentReturn Function(int)>();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -19732,75 +19734,81 @@ class Api {
 
   late final _msgContentUrlPreviews =
       _msgContentUrlPreviewsPtr.asFunction<int Function(int)>();
-  late final _membershipChangeUserIdPtr =
+  late final _membershipContentUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__MembershipChange_user_id",
+        "__MembershipContent_user_id",
       );
 
-  late final _membershipChangeUserId =
-      _membershipChangeUserIdPtr.asFunction<int Function(int)>();
-  late final _membershipChangeChangePtr = _lookup<
-    ffi.NativeFunction<_MembershipChangeChangeReturn Function(ffi.IntPtr)>
-  >("__MembershipChange_change");
+  late final _membershipContentUserId =
+      _membershipContentUserIdPtr.asFunction<int Function(int)>();
+  late final _membershipContentChangePtr = _lookup<
+    ffi.NativeFunction<_MembershipContentChangeReturn Function(ffi.IntPtr)>
+  >("__MembershipContent_change");
 
-  late final _membershipChangeChange =
-      _membershipChangeChangePtr
-          .asFunction<_MembershipChangeChangeReturn Function(int)>();
-  late final _profileChangeUserIdPtr =
+  late final _membershipContentChange =
+      _membershipContentChangePtr
+          .asFunction<_MembershipContentChangeReturn Function(int)>();
+  late final _profileContentUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__ProfileChange_user_id",
+        "__ProfileContent_user_id",
       );
 
-  late final _profileChangeUserId =
-      _profileChangeUserIdPtr.asFunction<int Function(int)>();
-  late final _profileChangeDisplayNameChangePtr = _lookup<
+  late final _profileContentUserId =
+      _profileContentUserIdPtr.asFunction<int Function(int)>();
+  late final _profileContentDisplayNameChangePtr = _lookup<
     ffi.NativeFunction<
-      _ProfileChangeDisplayNameChangeReturn Function(ffi.IntPtr)
+      _ProfileContentDisplayNameChangeReturn Function(ffi.IntPtr)
     >
-  >("__ProfileChange_display_name_change");
+  >("__ProfileContent_display_name_change");
 
-  late final _profileChangeDisplayNameChange =
-      _profileChangeDisplayNameChangePtr
-          .asFunction<_ProfileChangeDisplayNameChangeReturn Function(int)>();
-  late final _profileChangeDisplayNameOldValPtr = _lookup<
+  late final _profileContentDisplayNameChange =
+      _profileContentDisplayNameChangePtr
+          .asFunction<_ProfileContentDisplayNameChangeReturn Function(int)>();
+  late final _profileContentDisplayNameOldValPtr = _lookup<
     ffi.NativeFunction<
-      _ProfileChangeDisplayNameOldValReturn Function(ffi.IntPtr)
+      _ProfileContentDisplayNameOldValReturn Function(ffi.IntPtr)
     >
-  >("__ProfileChange_display_name_old_val");
+  >("__ProfileContent_display_name_old_val");
 
-  late final _profileChangeDisplayNameOldVal =
-      _profileChangeDisplayNameOldValPtr
-          .asFunction<_ProfileChangeDisplayNameOldValReturn Function(int)>();
-  late final _profileChangeDisplayNameNewValPtr = _lookup<
+  late final _profileContentDisplayNameOldVal =
+      _profileContentDisplayNameOldValPtr
+          .asFunction<_ProfileContentDisplayNameOldValReturn Function(int)>();
+  late final _profileContentDisplayNameNewValPtr = _lookup<
     ffi.NativeFunction<
-      _ProfileChangeDisplayNameNewValReturn Function(ffi.IntPtr)
+      _ProfileContentDisplayNameNewValReturn Function(ffi.IntPtr)
     >
-  >("__ProfileChange_display_name_new_val");
+  >("__ProfileContent_display_name_new_val");
 
-  late final _profileChangeDisplayNameNewVal =
-      _profileChangeDisplayNameNewValPtr
-          .asFunction<_ProfileChangeDisplayNameNewValReturn Function(int)>();
-  late final _profileChangeAvatarUrlChangePtr = _lookup<
-    ffi.NativeFunction<_ProfileChangeAvatarUrlChangeReturn Function(ffi.IntPtr)>
-  >("__ProfileChange_avatar_url_change");
+  late final _profileContentDisplayNameNewVal =
+      _profileContentDisplayNameNewValPtr
+          .asFunction<_ProfileContentDisplayNameNewValReturn Function(int)>();
+  late final _profileContentAvatarUrlChangePtr = _lookup<
+    ffi.NativeFunction<
+      _ProfileContentAvatarUrlChangeReturn Function(ffi.IntPtr)
+    >
+  >("__ProfileContent_avatar_url_change");
 
-  late final _profileChangeAvatarUrlChange =
-      _profileChangeAvatarUrlChangePtr
-          .asFunction<_ProfileChangeAvatarUrlChangeReturn Function(int)>();
-  late final _profileChangeAvatarUrlOldValPtr = _lookup<
-    ffi.NativeFunction<_ProfileChangeAvatarUrlOldValReturn Function(ffi.IntPtr)>
-  >("__ProfileChange_avatar_url_old_val");
+  late final _profileContentAvatarUrlChange =
+      _profileContentAvatarUrlChangePtr
+          .asFunction<_ProfileContentAvatarUrlChangeReturn Function(int)>();
+  late final _profileContentAvatarUrlOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _ProfileContentAvatarUrlOldValReturn Function(ffi.IntPtr)
+    >
+  >("__ProfileContent_avatar_url_old_val");
 
-  late final _profileChangeAvatarUrlOldVal =
-      _profileChangeAvatarUrlOldValPtr
-          .asFunction<_ProfileChangeAvatarUrlOldValReturn Function(int)>();
-  late final _profileChangeAvatarUrlNewValPtr = _lookup<
-    ffi.NativeFunction<_ProfileChangeAvatarUrlNewValReturn Function(ffi.IntPtr)>
-  >("__ProfileChange_avatar_url_new_val");
+  late final _profileContentAvatarUrlOldVal =
+      _profileContentAvatarUrlOldValPtr
+          .asFunction<_ProfileContentAvatarUrlOldValReturn Function(int)>();
+  late final _profileContentAvatarUrlNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _ProfileContentAvatarUrlNewValReturn Function(ffi.IntPtr)
+    >
+  >("__ProfileContent_avatar_url_new_val");
 
-  late final _profileChangeAvatarUrlNewVal =
-      _profileChangeAvatarUrlNewValPtr
-          .asFunction<_ProfileChangeAvatarUrlNewValReturn Function(int)>();
+  late final _profileContentAvatarUrlNewVal =
+      _profileContentAvatarUrlNewValPtr
+          .asFunction<_ProfileContentAvatarUrlNewValReturn Function(int)>();
   late final _reactionRecordSenderIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__ReactionRecord_sender_id",
@@ -23031,20 +23039,20 @@ class Api {
   late final _activityMsgContent =
       _activityMsgContentPtr
           .asFunction<_ActivityMsgContentReturn Function(int)>();
-  late final _activityMembershipChangePtr = _lookup<
-    ffi.NativeFunction<_ActivityMembershipChangeReturn Function(ffi.IntPtr)>
-  >("__Activity_membership_change");
+  late final _activityMembershipContentPtr = _lookup<
+    ffi.NativeFunction<_ActivityMembershipContentReturn Function(ffi.IntPtr)>
+  >("__Activity_membership_content");
 
-  late final _activityMembershipChange =
-      _activityMembershipChangePtr
-          .asFunction<_ActivityMembershipChangeReturn Function(int)>();
-  late final _activityProfileChangePtr = _lookup<
-    ffi.NativeFunction<_ActivityProfileChangeReturn Function(ffi.IntPtr)>
-  >("__Activity_profile_change");
+  late final _activityMembershipContent =
+      _activityMembershipContentPtr
+          .asFunction<_ActivityMembershipContentReturn Function(int)>();
+  late final _activityProfileContentPtr = _lookup<
+    ffi.NativeFunction<_ActivityProfileContentReturn Function(ffi.IntPtr)>
+  >("__Activity_profile_content");
 
-  late final _activityProfileChange =
-      _activityProfileChangePtr
-          .asFunction<_ActivityProfileChangeReturn Function(int)>();
+  late final _activityProfileContent =
+      _activityProfileContentPtr
+          .asFunction<_ActivityProfileContentReturn Function(int)>();
   late final _activityReactionKeyPtr = _lookup<
     ffi.NativeFunction<_ActivityReactionKeyReturn Function(ffi.IntPtr)>
   >("__Activity_reaction_key");
@@ -40448,36 +40456,36 @@ class TimelineEventItem {
   }
 
   /// covers some of m.room.member
-  MembershipChange? membershipChange() {
+  MembershipContent? membershipContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemMembershipChange(tmp0);
+    final tmp1 = _api._timelineEventItemMembershipContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MembershipChange._(_api, tmp4_1);
+    final tmp2 = MembershipContent._(_api, tmp4_1);
     return tmp2;
   }
 
   /// covers some of m.room.member
-  ProfileChange? profileChange() {
+  ProfileContent? profileContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemProfileChange(tmp0);
+    final tmp1 = _api._timelineEventItemProfileContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ProfileChange");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ProfileContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ProfileChange._(_api, tmp4_1);
+    final tmp2 = ProfileContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -41111,17 +41119,17 @@ class MsgContent {
   }
 }
 
-class MembershipChange {
+class MembershipContent {
   final Api _api;
   final _Box _box;
 
-  MembershipChange._(this._api, this._box);
+  MembershipContent._(this._api, this._box);
 
   /// The ID of the user whose profile changed.
   UserId userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._membershipChangeUserId(tmp0);
+    final tmp1 = _api._membershipContentUserId(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
@@ -41134,7 +41142,7 @@ class MembershipChange {
   String change() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._membershipChangeChange(tmp0);
+    final tmp1 = _api._membershipContentChange(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -41164,17 +41172,17 @@ class MembershipChange {
   }
 }
 
-class ProfileChange {
+class ProfileContent {
   final Api _api;
   final _Box _box;
 
-  ProfileChange._(this._api, this._box);
+  ProfileContent._(this._api, this._box);
 
   /// The ID of the user whose profile changed
   UserId userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeUserId(tmp0);
+    final tmp1 = _api._profileContentUserId(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
@@ -41187,7 +41195,7 @@ class ProfileChange {
   String? displayNameChange() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeDisplayNameChange(tmp0);
+    final tmp1 = _api._profileContentDisplayNameChange(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -41219,7 +41227,7 @@ class ProfileChange {
   String? displayNameOldVal() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeDisplayNameOldVal(tmp0);
+    final tmp1 = _api._profileContentDisplayNameOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -41251,7 +41259,7 @@ class ProfileChange {
   String? displayNameNewVal() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeDisplayNameNewVal(tmp0);
+    final tmp1 = _api._profileContentDisplayNameNewVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -41283,7 +41291,7 @@ class ProfileChange {
   String? avatarUrlChange() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeAvatarUrlChange(tmp0);
+    final tmp1 = _api._profileContentAvatarUrlChange(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -41315,7 +41323,7 @@ class ProfileChange {
   MxcUri? avatarUrlOldVal() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeAvatarUrlOldVal(tmp0);
+    final tmp1 = _api._profileContentAvatarUrlOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -41332,7 +41340,7 @@ class ProfileChange {
   MxcUri? avatarUrlNewVal() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._profileChangeAvatarUrlNewVal(tmp0);
+    final tmp1 = _api._profileContentAvatarUrlNewVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -49418,36 +49426,36 @@ class Activity {
   }
 
   /// the details of this membership change activity
-  MembershipChange? membershipChange() {
+  MembershipContent? membershipContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._activityMembershipChange(tmp0);
+    final tmp1 = _api._activityMembershipContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipChange");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MembershipContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MembershipChange._(_api, tmp4_1);
+    final tmp2 = MembershipContent._(_api, tmp4_1);
     return tmp2;
   }
 
   /// the details of this profile change activity
-  ProfileChange? profileChange() {
+  ProfileContent? profileContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._activityProfileChange(tmp0);
+    final tmp1 = _api._activityProfileContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ProfileChange");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ProfileContent");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ProfileChange._(_api, tmp4_1);
+    final tmp2 = ProfileContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -61010,14 +61018,14 @@ class _TimelineEventItemMessageReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _TimelineEventItemMembershipChangeReturn extends ffi.Struct {
+class _TimelineEventItemMembershipContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _TimelineEventItemProfileChangeReturn extends ffi.Struct {
+class _TimelineEventItemProfileContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -61205,7 +61213,7 @@ class _MsgContentGeoUriReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _MembershipChangeChangeReturn extends ffi.Struct {
+class _MembershipContentChangeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
@@ -61214,7 +61222,7 @@ class _MembershipChangeChangeReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ProfileChangeDisplayNameChangeReturn extends ffi.Struct {
+class _ProfileContentDisplayNameChangeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -61225,7 +61233,7 @@ class _ProfileChangeDisplayNameChangeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ProfileChangeDisplayNameOldValReturn extends ffi.Struct {
+class _ProfileContentDisplayNameOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -61236,7 +61244,7 @@ class _ProfileChangeDisplayNameOldValReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ProfileChangeDisplayNameNewValReturn extends ffi.Struct {
+class _ProfileContentDisplayNameNewValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -61247,7 +61255,7 @@ class _ProfileChangeDisplayNameNewValReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ProfileChangeAvatarUrlChangeReturn extends ffi.Struct {
+class _ProfileContentAvatarUrlChangeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -61258,14 +61266,14 @@ class _ProfileChangeAvatarUrlChangeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ProfileChangeAvatarUrlOldValReturn extends ffi.Struct {
+class _ProfileContentAvatarUrlOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _ProfileChangeAvatarUrlNewValReturn extends ffi.Struct {
+class _ProfileContentAvatarUrlNewValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -62262,14 +62270,14 @@ class _ActivityMsgContentReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ActivityMembershipChangeReturn extends ffi.Struct {
+class _ActivityMembershipContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
 }
 
-class _ActivityProfileChangeReturn extends ffi.Struct {
+class _ActivityProfileContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

@@ -15,15 +15,15 @@ use crate::{
     events::AnyActerEvent,
     referencing::{ExecuteReference, IndexKey},
 };
-pub use membership::MembershipChange;
-pub use profile::{Change, ProfileChange};
+pub use membership::MembershipContent;
+pub use profile::{Change, ProfileContent};
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ActerSupportedRoomStatusEvents {
-    MembershipChange(MembershipChange),
-    ProfileChange(ProfileChange),
+    MembershipChange(MembershipContent),
+    ProfileChange(ProfileContent),
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
 }
@@ -77,7 +77,7 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                     avatar_url_change,
                 } = membership_change
                 {
-                    let change = ProfileChange::new(
+                    let content = ProfileContent::new(
                         inner.state_key.clone(),
                         displayname_change.map(|c| Change {
                             new_val: c.new.map(ToOwned::to_owned),
@@ -88,11 +88,11 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                             old_val: c.old.map(ToOwned::to_owned),
                         }),
                     );
-                    ActerSupportedRoomStatusEvents::ProfileChange(change)
-                } else if let Ok(change) =
-                    MembershipChange::try_from((membership_change, inner.state_key.clone()))
+                    ActerSupportedRoomStatusEvents::ProfileChange(content)
+                } else if let Ok(content) =
+                    MembershipContent::try_from((membership_change, inner.state_key.clone()))
                 {
-                    ActerSupportedRoomStatusEvents::MembershipChange(change)
+                    ActerSupportedRoomStatusEvents::MembershipChange(content)
                 } else {
                     return Err(make_err(event));
                 };

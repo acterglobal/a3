@@ -23,15 +23,15 @@ impl<T: PartialEq> Change<T> {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ProfileChange {
+pub struct ProfileContent {
     user_id: OwnedUserId,
     display_name_change: Option<Change<Option<String>>>,
     avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
 }
 
-impl From<&MemberProfileChange> for ProfileChange {
+impl From<&MemberProfileChange> for ProfileContent {
     fn from(value: &MemberProfileChange) -> Self {
-        ProfileChange {
+        ProfileContent {
             user_id: value.user_id().to_owned(),
             display_name_change: value
                 .displayname_change()
@@ -43,13 +43,13 @@ impl From<&MemberProfileChange> for ProfileChange {
     }
 }
 
-impl ProfileChange {
+impl ProfileContent {
     pub(crate) fn new(
         user_id: OwnedUserId,
         display_name_change: Option<Change<Option<String>>>,
         avatar_url_change: Option<Change<Option<OwnedMxcUri>>>,
     ) -> Self {
-        ProfileChange {
+        ProfileContent {
             user_id,
             display_name_change,
             avatar_url_change,

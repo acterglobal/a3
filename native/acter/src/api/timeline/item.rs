@@ -1,5 +1,5 @@
 use acter_core::{
-    models::status::{MembershipChange, ProfileChange},
+    models::status::{MembershipContent, ProfileContent},
     util::do_vecs_match,
 };
 use anyhow::{bail, Result};
@@ -192,14 +192,14 @@ impl TimelineEventItem {
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event");
                 me.event_type("MembershipChange".to_string());
-                if let Ok(content) = MembershipChange::try_from(m) {
+                if let Ok(content) = MembershipContent::try_from(m) {
                     me.content(Some(TimelineEventContent::MembershipChange(content)));
                 }
             }
             SdkTimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to a state event");
                 me.event_type("ProfileChange".to_string());
-                let content = ProfileChange::from(p);
+                let content = ProfileContent::from(p);
                 me.content(Some(TimelineEventContent::ProfileChange(content)));
             }
 
@@ -270,7 +270,7 @@ impl TimelineEventItem {
         }
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
+    pub fn membership_content(&self) -> Option<MembershipContent> {
         if let Some(TimelineEventContent::MembershipChange(c)) = &self.content {
             Some(c.clone())
         } else {
@@ -278,7 +278,7 @@ impl TimelineEventItem {
         }
     }
 
-    pub fn profile_change(&self) -> Option<ProfileChange> {
+    pub fn profile_content(&self) -> Option<ProfileContent> {
         if let Some(TimelineEventContent::ProfileChange(c)) = &self.content {
             Some(c.clone())
         } else {

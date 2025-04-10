@@ -5,7 +5,7 @@ use acter_core::{
     activities::Activity as CoreActivity,
     events::news::{FallbackNewsContent, NewsContent},
     models::{
-        status::{MembershipChange, ProfileChange},
+        status::{MembershipContent, ProfileContent},
         ActerModel,
     },
     referencing::IndexKey,
@@ -66,12 +66,12 @@ impl Activity {
         }
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        self.inner.membership_change()
+    pub fn membership_content(&self) -> Option<MembershipContent> {
+        self.inner.membership_content()
     }
 
-    pub fn profile_change(&self) -> Option<ProfileChange> {
-        self.inner.profile_change()
+    pub fn profile_content(&self) -> Option<ProfileContent> {
+        self.inner.profile_content()
     }
 
     pub fn mentions_you(&self) -> bool {

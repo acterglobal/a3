@@ -5,7 +5,7 @@ import 'package:acter/common/utils/room_member.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show ProfileChange, TimelineEventItem;
+    show ProfileContent, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,7 +43,7 @@ class ProfileUpdateEvent extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final myUserId = ref.read(myUserIdStrProvider);
-    ProfileChange content = item.profileChange().expect(
+    ProfileContent content = item.profileContent().expect(
       'failed to get content of profile change',
     );
     final userId = content.userId().toString();

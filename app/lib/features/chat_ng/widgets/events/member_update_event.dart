@@ -5,7 +5,7 @@ import 'package:acter/common/utils/room_member.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show MembershipChange, TimelineEventItem;
+    show MembershipContent, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -52,7 +52,7 @@ class MemberUpdateEvent extends ConsumerWidget {
             .valueOrNull ??
         simplifyUserId(senderId) ??
         senderId;
-    MembershipChange content = item.membershipChange().expect(
+    MembershipContent content = item.membershipContent().expect(
       'failed to get content of membership change',
     );
     final userId = content.userId().toString();

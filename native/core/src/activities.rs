@@ -13,7 +13,7 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::{MembershipChange, ProfileChange},
+        status::{MembershipContent, ProfileContent},
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -24,8 +24,8 @@ pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
-    MembershipChange(MembershipChange),
-    ProfileChange(ProfileChange),
+    MembershipChange(MembershipContent),
+    ProfileChange(ProfileContent),
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
     Boost {
@@ -170,7 +170,7 @@ impl Activity {
         .to_owned()
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
+    pub fn membership_content(&self) -> Option<MembershipContent> {
         if let ActivityContent::MembershipChange(c) = &self.inner {
             Some(c.clone())
         } else {
@@ -178,7 +178,7 @@ impl Activity {
         }
     }
 
-    pub fn profile_change(&self) -> Option<ProfileChange> {
+    pub fn profile_content(&self) -> Option<ProfileContent> {
         if let ActivityContent::ProfileChange(c) = &self.inner {
             Some(c.clone())
         } else {
