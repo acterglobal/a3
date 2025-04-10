@@ -122,29 +122,19 @@ String? getStateOnProfileChange(
 ) {
   switch (metadata['displayName']['change']) {
     case 'Changed':
-      String newVal = metadata['displayName']['newVal'].expect(
-        'failed to get new val in display name changed of profile change',
-      );
-      String oldVal = metadata['displayName']['oldVal'].expect(
-        'failed to get old val in display name changed of profile change',
-      );
+      String newVal = metadata['displayName']['newVal'];
+      String oldVal = metadata['displayName']['oldVal'];
       if (userId == myId) {
-        return lang.chatProfileDisplayNameYouChanged(newVal, oldVal);
+        return lang.chatProfileDisplayNameYouChanged(newVal);
       } else {
-        return lang.chatProfileDisplayNameOtherChanged(
-          newVal,
-          oldVal,
-          userName,
-        );
+        return lang.chatProfileDisplayNameOtherChanged(newVal, oldVal);
       }
     case 'Set':
-      String newVal = metadata['displayName']['newVal'].expect(
-        'failed to get new val in display name changed of profile change',
-      );
+      String newVal = metadata['displayName']['newVal'];
       if (userId == myId) {
         return lang.chatProfileDisplayNameYouSet(newVal);
       } else {
-        return lang.chatProfileDisplayNameOtherSet(newVal, userName);
+        return lang.chatProfileDisplayNameOtherSet(newVal, userId);
       }
     case 'Unset':
       if (userId == myId) {
