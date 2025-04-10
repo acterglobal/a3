@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
+import 'package:acter/config/setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -32,8 +33,7 @@ final researchProvider = createAsyncPrefProvider<bool>(
 );
 
 Future<SentryEvent?> sentryBeforeSend(SentryEvent evt, Hint hint) async {
-  final container = ProviderContainer();
-  final canReport = await container.read(canReportSentryProvider.future);
+  final canReport = await mainProviderContainer.read(canReportSentryProvider.future);
   if (!canReport) {
     return null;
   }
