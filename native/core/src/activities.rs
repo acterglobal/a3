@@ -129,9 +129,9 @@ impl Activity {
             }
             ActivityContent::ProfileChange(c) => {
                 if c.display_name_change().is_some() {
-                    "displayNameChange"
+                    "displayName"
                 } else if c.avatar_url_change().is_some() {
-                    "avatarUrlChange"
+                    "avatarUrl"
                 } else {
                     unreachable!()
                 }
