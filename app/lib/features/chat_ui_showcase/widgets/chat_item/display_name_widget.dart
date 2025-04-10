@@ -28,11 +28,8 @@ class DisplayNameWidget extends ConsumerWidget {
   }
 
   Widget _renderDisplayName(BuildContext context, String? displayName) {
-    if (displayName == null || displayName.isEmpty) {
-      return const SizedBox.shrink();
-    }
     return Text(
-      displayName,
+      displayName ?? roomId,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: style ?? Theme.of(context).textTheme.bodyMedium,
