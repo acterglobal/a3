@@ -18,6 +18,7 @@ void main() {
       bool isUnread = false,
       bool isFeatureActive = true,
       bool isDM = false,
+      bool isError = false,
     }) async {
       await tester.pumpProviderWidget(
         overrides: [
@@ -26,9 +27,15 @@ void main() {
             LabsFeature.chatUnread,
           ).overrideWith((ref) => isFeatureActive),
           isDirectChatProvider.overrideWith((ref, roomId) => isDM),
-          latestMessageProvider.overrideWith(
-            () => MockAsyncLatestMsgNotifier(timelineItem: mockTimelineItem),
-          ),
+          latestMessageProvider.overrideWith(() {
+            final notifier = MockAsyncLatestMsgNotifier(
+              timelineItem: mockTimelineItem,
+            );
+            if (isError) {
+              notifier.state = throw Exception('Error');
+            }
+            return notifier;
+          }),
         ],
         child: const LastMessageWidget(roomId: 'mock-room-1'),
       );
@@ -185,6 +192,12 @@ void main() {
 
       // Check the color of the message text span
       expect(messageSpan.style?.color, equals(theme.colorScheme.surfaceTint));
+    });
+
+    testWidgets('should handle error case', (WidgetTester tester) async {
+      await createWidgetUnderTest(tester: tester, isError: true);
+      expect(find.byType(Text), findsNothing);
+      expect(find.byType(SizedBox), findsOneWidget);
     });
   });
 }

@@ -16,6 +16,7 @@ void main() {
       MockTimelineItem? mockTimelineItem,
       bool isUnread = false,
       bool isFeatureActive = true,
+      bool isError = false,
     }) async {
       await tester.pumpProviderWidget(
         overrides: [
@@ -23,9 +24,15 @@ void main() {
           isActiveProvider(
             LabsFeature.chatUnread,
           ).overrideWith((ref) => isFeatureActive),
-          latestMessageProvider.overrideWith(
-            () => MockAsyncLatestMsgNotifier(timelineItem: mockTimelineItem),
-          ),
+          latestMessageProvider.overrideWith(() {
+            final notifier = MockAsyncLatestMsgNotifier(
+              timelineItem: mockTimelineItem,
+            );
+            if (isError) {
+              notifier.state = throw Exception('Error');
+            }
+            return notifier;
+          }),
         ],
         child: const LastMessageTimeWidget(roomId: 'mock-room-1'),
       );
@@ -118,6 +125,12 @@ void main() {
       final textWidget = tester.widget<Text>(find.byType(Text));
       final theme = Theme.of(tester.element(find.byType(Text)));
       expect(textWidget.style?.color, equals(theme.colorScheme.surfaceTint));
+    });
+
+    testWidgets('should handle error case', (WidgetTester tester) async {
+      await createWidgetUnderTest(tester: tester, isError: true);
+      expect(find.byType(Text), findsNothing);
+      expect(find.byType(SizedBox), findsOneWidget);
     });
   });
 }
