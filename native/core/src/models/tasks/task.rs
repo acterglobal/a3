@@ -33,8 +33,8 @@ impl Deref for Task {
 }
 
 impl Task {
-    pub fn title(&self) -> &String {
-        &self.inner.title
+    pub fn title(&self) -> String {
+        self.inner.title.clone()
     }
 
     pub fn assignees(&self) -> Vec<OwnedUserId> {
