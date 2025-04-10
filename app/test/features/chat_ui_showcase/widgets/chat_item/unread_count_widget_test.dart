@@ -4,6 +4,7 @@ import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../helpers/test_util.dart';
 
 void main() {
@@ -14,15 +15,26 @@ void main() {
       int mentions = 0,
       int messages = 0,
       bool isFeatureActive = true,
+      bool isError = false,
+      bool isLoading = false,
     }) async {
       await tester.pumpProviderWidget(
         overrides: [
           isActiveProvider(
             LabsFeature.chatUnread,
           ).overrideWith((ref) => isFeatureActive),
-          unreadCountersProvider.overrideWith(
-            (ref, roomId) => Future.value((notifications, mentions, messages)),
-          ),
+          unreadCountersProvider.overrideWith((ref, roomId) {
+            if (isLoading) {
+              return Future.delayed(
+                const Duration(milliseconds: 100),
+                () => (notifications, mentions, messages),
+              );
+            }
+            if (isError) {
+              return Future.error('Error');
+            }
+            return Future.value((notifications, mentions, messages));
+          }),
         ],
         child: const UnreadCountWidget(roomId: 'mock-room-1'),
       );
@@ -134,6 +146,26 @@ void main() {
       // Check text style
       final text = container.child as Text;
       expect(text.style, equals(theme.textTheme.bodySmall));
+    });
+
+    testWidgets('should handle error case', (WidgetTester tester) async {
+      await createWidgetUnderTest(tester: tester, isError: true);
+      expect(find.text('5'), findsNothing);
+      expect(find.byType(SizedBox), findsOneWidget);
+    });
+
+    testWidgets('should handle loading case', (WidgetTester tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        isLoading: true,
+        notifications: 5,
+      );
+
+      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsOneWidget);
+      // Wait for the async provider to load
+      await tester.pump(const Duration(milliseconds: 110));
+      expect(find.text('5'), findsOneWidget);
+      expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsNothing);
     });
   });
 }
