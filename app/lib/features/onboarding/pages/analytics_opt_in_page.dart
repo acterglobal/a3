@@ -17,7 +17,6 @@ class AnalyticsOptInWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final textTheme = Theme.of(context).textTheme;
     // ensure we are triggering a sync and do not delay this process
     // ignore: unused_local_variable, no_leading_underscores_for_local_identifiers
     final _syncState = ref.read(syncStateProvider);
@@ -30,13 +29,13 @@ class AnalyticsOptInWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildIcon(context),
+                _buildCloseIconButton(context),
                 const SizedBox(height: 20),
-                _buildTitleText(context, lang, textTheme),
+                _buildTitleText(context, lang),
                 const SizedBox(height: 10),
-                _buildDescriptionText(lang, textTheme),
+                _buildDescriptionText(context, lang),
                 const SizedBox(height: 30),
-                _buildMoreDetails(context, lang, textTheme, ref),
+                _buildMoreDetails(context, lang, ref),
                 const SizedBox(height: 10),
                 _buildTelemetryAnalytics(context, ref),
                 const SizedBox(height: 30),
@@ -50,7 +49,7 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildIcon(BuildContext context) {
+  Widget _buildCloseIconButton(BuildContext context) {
     return Align(
       alignment: Alignment.topRight,
       child: IconButton(
@@ -61,10 +60,10 @@ class AnalyticsOptInWidget extends ConsumerWidget {
   }
 
   // widget for title text
-  Widget _buildTitleText(BuildContext context, L10n lang, TextTheme textTheme) {
+  Widget _buildTitleText(BuildContext context, L10n lang) {
     return Text(
       lang.analyticsTitle,
-      style: textTheme.headlineMedium?.copyWith(
+      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface,
       ),
       textAlign: TextAlign.center,
@@ -72,22 +71,18 @@ class AnalyticsOptInWidget extends ConsumerWidget {
   }
 
   // widget for description text
-  Widget _buildDescriptionText(L10n lang, TextTheme textTheme) {
+  Widget _buildDescriptionText(BuildContext context, L10n lang) {
     return Text(
       lang.analyticsDescription,
-      style: textTheme.bodyMedium,
+      style: Theme.of(context).textTheme.bodyMedium,
       textAlign: TextAlign.center,
     );
   }
 
   // widget for "More Details" text
-  Widget _buildMoreDetails(
-    BuildContext context,
-    L10n lang,
-    TextTheme textTheme,
-    WidgetRef ref,
-  ) {
+  Widget _buildMoreDetails(BuildContext context, L10n lang, WidgetRef ref) {
     final primaryColor = Theme.of(context).colorScheme.primary;
+    final textTheme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap:
           () => openLink(
@@ -126,71 +121,53 @@ class AnalyticsOptInWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        _buildToggleAllOption(lang.togglleAll, allEnabled, () async {
-          final newValue = !allEnabled;
-          final telemetryAnalyticsNotifier = ref.read(
-            analyticsPreferencesProvider.notifier,
-          );
-          await telemetryAnalyticsNotifier.setPreference(
-            canReportSentry,
-            newValue,
-            ref,
-          );
-          await telemetryAnalyticsNotifier.setPreference(
-            matomoAnalytics,
-            newValue,
-            ref,
-          );
-          await telemetryAnalyticsNotifier.setPreference(
-            basicTelemetry,
-            newValue,
-            ref,
-          );
-          await telemetryAnalyticsNotifier.setPreference(
-            research,
-            newValue,
-            ref,
-          );
-        }, context),
+        _buildToggleAllOption(
+          context: context,
+          text: lang.togglleAll,
+          value: allEnabled,
+          onToggle: (value) async {
+            await _updateAllAnalyticsPreferences(ref, value);
+          },
+        ),
         _buildAnalyticsCard(
-          context,
-          lang.sendCrashReportsTitle,
-          lang.sendCrashReportsInfo,
-          allowReportSending,
-          (value) async {
+          context: context,
+          title: lang.sendCrashReportsTitle,
+          subtitle: lang.sendCrashReportsInfo,
+          value: allowReportSending,
+          onToggle: (value) async {
             await ref
                 .read(analyticsPreferencesProvider.notifier)
                 .setPreference(canReportSentry, value, ref);
           },
         ),
         _buildAnalyticsCard(
-          context,
-          lang.basicTelemetry,
-          lang.basicTelemetryInfo,
-          basicTelemetryEnabled,
-          (value) async {
+          context: context,
+          title: lang.basicTelemetry,
+          subtitle: lang.basicTelemetryInfo,
+          value: basicTelemetryEnabled,
+          onToggle: (value) async {
             await ref
                 .read(analyticsPreferencesProvider.notifier)
                 .setPreference(basicTelemetry, value, ref);
           },
         ),
         _buildAnalyticsCard(
-          context,
-          lang.appAnalytics,
-          lang.appAnalyticsInfo,
-          matomoAnalyticsEnabled,
-          (value) async {
+          context: context,
+          title: lang.appAnalytics,
+          subtitle: lang.appAnalyticsInfo,
+          value: matomoAnalyticsEnabled,
+          onToggle: (value) async {
             await ref
                 .read(analyticsPreferencesProvider.notifier)
                 .setPreference(matomoAnalytics, value, ref);
           },
         ),
         _buildAnalyticsCard(
-          context,
-          lang.research,
-          lang.researchInfo,
-          researchEnabled,
-          (value) async {
+          context: context,
+          title: lang.research,
+          subtitle: lang.researchInfo,
+          value: researchEnabled,
+          onToggle: (value) async {
             await ref
                 .read(analyticsPreferencesProvider.notifier)
                 .setPreference(research, value, ref);
@@ -200,33 +177,33 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     );
   }
 
-  // Reusable widget for switch toggle option without card
-  Widget _buildToggleAllOption(
-    String text,
-    bool value,
-    Future<void> Function() onToggle,
-    BuildContext context,
-  ) {
+  // widget for switch toggle option without card
+  Widget _buildToggleAllOption({
+    required BuildContext context,
+    required String text,
+    required bool value,
+    required Future<void> Function(bool) onToggle,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(text),
         Transform.scale(
           scale: 0.6,
-          child: Switch(value: value, onChanged: (_) => onToggle()),
+          child: Switch(value: value, onChanged: onToggle),
         ),
       ],
     );
   }
 
   // widget for analytics card with separate preference
-  Widget _buildAnalyticsCard(
-    BuildContext context,
-    String title,
-    String subtitle,
-    bool value,
-    Future<void> Function(bool) onToggle,
-  ) {
+  Widget _buildAnalyticsCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required bool value,
+    required Future<void> Function(bool) onToggle,
+  }) {
     final textTheme = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsets.only(top: 10),
@@ -260,5 +237,30 @@ class AnalyticsOptInWidget extends ConsumerWidget {
         style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
+  }
+
+  Future<void> _updateAllAnalyticsPreferences(
+    WidgetRef ref,
+    bool newValue,
+  ) async {
+    final telemetryAnalyticsNotifier = ref.read(
+      analyticsPreferencesProvider.notifier,
+    );
+    await telemetryAnalyticsNotifier.setPreference(
+      canReportSentry,
+      newValue,
+      ref,
+    );
+    await telemetryAnalyticsNotifier.setPreference(
+      matomoAnalytics,
+      newValue,
+      ref,
+    );
+    await telemetryAnalyticsNotifier.setPreference(
+      basicTelemetry,
+      newValue,
+      ref,
+    );
+    await telemetryAnalyticsNotifier.setPreference(research, newValue, ref);
   }
 }
