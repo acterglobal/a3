@@ -275,9 +275,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
     // reply is allowed for only EventItem not VirtualItem
     // user should be able to get original event as TimelineItem
-    TimelineEventItem orgEventItem = roomMsg.eventItem().expect(
-      'room msg should have event item',
-    );
+    TimelineEventItem? orgEventItem = roomMsg.eventItem();
+    if (orgEventItem == null) {
+      _log.severe('room msg should have event item');
+      return;
+    }
     EventSendState? eventState = orgEventItem.sendState();
     String eventType = orgEventItem.eventType();
     Map<String, dynamic> repliedToContent = {'eventState': eventState};
@@ -478,9 +480,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     }
 
     // If not virtual item, it should be event item
-    TimelineEventItem eventItem = message.eventItem().expect(
-      'room msg should have event item',
-    );
+    TimelineEventItem? eventItem = message.eventItem();
+    if (eventItem == null) {
+      _log.severe('room msg should have event item');
+      return types.UnsupportedMessage(
+        author: const types.User(id: 'virtual'),
+        remoteId: UniqueKey().toString(),
+        id: UniqueKey().toString(),
+        metadata: const {'itemType': 'virtual'},
+      );
+    }
     EventSendState? eventState;
     if (eventItem.sendState() != null) {
       eventState = eventItem.sendState();
@@ -584,9 +593,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'MembershipChange':
-        MembershipContent content = eventItem.membershipContent().expect(
-          'failed to get content of membership change',
-        );
+        MembershipContent? content = eventItem.membershipContent();
+        if (content == null) {
+          _log.severe('failed to get content of membership change');
+          break;
+        }
         return types.CustomMessage(
           author: author,
           createdAt: createdAt,
@@ -604,9 +615,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           },
         );
       case 'ProfileChange':
-        ProfileContent content = eventItem.profileContent().expect(
-          'failed to get content of profile change',
-        );
+        ProfileContent? content = eventItem.profileContent();
+        if (content == null) {
+          _log.severe('failed to get content of profile change');
+          break;
+        }
         final metadata = {
           'itemType': 'event',
           'eventType': eventType,

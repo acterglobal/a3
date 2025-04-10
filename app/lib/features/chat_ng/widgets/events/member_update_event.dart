@@ -1,4 +1,3 @@
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/room_member.dart';
@@ -8,6 +7,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show MembershipContent, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat_ng::widgets::member_update');
 
 class MemberUpdateEvent extends ConsumerWidget {
   final bool isMe;
@@ -52,9 +54,11 @@ class MemberUpdateEvent extends ConsumerWidget {
             .valueOrNull ??
         simplifyUserId(senderId) ??
         senderId;
-    MembershipContent content = item.membershipContent().expect(
-      'failed to get content of membership change',
-    );
+    MembershipContent? content = item.membershipContent();
+    if (content == null) {
+      _log.severe('failed to get content of membership change');
+      return null;
+    }
     final userId = content.userId().toString();
     final userName =
         ref

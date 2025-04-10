@@ -8,6 +8,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show ProfileContent, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat_ng::widgets::profile_update');
 
 class ProfileUpdateEvent extends ConsumerWidget {
   final bool isMe;
@@ -43,9 +46,11 @@ class ProfileUpdateEvent extends ConsumerWidget {
   ) {
     final lang = L10n.of(context);
     final myUserId = ref.read(myUserIdStrProvider);
-    ProfileContent content = item.profileContent().expect(
-      'failed to get content of profile change',
-    );
+    ProfileContent? content = item.profileContent();
+    if (content == null) {
+      _log.severe('failed to get content of profile change');
+      return null;
+    }
     final userId = content.userId().toString();
     final userName =
         ref

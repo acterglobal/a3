@@ -264,6 +264,7 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.text':
             MsgContent? msgContent = eventItem.message();
             if (msgContent == null) {
+              _log.severe('failed to get content of room message');
               return const SizedBox.shrink();
             }
             String body = msgContent.body();
@@ -333,11 +334,12 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
-        final body =
-            eventItem
-                .message()
-                .expect('m.sticker should have msg content')
-                .body();
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) {
+          _log.severe('failed to get content of sticker event');
+          return const SizedBox.shrink();
+        }
+        final body = msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -409,6 +411,11 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'MembershipChange':
+        MembershipContent? content = eventItem.membershipContent();
+        if (content == null) {
+          _log.severe('failed to get content of membership change');
+          return const SizedBox.shrink();
+        }
         final senderId = eventItem.sender();
         final senderName =
             ref
@@ -418,9 +425,6 @@ class _SubtitleWidget extends ConsumerWidget {
                 .valueOrNull ??
             simplifyUserId(senderId) ??
             senderId;
-        MembershipContent content = eventItem.membershipContent().expect(
-          'failed to get content of membership change',
-        );
         final userId = content.userId().toString();
         final userName =
             ref
@@ -455,9 +459,11 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'ProfileChange':
-        ProfileContent content = eventItem.profileContent().expect(
-          'failed to get content of profile change',
-        );
+        ProfileContent? content = eventItem.profileContent();
+        if (content == null) {
+          _log.severe('failed to get content of profile change');
+          return const SizedBox.shrink();
+        }
         final userId = content.userId().toString();
         final userName =
             ref
@@ -507,11 +513,12 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.poll.start':
-        final body =
-            eventItem
-                .message()
-                .expect('m.poll.start should have msg content')
-                .body();
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) {
+          _log.severe('failed to get content of poll event');
+          return const SizedBox.shrink();
+        }
+        final body = msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
