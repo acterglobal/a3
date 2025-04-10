@@ -492,13 +492,15 @@ class _SubtitleWidget extends ConsumerWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              body ?? '',
-              maxLines: 1,
-              style: textTheme.labelMedium?.copyWith(
-                fontStyle: FontStyle.italic,
+            Flexible(
+              child: Text(
+                body ?? '',
+                maxLines: 1,
+                style: textTheme.labelMedium?.copyWith(
+                  fontStyle: FontStyle.italic,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         );

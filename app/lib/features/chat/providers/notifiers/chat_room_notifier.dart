@@ -594,6 +594,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           'msgType': eventItem.msgType(),
           'eventState': eventState,
           'receipts': receipts,
+          'userId': content.userId().toString(),
         };
         final displayNameChange = content.displayNameChange();
         if (displayNameChange != null) {
