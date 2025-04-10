@@ -13,10 +13,10 @@ async fn chat_invitation_shows_up() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_convo("cI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("cI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
@@ -59,10 +59,10 @@ async fn space_invitation_shows_up() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_space("spI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 

@@ -47,7 +47,9 @@ class AsyncLatestMsgNotifier
 
   FutureOr<TimelineItem?> _refresh(String roomId) async {
     final convo = await ref.read(chatProvider(roomId).future);
-    return convo?.latestMessage();
+    if (convo == null) return null;
+    final msg = await convo.latestMessage();
+    return msg.data();
   }
 
   @override

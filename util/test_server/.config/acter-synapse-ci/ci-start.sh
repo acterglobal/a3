@@ -24,6 +24,11 @@ enable_registration_without_verification: true
 enable_registration: true
 suppress_key_server_warning: true
 
+experimental_features:
+  msc3266_enabled: true
+  msc3575_enabled: true
+  msc4186_enabled: true
+
 rc_message:
   per_second: 1000
   burst_count: 1000

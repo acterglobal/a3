@@ -246,6 +246,11 @@ object OptionComposeDraft {
     fn draft() -> Option<ComposeDraft>;
 }
 
+object OptionTimelineItem {
+    /// get data
+    fn data() -> Option<TimelineItem>;
+}
+
 object UserProfile {
     /// get user id
     fn user_id() -> UserId;
@@ -1028,6 +1033,18 @@ object TimelineEventItem {
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
+    /// original sender id, if this msg is reply to another msg
+    fn replied_to_sender() -> Option<string>;
+
+    /// original msg body, if this msg is reply to another msg
+    fn replied_to_body() -> Option<string>;
+
+    /// original msg type, if this msg is reply to another msg
+    fn replied_to_msgtype() -> Option<string>;
+
+    /// original msg content, if this msg is reply to another msg
+    fn replied_to_content() -> Option<MsgContent>;
+
     /// the list of users that read this message
     fn read_users() -> Vec<string>;
 
@@ -1443,7 +1460,7 @@ object Convo {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// Get the timeline for the room
-    fn timeline_stream() -> TimelineStream;
+    fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// how many unread notifications for this chat
     fn num_unread_notification_count() -> u64;
@@ -1455,10 +1472,10 @@ object Convo {
     fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<TimelineItem>;
+    fn latest_message() -> Future<Result<OptionTimelineItem>>;
 
     /// Latest message timestamp or 0
-    fn latest_message_ts() -> u64;
+    fn latest_message_ts() -> Future<Result<u64>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -3151,7 +3168,7 @@ object InvitationsManager {
 /// Main entry point for `acter`.
 object Client {
     /// start the sync
-    fn start_sync() -> SyncState;
+    fn start_sync() -> Future<Result<SyncState>>;
 
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;

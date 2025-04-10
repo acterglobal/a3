@@ -31,10 +31,10 @@ async fn ref_details_as_url_preview() -> Result<()> {
     let mut user = users[0].clone();
     let mut second = users[1].clone();
 
-    let sync_state1 = user.start_sync();
+    let sync_state1 = user.start_sync().await?;
     sync_state1.await_has_synced_history().await?;
 
-    let sync_state2 = second.start_sync();
+    let sync_state2 = second.start_sync().await?;
     sync_state2.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -65,7 +65,7 @@ async fn ref_details_as_url_preview() -> Result<()> {
         .convo(chat_id.to_string())
         .await
         .expect("we are in the chat");
-    let tl = convo.timeline_stream();
+    let tl = convo.timeline_stream().await?;
     tl.send_message(Box::new(draft)).await?;
 
     let fetcher_client = second.clone();
@@ -77,7 +77,8 @@ async fn ref_details_as_url_preview() -> Result<()> {
             accept_all_invites(&second).await?;
 
             let convo = second.convo(chat_id).await?;
-            let Some(msg) = convo.latest_message() else {
+            let latest_message = convo.latest_message().await?;
+            let Some(msg) = latest_message.data() else {
                 bail!("no latest message found");
             };
             let Some(item) = msg.event_item() else {
@@ -117,10 +118,10 @@ async fn url_preview_on_message() -> Result<()> {
     let mut user = users[0].clone();
     let mut second = users[1].clone();
 
-    let sync_state1 = user.start_sync();
+    let sync_state1 = user.start_sync().await?;
     sync_state1.await_has_synced_history().await?;
 
-    let sync_state2 = second.start_sync();
+    let sync_state2 = second.start_sync().await?;
     sync_state2.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -140,7 +141,7 @@ async fn url_preview_on_message() -> Result<()> {
         .convo(chat_id.to_string())
         .await
         .expect("we are in the chat");
-    let tl = convo.timeline_stream();
+    let tl = convo.timeline_stream().await?;
     tl.send_message(Box::new(draft)).await?;
 
     let fetcher_client = second.clone();
@@ -154,7 +155,8 @@ async fn url_preview_on_message() -> Result<()> {
             accept_all_invites(&second).await?;
 
             let convo = second.convo(chat_id).await?;
-            let Some(msg) = convo.latest_message() else {
+            let latest_message = convo.latest_message().await?;
+            let Some(msg) = latest_message.data() else {
                 bail!("no latest message found");
             };
             let Some(item) = msg.event_item() else {
