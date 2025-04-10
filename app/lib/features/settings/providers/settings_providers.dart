@@ -6,6 +6,9 @@ import 'package:acter/features/settings/providers/notifiers/locale_notifier.dart
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+
+final desktopFeaturesProvider = StateProvider<bool>((ref) => false);
+
 final allowSentryReportingProvider = FutureProvider(
   (ref) => getCanReportToSentry(),
 );

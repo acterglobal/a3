@@ -1,24 +1,18 @@
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class DesktopSetupPage extends ConsumerStatefulWidget {
-  const DesktopSetupPage({super.key});
+class DesktopSetupWidget extends ConsumerWidget {
+  const DesktopSetupWidget({super.key});
 
   @override
-  ConsumerState<DesktopSetupPage> createState() => _DesktopSetupPageState();
-}
-
-class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
-  bool _isFeaturesEnabled = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final textTheme = Theme.of(context).textTheme;
+    final isFeaturesEnabled = ref.watch(desktopFeaturesProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -43,13 +37,18 @@ class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
                     children: [
                       _buildIcon(context),
                       const SizedBox(height: 20),
-                      _buildTitleText(context, lang, textTheme),
+                      _buildTitleText(context, lang),
                       const SizedBox(height: 20),
-                      _buildDescriptionText(lang, textTheme),
+                      _buildDescriptionText(context, lang),
                       const SizedBox(height: 20),
-                      _buildActivateFeatures(context, lang, textTheme),
+                      _buildActivateFeatures(
+                        context,
+                        lang,
+                        isFeaturesEnabled,
+                        ref,
+                      ),
                       const SizedBox(height: 20),
-                      _buildActionButton(context, lang, textTheme),
+                      _buildActionButton(context, lang),
                     ],
                   ),
                 ),
@@ -71,10 +70,10 @@ class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
   }
 
   // Title text for the page
-  Widget _buildTitleText(BuildContext context, L10n lang, TextTheme textTheme) {
+  Widget _buildTitleText(BuildContext context, L10n lang) {
     return Text(
       lang.desktopSetup,
-      style: textTheme.headlineMedium?.copyWith(
+      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface,
       ),
       textAlign: TextAlign.center,
@@ -82,10 +81,10 @@ class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
   }
 
   // Description text for the page
-  Widget _buildDescriptionText(L10n lang, TextTheme textTheme) {
+  Widget _buildDescriptionText(BuildContext context, L10n lang) {
     return Text(
       lang.desktopSetupInfo,
-      style: textTheme.bodyMedium,
+      style: Theme.of(context).textTheme.bodyMedium,
       textAlign: TextAlign.center,
     );
   }
@@ -94,18 +93,18 @@ class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
   Widget _buildActivateFeatures(
     BuildContext context,
     L10n lang,
-    TextTheme textTheme,
+    bool isFeaturesEnabled,
+    WidgetRef ref,
   ) {
+    final textTheme = Theme.of(context).textTheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Checkbox(
-          value: _isFeaturesEnabled,
+          value: isFeaturesEnabled,
           onChanged: (bool? newValue) {
             if (newValue != null) {
-              setState(() {
-                _isFeaturesEnabled = newValue;
-              });
+              ref.read(desktopFeaturesProvider.notifier).state = newValue;
             }
           },
         ),
@@ -115,16 +114,13 @@ class _DesktopSetupPageState extends ConsumerState<DesktopSetupPage> {
   }
 
   // Action button for the page
-  Widget _buildActionButton(
-    BuildContext context,
-    L10n lang,
-    TextTheme textTheme,
-  ) {
+  Widget _buildActionButton(BuildContext context, L10n lang) {
+    final textTheme = Theme.of(context).textTheme;
     return OutlinedButton(
       onPressed: () => context.goNamed(Routes.main.name),
       child: Text(
-        L10n.of(context).gotIt,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        lang.gotIt,
+        style: textTheme.bodyMedium?.copyWith(
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
