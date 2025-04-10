@@ -120,48 +120,54 @@ String? getStateOnProfileChange(
   String userId,
   String userName,
 ) {
-  switch (metadata['displayName']['change']) {
-    case 'Changed':
-      String newVal = metadata['displayName']['newVal'];
-      String oldVal = metadata['displayName']['oldVal'];
-      if (userId == myId) {
-        return lang.chatProfileDisplayNameYouChanged(newVal);
-      } else {
-        return lang.chatProfileDisplayNameOtherChanged(oldVal, newVal);
-      }
-    case 'Set':
-      String newVal = metadata['displayName']['newVal'];
-      if (userId == myId) {
-        return lang.chatProfileDisplayNameYouSet(newVal);
-      } else {
-        return lang.chatProfileDisplayNameOtherSet(userId, newVal);
-      }
-    case 'Unset':
-      if (userId == myId) {
-        return lang.chatProfileDisplayNameYouUnset;
-      } else {
-        return lang.chatProfileDisplayNameOtherUnset(userName);
-      }
+  final displayName = metadata['displayName'];
+  if (displayName != null) {
+    switch (displayName['change']) {
+      case 'Changed':
+        String newVal = displayName['newVal'];
+        String oldVal = displayName['oldVal'];
+        if (userId == myId) {
+          return lang.chatProfileDisplayNameYouChanged(newVal);
+        } else {
+          return lang.chatProfileDisplayNameOtherChanged(oldVal, newVal);
+        }
+      case 'Set':
+        String newVal = displayName['newVal'];
+        if (userId == myId) {
+          return lang.chatProfileDisplayNameYouSet(newVal);
+        } else {
+          return lang.chatProfileDisplayNameOtherSet(userId, newVal);
+        }
+      case 'Unset':
+        if (userId == myId) {
+          return lang.chatProfileDisplayNameYouUnset;
+        } else {
+          return lang.chatProfileDisplayNameOtherUnset(userName);
+        }
+    }
   }
-  switch (metadata['avatarUrl']['change']) {
-    case 'Changed':
-      if (userId == myId) {
-        return lang.chatProfileAvatarUrlYouChanged;
-      } else {
-        return lang.chatProfileAvatarUrlOtherChanged(userName);
-      }
-    case 'Set':
-      if (userId == myId) {
-        return lang.chatProfileAvatarUrlYouSet;
-      } else {
-        return lang.chatProfileAvatarUrlOtherSet(userName);
-      }
-    case 'Unset':
-      if (userId == myId) {
-        return lang.chatProfileAvatarUrlYouUnset;
-      } else {
-        return lang.chatProfileAvatarUrlOtherUnset(userName);
-      }
+  final avatarUrl = metadata['avatarUrl'];
+  if (avatarUrl != null) {
+    switch (avatarUrl['change']) {
+      case 'Changed':
+        if (userId == myId) {
+          return lang.chatProfileAvatarUrlYouChanged;
+        } else {
+          return lang.chatProfileAvatarUrlOtherChanged(userName);
+        }
+      case 'Set':
+        if (userId == myId) {
+          return lang.chatProfileAvatarUrlYouSet;
+        } else {
+          return lang.chatProfileAvatarUrlOtherSet(userName);
+        }
+      case 'Unset':
+        if (userId == myId) {
+          return lang.chatProfileAvatarUrlYouUnset;
+        } else {
+          return lang.chatProfileAvatarUrlOtherUnset(userName);
+        }
+    }
   }
   return null;
 }
