@@ -4,7 +4,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/utils/device_permissions/notification.dart';
-import 'package:acter/common/utils/device_permissions/telemetry_analytics.dart';
+import 'package:acter/common/utils/telemetry_analytics.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
