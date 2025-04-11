@@ -5,35 +5,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-// Analytics preference keys
-const String canReportSentryKey = 'analytics.sentry';
-const String matomoAnalyticsKey = 'analytics.matomo';
-const String basicTelemetryKey = 'analytics.telemetry';
-const String researchKey = 'analytics.research';
+/// Enum representing different analytics preference keys
+enum AnalyticsPreferenceKey {
+  crashReporting,
+  basicTelemetry,
+  appAnalytics,
+  research,
+}
 
 // Analytics preference providers
 final canReportSentryProvider = createAsyncPrefProvider<bool>(
-  prefKey: canReportSentryKey,
+  prefKey: AnalyticsPreferenceKey.crashReporting.name,
   defaultValue: false,
 );
 
 final matomoAnalyticsProvider = createAsyncPrefProvider<bool>(
-  prefKey: matomoAnalyticsKey,
+  prefKey: AnalyticsPreferenceKey.appAnalytics.name,
   defaultValue: false,
 );
 
 final basicTelemetryProvider = createAsyncPrefProvider<bool>(
-  prefKey: basicTelemetryKey,
+  prefKey: AnalyticsPreferenceKey.basicTelemetry.name,
   defaultValue: false,
 );
 
 final researchProvider = createAsyncPrefProvider<bool>(
-  prefKey: researchKey,
+  prefKey: AnalyticsPreferenceKey.research.name,
   defaultValue: false,
 );
 
 Future<SentryEvent?> sentryBeforeSend(SentryEvent evt, Hint hint) async {
-  final canReport = await mainProviderContainer.read(canReportSentryProvider.future);
+  final canReport = await mainProviderContainer.read(
+    canReportSentryProvider.future,
+  );
   if (!canReport) {
     return null;
   }
@@ -57,18 +61,20 @@ void setMatomoUserId(String userId) {
 
 // Helper function to update analytics preferences
 Future<void> updateAnalyticsPreference(
-  String key,
+  AnalyticsPreferenceKey key,
   bool value,
   WidgetRef ref,
 ) async {
   await switch (key) {
-    matomoAnalyticsKey => () async {
+    AnalyticsPreferenceKey.appAnalytics => () async {
       await ref.read(matomoAnalyticsProvider.notifier).set(value);
       await setMatomoAnalytics(value, ref);
     }(),
-    canReportSentryKey => ref.read(canReportSentryProvider.notifier).set(value),
-    basicTelemetryKey => ref.read(basicTelemetryProvider.notifier).set(value),
-    researchKey => ref.read(researchProvider.notifier).set(value),
-    _ => throw ArgumentError('Unknown analytics preference key: $key'),
+    AnalyticsPreferenceKey.crashReporting =>
+        ref.read(canReportSentryProvider.notifier).set(value),
+    AnalyticsPreferenceKey.basicTelemetry =>
+        ref.read(basicTelemetryProvider.notifier).set(value),
+    AnalyticsPreferenceKey.research =>
+        ref.read(researchProvider.notifier).set(value),
   };
 }

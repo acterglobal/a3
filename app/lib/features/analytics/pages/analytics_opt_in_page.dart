@@ -140,7 +140,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.sendCrashReportsInfo,
           value: allowReportSending,
           onToggle: (value) async {
-            await updateAnalyticsPreference(canReportSentryKey, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.crashReporting,
+              value,
+              ref,
+            );
           },
         ),
         _buildAnalyticsCard(
@@ -149,7 +153,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.basicTelemetryInfo,
           value: basicTelemetryEnabled,
           onToggle: (value) async {
-            await updateAnalyticsPreference(basicTelemetryKey, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.basicTelemetry,
+              value,
+              ref,
+            );
           },
         ),
         _buildAnalyticsCard(
@@ -158,7 +166,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.appAnalyticsInfo,
           value: matomoAnalyticsEnabled,
           onToggle: (value) async {
-            await updateAnalyticsPreference(matomoAnalyticsKey, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.appAnalytics,
+              value,
+              ref,
+            );
           },
         ),
         _buildAnalyticsCard(
@@ -167,7 +179,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.researchInfo,
           value: researchEnabled,
           onToggle: (value) async {
-            await updateAnalyticsPreference(researchKey, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.research,
+              value,
+              ref,
+            );
           },
         ),
       ],
@@ -240,9 +256,9 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     WidgetRef ref,
     bool newValue,
   ) async {
-    await updateAnalyticsPreference(canReportSentryKey, newValue, ref);
-    await updateAnalyticsPreference(matomoAnalyticsKey, newValue, ref);
-    await updateAnalyticsPreference(basicTelemetryKey, newValue, ref);
-    await updateAnalyticsPreference(researchKey, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.crashReporting, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.basicTelemetry, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.appAnalytics, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.research, newValue, ref);
   }
 }

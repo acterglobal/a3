@@ -12,16 +12,28 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(canReportSentryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.crashReporting.name,
+              false,
+            ),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(matomoAnalyticsKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.appAnalytics.name,
+              false,
+            ),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(basicTelemetryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.basicTelemetry.name,
+              false,
+            ),
           ),
           researchProvider.overrideWith(
-            () => AsyncPrefNotifier(researchKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.research.name,
+              false,
+            ),
           ),
         ],
         child: const AnalyticsOptInWidget(),
@@ -39,16 +51,28 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(canReportSentryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.crashReporting.name,
+              false,
+            ),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(matomoAnalyticsKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.appAnalytics.name,
+              false,
+            ),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(basicTelemetryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.basicTelemetry.name,
+              false,
+            ),
           ),
           researchProvider.overrideWith(
-            () => AsyncPrefNotifier(researchKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.research.name,
+              false,
+            ),
           ),
         ],
         child: const AnalyticsOptInWidget(),
@@ -64,16 +88,28 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(canReportSentryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.crashReporting.name,
+              false,
+            ),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(matomoAnalyticsKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.appAnalytics.name,
+              false,
+            ),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(basicTelemetryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.basicTelemetry.name,
+              false,
+            ),
           ),
           researchProvider.overrideWith(
-            () => AsyncPrefNotifier(researchKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.research.name,
+              false,
+            ),
           ),
         ],
         child: const AnalyticsOptInWidget(),
@@ -92,16 +128,28 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(canReportSentryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.crashReporting.name,
+              false,
+            ),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(matomoAnalyticsKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.appAnalytics.name,
+              false,
+            ),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(basicTelemetryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.basicTelemetry.name,
+              false,
+            ),
           ),
           researchProvider.overrideWith(
-            () => AsyncPrefNotifier(researchKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.research.name,
+              false,
+            ),
           ),
         ],
         child: const AnalyticsOptInWidget(),
@@ -118,16 +166,28 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(canReportSentryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.crashReporting.name,
+              false,
+            ),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(matomoAnalyticsKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.appAnalytics.name,
+              false,
+            ),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(basicTelemetryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.basicTelemetry.name,
+              false,
+            ),
           ),
           researchProvider.overrideWith(
-            () => AsyncPrefNotifier(researchKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.research.name,
+              false,
+            ),
           ),
         ],
         child: const AnalyticsOptInWidget(),
@@ -150,16 +210,28 @@ void main() {
         await tester.pumpProviderWidget(
           overrides: [
             canReportSentryProvider.overrideWith(
-              () => AsyncPrefNotifier(canReportSentryKey, true),
+              () => AsyncPrefNotifier(
+                AnalyticsPreferenceKey.crashReporting.name,
+                true,
+              ),
             ),
             matomoAnalyticsProvider.overrideWith(
-              () => AsyncPrefNotifier(matomoAnalyticsKey, true),
+              () => AsyncPrefNotifier(
+                AnalyticsPreferenceKey.appAnalytics.name,
+                true,
+              ),
             ),
             basicTelemetryProvider.overrideWith(
-              () => AsyncPrefNotifier(basicTelemetryKey, true),
+              () => AsyncPrefNotifier(
+                AnalyticsPreferenceKey.basicTelemetry.name,
+                true,
+              ),
             ),
             researchProvider.overrideWith(
-              () => AsyncPrefNotifier(researchKey, true),
+              () => AsyncPrefNotifier(
+                AnalyticsPreferenceKey.research.name,
+                true,
+              ),
             ),
           ],
           child: const AnalyticsOptInWidget(),
@@ -183,16 +255,28 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(canReportSentryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.crashReporting.name,
+              false,
+            ),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(matomoAnalyticsKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.appAnalytics.name,
+              false,
+            ),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(basicTelemetryKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.basicTelemetry.name,
+              false,
+            ),
           ),
           researchProvider.overrideWith(
-            () => AsyncPrefNotifier(researchKey, false),
+            () => AsyncPrefNotifier(
+              AnalyticsPreferenceKey.research.name,
+              false,
+            ),
           ),
         ],
         child: const AnalyticsOptInWidget(),
