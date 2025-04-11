@@ -98,7 +98,7 @@ class LastMessageWidget extends ConsumerWidget {
       case 'm.room.redaction':
         return lang.thisMessageHasBeenDeleted;
       default:
-        final msgContent = eventItem?.msgContent();
+        final msgContent = eventItem?.message();
         return msgContent?.body() ?? '';
     }
   }

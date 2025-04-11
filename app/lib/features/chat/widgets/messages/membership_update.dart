@@ -18,27 +18,27 @@ class MembershipUpdateWidget extends ConsumerWidget {
     final firstName = message.author.firstName;
     if (msgType == 'Joined') {
       if (message.author.id == myUserId) {
-        textMsg = lang.chatYouJoined;
+        textMsg = lang.chatMembershipYouJoined;
       } else if (firstName != null) {
-        textMsg = lang.chatJoinedDisplayName(firstName);
+        textMsg = lang.chatMembershipOtherJoined(firstName);
       } else {
-        textMsg = lang.chatJoinedUserId(message.author.id);
+        textMsg = lang.chatMembershipOtherJoined(message.author.id);
       }
     } else if (msgType == 'InvitationAccepted') {
       if (message.author.id == myUserId) {
-        textMsg = lang.chatYouAcceptedInvite;
+        textMsg = lang.chatMembershipInvitationYouAccepted;
       } else if (firstName != null) {
-        textMsg = lang.chatInvitationAcceptedDisplayName(firstName);
+        textMsg = lang.chatMembershipInvitationOtherAccepted(firstName);
       } else {
-        textMsg = lang.chatInvitationAcceptedUserId(message.author.id);
+        textMsg = lang.chatMembershipInvitationOtherAccepted(message.author.id);
       }
     } else if (msgType == 'Invited') {
       if (message.author.id == myUserId) {
-        textMsg = lang.chatYouInvited('');
+        textMsg = lang.chatMembershipYouInvitedOther('');
       } else if (firstName != null) {
-        textMsg = lang.chatInvitedDisplayName(firstName, '');
+        textMsg = lang.chatMembershipOtherInvitedOther(firstName, '');
       } else {
-        textMsg = lang.chatInvitedUserId(message.author.id, '');
+        textMsg = lang.chatMembershipOtherInvitedOther(message.author.id, '');
       }
     } else {
       textMsg = message.metadata?['body'] ?? '';

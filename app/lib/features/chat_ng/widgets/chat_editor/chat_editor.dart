@@ -104,7 +104,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   void _handleEditing(TimelineEventItem? item) {
     if (item == null) return;
 
-    final msgContent = item.msgContent();
+    final msgContent = item.message();
     if (msgContent == null) return;
 
     final body = msgContent.body();
