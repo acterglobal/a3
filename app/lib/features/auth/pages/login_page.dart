@@ -218,7 +218,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!mounted) return;
       await handleCalendarPermission(context);
       if (!mounted) return;
-      await handleAnalyticsOptIn(context);
+      await showAnalyticsOptIn(context);
       if (!mounted) return;
       context.goNamed(Routes.main.name);
     } else {

@@ -179,7 +179,7 @@ class UploadAvatarPage extends ConsumerWidget {
           await handleCalendarPermission(context);
         }
         if (context.mounted) {
-          await handleAnalyticsOptIn(context);
+          await showAnalyticsOptIn(context);
         }
         if (context.mounted) {
           context.goNamed(Routes.main.name);

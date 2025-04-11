@@ -189,7 +189,7 @@ class SettingsMenu extends ConsumerWidget {
               title: lang.telemetryAnalytics,
               onTap: () {
                 if (context.mounted) {
-                  handleAnalyticsOptIn(context);
+                  showAnalyticsOptIn(context);
                 }
               },
             ),
