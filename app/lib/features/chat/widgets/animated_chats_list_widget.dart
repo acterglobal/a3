@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -103,7 +103,7 @@ class AnimatedChatsListState extends State<AnimatedChatsListWidget> {
     BuildContext context,
     Animation<double> animation,
   ) {
-    return ChatItemWidget(
+    return ConvoCard(
       animation: animation,
       key: Key('convo-card-$roomId-removed'),
       roomId: roomId,
@@ -126,7 +126,7 @@ class AnimatedChatsListState extends State<AnimatedChatsListWidget> {
     }
     final roomId = _currentList[index];
     _log.fine('render $roomId');
-    return ChatItemWidget(
+    return ConvoCard(
       animation: animation,
       key: Key('convo-card-$roomId'),
       roomId: roomId,

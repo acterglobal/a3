@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -63,13 +63,10 @@ class ChatListWidget extends ConsumerWidget {
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         final roomId = chatList[index].getRoomIdStr();
-        return Card(
-          margin: EdgeInsets.only(bottom: 16),
-          child: ChatItemWidget(
-            showSelectedIndication: false,
-            roomId: roomId,
-            onTap: () => goToChat(context, roomId),
-          ),
+        return ConvoCard(
+          showSelectedIndication: false,
+          roomId: roomId,
+          onTap: () => goToChat(context, roomId),
         );
       },
     );
