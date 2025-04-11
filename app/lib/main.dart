@@ -34,7 +34,7 @@ void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
-    await _startAppInner(makeApp(), true, true);
+    await _startAppInner(makeApp(), true);
   }
 }
 
@@ -47,13 +47,12 @@ Future<void> startAppForTesting(Widget app) async {
   setCreateOrJoinSpaceTutorialAsViewed();
   setBottomNavigationTutorialsAsViewed();
   setSpaceOverviewTutorialsAsViewed();
-  return await _startAppInner(app, false, false);
+  return await _startAppInner(app, false);
 }
 
 Future<void> _startAppInner(
   Widget app,
-  bool withSentry,
-  bool withMatomo,
+  bool withAnalytics,
 ) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
@@ -79,15 +78,14 @@ Future<void> _startAppInner(
     container: mainProviderContainer,
     child: app,
   );
-
-  if (withMatomo) {
+  if (withAnalytics) {
     await MatomoTracker.instance.initialize(
       siteId: Env.matomoSiteId,
       url: Env.matomoUrl,
     );
+
     MatomoTracker.instance.setOptOut(optOut: true);
-  }
-  if (withSentry) {
+    
     await SentryFlutter.init((options) {
       // we use the dart-define default env for the default stuff.
       options.dsn = Env.sentryDsn;
