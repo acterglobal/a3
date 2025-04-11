@@ -85,6 +85,7 @@ Future<void> _startAppInner(
       siteId: Env.matomoSiteId,
       url: Env.matomoUrl,
     );
+    MatomoTracker.instance.setOptOut(optOut: true);
   }
   if (withSentry) {
     await SentryFlutter.init((options) {
