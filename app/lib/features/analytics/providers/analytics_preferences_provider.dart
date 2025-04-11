@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
-import 'package:acter/config/setup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
