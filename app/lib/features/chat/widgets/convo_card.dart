@@ -3,7 +3,6 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/room_member.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
@@ -216,7 +215,6 @@ class _SubtitleWidget extends ConsumerWidget {
     }
 
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
-    final myUserId = ref.read(myUserIdStrProvider);
 
     TimelineEventItem? eventItem = latestMessage?.eventItem();
     if (eventItem == null) {
@@ -411,107 +409,9 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'MembershipChange':
-        MembershipContent? content = eventItem.membershipContent();
-        if (content == null) {
-          _log.severe('failed to get content of membership change');
-          return const SizedBox.shrink();
-        }
-        final senderId = eventItem.sender();
-        final senderName =
-            ref
-                .watch(
-                  memberDisplayNameProvider((roomId: roomId, userId: senderId)),
-                )
-                .valueOrNull ??
-            simplifyUserId(senderId) ??
-            senderId;
-        final userId = content.userId().toString();
-        final userName =
-            ref
-                .watch(
-                  memberDisplayNameProvider((roomId: roomId, userId: userId)),
-                )
-                .valueOrNull ??
-            simplifyUserId(userId) ??
-            userId;
-        String? body = getStateOnMembershipChange(
-          lang,
-          content.change(),
-          myUserId,
-          senderId,
-          senderName,
-          userId,
-          userName,
-        );
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                body ?? '',
-                maxLines: 1,
-                style: textTheme.labelMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        );
+        return _MembershipUpdateWidget(roomId: roomId, eventItem: eventItem);
       case 'ProfileChange':
-        ProfileContent? content = eventItem.profileContent();
-        if (content == null) {
-          _log.severe('failed to get content of profile change');
-          return const SizedBox.shrink();
-        }
-        final userId = content.userId().toString();
-        final userName =
-            ref
-                .watch(
-                  memberDisplayNameProvider((roomId: roomId, userId: userId)),
-                )
-                .valueOrNull ??
-            simplifyUserId(userId) ??
-            userId;
-        Map<String, dynamic> metadata = {};
-        final displayNameChange = content.displayNameChange();
-        if (displayNameChange != null) {
-          metadata['displayName'] = {
-            'change': displayNameChange,
-            'newVal': content.displayNameNewVal(),
-            'oldVal': content.displayNameOldVal(),
-          };
-        }
-        final avatarUrlChange = content.avatarUrlChange();
-        if (avatarUrlChange != null) {
-          metadata['avatarUrl'] = {
-            'change': avatarUrlChange,
-            'newVal': content.avatarUrlNewVal().map((url) => url.toString()),
-            'oldVal': content.avatarUrlOldVal().map((url) => url.toString()),
-          };
-        }
-        String? body = getStateOnProfileChange(
-          lang,
-          metadata,
-          myUserId,
-          userId,
-          userName,
-        );
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                body ?? '',
-                maxLines: 1,
-                style: textTheme.labelMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        );
+        return _ProfileUpdateWidget(roomId: roomId, eventItem: eventItem);
       case 'm.poll.start':
         MsgContent? msgContent = eventItem.message();
         if (msgContent == null) {
@@ -592,5 +492,809 @@ class _TrailingWidget extends ConsumerWidget {
       jiffyTime(context, eventItem.originServerTs()),
       style: Theme.of(context).textTheme.labelMedium,
     );
+  }
+}
+
+class _MembershipUpdateWidget extends ConsumerWidget {
+  final String roomId;
+  final TimelineEventItem eventItem;
+
+  const _MembershipUpdateWidget({
+    required this.roomId,
+    required this.eventItem,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myId = ref.read(myUserIdStrProvider);
+    MembershipContent? content = eventItem.membershipContent();
+    if (content == null) {
+      _log.severe('failed to get content of membership change');
+      return const SizedBox.shrink();
+    }
+    final senderId = eventItem.sender();
+    final senderName =
+        ref
+            .watch(
+              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
+            )
+            .valueOrNull ??
+        simplifyUserId(senderId) ??
+        senderId;
+    final userId = content.userId().toString();
+    final userName =
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
+        simplifyUserId(userId) ??
+        userId;
+    switch (content.change()) {
+      case 'joined':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildJoinedEventMessage(context, myId, userId, userName),
+            ),
+          ],
+        );
+      case 'left':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildLeftEventMessage(context, myId, userId, userName),
+            ),
+          ],
+        );
+      case 'banned':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildBannedEventMessage(
+                context,
+                myId,
+                senderId,
+                senderName,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'unbanned':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildUnbannedEventMessage(
+                context,
+                myId,
+                senderId,
+                senderName,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'kicked':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildKickedEventMessage(
+                context,
+                myId,
+                senderId,
+                senderName,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'invited':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildInvitedEventMessage(
+                context,
+                myId,
+                senderId,
+                senderName,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'kickedAndBanned':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildKickedAndBannedEventMessage(
+                context,
+                myId,
+                senderId,
+                senderName,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'invitationAccepted':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildInvitationAcceptedEventMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'invitationRejected':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildInvitationRejectedEventMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'invitationRevoked':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildInvitationRevokedEventMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'knocked':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildKnockedEventMessage(
+                context,
+                myId,
+                senderId,
+                senderName,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'knockAccepted':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildKnockAcceptedEventMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'knockRetracted':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildKnockRetractedEventMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'knockDenied':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildKnockDeniedEventMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget buildJoinedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipYouJoined,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherJoined(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildLeftEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipYouLeft,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherLeft(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildBannedEventMessage(
+    BuildContext context,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (senderId == myId) {
+      return Text(
+        lang.chatMembershipYouBannedOther(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (userId == myId) {
+      return Text(
+        lang.chatMembershipOtherBannedYou(senderName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherBannedOther(senderName, userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildUnbannedEventMessage(
+    BuildContext context,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (senderId == myId) {
+      return Text(
+        lang.chatMembershipYouUnbannedOther(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (userId == myId) {
+      return Text(
+        lang.chatMembershipOtherUnbannedYou(senderName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherUnbannedOther(senderName, userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildKickedEventMessage(
+    BuildContext context,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (senderId == myId) {
+      return Text(
+        lang.chatMembershipYouKickedOther(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (userId == myId) {
+      return Text(
+        lang.chatMembershipOtherKickedYou(senderName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherKickedOther(senderName, userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildInvitedEventMessage(
+    BuildContext context,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (senderId == myId) {
+      return Text(
+        lang.chatMembershipYouInvitedOther(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (userId == myId) {
+      return Text(
+        lang.chatMembershipOtherInvitedYou(senderName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherInvitedOther(senderName, userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildKickedAndBannedEventMessage(
+    BuildContext context,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (senderId == myId) {
+      return Text(
+        lang.chatMembershipYouKickedAndBannedOther(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (userId == myId) {
+      return Text(
+        lang.chatMembershipOtherKickedAndBannedYou(senderName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherKickedAndBannedOther(senderName, userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildInvitationAcceptedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipInvitationYouAccepted,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipInvitationOtherAccepted(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildInvitationRejectedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipInvitationYouRejected,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipInvitationOtherRejected(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildInvitationRevokedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipInvitationYouRevoked,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipInvitationOtherRevoked(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildKnockedEventMessage(
+    BuildContext context,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (senderId == myId) {
+      return Text(
+        lang.chatMembershipYouKnockedOther(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else if (userId == myId) {
+      return Text(
+        lang.chatMembershipOtherKnockedYou(senderName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipOtherKnockedOther(senderName, userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildKnockAcceptedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipKnockYouAccepted,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipKnockOtherAccepted(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildKnockRetractedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipKnockYouRetracted,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipKnockOtherRetracted(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildKnockDeniedEventMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatMembershipKnockYouDenied,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatMembershipKnockOtherDenied(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+}
+
+class _ProfileUpdateWidget extends ConsumerWidget {
+  final String roomId;
+  final TimelineEventItem eventItem;
+
+  const _ProfileUpdateWidget({required this.roomId, required this.eventItem});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return const SizedBox.shrink();
+  }
+
+  Widget buildDisplayNameChangedMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String newVal,
+    String oldVal,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatProfileDisplayNameYouChanged(newVal),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatProfileDisplayNameOtherChanged(oldVal, newVal),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildDisplayNameSetMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String newVal,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatProfileDisplayNameYouSet(newVal),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatProfileDisplayNameOtherSet(userId, newVal),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildDisplayNameUnsetMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatProfileDisplayNameYouUnset,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatProfileDisplayNameOtherUnset(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildAvatarUrlChangedMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatProfileAvatarUrlYouChanged,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatProfileAvatarUrlOtherChanged(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildAvatarUrlSetMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatProfileAvatarUrlYouSet,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatProfileAvatarUrlOtherSet(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  Widget buildAvatarUrlUnsetMessage(
+    BuildContext context,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    if (userId == myId) {
+      return Text(
+        lang.chatProfileAvatarUrlYouUnset,
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        lang.chatProfileAvatarUrlOtherUnset(userName),
+        maxLines: 1,
+        style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
   }
 }
