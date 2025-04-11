@@ -34,8 +34,8 @@ final researchProvider = createAsyncPrefProvider<bool>(
   defaultValue: false,
 );
 
-Future<SentryEvent?> sentryBeforeSend(SentryEvent evt, Hint hint) async {
-  final canReport = await mainProviderContainer.read(
+Future<SentryEvent?> sentryBeforeSend(ProviderContainer container, SentryEvent evt, Hint hint) async {
+  final canReport = await container.read(
     canReportSentryProvider.future,
   );
   if (!canReport) {
