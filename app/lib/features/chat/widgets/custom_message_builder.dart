@@ -2,7 +2,6 @@ import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/location_message.dart';
 import 'package:acter/features/chat/widgets/messages/membership_update.dart';
 import 'package:acter/features/chat/widgets/messages/poll_start_message.dart';
-import 'package:acter/features/chat/widgets/messages/profile_update.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat/widgets/messages/simple_state_update.dart';
 import 'package:acter/features/chat/widgets/messages/sticker_message.dart';
@@ -28,10 +27,8 @@ class CustomMessageBuilder extends StatelessWidget {
     switch (message.metadata?['eventType']) {
       case 'm.room.encrypted':
         return const EncryptedMessageWidget();
-      case 'MembershipChange':
+      case 'm.room.member':
         return MembershipUpdateWidget(message: message);
-      case 'ProfileChange':
-        return ProfileUpdateWidget(message: message);
       case 'm.room.message':
         if (message.metadata?['msgType'] == 'm.location') {
           return LocationMessageWidget(message: message);

@@ -592,69 +592,28 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           id: uniqueId,
           metadata: metadata,
         );
-      case 'MembershipChange':
-        MembershipContent? content = eventItem.membershipContent();
-        if (content == null) {
-          _log.severe('failed to get content of membership change');
-          break;
-        }
-        return types.CustomMessage(
-          author: author,
-          createdAt: createdAt,
-          id: uniqueId,
-          roomId: roomId,
-          remoteId: eventId,
-          metadata: {
-            'itemType': 'event',
-            'eventType': eventType,
-            'msgType': eventItem.msgType(),
-            'eventState': eventState,
-            'receipts': receipts,
-            'change': content.change(),
-            'userId': content.userId().toString(),
-          },
-        );
-      case 'ProfileChange':
-        ProfileContent? content = eventItem.profileContent();
-        if (content == null) {
-          _log.severe('failed to get content of profile change');
-          break;
-        }
-        final metadata = {
-          'itemType': 'event',
-          'eventType': eventType,
-          'msgType': eventItem.msgType(),
-          'eventState': eventState,
-          'receipts': receipts,
-          'userId': content.userId().toString(),
-        };
-        final displayNameChange = content.displayNameChange();
-        if (displayNameChange != null) {
-          metadata['displayName'] = {
-            'change': displayNameChange,
-            'newVal': content.displayNameNewVal(),
-            'oldVal': content.displayNameOldVal(),
-          };
-        }
-        final avatarUrlChange = content.avatarUrlChange();
-        if (avatarUrlChange != null) {
-          metadata['avatarUrl'] = {
-            'change': avatarUrlChange,
-            'newVal': content.avatarUrlNewVal().map((url) => url.toString()),
-            'oldVal': content.avatarUrlOldVal().map((url) => url.toString()),
-          };
-        }
-        return types.CustomMessage(
-          author: author,
-          createdAt: createdAt,
-          id: uniqueId,
-          roomId: roomId,
-          remoteId: eventId,
-          metadata: metadata,
-        );
-      case 'm.room.message':
+      case 'm.room.member':
         MsgContent? msgContent = eventItem.message();
-        if (msgContent == null) break;
+        if (msgContent != null) {
+          String? formattedBody = msgContent.formattedBody();
+          String body = msgContent.body(); // always exists
+          return types.CustomMessage(
+            author: author,
+            createdAt: createdAt,
+            id: uniqueId,
+            remoteId: eventId,
+            metadata: {
+              'itemType': 'event',
+              'eventType': eventType,
+              'msgType': eventItem.msgType(),
+              'body': formattedBody ?? body,
+              'eventState': eventState,
+              'receipts': receipts,
+            },
+          );
+        }
+        break;
+      case 'm.room.message':
         Map<String, dynamic> reactions = {};
         for (final key in asDartStringList(eventItem.reactionKeys())) {
           final records = eventItem.reactionRecords(key);

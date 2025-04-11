@@ -44,8 +44,7 @@ class BubbleBuilder extends ConsumerWidget {
     final isAuthor = (myId == message.author.id);
     final inputNotifier = ref.read(chatInputProvider.notifier);
     String? eventType = message.metadata?['eventType'];
-    bool isMemberEvent =
-        eventType == 'MembershipChange' || eventType == 'ProfileChange';
+    bool isMemberEvent = eventType == 'm.room.member';
     bool redactedOrEncrypted =
         (message is types.CustomMessage) &&
         (eventType == 'm.room.redaction' || eventType == 'm.room.encrypted');

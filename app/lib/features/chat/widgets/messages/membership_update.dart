@@ -1,8 +1,4 @@
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/room_member.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -17,40 +13,41 @@ class MembershipUpdateWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final myUserId = ref.watch(myUserIdStrProvider);
-    String roomId = message.roomId.expect(
-      'room id should be specified in custom message for membership change',
-    );
-    String change = message.metadata?['change'];
-    String senderId = message.author.id;
-    final senderName =
-        ref
-            .watch(
-              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
-            )
-            .valueOrNull ??
-        simplifyUserId(senderId) ??
-        senderId;
-    String userId = message.metadata?['userId'];
-    final userName =
-        ref
-            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
-            .valueOrNull ??
-        simplifyUserId(userId) ??
-        userId;
-    String? body = getStateOnMembershipChange(
-      lang,
-      change,
-      myUserId,
-      senderId,
-      senderName,
-      userId,
-      userName,
-    );
+    late String textMsg;
+    final msgType = message.metadata?['msgType'];
+    final firstName = message.author.firstName;
+    if (msgType == 'Joined') {
+      if (message.author.id == myUserId) {
+        textMsg = lang.chatMembershipYouJoined;
+      } else if (firstName != null) {
+        textMsg = lang.chatMembershipOtherJoined(firstName);
+      } else {
+        textMsg = lang.chatMembershipOtherJoined(message.author.id);
+      }
+    } else if (msgType == 'InvitationAccepted') {
+      if (message.author.id == myUserId) {
+        textMsg = lang.chatMembershipInvitationYouAccepted;
+      } else if (firstName != null) {
+        textMsg = lang.chatMembershipInvitationOtherAccepted(firstName);
+      } else {
+        textMsg = lang.chatMembershipInvitationOtherAccepted(message.author.id);
+      }
+    } else if (msgType == 'Invited') {
+      if (message.author.id == myUserId) {
+        textMsg = lang.chatMembershipYouInvitedOther('');
+      } else if (firstName != null) {
+        textMsg = lang.chatMembershipOtherInvitedOther(firstName, '');
+      } else {
+        textMsg = lang.chatMembershipOtherInvitedOther(message.author.id, '');
+      }
+    } else {
+      textMsg = message.metadata?['body'] ?? '';
+    }
     return Container(
       padding: const EdgeInsets.only(left: 10, bottom: 5),
       child: RichText(
         text: TextSpan(
-          text: body ?? '',
+          text: textMsg,
           style: Theme.of(context).textTheme.labelSmall,
         ),
       ),
