@@ -2,6 +2,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/avatar/full_screen_avatar_page.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
@@ -11,6 +12,7 @@ import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
+import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
 import 'package:acter/features/deep_linking/pages/scan_qr_code.dart';
 import 'package:acter/features/intro/pages/intro_page.dart';
 import 'package:acter/features/intro/pages/intro_profile.dart';
@@ -264,6 +266,16 @@ final generalRoutes = [
           );
     },
   ),
+  if (includeChatShowcase)
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.chatListShowcase.name,
+      path: Routes.chatListShowcase.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return MaterialPage(key: state.pageKey, child: ChatListShowcasePage());
+      },
+    ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
     name: Routes.fullScreenAvatar.name,
