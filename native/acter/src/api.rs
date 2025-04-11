@@ -66,7 +66,15 @@ pub use acter_core::{
         UtcDateTime,
     },
     models::{
-        status::{MembershipContent, ProfileContent},
+        status::{
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent, RoomAliasesContent, RoomAvatarContent,
+            RoomCanonicalAliasContent, RoomCreateContent, RoomEncryptionContent,
+            RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
+            RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
+            RoomThirdPartyInviteContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+            SpaceParentContent,
+        },
         ActerModel, Tag, TextMessageContent,
     },
 };
