@@ -151,9 +151,13 @@ class MockAsyncLatestMsgNotifier
     extends FamilyAsyncNotifier<TimelineItem?, String>
     with Mock
     implements AsyncLatestMsgNotifier {
+  final TimelineItem? timelineItem;
+
+  MockAsyncLatestMsgNotifier({this.timelineItem});
+
   @override
   FutureOr<TimelineItem?> build(String arg) {
-    return null;
+    return timelineItem;
   }
 }
 

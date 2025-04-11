@@ -2371,6 +2371,8 @@
   "allowPermission": "Allow Permission",
   "askAgain": "Ask again later",
   "spam": "No marketing spam",
+  "chatUIShowcase": "Chat UI Show-case",
+  "chatUIShowcaseDes": "Showcase the user interface and overall chat experience with sample data",
   "notificationDenied": "Notification permission denied",
   "permissionPermantlyDenied": "Permission permanently denied. You can enable it in settings",
   "goToSettings": "Go to Settings",
