@@ -113,6 +113,12 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     ref.read(localeProvider.notifier).initLanguage();
+    ref.listen(matomoAnalyticsProvider, (previous, next) {
+      if (next.hasValue) {
+        final isEnabled = next.value ?? false;
+        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
+      }
+    });
     WidgetsBinding.instance.addObserver(this);
   }
 
