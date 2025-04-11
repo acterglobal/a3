@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';

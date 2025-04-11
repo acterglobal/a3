@@ -2,7 +2,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/typing_indicator.dart'
     show AnimatedCircles;
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item/typing_indicator.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';

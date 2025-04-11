@@ -1,5 +1,5 @@
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item/unread_count_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/unread_count_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';

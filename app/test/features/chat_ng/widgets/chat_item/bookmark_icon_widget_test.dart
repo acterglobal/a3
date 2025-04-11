@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item/bookmark_icon_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/bookmark_icon_widget.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

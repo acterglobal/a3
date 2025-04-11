@@ -1,6 +1,6 @@
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item/last_message_widget.dart';
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item/typing_indicator.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

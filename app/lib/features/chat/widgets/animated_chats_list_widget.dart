@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ui_showcase/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
