@@ -1,10 +1,9 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/main.dart';
 import 'package:acter/config/env.g.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,12 +105,18 @@ class AnalyticsOptInWidget extends ConsumerWidget {
   // Refactored crash analytics section with toggle functionality
   Widget _buildTelemetryAnalytics(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final preferences = ref.watch(analyticsPreferencesProvider);
 
-    final allowReportSending = preferences[canReportSentry] ?? isNightly;
-    final matomoAnalyticsEnabled = preferences[matomoAnalytics] ?? isNightly;
-    final basicTelemetryEnabled = preferences[basicTelemetry] ?? isNightly;
-    final researchEnabled = preferences[research] ?? isNightly;
+    // Watch all analytics preferences
+    final allowReportSendingAsync = ref.watch(canReportSentryProvider);
+    final matomoAnalyticsAsync = ref.watch(matomoAnalyticsProvider);
+    final basicTelemetryAsync = ref.watch(basicTelemetryProvider);
+    final researchAsync = ref.watch(researchProvider);
+
+    // Get the values or default to isNightly
+    final allowReportSending = allowReportSendingAsync.value ?? isNightly;
+    final matomoAnalyticsEnabled = matomoAnalyticsAsync.value ?? isNightly;
+    final basicTelemetryEnabled = basicTelemetryAsync.value ?? isNightly;
+    final researchEnabled = researchAsync.value ?? isNightly;
 
     final allEnabled =
         allowReportSending &&
@@ -135,9 +140,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.sendCrashReportsInfo,
           value: allowReportSending,
           onToggle: (value) async {
-            await ref
-                .read(analyticsPreferencesProvider.notifier)
-                .setPreference(canReportSentry, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.crashReporting,
+              value,
+              ref,
+            );
           },
         ),
         _buildAnalyticsCard(
@@ -146,9 +153,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.basicTelemetryInfo,
           value: basicTelemetryEnabled,
           onToggle: (value) async {
-            await ref
-                .read(analyticsPreferencesProvider.notifier)
-                .setPreference(basicTelemetry, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.basicTelemetry,
+              value,
+              ref,
+            );
           },
         ),
         _buildAnalyticsCard(
@@ -157,9 +166,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.appAnalyticsInfo,
           value: matomoAnalyticsEnabled,
           onToggle: (value) async {
-            await ref
-                .read(analyticsPreferencesProvider.notifier)
-                .setPreference(matomoAnalytics, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.appAnalytics,
+              value,
+              ref,
+            );
           },
         ),
         _buildAnalyticsCard(
@@ -168,9 +179,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
           subtitle: lang.researchInfo,
           value: researchEnabled,
           onToggle: (value) async {
-            await ref
-                .read(analyticsPreferencesProvider.notifier)
-                .setPreference(research, value, ref);
+            await updateAnalyticsPreference(
+              AnalyticsPreferenceKey.research,
+              value,
+              ref,
+            );
           },
         ),
       ],
@@ -243,24 +256,9 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     WidgetRef ref,
     bool newValue,
   ) async {
-    final telemetryAnalyticsNotifier = ref.read(
-      analyticsPreferencesProvider.notifier,
-    );
-    await telemetryAnalyticsNotifier.setPreference(
-      canReportSentry,
-      newValue,
-      ref,
-    );
-    await telemetryAnalyticsNotifier.setPreference(
-      matomoAnalytics,
-      newValue,
-      ref,
-    );
-    await telemetryAnalyticsNotifier.setPreference(
-      basicTelemetry,
-      newValue,
-      ref,
-    );
-    await telemetryAnalyticsNotifier.setPreference(research, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.crashReporting, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.basicTelemetry, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.appAnalytics, newValue, ref);
+    await updateAnalyticsPreference(AnalyticsPreferenceKey.research, newValue, ref);
   }
 }

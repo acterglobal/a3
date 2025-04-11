@@ -7,12 +7,12 @@ import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/common/utils/logging.dart';
-import 'package:acter/common/utils/main.dart';
 import 'package:acter/config/desktop.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter/router/router.dart';
@@ -34,7 +34,7 @@ void main(List<String> args) async {
   if (args.isNotEmpty) {
     await cliMain(args);
   } else {
-    await _startAppInner(makeApp(), true, true);
+    await _startAppInner(makeApp(), true);
   }
 }
 
@@ -47,13 +47,12 @@ Future<void> startAppForTesting(Widget app) async {
   setCreateOrJoinSpaceTutorialAsViewed();
   setBottomNavigationTutorialsAsViewed();
   setSpaceOverviewTutorialsAsViewed();
-  return await _startAppInner(app, false, false);
+  return await _startAppInner(app, false);
 }
 
 Future<void> _startAppInner(
   Widget app,
-  bool withSentry,
-  bool withMatomo,
+  bool withAnalytics,
 ) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
@@ -79,14 +78,14 @@ Future<void> _startAppInner(
     container: mainProviderContainer,
     child: app,
   );
-
-  if (withMatomo) {
+  if (withAnalytics) {
     await MatomoTracker.instance.initialize(
       siteId: Env.matomoSiteId,
       url: Env.matomoUrl,
     );
-  }
-  if (withSentry) {
+
+    MatomoTracker.instance.setOptOut(optOut: true);
+    
     await SentryFlutter.init((options) {
       // we use the dart-define default env for the default stuff.
       options.dsn = Env.sentryDsn;
@@ -95,7 +94,7 @@ Future<void> _startAppInner(
 
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
-      options.beforeSend = sentryBeforeSend;
+      options.beforeSend = (SentryEvent evt, Hint hint) => sentryBeforeSend(mainProviderContainer, evt, hint);
     }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
@@ -131,7 +130,12 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final language = ref.watch(localeProvider);
-
+    ref.listen(matomoAnalyticsProvider, (previous, next) {
+      if (next.hasValue) {
+        final isEnabled = next.value ?? false;
+        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
+      }
+    });
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
     EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;
