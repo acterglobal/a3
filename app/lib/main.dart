@@ -113,12 +113,6 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     ref.read(localeProvider.notifier).initLanguage();
-    ref.listen(matomoAnalyticsProvider, (previous, next) {
-      if (next.hasValue) {
-        final isEnabled = next.value ?? false;
-        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
-      }
-    });
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -136,7 +130,12 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final language = ref.watch(localeProvider);
-
+    ref.listen(matomoAnalyticsProvider, (previous, next) {
+      if (next.hasValue) {
+        final isEnabled = next.value ?? false;
+        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
+      }
+    });
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
     EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;
