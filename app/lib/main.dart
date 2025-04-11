@@ -12,7 +12,7 @@ import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
-import 'package:acter/features/onboarding/providers/analytics_preferences_provider.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter/router/router.dart';

@@ -2,7 +2,7 @@ import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/config/env.g.dart';
-import 'package:acter/features/onboarding/providers/analytics_preferences_provider.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';

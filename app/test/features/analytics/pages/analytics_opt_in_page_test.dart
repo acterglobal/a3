@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
-import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
-import 'package:acter/features/onboarding/providers/analytics_preferences_provider.dart';
+import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
