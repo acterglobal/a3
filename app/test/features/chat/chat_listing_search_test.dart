@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,7 +73,7 @@ void main() {
       // -- we see all
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -87,7 +87,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(2),
@@ -100,7 +100,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(3),
@@ -116,7 +116,7 @@ void main() {
       // -- we should see all of them again
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -141,7 +141,7 @@ void main() {
       // -- we see all
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -158,7 +158,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
@@ -175,7 +175,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
@@ -192,7 +192,7 @@ void main() {
       // -- we should see all of them again
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -217,7 +217,7 @@ void main() {
       // -- we see all
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -234,7 +234,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
@@ -246,7 +246,7 @@ void main() {
       // -- we still only see the subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
