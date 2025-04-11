@@ -37,7 +37,7 @@ class ProfileUpdateEvent extends ConsumerWidget {
     WidgetRef ref,
     TimelineEventItem item,
   ) {
-    final myId = ref.read(myUserIdStrProvider);
+    final myId = ref.watch(myUserIdStrProvider);
     ProfileContent? content = item.profileContent();
     if (content == null) {
       _log.severe('failed to get content of profile change');

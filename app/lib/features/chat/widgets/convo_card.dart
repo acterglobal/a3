@@ -506,7 +506,7 @@ class _MembershipUpdateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final myId = ref.read(myUserIdStrProvider);
+    final myId = ref.watch(myUserIdStrProvider);
     MembershipContent? content = eventItem.membershipContent();
     if (content == null) {
       _log.severe('failed to get content of membership change');
@@ -1144,7 +1144,7 @@ class _ProfileUpdateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final myId = ref.read(myUserIdStrProvider);
+    final myId = ref.watch(myUserIdStrProvider);
     ProfileContent? content = eventItem.profileContent();
     if (content == null) {
       _log.severe('failed to get content of membership change');

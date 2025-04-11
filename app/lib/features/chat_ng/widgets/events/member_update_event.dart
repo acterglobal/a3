@@ -37,7 +37,7 @@ class MemberUpdateEvent extends ConsumerWidget {
     WidgetRef ref,
     TimelineEventItem item,
   ) {
-    final myId = ref.read(myUserIdStrProvider);
+    final myId = ref.watch(myUserIdStrProvider);
     final senderId = item.sender();
     final senderName =
         ref
