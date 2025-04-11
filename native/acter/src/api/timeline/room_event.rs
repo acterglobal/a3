@@ -1,4 +1,11 @@
-use acter_core::models::status::{MembershipContent, ProfileContent};
+use acter_core::models::status::{
+    MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
+    ProfileContent, RoomAliasesContent, RoomAvatarContent, RoomCanonicalAliasContent,
+    RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+    RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+    RoomServerAclContent, RoomThirdPartyInviteContent, RoomTombstoneContent, RoomTopicContent,
+    SpaceChildContent, SpaceParentContent,
+};
 use matrix_sdk_base::ruma::events::room::message::MessageType;
 use serde::{Deserialize, Serialize};
 
@@ -10,6 +17,26 @@ pub enum TimelineEventContent {
     Message(MsgContent),
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
+    PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
+    RoomAliases(RoomAliasesContent),
+    RoomAvatar(RoomAvatarContent),
+    RoomCanonicalAlias(RoomCanonicalAliasContent),
+    RoomCreate(RoomCreateContent),
+    RoomEncryption(RoomEncryptionContent),
+    RoomGuestAccess(RoomGuestAccessContent),
+    RoomHistoryVisibility(RoomHistoryVisibilityContent),
+    RoomJoinRules(RoomJoinRulesContent),
+    RoomName(RoomNameContent),
+    RoomPinnedEvents(RoomPinnedEventsContent),
+    RoomPowerLevels(RoomPowerLevelsContent),
+    RoomServerAcl(RoomServerAclContent),
+    RoomThirdPartyInvite(RoomThirdPartyInviteContent),
+    RoomTombstone(RoomTombstoneContent),
+    RoomTopic(RoomTopicContent),
+    SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
 }
 
 impl TryFrom<&MessageType> for TimelineEventContent {

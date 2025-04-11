@@ -1031,6 +1031,66 @@ object TimelineEventItem {
     /// covers some of m.room.member
     fn profile_content() -> Option<ProfileContent>;
 
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
+
+    /// covers m.policy.rule.server
+    fn policy_rule_server_content() -> Option<PolicyRuleServerContent>;
+
+    /// covers m.policy.rule.user
+    fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.aliases
+    fn room_aliases_content() -> Option<RoomAliasesContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.canonical_alias
+    fn room_canonical_alias_content() -> Option<RoomCanonicalAliasContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers m.room.join_rules
+    fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
+
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
+    /// covers m.room.third_party_invite
+    fn room_third_party_invite_content() -> Option<RoomThirdPartyInviteContent>;
+
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1192,6 +1252,223 @@ object JoinRuleBuilder {
     fn join_rule(input: string);
     fn add_room(room: string);
 }
+
+
+//  ########   #######   #######  ##     ##     ######  ########    ###    ######## ########     ######  ##     ##    ###    ##    ##  ######   ######## 
+//  ##     ## ##     ## ##     ## ###   ###    ##    ##    ##      ## ##      ##    ##          ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       
+//  ##     ## ##     ## ##     ## #### ####    ##          ##     ##   ##     ##    ##          ##       ##     ##  ##   ##  ####  ## ##        ##       
+//  ########  ##     ## ##     ## ## ### ##     ######     ##    ##     ##    ##    ######      ##       ######### ##     ## ## ## ## ##   #### ######   
+//  ##   ##   ##     ## ##     ## ##     ##          ##    ##    #########    ##    ##          ##       ##     ## ######### ##  #### ##    ##  ##       
+//  ##    ##  ##     ## ##     ## ##     ##    ##    ##    ##    ##     ##    ##    ##          ##    ## ##     ## ##     ## ##   ### ##    ##  ##       
+//  ##     ##  #######   #######  ##     ##     ######     ##    ##     ##    ##    ########     ######  ##     ## ##     ## ##    ##  ######   ######## 
+
+
+object PolicyRuleRoomContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleServerContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleUserContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAliasesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
+}
+
+object RoomCanonicalAliasContent {
+    fn alias_change() -> Option<string>;
+    fn alias_new_val() -> Option<string>;
+    fn alias_old_val() -> Option<string>;
+
+    fn alt_aliases_change() -> Option<string>;
+    fn alt_aliases_new_val() -> Vec<string>;
+    fn alt_aliases_old_val() -> Option<Vec<string>>;
+}
+
+object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomJoinRulesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomNameContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomPinnedEventsContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomPowerLevelsContent {
+    fn ban_change() -> Option<string>;
+    fn ban_new_val() -> i64;
+    fn ban_old_val() -> Option<i64>;
+
+    fn events_change() -> Option<string>;
+
+    fn events_default_change() -> Option<string>;
+    fn events_default_new_val() -> i64;
+    fn events_default_old_val() -> Option<i64>;
+
+    fn invite_change() -> Option<string>;
+    fn invite_new_val() -> i64;
+    fn invite_old_val() -> Option<i64>;
+
+    fn kick_change() -> Option<string>;
+    fn kick_new_val() -> i64;
+    fn kick_old_val() -> Option<i64>;
+
+    fn notifications_change() -> Option<string>;
+    fn notifications_new_val() -> i64;
+    fn notifications_old_val() -> Option<i64>;
+
+    fn redact_change() -> Option<string>;
+    fn redact_new_val() -> i64;
+    fn redact_old_val() -> Option<i64>;
+
+    fn state_default_change() -> Option<string>;
+    fn state_default_new_val() -> i64;
+    fn state_default_old_val() -> Option<i64>;
+
+    fn users_change() -> Option<string>;
+
+    fn users_default_change() -> Option<string>;
+    fn users_default_new_val() -> i64;
+    fn users_default_old_val() -> Option<i64>;
+}
+
+object RoomServerAclContent {
+    fn allow_ip_literals_change() -> Option<string>;
+    fn allow_ip_literals_new_val() -> bool;
+    fn allow_ip_literals_old_val() -> Option<bool>;
+
+    fn allow_change() -> Option<string>;
+    fn allow_new_val() -> Vec<string>;
+    fn allow_old_val() -> Option<Vec<string>>;
+
+    fn deny_change() -> Option<string>;
+    fn deny_new_val() -> Vec<string>;
+    fn deny_old_val() -> Option<Vec<string>>;
+}
+
+object RoomThirdPartyInviteContent {
+    fn display_name_change() -> Option<string>;
+    fn display_name_new_val() -> string;
+    fn display_name_old_val() -> Option<string>;
+
+    fn key_validity_url_change() -> Option<string>;
+    fn key_validity_url_new_val() -> string;
+    fn key_validity_url_old_val() -> Option<string>;
+
+    fn public_key_change() -> Option<string>;
+}
+
+object RoomTombstoneContent {
+    fn body_change() -> Option<string>;
+    fn body_new_val() -> string;
+    fn body_old_val() -> Option<string>;
+
+    fn replacement_room_change() -> Option<string>;
+    fn replacement_room_new_val() -> string;
+    fn replacement_room_old_val() -> Option<string>;
+}
+
+object RoomTopicContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object SpaceChildContent {
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn order_change() -> Option<string>;
+    fn order_new_val() -> Option<string>;
+    fn order_old_val() -> Option<string>;
+
+    fn suggested_change() -> Option<string>;
+    fn suggested_new_val() -> bool;
+    fn suggested_old_val() -> Option<bool>;
+}
+
+object SpaceParentContent {
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn canonical_change() -> Option<string>;
+    fn canonical_new_val() -> bool;
+    fn canonical_old_val() -> Option<bool>;
+}
+
 
 //  ########   #######   #######  ##     ##
 //  ##     ## ##     ## ##     ## ###   ###

@@ -19520,6 +19520,222 @@ class Api {
   late final _timelineEventItemProfileContent =
       _timelineEventItemProfileContentPtr
           .asFunction<_TimelineEventItemProfileContentReturn Function(int)>();
+  late final _timelineEventItemPolicyRuleRoomContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemPolicyRuleRoomContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_policy_rule_room_content");
+
+  late final _timelineEventItemPolicyRuleRoomContent =
+      _timelineEventItemPolicyRuleRoomContentPtr
+          .asFunction<
+            _TimelineEventItemPolicyRuleRoomContentReturn Function(int)
+          >();
+  late final _timelineEventItemPolicyRuleServerContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemPolicyRuleServerContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_policy_rule_server_content");
+
+  late final _timelineEventItemPolicyRuleServerContent =
+      _timelineEventItemPolicyRuleServerContentPtr
+          .asFunction<
+            _TimelineEventItemPolicyRuleServerContentReturn Function(int)
+          >();
+  late final _timelineEventItemPolicyRuleUserContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemPolicyRuleUserContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_policy_rule_user_content");
+
+  late final _timelineEventItemPolicyRuleUserContent =
+      _timelineEventItemPolicyRuleUserContentPtr
+          .asFunction<
+            _TimelineEventItemPolicyRuleUserContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomAliasesContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomAliasesContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_aliases_content");
+
+  late final _timelineEventItemRoomAliasesContent =
+      _timelineEventItemRoomAliasesContentPtr
+          .asFunction<
+            _TimelineEventItemRoomAliasesContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomAvatarContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomAvatarContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_avatar_content");
+
+  late final _timelineEventItemRoomAvatarContent =
+      _timelineEventItemRoomAvatarContentPtr
+          .asFunction<
+            _TimelineEventItemRoomAvatarContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomCanonicalAliasContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomCanonicalAliasContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_canonical_alias_content");
+
+  late final _timelineEventItemRoomCanonicalAliasContent =
+      _timelineEventItemRoomCanonicalAliasContentPtr
+          .asFunction<
+            _TimelineEventItemRoomCanonicalAliasContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomCreateContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomCreateContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_create_content");
+
+  late final _timelineEventItemRoomCreateContent =
+      _timelineEventItemRoomCreateContentPtr
+          .asFunction<
+            _TimelineEventItemRoomCreateContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomEncryptionContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomEncryptionContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_encryption_content");
+
+  late final _timelineEventItemRoomEncryptionContent =
+      _timelineEventItemRoomEncryptionContentPtr
+          .asFunction<
+            _TimelineEventItemRoomEncryptionContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomGuestAccessContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomGuestAccessContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_guest_access_content");
+
+  late final _timelineEventItemRoomGuestAccessContent =
+      _timelineEventItemRoomGuestAccessContentPtr
+          .asFunction<
+            _TimelineEventItemRoomGuestAccessContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomHistoryVisibilityContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomHistoryVisibilityContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_history_visibility_content");
+
+  late final _timelineEventItemRoomHistoryVisibilityContent =
+      _timelineEventItemRoomHistoryVisibilityContentPtr
+          .asFunction<
+            _TimelineEventItemRoomHistoryVisibilityContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomJoinRulesContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomJoinRulesContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_join_rules_content");
+
+  late final _timelineEventItemRoomJoinRulesContent =
+      _timelineEventItemRoomJoinRulesContentPtr
+          .asFunction<
+            _TimelineEventItemRoomJoinRulesContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomNameContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomNameContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_name_content");
+
+  late final _timelineEventItemRoomNameContent =
+      _timelineEventItemRoomNameContentPtr
+          .asFunction<_TimelineEventItemRoomNameContentReturn Function(int)>();
+  late final _timelineEventItemRoomPinnedEventsContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomPinnedEventsContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_pinned_events_content");
+
+  late final _timelineEventItemRoomPinnedEventsContent =
+      _timelineEventItemRoomPinnedEventsContentPtr
+          .asFunction<
+            _TimelineEventItemRoomPinnedEventsContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomPowerLevelsContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomPowerLevelsContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_power_levels_content");
+
+  late final _timelineEventItemRoomPowerLevelsContent =
+      _timelineEventItemRoomPowerLevelsContentPtr
+          .asFunction<
+            _TimelineEventItemRoomPowerLevelsContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomServerAclContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomServerAclContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_server_acl_content");
+
+  late final _timelineEventItemRoomServerAclContent =
+      _timelineEventItemRoomServerAclContentPtr
+          .asFunction<
+            _TimelineEventItemRoomServerAclContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomThirdPartyInviteContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomThirdPartyInviteContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_third_party_invite_content");
+
+  late final _timelineEventItemRoomThirdPartyInviteContent =
+      _timelineEventItemRoomThirdPartyInviteContentPtr
+          .asFunction<
+            _TimelineEventItemRoomThirdPartyInviteContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomTombstoneContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomTombstoneContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_tombstone_content");
+
+  late final _timelineEventItemRoomTombstoneContent =
+      _timelineEventItemRoomTombstoneContentPtr
+          .asFunction<
+            _TimelineEventItemRoomTombstoneContentReturn Function(int)
+          >();
+  late final _timelineEventItemRoomTopicContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomTopicContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_topic_content");
+
+  late final _timelineEventItemRoomTopicContent =
+      _timelineEventItemRoomTopicContentPtr
+          .asFunction<_TimelineEventItemRoomTopicContentReturn Function(int)>();
+  late final _timelineEventItemSpaceChildContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemSpaceChildContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_space_child_content");
+
+  late final _timelineEventItemSpaceChildContent =
+      _timelineEventItemSpaceChildContentPtr
+          .asFunction<
+            _TimelineEventItemSpaceChildContentReturn Function(int)
+          >();
+  late final _timelineEventItemSpaceParentContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemSpaceParentContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_space_parent_content");
+
+  late final _timelineEventItemSpaceParentContent =
+      _timelineEventItemSpaceParentContentPtr
+          .asFunction<
+            _TimelineEventItemSpaceParentContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -19876,6 +20092,1143 @@ class Api {
   late final _joinRuleBuilderAddRoom =
       _joinRuleBuilderAddRoomPtr
           .asFunction<void Function(int, int, int, int)>();
+  late final _policyRuleRoomContentEntityChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentEntityChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_entity_change");
+
+  late final _policyRuleRoomContentEntityChange =
+      _policyRuleRoomContentEntityChangePtr
+          .asFunction<_PolicyRuleRoomContentEntityChangeReturn Function(int)>();
+  late final _policyRuleRoomContentEntityNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentEntityNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_entity_new_val");
+
+  late final _policyRuleRoomContentEntityNewVal =
+      _policyRuleRoomContentEntityNewValPtr
+          .asFunction<_PolicyRuleRoomContentEntityNewValReturn Function(int)>();
+  late final _policyRuleRoomContentEntityOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentEntityOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_entity_old_val");
+
+  late final _policyRuleRoomContentEntityOldVal =
+      _policyRuleRoomContentEntityOldValPtr
+          .asFunction<_PolicyRuleRoomContentEntityOldValReturn Function(int)>();
+  late final _policyRuleRoomContentReasonChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentReasonChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_reason_change");
+
+  late final _policyRuleRoomContentReasonChange =
+      _policyRuleRoomContentReasonChangePtr
+          .asFunction<_PolicyRuleRoomContentReasonChangeReturn Function(int)>();
+  late final _policyRuleRoomContentReasonNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentReasonNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_reason_new_val");
+
+  late final _policyRuleRoomContentReasonNewVal =
+      _policyRuleRoomContentReasonNewValPtr
+          .asFunction<_PolicyRuleRoomContentReasonNewValReturn Function(int)>();
+  late final _policyRuleRoomContentReasonOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentReasonOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_reason_old_val");
+
+  late final _policyRuleRoomContentReasonOldVal =
+      _policyRuleRoomContentReasonOldValPtr
+          .asFunction<_PolicyRuleRoomContentReasonOldValReturn Function(int)>();
+  late final _policyRuleRoomContentRecommendationChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentRecommendationChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_recommendation_change");
+
+  late final _policyRuleRoomContentRecommendationChange =
+      _policyRuleRoomContentRecommendationChangePtr
+          .asFunction<
+            _PolicyRuleRoomContentRecommendationChangeReturn Function(int)
+          >();
+  late final _policyRuleRoomContentRecommendationNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentRecommendationNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_recommendation_new_val");
+
+  late final _policyRuleRoomContentRecommendationNewVal =
+      _policyRuleRoomContentRecommendationNewValPtr
+          .asFunction<
+            _PolicyRuleRoomContentRecommendationNewValReturn Function(int)
+          >();
+  late final _policyRuleRoomContentRecommendationOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleRoomContentRecommendationOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleRoomContent_recommendation_old_val");
+
+  late final _policyRuleRoomContentRecommendationOldVal =
+      _policyRuleRoomContentRecommendationOldValPtr
+          .asFunction<
+            _PolicyRuleRoomContentRecommendationOldValReturn Function(int)
+          >();
+  late final _policyRuleServerContentEntityChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentEntityChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_entity_change");
+
+  late final _policyRuleServerContentEntityChange =
+      _policyRuleServerContentEntityChangePtr
+          .asFunction<
+            _PolicyRuleServerContentEntityChangeReturn Function(int)
+          >();
+  late final _policyRuleServerContentEntityNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentEntityNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_entity_new_val");
+
+  late final _policyRuleServerContentEntityNewVal =
+      _policyRuleServerContentEntityNewValPtr
+          .asFunction<
+            _PolicyRuleServerContentEntityNewValReturn Function(int)
+          >();
+  late final _policyRuleServerContentEntityOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentEntityOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_entity_old_val");
+
+  late final _policyRuleServerContentEntityOldVal =
+      _policyRuleServerContentEntityOldValPtr
+          .asFunction<
+            _PolicyRuleServerContentEntityOldValReturn Function(int)
+          >();
+  late final _policyRuleServerContentReasonChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentReasonChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_reason_change");
+
+  late final _policyRuleServerContentReasonChange =
+      _policyRuleServerContentReasonChangePtr
+          .asFunction<
+            _PolicyRuleServerContentReasonChangeReturn Function(int)
+          >();
+  late final _policyRuleServerContentReasonNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentReasonNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_reason_new_val");
+
+  late final _policyRuleServerContentReasonNewVal =
+      _policyRuleServerContentReasonNewValPtr
+          .asFunction<
+            _PolicyRuleServerContentReasonNewValReturn Function(int)
+          >();
+  late final _policyRuleServerContentReasonOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentReasonOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_reason_old_val");
+
+  late final _policyRuleServerContentReasonOldVal =
+      _policyRuleServerContentReasonOldValPtr
+          .asFunction<
+            _PolicyRuleServerContentReasonOldValReturn Function(int)
+          >();
+  late final _policyRuleServerContentRecommendationChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentRecommendationChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_recommendation_change");
+
+  late final _policyRuleServerContentRecommendationChange =
+      _policyRuleServerContentRecommendationChangePtr
+          .asFunction<
+            _PolicyRuleServerContentRecommendationChangeReturn Function(int)
+          >();
+  late final _policyRuleServerContentRecommendationNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentRecommendationNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_recommendation_new_val");
+
+  late final _policyRuleServerContentRecommendationNewVal =
+      _policyRuleServerContentRecommendationNewValPtr
+          .asFunction<
+            _PolicyRuleServerContentRecommendationNewValReturn Function(int)
+          >();
+  late final _policyRuleServerContentRecommendationOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleServerContentRecommendationOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleServerContent_recommendation_old_val");
+
+  late final _policyRuleServerContentRecommendationOldVal =
+      _policyRuleServerContentRecommendationOldValPtr
+          .asFunction<
+            _PolicyRuleServerContentRecommendationOldValReturn Function(int)
+          >();
+  late final _policyRuleUserContentEntityChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentEntityChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_entity_change");
+
+  late final _policyRuleUserContentEntityChange =
+      _policyRuleUserContentEntityChangePtr
+          .asFunction<_PolicyRuleUserContentEntityChangeReturn Function(int)>();
+  late final _policyRuleUserContentEntityNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentEntityNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_entity_new_val");
+
+  late final _policyRuleUserContentEntityNewVal =
+      _policyRuleUserContentEntityNewValPtr
+          .asFunction<_PolicyRuleUserContentEntityNewValReturn Function(int)>();
+  late final _policyRuleUserContentEntityOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentEntityOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_entity_old_val");
+
+  late final _policyRuleUserContentEntityOldVal =
+      _policyRuleUserContentEntityOldValPtr
+          .asFunction<_PolicyRuleUserContentEntityOldValReturn Function(int)>();
+  late final _policyRuleUserContentReasonChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentReasonChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_reason_change");
+
+  late final _policyRuleUserContentReasonChange =
+      _policyRuleUserContentReasonChangePtr
+          .asFunction<_PolicyRuleUserContentReasonChangeReturn Function(int)>();
+  late final _policyRuleUserContentReasonNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentReasonNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_reason_new_val");
+
+  late final _policyRuleUserContentReasonNewVal =
+      _policyRuleUserContentReasonNewValPtr
+          .asFunction<_PolicyRuleUserContentReasonNewValReturn Function(int)>();
+  late final _policyRuleUserContentReasonOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentReasonOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_reason_old_val");
+
+  late final _policyRuleUserContentReasonOldVal =
+      _policyRuleUserContentReasonOldValPtr
+          .asFunction<_PolicyRuleUserContentReasonOldValReturn Function(int)>();
+  late final _policyRuleUserContentRecommendationChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentRecommendationChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_recommendation_change");
+
+  late final _policyRuleUserContentRecommendationChange =
+      _policyRuleUserContentRecommendationChangePtr
+          .asFunction<
+            _PolicyRuleUserContentRecommendationChangeReturn Function(int)
+          >();
+  late final _policyRuleUserContentRecommendationNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentRecommendationNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_recommendation_new_val");
+
+  late final _policyRuleUserContentRecommendationNewVal =
+      _policyRuleUserContentRecommendationNewValPtr
+          .asFunction<
+            _PolicyRuleUserContentRecommendationNewValReturn Function(int)
+          >();
+  late final _policyRuleUserContentRecommendationOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentRecommendationOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_recommendation_old_val");
+
+  late final _policyRuleUserContentRecommendationOldVal =
+      _policyRuleUserContentRecommendationOldValPtr
+          .asFunction<
+            _PolicyRuleUserContentRecommendationOldValReturn Function(int)
+          >();
+  late final _roomAliasesContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomAliasesContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomAliasesContent_change");
+
+  late final _roomAliasesContentChange =
+      _roomAliasesContentChangePtr
+          .asFunction<_RoomAliasesContentChangeReturn Function(int)>();
+  late final _roomAliasesContentNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__RoomAliasesContent_new_val",
+      );
+
+  late final _roomAliasesContentNewVal =
+      _roomAliasesContentNewValPtr.asFunction<int Function(int)>();
+  late final _roomAliasesContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomAliasesContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomAliasesContent_old_val");
+
+  late final _roomAliasesContentOldVal =
+      _roomAliasesContentOldValPtr
+          .asFunction<_RoomAliasesContentOldValReturn Function(int)>();
+  late final _roomAvatarContentUrlChangePtr = _lookup<
+    ffi.NativeFunction<_RoomAvatarContentUrlChangeReturn Function(ffi.IntPtr)>
+  >("__RoomAvatarContent_url_change");
+
+  late final _roomAvatarContentUrlChange =
+      _roomAvatarContentUrlChangePtr
+          .asFunction<_RoomAvatarContentUrlChangeReturn Function(int)>();
+  late final _roomAvatarContentUrlNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomAvatarContentUrlNewValReturn Function(ffi.IntPtr)>
+  >("__RoomAvatarContent_url_new_val");
+
+  late final _roomAvatarContentUrlNewVal =
+      _roomAvatarContentUrlNewValPtr
+          .asFunction<_RoomAvatarContentUrlNewValReturn Function(int)>();
+  late final _roomAvatarContentUrlOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomAvatarContentUrlOldValReturn Function(ffi.IntPtr)>
+  >("__RoomAvatarContent_url_old_val");
+
+  late final _roomAvatarContentUrlOldVal =
+      _roomAvatarContentUrlOldValPtr
+          .asFunction<_RoomAvatarContentUrlOldValReturn Function(int)>();
+  late final _roomCanonicalAliasContentAliasChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomCanonicalAliasContentAliasChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomCanonicalAliasContent_alias_change");
+
+  late final _roomCanonicalAliasContentAliasChange =
+      _roomCanonicalAliasContentAliasChangePtr
+          .asFunction<
+            _RoomCanonicalAliasContentAliasChangeReturn Function(int)
+          >();
+  late final _roomCanonicalAliasContentAliasNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomCanonicalAliasContentAliasNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomCanonicalAliasContent_alias_new_val");
+
+  late final _roomCanonicalAliasContentAliasNewVal =
+      _roomCanonicalAliasContentAliasNewValPtr
+          .asFunction<
+            _RoomCanonicalAliasContentAliasNewValReturn Function(int)
+          >();
+  late final _roomCanonicalAliasContentAliasOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomCanonicalAliasContentAliasOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomCanonicalAliasContent_alias_old_val");
+
+  late final _roomCanonicalAliasContentAliasOldVal =
+      _roomCanonicalAliasContentAliasOldValPtr
+          .asFunction<
+            _RoomCanonicalAliasContentAliasOldValReturn Function(int)
+          >();
+  late final _roomCanonicalAliasContentAltAliasesChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomCanonicalAliasContentAltAliasesChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomCanonicalAliasContent_alt_aliases_change");
+
+  late final _roomCanonicalAliasContentAltAliasesChange =
+      _roomCanonicalAliasContentAltAliasesChangePtr
+          .asFunction<
+            _RoomCanonicalAliasContentAltAliasesChangeReturn Function(int)
+          >();
+  late final _roomCanonicalAliasContentAltAliasesNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__RoomCanonicalAliasContent_alt_aliases_new_val",
+      );
+
+  late final _roomCanonicalAliasContentAltAliasesNewVal =
+      _roomCanonicalAliasContentAltAliasesNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomCanonicalAliasContentAltAliasesOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomCanonicalAliasContentAltAliasesOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomCanonicalAliasContent_alt_aliases_old_val");
+
+  late final _roomCanonicalAliasContentAltAliasesOldVal =
+      _roomCanonicalAliasContentAltAliasesOldValPtr
+          .asFunction<
+            _RoomCanonicalAliasContentAltAliasesOldValReturn Function(int)
+          >();
+  late final _roomEncryptionContentAlgorithmChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomEncryptionContentAlgorithmChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomEncryptionContent_algorithm_change");
+
+  late final _roomEncryptionContentAlgorithmChange =
+      _roomEncryptionContentAlgorithmChangePtr
+          .asFunction<
+            _RoomEncryptionContentAlgorithmChangeReturn Function(int)
+          >();
+  late final _roomEncryptionContentAlgorithmNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomEncryptionContentAlgorithmNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomEncryptionContent_algorithm_new_val");
+
+  late final _roomEncryptionContentAlgorithmNewVal =
+      _roomEncryptionContentAlgorithmNewValPtr
+          .asFunction<
+            _RoomEncryptionContentAlgorithmNewValReturn Function(int)
+          >();
+  late final _roomEncryptionContentAlgorithmOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomEncryptionContentAlgorithmOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomEncryptionContent_algorithm_old_val");
+
+  late final _roomEncryptionContentAlgorithmOldVal =
+      _roomEncryptionContentAlgorithmOldValPtr
+          .asFunction<
+            _RoomEncryptionContentAlgorithmOldValReturn Function(int)
+          >();
+  late final _roomGuestAccessContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomGuestAccessContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomGuestAccessContent_change");
+
+  late final _roomGuestAccessContentChange =
+      _roomGuestAccessContentChangePtr
+          .asFunction<_RoomGuestAccessContentChangeReturn Function(int)>();
+  late final _roomGuestAccessContentNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomGuestAccessContentNewValReturn Function(ffi.IntPtr)>
+  >("__RoomGuestAccessContent_new_val");
+
+  late final _roomGuestAccessContentNewVal =
+      _roomGuestAccessContentNewValPtr
+          .asFunction<_RoomGuestAccessContentNewValReturn Function(int)>();
+  late final _roomGuestAccessContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomGuestAccessContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomGuestAccessContent_old_val");
+
+  late final _roomGuestAccessContentOldVal =
+      _roomGuestAccessContentOldValPtr
+          .asFunction<_RoomGuestAccessContentOldValReturn Function(int)>();
+  late final _roomHistoryVisibilityContentChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomHistoryVisibilityContentChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomHistoryVisibilityContent_change");
+
+  late final _roomHistoryVisibilityContentChange =
+      _roomHistoryVisibilityContentChangePtr
+          .asFunction<
+            _RoomHistoryVisibilityContentChangeReturn Function(int)
+          >();
+  late final _roomHistoryVisibilityContentNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomHistoryVisibilityContentNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomHistoryVisibilityContent_new_val");
+
+  late final _roomHistoryVisibilityContentNewVal =
+      _roomHistoryVisibilityContentNewValPtr
+          .asFunction<
+            _RoomHistoryVisibilityContentNewValReturn Function(int)
+          >();
+  late final _roomHistoryVisibilityContentOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomHistoryVisibilityContentOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomHistoryVisibilityContent_old_val");
+
+  late final _roomHistoryVisibilityContentOldVal =
+      _roomHistoryVisibilityContentOldValPtr
+          .asFunction<
+            _RoomHistoryVisibilityContentOldValReturn Function(int)
+          >();
+  late final _roomJoinRulesContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomJoinRulesContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomJoinRulesContent_change");
+
+  late final _roomJoinRulesContentChange =
+      _roomJoinRulesContentChangePtr
+          .asFunction<_RoomJoinRulesContentChangeReturn Function(int)>();
+  late final _roomJoinRulesContentNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomJoinRulesContentNewValReturn Function(ffi.IntPtr)>
+  >("__RoomJoinRulesContent_new_val");
+
+  late final _roomJoinRulesContentNewVal =
+      _roomJoinRulesContentNewValPtr
+          .asFunction<_RoomJoinRulesContentNewValReturn Function(int)>();
+  late final _roomJoinRulesContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomJoinRulesContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomJoinRulesContent_old_val");
+
+  late final _roomJoinRulesContentOldVal =
+      _roomJoinRulesContentOldValPtr
+          .asFunction<_RoomJoinRulesContentOldValReturn Function(int)>();
+  late final _roomNameContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomNameContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomNameContent_change");
+
+  late final _roomNameContentChange =
+      _roomNameContentChangePtr
+          .asFunction<_RoomNameContentChangeReturn Function(int)>();
+  late final _roomNameContentNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomNameContentNewValReturn Function(ffi.IntPtr)>
+  >("__RoomNameContent_new_val");
+
+  late final _roomNameContentNewVal =
+      _roomNameContentNewValPtr
+          .asFunction<_RoomNameContentNewValReturn Function(int)>();
+  late final _roomNameContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomNameContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomNameContent_old_val");
+
+  late final _roomNameContentOldVal =
+      _roomNameContentOldValPtr
+          .asFunction<_RoomNameContentOldValReturn Function(int)>();
+  late final _roomPinnedEventsContentChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPinnedEventsContentChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPinnedEventsContent_change");
+
+  late final _roomPinnedEventsContentChange =
+      _roomPinnedEventsContentChangePtr
+          .asFunction<_RoomPinnedEventsContentChangeReturn Function(int)>();
+  late final _roomPinnedEventsContentNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__RoomPinnedEventsContent_new_val",
+      );
+
+  late final _roomPinnedEventsContentNewVal =
+      _roomPinnedEventsContentNewValPtr.asFunction<int Function(int)>();
+  late final _roomPinnedEventsContentOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPinnedEventsContentOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPinnedEventsContent_old_val");
+
+  late final _roomPinnedEventsContentOldVal =
+      _roomPinnedEventsContentOldValPtr
+          .asFunction<_RoomPinnedEventsContentOldValReturn Function(int)>();
+  late final _roomPowerLevelsContentBanChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentBanChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_ban_change");
+
+  late final _roomPowerLevelsContentBanChange =
+      _roomPowerLevelsContentBanChangePtr
+          .asFunction<_RoomPowerLevelsContentBanChangeReturn Function(int)>();
+  late final _roomPowerLevelsContentBanNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_ban_new_val",
+      );
+
+  late final _roomPowerLevelsContentBanNewVal =
+      _roomPowerLevelsContentBanNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentBanOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentBanOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_ban_old_val");
+
+  late final _roomPowerLevelsContentBanOldVal =
+      _roomPowerLevelsContentBanOldValPtr
+          .asFunction<_RoomPowerLevelsContentBanOldValReturn Function(int)>();
+  late final _roomPowerLevelsContentEventsChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_events_change");
+
+  late final _roomPowerLevelsContentEventsChange =
+      _roomPowerLevelsContentEventsChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentEventsDefaultChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsDefaultChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_events_default_change");
+
+  late final _roomPowerLevelsContentEventsDefaultChange =
+      _roomPowerLevelsContentEventsDefaultChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsDefaultChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentEventsDefaultNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_events_default_new_val",
+      );
+
+  late final _roomPowerLevelsContentEventsDefaultNewVal =
+      _roomPowerLevelsContentEventsDefaultNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentEventsDefaultOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsDefaultOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_events_default_old_val");
+
+  late final _roomPowerLevelsContentEventsDefaultOldVal =
+      _roomPowerLevelsContentEventsDefaultOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsDefaultOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentInviteChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentInviteChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_invite_change");
+
+  late final _roomPowerLevelsContentInviteChange =
+      _roomPowerLevelsContentInviteChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentInviteChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentInviteNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_invite_new_val",
+      );
+
+  late final _roomPowerLevelsContentInviteNewVal =
+      _roomPowerLevelsContentInviteNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentInviteOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentInviteOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_invite_old_val");
+
+  late final _roomPowerLevelsContentInviteOldVal =
+      _roomPowerLevelsContentInviteOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentInviteOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentKickChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentKickChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_kick_change");
+
+  late final _roomPowerLevelsContentKickChange =
+      _roomPowerLevelsContentKickChangePtr
+          .asFunction<_RoomPowerLevelsContentKickChangeReturn Function(int)>();
+  late final _roomPowerLevelsContentKickNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_kick_new_val",
+      );
+
+  late final _roomPowerLevelsContentKickNewVal =
+      _roomPowerLevelsContentKickNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentKickOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentKickOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_kick_old_val");
+
+  late final _roomPowerLevelsContentKickOldVal =
+      _roomPowerLevelsContentKickOldValPtr
+          .asFunction<_RoomPowerLevelsContentKickOldValReturn Function(int)>();
+  late final _roomPowerLevelsContentNotificationsChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentNotificationsChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_notifications_change");
+
+  late final _roomPowerLevelsContentNotificationsChange =
+      _roomPowerLevelsContentNotificationsChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentNotificationsChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentNotificationsNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_notifications_new_val",
+      );
+
+  late final _roomPowerLevelsContentNotificationsNewVal =
+      _roomPowerLevelsContentNotificationsNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentNotificationsOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentNotificationsOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_notifications_old_val");
+
+  late final _roomPowerLevelsContentNotificationsOldVal =
+      _roomPowerLevelsContentNotificationsOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentNotificationsOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentRedactChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentRedactChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_redact_change");
+
+  late final _roomPowerLevelsContentRedactChange =
+      _roomPowerLevelsContentRedactChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentRedactChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentRedactNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_redact_new_val",
+      );
+
+  late final _roomPowerLevelsContentRedactNewVal =
+      _roomPowerLevelsContentRedactNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentRedactOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentRedactOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_redact_old_val");
+
+  late final _roomPowerLevelsContentRedactOldVal =
+      _roomPowerLevelsContentRedactOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentRedactOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentStateDefaultChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentStateDefaultChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_state_default_change");
+
+  late final _roomPowerLevelsContentStateDefaultChange =
+      _roomPowerLevelsContentStateDefaultChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentStateDefaultChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentStateDefaultNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_state_default_new_val",
+      );
+
+  late final _roomPowerLevelsContentStateDefaultNewVal =
+      _roomPowerLevelsContentStateDefaultNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentStateDefaultOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentStateDefaultOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_state_default_old_val");
+
+  late final _roomPowerLevelsContentStateDefaultOldVal =
+      _roomPowerLevelsContentStateDefaultOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentStateDefaultOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentUsersChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentUsersChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_users_change");
+
+  late final _roomPowerLevelsContentUsersChange =
+      _roomPowerLevelsContentUsersChangePtr
+          .asFunction<_RoomPowerLevelsContentUsersChangeReturn Function(int)>();
+  late final _roomPowerLevelsContentUsersDefaultChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentUsersDefaultChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_users_default_change");
+
+  late final _roomPowerLevelsContentUsersDefaultChange =
+      _roomPowerLevelsContentUsersDefaultChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentUsersDefaultChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentUsersDefaultNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_users_default_new_val",
+      );
+
+  late final _roomPowerLevelsContentUsersDefaultNewVal =
+      _roomPowerLevelsContentUsersDefaultNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentUsersDefaultOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentUsersDefaultOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_users_default_old_val");
+
+  late final _roomPowerLevelsContentUsersDefaultOldVal =
+      _roomPowerLevelsContentUsersDefaultOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentUsersDefaultOldValReturn Function(int)
+          >();
+  late final _roomServerAclContentAllowIpLiteralsChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomServerAclContentAllowIpLiteralsChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomServerAclContent_allow_ip_literals_change");
+
+  late final _roomServerAclContentAllowIpLiteralsChange =
+      _roomServerAclContentAllowIpLiteralsChangePtr
+          .asFunction<
+            _RoomServerAclContentAllowIpLiteralsChangeReturn Function(int)
+          >();
+  late final _roomServerAclContentAllowIpLiteralsNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__RoomServerAclContent_allow_ip_literals_new_val",
+      );
+
+  late final _roomServerAclContentAllowIpLiteralsNewVal =
+      _roomServerAclContentAllowIpLiteralsNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomServerAclContentAllowIpLiteralsOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomServerAclContentAllowIpLiteralsOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomServerAclContent_allow_ip_literals_old_val");
+
+  late final _roomServerAclContentAllowIpLiteralsOldVal =
+      _roomServerAclContentAllowIpLiteralsOldValPtr
+          .asFunction<
+            _RoomServerAclContentAllowIpLiteralsOldValReturn Function(int)
+          >();
+  late final _roomServerAclContentAllowChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomServerAclContentAllowChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomServerAclContent_allow_change");
+
+  late final _roomServerAclContentAllowChange =
+      _roomServerAclContentAllowChangePtr
+          .asFunction<_RoomServerAclContentAllowChangeReturn Function(int)>();
+  late final _roomServerAclContentAllowNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__RoomServerAclContent_allow_new_val",
+      );
+
+  late final _roomServerAclContentAllowNewVal =
+      _roomServerAclContentAllowNewValPtr.asFunction<int Function(int)>();
+  late final _roomServerAclContentAllowOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomServerAclContentAllowOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomServerAclContent_allow_old_val");
+
+  late final _roomServerAclContentAllowOldVal =
+      _roomServerAclContentAllowOldValPtr
+          .asFunction<_RoomServerAclContentAllowOldValReturn Function(int)>();
+  late final _roomServerAclContentDenyChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomServerAclContentDenyChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomServerAclContent_deny_change");
+
+  late final _roomServerAclContentDenyChange =
+      _roomServerAclContentDenyChangePtr
+          .asFunction<_RoomServerAclContentDenyChangeReturn Function(int)>();
+  late final _roomServerAclContentDenyNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__RoomServerAclContent_deny_new_val",
+      );
+
+  late final _roomServerAclContentDenyNewVal =
+      _roomServerAclContentDenyNewValPtr.asFunction<int Function(int)>();
+  late final _roomServerAclContentDenyOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomServerAclContentDenyOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomServerAclContent_deny_old_val");
+
+  late final _roomServerAclContentDenyOldVal =
+      _roomServerAclContentDenyOldValPtr
+          .asFunction<_RoomServerAclContentDenyOldValReturn Function(int)>();
+  late final _roomThirdPartyInviteContentDisplayNameChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentDisplayNameChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomThirdPartyInviteContent_display_name_change");
+
+  late final _roomThirdPartyInviteContentDisplayNameChange =
+      _roomThirdPartyInviteContentDisplayNameChangePtr
+          .asFunction<
+            _RoomThirdPartyInviteContentDisplayNameChangeReturn Function(int)
+          >();
+  late final _roomThirdPartyInviteContentDisplayNameNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentDisplayNameNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomThirdPartyInviteContent_display_name_new_val");
+
+  late final _roomThirdPartyInviteContentDisplayNameNewVal =
+      _roomThirdPartyInviteContentDisplayNameNewValPtr
+          .asFunction<
+            _RoomThirdPartyInviteContentDisplayNameNewValReturn Function(int)
+          >();
+  late final _roomThirdPartyInviteContentDisplayNameOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentDisplayNameOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomThirdPartyInviteContent_display_name_old_val");
+
+  late final _roomThirdPartyInviteContentDisplayNameOldVal =
+      _roomThirdPartyInviteContentDisplayNameOldValPtr
+          .asFunction<
+            _RoomThirdPartyInviteContentDisplayNameOldValReturn Function(int)
+          >();
+  late final _roomThirdPartyInviteContentKeyValidityUrlChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentKeyValidityUrlChangeReturn Function(
+        ffi.IntPtr,
+      )
+    >
+  >("__RoomThirdPartyInviteContent_key_validity_url_change");
+
+  late final _roomThirdPartyInviteContentKeyValidityUrlChange =
+      _roomThirdPartyInviteContentKeyValidityUrlChangePtr
+          .asFunction<
+            _RoomThirdPartyInviteContentKeyValidityUrlChangeReturn Function(int)
+          >();
+  late final _roomThirdPartyInviteContentKeyValidityUrlNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentKeyValidityUrlNewValReturn Function(
+        ffi.IntPtr,
+      )
+    >
+  >("__RoomThirdPartyInviteContent_key_validity_url_new_val");
+
+  late final _roomThirdPartyInviteContentKeyValidityUrlNewVal =
+      _roomThirdPartyInviteContentKeyValidityUrlNewValPtr
+          .asFunction<
+            _RoomThirdPartyInviteContentKeyValidityUrlNewValReturn Function(int)
+          >();
+  late final _roomThirdPartyInviteContentKeyValidityUrlOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentKeyValidityUrlOldValReturn Function(
+        ffi.IntPtr,
+      )
+    >
+  >("__RoomThirdPartyInviteContent_key_validity_url_old_val");
+
+  late final _roomThirdPartyInviteContentKeyValidityUrlOldVal =
+      _roomThirdPartyInviteContentKeyValidityUrlOldValPtr
+          .asFunction<
+            _RoomThirdPartyInviteContentKeyValidityUrlOldValReturn Function(int)
+          >();
+  late final _roomThirdPartyInviteContentPublicKeyChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomThirdPartyInviteContentPublicKeyChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomThirdPartyInviteContent_public_key_change");
+
+  late final _roomThirdPartyInviteContentPublicKeyChange =
+      _roomThirdPartyInviteContentPublicKeyChangePtr
+          .asFunction<
+            _RoomThirdPartyInviteContentPublicKeyChangeReturn Function(int)
+          >();
+  late final _roomTombstoneContentBodyChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentBodyChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_body_change");
+
+  late final _roomTombstoneContentBodyChange =
+      _roomTombstoneContentBodyChangePtr
+          .asFunction<_RoomTombstoneContentBodyChangeReturn Function(int)>();
+  late final _roomTombstoneContentBodyNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentBodyNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_body_new_val");
+
+  late final _roomTombstoneContentBodyNewVal =
+      _roomTombstoneContentBodyNewValPtr
+          .asFunction<_RoomTombstoneContentBodyNewValReturn Function(int)>();
+  late final _roomTombstoneContentBodyOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentBodyOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_body_old_val");
+
+  late final _roomTombstoneContentBodyOldVal =
+      _roomTombstoneContentBodyOldValPtr
+          .asFunction<_RoomTombstoneContentBodyOldValReturn Function(int)>();
+  late final _roomTombstoneContentReplacementRoomChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentReplacementRoomChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_replacement_room_change");
+
+  late final _roomTombstoneContentReplacementRoomChange =
+      _roomTombstoneContentReplacementRoomChangePtr
+          .asFunction<
+            _RoomTombstoneContentReplacementRoomChangeReturn Function(int)
+          >();
+  late final _roomTombstoneContentReplacementRoomNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentReplacementRoomNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_replacement_room_new_val");
+
+  late final _roomTombstoneContentReplacementRoomNewVal =
+      _roomTombstoneContentReplacementRoomNewValPtr
+          .asFunction<
+            _RoomTombstoneContentReplacementRoomNewValReturn Function(int)
+          >();
+  late final _roomTombstoneContentReplacementRoomOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentReplacementRoomOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_replacement_room_old_val");
+
+  late final _roomTombstoneContentReplacementRoomOldVal =
+      _roomTombstoneContentReplacementRoomOldValPtr
+          .asFunction<
+            _RoomTombstoneContentReplacementRoomOldValReturn Function(int)
+          >();
+  late final _roomTopicContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomTopicContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomTopicContent_change");
+
+  late final _roomTopicContentChange =
+      _roomTopicContentChangePtr
+          .asFunction<_RoomTopicContentChangeReturn Function(int)>();
+  late final _roomTopicContentNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomTopicContentNewValReturn Function(ffi.IntPtr)>
+  >("__RoomTopicContent_new_val");
+
+  late final _roomTopicContentNewVal =
+      _roomTopicContentNewValPtr
+          .asFunction<_RoomTopicContentNewValReturn Function(int)>();
+  late final _roomTopicContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomTopicContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomTopicContent_old_val");
+
+  late final _roomTopicContentOldVal =
+      _roomTopicContentOldValPtr
+          .asFunction<_RoomTopicContentOldValReturn Function(int)>();
+  late final _spaceChildContentViaChangePtr = _lookup<
+    ffi.NativeFunction<_SpaceChildContentViaChangeReturn Function(ffi.IntPtr)>
+  >("__SpaceChildContent_via_change");
+
+  late final _spaceChildContentViaChange =
+      _spaceChildContentViaChangePtr
+          .asFunction<_SpaceChildContentViaChangeReturn Function(int)>();
+  late final _spaceChildContentViaNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__SpaceChildContent_via_new_val",
+      );
+
+  late final _spaceChildContentViaNewVal =
+      _spaceChildContentViaNewValPtr.asFunction<int Function(int)>();
+  late final _spaceChildContentViaOldValPtr = _lookup<
+    ffi.NativeFunction<_SpaceChildContentViaOldValReturn Function(ffi.IntPtr)>
+  >("__SpaceChildContent_via_old_val");
+
+  late final _spaceChildContentViaOldVal =
+      _spaceChildContentViaOldValPtr
+          .asFunction<_SpaceChildContentViaOldValReturn Function(int)>();
+  late final _spaceChildContentOrderChangePtr = _lookup<
+    ffi.NativeFunction<_SpaceChildContentOrderChangeReturn Function(ffi.IntPtr)>
+  >("__SpaceChildContent_order_change");
+
+  late final _spaceChildContentOrderChange =
+      _spaceChildContentOrderChangePtr
+          .asFunction<_SpaceChildContentOrderChangeReturn Function(int)>();
+  late final _spaceChildContentOrderNewValPtr = _lookup<
+    ffi.NativeFunction<_SpaceChildContentOrderNewValReturn Function(ffi.IntPtr)>
+  >("__SpaceChildContent_order_new_val");
+
+  late final _spaceChildContentOrderNewVal =
+      _spaceChildContentOrderNewValPtr
+          .asFunction<_SpaceChildContentOrderNewValReturn Function(int)>();
+  late final _spaceChildContentOrderOldValPtr = _lookup<
+    ffi.NativeFunction<_SpaceChildContentOrderOldValReturn Function(ffi.IntPtr)>
+  >("__SpaceChildContent_order_old_val");
+
+  late final _spaceChildContentOrderOldVal =
+      _spaceChildContentOrderOldValPtr
+          .asFunction<_SpaceChildContentOrderOldValReturn Function(int)>();
+  late final _spaceChildContentSuggestedChangePtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceChildContentSuggestedChangeReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceChildContent_suggested_change");
+
+  late final _spaceChildContentSuggestedChange =
+      _spaceChildContentSuggestedChangePtr
+          .asFunction<_SpaceChildContentSuggestedChangeReturn Function(int)>();
+  late final _spaceChildContentSuggestedNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__SpaceChildContent_suggested_new_val",
+      );
+
+  late final _spaceChildContentSuggestedNewVal =
+      _spaceChildContentSuggestedNewValPtr.asFunction<int Function(int)>();
+  late final _spaceChildContentSuggestedOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceChildContentSuggestedOldValReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceChildContent_suggested_old_val");
+
+  late final _spaceChildContentSuggestedOldVal =
+      _spaceChildContentSuggestedOldValPtr
+          .asFunction<_SpaceChildContentSuggestedOldValReturn Function(int)>();
+  late final _spaceParentContentViaChangePtr = _lookup<
+    ffi.NativeFunction<_SpaceParentContentViaChangeReturn Function(ffi.IntPtr)>
+  >("__SpaceParentContent_via_change");
+
+  late final _spaceParentContentViaChange =
+      _spaceParentContentViaChangePtr
+          .asFunction<_SpaceParentContentViaChangeReturn Function(int)>();
+  late final _spaceParentContentViaNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__SpaceParentContent_via_new_val",
+      );
+
+  late final _spaceParentContentViaNewVal =
+      _spaceParentContentViaNewValPtr.asFunction<int Function(int)>();
+  late final _spaceParentContentViaOldValPtr = _lookup<
+    ffi.NativeFunction<_SpaceParentContentViaOldValReturn Function(ffi.IntPtr)>
+  >("__SpaceParentContent_via_old_val");
+
+  late final _spaceParentContentViaOldVal =
+      _spaceParentContentViaOldValPtr
+          .asFunction<_SpaceParentContentViaOldValReturn Function(int)>();
+  late final _spaceParentContentCanonicalChangePtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceParentContentCanonicalChangeReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceParentContent_canonical_change");
+
+  late final _spaceParentContentCanonicalChange =
+      _spaceParentContentCanonicalChangePtr
+          .asFunction<_SpaceParentContentCanonicalChangeReturn Function(int)>();
+  late final _spaceParentContentCanonicalNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__SpaceParentContent_canonical_new_val",
+      );
+
+  late final _spaceParentContentCanonicalNewVal =
+      _spaceParentContentCanonicalNewValPtr.asFunction<int Function(int)>();
+  late final _spaceParentContentCanonicalOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceParentContentCanonicalOldValReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceParentContent_canonical_old_val");
+
+  late final _spaceParentContentCanonicalOldVal =
+      _spaceParentContentCanonicalOldValPtr
+          .asFunction<_SpaceParentContentCanonicalOldValReturn Function(int)>();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -40489,6 +41842,346 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.policy.rule.room
+  PolicyRuleRoomContent? policyRuleRoomContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemPolicyRuleRoomContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleRoomContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleRoomContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.policy.rule.server
+  PolicyRuleServerContent? policyRuleServerContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemPolicyRuleServerContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleServerContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleServerContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.policy.rule.user
+  PolicyRuleUserContent? policyRuleUserContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemPolicyRuleUserContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleUserContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleUserContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.aliases
+  RoomAliasesContent? roomAliasesContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomAliasesContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomAliasesContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomAliasesContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.avatar
+  RoomAvatarContent? roomAvatarContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomAvatarContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomAvatarContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomAvatarContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.canonical_alias
+  RoomCanonicalAliasContent? roomCanonicalAliasContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomCanonicalAliasContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomCanonicalAliasContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomCanonicalAliasContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.create
+  RoomCreateContent? roomCreateContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomCreateContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomCreateContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomCreateContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.encryption
+  RoomEncryptionContent? roomEncryptionContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomEncryptionContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomEncryptionContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomEncryptionContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.guest_access
+  RoomGuestAccessContent? roomGuestAccessContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomGuestAccessContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomGuestAccessContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomGuestAccessContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.history_visibility
+  RoomHistoryVisibilityContent? roomHistoryVisibilityContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomHistoryVisibilityContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomHistoryVisibilityContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomHistoryVisibilityContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.join_rules
+  RoomJoinRulesContent? roomJoinRulesContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomJoinRulesContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomJoinRulesContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomJoinRulesContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.name
+  RoomNameContent? roomNameContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomNameContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomNameContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomNameContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.pinned_events
+  RoomPinnedEventsContent? roomPinnedEventsContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomPinnedEventsContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomPinnedEventsContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomPinnedEventsContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.power_levels
+  RoomPowerLevelsContent? roomPowerLevelsContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomPowerLevelsContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomPowerLevelsContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomPowerLevelsContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.server_acl
+  RoomServerAclContent? roomServerAclContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomServerAclContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomServerAclContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomServerAclContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.third_party_invite
+  RoomThirdPartyInviteContent? roomThirdPartyInviteContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomThirdPartyInviteContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomThirdPartyInviteContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomThirdPartyInviteContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.tombstone
+  RoomTombstoneContent? roomTombstoneContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomTombstoneContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomTombstoneContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomTombstoneContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.topic
+  RoomTopicContent? roomTopicContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomTopicContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomTopicContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomTopicContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.space.child
+  SpaceChildContent? spaceChildContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemSpaceChildContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SpaceChildContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = SpaceChildContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.space.parent
+  SpaceParentContent? spaceParentContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemSpaceParentContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SpaceParentContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = SpaceParentContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -41535,6 +43228,3319 @@ class JoinRuleBuilder {
     tmp4 = tmp3;
     _api._joinRuleBuilderAddRoom(tmp0, tmp2, tmp3, tmp4);
     return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PolicyRuleRoomContent {
+  final Api _api;
+  final _Box _box;
+
+  PolicyRuleRoomContent._(this._api, this._box);
+
+  String? entityChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentEntityChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String entityNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentEntityNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? entityOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentEntityOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentReasonChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String reasonNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentReasonNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentReasonOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentRecommendationChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String recommendationNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentRecommendationNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleRoomContentRecommendationOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PolicyRuleServerContent {
+  final Api _api;
+  final _Box _box;
+
+  PolicyRuleServerContent._(this._api, this._box);
+
+  String? entityChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentEntityChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String entityNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentEntityNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? entityOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentEntityOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentReasonChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String reasonNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentReasonNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentReasonOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentRecommendationChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String recommendationNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentRecommendationNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleServerContentRecommendationOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PolicyRuleUserContent {
+  final Api _api;
+  final _Box _box;
+
+  PolicyRuleUserContent._(this._api, this._box);
+
+  String? entityChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentEntityChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String entityNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentEntityNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? entityOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentEntityOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentReasonChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String reasonNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentReasonNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentReasonOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentRecommendationChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String recommendationNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentRecommendationNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentRecommendationOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomAliasesContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomAliasesContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAliasesContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAliasesContentNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAliasesContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomAvatarContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomAvatarContent._(this._api, this._box);
+
+  String? urlChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAvatarContentUrlChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? urlNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAvatarContentUrlNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? urlOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAvatarContentUrlOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomCanonicalAliasContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomCanonicalAliasContent._(this._api, this._box);
+
+  String? aliasChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomCanonicalAliasContentAliasChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? aliasNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomCanonicalAliasContentAliasNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? aliasOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomCanonicalAliasContentAliasOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? altAliasesChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomCanonicalAliasContentAltAliasesChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString altAliasesNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomCanonicalAliasContentAltAliasesNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? altAliasesOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomCanonicalAliasContentAltAliasesOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomCreateContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomCreateContent._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomEncryptionContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomEncryptionContent._(this._api, this._box);
+
+  String? algorithmChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEncryptionContentAlgorithmChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String algorithmNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEncryptionContentAlgorithmNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? algorithmOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEncryptionContentAlgorithmOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomGuestAccessContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomGuestAccessContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomGuestAccessContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomGuestAccessContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomGuestAccessContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomHistoryVisibilityContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomHistoryVisibilityContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomHistoryVisibilityContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomHistoryVisibilityContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomHistoryVisibilityContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomJoinRulesContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomJoinRulesContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomJoinRulesContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomJoinRulesContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomJoinRulesContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomNameContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomNameContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomNameContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomNameContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomNameContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomPinnedEventsContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomPinnedEventsContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPinnedEventsContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPinnedEventsContentNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPinnedEventsContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomPowerLevelsContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomPowerLevelsContent._(this._api, this._box);
+
+  String? banChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentBanChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int banNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentBanNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? banOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentBanOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? eventsChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? eventsDefaultChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsDefaultChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int eventsDefaultNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsDefaultNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? eventsDefaultOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsDefaultOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? inviteChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentInviteChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int inviteNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentInviteNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? inviteOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentInviteOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? kickChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentKickChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int kickNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentKickNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? kickOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentKickOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? notificationsChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentNotificationsChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int notificationsNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentNotificationsNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? notificationsOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentNotificationsOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? redactChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentRedactChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int redactNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentRedactNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? redactOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentRedactOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? stateDefaultChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentStateDefaultChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int stateDefaultNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentStateDefaultNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? stateDefaultOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentStateDefaultOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? usersChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? usersDefaultChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersDefaultChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int usersDefaultNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersDefaultNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? usersDefaultOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersDefaultOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomServerAclContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomServerAclContent._(this._api, this._box);
+
+  String? allowIpLiteralsChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentAllowIpLiteralsChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool allowIpLiteralsNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentAllowIpLiteralsNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool? allowIpLiteralsOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentAllowIpLiteralsOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  String? allowChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentAllowChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString allowNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentAllowNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? allowOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentAllowOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  String? denyChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentDenyChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString denyNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentDenyNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? denyOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomServerAclContentDenyOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomThirdPartyInviteContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomThirdPartyInviteContent._(this._api, this._box);
+
+  String? displayNameChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentDisplayNameChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String displayNameNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentDisplayNameNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? displayNameOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentDisplayNameOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? keyValidityUrlChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentKeyValidityUrlChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String keyValidityUrlNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentKeyValidityUrlNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? keyValidityUrlOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentKeyValidityUrlOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? publicKeyChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomThirdPartyInviteContentPublicKeyChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomTombstoneContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomTombstoneContent._(this._api, this._box);
+
+  String? bodyChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentBodyChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String bodyNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentBodyNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? bodyOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentBodyOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? replacementRoomChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentReplacementRoomChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String replacementRoomNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentReplacementRoomNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? replacementRoomOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentReplacementRoomOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomTopicContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomTopicContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTopicContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTopicContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTopicContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SpaceChildContent {
+  final Api _api;
+  final _Box _box;
+
+  SpaceChildContent._(this._api, this._box);
+
+  String? viaChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentViaChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString viaNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentViaNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? viaOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentViaOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  String? orderChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentOrderChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? orderNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentOrderNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? orderOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentOrderOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? suggestedChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentSuggestedChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool suggestedNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentSuggestedNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool? suggestedOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceChildContentSuggestedOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SpaceParentContent {
+  final Api _api;
+  final _Box _box;
+
+  SpaceParentContent._(this._api, this._box);
+
+  String? viaChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentViaChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString viaNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentViaNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? viaOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentViaOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  String? canonicalChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentCanonicalChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool canonicalNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentCanonicalNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool? canonicalOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentCanonicalOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -61032,6 +66038,146 @@ class _TimelineEventItemProfileContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemPolicyRuleRoomContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemPolicyRuleServerContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemPolicyRuleUserContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomAliasesContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomAvatarContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomCanonicalAliasContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomCreateContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomEncryptionContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomGuestAccessContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomHistoryVisibilityContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomJoinRulesContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomNameContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomPinnedEventsContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomPowerLevelsContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomServerAclContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomThirdPartyInviteContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomTombstoneContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomTopicContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemSpaceChildContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemSpaceParentContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -61307,6 +66453,1054 @@ class _TimelineItemDiffValueReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
+  external int arg1;
+}
+
+class _PolicyRuleRoomContentEntityChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleRoomContentEntityNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleRoomContentEntityOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleRoomContentReasonChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleRoomContentReasonNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleRoomContentReasonOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleRoomContentRecommendationChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleRoomContentRecommendationNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleRoomContentRecommendationOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleServerContentEntityChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleServerContentEntityNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleServerContentEntityOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleServerContentReasonChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleServerContentReasonNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleServerContentReasonOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleServerContentRecommendationChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleServerContentRecommendationNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleServerContentRecommendationOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentEntityChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentEntityNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleUserContentEntityOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentReasonChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentReasonNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleUserContentReasonOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentRecommendationChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentRecommendationNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleUserContentRecommendationOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAliasesContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAliasesContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _RoomAvatarContentUrlChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAvatarContentUrlNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAvatarContentUrlOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomCanonicalAliasContentAliasChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomCanonicalAliasContentAliasNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomCanonicalAliasContentAliasOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomCanonicalAliasContentAltAliasesChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomCanonicalAliasContentAltAliasesOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _RoomEncryptionContentAlgorithmChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomEncryptionContentAlgorithmNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomEncryptionContentAlgorithmOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomGuestAccessContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomGuestAccessContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomGuestAccessContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomHistoryVisibilityContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomHistoryVisibilityContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomHistoryVisibilityContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomJoinRulesContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomJoinRulesContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomJoinRulesContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomNameContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomNameContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomNameContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPinnedEventsContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPinnedEventsContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentBanChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentBanOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentEventsChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentEventsDefaultChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentEventsDefaultOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentInviteChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentInviteOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentKickChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentKickOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentNotificationsChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentNotificationsOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentRedactChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentRedactOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentStateDefaultChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentStateDefaultOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentUsersChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentUsersDefaultChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentUsersDefaultOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomServerAclContentAllowIpLiteralsChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomServerAclContentAllowIpLiteralsOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _RoomServerAclContentAllowChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomServerAclContentAllowOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _RoomServerAclContentDenyChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomServerAclContentDenyOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _RoomThirdPartyInviteContentDisplayNameChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomThirdPartyInviteContentDisplayNameNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomThirdPartyInviteContentDisplayNameOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomThirdPartyInviteContentKeyValidityUrlChangeReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomThirdPartyInviteContentKeyValidityUrlNewValReturn
+    extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomThirdPartyInviteContentKeyValidityUrlOldValReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomThirdPartyInviteContentPublicKeyChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentBodyChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentBodyNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomTombstoneContentBodyOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentReplacementRoomChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentReplacementRoomNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomTombstoneContentReplacementRoomOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTopicContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTopicContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomTopicContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceChildContentViaChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceChildContentViaOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _SpaceChildContentOrderChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceChildContentOrderNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceChildContentOrderOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceChildContentSuggestedChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceChildContentSuggestedOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _SpaceParentContentViaChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceParentContentViaOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _SpaceParentContentCanonicalChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceParentContentCanonicalOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 
