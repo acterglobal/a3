@@ -59,6 +59,10 @@ class MockFfiListSpaceHierarchyRoomInfo extends Mock
 
   @override
   Iterator<SpaceHierarchyRoomInfo> get iterator => _items.iterator;
+
+  @override
+  List<SpaceHierarchyRoomInfo> toList({bool growable = true}) =>
+      List.from(_items, growable: growable);
 }
 
 class MockSpaceRelations extends Mock implements SpaceRelations {

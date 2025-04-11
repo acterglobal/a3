@@ -21,7 +21,7 @@ enum TabEntry {
   actions,
 }
 
-class TabsNotifier extends AutoDisposeFamilyNotifier<List<TabEntry>, String> {
+class TabsNotifier extends FamilyNotifier<List<TabEntry>, String> {
   @override
   List<TabEntry> build(String spaceId) => [
     if (ref.watch(topicProvider(spaceId)).valueOrNull != null)
@@ -127,5 +127,7 @@ class TabsNotifier extends AutoDisposeFamilyNotifier<List<TabEntry>, String> {
   }
 }
 
-final tabsProvider = NotifierProvider.autoDispose
-    .family<TabsNotifier, List<TabEntry>, String>(() => TabsNotifier());
+final tabsProvider =
+    NotifierProvider.family<TabsNotifier, List<TabEntry>, String>(
+      () => TabsNotifier(),
+    );

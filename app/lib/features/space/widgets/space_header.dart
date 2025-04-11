@@ -5,8 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SpaceHeader extends ConsumerStatefulWidget {
   final String spaceIdOrAlias;
+  final bool expanded;
 
-  const SpaceHeader({super.key, required this.spaceIdOrAlias});
+  const SpaceHeader({
+    super.key,
+    required this.spaceIdOrAlias,
+    this.expanded = false,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SpaceHeaderState();

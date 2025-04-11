@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
@@ -12,8 +13,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../helpers/mock_a3sdk.dart';
+import '../../../helpers/mock_app_settings.dart';
+import '../../../helpers/mock_pins_providers.dart';
+import '../../../helpers/mock_relations.dart';
+import '../../../helpers/mock_room_providers.dart';
 import '../../../helpers/mock_updates_providers.dart';
-import '../../space/pages/space_details_page_test.dart';
 
 class MockSpaceHierarchyRoomInfo extends Mock
     implements SpaceHierarchyRoomInfo {}
@@ -22,10 +27,28 @@ void main() {
   group('SpaceNavbarProvider', () {
     late ProviderContainer container;
     late String testSpaceId;
+    late MockSpaceRelations mockSpaceRelations;
 
     setUp(() {
       container = ProviderContainer();
       testSpaceId = 'test-space-id-${Random().nextInt(1000000)}';
+      mockSpaceRelations = MockSpaceRelations(
+        roomId: testSpaceId,
+        children: [
+          MockSpaceRelation(roomId: 'subspace1', targetType: 'Space'),
+          MockSpaceRelation(roomId: 'chat1', targetType: 'ChatRoom'),
+          MockSpaceRelation(
+            roomId: 'suggested1',
+            targetType: 'Space',
+            suggested: true,
+          ),
+          MockSpaceRelation(
+            roomId: 'suggested2',
+            targetType: 'ChatRoom',
+            suggested: true,
+          ),
+        ],
+      );
     });
 
     tearDown(() {
@@ -562,6 +585,34 @@ void main() {
         );
       });
 
+      test('shows all child space tabs from space relations', () async {
+        container = ProviderContainer(
+          overrides: [
+            ...basicOverrides,
+            maybeRoomProvider.overrideWith(
+              () => MockAlwaysTheSameRoomNotifier(room: MockRoom()),
+            ),
+            spaceRelationsProvider(
+              testSpaceId,
+            ).overrideWith((ref) async => mockSpaceRelations),
+          ],
+        );
+        // cached
+        // ignore: unused_local_variable
+        final first = container.read(tabsProvider(testSpaceId));
+
+        await container.pump();
+        final next = container.read(tabsProvider(testSpaceId));
+        expect(
+          next,
+          containsAll([
+            TabEntry.suggestedChats,
+            TabEntry.suggestedSpaces,
+            TabEntry.chats,
+            TabEntry.spaces,
+          ]),
+        );
+      });
       test('hides child space tabs when none are available', () async {
         container = ProviderContainer(
           overrides: [

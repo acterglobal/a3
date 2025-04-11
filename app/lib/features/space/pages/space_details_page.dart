@@ -25,10 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
-final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
