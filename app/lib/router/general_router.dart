@@ -2,6 +2,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/avatar/full_screen_avatar_page.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
@@ -265,16 +266,16 @@ final generalRoutes = [
           );
     },
   ),
-
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.chatListShowcase.name,
-    path: Routes.chatListShowcase.route,
-    redirect: authGuardRedirect,
-    pageBuilder: (context, state) {
-      return MaterialPage(key: state.pageKey, child: ChatListShowcasePage());
-    },
-  ),
+  if (includeChatShowcase)
+    GoRoute(
+      parentNavigatorKey: rootNavKey,
+      name: Routes.chatListShowcase.name,
+      path: Routes.chatListShowcase.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return MaterialPage(key: state.pageKey, child: ChatListShowcasePage());
+      },
+    ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
     name: Routes.fullScreenAvatar.name,
