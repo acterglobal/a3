@@ -52,7 +52,7 @@ MockChatItem createMockChatItem({
   );
 }
 
-final mockChatItem1 = createMockChatItem(
+final emilyDmMutedBookmarked = createMockChatItem(
   roomId: 'mock-room-1',
   displayName: 'Emily Davis',
   notificationMode: 'muted',
@@ -69,7 +69,7 @@ final mockChatItem1 = createMockChatItem(
   ),
 );
 
-final mockChatItem2 = createMockChatItem(
+final productTeamMutedWithSingleTypingUser = createMockChatItem(
   roomId: 'mock-room-2',
   displayName: 'Product Team',
   notificationMode: 'muted',
@@ -91,7 +91,7 @@ final mockChatItem2 = createMockChatItem(
   ),
 );
 
-final mockChatItem3 = createMockChatItem(
+final engineeringTeamWithTestUpdate = createMockChatItem(
   roomId: 'mock-room-3',
   displayName: 'Engineering',
   activeMembersIds: [
@@ -107,7 +107,7 @@ final mockChatItem3 = createMockChatItem(
   ),
 );
 
-final mockChatItem4 = createMockChatItem(
+final designReviewMutedBookmarkedWithUnread = createMockChatItem(
   roomId: 'mock-room-4',
   displayName: 'Design Review',
   notificationMode: 'muted',
@@ -129,7 +129,7 @@ final mockChatItem4 = createMockChatItem(
   ),
 );
 
-final mockChatItem5 = createMockChatItem(
+final groupDmWithMichaelKumarpalsinhBen = createMockChatItem(
   roomId: 'mock-room-5',
   displayName: 'Michael, Kumarpalsinh & Ben',
   activeMembersIds: [
@@ -148,7 +148,7 @@ final mockChatItem5 = createMockChatItem(
   ),
 );
 
-final mockChatItem6 = createMockChatItem(
+final sarahDmWithTyping = createMockChatItem(
   roomId: 'mock-room-6',
   displayName: 'Sarah Wilson',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
@@ -164,7 +164,7 @@ final mockChatItem6 = createMockChatItem(
   ),
 );
 
-final mockChatItem7 = createMockChatItem(
+final projectAlphaWithMultipleTyping = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
   typingUsers: [
@@ -185,7 +185,7 @@ final mockChatItem7 = createMockChatItem(
   ),
 );
 
-final mockChatItem8 = createMockChatItem(
+final lisaDmBookmarked = createMockChatItem(
   roomId: 'mock-room-8',
   displayName: 'Lisa Park',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
@@ -200,7 +200,7 @@ final mockChatItem8 = createMockChatItem(
   ),
 );
 
-final mockChatItem9 = createMockChatItem(
+final teamUpdatesBookmarked = createMockChatItem(
   roomId: 'mock-room-9',
   displayName: 'Team Updates',
   activeMembersIds: [
@@ -219,7 +219,7 @@ final mockChatItem9 = createMockChatItem(
   ),
 );
 
-final mockChatItem10 = createMockChatItem(
+final groupDmWithEmmaKumarpalsinhBen = createMockChatItem(
   roomId: 'mock-room-10',
   displayName: 'Emma, Kumarpalsinh & Ben',
   activeMembersIds: [
@@ -238,7 +238,7 @@ final mockChatItem10 = createMockChatItem(
   ),
 );
 
-final mockChatItem11 = createMockChatItem(
+final alexDm = createMockChatItem(
   roomId: 'mock-room-11',
   displayName: 'Alex Thompson',
   activeMembersIds: ['@alex:acter.global', '@kumarpalsinh:acter.global'],
@@ -252,7 +252,7 @@ final mockChatItem11 = createMockChatItem(
   ),
 );
 
-final mockChatItem12 = createMockChatItem(
+final marketingTeam = createMockChatItem(
   roomId: 'mock-room-12',
   displayName: 'Marketing Team',
   activeMembersIds: [
@@ -270,7 +270,7 @@ final mockChatItem12 = createMockChatItem(
   ),
 );
 
-final mockChatItem13 = createMockChatItem(
+final lisaDm = createMockChatItem(
   roomId: 'mock-room-13',
   displayName: 'Lisa Park',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
@@ -284,7 +284,7 @@ final mockChatItem13 = createMockChatItem(
   ),
 );
 
-final mockChatItem14 = createMockChatItem(
+final productFeedbackGroup = createMockChatItem(
   roomId: 'mock-room-14',
   displayName: 'Product Feedback',
   activeMembersIds: [
@@ -300,7 +300,7 @@ final mockChatItem14 = createMockChatItem(
   ),
 );
 
-final mockChatItem15 = createMockChatItem(
+final davidDm = createMockChatItem(
   roomId: 'mock-room-15',
   displayName: 'David Miller',
   activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
