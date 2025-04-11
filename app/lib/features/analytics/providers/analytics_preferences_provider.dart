@@ -47,7 +47,7 @@ Future<SentryEvent?> sentryBeforeSend(SentryEvent evt, Hint hint) async {
 /// Handles Matomo-specific analytics settings
 Future<void> setMatomoAnalytics(bool value, WidgetRef ref) async {
   // Update Matomo tracking state
-  MatomoTracker.instance.setOptOut(optOut: value);
+  MatomoTracker.instance.setOptOut(optOut: !value);
 
   // Set visitor ID if enabled
   final userId = ref.read(myUserIdStrProvider);
