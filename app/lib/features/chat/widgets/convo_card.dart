@@ -1144,6 +1144,103 @@ class _ProfileUpdateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myId = ref.read(myUserIdStrProvider);
+    ProfileContent? content = eventItem.profileContent();
+    if (content == null) {
+      _log.severe('failed to get content of membership change');
+      return const SizedBox.shrink();
+    }
+    final userId = content.userId().toString();
+    final userName =
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
+        simplifyUserId(userId) ??
+        userId;
+    switch (content.displayNameChange()) {
+      case 'Changed':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildDisplayNameChangedMessage(
+                context,
+                myId,
+                userId,
+                content.displayNameNewVal() ?? '',
+                content.displayNameOldVal() ?? '',
+              ),
+            ),
+          ],
+        );
+      case 'Set':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildDisplayNameSetMessage(
+                context,
+                myId,
+                userId,
+                content.displayNameNewVal() ?? '',
+              ),
+            ),
+          ],
+        );
+      case 'Unset':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildDisplayNameUnsetMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+    }
+    switch (content.avatarUrlChange()) {
+      case 'Changed':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildAvatarUrlChangedMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+      case 'Set':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildAvatarUrlSetMessage(context, myId, userId, userName),
+            ),
+          ],
+        );
+      case 'Unset':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: buildAvatarUrlUnsetMessage(
+                context,
+                myId,
+                userId,
+                userName,
+              ),
+            ),
+          ],
+        );
+    }
     return const SizedBox.shrink();
   }
 
