@@ -259,7 +259,6 @@ impl Space {
                 let mut requests = Vec::new();
 
                 for state in default_acter_space_states() {
-                    println!("{:?}", state);
                     let event_type = state
                         .get_field::<StateEventType>("type")?
                         .context("Unable to get state event type")?;

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,9 @@ Future<bool> handleNotificationPermission(BuildContext context) async {
     if (context.mounted) {
       return await _handleNotificationPermission(context);
     }
+  }
+  if (isDesktop) {
+    return true;
   }
   return false;
 }
