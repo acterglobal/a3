@@ -102,23 +102,28 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   void _handleEditing(TimelineEventItem? item) {
-    try {
-      if (item == null) return;
-      final msgContent = item.msgContent();
-      if (msgContent == null) return;
-      final body = msgContent.body();
-      // insert editing text
-      final transaction = textEditorState.transaction;
-      final docNode = textEditorState.getNodeAtPath([0]);
-      if (docNode == null) return;
+    if (item == null) return;
 
-      transaction.replaceText(docNode, 0, docNode.delta?.length ?? 0, body);
-      final pos = Position(path: [0], offset: body.length);
-      transaction.afterSelection = Selection.collapsed(pos);
-      textEditorState.apply(transaction);
-    } catch (e) {
-      _log.severe('Error handling edit state change: $e');
-    }
+    final msgContent = item.message();
+    if (msgContent == null) return;
+
+    final body = msgContent.body();
+    if (body.isEmpty) return;
+    // clear the editor first
+    textEditorState.clear();
+
+    final docNode = textEditorState.getNodeAtPath([0]);
+    if (docNode == null) return;
+
+    // process text and apply mention attributes , if any
+    textEditorState.toMentionPills(body, docNode);
+
+    final text = docNode.delta?.toPlainText() ?? '';
+    final pos = Position(path: [0], offset: text.length);
+    textEditorState.updateSelectionWithReason(
+      Selection.collapsed(pos),
+      reason: SelectionUpdateReason.uiEvent,
+    );
   }
 
   void _editorUpdate(Transaction data) {
