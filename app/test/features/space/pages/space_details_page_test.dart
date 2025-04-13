@@ -7,10 +7,12 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/space/pages/space_details_page.dart';
+import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/topic_provider.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/members_section.dart';
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
+import 'package:acter/features/space/widgets/space_sections/spaces_loading_error_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_chats_section.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -249,6 +251,52 @@ void main() {
         expect(find.text(lang.spaces, skipOffstage: false), findsAtLeast(1));
         expect(find.text(lang.chats, skipOffstage: false), findsAtLeast(1));
       });
+
+      testWidgets('renders spaces loading error section', (
+        WidgetTester tester,
+      ) async {
+        await tester.pumpProviderWidget(
+          overrides: [
+            ...extendedOverrides,
+            spaceProvider(testSpaceId).overrideWith((ref) async => MockSpace()),
+            maybeRoomProvider.overrideWith(
+              () => MockAlwaysTheSameRoomNotifier(room: MockRoom()),
+            ),
+            spaceRelationsProvider(
+              testSpaceId,
+            ).overrideWith((ref) async => throw SpaceNotFound()),
+          ],
+          child: SpaceDetailsPage(spaceId: testSpaceId),
+        );
+
+        // Verify header is present
+        final header = find.byKey(SpaceDetailsPage.headerKey);
+        expect(header, findsOneWidget);
+        final BuildContext context = tester.element(header);
+        final lang = L10n.of(context);
+
+        // Verify tabs are rendered
+        expect(find.byKey(Key(TabEntry.overview.name)), findsOneWidget);
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
+
+        // what we care for in this stest
+        expect(find.byKey(Key(TabEntry.suggestedSpaces.name)), findsNothing);
+        expect(find.byKey(Key(TabEntry.suggestedChats.name)), findsNothing);
+        expect(
+          find.byKey(Key(TabEntry.spacesLoadingError.name)),
+          findsOneWidget,
+        );
+        // scroll down
+        await tester.tap(find.byKey(Key(TabEntry.spacesLoadingError.name)));
+
+        await tester.pump(const Duration(seconds: 4));
+        expect(
+          find.byType(SpacesLoadingErrorSection, skipOffstage: false),
+          findsOneWidget,
+        );
+      });
     });
     group('Tab Provider Changes updates properly', () {
       const testSpaceId = 'test-space-id';
@@ -283,7 +331,7 @@ void main() {
             //emulate the connection
             await ref.watch(spaceProvider(testSpaceId).future);
             if (failSpaceRelations) {
-              throw Exception('Failed to load space relations');
+              throw SpaceNotFound();
             }
             return mockSpaceRelations;
           }),
@@ -313,25 +361,28 @@ void main() {
           child: SpaceDetailsPage(spaceId: testSpaceId),
         );
 
-        final context = tester.element(find.byType(SpaceDetailsPage));
-        final lang = L10n.of(context);
-
-        expect(find.text(lang.overview), findsOneWidget);
+        expect(find.byKey(Key(TabEntry.overview.name)), findsOneWidget);
         expect(find.text('We have some topic'), findsOneWidget);
-        expect(find.text(lang.updates), findsAtLeast(1));
-        expect(find.text(lang.pins), findsAtLeast(1));
-        expect(find.text(lang.tasks), findsAtLeast(1));
-        expect(find.text(lang.events), findsAtLeast(1));
-        expect(find.text(lang.members), findsAtLeast(1));
+        expect(find.byKey(Key(TabEntry.updates.name)), findsOneWidget);
+        expect(find.byKey(Key(TabEntry.pins.name)), findsOneWidget);
+        expect(find.byKey(Key(TabEntry.tasks.name)), findsOneWidget);
+        expect(find.byKey(Key(TabEntry.events.name)), findsOneWidget);
+        expect(find.byKey(Key(TabEntry.members.name)), findsOneWidget);
 
         // this failed!
+        await tester.pump(const Duration(seconds: 1));
 
-        expect(find.text(lang.spaces), findsNothing);
-        expect(find.text(lang.chats), findsNothing);
-        expect(find.text(lang.suggestedChats), findsNothing);
-        expect(find.text(lang.suggestedSpaces), findsNothing);
+        expect(find.byKey(Key(TabEntry.chats.name)), findsNothing);
+        expect(find.byKey(Key(TabEntry.spaces.name)), findsNothing);
+        expect(find.byKey(Key(TabEntry.suggestedChats.name)), findsNothing);
+        expect(find.byKey(Key(TabEntry.suggestedSpaces.name)), findsNothing);
 
-        // make it not fail
+        expect(
+          find.byKey(Key(TabEntry.spacesLoadingError.name)),
+          findsOneWidget,
+        );
+
+        // make it work this time
         failSpaceRelations = false;
 
         // Pull to refresh
@@ -343,6 +394,7 @@ void main() {
         await tester.pump(
           const Duration(seconds: 1),
         ); // finish the scroll animation
+
         await tester.pump(
           const Duration(seconds: 1),
         ); // finish the indicator settle animation
@@ -350,10 +402,14 @@ void main() {
           const Duration(seconds: 1),
         ); // finish the indicator hide animation
 
-        expect(find.text(lang.spaces), findsAtLeast(1));
-        expect(find.text(lang.chats), findsAtLeast(1));
-        expect(find.text(lang.suggestedChats), findsAtLeast(1));
-        expect(find.text(lang.suggestedSpaces), findsAtLeast(1));
+        await tester.pump(
+          const Duration(seconds: 1),
+        ); // wait for the error to be gone
+
+        expect(find.byKey(Key(TabEntry.spaces.name)), findsAtLeast(1));
+        expect(find.byKey(Key(TabEntry.chats.name)), findsAtLeast(1));
+        expect(find.byKey(Key(TabEntry.suggestedChats.name)), findsAtLeast(1));
+        expect(find.byKey(Key(TabEntry.suggestedSpaces.name)), findsAtLeast(1));
       });
       testWidgets('when news are activated', (tester) async {
         when(() => mockMembership.canString(any())).thenReturn(true);
@@ -426,10 +482,16 @@ void main() {
         );
 
         await tester.pump();
-        expect(find.byType(AboutSection), findsOneWidget);
-        expect(find.byType(MembersSection), findsOneWidget);
-        expect(find.byType(NewsSection), findsNothing);
-        expect(find.byType(SuggestedChatsSection), findsNothing);
+        expect(find.byType(AboutSection, skipOffstage: false), findsOneWidget);
+        expect(
+          find.byType(MembersSection, skipOffstage: false),
+          findsOneWidget,
+        );
+        expect(find.byType(NewsSection, skipOffstage: false), findsNothing);
+        expect(
+          find.byType(SuggestedChatsSection, skipOffstage: false),
+          findsNothing,
+        );
 
         final context = tester.element(find.byType(SpaceDetailsPage));
         final container = ProviderScope.containerOf(context);

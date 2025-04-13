@@ -470,6 +470,24 @@ void main() {
         ),
       ];
 
+      test('shows spaces loading error when noticed', () async {
+        container = ProviderContainer(
+          overrides: [
+            ...basicOverrides,
+            spaceRelationsProvider(testSpaceId).overrideWith(
+              (ref) async => throw Exception('Failed to load space relations'),
+            ),
+          ],
+        );
+
+        await container.pump();
+        // ignore: unused_local_variable
+        final first = container.read(tabsProvider(testSpaceId));
+        await container.pump();
+        final next = container.read(tabsProvider(testSpaceId));
+        expect(next, contains(TabEntry.spacesLoadingError));
+      });
+
       test('shows suggested chats when available', () async {
         container = ProviderContainer(
           overrides: [

@@ -16,6 +16,7 @@ import 'package:acter/features/space/widgets/space_sections/members_section.dart
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
 import 'package:acter/features/space/widgets/space_sections/other_sub_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
+import 'package:acter/features/space/widgets/space_sections/spaces_loading_error_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
@@ -224,6 +225,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.suggestedSpaces => lang.suggestedSpaces,
       TabEntry.chats => lang.chats,
       TabEntry.spaces => lang.spaces,
+      TabEntry.spacesLoadingError => lang.spaces,
       TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
@@ -272,6 +274,9 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       ),
       TabEntry.chats => OtherChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => OtherSubSpacesSection(spaceId: widget.spaceId),
+      TabEntry.spacesLoadingError => SpacesLoadingErrorSection(
+        spaceId: widget.spaceId,
+      ),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
       TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
     };

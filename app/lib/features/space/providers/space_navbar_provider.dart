@@ -17,6 +17,7 @@ enum TabEntry {
   suggestedSpaces,
   chats,
   spaces,
+  spacesLoadingError,
   members,
   actions,
 }
@@ -105,6 +106,13 @@ class TabsNotifier extends FamilyNotifier<List<TabEntry>, String> {
         otherSubSpaces?.$2.isNotEmpty == true;
     if (hasOtherSubSpaces) {
       tabs.add(TabEntry.spaces);
+    }
+
+    if (tabs.isEmpty) {
+      final error = ref.watch(spaceRelationsProvider(spaceId)).error;
+      if (error != null) {
+        tabs.add(TabEntry.spacesLoadingError);
+      }
     }
     return tabs;
   }
