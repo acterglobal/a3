@@ -1,3 +1,5 @@
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/desktop_setup/actions/desktop_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/utils/device_permissions/calendar.dart';
@@ -19,6 +21,11 @@ final postLoginSignupProvider = Provider<PostLoginSignupService>(
         name: 'Calendar Permission',
         execute: handleCalendarPermission,
       ),
+      if (isDesktop)
+        PostLoginSignupStep(
+          name: 'Launch at Startup',
+          execute: showDesktopSetupDialog,
+        ),
       PostLoginSignupStep(
         name: 'Analytics Opt-in',
         execute: showAnalyticsOptIn,

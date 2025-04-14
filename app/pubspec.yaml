@@ -171,6 +171,10 @@ dependencies:
   mocktail: ^1.0.4
   # Matomo Analytics
   matomo_tracker: ^5.1.0
+  # Launch at startup
+  launch_at_startup: ^0.3.1
+  # Package info
+  package_info_plus: ^8.3.0
 
 dev_dependencies:
   flutter_test:

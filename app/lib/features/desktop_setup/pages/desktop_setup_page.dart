@@ -1,19 +1,48 @@
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/settings/providers/settings_providers.dart';
+import 'package:acter/features/desktop_setup/providers/desktop_setup_provider.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class DesktopSetupWidget extends ConsumerWidget {
+class DesktopSetupWidget extends ConsumerStatefulWidget {
   const DesktopSetupWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DesktopSetupWidget> createState() => _DesktopSetupWidgetState();
+}
+
+class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    final isEnabled = await launchAtStartup.isEnabled();
+    if (mounted) {
+      ref.read(desktopFeaturesProvider.notifier).state = isEnabled;
+    }
+  }
+
+  Future<void> handleEnable() async {
+    await launchAtStartup.enable();
+    await _init();
+  }
+
+  Future<void> handleDisable() async {
+    await launchAtStartup.disable();
+    await _init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final isFeaturesEnabled = ref.watch(desktopFeaturesProvider);
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -21,7 +50,7 @@ class DesktopSetupWidget extends ConsumerWidget {
           children: [
             // Close button at the top right
             Positioned(
-              top: 0,
+              top: 20,
               right: 0,
               child: IconButton(
                 onPressed: () => Navigator.pop(context),
@@ -47,7 +76,7 @@ class DesktopSetupWidget extends ConsumerWidget {
                         isFeaturesEnabled,
                         ref,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 40),
                       _buildActionButton(context, lang),
                     ],
                   ),
@@ -105,6 +134,11 @@ class DesktopSetupWidget extends ConsumerWidget {
           onChanged: (bool? newValue) {
             if (newValue != null) {
               ref.read(desktopFeaturesProvider.notifier).state = newValue;
+              if (newValue) {
+                handleEnable();
+              } else {
+                handleDisable();
+              }
             }
           },
         ),
@@ -116,12 +150,12 @@ class DesktopSetupWidget extends ConsumerWidget {
   // Action button for the page
   Widget _buildActionButton(BuildContext context, L10n lang) {
     final textTheme = Theme.of(context).textTheme;
-    return OutlinedButton(
+    return ElevatedButton(
       onPressed: () => context.goNamed(Routes.main.name),
       child: Text(
-        lang.gotIt,
+        lang.wizzardContinue,
         style: textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onSecondary,
         ),
       ),
     );

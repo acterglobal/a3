@@ -1,12 +1,12 @@
-import 'package:acter/features/onboarding/pages/desktop_setup_page.dart';
+import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:flutter/material.dart';
 
-/// Internal function to handle desktop setup
-Future<void> handleDesktopSetup(BuildContext context) async {
+/// Internal function to show the desktop setup dialog
+Future<void> showDesktopSetupDialog(BuildContext context) async {
   if (context.mounted) {
     await showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: false,  
       builder: (BuildContext context) {
         return Dialog.fullscreen(child: const DesktopSetupWidget());
       },
