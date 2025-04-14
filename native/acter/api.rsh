@@ -1872,6 +1872,85 @@ object Convo {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects servers.
+    /// entity: *.example.org
+    /// reason: undesirable engagement
+    fn set_policy_rule_server(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects users.
+    /// entity: @alice*:example.org
+    /// reason: undesirable behaviour
+    fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room alias array
+    /// ["#friendlyname:server.name"]
+    fn set_aliases(aliases: string) -> Future<Result<EventId>>;
+
+    /// set room canonical alias
+    /// "#friendlyname:server.name"
+    fn set_canonical_alias(alias: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
+
+    /// set room join rules
+    /// invite, knock, private, or public
+    fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room third party invite
+    fn set_third_party_invite(display_name: string, key_validity_url: string, public_key: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2914,6 +2993,85 @@ object Space {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects servers.
+    /// entity: *.example.org
+    /// reason: undesirable engagement
+    fn set_policy_rule_server(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects users.
+    /// entity: @alice*:example.org
+    /// reason: undesirable behaviour
+    fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room alias array
+    /// ["#friendlyname:server.name"]
+    fn set_aliases(aliases: string) -> Future<Result<EventId>>;
+
+    /// set room canonical alias
+    /// "#friendlyname:server.name"
+    fn set_canonical_alias(alias: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
+
+    /// set room join rules
+    /// invite, knock, private, or public
+    fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room third party invite
+    fn set_third_party_invite(display_name: string, key_validity_url: string, public_key: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

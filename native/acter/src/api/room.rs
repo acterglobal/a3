@@ -37,22 +37,39 @@ use matrix_sdk_base::{
         },
         assign,
         events::{
+            policy::rule::{
+                room::PolicyRuleRoomEventContent, server::PolicyRuleServerEventContent,
+                user::PolicyRuleUserEventContent, PolicyRuleEventContent, Recommendation,
+            },
             room::{
-                avatar::ImageInfo as AvatarImageInfo,
+                aliases::RoomAliasesEventContent,
+                avatar::ImageInfo,
+                canonical_alias::RoomCanonicalAliasEventContent,
+                encryption::RoomEncryptionEventContent,
+                guest_access::{GuestAccess, RoomGuestAccessEventContent},
+                history_visibility::{HistoryVisibility, RoomHistoryVisibilityEventContent},
                 join_rules::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
                 },
                 message::{MessageType, RoomMessageEvent},
+                pinned_events::RoomPinnedEventsEventContent,
+                power_levels::RoomPowerLevelsEventContent,
+                server_acl::RoomServerAclEventContent,
+                third_party_invite::RoomThirdPartyInviteEventContent,
+                tombstone::RoomTombstoneEventContent,
+                topic::RoomTopicEventContent,
                 MediaSource,
             },
             space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
             MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
         },
+        power_levels::NotificationPowerLevels,
         room::RoomType,
-        serde::Raw,
+        serde::{Base64, Raw},
         space::SpaceRoomJoinRule,
-        EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-        OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
+        EventEncryptionAlgorithm, EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri,
+        OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomAliasId, RoomId,
+        ServerName, UserId,
     },
     RoomDisplayName, RoomMemberships, RoomState,
 };
@@ -829,7 +846,7 @@ impl Room {
                 let response = client.media().upload(&content_type, buf, None).await?;
 
                 let content_uri = response.content_uri;
-                let info = assign!(AvatarImageInfo::new(), {
+                let info = assign!(ImageInfo::new(), {
                     blurhash: response.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
@@ -1801,6 +1818,335 @@ impl Room {
                         preview: RefPreview::new(None, room_display_name),
                     },
                 ))
+            })
+            .await?
+    }
+
+    // entity: #*:example.org
+    // reason: undesirable content
+    // state key: rule:#*:example.org
+    pub async fn set_policy_rule_room(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleRoomEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // entity: *.example.org
+    // reason: undesirable engagement
+    // state key: rule:*.example.org
+    pub async fn set_policy_rule_server(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleServerEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // entity: @alice*:example.org
+    // reason: undesirable behaviour
+    // state key: rule:@alice*:example.org
+    pub async fn set_policy_rule_user(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleUserEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_aliases(&self, aliases: String) -> Result<OwnedEventId> {
+        let aliases = serde_json::from_str::<Vec<OwnedRoomAliasId>>(&aliases)?;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let Some(server_name) = room.room_id().server_name() else {
+                    bail!("failed to get server name for room aliases update")
+                };
+                let content = RoomAliasesEventContent::new(aliases);
+                let response = room.send_state_event_for_key(server_name, content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_canonical_alias(&self, alias: String) -> Result<OwnedEventId> {
+        let alias = RoomAliasId::parse(&alias)?;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomCanonicalAliasEventContent::new(), {
+                    alias: Some(alias),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    pub async fn set_encryption(&self, algorithm: String) -> Result<OwnedEventId> {
+        let algorithm = EventEncryptionAlgorithm::from(algorithm.as_str());
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomEncryptionEventContent::new(algorithm);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // can_join or forbidden
+    pub async fn set_guest_access(&self, guest_access: String) -> Result<OwnedEventId> {
+        let guest_access = GuestAccess::from(guest_access.as_str());
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomGuestAccessEventContent::new(guest_access);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // invited, joined, shared, or world_readable
+    pub async fn set_history_visibility(&self, history_visibility: String) -> Result<OwnedEventId> {
+        let history_visibility = HistoryVisibility::from(history_visibility.as_str());
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomHistoryVisibilityEventContent::new(history_visibility);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_join_rules(&self, join_rule: String) -> Result<OwnedEventId> {
+        let join_rule = match (join_rule.as_str()) {
+            "invite" => JoinRule::Invite,
+            "knock" => JoinRule::Knock,
+            "private" => JoinRule::Private,
+            "public" => JoinRule::Public,
+            _ => bail!("invalid join rule"),
+        };
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomJoinRulesEventContent::new(join_rule);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_pinned_events(&self, event_ids: String) -> Result<OwnedEventId> {
+        let pinned = serde_json::from_str::<Vec<OwnedEventId>>(&event_ids)?;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomPinnedEventsEventContent::new(pinned);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_ban(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    ban: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_events_default(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    events_default: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_invite(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    invite: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_kick(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    kick: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_redact(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    redact: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_state_default(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    state_default: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_users_default(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    users_default: Int::from(level),
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_power_levels_notifications(&self, level: i32) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let notifications = assign!(NotificationPowerLevels::new(), {
+                    room: Int::from(level),
+                });
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    notifications,
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // allow_ip_literals: true
+    // allow: ["*"]
+    // deny: ["1.1.1.1"]
+    pub async fn set_server_acl(
+        &self,
+        allow_ip_literals: bool,
+        allow: String,
+        deny: String,
+    ) -> Result<OwnedEventId> {
+        let allow = serde_json::from_str::<Vec<String>>(&allow)?;
+        let deny = serde_json::from_str::<Vec<String>>(&deny)?;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomServerAclEventContent::new(allow_ip_literals, allow, deny);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_third_party_invite(
+        &self,
+        display_name: String,
+        key_validity_url: String,
+        public_key: String,
+    ) -> Result<OwnedEventId> {
+        let public_key = Base64::new(public_key.as_bytes().to_owned());
+        let room = self.room.clone();
+        let room_id = room.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomThirdPartyInviteEventContent::new(
+                    display_name,
+                    key_validity_url,
+                    public_key,
+                );
+                let response = room
+                    .send_state_event_for_key(room_id.as_str(), content)
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_tombstone(
+        &self,
+        body: String,
+        replacement_room_id: String,
+    ) -> Result<OwnedEventId> {
+        let replacement_room = RoomId::parse(replacement_room_id)?;
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let content = RoomTombstoneEventContent::new(body, replacement_room);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
             })
             .await?
     }
