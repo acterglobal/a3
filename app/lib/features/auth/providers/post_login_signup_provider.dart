@@ -24,7 +24,7 @@ final postLoginSignupProvider = Provider<PostLoginSignupService>(
       if (isDesktop)
         PostLoginSignupStep(
           name: 'Launch at Startup',
-          execute: showDesktopSetupDialog,
+          execute: showDesktopSetup,
         ),
       PostLoginSignupStep(
         name: 'Analytics Opt-in',

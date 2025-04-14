@@ -2,7 +2,7 @@ import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:flutter/material.dart';
 
 /// Internal function to show the desktop setup dialog
-Future<void> showDesktopSetupDialog(BuildContext context) async {
+Future<void> showDesktopSetup(BuildContext context) async {
   if (context.mounted) {
     await showDialog(
       context: context,
