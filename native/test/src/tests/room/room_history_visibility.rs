@@ -49,7 +49,7 @@ async fn test_room_history_visibility() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(event_id) = match_msg(&value, "Set", history_visibility) {
+                    if let Some(event_id) = match_msg(&value, "Changed", history_visibility) {
                         found_event_id = Some(event_id);
                     }
                 }
@@ -58,7 +58,7 @@ async fn test_room_history_visibility() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(event_id) = match_msg(value, "Set", history_visibility) {
+                        if let Some(event_id) = match_msg(value, "Changed", history_visibility) {
                             found_event_id = Some(event_id);
                             break;
                         }

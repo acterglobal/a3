@@ -29,6 +29,7 @@ use matrix_sdk_base::ruma::events::{
         child::{PossiblyRedactedSpaceChildEventContent, SpaceChildEventContent},
         parent::{PossiblyRedactedSpaceParentEventContent, SpaceParentEventContent},
     },
+    TimelineEventType,
 };
 use serde::{Deserialize, Serialize};
 
@@ -871,6 +872,30 @@ impl RoomPowerLevelsContent {
         } else {
             Some("Set".to_owned())
         }
+    }
+
+    pub fn events_new_val(&self, event_type: String) -> Result<i64, crate::Error> {
+        let key = match TimelineEventType::try_from(event_type) {
+            Ok(t) => t,
+            Err(e) => {
+                return Err(crate::Error::Custom(e.to_string()));
+            }
+        };
+        Ok(self.content.events[&key].into())
+    }
+
+    pub fn events_old_val(&self, event_type: String) -> Result<Option<i64>, crate::Error> {
+        let key = match TimelineEventType::try_from(event_type) {
+            Ok(t) => t,
+            Err(e) => {
+                return Err(crate::Error::Custom(e.to_string()));
+            }
+        };
+        let level = self
+            .prev_content
+            .as_ref()
+            .map(|prev| prev.events[&key].into());
+        Ok(level)
     }
 
     pub fn events_default_change(&self) -> Option<String> {

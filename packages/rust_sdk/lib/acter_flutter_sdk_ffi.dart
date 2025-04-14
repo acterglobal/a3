@@ -7659,6 +7659,51 @@ class Api {
     return tmp7;
   }
 
+  EventId? __convoSetPowerLevelsEventsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsEventsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __convoSetPowerLevelsEventsDefaultFuturePoll(
     int boxed,
     int postCobject,
@@ -11716,6 +11761,51 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceSetPowerLevelsBanFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsEventsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsEventsFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -24225,6 +24315,21 @@ class Api {
 
   late final _convoSetPowerLevelsBan =
       _convoSetPowerLevelsBanPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsEventsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Convo_set_power_levels_events");
+
+  late final _convoSetPowerLevelsEvents =
+      _convoSetPowerLevelsEventsPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _convoSetPowerLevelsEventsDefaultPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
         "__Convo_set_power_levels_events_default",
@@ -27311,6 +27416,21 @@ class Api {
 
   late final _spaceSetPowerLevelsBan =
       _spaceSetPowerLevelsBanPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsEventsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Space_set_power_levels_events");
+
+  late final _spaceSetPowerLevelsEvents =
+      _spaceSetPowerLevelsEventsPtr
+          .asFunction<int Function(int, int, int, int, int)>();
   late final _spaceSetPowerLevelsEventsDefaultPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
         "__Space_set_power_levels_events_default",
@@ -32347,6 +32467,21 @@ class Api {
           .asFunction<
             _ConvoSetPowerLevelsBanFuturePollReturn Function(int, int, int)
           >();
+  late final _convoSetPowerLevelsEventsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_events_future_poll");
+
+  late final _convoSetPowerLevelsEventsFuturePoll =
+      _convoSetPowerLevelsEventsFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsEventsFuturePollReturn Function(int, int, int)
+          >();
   late final _convoSetPowerLevelsEventsDefaultFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _ConvoSetPowerLevelsEventsDefaultFuturePollReturn Function(
@@ -33742,6 +33877,21 @@ class Api {
       _spaceSetPowerLevelsBanFuturePollPtr
           .asFunction<
             _SpaceSetPowerLevelsBanFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsEventsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_events_future_poll");
+
+  late final _spaceSetPowerLevelsEventsFuturePoll =
+      _spaceSetPowerLevelsEventsFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsEventsFuturePollReturn Function(int, int, int)
           >();
   late final _spaceSetPowerLevelsEventsDefaultFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -52576,6 +52726,42 @@ class Convo {
     return tmp4;
   }
 
+  /// set events of power levels
+  /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+  Future<EventId> setPowerLevelsEvents(String eventType, int level) {
+    final tmp1 = eventType;
+    final tmp5 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._convoSetPowerLevelsEvents(tmp0, tmp2, tmp3, tmp4, tmp6);
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(
+      _api,
+      tmp9_0,
+      "__Convo_set_power_levels_events_future_drop",
+    );
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(
+      tmp9_1,
+      _api.__convoSetPowerLevelsEventsFuturePoll,
+    );
+    return tmp8;
+  }
+
   /// set events_default of power levels
   Future<EventId> setPowerLevelsEventsDefault(int level) {
     final tmp1 = level;
@@ -60505,6 +60691,42 @@ class Space {
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
     final tmp4 = _nativeFuture(tmp5_1, _api.__spaceSetPowerLevelsBanFuturePoll);
     return tmp4;
+  }
+
+  /// set events of power levels
+  /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+  Future<EventId> setPowerLevelsEvents(String eventType, int level) {
+    final tmp1 = eventType;
+    final tmp5 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._spaceSetPowerLevelsEvents(tmp0, tmp2, tmp3, tmp4, tmp6);
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(
+      _api,
+      tmp9_0,
+      "__Space_set_power_levels_events_future_drop",
+    );
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(
+      tmp9_1,
+      _api.__spaceSetPowerLevelsEventsFuturePoll,
+    );
+    return tmp8;
   }
 
   /// set events_default of power levels
@@ -75921,6 +76143,21 @@ class _ConvoSetPowerLevelsBanFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetPowerLevelsEventsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _ConvoSetPowerLevelsEventsDefaultFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -77321,6 +77558,21 @@ class _SpaceSetPinnedEventsFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceSetPowerLevelsBanFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsEventsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

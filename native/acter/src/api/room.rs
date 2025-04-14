@@ -62,6 +62,7 @@ use matrix_sdk_base::{
             },
             space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
             MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
+            TimelineEventType,
         },
         power_levels::NotificationPowerLevels,
         room::RoomType,
@@ -73,7 +74,7 @@ use matrix_sdk_base::{
     },
     RoomDisplayName, RoomMemberships, RoomState,
 };
-use std::{fs::exists, io::Write, ops::Deref, path::PathBuf};
+use std::{collections::BTreeMap, fs::exists, io::Write, ops::Deref, path::PathBuf};
 use tokio::fs;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 use tracing::{info, warn};
@@ -1729,6 +1730,7 @@ impl Room {
             .await?
     }
 
+    // initial level of room creator is 100
     pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Unable to update power level in a room we are not in");
@@ -1915,6 +1917,7 @@ impl Room {
     }
 
     // m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    // initial algorithm is m.megolm.v1.aes-sha2
     pub async fn set_encryption(&self, algorithm: String) -> Result<OwnedEventId> {
         let algorithm = EventEncryptionAlgorithm::from(algorithm.as_str());
         let room = self.room.clone();
@@ -1953,6 +1956,7 @@ impl Room {
             .await?
     }
 
+    // initial rule is Invite
     pub async fn set_join_rules(&self, join_rule: String) -> Result<OwnedEventId> {
         let join_rule = match (join_rule.as_str()) {
             "invite" => JoinRule::Invite,
@@ -1983,6 +1987,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 50
     pub async fn set_power_levels_ban(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -1996,6 +2001,36 @@ impl Room {
             .await?
     }
 
+    // initial value of "m.room.avatar": 50
+    // initial value of "m.room.canonical_alias": 50
+    // initial value of "m.room.encryption": 100
+    // initial value of "m.room.history_visibility": 100
+    // initial value of "m.room.name": 50
+    // initial value of "m.room.power_levels": 100
+    // initial value of "m.room.server_acl": 100
+    // initial value of "m.room.tombstone": 100
+    pub async fn set_power_levels_events(
+        &self,
+        event_type: String,
+        level: i32,
+    ) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let key = TimelineEventType::try_from(event_type)?;
+        let value = Int::from(level);
+        RUNTIME
+            .spawn(async move {
+                let mut events = BTreeMap::new();
+                events.insert(key, value);
+                let content = assign!(RoomPowerLevelsEventContent::new(), {
+                    events,
+                });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // initial level is 0
     pub async fn set_power_levels_events_default(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -2009,6 +2044,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 0
     pub async fn set_power_levels_invite(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -2022,6 +2058,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 50
     pub async fn set_power_levels_kick(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -2035,6 +2072,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 50
     pub async fn set_power_levels_redact(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -2048,6 +2086,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 50
     pub async fn set_power_levels_state_default(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -2061,6 +2100,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 0
     pub async fn set_power_levels_users_default(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME
@@ -2074,6 +2114,7 @@ impl Room {
             .await?
     }
 
+    // initial level is 50
     pub async fn set_power_levels_notifications(&self, level: i32) -> Result<OwnedEventId> {
         let room = self.room.clone();
         RUNTIME

@@ -2,6 +2,7 @@ use acter::api::TimelineItem;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
+use matrix_sdk_base::ruma::EventEncryptionAlgorithm;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -34,7 +35,7 @@ async fn test_room_encryption() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let algorithm = "m.olm.v1.curve25519-aes-sha2";
+    let algorithm = EventEncryptionAlgorithm::OlmV1Curve25519AesSha2.as_str();
     let encryption_event_id = convo.set_encryption(algorithm.to_owned()).await?;
 
     // room state event may reach via pushback action or reset action

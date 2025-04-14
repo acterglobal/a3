@@ -47,7 +47,7 @@ async fn test_room_join_rules() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(event_id) = match_msg(&value, "Set", join_rule) {
+                    if let Some(event_id) = match_msg(&value, "Changed", join_rule) {
                         found_event_id = Some(event_id);
                     }
                 }
@@ -56,7 +56,7 @@ async fn test_room_join_rules() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(event_id) = match_msg(value, "Set", join_rule) {
+                        if let Some(event_id) = match_msg(value, "Changed", join_rule) {
                             found_event_id = Some(event_id);
                             break;
                         }

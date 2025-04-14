@@ -1371,6 +1371,8 @@ object RoomPowerLevelsContent {
     fn ban_old_val() -> Option<i64>;
 
     fn events_change() -> Option<string>;
+    fn events_new_val(event_type: string) -> Result<i64>;
+    fn events_old_val(event_type: string) -> Result<Option<i64>>;
 
     fn events_default_change() -> Option<string>;
     fn events_default_new_val() -> i64;
@@ -1918,6 +1920,10 @@ object Convo {
 
     /// set ban of power levels
     fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
 
     /// set events_default of power levels
     fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
@@ -3039,6 +3045,10 @@ object Space {
 
     /// set ban of power levels
     fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
 
     /// set events_default of power levels
     fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
