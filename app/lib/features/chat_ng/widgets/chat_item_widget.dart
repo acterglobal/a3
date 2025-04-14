@@ -57,12 +57,12 @@ class ChatItemWidget extends ConsumerWidget {
       contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       onTap: onTap,
       leading: RoomAvatar(roomId: roomId, showParents: true),
-      title: _buildChatTitle(context),
-      subtitle: _buildChatSubtitle(context, ref),
+      title: _buildChatTitle(),
+      subtitle: _buildChatSubtitle(),
     );
   }
 
-  Widget _buildChatTitle(BuildContext context) {
+  Widget _buildChatTitle() {
     return Row(
       children: [
         Expanded(child: DisplayNameWidget(roomId: roomId)),
@@ -72,8 +72,11 @@ class ChatItemWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildChatSubtitle(BuildContext context, WidgetRef ref) {
+  Widget _buildChatSubtitle() {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(child: ChatTypingLastMessageContainerWidget(roomId: roomId)),
         BookmarkIconWidget(roomId: roomId),

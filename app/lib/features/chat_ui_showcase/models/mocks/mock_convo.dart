@@ -16,13 +16,14 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final int? mockOriginServerTs;
   final String? mockEventType;
   final MsgContent? mockMsgContent;
-
+  final String? mockMsgType;
   MockTimelineEventItem({
     this.mockEventId,
     this.mockSenderId,
     this.mockOriginServerTs,
     this.mockEventType,
     this.mockMsgContent,
+    this.mockMsgType,
   });
 
   @override
@@ -39,11 +40,13 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   String eventType() => mockEventType ?? 'm.room.message';
+
+  @override
+  String msgType() => mockMsgType ?? 'm.text';
 }
 
 class MockMsgContent extends Mock implements MsgContent {
   final String? mockBody;
-
   MockMsgContent({this.mockBody});
 
   @override

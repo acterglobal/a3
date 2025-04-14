@@ -52,7 +52,7 @@ MockChatItem createMockChatItem({
   );
 }
 
-final emilyDmMutedBookmarked = createMockChatItem(
+final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   roomId: 'mock-room-1',
   displayName: 'Emily Davis',
   notificationMode: 'muted',
@@ -69,7 +69,7 @@ final emilyDmMutedBookmarked = createMockChatItem(
   ),
 );
 
-final productTeamMutedWithSingleTypingUser = createMockChatItem(
+final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
   roomId: 'mock-room-2',
   displayName: 'Product Team',
   notificationMode: 'muted',
@@ -91,7 +91,7 @@ final productTeamMutedWithSingleTypingUser = createMockChatItem(
   ),
 );
 
-final engineeringTeamWithTestUpdate = createMockChatItem(
+final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
   roomId: 'mock-room-3',
   displayName: 'Engineering',
   activeMembersIds: [
@@ -107,7 +107,7 @@ final engineeringTeamWithTestUpdate = createMockChatItem(
   ),
 );
 
-final designReviewMutedBookmarkedWithUnread = createMockChatItem(
+final designReviewMutedBookmarkedWithUnreadRoom4 = createMockChatItem(
   roomId: 'mock-room-4',
   displayName: 'Design Review',
   notificationMode: 'muted',
@@ -129,7 +129,7 @@ final designReviewMutedBookmarkedWithUnread = createMockChatItem(
   ),
 );
 
-final groupDmWithMichaelKumarpalsinhBen = createMockChatItem(
+final groupDmWithMichaelKumarpalsinhBenRoom5 = createMockChatItem(
   roomId: 'mock-room-5',
   displayName: 'Michael, Kumarpalsinh & Ben',
   activeMembersIds: [
@@ -148,7 +148,7 @@ final groupDmWithMichaelKumarpalsinhBen = createMockChatItem(
   ),
 );
 
-final sarahDmWithTyping = createMockChatItem(
+final sarahDmWithTypingRoom6 = createMockChatItem(
   roomId: 'mock-room-6',
   displayName: 'Sarah Wilson',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
@@ -164,7 +164,7 @@ final sarahDmWithTyping = createMockChatItem(
   ),
 );
 
-final projectAlphaWithMultipleTyping = createMockChatItem(
+final projectAlphaWithMultipleTypingRoom7 = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
   typingUsers: [
@@ -185,7 +185,7 @@ final projectAlphaWithMultipleTyping = createMockChatItem(
   ),
 );
 
-final lisaDmBookmarked = createMockChatItem(
+final lisaDmBookmarkedImageMessageRoom8 = createMockChatItem(
   roomId: 'mock-room-8',
   displayName: 'Lisa Park',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
@@ -200,7 +200,7 @@ final lisaDmBookmarked = createMockChatItem(
   ),
 );
 
-final teamUpdatesBookmarked = createMockChatItem(
+final teamUpdatesBookmarkedVideoMessageRoom9 = createMockChatItem(
   roomId: 'mock-room-9',
   displayName: 'Team Updates',
   activeMembersIds: [
@@ -219,7 +219,7 @@ final teamUpdatesBookmarked = createMockChatItem(
   ),
 );
 
-final groupDmWithEmmaKumarpalsinhBen = createMockChatItem(
+final groupDmWithEmmaKumarpalsinhBenRoom10 = createMockChatItem(
   roomId: 'mock-room-10',
   displayName: 'Emma, Kumarpalsinh & Ben',
   activeMembersIds: [
@@ -238,7 +238,7 @@ final groupDmWithEmmaKumarpalsinhBen = createMockChatItem(
   ),
 );
 
-final alexDm = createMockChatItem(
+final alexDmRoom11 = createMockChatItem(
   roomId: 'mock-room-11',
   displayName: 'Alex Thompson',
   activeMembersIds: ['@alex:acter.global', '@kumarpalsinh:acter.global'],
@@ -252,7 +252,7 @@ final alexDm = createMockChatItem(
   ),
 );
 
-final marketingTeam = createMockChatItem(
+final marketingTeamRoom12 = createMockChatItem(
   roomId: 'mock-room-12',
   displayName: 'Marketing Team',
   activeMembersIds: [
@@ -270,7 +270,7 @@ final marketingTeam = createMockChatItem(
   ),
 );
 
-final lisaDm = createMockChatItem(
+final lisaDmRoom13 = createMockChatItem(
   roomId: 'mock-room-13',
   displayName: 'Lisa Park',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
@@ -284,7 +284,7 @@ final lisaDm = createMockChatItem(
   ),
 );
 
-final productFeedbackGroup = createMockChatItem(
+final productFeedbackGroupRoom14 = createMockChatItem(
   roomId: 'mock-room-14',
   displayName: 'Product Feedback',
   activeMembersIds: [
@@ -300,7 +300,7 @@ final productFeedbackGroup = createMockChatItem(
   ),
 );
 
-final davidDm = createMockChatItem(
+final davidDmRoom15 = createMockChatItem(
   roomId: 'mock-room-15',
   displayName: 'David Miller',
   activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
@@ -311,5 +311,113 @@ final davidDm = createMockChatItem(
     mockMsgContent: MockMsgContent(
       mockBody: 'Task completed and merged to main branch.',
     ),
+  ),
+);
+
+final imageMessageDmRoom16 = createMockChatItem(
+  roomId: 'mock-room-16',
+  displayName: 'David Chen',
+  activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
+  isDm: true,
+  timelineEventItem: MockTimelineEventItem(
+    mockSenderId: '@david:acter.global',
+    mockOriginServerTs: 1743318966000, // March 30, 2025
+    mockMsgType: 'm.image',
+    mockEventType: 'm.room.message',
+    mockMsgContent: MockMsgContent(
+      mockBody: 'Image message about the API changes',
+    ),
+  ),
+);
+
+final videoMessageDmRoom17 = createMockChatItem(
+  roomId: 'mock-room-17',
+  displayName: 'Sales Team',
+  unreadNotificationCount: 2,
+  unreadMessages: 2,
+  activeMembersIds: [
+    '@emily:acter.global',
+    '@alex:acter.global',
+    '@christopher:acter.global',
+    '@daniel:acter.global',
+    '@james:acter.global',
+    '@patricia:acter.global',
+  ],
+  timelineEventItem: MockTimelineEventItem(
+    mockSenderId: '@david:acter.global',
+    mockOriginServerTs: 1743318966000, // March 30, 2025
+    mockMsgType: 'm.video',
+    mockEventType: 'm.room.message',
+    mockMsgContent: MockMsgContent(
+      mockBody: 'Video message about the API changes',
+    ),
+  ),
+);
+
+final audioMessageDmRoom18 = createMockChatItem(
+  roomId: 'mock-room-18',
+  displayName: 'David Chen',
+  activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
+  isDm: true,
+  timelineEventItem: MockTimelineEventItem(
+    mockSenderId: '@david:acter.global',
+    mockOriginServerTs: 1743318966000, // March 30, 2025
+    mockMsgType: 'm.audio',
+    mockEventType: 'm.room.message',
+    mockMsgContent: MockMsgContent(
+      mockBody: 'Voice message about the API changes',
+    ),
+  ),
+);
+
+final fileMessageDmRoom19 = createMockChatItem(
+  roomId: 'mock-room-19',
+  displayName: 'Jennifer Lee',
+  activeMembersIds: ['@jennifer:acter.global', '@kumarpalsinh:acter.global'],
+  isDm: true,
+  isBookmarked: true,
+  timelineEventItem: MockTimelineEventItem(
+    mockSenderId: '@jennifer:acter.global',
+    mockOriginServerTs: 1743232566000, // March 29, 2025
+    mockMsgType: 'm.file',
+    mockEventType: 'm.room.message',
+    mockMsgContent: MockMsgContent(mockBody: 'Project proposal document'),
+  ),
+);
+
+final locationMessageDmRoom20 = createMockChatItem(
+  roomId: 'mock-room-20',
+  displayName: 'Design Team',
+  unreadNotificationCount: 5,
+  unreadMessages: 5,
+  activeMembersIds: [
+    '@michael:acter.global',
+    '@kumarpalsinh:acter.global',
+    '@emily:acter.global',
+    '@alex:acter.global',
+    '@david:acter.global',
+  ],
+  timelineEventItem: MockTimelineEventItem(
+    mockSenderId: '@michael:acter.global',
+    mockOriginServerTs: 1743146166000, // March 28, 2025
+    mockMsgType: 'm.location',
+    mockEventType: 'm.room.message',
+    mockMsgContent: MockMsgContent(mockBody: 'Meeting location'),
+  ),
+);
+
+final redactionEventRoom21 = createMockChatItem(
+  roomId: 'mock-room-21',
+  displayName: 'Moderation',
+  activeMembersIds: [
+    '@emily:acter.global',
+    '@alex:acter.global',
+    '@david:acter.global',
+  ],
+  timelineEventItem: MockTimelineEventItem(
+    mockSenderId: '@emily:acter.global',
+    mockOriginServerTs: 1742800566000, // March 24, 2025
+    mockEventType: 'm.room.redaction',
+    mockMsgContent: MockMsgContent(mockBody: 'Message was redacted'),
   ),
 );
