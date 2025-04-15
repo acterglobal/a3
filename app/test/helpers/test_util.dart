@@ -68,6 +68,8 @@ extension ActerProviderTesting on WidgetTester {
         child: InActerContextTestWrapper(child: child),
       ),
     );
-    await screenshot(path: screenshotPath);
+    if (screenshotPath != null) {
+      await screenshot(path: screenshotPath);
+    }
   }
 }
