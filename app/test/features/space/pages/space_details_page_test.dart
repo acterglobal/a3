@@ -272,8 +272,6 @@ void main() {
         // Verify header is present
         final header = find.byKey(SpaceDetailsPage.headerKey);
         expect(header, findsOneWidget);
-        final BuildContext context = tester.element(header);
-        final lang = L10n.of(context);
 
         // Verify tabs are rendered
         expect(find.byKey(Key(TabEntry.overview.name)), findsOneWidget);
