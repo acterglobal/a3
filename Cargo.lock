@@ -118,6 +118,7 @@ dependencies = [
  "matrix-sdk-base",
  "matrix-sdk-sqlite",
  "matrix-sdk-test",
+ "matrix-sdk-ui",
  "mime_guess",
  "minijinja",
  "scc",

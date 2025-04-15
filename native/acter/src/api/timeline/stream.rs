@@ -1,12 +1,11 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::room::{edit::EditedContent, Receipts};
+use matrix_sdk::room::edit::EditedContent;
 use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
         assign,
         events::{
-            receipt::ReceiptThread,
             room::{
                 message::{AudioInfo, FileInfo, ForwardThread, VideoInfo},
                 ImageInfo,

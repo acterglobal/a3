@@ -17,11 +17,12 @@ enum TabEntry {
   suggestedSpaces,
   chats,
   spaces,
+  spacesLoading,
   members,
   actions,
 }
 
-class TabsNotifier extends AutoDisposeFamilyNotifier<List<TabEntry>, String> {
+class TabsNotifier extends FamilyNotifier<List<TabEntry>, String> {
   @override
   List<TabEntry> build(String spaceId) => [
     // always show overview the first tab
@@ -111,6 +112,14 @@ class TabsNotifier extends AutoDisposeFamilyNotifier<List<TabEntry>, String> {
     if (hasOtherSubSpaces) {
       tabs.add(TabEntry.spaces);
     }
+
+    if (tabs.isEmpty) {
+      final currentState = ref.watch(spaceRelationsProvider(spaceId));
+      if (currentState.isLoading || currentState.error != null) {
+        // show while loading or on error
+        tabs.add(TabEntry.spacesLoading);
+      }
+    }
     return tabs;
   }
 
@@ -132,5 +141,7 @@ class TabsNotifier extends AutoDisposeFamilyNotifier<List<TabEntry>, String> {
   }
 }
 
-final tabsProvider = NotifierProvider.autoDispose
-    .family<TabsNotifier, List<TabEntry>, String>(() => TabsNotifier());
+final tabsProvider =
+    NotifierProvider.family<TabsNotifier, List<TabEntry>, String>(
+      () => TabsNotifier(),
+    );

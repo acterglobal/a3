@@ -19,7 +19,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
           children: [
             // Close button at the top right
             Positioned(
-              top: 0,
+              top: 20,
               right: 0,
               child: IconButton(
                 onPressed: () => Navigator.pop(context),

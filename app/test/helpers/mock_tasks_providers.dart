@@ -224,6 +224,10 @@ class MockTask extends Fake implements Task {
 class MockFfiListFfiString extends Mock implements FfiListFfiString {
   final List<FfiString> _strings = [];
 
+  MockFfiListFfiString({List<String> items = const []}) {
+    _strings.addAll(items.map((e) => MockFfiString(e)));
+  }
+
   @override
   void add(FfiString value) {
     _strings.add(value);

@@ -1022,8 +1022,14 @@ object TimelineEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// covers text/image/audio/video/file/location/emote/sticker
-    fn msg_content() -> Option<MsgContent>;
+    /// covers text/image/audio/video/file/location/emote
+    fn message() -> Option<MsgContent>;
+
+    /// covers some of m.room.member
+    fn membership_content() -> Option<MembershipContent>;
+
+    /// covers some of m.room.member
+    fn profile_content() -> Option<ProfileContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -1115,6 +1121,37 @@ object MsgContent {
 
     /// the list of url previews
     fn url_previews() -> Vec<UrlPreview>;
+}
+
+object MembershipContent {
+    /// The ID of the user whose profile changed.
+    fn user_id() -> UserId;
+
+    /// The membership change induced by this event.
+    fn change() -> string;
+}
+
+object ProfileContent {
+    /// The ID of the user whose profile changed
+    fn user_id() -> UserId;
+
+    /// The display name change induced by this event
+    fn display_name_change() -> Option<string>;
+
+    /// The old value of display name change
+    fn display_name_old_val() -> Option<string>;
+
+    /// The new value of display name change
+    fn display_name_new_val() -> Option<string>;
+
+    /// The avatar url change induced by this event
+    fn avatar_url_change() -> Option<string>;
+
+    /// The old value of avatar url change
+    fn avatar_url_old_val() -> Option<MxcUri>;
+
+    /// The new value of avatar url change
+    fn avatar_url_new_val() -> Option<MxcUri>;
 }
 
 object ReactionRecord {
@@ -2267,20 +2304,6 @@ object ActerAppSettingsBuilder {
 //  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ##
 //  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######
 
-object MembershipChange {
-    /// user_id of the member that has changed
-    fn user_id_str() -> string;
-
-    /// avatar_url of the member that has changed
-    fn avatar_url() -> Option<string>;
-
-    /// display_name of the member that has changed
-    fn display_name() -> Option<string>;
-
-    /// reason if any was provided
-    fn reason() -> Option<string>;
-}
-
 object ActivityObject {
     fn type_str() -> string;
     fn object_id_str() -> string;
@@ -2313,9 +2336,6 @@ object Activity {
     /// e.g. image, video, audio, file, link, location, etc.
     fn sub_type_str() -> Option<string>;
 
-    /// the details of this membership change activity
-    fn membership_change() -> Option<MembershipChange>;
-
     /// if the added information is a reference
     fn ref_details() -> Option<RefDetails>;
 
@@ -2336,6 +2356,12 @@ object Activity {
 
     /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
+
+    /// the details of this membership change activity
+    fn membership_content() -> Option<MembershipContent>;
+
+    /// the details of this profile change activity
+    fn profile_content() -> Option<ProfileContent>;
 
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;

@@ -14,6 +14,8 @@ use tokio_retry::{
     Retry,
 };
 
+pub mod upgrades;
+
 use crate::utils::{random_user, random_user_with_template};
 
 const THREE_SPACES_TMPL: &str = r#"

@@ -784,7 +784,7 @@ impl Room {
         let my_id = self.user_id()?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            self.app_settings_content().await?
+            Some(self.app_settings_content().await?.unwrap_or_default())
         } else {
             None
         };

@@ -209,8 +209,6 @@ Widget _buildTypingIndicator(WidgetRef ref, String roomId) {
     bottom: 16,
     left: 16,
     right: 0,
-    child: TypingIndicator(
-      options: TypingIndicatorOptions(typingUsers: typingUsers),
-    ),
+    child: TypingIndicator(typingUsers: typingUsers),
   );
 }

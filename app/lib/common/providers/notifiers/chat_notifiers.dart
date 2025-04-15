@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Convo, ConvoDiff, TimelineItem;
@@ -19,6 +21,16 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
   @override
   FutureOr<Convo?> build(String arg) async {
     final roomId = arg;
+
+    // if we are in chat showcase mode, return a mock convo
+    if (includeChatShowcase &&
+        mockChatList.any((mockChatItem) => mockChatItem.roomId == arg)) {
+      return mockChatList
+          .firstWhere((mockChatItem) => mockChatItem.roomId == arg)
+          .mockConvo;
+    }
+
+    // otherwise, get the convo from the client
     final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeRoomStream(
       roomId,
@@ -53,6 +65,17 @@ class AsyncLatestMsgNotifier
   @override
   FutureOr<TimelineItem?> build(String arg) async {
     final roomId = arg;
+
+    // if we are in chat showcase mode, return a mock timeline item
+    if (includeChatShowcase &&
+        mockChatList.any((mockChatItem) => mockChatItem.roomId == arg)) {
+      return mockChatList
+          .firstWhere((mockChatItem) => mockChatItem.roomId == arg)
+          .mockConvo
+          .latestMessage();
+    }
+
+    // otherwise, get the latest message from the client
     final client = await ref.watch(alwaysClientProvider.future);
     _listener = client.subscribeRoomParamStream(roomId, 'latest_message');
     _poller = _listener.listen(

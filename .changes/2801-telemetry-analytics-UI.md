@@ -1,0 +1,1 @@
+- [Implemented] : Added user telemetry consent screen for community contributions which includes the crash reports, basic telemetry, analytics and research.

@@ -1,4 +1,5 @@
 import 'package:acter/config/env.g.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/foundation.dart';
 
 const String heart = '\u{2764}';
@@ -35,6 +36,7 @@ const autoGuestLogin = Env.autoLoginAsGuest;
 const inCI = Env.isCI;
 const isDemo = Env.isDemo;
 const isNightly = Env.isNightly;
+const includeChatShowcase = isNightly || isDevBuild;
 
 final defaultServers = parseServers(Env.defaultSearchServers);
 

@@ -39,14 +39,19 @@ class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
 class MockSpace extends Mock implements Space {
   final String id;
   final bool bookmarked;
+  final bool _isJoined;
 
-  MockSpace({this.id = 'id', this.bookmarked = false});
+  MockSpace({this.id = 'id', this.bookmarked = false, isJoined = true})
+    : _isJoined = isJoined;
 
   @override
   String getRoomIdStr() => id;
 
   @override
   bool isBookmarked() => bookmarked;
+
+  @override
+  bool isJoined() => _isJoined;
 }
 
 class MockFfiListString extends Fake implements FfiListFfiString {

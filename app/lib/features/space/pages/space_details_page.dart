@@ -16,6 +16,7 @@ import 'package:acter/features/space/widgets/space_sections/members_section.dart
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
 import 'package:acter/features/space/widgets/space_sections/other_sub_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
+import 'package:acter/features/space/widgets/space_sections/spaces_loading_error_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
@@ -25,10 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
-final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
@@ -227,6 +225,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.suggestedSpaces => lang.suggestedSpaces,
       TabEntry.chats => lang.chats,
       TabEntry.spaces => lang.spaces,
+      TabEntry.spacesLoading => lang.spaces,
       TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
@@ -275,6 +274,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       ),
       TabEntry.chats => OtherChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => OtherSubSpacesSection(spaceId: widget.spaceId),
+      TabEntry.spacesLoading => SpacesLoadingSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
       TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
     };
