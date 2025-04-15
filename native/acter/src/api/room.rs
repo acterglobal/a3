@@ -2015,7 +2015,7 @@ impl Room {
         level: i32,
     ) -> Result<OwnedEventId> {
         let room = self.room.clone();
-        let key = TimelineEventType::try_from(event_type)?;
+        let key = TimelineEventType::from(event_type);
         let value = Int::from(level);
         RUNTIME
             .spawn(async move {
