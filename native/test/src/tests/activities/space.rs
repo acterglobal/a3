@@ -6,6 +6,7 @@ use uuid::Uuid;
 
 use super::{get_latest_activity, setup_accounts};
 
+#[allow(dead_code)]
 fn new_room_name(prefix: &str) -> String {
     let uuid = Uuid::new_v4().to_string();
     format!("new-room-{prefix}-{uuid}")
