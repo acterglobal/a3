@@ -2,12 +2,12 @@ use acter::api::TimelineItem;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
+use nano_id::base64;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
-use uuid::Uuid;
 
 use crate::utils::random_user_with_random_convo;
 
@@ -37,8 +37,8 @@ async fn test_room_tombstone() -> Result<()> {
     pin_mut!(stream);
 
     let body = "This room was upgraded to the other version";
-    let uuid = Uuid::new_v4().to_string();
-    let replacement_room_id = format!("it-room-{prefix}-{uuid}");
+    let id = base64::<18>();
+    let replacement_room_id = format!("!{}:localhost", id);
     let tombstone_event_id = convo
         .set_tombstone(body.to_owned(), replacement_room_id.clone())
         .await?;

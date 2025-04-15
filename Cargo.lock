@@ -150,6 +150,7 @@ dependencies = [
  "mailhog-rs",
  "matrix-sdk",
  "matrix-sdk-base",
+ "nano-id",
  "regex",
  "serde_json",
  "tempfile",
@@ -3839,6 +3840,15 @@ dependencies = [
  "env_logger",
  "git2",
  "log",
+]
+
+[[package]]
+name = "nano-id"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2adbe5f0f3dd71ed00a8c8a6ac7d7d2d4f65977661efc830b0e1f8cf5a08dfca"
+dependencies = [
+ "getrandom 0.2.15",
 ]
 
 [[package]]
