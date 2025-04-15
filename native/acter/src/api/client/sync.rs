@@ -448,7 +448,6 @@ impl Client {
         let executor = self.executor().clone();
         let client = self.core.client().clone();
 
-        self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
 
         self.verification_controller
@@ -458,7 +457,6 @@ impl Client {
         // in order to avoid this issue, comment out sync event
         self.verification_controller.add_sync_event_handler(&client);
 
-        let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
@@ -520,7 +518,6 @@ impl Client {
                 {
                     info!("received first sync");
                     trace!(user_id=?client.user_id(), "initial synced");
-                    invitation_controller.load_invitations().await;
 
                     initial.store(false, Ordering::SeqCst);
 

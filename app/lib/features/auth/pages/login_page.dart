@@ -6,6 +6,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
+import 'package:acter/features/auth/providers/post_login_signup_provider.dart';
 import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -164,7 +165,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: LoginPageKeys.submitBtn,
-          onPressed: () => handleSubmit(context),
+          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
           child: Text(
             L10n.of(context).logIn,
             style: Theme.of(context).textTheme.bodyMedium,
@@ -199,23 +200,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  Future<void> handleSubmit(BuildContext context) async {
+  Future<void> handleSubmit(L10n lang, GoRouter navigator) async {
     if (!formKey.currentState!.validate()) return;
     if (!inCI && !ref.read(hasNetworkProvider)) {
-      showNoInternetNotification(context);
+      showNoInternetNotification(lang);
       return;
     }
     final authNotifier = ref.read(authStateProvider.notifier);
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
-      if (context.mounted) {
-        // no message means, login was successful.
-        context.goNamed(Routes.analyticsOptIn.name);
-      }
+      if (!mounted) return;
+      await ref.read(postLoginSignupProvider).initialize(context);
+      if (!mounted) return;
+      context.goNamed(Routes.main.name);
     } else {
       _log.severe('Failed to login', loginSuccess);
-      if (!context.mounted) return;
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));
     }
   }

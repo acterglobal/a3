@@ -168,6 +168,9 @@ dependencies:
   android_intent_plus: ^5.2.2
   collection: ^1.18.0
   preload_page_view: ^0.2.0
+  mocktail: ^1.0.4
+  # Matomo Analytics
+  matomo_tracker: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -190,8 +193,8 @@ dev_dependencies:
   sentry_dart_plugin: ^2.0.0
   translations_cleaner: ^0.0.5
   enven: ^1.0.1
-  mockingjay: ^0.6.0
-  mocktail: ^1.0.4
+  mockingjay: ^1.0.0
+  test_screenshot: ^0.0.7
 
 dependency_overrides:
 

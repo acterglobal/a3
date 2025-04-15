@@ -32,8 +32,7 @@ mod common;
 mod convo;
 mod deep_linking;
 mod device;
-mod invitation;
-mod message;
+mod invitations;
 mod news;
 mod pins;
 mod profile;
@@ -45,14 +44,13 @@ mod search;
 mod settings;
 mod spaces;
 mod stories;
-mod stream;
 mod super_invites;
 mod tasks;
+mod timeline;
 mod typing;
 mod utils;
 mod verification;
 
-mod invitations;
 pub mod read_receipts;
 #[cfg(feature = "uniffi")]
 mod uniffi_api;
@@ -67,9 +65,12 @@ pub use acter_core::{
         CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,
         UtcDateTime,
     },
-    models::{ActerModel, Tag, TextMessageContent},
+    models::{
+        status::{MembershipContent, ProfileContent},
+        ActerModel, Tag, TextMessageContent,
+    },
 };
-pub use activities::{Activities, Activity, ActivityObject, MembershipChange};
+pub use activities::{Activities, Activity, ActivityObject};
 pub use attachments::{Attachment, AttachmentDraft, AttachmentsManager};
 pub use auth::{
     destroy_local_data, guest_client, login_new_client, login_with_token, register_with_token,
@@ -89,9 +90,8 @@ pub use client::{Client, ClientStateBuilder, HistoryLoadState, LocalUrlPreview, 
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::{
     duration_from_secs, new_colorize_builder, new_display_builder, new_obj_ref_builder,
-    new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, MsgContent, OptionBuffer,
-    OptionComposeDraft, OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo,
-    ThumbnailSize, UrlPreview,
+    new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, OptionBuffer, OptionComposeDraft,
+    OptionRsvpStatus, OptionString, ReactionRecord, ThumbnailInfo, ThumbnailSize, UrlPreview,
 };
 pub use convo::{
     new_convo_settings_builder, Convo, ConvoDiff, CreateConvoSettings, CreateConvoSettingsBuilder,
@@ -99,9 +99,7 @@ pub use convo::{
 pub use core::time::Duration as EfkDuration;
 pub use deep_linking::{new_link_ref_details, ObjRef, RefDetails};
 pub use device::DeviceEvent;
-pub use invitation::Invitation;
-pub use invitations::InvitationsManager;
-pub use message::{EventSendState, RoomEventItem, RoomMessage, RoomVirtualItem};
+pub use invitations::{InvitationsManager, ObjectInvitationsManager, RoomInvitation};
 pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide, NewsSlideDraft};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::UserProfile;
@@ -124,16 +122,19 @@ pub use settings::{
     StoriesSettings, TasksSettings,
 };
 pub use spaces::{
-    new_space_settings_builder, CreateSpaceSettings, CreateSpaceSettingsBuilder,
-    RelationTargetType, Space, SpaceDiff,
+    new_app_permissions_builder, new_space_settings_builder, AppPermissionsBuilder,
+    CreateSpaceSettings, CreateSpaceSettingsBuilder, RelationTargetType, Space, SpaceDiff,
 };
 pub use stories::{Story, StoryDraft, StorySlide, StorySlideDraft, StoryUpdateBuilder};
-pub use stream::{MsgDraft, RoomMessageDiff, TimelineStream};
 pub use super_invites::{
     SuperInviteInfo, SuperInviteToken, SuperInvites, SuperInvitesTokenUpdateBuilder,
 };
 pub use tasks::{
     Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
+};
+pub use timeline::{
+    EventSendState, MsgContent, MsgDraft, TimelineEventItem, TimelineItem, TimelineItemDiff,
+    TimelineStream, TimelineVirtualItem,
 };
 pub use typing::TypingEvent;
 pub use utils::{new_vec_string_builder, VecStringBuilder};

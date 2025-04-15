@@ -1503,6 +1503,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  matomo_tracker:
+    dependency: "direct main"
+    description:
+      name: matomo_tracker
+      sha256: "8706ca29389b836929415a52c3e6e94aaf8e37ceca23407ee215716fdb83466d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.0"
   matrix_link_text:
     dependency: transitive
     description:
@@ -1611,12 +1619,12 @@ packages:
     dependency: "direct dev"
     description:
       name: mockingjay
-      sha256: cea2f3d38d1343beb6908f0ade5724c12304ee74014fbd274b4065a4b7db6536
+      sha256: db8bed9123ca1cd13442a26c90a18cdf6f707ca79160d1c3ac3baa0f8f86cf1d
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "1.0.0"
   mocktail:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: mocktail
       sha256: "890df3f9688106f25755f26b1c60589a92b3ab91a22b8b224947ad041bf172d8"
@@ -2613,6 +2621,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.8"
+  test_screenshot:
+    dependency: "direct dev"
+    description:
+      name: test_screenshot
+      sha256: c441e0249f3094b373e7456eddd345256543a11b8315370c1da029c2ac40e734
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   time:
     dependency: transitive
     description:

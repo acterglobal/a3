@@ -10,10 +10,10 @@ enum Routes {
 
   // -- onboarding
   saveUsername('/saveUsername'),
+  redeemInvitations('/redeemInvitations'),
   encryptionBackup('/enableEncryptionBackup'),
   linkEmail('/linkEmail'),
   uploadAvatar('/uploadAvatar'),
-  analyticsOptIn('/analyticsOptIn'),
 
   // --- profile
   myProfile('/profile'),
@@ -96,6 +96,7 @@ enum Routes {
   settings('/settings'),
   settingsLabs('/settings/labs'),
   settingsChat('/settings/chat'),
+  chatListShowcase('/settings/chat/chat-list-showcase'),
   settingsCalendar('/settings/calendar'),
   settingsCustomizations('/settings/customizations'),
   settingSessions('/settings/sessions'),

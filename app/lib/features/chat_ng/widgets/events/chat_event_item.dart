@@ -3,16 +3,17 @@ import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/member_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
+import 'package:acter/features/chat_ng/widgets/events/profile_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:flutter/material.dart';
 
 class ChatEventItem extends StatelessWidget {
   final String roomId;
   final String messageId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
   final bool isMe;
   final bool canRedact;
   final bool isFirstMessageBySender;
@@ -69,7 +70,12 @@ class ChatEventItem extends StatelessWidget {
               isLastMessageBySender: isLastMessageBySender,
               child: EncryptedMessageWidget(),
             ),
-      'm.room.member' || 'ProfileChange' => MemberUpdateEvent(
+      'MembershipChange' => MemberUpdateEvent(
+        isMe: isMe,
+        roomId: roomId,
+        item: item,
+      ),
+      'ProfileChange' => ProfileUpdateEvent(
         isMe: isMe,
         roomId: roomId,
         item: item,

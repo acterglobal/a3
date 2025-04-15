@@ -29,7 +29,7 @@ final supportedActivityTypes = [
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {
-  final invitations = ref.watch(invitationListProvider);
+  final invitations = ref.watch(invitationListProvider).valueOrNull ?? [];
   if (invitations.isNotEmpty) {
     return UrgencyBadge.urgent;
   }

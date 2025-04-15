@@ -5,10 +5,10 @@ use crate::models::EventMeta;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Error in the inner MatrixSDK")]
+    #[error("Error in the inner MatrixSDK: {0}")]
     MatrixSdk(#[from] matrix_sdk::Error),
 
-    #[error("Error in the MatrixSDK HTTP")]
+    #[error("Error in the MatrixSDK HTTP: {0}")]
     HttpError(#[from] matrix_sdk::HttpError),
 
     #[error("Not a known Acter Event")]

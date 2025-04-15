@@ -8,7 +8,7 @@ import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class ChatEditorActionsPreview extends ConsumerWidget {
   static const closePreviewKey = Key('chat-editor-actions-close');
 
   final EditorState textEditorState;
-  final RoomEventItem msgItem;
+  final TimelineEventItem msgItem;
   final String roomId;
 
   const ChatEditorActionsPreview({
@@ -139,10 +139,10 @@ class ChatEditorActionsPreview extends ConsumerWidget {
     const Spacer(),
   ];
 
-  Widget _buildRepliedToItem(BuildContext context, RoomEventItem item) {
+  Widget _buildRepliedToItem(BuildContext context, TimelineEventItem item) {
     final messageId = item.eventId();
     final msgType = item.msgType();
-    final content = item.msgContent();
+    final content = item.message();
     if (msgType == null || content == null || messageId == null) {
       return const SizedBox.shrink();
     }

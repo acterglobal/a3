@@ -16,8 +16,8 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::MembershipChange, ActerModel, ActerSupportedRoomStatusEvents,
-        AnyActerModel, EventMeta, Task,
+        status::{MembershipContent, ProfileContent},
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
 };
@@ -27,7 +27,8 @@ pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
-    MembershipChange(MembershipChange),
+    MembershipChange(MembershipContent),
+    ProfileChange(ProfileContent),
     RoomCreate(RoomCreateEventContent),
     RoomAvatar(RoomAvatarEventContent),
     RoomName(RoomNameEventContent),
@@ -128,7 +129,18 @@ impl Activity {
 
     pub fn type_str(&self) -> String {
         match &self.inner {
-            ActivityContent::MembershipChange(c) => c.as_str(),
+            ActivityContent::MembershipChange(c) => {
+                return c.change();
+            }
+            ActivityContent::ProfileChange(c) => {
+                if c.display_name_change().is_some() {
+                    "displayName"
+                } else if c.avatar_url_change().is_some() {
+                    "avatarUrl"
+                } else {
+                    unreachable!()
+                }
+            }
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomAvatar(_) => "roomAvatar",
             ActivityContent::RoomName(_) => "roomName",
@@ -165,13 +177,20 @@ impl Activity {
         .to_owned()
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        #[allow(irrefutable_let_patterns)]
-        let ActivityContent::MembershipChange(c) = &self.inner
-        else {
-            return None;
-        };
-        Some(c.clone())
+    pub fn membership_content(&self) -> Option<MembershipContent> {
+        if let ActivityContent::MembershipChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn profile_content(&self) -> Option<ProfileContent> {
+        if let ActivityContent::ProfileChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
     }
 
     pub fn event_meta(&self) -> &EventMeta {
@@ -210,6 +229,7 @@ impl Activity {
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
             ActivityContent::MembershipChange(_)
+            | ActivityContent::ProfileChange(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomName(_)
@@ -308,6 +328,7 @@ impl Activity {
                 format!("/tasks/{}/{}", object.object_id_str(), self.meta.event_id)
             }
             ActivityContent::MembershipChange(_)
+            | ActivityContent::ProfileChange(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomName(_)
@@ -319,7 +340,10 @@ impl Activity {
         let ActivityContent::ObjectInvitation { ref invitees, .. } = self.content() else {
             return vec![];
         };
-        invitees.iter().map(|i| i.to_string()).collect()
+        invitees
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 
     pub fn task_list_id_str(&self) -> Option<String> {
@@ -341,6 +365,9 @@ impl Activity {
             AnyActerModel::RoomStatus(s) => match s.inner {
                 ActerSupportedRoomStatusEvents::MembershipChange(c) => {
                     Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
+                }
+                ActerSupportedRoomStatusEvents::ProfileChange(c) => {
+                    Ok(Self::new(meta, ActivityContent::ProfileChange(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))

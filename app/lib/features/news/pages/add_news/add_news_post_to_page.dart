@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/news/actions/submit_news.dart';
@@ -25,6 +26,17 @@ class _AddNewsPostToPageState extends ConsumerState<AddNewsPostToPage> {
   );
   ValueNotifier<bool> canPostBoost = ValueNotifier(false);
   ValueNotifier<bool> canPostStories = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+
+    //Update selected space id for space selector
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
+      final selectedSpaceId = ref.read(newsStateProvider).newsPostSpaceId;
+      ref.read(selectedSpaceIdProvider.notifier).state = selectedSpaceId;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

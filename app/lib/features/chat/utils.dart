@@ -1,11 +1,13 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/widgets/html_editor/services/constants.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/deep_linking/actions/handle_deep_link_uri.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
@@ -14,11 +16,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart';
-
-//Check for mentioned user link
-final mentionedUserLinkRegex = RegExp(
-  r'https://matrix.to/#/(?<alias>@.+):(?<server>.+)',
-);
 
 bool renderCustomMessageBubble(types.CustomMessage message) {
   switch (message.metadata?['eventType']) {
@@ -30,9 +27,9 @@ bool renderCustomMessageBubble(types.CustomMessage message) {
     case 'm.room.canonical_alias':
     case 'm.room.create':
     case 'm.room.encryption':
-    case 'm.room.guest.access':
+    case 'm.room.guest_access':
     case 'm.room.history_visibility':
-    case 'm.room.join.rules':
+    case 'm.room.join_rules':
     case 'm.room.name':
     case 'm.room.pinned_events':
     case 'm.room.power_levels':
@@ -83,7 +80,7 @@ class UserMentionMessageData {
 }
 
 String? extractUserIdFromUri(String link) {
-  final mentionedUserLink = mentionedUserLinkRegex.firstMatch(link);
+  final mentionedUserLink = userMentionLinkRegExp.firstMatch(link);
 
   if (mentionedUserLink != null) {
     //Get Username from mentioned user link
@@ -105,7 +102,7 @@ UserMentionMessageData parseUserMentionMessage(
   // Get 'A Tag' href link
   final hrefLink = aTagElement.attributes['href'] ?? '';
 
-  final mentionedUserLink = mentionedUserLinkRegex.firstMatch(hrefLink);
+  final mentionedUserLink = userMentionLinkRegExp.firstMatch(hrefLink);
 
   if (mentionedUserLink != null) {
     //Get Username from mentioned user link
@@ -237,11 +234,10 @@ Future<void> parseUserMentionText(
   final roomMentions = await ref.read(membersIdsProvider(roomId).future);
   final inputNotifier = ref.read(chatInputProvider.notifier);
   // Regular expression to match mention links
-  final mentionRegex = RegExp(r'\[@([^\]]+)\]\(https://matrix\.to/#/([^)]+)\)');
+  final matches = userMentionRegExp.allMatches(htmlText);
   List<TaggedText> tags = [];
   String parsedText = htmlText;
   // Find all matches
-  final matches = mentionRegex.allMatches(htmlText);
 
   int offset = 0;
   for (final match in matches) {
@@ -352,7 +348,7 @@ Future<void> onMessageLinkTap(
     ///If link is other than matrix room link
     ///Then open it on browser
     else {
-      await openLink(ref, uri.toString(), context);
+      await openLink(ref: ref, target: uri.toString(), lang: L10n.of(context));
     }
   }
 }

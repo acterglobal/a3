@@ -30,12 +30,12 @@ class MockChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState>
 void main() {
   group('Chat editor reply/edit preview tests', () {
     final mockMsgContent = MockMsgContent(bodyText: 'Test Content Message');
-    final mockEventItem = MockRoomEventItem(
+    final mockEventItem = MockTimelineEventItem(
       mockSender: 'user-1',
       mockMsgContent: mockMsgContent,
       mockMsgType: 'm.text',
     );
-    final roomMsg1 = MockRoomMessage(
+    final roomMsg1 = MockTimelineItem(
       id: 'test-messageId-1',
       mockEventItem: mockEventItem,
     );
@@ -161,7 +161,7 @@ void main() {
       );
       final textEditorState = previewWidget.textEditorState;
 
-      final messageContent = updatedState.selectedMsgItem?.msgContent()?.body();
+      final messageContent = updatedState.selectedMsgItem?.message()?.body();
       final editorText =
           textEditorState.getNodeAtPath([0])?.delta?.toPlainText();
 
@@ -302,8 +302,7 @@ void main() {
         expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
 
         // verify editor field has edit preview content
-        final messageContent =
-            updatedState.selectedMsgItem?.msgContent()?.body();
+        final messageContent = updatedState.selectedMsgItem?.message()?.body();
         final previewWidget = tester.widget<ChatEditorActionsPreview>(
           find.byType(ChatEditorActionsPreview),
         );

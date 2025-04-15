@@ -1,4 +1,4 @@
-use acter_core::{activities::ActivityContent, models::status::membership::MembershipChangeType};
+use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -92,9 +92,8 @@ async fn invite_and_join() -> Result<()> {
         bail!("not a membership event");
     };
 
-    assert!(matches!(r.change, MembershipChangeType::Invited));
-    assert_eq!(r.as_str(), "invited");
-    assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(r.change(), "invited");
+    assert_eq!(r.user_id(), to_invite_user_name);
 
     // let the third accept the invite
 
@@ -136,10 +135,9 @@ async fn invite_and_join() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::InvitationAccepted));
-    assert_eq!(r.as_str(), "invitationAccepted");
-    assert_eq!(r.user_id, to_invite_user_name);
-    assert_eq!(meta.sender, r.user_id);
+    assert_eq!(r.change(), "invitationAccepted");
+    assert_eq!(r.user_id(), to_invite_user_name);
+    assert_eq!(meta.sender, r.user_id());
 
     Ok(())
 }
@@ -180,9 +178,8 @@ async fn kicked() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Kicked));
-    assert_eq!(r.as_str(), "kicked");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "kicked");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
     Ok(())
 }
@@ -231,9 +228,8 @@ async fn invite_and_rejected() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Invited));
-    assert_eq!(r.as_str(), "invited");
-    assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(r.change(), "invited");
+    assert_eq!(r.user_id(), to_invite_user_name);
     assert_eq!(meta.sender, admin.user_id()?);
 
     // let the third accept the invite
@@ -276,10 +272,9 @@ async fn invite_and_rejected() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::InvitationRejected));
-    assert_eq!(r.as_str(), "invitationRejected");
-    assert_eq!(r.user_id, to_invite_user_name);
-    assert_eq!(meta.sender, r.user_id);
+    assert_eq!(r.change(), "invitationRejected");
+    assert_eq!(r.user_id(), to_invite_user_name);
+    assert_eq!(meta.sender, r.user_id());
 
     Ok(())
 }
@@ -321,9 +316,8 @@ async fn kickban_and_unban() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::KickedAndBanned));
-    assert_eq!(r.as_str(), "kickedAndBanned");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "kickedAndBanned");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
 
     // ensure it was sent
@@ -352,9 +346,8 @@ async fn kickban_and_unban() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Unbanned));
-    assert_eq!(r.as_str(), "unbanned");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "unbanned");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
     Ok(())
 }
@@ -395,9 +388,8 @@ async fn left() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Left));
-    assert_eq!(r.as_str(), "left");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "left");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, observer.user_id()?);
 
     // external API check

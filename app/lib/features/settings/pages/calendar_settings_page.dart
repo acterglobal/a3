@@ -1,4 +1,5 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
+import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/calendar_sync/providers/calendar_sync_active_provider.dart';
@@ -35,6 +36,12 @@ class CalendarSettingsPage extends ConsumerWidget {
                       (ref.watch(isCalendarSyncActiveProvider).valueOrNull ??
                           true),
                   onToggle: (newVal) async {
+                    if (newVal) {
+                      final hasPermission = await handleCalendarPermission( context, );
+                      if (!hasPermission || !context.mounted) {
+                        return;
+                      }
+                    }
                     ref.read(isCalendarSyncActiveProvider.notifier).set(newVal);
                     if (newVal) {
                       await initCalendarSync(ignoreRejection: true);

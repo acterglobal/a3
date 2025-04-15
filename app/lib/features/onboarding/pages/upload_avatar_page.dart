@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/auth/providers/post_login_signup_provider.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -44,7 +44,7 @@ class UploadAvatarPage extends ConsumerWidget {
             const Spacer(),
             _buildUploadActionButton(context, ref),
             const SizedBox(height: 20),
-            _buildSkipActionButton(context),
+            _buildSkipActionButton(context, ref),
             const Spacer(),
           ],
         ),
@@ -165,10 +165,15 @@ class UploadAvatarPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSkipActionButton(BuildContext context) {
+  Widget _buildSkipActionButton(BuildContext context, WidgetRef ref) {
     return OutlinedButton(
       key: UploadAvatarPage.skipBtn,
-      onPressed: () => context.goNamed(Routes.analyticsOptIn.name),
+      onPressed: () async {
+        if (!context.mounted) return;
+        await ref.read(postLoginSignupProvider).initialize(context);
+        if (!context.mounted) return;
+        context.goNamed(Routes.main.name);
+      },
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,
