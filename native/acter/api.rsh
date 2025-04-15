@@ -1448,6 +1448,8 @@ object RoomTopicContent {
 }
 
 object SpaceChildContent {
+    fn room_id() -> Result<RoomId>;
+
     fn via_change() -> Option<string>;
     fn via_new_val() -> Vec<string>;
     fn via_old_val() -> Option<Vec<string>>;
@@ -1462,6 +1464,8 @@ object SpaceChildContent {
 }
 
 object SpaceParentContent {
+    fn room_id() -> Result<RoomId>;
+
     fn via_change() -> Option<string>;
     fn via_new_val() -> Vec<string>;
     fn via_old_val() -> Option<Vec<string>>;
@@ -1527,6 +1531,13 @@ object Room {
 
     /// remove a parent room
     fn remove_parent_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
+
+    /// add the following as a child room and return event id of that event
+    /// room can have multiple childs
+    fn add_child_room(room_id: string, order: Option<string>, suggested: bool) -> Future<Result<string>>;
+
+    /// remove a child room
+    fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;

@@ -1,35 +1,40 @@
-use matrix_sdk_base::ruma::events::{
-    policy::rule::{
-        room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
-        server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
-        user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
-    },
-    room::{
-        aliases::{PossiblyRedactedRoomAliasesEventContent, RoomAliasesEventContent},
-        avatar::RoomAvatarEventContent,
-        canonical_alias::RoomCanonicalAliasEventContent,
-        create::RoomCreateEventContent,
-        encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
-        guest_access::{PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent},
-        history_visibility::RoomHistoryVisibilityEventContent,
-        join_rules::RoomJoinRulesEventContent,
-        name::{PossiblyRedactedRoomNameEventContent, RoomNameEventContent},
-        pinned_events::{
-            PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
+use matrix_sdk_base::ruma::{
+    events::{
+        policy::rule::{
+            room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
+            server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
+            user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
         },
-        power_levels::RoomPowerLevelsEventContent,
-        server_acl::RoomServerAclEventContent,
-        third_party_invite::{
-            PossiblyRedactedRoomThirdPartyInviteEventContent, RoomThirdPartyInviteEventContent,
+        room::{
+            aliases::{PossiblyRedactedRoomAliasesEventContent, RoomAliasesEventContent},
+            avatar::RoomAvatarEventContent,
+            canonical_alias::RoomCanonicalAliasEventContent,
+            create::RoomCreateEventContent,
+            encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
+            guest_access::{
+                PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent,
+            },
+            history_visibility::RoomHistoryVisibilityEventContent,
+            join_rules::RoomJoinRulesEventContent,
+            name::{PossiblyRedactedRoomNameEventContent, RoomNameEventContent},
+            pinned_events::{
+                PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
+            },
+            power_levels::RoomPowerLevelsEventContent,
+            server_acl::RoomServerAclEventContent,
+            third_party_invite::{
+                PossiblyRedactedRoomThirdPartyInviteEventContent, RoomThirdPartyInviteEventContent,
+            },
+            tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
+            topic::{PossiblyRedactedRoomTopicEventContent, RoomTopicEventContent},
         },
-        tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
-        topic::{PossiblyRedactedRoomTopicEventContent, RoomTopicEventContent},
+        space::{
+            child::{PossiblyRedactedSpaceChildEventContent, SpaceChildEventContent},
+            parent::{PossiblyRedactedSpaceParentEventContent, SpaceParentEventContent},
+        },
+        TimelineEventType,
     },
-    space::{
-        child::{PossiblyRedactedSpaceChildEventContent, SpaceChildEventContent},
-        parent::{PossiblyRedactedSpaceParentEventContent, SpaceParentEventContent},
-    },
-    TimelineEventType,
+    OwnedRoomId, RoomId,
 };
 use serde::{Deserialize, Serialize};
 
@@ -1332,18 +1337,28 @@ impl RoomTopicContent {
 // m.space.child
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SpaceChildContent {
+    state_key: String,
     content: SpaceChildEventContent,
     prev_content: Option<PossiblyRedactedSpaceChildEventContent>,
 }
 
 impl SpaceChildContent {
     pub fn new(
+        state_key: String,
         content: SpaceChildEventContent,
         prev_content: Option<PossiblyRedactedSpaceChildEventContent>,
     ) -> Self {
         SpaceChildContent {
+            state_key,
             content,
             prev_content,
+        }
+    }
+
+    pub fn room_id(&self) -> Result<OwnedRoomId, crate::Error> {
+        match RoomId::parse(self.state_key.clone()) {
+            Ok(r_id) => Ok(r_id),
+            Err(e) => Err(crate::Error::IdParseError(e)),
         }
     }
 
@@ -1434,18 +1449,28 @@ impl SpaceChildContent {
 // m.space.parent
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SpaceParentContent {
+    state_key: String,
     content: SpaceParentEventContent,
     prev_content: Option<PossiblyRedactedSpaceParentEventContent>,
 }
 
 impl SpaceParentContent {
     pub fn new(
+        state_key: String,
         content: SpaceParentEventContent,
         prev_content: Option<PossiblyRedactedSpaceParentEventContent>,
     ) -> Self {
         SpaceParentContent {
+            state_key,
             content,
             prev_content,
+        }
+    }
+
+    pub fn room_id(&self) -> Result<OwnedRoomId, crate::Error> {
+        match RoomId::parse(self.state_key.as_str()) {
+            Ok(room_id) => Ok(room_id),
+            Err(e) => Err(crate::Error::IdParseError(e)),
         }
     }
 

@@ -513,40 +513,40 @@ impl TimelineEventItemBuilder {
                 prev_content,
             }) => {
                 self.event_type("m.policy.rule.room".to_owned());
-                let content = PolicyRuleRoomContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::PolicyRuleRoom(content)));
+                let c = PolicyRuleRoomContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::PolicyRuleRoom(c)));
             }
             AnyOtherFullStateEventContent::PolicyRuleServer(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.policy.rule.server".to_owned());
-                let content = PolicyRuleServerContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::PolicyRuleServer(content)));
+                let c = PolicyRuleServerContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::PolicyRuleServer(c)));
             }
             AnyOtherFullStateEventContent::PolicyRuleUser(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.policy.rule.user".to_owned());
-                let content = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::PolicyRuleUser(content)));
+                let c = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::PolicyRuleUser(c)));
             }
             AnyOtherFullStateEventContent::RoomAliases(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.aliases".to_owned());
-                let content = RoomAliasesContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomAliases(content)));
+                let c = RoomAliasesContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomAliases(c)));
             }
             AnyOtherFullStateEventContent::RoomAvatar(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.avatar".to_owned());
-                let content = RoomAvatarContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomAvatar(content)));
+                let c = RoomAvatarContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomAvatar(c)));
             }
             AnyOtherFullStateEventContent::RoomCanonicalAlias(
                 FullStateEventContent::Original {
@@ -555,32 +555,32 @@ impl TimelineEventItemBuilder {
                 },
             ) => {
                 self.event_type("m.room.canonical_alias".to_owned());
-                let content = RoomCanonicalAliasContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomCanonicalAlias(content)));
+                let c = RoomCanonicalAliasContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomCanonicalAlias(c)));
             }
             AnyOtherFullStateEventContent::RoomCreate(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.create".to_owned());
-                let content = RoomCreateContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomCreate(content)));
+                let c = RoomCreateContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomCreate(c)));
             }
             AnyOtherFullStateEventContent::RoomEncryption(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.encryption".to_owned());
-                let content = RoomEncryptionContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomEncryption(content)));
+                let c = RoomEncryptionContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomEncryption(c)));
             }
             AnyOtherFullStateEventContent::RoomGuestAccess(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.guest_access".to_owned());
-                let content = RoomGuestAccessContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomGuestAccess(content)));
+                let c = RoomGuestAccessContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomGuestAccess(c)));
             }
             AnyOtherFullStateEventContent::RoomHistoryVisibility(
                 FullStateEventContent::Original {
@@ -589,49 +589,48 @@ impl TimelineEventItemBuilder {
                 },
             ) => {
                 self.event_type("m.room.history_visibility".to_owned());
-                let content =
-                    RoomHistoryVisibilityContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomHistoryVisibility(content)));
+                let c = RoomHistoryVisibilityContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomHistoryVisibility(c)));
             }
             AnyOtherFullStateEventContent::RoomJoinRules(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.join_rules".to_owned());
-                let content = RoomJoinRulesContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomJoinRules(content)));
+                let c = RoomJoinRulesContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomJoinRules(c)));
             }
             AnyOtherFullStateEventContent::RoomName(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.name".to_owned());
-                let content = RoomNameContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomName(content)));
+                let c = RoomNameContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomName(c)));
             }
             AnyOtherFullStateEventContent::RoomPinnedEvents(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.pinned_events".to_owned());
-                let content = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomPinnedEvents(content)));
+                let c = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomPinnedEvents(c)));
             }
             AnyOtherFullStateEventContent::RoomPowerLevels(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.power_levels".to_owned());
-                let content = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomPowerLevels(content)));
+                let c = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomPowerLevels(c)));
             }
             AnyOtherFullStateEventContent::RoomServerAcl(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.server_acl".to_owned());
-                let content = RoomServerAclContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomServerAcl(content)));
+                let c = RoomServerAclContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomServerAcl(c)));
             }
             AnyOtherFullStateEventContent::RoomThirdPartyInvite(
                 FullStateEventContent::Original {
@@ -640,41 +639,42 @@ impl TimelineEventItemBuilder {
                 },
             ) => {
                 self.event_type("m.room.third_party_invite".to_owned());
-                let content =
-                    RoomThirdPartyInviteContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomThirdPartyInvite(content)));
+                let c = RoomThirdPartyInviteContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomThirdPartyInvite(c)));
             }
             AnyOtherFullStateEventContent::RoomTombstone(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.tombstone".to_owned());
-                let content = RoomTombstoneContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomTombstone(content)));
+                let c = RoomTombstoneContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomTombstone(c)));
             }
             AnyOtherFullStateEventContent::RoomTopic(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.room.topic".to_owned());
-                let content = RoomTopicContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::RoomTopic(content)));
+                let c = RoomTopicContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomTopic(c)));
             }
             AnyOtherFullStateEventContent::SpaceChild(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.space.child".to_owned());
-                let content = SpaceChildContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::SpaceChild(content)));
+                let state_key = state.state_key().to_owned();
+                let c = SpaceChildContent::new(state_key, content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::SpaceChild(c)));
             }
             AnyOtherFullStateEventContent::SpaceParent(FullStateEventContent::Original {
                 content,
                 prev_content,
             }) => {
                 self.event_type("m.space.parent".to_owned());
-                let content = SpaceParentContent::new(content.clone(), prev_content.clone());
-                self.content(Some(TimelineEventContent::SpaceParent(content)));
+                let state_key = state.state_key().to_owned();
+                let c = SpaceParentContent::new(state_key, content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::SpaceParent(c)));
             }
             _ => {}
         }

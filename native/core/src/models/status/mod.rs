@@ -300,7 +300,9 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 })
             }
             AnyStateEvent::SpaceChild(StateEvent::Original(inner)) => {
+                let state_key = event.state_key().to_owned();
                 let content = SpaceChildContent::new(
+                    state_key,
                     inner.content.clone(),
                     inner.unsigned.prev_content.clone(),
                 );
@@ -310,7 +312,9 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 })
             }
             AnyStateEvent::SpaceParent(StateEvent::Original(inner)) => {
+                let state_key = event.state_key().to_owned();
                 let content = SpaceParentContent::new(
+                    state_key,
                     inner.content.clone(),
                     inner.unsigned.prev_content.clone(),
                 );

@@ -60,7 +60,10 @@ use matrix_sdk_base::{
                 topic::RoomTopicEventContent,
                 MediaSource,
             },
-            space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
+            space::{
+                child::{HierarchySpaceChildEvent, SpaceChildEventContent},
+                parent::SpaceParentEventContent,
+            },
             MessageLikeEventType, StateEvent, StateEventType, StaticEventContent,
             TimelineEventType,
         },
@@ -769,6 +772,94 @@ impl Room {
                     .await?;
                 let Some(raw_state) = response else {
                     warn!("Room {} is not a parent", room_id);
+                    return Ok(true);
+                };
+                let event_id = match raw_state.deserialize()? {
+                    SyncOrStrippedState::Stripped(ev) => {
+                        bail!("Unable to get event id about stripped event")
+                    }
+                    SyncOrStrippedState::Sync(ev) => {
+                        let permitted = if ev.sender() == my_id {
+                            room.can_user_redact_own(&my_id).await?
+                        } else {
+                            room.can_user_redact_other(&my_id).await?
+                        };
+                        if !permitted {
+                            bail!("No permissions to redact this message");
+                        }
+                        ev.event_id().to_owned()
+                    }
+                };
+                room.redact(&event_id, reason.as_deref(), None).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn add_child_room(
+        &self,
+        room_id: String,
+        order: Option<String>,
+        suggested: bool,
+    ) -> Result<String> {
+        if !self.is_joined() {
+            bail!("Unable to update a room you aren’t part of");
+        }
+        let room_id = RoomId::parse(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("No permissions to add child to room");
+        }
+        let client = self.core.client().clone();
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                let Some(Ok(homeserver)) = client.homeserver().host_str().map(ServerName::parse)
+                else {
+                    return Err(Error::HomeserverMissesHostname)?;
+                };
+                let content = assign!(SpaceChildEventContent::new(vec![homeserver]), {
+                    order, suggested,
+                });
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::SpaceChild)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change space child of this room");
+                }
+                let response = room.send_state_event_for_key(&room_id, content).await?;
+                Ok(response.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn remove_child_room(&self, room_id: String, reason: Option<String>) -> Result<bool> {
+        if !self.is_joined() {
+            bail!("Unable to update a room you aren’t part of");
+        }
+        let room_id = RoomId::parse(room_id)?;
+        if !self
+            .get_my_membership()
+            .await?
+            .can(crate::MemberPermission::CanLinkSpaces)
+        {
+            bail!("No permissions to remove child from room");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                let response = room
+                    .get_state_event_static_for_key::<SpaceChildEventContent, OwnedRoomId>(&room_id)
+                    .await?;
+                let Some(raw_state) = response else {
+                    warn!("Room {} is not a child", room_id);
                     return Ok(true);
                 };
                 let event_id = match raw_state.deserialize()? {
