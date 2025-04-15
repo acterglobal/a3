@@ -58,7 +58,7 @@ async fn test_space_child() -> Result<()> {
                         child_room_id.as_str(),
                         "Set",
                         via.clone(),
-                        "Set",
+                        None,
                         None,
                         "Set",
                         true,
@@ -76,7 +76,7 @@ async fn test_space_child() -> Result<()> {
                             child_room_id.as_str(),
                             "Set",
                             via.clone(),
-                            "Set",
+                            None,
                             None,
                             "Set",
                             true,
@@ -110,7 +110,7 @@ fn match_msg(
     room_id: &str,
     via_change: &str,
     via_new_val: Vec<String>,
-    order_change: &str,
+    order_change: Option<String>,
     order_new_val: Option<String>,
     suggested_change: &str,
     suggested_new_val: bool,
@@ -137,10 +137,7 @@ fn match_msg(
     if !do_vecs_match(content.via_new_val().as_slice(), via_new_val.as_slice()) {
         return None;
     }
-    let Some(chg) = content.order_change() else {
-        return None;
-    };
-    if chg != order_change {
+    if content.order_change() != order_change {
         return None;
     }
     if content.order_new_val() != order_new_val {
