@@ -10,6 +10,7 @@ import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
+import 'package:acter/features/onboarding/pages/onboarding_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
 import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
@@ -19,11 +20,6 @@ import 'package:acter/features/intro/pages/intro_profile.dart';
 import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/news/pages/add_news/add_news_page.dart';
-import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
-import 'package:acter/features/onboarding/pages/link_email_page.dart';
-import 'package:acter/features/onboarding/pages/redeem_invitations_page.dart';
-import 'package:acter/features/onboarding/pages/save_username_page.dart';
-import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
 import 'package:acter/features/pins/pages/create_pin_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -69,44 +65,20 @@ final generalRoutes = [
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.saveUsername.name,
-    path: Routes.saveUsername.route,
-    builder: (context, state) {
-      final username = state.uri.queryParameters['username'].expect(
-        'saveUsername route needs username as query param',
-      );
-      return SaveUsernamePage(username: username);
-    },
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
     name: Routes.scanQrCode.name,
     path: Routes.scanQrCode.route,
     builder: (context, state) => const ScanQrCode(),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
-    name: Routes.linkEmail.name,
-    path: Routes.linkEmail.route,
-    builder: (context, state) => LinkEmailPage(),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.uploadAvatar.name,
-    path: Routes.uploadAvatar.route,
-    builder: (context, state) => UploadAvatarPage(),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.encryptionBackup.name,
-    path: Routes.encryptionBackup.route,
-    builder: (context, state) => const EncryptionBackupPage(),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.redeemInvitations.name,
-    path: Routes.redeemInvitations.route,
-    builder: (context, state) => const RedeemInvitationsPage(),
+    name: Routes.onboarding.name,
+    path: Routes.onboarding.route,
+    builder: (context, state) {
+      final username = state.uri.queryParameters['username'].expect(
+        'saveUsername route needs username as query param',
+      );
+      return OnboardingPage(username: username);
+    },
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,

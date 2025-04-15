@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -11,15 +10,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 import 'package:acter_avatar/acter_avatar.dart';
 import 'dart:async';
+import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class RedeemInvitationsPage extends ConsumerStatefulWidget {
-  const RedeemInvitationsPage({super.key});
+  final Function(bool) onRedeemed;
+  final int currentPage;
+  final int totalPages;
+  const RedeemInvitationsPage({
+    super.key,
+    required this.onRedeemed,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   @override
   ConsumerState<RedeemInvitationsPage> createState() =>
@@ -167,6 +174,11 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
               ),
             ),
             _buildNavigationButtons(context, lang),
+            OnboardingProgressDots(
+              currentPage: widget.currentPage,
+              totalPages: widget.totalPages,
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -321,7 +333,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       return ActerPrimaryActionButton(
         onPressed: () {
           EasyLoading.dismiss();
-          context.goNamed(Routes.encryptionBackup.name);
+          widget.onRedeemed(true);
         },
         child: Text(lang.wizzardContinue, style: const TextStyle(fontSize: 16)),
       );
@@ -330,7 +342,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     return OutlinedButton(
       onPressed: () {
         EasyLoading.dismiss();
-        context.goNamed(Routes.encryptionBackup.name);
+        widget.onRedeemed(true);
       },
       child: Text(lang.skip),
     );

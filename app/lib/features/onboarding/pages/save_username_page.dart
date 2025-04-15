@@ -1,41 +1,59 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:go_router/go_router.dart';
+import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class SaveUsernamePage extends StatelessWidget {
   static const copyUsernameBtn = Key('reg-copy-username-btn');
   static const continueBtn = Key('reg-continue-btn');
   final String username;
+  final Function(bool) onCopied;
+  final int currentPage;
+  final int totalPages;
 
-  SaveUsernamePage({super.key, required this.username});
+  SaveUsernamePage({
+    super.key,
+    required this.username,
+    required this.onCopied,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   final ValueNotifier<bool> isCopied = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _buildBody(context));
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
+    return Scaffold(
+      body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: kToolbarHeight),
-              _buildHeadlineText(context),
-              const SizedBox(height: 30),
-              _buildDisplayUsername(context),
-              const SizedBox(height: 30),
-              _buildCopyActionButton(context),
-              const SizedBox(height: 20),
-              _buildContinueActionButton(context),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: kToolbarHeight),
+                      _buildHeadlineText(context),
+                      const SizedBox(height: 30),
+                      _buildDisplayUsername(context),
+                      const SizedBox(height: 30),
+                      _buildCopyActionButton(context),
+                      const SizedBox(height: 20),
+                      _buildContinueActionButton(context),
+                    ],
+                  ),
+                ),
+              ),
+              OnboardingProgressDots(
+                currentPage: currentPage,
+                totalPages: totalPages,
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -124,10 +142,7 @@ class SaveUsernamePage extends StatelessWidget {
       builder: (context, isCopiedValue, child) {
         return OutlinedButton(
           key: continueBtn,
-          onPressed:
-              isCopiedValue
-                  ? () => context.goNamed(Routes.redeemInvitations.name)
-                  : null,
+          onPressed: isCopiedValue ? () => onCopied(true) : null,
           style: OutlinedButton.styleFrom(
             side: isCopiedValue ? null : BorderSide(color: disabledColor),
           ),

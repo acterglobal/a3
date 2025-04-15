@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/auth/providers/post_login_signup_provider.dart';
+import 'package:acter/features/onboarding/providers/post_login_signup_provider.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -12,6 +12,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 final _log = Logger('a3::onboarding::upload_avatar');
 
@@ -20,9 +21,17 @@ class UploadAvatarPage extends ConsumerWidget {
   static const uploadBtn = Key('reg-upload-btn');
   static const skipBtn = Key('reg-skip-btn');
 
-  UploadAvatarPage({super.key});
-
+  final Function(bool) onUploaded;
+  final int currentPage;
+  final int totalPages;
   final ValueNotifier<PlatformFile?> selectedUserAvatar = ValueNotifier(null);
+
+  UploadAvatarPage({
+    super.key,
+    required this.onUploaded,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,6 +55,11 @@ class UploadAvatarPage extends ConsumerWidget {
             const SizedBox(height: 20),
             _buildSkipActionButton(context, ref),
             const Spacer(),
+            OnboardingProgressDots(
+              currentPage: currentPage,
+              totalPages: totalPages,
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -172,9 +186,9 @@ class UploadAvatarPage extends ConsumerWidget {
         if (!context.mounted) return;
         // Handle all post-login steps
         final postLoginNotifier = ref.read(postLoginSignupProvider.notifier);
-        var currentStep = PostLoginStep.notifications;
+        var currentStep = PostLoginSignupStep.notifications;
 
-        while (currentStep != PostLoginStep.completed) {
+        while (currentStep != PostLoginSignupStep.completed) {
           await postLoginNotifier.handleStep(context, currentStep);
           if (!context.mounted) return;
           currentStep = ref.read(postLoginSignupProvider).currentStep;

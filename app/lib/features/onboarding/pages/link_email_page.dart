@@ -1,46 +1,63 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
 
+  final int currentPage;
+  final int totalPages;
+  final Function(bool) onLinked;
   final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
 
-  LinkEmailPage({super.key});
+  LinkEmailPage({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+    required this.onLinked,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(body: _buildBody(context, ref));
-  }
-
-  Widget _buildBody(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Center(
+    return Scaffold(
+      body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: kToolbarHeight),
-              _buildHeadlineText(context),
-              const SizedBox(height: 30),
-              _buildEmailInputField(context),
-              const SizedBox(height: 30),
-              _buildLinkEmailActionButton(context, ref),
-              const SizedBox(height: 20),
-              _buildSkipActionButton(context),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: kToolbarHeight),
+                      _buildHeadlineText(context),
+                      const SizedBox(height: 30),
+                      _buildEmailInputField(context),
+                      const SizedBox(height: 30),
+                      _buildLinkEmailActionButton(context, ref),
+                      const SizedBox(height: 20),
+                      _buildSkipActionButton(context),
+                    ],
+                  ),
+                ),
+              ),
+              OnboardingProgressDots(
+                currentPage: currentPage,
+                totalPages: totalPages,
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -102,6 +119,7 @@ class LinkEmailPage extends ConsumerWidget {
       if (!context.mounted) return;
       EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
+      onLinked(true);
     } catch (e) {
       EasyLoading.showToast(
         lang.failedToSubmitEmail(e),
@@ -109,9 +127,9 @@ class LinkEmailPage extends ConsumerWidget {
       );
     } finally {
       EasyLoading.dismiss();
-      if (context.mounted) {
-        context.goNamed(Routes.uploadAvatar.name);
-      }
+      // if (context.mounted) {
+      //   context.goNamed(Routes.uploadAvatar.name);
+      // }
     }
   }
 
@@ -156,7 +174,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.goNamed(Routes.uploadAvatar.name),
+      onPressed: () => {onLinked(true)},
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

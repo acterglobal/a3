@@ -1,16 +1,24 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
-  const EncryptionBackupPage({super.key});
+  final int currentPage;
+  final int totalPages;
+  final Function(bool) onEnabled;
+
+  const EncryptionBackupPage({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+    required this.onEnabled,
+  });
 
   @override
   ConsumerState<EncryptionBackupPage> createState() =>
@@ -42,6 +50,11 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
             _buildEncryptionKey(context),
             const Spacer(),
             _buildNavigationButtons(context, lang),
+            OnboardingProgressDots(
+              currentPage: widget.currentPage,
+              totalPages: widget.totalPages,
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -168,8 +181,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed:
-              isEnabled ? () => context.goNamed(Routes.linkEmail.name) : null,
+          onPressed: () {  widget.onEnabled(true);},
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
@@ -177,10 +189,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buidSkipButton(BuildContext context, L10n lang) {
-    return OutlinedButton(
-      onPressed: () => context.goNamed(Routes.linkEmail.name),
-      child: Text(L10n.of(context).skip),
-    );
+    return OutlinedButton(onPressed: () {  widget.onEnabled(true);}, child: Text(L10n.of(context).skip));
   }
 
   Widget _buildActionButton({
