@@ -402,12 +402,12 @@ pub fn new_obj_ref_builder(
 }
 
 pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
-    if let matrix_sdk::Error::Http(HttpError::Api(api_error)) = &err {
-        match api_error {
-            FromHttpResponseError::Deserialization(des) => {
+    if let matrix_sdk::Error::Http(boxed) = &err {
+        match boxed.as_ref() {
+            HttpError::Api(FromHttpResponseError::Deserialization(des)) => {
                 return anyhow::anyhow!("Deserialization failed: {des}");
             }
-            FromHttpResponseError::Server(inner) => match inner {
+            HttpError::Api(FromHttpResponseError::Server(inner)) => match inner {
                 RumaApiError::ClientApi(error) => {
                     if let ErrorBody::Standard { kind, message } = &error.body {
                         return anyhow::anyhow!("{message:?} [{kind:?}]");
@@ -425,6 +425,9 @@ pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
                     return anyhow::anyhow!("{:?} [{:?}]", err.body, err.status_code);
                 }
             },
+            HttpError::Reqwest(reqwest_error) => {
+                return anyhow::anyhow!("Transport error {:?}", reqwest_error);
+            }
             _ => {}
         }
     }

@@ -3191,9 +3191,6 @@ object Client {
     /// Whether the client is syncing
     fn is_syncing() -> bool;
 
-    /// Whether the client is logged in
-    fn logged_in() -> bool;
-
     /// return the account of the logged in user, if given
     fn account() -> Result<Account>;
 

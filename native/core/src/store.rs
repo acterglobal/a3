@@ -30,7 +30,7 @@ static CURRENT_DB_VERSION: u32 = 1;
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(client: Client, key: &str) -> Result<T> {
     let v = client
-        .store()
+        .state_store()
         .get_custom_value(format!("acter:{key}").as_bytes())
         .await?
         .ok_or_else(|| Error::ModelNotFound(key.to_owned()))?;
@@ -44,7 +44,7 @@ impl Store {
 
     pub async fn delete_key(&self, key: &str) -> Result<()> {
         self.client
-            .store()
+            .state_store()
             .remove_custom_value(format!("acter:{key}").as_bytes())
             .await?;
         Ok(())
@@ -57,7 +57,7 @@ impl Store {
     pub async fn set_raw<T: serde::Serialize>(&self, key: &str, value: &T) -> Result<()> {
         trace!(key, "set_raw");
         self.client
-            .store()
+            .state_store()
             .set_custom_value_no_read(
                 format!("acter:{key}").as_bytes(),
                 serde_json::to_vec(value)?,
@@ -78,7 +78,7 @@ impl Store {
 
     async fn new_inner(client: Client, user_id: OwnedUserId) -> Result<Self> {
         let ver = client
-            .store()
+            .state_store()
             .get_custom_value(DB_VERSION_KEY.as_bytes())
             .await
             .map_err(|e| Error::Custom(format!("failed to find DB version key: {e}")))?
@@ -87,13 +87,13 @@ impl Store {
         if ver < CURRENT_DB_VERSION {
             // "upgrading" by resetting
             client
-                .store()
+                .state_store()
                 .set_custom_value_no_read(ALL_MODELS_KEY.as_bytes(), vec![])
                 .await
                 .map_err(|e| Error::Custom(format!("setting all models to [] failed: {e}")))?;
 
             client
-                .store()
+                .state_store()
                 .set_custom_value_no_read(
                     DB_VERSION_KEY.as_bytes(),
                     CURRENT_DB_VERSION.to_le_bytes().to_vec(),
@@ -113,7 +113,7 @@ impl Store {
         // current DB version, attempt to load models
 
         let data = client
-            .store()
+            .state_store()
             .get_custom_value(ALL_MODELS_KEY.as_bytes())
             .await?
             .map(|v| {
@@ -385,7 +385,7 @@ impl Store {
             (models_to_write, to_remove, serde_json::to_vec(&model_keys)?)
         };
         trace!("store sync");
-        let client_store = self.client.store();
+        let client_store = self.client.state_store();
         for (key, value) in models_to_write.into_iter() {
             if let Err(error) = client_store
                 .set_custom_value_no_read(key.as_bytes(), value)

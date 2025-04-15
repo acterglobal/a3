@@ -219,14 +219,14 @@ impl Convo {
     }
 
     pub fn num_unread_notification_count(&self) -> u64 {
-        self.inner.unread_notification_counts().notification_count
+        self.inner.read_receipts().num_notifications
     }
     pub fn num_unread_messages(&self) -> u64 {
-        self.inner.num_unread_messages()
+        self.inner.read_receipts().num_unread
     }
 
     pub fn num_unread_mentions(&self) -> u64 {
-        self.inner.unread_notification_counts().highlight_count
+        self.inner.read_receipts().num_mentions
     }
 
     pub fn latest_message_ts(&self) -> u64 {
