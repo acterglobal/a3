@@ -22610,25 +22610,13 @@ class Api {
           >();
   late final _roomPowerLevelsContentEventsNewValPtr = _lookup<
     ffi.NativeFunction<
-      _RoomPowerLevelsContentEventsNewValReturn Function(
-        ffi.IntPtr,
-        ffi.IntPtr,
-        ffi.UintPtr,
-        ffi.UintPtr,
-      )
+      ffi.Int64 Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__RoomPowerLevelsContent_events_new_val");
 
   late final _roomPowerLevelsContentEventsNewVal =
       _roomPowerLevelsContentEventsNewValPtr
-          .asFunction<
-            _RoomPowerLevelsContentEventsNewValReturn Function(
-              int,
-              int,
-              int,
-              int,
-            )
-          >();
+          .asFunction<int Function(int, int, int, int)>();
   late final _roomPowerLevelsContentEventsOldValPtr = _lookup<
     ffi.NativeFunction<
       _RoomPowerLevelsContentEventsOldValReturn Function(
@@ -48272,26 +48260,8 @@ class RoomPowerLevelsContent {
       tmp3,
       tmp4,
     );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
-    if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 = utf8.decode(
-        tmp8_0.asTypedList(tmp9),
-        allowMalformed: true,
-      );
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    final tmp6 = tmp11;
+    final tmp7 = tmp5;
+    final tmp6 = tmp7;
     return tmp6;
   }
 
@@ -48318,28 +48288,10 @@ class RoomPowerLevelsContent {
     );
     final tmp7 = tmp5.arg0;
     final tmp8 = tmp5.arg1;
-    final tmp9 = tmp5.arg2;
-    final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
-    final tmp12 = tmp5.arg5;
     if (tmp7 == 0) {
-      debugAllocation("handle error", tmp8, tmp9);
-      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-      final tmp7_0 = utf8.decode(
-        tmp8_0.asTypedList(tmp9),
-        allowMalformed: true,
-      );
-      if (tmp9 > 0) {
-        final ffi.Pointer<ffi.Void> tmp8_0;
-        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-        _api.__deallocate(tmp8_0, tmp10, 1);
-      }
-      throw tmp7_0;
-    }
-    if (tmp11 == 0) {
       return null;
     }
-    final tmp6 = tmp12;
+    final tmp6 = tmp8;
     return tmp6;
   }
 
@@ -71773,32 +71725,11 @@ class _RoomPowerLevelsContentEventsChangeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RoomPowerLevelsContentEventsNewValReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
 class _RoomPowerLevelsContentEventsOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.Uint8()
-  external int arg4;
   @ffi.Int64()
-  external int arg5;
+  external int arg1;
 }
 
 class _RoomPowerLevelsContentEventsDefaultChangeReturn extends ffi.Struct {

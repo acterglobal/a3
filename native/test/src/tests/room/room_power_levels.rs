@@ -190,16 +190,10 @@ fn match_events_msg(msg: &TimelineItem, change: &str, key: &str, level: i64) -> 
             return None;
         }
     }
-    match content.events_new_val(key.to_owned()) {
-        Ok(new_val) => {
-            if new_val == level {
-                event_item.event_id()
-            } else {
-                None
-            }
-        }
-        Err(_) => None,
+    if content.events_new_val(key.to_owned()) != level {
+        return None;
     }
+    event_item.event_id()
 }
 
 #[tokio::test]
