@@ -170,9 +170,15 @@ class UploadAvatarPage extends ConsumerWidget {
       key: UploadAvatarPage.skipBtn,
       onPressed: () async {
         if (!context.mounted) return;
-        await ref.read(postLoginSignupProvider).initialize(context);
-        if (!context.mounted) return;
-        context.goNamed(Routes.main.name);
+        // Handle all post-login steps
+        final postLoginNotifier = ref.read(postLoginSignupProvider.notifier);
+        var currentStep = PostLoginStep.notifications;
+
+        while (currentStep != PostLoginStep.completed) {
+          await postLoginNotifier.handleStep(context, currentStep);
+          if (!context.mounted) return;
+          currentStep = ref.read(postLoginSignupProvider).currentStep;
+        }
       },
       child: Text(
         L10n.of(context).skip,

@@ -211,9 +211,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     if (loginSuccess == null) {
       if (!mounted) return;
-      await ref.read(postLoginSignupProvider).initialize(context);
-      if (!mounted) return;
-      context.goNamed(Routes.main.name);
+      // Handle all post-login steps
+      final postLoginNotifier = ref.read(postLoginSignupProvider.notifier);
+      var currentStep = PostLoginStep.notifications;
+
+      while (currentStep != PostLoginStep.completed) {
+        await postLoginNotifier.handleStep(context, currentStep);
+        if (!mounted) return;
+        currentStep = ref.read(postLoginSignupProvider).currentStep;
+      }
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));
