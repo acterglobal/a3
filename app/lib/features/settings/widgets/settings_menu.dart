@@ -2,7 +2,6 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/features/analytics/actions/telemetry_analytics.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
