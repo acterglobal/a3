@@ -89,10 +89,11 @@ fn match_ban_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Option<Strin
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.ban_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.ban_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.ban_new_val() != new_val {
         return None;
@@ -185,10 +186,11 @@ fn match_events_msg(msg: &TimelineItem, change: &str, key: &str, level: i64) -> 
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.events_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.events_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.events_new_val(key.to_owned()) != level {
         return None;
@@ -275,10 +277,11 @@ fn match_events_default_msg(msg: &TimelineItem, change: &str, new_val: i64) -> O
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.events_default_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.events_default_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.events_default_new_val() != new_val {
         return None;
@@ -364,10 +367,11 @@ fn match_invite_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Option<St
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.invite_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.invite_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.invite_new_val() != new_val {
         return None;
@@ -453,10 +457,11 @@ fn match_kick_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Option<Stri
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.kick_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.kick_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.kick_new_val() != new_val {
         return None;
@@ -542,10 +547,11 @@ fn match_redact_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Option<St
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.redact_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.redact_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.redact_new_val() != new_val {
         return None;
@@ -632,10 +638,11 @@ fn match_state_default_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Op
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.state_default_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.state_default_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.state_default_new_val() != new_val {
         return None;
@@ -722,10 +729,11 @@ fn match_users_default_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Op
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.users_default_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.users_default_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.users_default_new_val() != new_val {
         return None;
@@ -812,10 +820,11 @@ fn match_notifications_msg(msg: &TimelineItem, change: &str, new_val: i64) -> Op
     let Some(content) = event_item.room_power_levels_content() else {
         return None;
     };
-    if let Some(chg) = content.notifications_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.notifications_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.notifications_new_val() != new_val {
         return None;

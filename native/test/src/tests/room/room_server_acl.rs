@@ -109,26 +109,29 @@ fn match_msg(
     let Some(content) = event_item.room_server_acl_content() else {
         return None;
     };
-    if let Some(chg) = content.allow_ip_literals_change() {
-        if chg != allow_ip_literals_change {
-            return None;
-        }
+    let Some(chg) = content.allow_ip_literals_change() else {
+        return None;
+    };
+    if chg != allow_ip_literals_change {
+        return None;
     }
     if content.allow_ip_literals_new_val() != allow_ip_literals_new_val {
         return None;
     }
-    if let Some(chg) = content.allow_change() {
-        if chg != allow_change {
-            return None;
-        }
+    let Some(chg) = content.allow_change() else {
+        return None;
+    };
+    if chg != allow_change {
+        return None;
     }
     if !do_vecs_match(content.allow_new_val().as_slice(), allow_new_val.as_slice()) {
         return None;
     }
-    if let Some(chg) = content.deny_change() {
-        if chg != deny_change {
-            return None;
-        }
+    let Some(chg) = content.deny_change() else {
+        return None;
+    };
+    if chg != deny_change {
+        return None;
     }
     if !do_vecs_match(content.deny_new_val().as_slice(), deny_new_val.as_slice()) {
         return None;

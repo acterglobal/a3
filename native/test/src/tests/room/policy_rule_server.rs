@@ -93,10 +93,11 @@ fn match_msg(msg: &TimelineItem, change: &str, new_val: &str) -> Option<String> 
     let Some(content) = event_item.policy_rule_server_content() else {
         return None;
     };
-    if let Some(chg) = content.entity_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.entity_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.entity_new_val() != new_val {
         return None;

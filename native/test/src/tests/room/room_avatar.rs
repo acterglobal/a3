@@ -97,10 +97,11 @@ fn match_msg(msg: &TimelineItem, change: &str, new_val: String) -> Option<String
     let Some(content) = event_item.room_avatar_content() else {
         return None;
     };
-    if let Some(chg) = content.url_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.url_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if content.url_new_val() != Some(new_val) {
         return None;

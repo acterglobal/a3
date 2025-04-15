@@ -92,10 +92,11 @@ fn match_msg(msg: &TimelineItem, change: &str, new_val: &str) -> Option<String> 
     let Some(content) = event_item.room_canonical_alias_content() else {
         return None;
     };
-    if let Some(chg) = content.alias_change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.alias_change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     let Some(alias_new_val) = content.alias_new_val() else {
         return None;

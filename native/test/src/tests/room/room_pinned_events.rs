@@ -148,10 +148,11 @@ fn match_pinned_msg(msg: &TimelineItem, change: &str, new_val: &Vec<String>) -> 
     let Some(content) = event_item.room_pinned_events_content() else {
         return None;
     };
-    if let Some(chg) = content.change() {
-        if chg != change {
-            return None;
-        }
+    let Some(chg) = content.change() else {
+        return None;
+    };
+    if chg != change {
+        return None;
     }
     if !do_vecs_match(content.new_val().as_slice(), new_val.as_slice()) {
         return None;

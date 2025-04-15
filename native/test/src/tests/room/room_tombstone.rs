@@ -105,18 +105,20 @@ fn match_msg(
     let Some(content) = event_item.room_tombstone_content() else {
         return None;
     };
-    if let Some(chg) = content.body_change() {
-        if chg != body_change {
-            return None;
-        }
+    let Some(chg) = content.body_change() else {
+        return None;
+    };
+    if chg != body_change {
+        return None;
     }
     if content.body_new_val() != body_new_val {
         return None;
     }
-    if let Some(chg) = content.replacement_room_change() {
-        if chg != replacement_room_change {
-            return None;
-        }
+    let Some(chg) = content.replacement_room_change() else {
+        return None;
+    };
+    if chg != replacement_room_change {
+        return None;
     }
     if content.replacement_room_new_val() != replacement_room_new_val {
         return None;
