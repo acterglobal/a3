@@ -207,11 +207,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     return height;
   }
 
-  // determine if content requires scrolling
-  bool _needsScrolling(String text) {
-    return text.isNotEmpty && text.split('\n').length > 3;
-  }
-
   void _updateContentHeight() {
     final text = textEditorState.intoMarkdown();
     double newHeight = _contentHeight(text);
@@ -335,7 +330,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
                 log: _log,
               ),
           LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
-              () => _insertNewLine(),
+              () => textEditorState.insertNewLine(),
         },
         child: _renderEditor(hintText),
       ),
@@ -345,7 +340,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   Widget _renderEditor(String? hintText) {
     final contentText = textEditorState.intoMarkdown();
 
-    final needsScrolling = _needsScrolling(contentText);
+    final needsScrolling =
+        contentText.isNotEmpty && contentText.split('\n').length > 3;
 
     return HtmlEditor(
       footer: null,
@@ -354,7 +350,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       hintText: hintText,
       editable: true,
       shrinkWrap: needsScrolling,
-      // Only enable scrolling when content height would exceed appflowy editor compatible scrolling height
+      // only enable scrolling when content height would exceed appflowy editor compatible scrolling height
       disableAutoScroll: !needsScrolling,
       editorState: textEditorState,
       scrollController: scrollController,
@@ -418,11 +414,4 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       icon: const Icon(Atlas.paperclip_attachment_thin, size: 20),
     ),
   );
-
-  // Insert a newline and adjust height
-  void _insertNewLine() {
-    textEditorState.insertNewLine();
-    // Update height after inserting newline
-    _updateContentHeight();
-  }
 }
