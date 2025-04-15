@@ -195,6 +195,7 @@ dev_dependencies:
   enven: ^1.0.1
   mockingjay: ^1.0.0
   test_screenshot: ^0.0.7
+  golden_toolkit: ^0.15.0
 
 dependency_overrides:
 

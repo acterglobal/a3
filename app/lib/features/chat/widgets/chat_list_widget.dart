@@ -17,6 +17,7 @@ class ChatListWidget extends ConsumerWidget {
   final bool showSectionBg;
   final bool shrinkWrap;
   final bool showBookmarkedIndicator;
+  final bool showSelectedIndication;
   final Widget emptyState;
 
   const ChatListWidget({
@@ -29,6 +30,7 @@ class ChatListWidget extends ConsumerWidget {
     this.isShowSeeAllButton,
     this.showSectionBg = true,
     this.shrinkWrap = true,
+    this.showSelectedIndication = false,
     this.showBookmarkedIndicator = true,
     this.emptyState = const SizedBox.shrink(),
   });
@@ -66,7 +68,7 @@ class ChatListWidget extends ConsumerWidget {
         return Card(
           margin: EdgeInsets.only(bottom: 16),
           child: ChatItemWidget(
-            showSelectedIndication: false,
+            showSelectedIndication: showSelectedIndication,
             roomId: roomId,
             onTap: () => goToChat(context, roomId),
           ),
