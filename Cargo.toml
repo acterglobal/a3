@@ -12,50 +12,50 @@ rust-version = "1.85"
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+rev = "22d092b83c72684094aff24bfcf3a116dc1746c7"
 default-features = false
 features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+rev = "22d092b83c72684094aff24bfcf3a116dc1746c7"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+rev = "22d092b83c72684094aff24bfcf3a116dc1746c7"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+rev = "22d092b83c72684094aff24bfcf3a116dc1746c7"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+rev = "22d092b83c72684094aff24bfcf3a116dc1746c7"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+rev = "22d092b83c72684094aff24bfcf3a116dc1746c7"
 default-features = false
 
 
 # not used directly but needed to enable specific features from ruma
 # ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
-# version = "0.12.1"
-git = "https://github.com/ruma/ruma"
-rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
+version = "0.12.2"
+# git = "https://github.com/ruma/ruma"
+# rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
 features = ['unstable-msc4095']
 
 # - see comment above
 [workspace.dependencies.ruma-common]
-# version = "0.15.1"
-git = "https://github.com/ruma/ruma"
-rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
+version = "0.15.2"
+# git = "https://github.com/ruma/ruma"
+# rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
 
 [workspace.dependencies.url]
 version = "2.5.0"
@@ -81,3 +81,4 @@ strip = true  # Automatically strip symbols from the binary.
 
 [patch.crates-io]
 const_panic = { git = "https://github.com/jplatte/const_panic", rev = "9024a4cb3eac45c1d2d980f17aaee287b17be498" }
+# async-compat = { git = "https://github.com/element-hq/async-compat", rev = "5a27c8b290f1f1dcfc0c4ec22c464e38528aa591" }
