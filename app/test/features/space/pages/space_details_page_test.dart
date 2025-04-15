@@ -284,16 +284,13 @@ void main() {
         // what we care for in this stest
         expect(find.byKey(Key(TabEntry.suggestedSpaces.name)), findsNothing);
         expect(find.byKey(Key(TabEntry.suggestedChats.name)), findsNothing);
-        expect(
-          find.byKey(Key(TabEntry.spacesLoadingError.name)),
-          findsOneWidget,
-        );
+        expect(find.byKey(Key(TabEntry.spacesLoading.name)), findsOneWidget);
         // scroll down
-        await tester.tap(find.byKey(Key(TabEntry.spacesLoadingError.name)));
+        await tester.tap(find.byKey(Key(TabEntry.spacesLoading.name)));
 
         await tester.pump(const Duration(seconds: 4));
         expect(
-          find.byType(SpacesLoadingErrorSection, skipOffstage: false),
+          find.byType(SpacesLoadingSection, skipOffstage: false),
           findsOneWidget,
         );
       });
@@ -377,10 +374,7 @@ void main() {
         expect(find.byKey(Key(TabEntry.suggestedChats.name)), findsNothing);
         expect(find.byKey(Key(TabEntry.suggestedSpaces.name)), findsNothing);
 
-        expect(
-          find.byKey(Key(TabEntry.spacesLoadingError.name)),
-          findsOneWidget,
-        );
+        expect(find.byKey(Key(TabEntry.spacesLoading.name)), findsOneWidget);
 
         // make it work this time
         failSpaceRelations = false;

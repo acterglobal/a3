@@ -63,6 +63,10 @@ void main() {
         isActerSpace.overrideWith(
           (ref, spaceId) => spaceId == testSpaceId ? true : false,
         ),
+        spaceRelationsProvider.overrideWith(
+          (ref, spaceId) =>
+              MockSpaceRelations(roomId: testSpaceId, children: []),
+        ),
       ];
       test('show overview if it exists', () async {
         // Override the allActivitiesProvider to return our mock activities
@@ -79,6 +83,10 @@ void main() {
           overrides: [
             topicProvider.overrideWith((ref, spaceId) => null),
             isActerSpace.overrideWith((ref, spaceId) => true),
+            spaceRelationsProvider.overrideWith(
+              (ref, spaceId) =>
+                  MockSpaceRelations(roomId: testSpaceId, children: []),
+            ),
           ],
         );
 
@@ -421,6 +429,11 @@ void main() {
             ),
             pinListProvider.overrideWith((ref, spaceId) => [MockActerPin()]),
             taskListsProvider.overrideWith((ref, spaceId) => ['a']),
+
+            spaceRelationsProvider.overrideWith(
+              (ref, spaceId) =>
+                  MockSpaceRelations(roomId: testSpaceId, children: []),
+            ),
           ],
         );
         await container.pump();
@@ -436,6 +449,11 @@ void main() {
           overrides: [
             topicProvider.overrideWith((ref, spaceId) => 'Test Topic'),
             isActerSpace.overrideWith((ref, spaceId) => false),
+
+            spaceRelationsProvider.overrideWith(
+              (ref, spaceId) =>
+                  MockSpaceRelations(roomId: testSpaceId, children: []),
+            ),
           ],
         );
 
@@ -451,6 +469,11 @@ void main() {
           overrides: [
             topicProvider.overrideWith((ref, spaceId) => null),
             isActerSpace.overrideWith((ref, spaceId) => false),
+
+            spaceRelationsProvider.overrideWith(
+              (ref, spaceId) =>
+                  MockSpaceRelations(roomId: testSpaceId, children: []),
+            ),
           ],
         );
 
@@ -485,7 +508,7 @@ void main() {
         final first = container.read(tabsProvider(testSpaceId));
         await container.pump();
         final next = container.read(tabsProvider(testSpaceId));
-        expect(next, contains(TabEntry.spacesLoadingError));
+        expect(next, contains(TabEntry.spacesLoading));
       });
 
       test('shows suggested chats when available', () async {
@@ -619,6 +642,7 @@ void main() {
         // ignore: unused_local_variable
         final first = container.read(tabsProvider(testSpaceId));
 
+        await container.pump();
         await container.pump();
         final next = container.read(tabsProvider(testSpaceId));
         expect(

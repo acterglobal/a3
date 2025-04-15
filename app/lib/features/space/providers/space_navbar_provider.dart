@@ -17,7 +17,7 @@ enum TabEntry {
   suggestedSpaces,
   chats,
   spaces,
-  spacesLoadingError,
+  spacesLoading,
   members,
   actions,
 }
@@ -109,9 +109,10 @@ class TabsNotifier extends FamilyNotifier<List<TabEntry>, String> {
     }
 
     if (tabs.isEmpty) {
-      final error = ref.watch(spaceRelationsProvider(spaceId)).error;
-      if (error != null) {
-        tabs.add(TabEntry.spacesLoadingError);
+      final currentState = ref.watch(spaceRelationsProvider(spaceId));
+      if (currentState.isLoading || currentState.error != null) {
+        // show while loading or on error
+        tabs.add(TabEntry.spacesLoading);
       }
     }
     return tabs;

@@ -225,7 +225,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.suggestedSpaces => lang.suggestedSpaces,
       TabEntry.chats => lang.chats,
       TabEntry.spaces => lang.spaces,
-      TabEntry.spacesLoadingError => lang.spaces,
+      TabEntry.spacesLoading => lang.spaces,
       TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
@@ -274,9 +274,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       ),
       TabEntry.chats => OtherChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => OtherSubSpacesSection(spaceId: widget.spaceId),
-      TabEntry.spacesLoadingError => SpacesLoadingErrorSection(
-        spaceId: widget.spaceId,
-      ),
+      TabEntry.spacesLoading => SpacesLoadingSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
       TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
     };
