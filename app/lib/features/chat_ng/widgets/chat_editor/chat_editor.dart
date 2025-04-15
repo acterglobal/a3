@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
@@ -40,27 +41,27 @@ class ChatEditor extends ConsumerStatefulWidget {
 class _ChatEditorState extends ConsumerState<ChatEditor> {
   EditorState textEditorState = EditorState.blank();
   late EditorScrollController scrollController;
-  StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
+  StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
-  double _cHeight = 0.10;
+  final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(64.0);
   Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    scrollController = EditorScrollController(
-      editorState: textEditorState,
-      shrinkWrap: true,
-    );
+    scrollController = EditorScrollController(editorState: textEditorState);
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
       _editorUpdate(data.$2);
-      // expand when user types more than one line upto exceed limit
-      _updateHeight();
+
+      _updateContentHeight();
     });
-    // have it call the first time to adjust height
-    _updateHeight();
+
+    // Initialize the empty state correctly
+    _isInputEmptyNotifier.value = true;
+    _contentHeightNotifier.value = 64.0;
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
 
     ref.listenManual(chatEditorStateProvider, (prev, next) async {
@@ -90,6 +91,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   void dispose() {
     _updateListener?.cancel();
     _debounceTimer?.cancel();
+    _contentHeightNotifier.dispose();
     super.dispose();
   }
 
@@ -124,6 +126,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       Selection.collapsed(pos),
       reason: SelectionUpdateReason.uiEvent,
     );
+
+    // Update content height after editing
+    _updateContentHeight();
   }
 
   void _editorUpdate(Transaction data) {
@@ -141,18 +146,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final htmlText = textEditorState.intoHtml();
       await saveMsgDraft(text, htmlText, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
-    });
-  }
-
-  // handler for expanding editor field height
-  void _updateHeight() {
-    final text = textEditorState.intoMarkdown();
-    final lineCount = '\n'.allMatches(text).length;
-
-    // Calculate new height based on line count
-    // Start with 5% and increase by 4% per line up to 15%
-    setState(() {
-      _cHeight = (0.05 + (lineCount - 1) * 0.04).clamp(0.05, 0.15);
     });
   }
 
@@ -196,6 +189,35 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       transaction.afterSelection = Selection.collapsed(pos);
       textEditorState.apply(transaction);
       _log.info('compose draft loaded for room: ${widget.roomId}');
+
+      // update the content height after loading the draft
+      _updateContentHeight();
+    }
+  }
+
+  // calculate content height based on line count
+  double _contentHeight(String text) {
+    if (text.isEmpty) {
+      return 64.0;
+    }
+
+    final lineCount = text.split('\n').length;
+    double height = 64.0;
+    height += (lineCount - 1) * 22.0;
+    return height;
+  }
+
+  // determine if content requires scrolling
+  bool _needsScrolling(String text) {
+    return text.isNotEmpty && text.split('\n').length > 3;
+  }
+
+  void _updateContentHeight() {
+    final text = textEditorState.intoMarkdown();
+    double newHeight = _contentHeight(text);
+    newHeight = min(newHeight, 200.0);
+    if (_contentHeightNotifier.value != newHeight) {
+      _contentHeightNotifier.value = newHeight;
     }
   }
 
@@ -227,7 +249,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     return Column(
       children: <Widget>[
         if (previewWidget != null) previewWidget,
-        renderEditorUI(emojiPickerVisible, isEncrypted),
+        ValueListenableBuilder<double>(
+          valueListenable: _contentHeightNotifier,
+          builder: (context, height, _) {
+            return renderEditorUI(emojiPickerVisible, isEncrypted, height);
+          },
+        ),
         // Emoji Picker UI
         if (emojiPickerVisible) ChatEmojiPicker(editorState: textEditorState),
         // adjust bottom viewport so toolbar doesn't obscure field when visible
@@ -238,13 +265,20 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   // chat editor UI
-  Widget renderEditorUI(bool emojiPickerVisible, bool isEncrypted) {
+  Widget renderEditorUI(
+    bool emojiPickerVisible,
+    bool isEncrypted,
+    double contentHeight,
+  ) {
     final chatEditorState = ref.watch(chatEditorStateProvider);
     final isPreviewOpen =
         chatEditorState.isReplying || chatEditorState.isEditing;
     final radiusVal = isPreviewOpen ? 2.0 : 15.0;
 
-    return DecoratedBox(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      width: MediaQuery.sizeOf(context).width,
+      height: contentHeight,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.only(
@@ -253,7 +287,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         ),
         border: BorderDirectional(top: BorderSide(color: greyColor)),
       ),
+      clipBehavior: Clip.hardEdge,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           leadingBtn(emojiPickerVisible),
           editorField(isEncrypted),
@@ -266,7 +302,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   // emoji button
   Widget leadingBtn(bool emojiPickerVisible) {
     return IconButton(
-      padding: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsets.only(left: 12, top: 12),
       onPressed: () => _toggleEmojiPicker(emojiPickerVisible),
       icon: const Icon(Icons.emoji_emotions, size: 20),
     );
@@ -278,7 +314,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget editorField(bool isEncrypted) {
-    final widgetSize = MediaQuery.sizeOf(context);
     final hintText = isEncrypted.map(
       (v) =>
           v == true
@@ -286,54 +321,50 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
               : L10n.of(context).newMessage,
       orElse: () => L10n.of(context).newMessage,
     );
+
     return Expanded(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        height: widgetSize.height * _cHeight,
-        margin: const EdgeInsets.only(top: 16),
-        child: SingleChildScrollView(
-          child: IntrinsicHeight(
-            // keyboard shortcuts (desktop)
-            child: CallbackShortcuts(
-              bindings: <ShortcutActivator, VoidCallback>{
-                const SingleActivator(LogicalKeyboardKey.enter):
-                    () => sendMessageAction(
-                      roomId: widget.roomId,
-                      textEditorState: textEditorState,
-                      onTyping: widget.onTyping,
-                      context: context,
-                      ref: ref,
-                      log: _log,
-                    ),
-                LogicalKeySet(
-                      LogicalKeyboardKey.enter,
-                      LogicalKeyboardKey.shift,
-                    ):
-                    () => textEditorState.insertNewLine(),
-              },
-              child: _renderEditor(hintText),
-            ),
-          ),
-        ),
+      child: CallbackShortcuts(
+        bindings: <ShortcutActivator, VoidCallback>{
+          const SingleActivator(LogicalKeyboardKey.enter):
+              () => sendMessageAction(
+                roomId: widget.roomId,
+                textEditorState: textEditorState,
+                onTyping: widget.onTyping,
+                context: context,
+                ref: ref,
+                log: _log,
+              ),
+          LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
+              () => _insertNewLine(),
+        },
+        child: _renderEditor(hintText),
       ),
     );
   }
 
-  Widget _renderEditor(String? hintText) => HtmlEditor(
-    footer: null,
-    // if provided, will activate mentions
-    roomId: widget.roomId,
-    hintText: hintText,
-    editable: true,
-    shrinkWrap: true,
-    editorState: textEditorState,
-    scrollController: scrollController,
-    editorPadding: const EdgeInsets.symmetric(horizontal: 10),
-    onChanged: (body, html) {
-      final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
-      widget.onTyping?.call(isTyping);
-    },
-  );
+  Widget _renderEditor(String? hintText) {
+    final contentText = textEditorState.intoMarkdown();
+
+    final needsScrolling = _needsScrolling(contentText);
+
+    return HtmlEditor(
+      footer: null,
+      // if provided, will activate mentions
+      roomId: widget.roomId,
+      hintText: hintText,
+      editable: true,
+      shrinkWrap: needsScrolling,
+      // Only enable scrolling when content height would exceed appflowy editor compatible scrolling height
+      disableAutoScroll: !needsScrolling,
+      editorState: textEditorState,
+      scrollController: scrollController,
+      editorPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      onChanged: (body, html) {
+        final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
+        widget.onTyping?.call(isTyping);
+      },
+    );
+  }
 
   // attachment/send button
   Widget trailingBtn() {
@@ -350,7 +381,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderSendBtn() => Padding(
-    padding: const EdgeInsets.only(right: 8),
+    padding: const EdgeInsets.only(right: 12, top: 12),
     child: IconButton.filled(
       alignment: Alignment.center,
       key: ChatEditor.sendBtnKey,
@@ -369,7 +400,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   );
 
   Widget _renderAttachmentBtn() => Padding(
-    padding: const EdgeInsets.only(right: 8),
+    padding: const EdgeInsets.only(right: 12, top: 12),
     child: IconButton(
       onPressed:
           () => selectAttachment(
@@ -387,4 +418,11 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       icon: const Icon(Atlas.paperclip_attachment_thin, size: 20),
     ),
   );
+
+  // Insert a newline and adjust height
+  void _insertNewLine() {
+    textEditorState.insertNewLine();
+    // Update height after inserting newline
+    _updateContentHeight();
+  }
 }
