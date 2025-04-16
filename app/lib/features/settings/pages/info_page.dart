@@ -8,6 +8,7 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/setup.dart';
+import 'package:acter/features/analytics/actions/telemetry_analytics.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -91,6 +92,15 @@ class _SettingsInfoPageState extends ConsumerState<SettingsInfoPage> {
                 ),
               ),
               tiles: <SettingsTile>[
+                SettingsTile(
+                  title: Text(lang.telemetryAnalytics),
+                  trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                  onPressed: (context) {
+                    if (context.mounted) {
+                      showAnalyticsOptIn(context);
+                    }
+                  },
+                ),
                 SettingsTile(
                   title: Text(lang.version, style: textTheme.bodyMedium),
                   value: const Text(Env.rageshakeAppVersion),

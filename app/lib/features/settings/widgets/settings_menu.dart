@@ -2,9 +2,6 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/common/utils/device_permissions/calendar.dart';
-import 'package:acter/common/utils/device_permissions/notification.dart';
-import 'package:acter/features/analytics/actions/telemetry_analytics.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
@@ -113,17 +110,12 @@ class SettingsMenu extends ConsumerWidget {
                 color: routedColor(context, ref, Routes.settingNotifications),
               ),
               onTap: () async {
-                final hasPermission = await handleNotificationPermission(
-                  context,
-                );
-                if (hasPermission && context.mounted) {
-                  if (!isFullPage && context.isLargeScreen) {
-                    context.pushReplacementNamed(
-                      Routes.settingNotifications.name,
-                    );
-                  } else {
-                    context.pushNamed(Routes.settingNotifications.name);
-                  }
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(
+                    Routes.settingNotifications.name,
+                  );
+                } else {
+                  context.pushNamed(Routes.settingNotifications.name);
                 }
               },
             ),
@@ -150,17 +142,11 @@ class SettingsMenu extends ConsumerWidget {
                 color: routedColor(context, ref, Routes.settingsCalendar),
               ),
               onTap: () async {
-                final hasPermission = await handleCalendarPermission(
-                  context,
-                );
-                if (hasPermission && context.mounted) {
-                  if (!isFullPage && context.isLargeScreen) {
-                    context.pushReplacementNamed(Routes.settingsCalendar.name);
-                  } else {
-                    context.pushNamed(Routes.settingsCalendar.name);
-                  }
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingsCalendar.name);
+                } else {
+                  context.pushNamed(Routes.settingsCalendar.name);
                 }
-              
               },
             ),
             MenuItemWidget(
@@ -181,15 +167,6 @@ class SettingsMenu extends ConsumerWidget {
                   );
                 } else {
                   context.pushNamed(Routes.settingsCustomizations.name);
-                }
-              },
-            ),
-            MenuItemWidget(
-              iconData: PhosphorIconsThin.chartLineUp,
-              title: lang.telemetryAnalytics,
-              onTap: () {
-                if (context.mounted) {
-                  showAnalyticsOptIn(context);
                 }
               },
             ),
