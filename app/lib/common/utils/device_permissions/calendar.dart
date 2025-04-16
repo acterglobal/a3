@@ -39,6 +39,6 @@ Future<bool> _handleCalendarPermission(BuildContext context) async {
 
 /// Checks if calendar permission is granted
 Future<bool> _checkCalendarPermission() async {
-  final status = await Permission.calendarFullAccess.request();
+  final status = await Permission.calendarFullAccess.status;
   return status.isGranted;
 }
