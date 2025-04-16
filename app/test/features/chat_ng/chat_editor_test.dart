@@ -161,7 +161,7 @@ void main() {
       );
       final textEditorState = previewWidget.textEditorState;
 
-      final messageContent = updatedState.selectedMsgItem?.msgContent()?.body();
+      final messageContent = updatedState.selectedMsgItem?.message()?.body();
       final editorText =
           textEditorState.getNodeAtPath([0])?.delta?.toPlainText();
 
@@ -302,8 +302,7 @@ void main() {
         expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
 
         // verify editor field has edit preview content
-        final messageContent =
-            updatedState.selectedMsgItem?.msgContent()?.body();
+        final messageContent = updatedState.selectedMsgItem?.message()?.body();
         final previewWidget = tester.widget<ChatEditorActionsPreview>(
           find.byType(ChatEditorActionsPreview),
         );

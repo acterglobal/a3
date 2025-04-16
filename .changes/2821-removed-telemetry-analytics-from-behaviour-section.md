@@ -1,0 +1,1 @@
+- [Fix] : Moved the Telemetry & Analytics from app settings Behavior section to the Acter App Info page.

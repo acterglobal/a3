@@ -1,0 +1,2 @@
+- [Fix] : Notification permission prompt now appears only when toggling "Push to the device" in app settings → Notifications, not when opening the section directly.
+- [Fix] : Calendar permission prompt now appears only when toggling "Calendar Sync" in app settings → Calendar, not when opening the section directly.
