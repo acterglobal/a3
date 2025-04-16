@@ -2,6 +2,23 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class TextMessageWidget extends ConsumerWidget {
+  final String roomId;
+  final String message;
+
+  const TextMessageWidget({
+    super.key,
+    required this.roomId,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final textStyle = lastMessageTextStyle(context, ref, roomId);
+    return Text(message, style: textStyle);
+  }
+}
+
 TextStyle? lastMessageTextStyle(
   BuildContext context,
   WidgetRef ref,

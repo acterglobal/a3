@@ -2,6 +2,8 @@ import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_message_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +21,7 @@ class LastMessageWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lastMessageProvider = ref.watch(latestMessageProvider(roomId));
     return lastMessageProvider.when(
-      data: (timelineItem) => _renderLastMessage(timelineItem),
+      data: (timelineItem) => _renderLastMessage(context, timelineItem),
       error: (e, s) {
         _log.severe('Failed to load last message', e, s);
         return const SizedBox.shrink();
@@ -28,18 +30,11 @@ class LastMessageWidget extends ConsumerWidget {
     );
   }
 
-  Widget _renderLastMessage(TimelineItem? timelineItem) {
+  Widget _renderLastMessage(BuildContext context, TimelineItem? timelineItem) {
+    final lang = L10n.of(context);
     final eventItem = timelineItem?.eventItem();
     if (eventItem == null) return const SizedBox.shrink();
     return switch (eventItem.eventType()) {
-      'm.room.encrypted' => GeneralMessageEventWidget(
-        roomId: roomId,
-        eventItem: eventItem,
-      ),
-      'm.room.redaction' => GeneralMessageEventWidget(
-        roomId: roomId,
-        eventItem: eventItem,
-      ),
       'm.room.message' => RoomMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
@@ -47,6 +42,14 @@ class LastMessageWidget extends ConsumerWidget {
       'MembershipChange' => RoomMembershipEventWidget(
         roomId: roomId,
         eventItem: eventItem,
+      ),
+      'm.room.encrypted' => TextMessageWidget(
+        roomId: roomId,
+        message: lang.failedToDecryptMessage,
+      ),
+      'm.room.redaction' => TextMessageWidget(
+        roomId: roomId,
+        message: lang.thisMessageHasBeenDeleted,
       ),
       _ => GeneralMessageEventWidget(roomId: roomId, eventItem: eventItem),
     };

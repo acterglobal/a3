@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/last_message_text_style.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
