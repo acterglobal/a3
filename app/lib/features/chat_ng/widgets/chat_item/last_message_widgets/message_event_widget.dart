@@ -42,7 +42,7 @@ class MessageEventWidget extends StatelessWidget {
         eventItem: eventItem,
         icon: PhosphorIcons.mapPin(),
       ),
-      _ => TextMessageWidget(roomId: roomId, eventItem: eventItem),
+      _ => const SizedBox.shrink(),
     };
   }
 }

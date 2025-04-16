@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/membership_event_message_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/message_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -40,6 +41,10 @@ class LastMessageWidget extends ConsumerWidget {
         eventItem: eventItem,
       ),
       'm.room.message' => MessageEventWidget(
+        roomId: roomId,
+        eventItem: eventItem,
+      ),
+      'm.room.member' => MembershipEventMessageWidget(
         roomId: roomId,
         eventItem: eventItem,
       ),
