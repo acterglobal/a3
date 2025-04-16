@@ -10,10 +10,7 @@ import 'package:share_plus/share_plus.dart';
 class EncryptionBackupPage extends ConsumerStatefulWidget {
   final Function() callNextPage;
 
-  const EncryptionBackupPage({
-    super.key,
-    required this.callNextPage,
-  });
+  const EncryptionBackupPage({super.key, required this.callNextPage});
 
   @override
   ConsumerState<EncryptionBackupPage> createState() =>
@@ -27,25 +24,29 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
-     return Scaffold(
+    return Scaffold(
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Spacer(),
-            Icon(PhosphorIcons.lockKey(), size: 80, color: primaryColor),
-            const SizedBox(height: 24),
-            _buildHeader(context, lang),
-            const SizedBox(height: 16),
-            _buildDescription(context, lang),
-            const SizedBox(height: 32),
-            _buildEncryptionKey(context),
-            const Spacer(),
-            _buildNavigationButtons(context, lang),
-            const SizedBox(height: 30),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24),
+                Icon(PhosphorIcons.lockKey(), size: 80, color: primaryColor),
+                const SizedBox(height: 24),
+                _buildHeader(context, lang),
+                const SizedBox(height: 16),
+                _buildDescription(context, lang),
+                const SizedBox(height: 32),
+                _buildEncryptionKey(context),
+                const SizedBox(height: 32),
+                _buildNavigationButtons(context, lang),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -171,7 +172,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: () {  widget.callNextPage();},
+          onPressed: isEnabled ? () => widget.callNextPage() : null,
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
@@ -179,7 +180,12 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buidSkipButton(BuildContext context, L10n lang) {
-    return OutlinedButton(onPressed: () {  widget.callNextPage();}, child: Text(L10n.of(context).skip));
+    return OutlinedButton(
+      onPressed: () {
+        widget.callNextPage();
+      },
+      child: Text(L10n.of(context).skip),
+    );
   }
 
   Widget _buildActionButton({
