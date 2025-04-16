@@ -36,21 +36,18 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     _checkPermissions();
   }
 
   Future<void> _checkPermissions() async {
     final showNotification = await isShowNotificationPermissionInfoPage();
     final showCalendar = await isShowCalendarPermissionInfoPage();
-    setState(() {
-      _showNotificationPermission = showNotification;
-      _showCalendarPermission = showCalendar;
-    });
+    if (mounted) {
+      setState(() {
+        _showNotificationPermission = showNotification;
+        _showCalendarPermission = showCalendar;
+      });
+    }
   }
 
   void _nextPage() {
