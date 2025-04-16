@@ -1,0 +1,2 @@
+- [Labs] Chat-NG:
+  - [fix] mention break when editing chat message. Now, preserves the mention-pill.

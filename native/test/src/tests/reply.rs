@@ -154,7 +154,7 @@ fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if !msg.is_virtual() {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
+        if let Some(msg_content) = event_item.message() {
             if msg_content.body() == body {
                 // exclude the pending msg
                 if let Some(event_id) = event_item.event_id() {

@@ -1,3 +1,0 @@
-- [Labs] Chat NG:
-  - [Improvement]: now features typing indicator being shown in chat messages.
-  - [Improvement]: you can customise typing indicator style in settings -> labs section.

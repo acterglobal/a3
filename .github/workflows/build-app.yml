@@ -47,6 +47,7 @@ jobs:
       APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APPLE_API_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
       BUNDLE_ID: 'global.acter.a3'
+      IOS_XCODE_TARGET: '16.1'
 
     strategy:
       matrix:
@@ -238,6 +239,13 @@ jobs:
           keychain add-certificates
 
           xcode-project use-profiles
+      - name: 'Select XCode $IOS_XCODE_TARGET'
+        if: matrix.target == 'ios'
+        run: |
+            # just delete them
+            sudo xcode-select --switch /Applications/Xcode_${{ env.IOS_XCODE_TARGET }}.app
+            # confirm
+            xcodebuild -showsdks
 
       - name: Setup MacOS keychain
         if: matrix.target == 'macos'

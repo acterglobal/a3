@@ -5,7 +5,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockRoom with Mock implements Room {}
+class MockRoom with Mock implements Room {
+  final bool _isJoined;
+
+  MockRoom({bool isJoined = true}) : _isJoined = isJoined;
+
+  @override
+  bool isJoined() => _isJoined;
+}
 
 class MockRoomUserSettings with Mock implements UserRoomSettings {
   final bool has_seen_suggested;

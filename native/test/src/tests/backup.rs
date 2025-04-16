@@ -50,7 +50,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         assert_eq!(
             msg.event_item()
                 .expect("has messsage")
-                .msg_content()
+                .message()
                 .expect("is message")
                 .body(),
             "Hi, everyone"
@@ -137,7 +137,7 @@ async fn can_recover_and_read_message() -> Result<()> {
     assert_eq!(
         msg.event_item()
             .expect("has messsage")
-            .msg_content()
+            .message()
             .expect("is message")
             .body(),
         "Hi, everyone" // WE CAN READ IT AGAIN

@@ -5,25 +5,16 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
-enum TypingIndicatorMode { name, avatar, nameAndAvatar }
-
-/// Options for the typing indicator.
-class TypingIndicatorOptions {
-  const TypingIndicatorOptions({this.typingUsers = const []});
+class TypingIndicator extends ConsumerWidget {
+  const TypingIndicator({super.key, required this.typingUsers});
 
   final List<AvatarInfo> typingUsers;
-}
-
-class TypingIndicator extends ConsumerWidget {
-  const TypingIndicator({super.key, required this.options});
-
-  final TypingIndicatorOptions options;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).typingIndicatorTheme;
 
-    return TypingWidget(typingUsers: options.typingUsers, theme: theme);
+    return TypingWidget(typingUsers: typingUsers, theme: theme);
   }
 }
 
@@ -33,12 +24,10 @@ class TypingWidget extends StatelessWidget {
     super.key,
     required this.typingUsers,
     required this.theme,
-    this.mode = TypingIndicatorMode.nameAndAvatar,
   });
 
   final List<AvatarInfo> typingUsers;
   final TypingIndicatorTheme theme;
-  final TypingIndicatorMode mode;
 
   String _buildTypingText(List<AvatarInfo> users, L10n l10n) {
     if (users.isEmpty) return '';

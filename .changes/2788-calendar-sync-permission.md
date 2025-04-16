@@ -1,1 +1,0 @@
-- [Implemented] : Added a Calendar sync Permission startup to the onboarding flow, prompting users to grant permission for sync calendar.

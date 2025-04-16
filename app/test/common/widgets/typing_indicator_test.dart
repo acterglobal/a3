@@ -16,9 +16,7 @@ void main() {
       );
 
       await tester.pumpProviderWidget(
-        child: TypingIndicator(
-          options: TypingIndicatorOptions(typingUsers: [testUser]),
-        ),
+        child: TypingIndicator(typingUsers: [testUser]),
       );
 
       await tester.pump(const Duration(milliseconds: 300));
@@ -40,9 +38,7 @@ void main() {
       );
 
       await tester.pumpProviderWidget(
-        child: TypingIndicator(
-          options: TypingIndicatorOptions(typingUsers: [testUser, testUser2]),
-        ),
+        child: TypingIndicator(typingUsers: [testUser, testUser2]),
       );
 
       await tester.pump(const Duration(milliseconds: 300));
@@ -54,15 +50,15 @@ void main() {
     });
 
     testWidgets('should display multiple users typing', (tester) async {
-      final options = TypingIndicatorOptions(
-        typingUsers: [
-          MockAvatarInfo(uniqueId: 'user1', mockDisplayName: 'Alice'),
-          MockAvatarInfo(uniqueId: 'user2', mockDisplayName: 'Bob'),
-          MockAvatarInfo(uniqueId: 'user3', mockDisplayName: 'Charlie'),
-        ],
-      );
+      final typingUsers = [
+        MockAvatarInfo(uniqueId: 'user1', mockDisplayName: 'Alice'),
+        MockAvatarInfo(uniqueId: 'user2', mockDisplayName: 'Bob'),
+        MockAvatarInfo(uniqueId: 'user3', mockDisplayName: 'Charlie'),
+      ];
 
-      await tester.pumpProviderWidget(child: TypingIndicator(options: options));
+      await tester.pumpProviderWidget(
+        child: TypingIndicator(typingUsers: typingUsers),
+      );
 
       await tester.pump(const Duration(milliseconds: 300));
 

@@ -4,6 +4,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
@@ -13,6 +14,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/utils.dart';
+import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
@@ -173,6 +175,17 @@ final isRoomEncryptedProvider = FutureProvider.family<bool, String>((
 
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
+      // if we are in chat showcase mode, return mock typing users
+      if (includeChatShowcase &&
+          mockChatList.any((mockChatItem) => mockChatItem.roomId == roomId)) {
+        final mockChatItem = mockChatList.firstWhere(
+          (mockChatItem) => mockChatItem.roomId == roomId,
+        );
+        yield mockChatItem.typingUsers ?? [];
+        return;
+      }
+
+      // otherwise, get the typing users from the client
       final client = await ref.watch(alwaysClientProvider.future);
       final userId = ref.watch(myUserIdStrProvider);
       yield [];

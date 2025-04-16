@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mockingjay/mockingjay.dart';
+import 'package:test_screenshot/test_screenshot.dart';
 
 import 'mock_go_router.dart';
 import 'test_wrapper_widget.dart';
@@ -49,6 +50,7 @@ extension ActerProviderTesting on WidgetTester {
     List<Override>? overrides,
     MockNavigator? navigatorOverride,
     GoRouter? goRouter,
+    String? screenshotPath,
     required Widget child,
   }) async {
     if (goRouter != null) {
@@ -57,11 +59,17 @@ extension ActerProviderTesting on WidgetTester {
     if (navigatorOverride != null) {
       child = MockNavigatorProvider(navigator: navigatorOverride, child: child);
     }
+    if (screenshotPath != null) {
+      await loadFonts();
+    }
     await pumpWidget(
       ProviderScope(
         overrides: overrides ?? [],
         child: InActerContextTestWrapper(child: child),
       ),
     );
+    if (screenshotPath != null) {
+      await screenshot(path: screenshotPath);
+    }
   }
 }

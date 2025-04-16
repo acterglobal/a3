@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/scrollable_list_tab_scroller.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
@@ -10,7 +9,6 @@ import 'package:acter/features/pins/widgets/pin_list_widget.dart';
 import 'package:acter/features/space/dialogs/suggested_rooms.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
-import 'package:acter/features/space/widgets/skeletons/space_details_skeletons.dart';
 import 'package:acter/features/space/widgets/space_header.dart';
 import 'package:acter/features/space/widgets/space_sections/about_section.dart';
 import 'package:acter/features/space/widgets/space_sections/other_chats_section.dart';
@@ -18,6 +16,7 @@ import 'package:acter/features/space/widgets/space_sections/members_section.dart
 import 'package:acter/features/space/widgets/space_sections/news_section.dart';
 import 'package:acter/features/space/widgets/space_sections/other_sub_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_sections/space_actions_section.dart';
+import 'package:acter/features/space/widgets/space_sections/spaces_loading_error_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_chats_section.dart';
 import 'package:acter/features/space/widgets/space_sections/suggested_spaces_section.dart';
 import 'package:acter/features/space/widgets/space_toolbar.dart';
@@ -27,10 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logging/logging.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
-final _log = Logger('a3::space::space_details');
 
 class SpaceDetailsPage extends ConsumerStatefulWidget {
   static const headerKey = Key('space-menus-header');
@@ -126,50 +122,30 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
   }
 
   Widget spaceBodyUI() {
-    final tabsLoader = ref.watch(tabsProvider(widget.spaceId));
-    return tabsLoader.when(
-      skipLoadingOnReload: true,
-      data: (tabs) {
-        return ScrollableListTabScroller(
-          headerKey: SpaceDetailsPage.headerKey,
-          itemCount: tabs.length,
-          itemPositionsListener: itemPositionsListener,
+    final tabs = ref.watch(tabsProvider(widget.spaceId));
+    return ScrollableListTabScroller(
+      headerKey: SpaceDetailsPage.headerKey,
+      itemCount: tabs.length,
+      itemPositionsListener: itemPositionsListener,
 
-          //Space Details Header UI
-          headerContainerBuilder:
-              (context, menuBarWidget) => spaceHeaderUI(menuBarWidget),
+      //Space Details Header UI
+      headerContainerBuilder:
+          (context, menuBarWidget) => spaceHeaderUI(menuBarWidget),
 
-          //Space Details Tab Menu UI
-          tabBuilder:
-              (context, index, active) =>
-                  spaceTabMenuUI(context, tabs[index], active),
+      //Space Details Tab Menu UI
+      tabBuilder:
+          (context, index, active) =>
+              spaceTabMenuUI(context, tabs[index], active),
 
-          //Space Details Page UI
-          itemBuilder: (context, index) => spacePageUI(tabs[index]),
+      //Space Details Page UI
+      itemBuilder: (context, index) => spacePageUI(tabs[index]),
 
-          // we allow this to be refreshed by over-pulling
-          onRefresh: () async {
-            await Future.wait([
-              ref.refresh(spaceProvider(widget.spaceId).future),
-              ref.refresh(maybeRoomProvider(widget.spaceId).future),
-            ]);
-          },
-        );
-      },
-      error: (e, s) => loadingError(e, s),
-      loading: () => const SpaceDetailsSkeletons(),
-    );
-  }
-
-  Widget loadingError(Object error, StackTrace stack) {
-    _log.severe('Failed to load tabs in space', error, stack);
-    return ErrorPage(
-      background: const SpaceDetailsSkeletons(),
-      error: error,
-      stack: stack,
-      textBuilder: (error, code) => L10n.of(context).loadingFailed(error),
-      onRetryTap: () {
-        ref.invalidate(spaceProvider(widget.spaceId));
+      // we allow this to be refreshed by over-pulling
+      onRefresh: () async {
+        await Future.wait([
+          ref.refresh(spaceProvider(widget.spaceId).future),
+          ref.refresh(maybeRoomProvider(widget.spaceId).future),
+        ]);
       },
     );
   }
@@ -249,6 +225,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       TabEntry.suggestedSpaces => lang.suggestedSpaces,
       TabEntry.chats => lang.chats,
       TabEntry.spaces => lang.spaces,
+      TabEntry.spacesLoading => lang.spaces,
       TabEntry.members => lang.members,
       TabEntry.actions => '...',
     };
@@ -297,6 +274,7 @@ class _SpaceDetailsPageState extends ConsumerState<SpaceDetailsPage> {
       ),
       TabEntry.chats => OtherChatsSection(spaceId: widget.spaceId),
       TabEntry.spaces => OtherSubSpacesSection(spaceId: widget.spaceId),
+      TabEntry.spacesLoading => SpacesLoadingSection(spaceId: widget.spaceId),
       TabEntry.members => MembersSection(spaceId: widget.spaceId),
       TabEntry.actions => SpaceActionsSection(spaceId: widget.spaceId),
     };

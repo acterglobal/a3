@@ -1,7 +1,8 @@
 import 'dart:io';
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
-import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Handles calendar permission request for both Android and iOS platforms
 Future<bool> handleCalendarPermission(BuildContext context) async {
@@ -9,6 +10,9 @@ Future<bool> handleCalendarPermission(BuildContext context) async {
     if (context.mounted) {
       return await _handleCalendarPermission(context);
     }
+  }
+  if (isDesktop) {
+    return true;
   }
   return false;
 }
@@ -35,7 +39,6 @@ Future<bool> _handleCalendarPermission(BuildContext context) async {
 
 /// Checks if calendar permission is granted
 Future<bool> _checkCalendarPermission() async {
-  final deviceCalendar = DeviceCalendarPlugin();
-  final hasPermission = await deviceCalendar.hasPermissions();
-  return hasPermission.data ?? false;
+  final status = await Permission.calendarFullAccess.status;
+  return status.isGranted;
 }

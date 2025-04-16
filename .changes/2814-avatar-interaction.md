@@ -1,0 +1,2 @@
+- [Labs] Chat NG:
+  - [fix] tapping on chat message avatar should open member info drawer now.
