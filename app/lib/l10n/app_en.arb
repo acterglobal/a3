@@ -2385,6 +2385,7 @@
   "qr": "QR",
   "newBoost": "New\nBoost",
   "addComment": "Add Comment",
+  "@addComment": {},
   "references": "References",
   "removeReference": "Remove Reference",
   "suggestedChats": "Suggested Chats",
@@ -2421,6 +2422,9 @@
   "completed": "Completed",
   "accepted": "Accepted",
   "declined": "Declined",
+  "spaceNameUpdate": " updated space name",
+  "spaceDescriptionUpdate": " updated space description",
+  "spaceAvatarUpdate": "updated avatar",
   "taskLabel": "Task",
   "getDetails": "Get Details",
   "pushNotification": "Push Notification",
@@ -2443,6 +2447,5 @@
   "userHasNotAllowed": "The user has not allowed this application to modify their calendar",
   "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
   "youInvited": "Invited to you to join {count} room",
-  "@youInvited": {},
-  "@addComment": {}
+  "@youInvited": {}
 }
