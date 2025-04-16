@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/icon_meessage_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/media_meessage_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -24,31 +24,31 @@ class RoomMessageEventWidget extends StatelessWidget {
         roomId: roomId,
         eventItem: eventItem,
       ),
-      'm.image' => IconMessageWidget(
+      'm.image' => MediaMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
         eventName: lang.image,
         icon: PhosphorIcons.image(),
       ),
-      'm.video' => IconMessageWidget(
+      'm.video' => MediaMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
         eventName: lang.video,
         icon: PhosphorIcons.video(),
       ),
-      'm.audio' => IconMessageWidget(
+      'm.audio' => MediaMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
         eventName: lang.audio,
         icon: PhosphorIcons.musicNote(),
       ),
-      'm.file' => IconMessageWidget(
+      'm.file' => MediaMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
         eventName: lang.file,
         icon: PhosphorIcons.file(),
       ),
-      'm.location' => IconMessageWidget(
+      'm.location' => MediaMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
         eventName: lang.location,

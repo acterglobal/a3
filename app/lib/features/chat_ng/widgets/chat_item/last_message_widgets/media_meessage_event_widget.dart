@@ -5,13 +5,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class IconMessageWidget extends ConsumerWidget {
+class MediaMessageEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
   final String eventName;
   final IconData icon;
 
-  const IconMessageWidget({
+  const MediaMessageEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
