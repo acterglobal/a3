@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:device_calendar/device_calendar.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Handles calendar permission request for both Android and iOS platforms
 Future<bool> isShowCalendarPermissionInfoPage() async {
