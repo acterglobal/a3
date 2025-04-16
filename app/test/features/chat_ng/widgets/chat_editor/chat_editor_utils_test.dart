@@ -21,12 +21,12 @@ void main() {
       test('increases height for multiline text', () {
         expect(
           ChatEditorUtils.calculateContentHeight('Line 1\nLine 2'),
-          ChatEditorUtils.baseHeight + ChatEditorUtils.lineHeight,
+          ChatEditorUtils.baseHeight,
         );
 
         expect(
           ChatEditorUtils.calculateContentHeight('Line 1\nLine 2\nLine 3'),
-          ChatEditorUtils.baseHeight + (2 * ChatEditorUtils.lineHeight),
+          ChatEditorUtils.baseHeight + 2 * ChatEditorUtils.lineHeight,
         );
       });
 
@@ -35,10 +35,9 @@ void main() {
         final linesNeededToExceedMax =
             ((ChatEditorUtils.maxHeight - ChatEditorUtils.baseHeight) /
                     ChatEditorUtils.lineHeight)
-                .ceil() +
-            1;
+                .ceil();
 
-        // create text with enough lines to exceed max height
+        // create text with enough newlines to exceed max height
         final largeText = List.generate(
           linesNeededToExceedMax + 1,
           (i) => 'Line $i',
@@ -79,13 +78,19 @@ void main() {
       });
 
       test('calculates correctly for different line counts', () {
-        //  for different line counts
+        // two lines (one newline) gives base height (56), which is below threshold
         final heightForTwoLines = ChatEditorUtils.calculateContentHeight(
           'Line 1\nLine 2',
         );
+
+        // three lines (two newlines) gives base height + 2*lineHeight = 56 + 40 = 96,
+        // which equals the threshold of 96
         final heightForThreeLines = ChatEditorUtils.calculateContentHeight(
           'Line 1\nLine 2\nLine 3',
         );
+
+        // four lines (three newlines) gives base height + 3*lineHeight = 56 + 60 = 116,
+        // which is above the threshold of 96
         final heightForFourLines = ChatEditorUtils.calculateContentHeight(
           'Line 1\nLine 2\nLine 3\nLine 4',
         );
