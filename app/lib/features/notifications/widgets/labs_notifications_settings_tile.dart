@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
@@ -44,9 +45,19 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     bool newVal,
   ) async {
     if (newVal) {
-      final hasPermission = await handleNotificationPermission(context);
-      if (!hasPermission || !context.mounted) {
-        return;
+      final hasPermission = await isShowNotificationPermissionInfoPage(context);
+      if (hasPermission) {
+        if (context.mounted) {
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return Dialog.fullscreen(
+                child: const NotificationPermissionWidget(),
+              );
+            },
+          );
+        }
       }
     }
     final lang = L10n.of(context);

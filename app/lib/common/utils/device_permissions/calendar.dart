@@ -1,45 +1,19 @@
 import 'dart:io';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 
 /// Handles calendar permission request for both Android and iOS platforms
-Future<bool> handleCalendarPermission(BuildContext context) async {
+Future<bool> isShowCalendarPermissionInfoPage(BuildContext context) async {
   if (Platform.isAndroid || Platform.isIOS) {
     if (context.mounted) {
-      return await _handleCalendarPermission(context);
+      final deviceCalendar = DeviceCalendarPlugin();
+      final hasPermission = await deviceCalendar.hasPermissions();
+      return !hasPermission.data!;
     }
   }
   if (isDesktop) {
     return true;
   }
   return false;
-}
-
-/// Internal function to handle calendar permission request
-Future<bool> _handleCalendarPermission(BuildContext context) async {
-  bool calendarPermissionGranted = await _checkCalendarPermission();
-
-  if (!calendarPermissionGranted) {
-    if (context.mounted) {
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog.fullscreen(child: const CalendarSyncPermissionWidget());
-        },
-      );
-      // Check permission again after showing the dialog
-      return await _checkCalendarPermission();
-    }
-  }
-  return calendarPermissionGranted;
-}
-
-/// Checks if calendar permission is granted
-Future<bool> _checkCalendarPermission() async {
-  final deviceCalendar = DeviceCalendarPlugin();
-  final hasPermission = await deviceCalendar.hasPermissions();
-  return hasPermission.data ?? false;
 }
