@@ -58,7 +58,7 @@ class ChatItemWidget extends ConsumerWidget {
       onTap: onTap,
       leading: RoomAvatar(roomId: roomId, showParents: true),
       title: _buildChatTitle(),
-      subtitle: _buildChatSubtitle(),
+      subtitle: _buildChatSubtitle(isChatSelected),
     );
   }
 
