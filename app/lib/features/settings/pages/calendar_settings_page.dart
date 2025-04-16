@@ -39,11 +39,10 @@ class CalendarSettingsPage extends ConsumerWidget {
                           true),
                   onToggle: (newVal) async {
                     if (newVal) {
-                      final hasPermission =
-                          await isShowCalendarPermissionInfoPage(context);
+                      final hasPermission = await isShowCalendarPermissionInfoPage();
                       if (hasPermission) {
                         if (context.mounted) {
-                          await showDialog(
+                          final granted = await showDialog<bool>(
                             context: context,
                             barrierDismissible: false,
                             builder: (BuildContext context) {
@@ -52,16 +51,21 @@ class CalendarSettingsPage extends ConsumerWidget {
                               );
                             },
                           );
+
+                          if (granted == true && context.mounted) {
+                            await initCalendarSync(ignoreRejection: true);
+                            EasyLoading.showToast('Acter Calendars synced');
+                            ref.read(isCalendarSyncActiveProvider.notifier).set(true);
+                          } else {
+                            // If permission not granted, keep toggle off
+                            ref.read(isCalendarSyncActiveProvider.notifier).set(false);
+                          }
                         }
+                      } else {
+                        await clearActerCalendars();
+                        EasyLoading.showToast('Acter Calendars removed');
+                        ref.read(isCalendarSyncActiveProvider.notifier).set(false);
                       }
-                    }
-                    ref.read(isCalendarSyncActiveProvider.notifier).set(newVal);
-                    if (newVal) {
-                      await initCalendarSync(ignoreRejection: true);
-                      EasyLoading.showToast('Acter Calendars synced');
-                    } else {
-                      await clearActerCalendars();
-                      EasyLoading.showToast('Acter Calendars removes');
                     }
                   },
                 ),

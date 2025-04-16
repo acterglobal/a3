@@ -7,11 +7,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NotificationPermissionWidget extends ConsumerStatefulWidget {
   final Function()? callNextPage;
-  final bool? isOnboarding;
   const NotificationPermissionWidget({
     super.key,
     this.callNextPage,
-    this.isOnboarding,
   });
 
   @override
@@ -63,7 +61,7 @@ class _NotificationPermissionWidgetState
           Align(
             alignment: Alignment.topRight,
             child: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(context,false),
               icon: const Icon(Icons.close),
             ),
           ),
@@ -183,7 +181,7 @@ class _NotificationPermissionWidgetState
               if (widget.callNextPage != null) {
                 widget.callNextPage!();
               } else {
-                Navigator.pop(context);
+                Navigator.pop(context,false);
               }
             }
           },
@@ -206,7 +204,7 @@ class _NotificationPermissionWidgetState
         if (widget.callNextPage != null) {
           widget.callNextPage!();
         } else {
-          Navigator.pop(context);
+          Navigator.pop(context,true);
         }
       }
     } else if (status.isDenied) {

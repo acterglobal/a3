@@ -45,36 +45,51 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     bool newVal,
   ) async {
     if (newVal) {
-      final hasPermission = await isShowNotificationPermissionInfoPage(context);
+      final hasPermission = await isShowNotificationPermissionInfoPage();
       if (hasPermission) {
-        if (context.mounted) {
-          await showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return Dialog.fullscreen(
-                child: const NotificationPermissionWidget(),
-              );
-            },
-          );
+        if (!context.mounted) return;
+        final granted = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Dialog.fullscreen(
+              child: const NotificationPermissionWidget(),
+            );
+          },
+        );
+
+        if (granted != true || !context.mounted) {
+          ref.read(isPushNotificationsActiveProvider.notifier).set(false);
+          return;
         }
       }
+      if (context.mounted) {
+        await _setupPushNotifications(context, ref);
+      }
     }
+  }
+
+  Future<void> _setupPushNotifications(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final lang = L10n.of(context);
-    ref.read(isPushNotificationsActiveProvider.notifier).set(newVal);
-    if (!newVal) return;
     final client = await ref.read(alwaysClientProvider.future);
+
     EasyLoading.show(status: lang.changingSettings);
     try {
       var granted = await setupPushNotifications(client, forced: true);
       if (granted) {
         EasyLoading.dismiss();
+        ref.read(isPushNotificationsActiveProvider.notifier).set(true);
         return;
       }
+
       await AppSettings.openAppSettings(type: AppSettingsType.notification);
       granted = await setupPushNotifications(client, forced: true);
       if (granted) {
         EasyLoading.dismiss();
+        ref.read(isPushNotificationsActiveProvider.notifier).set(true);
         return;
       }
       // second attempt, even sending the user to the settings, they do not

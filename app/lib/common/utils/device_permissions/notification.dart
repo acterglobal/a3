@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Handles notification permission request for both Android and iOS platforms
-Future<bool> isShowNotificationPermissionInfoPage(BuildContext context) async {
+Future<bool> isShowNotificationPermissionInfoPage() async {
   if (Platform.isAndroid) {
     final deviceInfo = DeviceInfoPlugin();
     final androidInfo = await deviceInfo.androidInfo;
@@ -15,10 +14,8 @@ Future<bool> isShowNotificationPermissionInfoPage(BuildContext context) async {
     }
   }
   if (Platform.isIOS) {
-    if (context.mounted) {
-      final status = await Permission.notification.status;
-      return !status.isGranted;
-    }
+    final status = await Permission.notification.status;
+    return !status.isGranted;
   }
   if (isDesktop) {
     return true;

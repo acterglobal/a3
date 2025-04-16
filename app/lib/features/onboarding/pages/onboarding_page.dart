@@ -45,11 +45,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   Future<void> _checkPermissions() async {
-    if (!mounted) return;
-    final showNotification = await isShowNotificationPermissionInfoPage(context);
-    if (!mounted) return;
-    final showCalendar = await isShowCalendarPermissionInfoPage(context);
-    if (!mounted) return;
+    final showNotification = await isShowNotificationPermissionInfoPage();
+    final showCalendar = await isShowCalendarPermissionInfoPage();
     setState(() {
       _showNotificationPermission = showNotification;
       _showCalendarPermission = showCalendar;

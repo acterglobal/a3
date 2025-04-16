@@ -29,7 +29,7 @@ class _CalendarSyncPermissionWidgetState extends ConsumerState<CalendarSyncPermi
                 top: 20,
                 right: 0,
                 child: IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pop(context,false),
                 icon: const Icon(Icons.close),
               ),
             ),
@@ -117,7 +117,7 @@ class _CalendarSyncPermissionWidgetState extends ConsumerState<CalendarSyncPermi
               if (widget.callNextPage != null) {
                 widget.callNextPage!();
               } else {
-                Navigator.pop(context);
+                Navigator.pop(context,false);
               }
             }
           },
@@ -140,7 +140,7 @@ class _CalendarSyncPermissionWidgetState extends ConsumerState<CalendarSyncPermi
         if (widget.callNextPage != null) {
           widget.callNextPage!();
         } else {
-          Navigator.pop(context);
+          Navigator.pop(context,true);
         }
       }
     } else if (status.isDenied) {
