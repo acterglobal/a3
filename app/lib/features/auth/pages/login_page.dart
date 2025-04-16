@@ -3,11 +3,10 @@ import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/device_permissions/calendar.dart';
-import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
+import 'package:acter/features/auth/providers/post_login_signup_provider.dart';
 import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -211,13 +210,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
-      // Check if context is still valid
       if (!mounted) return;
-      await handleNotificationPermission(context);
+      await ref.read(postLoginSignupProvider).initialize(context);
       if (!mounted) return;
-      await handleCalendarPermission(context);
-      if (!mounted) return;
-      navigator.goNamed( Routes.analyticsOptIn.name);
+      context.goNamed(Routes.main.name);
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));

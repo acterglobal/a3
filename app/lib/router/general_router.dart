@@ -19,7 +19,6 @@ import 'package:acter/features/intro/pages/intro_profile.dart';
 import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/link_room/types.dart';
 import 'package:acter/features/news/pages/add_news/add_news_page.dart';
-import 'package:acter/features/onboarding/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/redeem_invitations_page.dart';
@@ -96,12 +95,6 @@ final generalRoutes = [
     name: Routes.uploadAvatar.name,
     path: Routes.uploadAvatar.route,
     builder: (context, state) => UploadAvatarPage(),
-  ),
-  GoRoute(
-    parentNavigatorKey: rootNavKey,
-    name: Routes.analyticsOptIn.name,
-    path: Routes.analyticsOptIn.route,
-    builder: (context, state) => const AnalyticsOptInPage(),
   ),
   GoRoute(
     parentNavigatorKey: rootNavKey,
