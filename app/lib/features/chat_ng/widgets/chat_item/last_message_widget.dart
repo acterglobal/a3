@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/message_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,11 +32,11 @@ class LastMessageWidget extends ConsumerWidget {
     final eventItem = timelineItem?.eventItem();
     if (eventItem == null) return const SizedBox.shrink();
     return switch (eventItem.eventType()) {
-      'm.room.encrypted' => TextMessageWidget(
+      'm.room.encrypted' => GeneralMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
       ),
-      'm.room.redaction' => TextMessageWidget(
+      'm.room.redaction' => GeneralMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
       ),
@@ -48,7 +48,7 @@ class LastMessageWidget extends ConsumerWidget {
         roomId: roomId,
         eventItem: eventItem,
       ),
-      _ => TextMessageWidget(roomId: roomId, eventItem: eventItem),
+      _ => GeneralMessageEventWidget(roomId: roomId, eventItem: eventItem),
     };
   }
 }

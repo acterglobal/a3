@@ -5,11 +5,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TextMessageWidget extends ConsumerWidget {
+class GeneralMessageEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
 
-  const TextMessageWidget({
+  const GeneralMessageEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
