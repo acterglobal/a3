@@ -86,7 +86,7 @@ void main() {
     (MethodCall methodCall) async => null,
   );
 
-  group('ChatEditor Height Golden Tests', () {
+  group('ChatEditor Golden Tests', () {
     testWidgets('renders with default height for empty input', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 200));
 
@@ -102,7 +102,7 @@ void main() {
 
       await expectLater(
         find.byType(TestableEditor),
-        matchesGoldenFile('editor_default_height.png'),
+        matchesGoldenFile('goldens/editor_default_height.png'),
       );
 
       await tester.binding.setSurfaceSize(null);
@@ -148,7 +148,7 @@ void main() {
 
       await expectLater(
         find.byType(TestableEditor),
-        matchesGoldenFile('editor_multiline_height.png'),
+        matchesGoldenFile('goldens/editor_multiline_height.png'),
       );
 
       await tester.binding.setSurfaceSize(null);
@@ -206,7 +206,7 @@ void main() {
 
       await expectLater(
         find.byType(TestableEditor),
-        matchesGoldenFile('editor_scrollable_height.png'),
+        matchesGoldenFile('goldens/editor_scrollable_height.png'),
       );
 
       // verify auto scrolling enabled
@@ -271,7 +271,7 @@ void main() {
 
       await expectLater(
         find.byType(TestableEditor),
-        matchesGoldenFile('editor_max_height.png'),
+        matchesGoldenFile('goldens/editor_max_height.png'),
       );
 
       // height property should be at maximum
