@@ -10,9 +10,11 @@
     clippy::transmutes_expressible_as_ptr_casts
 )]
 
-#[rustfmt::skip]
 #[cfg(feature = "uniffi")]
-uniffi::include_scaffolding!("acter");
+pub mod api_next;
+#[cfg(feature = "uniffi")]
+pub use api_next::*;
+
 
 pub use matrix_sdk;
 pub use matrix_sdk_ui;

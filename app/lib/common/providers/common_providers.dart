@@ -27,7 +27,7 @@ final eventTypeUpdatesStream = StreamProvider.family<int, String>((
 
 final myUserIdStrProvider = Provider(
   (ref) =>
-      ref.watch(alwaysClientProvider).valueOrNull?.userId().toString() ??
+      ref.watch(uniffiClientProvider).valueOrNull?.userId() ??
       '@acter:acter.global',
 );
 

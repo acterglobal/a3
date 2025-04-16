@@ -52,11 +52,6 @@ mod utils;
 mod verification;
 
 pub mod read_receipts;
-#[cfg(feature = "uniffi")]
-mod uniffi_api;
-
-#[cfg(feature = "uniffi")]
-pub use uniffi_api::*;
 
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{

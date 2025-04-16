@@ -2,7 +2,9 @@ import 'package:acter/common/models/sync_state/sync_state.dart';
 import 'package:acter/features/home/providers/notifiers/always_client_notifier.dart';
 import 'package:acter/features/home/providers/notifiers/client_notifier.dart';
 import 'package:acter/common/providers/notifiers/sync_notifier.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart' show Client;
+import 'package:acter_flutter_sdk/acter.dart' show UniffiClient;
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart'
+    show Client, UniffiClientExtension;
 import 'package:riverpod/riverpod.dart';
 
 final clientProvider = AsyncNotifierProvider<ClientNotifier, Client?>(
@@ -20,4 +22,10 @@ final syncStateProvider = NotifierProvider<SyncNotifier, SyncState>(
 
 final isSyncingStateProvider = StateProvider<bool>((ref) {
   return ref.watch(syncStateProvider).initialSync;
+});
+
+final uniffiClientProvider = FutureProvider<UniffiClient>((ref) {
+  return ref
+      .watch(alwaysClientProvider.future)
+      .then((value) => value.toUniffiClient());
 });
