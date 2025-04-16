@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../../helpers/font_loader.dart';
+import '../../../../helpers/test_util.dart';
+
 class TestableEditor extends StatefulWidget {
   const TestableEditor({super.key});
 
@@ -86,15 +89,14 @@ void main() {
     (MethodCall methodCall) async => null,
   );
 
-  group('ChatEditor Golden Tests', () {
+  group('Chat Editor Golden Tests', () {
     testWidgets('renders with default height for empty input', (tester) async {
+      await loadTestFonts();
       await tester.binding.setSurfaceSize(const Size(400, 200));
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Center(
-            child: SizedBox(width: 400, height: 200, child: TestableEditor()),
-          ),
+      await tester.pumpProviderWidget(
+        child: Center(
+          child: SizedBox(width: 400, height: 200, child: TestableEditor()),
         ),
       );
 
@@ -109,13 +111,12 @@ void main() {
     });
 
     testWidgets('increases height for multiline input', (tester) async {
+      await loadTestFonts();
       await tester.binding.setSurfaceSize(const Size(400, 200));
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Center(
-            child: SizedBox(width: 400, height: 200, child: TestableEditor()),
-          ),
+      await tester.pumpProviderWidget(
+        child: Center(
+          child: SizedBox(width: 400, height: 200, child: TestableEditor()),
         ),
       );
 
@@ -155,13 +156,12 @@ void main() {
     });
 
     testWidgets('enables scrolling for large input', (tester) async {
+      await loadTestFonts();
       await tester.binding.setSurfaceSize(const Size(400, 200));
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Center(
-            child: SizedBox(width: 400, height: 200, child: TestableEditor()),
-          ),
+      await tester.pumpProviderWidget(
+        child: Center(
+          child: SizedBox(width: 400, height: 200, child: TestableEditor()),
         ),
       );
 
@@ -218,13 +218,12 @@ void main() {
     });
 
     testWidgets('caps height at maximum value', (tester) async {
+      await loadTestFonts();
       await tester.binding.setSurfaceSize(const Size(400, 300));
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Center(
-            child: SizedBox(width: 400, height: 300, child: TestableEditor()),
-          ),
+      await tester.pumpProviderWidget(
+        child: Center(
+          child: SizedBox(width: 400, height: 300, child: TestableEditor()),
         ),
       );
 
