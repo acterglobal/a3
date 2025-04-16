@@ -40,7 +40,12 @@ class IconMessageWidget extends ConsumerWidget {
         if (!isDM) Text('$senderName : ', style: textStyle),
         Icon(icon, size: 14, color: textStyle?.color),
         const SizedBox(width: 4),
-        Text(eventName, style: textStyle),
+        Text(
+          eventName,
+          maxLines: 1,
+          style: textStyle,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }

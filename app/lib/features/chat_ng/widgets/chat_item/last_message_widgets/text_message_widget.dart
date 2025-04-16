@@ -15,7 +15,12 @@ class TextMessageWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textStyle = lastMessageTextStyle(context, ref, roomId);
-    return Text(message, style: textStyle);
+    return Text(
+      message,
+      maxLines: 2,
+      style: textStyle,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
 
