@@ -15,7 +15,7 @@ final lastMessageTextProvider = Provider.family<String?, TimelineEventItem?>((
   ref,
   eventItem,
 ) {
-  final msgContent = eventItem?.msgContent();
+  final msgContent = eventItem?.message();
   if (msgContent == null) return null;
   return msgContent.body();
 });
