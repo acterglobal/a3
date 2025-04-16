@@ -195,7 +195,6 @@ dev_dependencies:
   enven: ^1.0.1
   mockingjay: ^1.0.0
   test_screenshot: ^0.0.7
-  golden_toolkit: ^0.15.0
 
 dependency_overrides:
 
@@ -268,6 +267,9 @@ flutter:
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter.ttf
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
     - family: NotoEmoji
       fonts:
         - asset: assets/fonts/Noto-COLRv1.ttf

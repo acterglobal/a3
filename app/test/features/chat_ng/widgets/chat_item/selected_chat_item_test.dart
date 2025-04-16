@@ -8,14 +8,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:golden_toolkit/golden_toolkit.dart' show loadAppFonts;
 
 import '../../../../helpers/test_util.dart';
+import '../../../../helpers/font_loader.dart';
 
 void main() {
   group('Chat NG Room items', () {
     testWidgets('unread counter visible on selection ', (tester) async {
-      await loadAppFonts();
+      await loadTestFonts();
       final chatListprovider = Provider<List<Convo>>(
         (ref) => [emilyDmMutedBookmarked.mockConvo],
       );
