@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -9,52 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../../helpers/font_loader.dart';
 import '../../../../helpers/test_util.dart';
-
-// Custom golden file comparator with tolerance
-class CustomGoldenFileComparator extends GoldenFileComparator {
-  CustomGoldenFileComparator(Uri testFile)
-    : _testFile = testFile,
-      _defaultComparator = LocalFileComparator(testFile);
-
-  final Uri _testFile;
-  final LocalFileComparator _defaultComparator;
-
-  // Create a default comparator for actual file operations
-  CustomGoldenFileComparator._(this._testFile, this._defaultComparator);
-
-  @override
-  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
-    try {
-      final File goldenFile = File(_testFile.resolve(golden.path).toFilePath());
-      final List<int> goldenBytes = await goldenFile.readAsBytes();
-
-      final ComparisonResult result = await GoldenFileComparator.compareLists(
-        imageBytes,
-        Uint8List.fromList(goldenBytes),
-      );
-
-      if (result.diffPercent <= 1.0) {
-        return true;
-      }
-
-      return await _defaultComparator.compare(imageBytes, golden);
-    } catch (error) {
-      // For any error (like missing golden file), use default behavior
-      return await _defaultComparator.compare(imageBytes, golden);
-    }
-  }
-
-  @override
-  Future<void> update(Uri golden, Uint8List imageBytes) {
-    return _defaultComparator.update(golden, imageBytes);
-  }
-
-  // Factory constructor used to create the comparator
-  static CustomGoldenFileComparator create(Uri testFile) {
-    final LocalFileComparator defaultComparator = LocalFileComparator(testFile);
-    return CustomGoldenFileComparator._(testFile, defaultComparator);
-  }
-}
 
 class TestableEditor extends StatefulWidget {
   const TestableEditor({super.key});
@@ -121,15 +73,6 @@ class _TestableEditorState extends State<TestableEditor> {
 
 void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
-
-  final testDir = Directory.current.path;
-  final goldenDir =
-      '$testDir/test/features/chat_ng/widgets/chat_editor/goldens';
-
-  // use custom comparator with tolerance
-  goldenFileComparator = CustomGoldenFileComparator.create(
-    Uri.parse(goldenDir),
-  );
 
   // mock the platform channels also
   const channel = MethodChannel('keyboardHeightEventChannel');
