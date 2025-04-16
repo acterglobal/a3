@@ -6,12 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UnreadCountWidget extends ConsumerWidget {
   final String roomId;
-  final bool inverse;
+  final bool isSelected;
 
   const UnreadCountWidget({
     super.key,
     required this.roomId,
-    this.inverse = false,
+    this.isSelected = false,
   });
 
   @override
@@ -22,20 +22,22 @@ class UnreadCountWidget extends ConsumerWidget {
     if (unreadCount == 0) return const SizedBox.shrink();
 
     final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    final surefaceColor = theme.colorScheme.onSurface;
+
+    final textColor = isSelected ? primaryColor : surefaceColor;
+    final backgroundColor = isSelected ? surefaceColor : primaryColor;
+
     return Container(
       margin: const EdgeInsets.only(left: 4),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color:
-            inverse ? theme.colorScheme.onSurface : theme.colorScheme.primary,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
         unreadCount.toString(),
-        style: theme.textTheme.bodySmall?.copyWith(
-          color:
-              inverse ? theme.colorScheme.primary : theme.colorScheme.onSurface,
-        ),
+        style: theme.textTheme.bodySmall?.copyWith(color: textColor),
       ),
     );
   }
