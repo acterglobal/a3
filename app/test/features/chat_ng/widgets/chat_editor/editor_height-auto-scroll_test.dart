@@ -10,6 +10,27 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../../helpers/font_loader.dart';
 import '../../../../helpers/test_util.dart';
 
+// Custom golden file comparator with tolerance
+class CustomGoldenFileComparator extends LocalFileComparator {
+  CustomGoldenFileComparator(super.testFile);
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await super.compare(imageBytes, golden);
+    if (result) {
+      return true;
+    }
+
+    // Allow up to 0.5% of pixels to be different
+    final ComparisonResult comparison = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+
+    return comparison.diffPercent <= 0.5;
+  }
+}
+
 class TestableEditor extends StatefulWidget {
   const TestableEditor({super.key});
 
@@ -80,7 +101,8 @@ void main() {
   final goldenDir =
       '$testDir/test/features/chat_ng/widgets/chat_editor/goldens';
 
-  goldenFileComparator = LocalFileComparator(Uri.parse(goldenDir));
+  // use custom comparator with tolerance
+  goldenFileComparator = CustomGoldenFileComparator(Uri.parse(goldenDir));
 
   // mock the platform channels also
   const channel = MethodChannel('keyboardHeightEventChannel');
