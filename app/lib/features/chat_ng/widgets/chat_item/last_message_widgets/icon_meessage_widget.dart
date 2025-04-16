@@ -8,12 +8,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class IconMessageWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
+  final String eventName;
   final IconData icon;
 
   const IconMessageWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
+    required this.eventName,
     required this.icon,
   });
 
@@ -27,7 +29,6 @@ class IconMessageWidget extends ConsumerWidget {
         userId: eventItem.sender(),
       )),
     );
-    final message = ref.watch(lastMessageTextProvider(eventItem));
     final textStyle = lastMessageTextStyle(context, ref, roomId);
 
     //Render
@@ -39,7 +40,7 @@ class IconMessageWidget extends ConsumerWidget {
         if (!isDM) Text('$senderName : ', style: textStyle),
         Icon(icon, size: 14, color: textStyle?.color),
         const SizedBox(width: 4),
-        Text(message ?? '', style: textStyle),
+        Text(eventName, style: textStyle),
       ],
     );
   }
