@@ -40,7 +40,7 @@ class LastMessageWidget extends ConsumerWidget {
         roomId: roomId,
         eventItem: eventItem,
       ),
-      'm.room.message' => MessageEventWidget(
+      'm.room.message' => RoomMessageEventWidget(
         roomId: roomId,
         eventItem: eventItem,
       ),
