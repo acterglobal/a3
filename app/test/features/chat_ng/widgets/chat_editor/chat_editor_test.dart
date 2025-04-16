@@ -12,12 +12,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../helpers/mock_a3sdk.dart';
-import '../../helpers/mock_client_provider.dart';
-import '../../helpers/test_wrapper_widget.dart';
-import '../comments/mock_data/mock_message_content.dart';
-import 'diff_applier_test.dart';
-import 'messages/chat_message_test.dart';
+import '../../../../helpers/mock_a3sdk.dart';
+import '../../../../helpers/mock_client_provider.dart';
+import '../../../../helpers/test_wrapper_widget.dart';
+import '../../../comments/mock_data/mock_message_content.dart';
+import '../../diff_applier_test.dart';
+import '../../messages/chat_message_test.dart';
 
 class MockChatEditorNotifier extends AutoDisposeNotifier<ChatEditorState>
     with Mock

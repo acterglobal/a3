@@ -43,8 +43,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   late EditorScrollController scrollController;
   StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
-  final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(64.0);
+  final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(56.0);
   Timer? _debounceTimer;
+  Timer? _heightDebounceTimer;
 
   @override
   void initState() {
@@ -57,10 +58,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
       _updateContentHeight();
     });
-
-    // Initialize the empty state correctly
-    _isInputEmptyNotifier.value = true;
-    _contentHeightNotifier.value = 64.0;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
 
@@ -91,6 +88,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   void dispose() {
     _updateListener?.cancel();
     _debounceTimer?.cancel();
+    _heightDebounceTimer?.cancel();
     _contentHeightNotifier.dispose();
     super.dispose();
   }
@@ -127,7 +125,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       reason: SelectionUpdateReason.uiEvent,
     );
 
-    // Update content height after editing
     _updateContentHeight();
   }
 
@@ -189,31 +186,24 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       transaction.afterSelection = Selection.collapsed(pos);
       textEditorState.apply(transaction);
       _log.info('compose draft loaded for room: ${widget.roomId}');
-
-      // update the content height after loading the draft
-      _updateContentHeight();
     }
-  }
-
-  // calculate content height based on line count
-  double _contentHeight(String text) {
-    if (text.isEmpty) {
-      return 64.0;
-    }
-
-    final lineCount = text.split('\n').length;
-    double height = 64.0;
-    height += (lineCount - 1) * 22.0;
-    return height;
   }
 
   void _updateContentHeight() {
-    final text = textEditorState.intoMarkdown();
-    double newHeight = _contentHeight(text);
-    newHeight = min(newHeight, 200.0);
-    if (_contentHeightNotifier.value != newHeight) {
-      _contentHeightNotifier.value = newHeight;
-    }
+    _heightDebounceTimer?.cancel();
+
+    // use a timer to debounce multiple rapid updates
+    _heightDebounceTimer = Timer(const Duration(milliseconds: 50), () {
+      if (!mounted) return;
+
+      final text = textEditorState.intoMarkdown();
+      double newHeight = ChatEditorUtils.calculateContentHeight(text);
+      newHeight = min(newHeight, 200.0);
+
+      if (_contentHeightNotifier.value != newHeight) {
+        _contentHeightNotifier.value = newHeight;
+      }
+    });
   }
 
   @override
@@ -338,10 +328,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderEditor(String? hintText) {
-    final contentText = textEditorState.intoMarkdown();
-
     final needsScrolling =
-        contentText.isNotEmpty && contentText.split('\n').length > 3;
+        _contentHeightNotifier.value >
+        ChatEditorUtils.scrollThreshold; // Threshold to enable auto scroll
 
     return HtmlEditor(
       footer: null,
@@ -354,7 +343,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       disableAutoScroll: !needsScrolling,
       editorState: textEditorState,
       scrollController: scrollController,
-      editorPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      editorPadding: const EdgeInsets.only(left: 12, right: 12, top: 12),
       onChanged: (body, html) {
         final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
         widget.onTyping?.call(isTyping);
