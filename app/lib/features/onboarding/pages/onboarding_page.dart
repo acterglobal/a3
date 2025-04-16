@@ -1,3 +1,5 @@
+import 'package:acter/common/utils/device_permissions/calendar.dart';
+import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
@@ -28,29 +30,58 @@ class OnboardingPage extends ConsumerStatefulWidget {
 class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  late List<Widget> _screens;
+  bool _showNotificationPermission = false;
+  bool _showCalendarPermission = false;
 
   @override
   void initState() {
     super.initState();
-    _screens =
-        widget.isLoginOnboarding == true
-            ? _buildLoginOnboardingScreens()
-            : _buildSignupOnboardingScreens();
   }
 
-  List<Widget> _buildSignupOnboardingScreens() {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    if (!mounted) return;
+    final showNotification = await isShowNotificationPermissionInfoPage(context);
+    if (!mounted) return;
+    final showCalendar = await isShowCalendarPermissionInfoPage(context);
+    if (!mounted) return;
+    setState(() {
+      _showNotificationPermission = showNotification;
+      _showCalendarPermission = showCalendar;
+    });
+  }
+
+  void _nextPage() {
+    if (_currentPage < _buildOnboardingScreens().length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+      setState(() => _currentPage++);
+    }
+  }
+
+  List<Widget> _buildOnboardingScreens() {
     return [
-      SaveUsernamePage(
-        username: widget.username ?? '',
-        callNextPage: () => _nextPage(),
-      ),
-      RedeemInvitationsPage(callNextPage: () => _nextPage()),
-      EncryptionBackupPage(callNextPage: () => _nextPage()),
-      LinkEmailPage(callNextPage: () => _nextPage()),
-      UploadAvatarPage(callNextPage: () => _nextPage()),
-      NotificationPermissionWidget(callNextPage: () => _nextPage()),
-      CalendarSyncPermissionWidget(callNextPage: () => _nextPage()),
+      if (!widget.isLoginOnboarding!) ...[
+        SaveUsernamePage(
+          username: widget.username ?? '',
+          callNextPage: () => _nextPage(),
+        ),
+        RedeemInvitationsPage(callNextPage: () => _nextPage()),
+        EncryptionBackupPage(callNextPage: () => _nextPage()),
+        LinkEmailPage(callNextPage: () => _nextPage()),
+        UploadAvatarPage(callNextPage: () => _nextPage()),
+      ],
+      if (_showNotificationPermission)
+        NotificationPermissionWidget(callNextPage: () => _nextPage()),
+      if (_showCalendarPermission)
+        CalendarSyncPermissionWidget(callNextPage: () => _nextPage()),
       AnalyticsOptInWidget(
         callNextPage: () {
           _nextPage();
@@ -62,36 +93,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     ];
   }
 
-  List<Widget> _buildLoginOnboardingScreens() {
-    return [
-      NotificationPermissionWidget(callNextPage: () => _nextPage()),
-      CalendarSyncPermissionWidget(callNextPage: () => _nextPage()),
-      AnalyticsOptInWidget(callNextPage: () {
-        _nextPage();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.goNamed(Routes.main.name);
-        });
-      }),
-    ];
-  }
-
-  void _nextPage() {
-    if (_currentPage < _screens.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-      setState(() => _currentPage++);
-    }
-  }
-
   Widget _buildPageIndicator() {
     return Container(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          _screens.length,
+          _buildOnboardingScreens().length,
           (index) => Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             width: 8,
@@ -124,7 +132,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
             onPageChanged: (index) => setState(() => _currentPage = index),
-            children: _screens,
+            children: _buildOnboardingScreens(),
           ),
           Positioned(
             left: 0,
