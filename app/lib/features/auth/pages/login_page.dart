@@ -6,6 +6,7 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
+import 'package:acter/features/auth/providers/post_login_signup_provider.dart';
 import 'package:acter/features/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -209,8 +210,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final loginSuccess = await authNotifier.login(username.text, password.text);
 
     if (loginSuccess == null) {
-      // no message means, login was successful.
-      navigator.goNamed(Routes.analyticsOptIn.name);
+      if (!mounted) return;
+      await ref.read(postLoginSignupProvider).initialize(context);
+      if (!mounted) return;
+      context.goNamed(Routes.main.name);
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));

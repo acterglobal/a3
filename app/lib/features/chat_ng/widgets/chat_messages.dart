@@ -1,10 +1,12 @@
 import 'dart:async';
 
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/chat/providers/chat_providers.dart' as chat;
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
+import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +48,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         }
       },
     );
+
     _scrollController.addListener(onScroll);
   }
 
@@ -53,6 +56,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
   void dispose() {
     markReadDebouce?.cancel();
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -74,12 +78,12 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       // Unread marking support
       if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) {
         final roomId = widget.roomId;
-        if (ref.read(hasUnreadMessages(roomId)).valueOrNull ?? false) {
+        if (ref.read(chat.hasUnreadMessages(roomId)).valueOrNull ?? false) {
           // debounce
           markReadDebouce?.cancel();
           markReadDebouce = Timer(const Duration(milliseconds: 300), () async {
             final timeline = await ref.read(
-              timelineStreamProvider(roomId).future,
+              chat.timelineStreamProvider(roomId).future,
             );
             await timeline.markAsRead(true);
             markReadDebouce?.cancel();
@@ -130,6 +134,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
                 _buildMessagesList(messages),
                 _buildScrollIndicator(),
                 _buildScrollToBottomButton(),
+                _buildTypingIndicator(ref, widget.roomId),
               ],
             ),
           ),
@@ -186,5 +191,24 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
         ),
       ),
     ),
+  );
+}
+
+Widget _buildTypingIndicator(WidgetRef ref, String roomId) {
+  final typingUsers =
+      (ref.watch(chatTypingEventProvider(roomId)).valueOrNull ?? [])
+          .map(
+            (userId) => ref.watch(
+              memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+            ),
+          )
+          .toList();
+
+  if (typingUsers.isEmpty) return const SizedBox.shrink();
+  return Positioned(
+    bottom: 16,
+    left: 16,
+    right: 0,
+    child: TypingIndicator(typingUsers: typingUsers),
   );
 }

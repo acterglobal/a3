@@ -76,11 +76,11 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
 fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
-    if msg.item_type() != "event" {
+    if msg.is_virtual() {
         return None;
     }
     let event_item = msg.event_item()?;
-    let msg_content = event_item.msg_content()?;
+    let msg_content = event_item.message()?;
     let _fresh_body = msg_content.body();
     let formatted = msg_content.formatted_body()?;
 

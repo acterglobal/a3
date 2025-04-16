@@ -105,7 +105,7 @@ impl Executor {
             }
             Ok(keys) => {
                 trace!(?event_id, "handling done");
-                info!("******************** executor handled: {:?}", keys.clone());
+                info!("******************** executor handled: {:?}", &keys);
                 self.notify(keys);
                 Ok(())
             }
@@ -136,10 +136,7 @@ impl Executor {
                 let redacted =
                     RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
                 let keys = model.redact(&self.store, redacted).await?;
-                info!(
-                    "******************** found model redacted: {:?}",
-                    keys.clone()
-                );
+                info!("******************** found model redacted: {:?}", &keys);
                 self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
@@ -147,10 +144,7 @@ impl Executor {
                 let redacted =
                     RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
                 let keys = redacted.execute(&self.store).await?;
-                info!(
-                    "******************** not found redacted: {:?}",
-                    keys.clone()
-                );
+                info!("******************** not found redacted: {:?}", &keys);
                 self.notify(keys);
             }
             Err(error) => return Err(error),
@@ -175,7 +169,7 @@ impl Executor {
                 let redacted =
                     RedactedActerModel::new(model.model_type().to_owned(), meta, event.into());
                 let keys = model.redact(&self.store, redacted).await?;
-                info!(?event_id, "live redacted: {:?}", keys.clone());
+                info!(?event_id, "live redacted: {:?}", &keys);
                 self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {

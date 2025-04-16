@@ -1,4 +1,8 @@
-use anyhow::bail;
+use acter_core::{
+    models::status::{MembershipContent, ProfileContent},
+    util::do_vecs_match,
+};
+use anyhow::{bail, Result};
 use chrono::{DateTime, Utc};
 use derive_builder::Builder;
 use futures::stream::Any;
@@ -19,17 +23,15 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MembershipChange, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
-    TimelineItemContent, TimelineItemKind, VirtualTimelineItem,
+    OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::info;
 
-use super::{
-    common::{MsgContent, ReactionRecord},
-    RUNTIME,
-};
+use super::{MsgContent, TimelineEventContent};
+use crate::{ReactionRecord, RUNTIME};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EventSendState {
@@ -77,13 +79,15 @@ impl EventSendState {
         self.event_id.clone()
     }
 
-    pub async fn abort(&self) -> anyhow::Result<bool> {
+    pub async fn abort(&self) -> Result<bool> {
         let Some(handle) = self.send_handle.clone() else {
             bail!("No send handle found");
         };
-
         RUNTIME
-            .spawn(async move { Ok(handle.abort().await?) })
+            .spawn(async move {
+                let result = handle.abort().await?;
+                Ok(result)
+            })
             .await?
     }
 }
@@ -104,7 +108,7 @@ pub struct TimelineEventItem {
     #[builder(default)]
     msg_type: Option<String>,
     #[builder(default)]
-    msg_content: Option<MsgContent>,
+    content: Option<TimelineEventContent>,
     #[builder(default)]
     in_reply_to: Option<OwnedEventId>,
     #[builder(default)]
@@ -142,15 +146,19 @@ impl TimelineEventItem {
                     .content()
                     .reactions()
                     .iter()
-                    .map(|(u, group)| {
+                    .map(|(key, group)| {
                         (
-                            u.to_string(),
+                            key.clone(),
                             group
                                 .iter()
-                                .map(|(e, r)| {
-                                    ReactionRecord::new(e.clone(), r.timestamp, *e == my_id)
+                                .map(|(sender_id, info)| {
+                                    ReactionRecord::new(
+                                        sender_id.clone(),
+                                        info.timestamp,
+                                        *sender_id == my_id,
+                                    )
                                 })
-                                .collect::<Vec<_>>(),
+                                .collect::<Vec<ReactionRecord>>(),
                         )
                     })
                     .collect(),
@@ -158,163 +166,53 @@ impl TimelineEventItem {
             .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
 
         match event.content() {
-            TimelineItemContent::Message(msg) => {
+            SdkTimelineItemContent::Message(msg) => {
                 me.event_type("m.room.message".to_owned());
                 let msg_type = msg.msgtype();
                 me.msg_type(Some(msg_type.msgtype().to_string()));
-                me.msg_content(match msg_type {
-                    MessageType::Text(content) => Some(MsgContent::from(content)),
-                    MessageType::Emote(content) => Some(MsgContent::from(content)),
-                    MessageType::Image(content) => Some(MsgContent::from(content)),
-                    MessageType::Audio(content) => Some(MsgContent::from(content)),
-                    MessageType::Video(content) => Some(MsgContent::from(content)),
-                    MessageType::File(content) => Some(MsgContent::from(content)),
-                    MessageType::Location(content) => Some(MsgContent::from(content)),
-                    MessageType::Notice(content) => Some(MsgContent::from(content)),
-                    MessageType::ServerNotice(content) => Some(MsgContent::from(content)),
-                    _ => None,
-                });
+                me.content(TimelineEventContent::try_from(msg_type).ok());
                 if let Some(in_reply_to) = msg.in_reply_to() {
-                    me.in_reply_to(Some(in_reply_to.clone().event_id));
+                    me.in_reply_to(Some(in_reply_to.event_id.clone()));
                 }
                 me.edited(msg.is_edited());
             }
-            TimelineItemContent::RedactedMessage => {
+            SdkTimelineItemContent::RedactedMessage => {
                 info!("Edit event applies to a redacted message");
                 me.event_type("m.room.redaction".to_string());
             }
-            TimelineItemContent::Sticker(s) => {
+            SdkTimelineItemContent::Sticker(s) => {
                 me.event_type("m.sticker".to_string());
                 // FIXME: proper sticker support needed
                 // me.msg_content(Some(MsgContent::from(s.content())));
             }
-            TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
+            SdkTimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn’t be decrypted");
                 me.event_type("m.room.encrypted".to_string());
             }
-            TimelineItemContent::MembershipChange(m) => {
-                info!("Edit event applies to a state event");
-                me.event_type("m.room.member".to_string());
-                let fallback = match m.change() {
-                    Some(MembershipChange::None) => {
-                        me.msg_type(Some("None".to_string()));
-                        "not changed membership".to_string()
-                    }
-                    Some(MembershipChange::Error) => {
-                        me.msg_type(Some("Error".to_string()));
-                        "error in membership change".to_string()
-                    }
-                    Some(MembershipChange::Joined) => {
-                        me.msg_type(Some("Joined".to_string()));
-                        "joined".to_string()
-                    }
-                    Some(MembershipChange::Left) => {
-                        me.msg_type(Some("Left".to_string()));
-                        "left".to_string()
-                    }
-                    Some(MembershipChange::Banned) => {
-                        me.msg_type(Some("Banned".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::Unbanned) => {
-                        me.msg_type(Some("Unbanned".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::Kicked) => {
-                        me.msg_type(Some("Kicked".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::Invited) => {
-                        me.msg_type(Some("Invited".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::KickedAndBanned) => {
-                        me.msg_type(Some("KickedAndBanned".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::InvitationAccepted) => {
-                        me.msg_type(Some("InvitationAccepted".to_string()));
-                        "accepted invitation".to_string()
-                    }
-                    Some(MembershipChange::InvitationRejected) => {
-                        me.msg_type(Some("InvitationRejected".to_string()));
-                        "rejected invitation".to_string()
-                    }
-                    Some(MembershipChange::InvitationRevoked) => {
-                        me.msg_type(Some("InvitationRevoked".to_string()));
-                        "revoked invitation".to_string()
-                    }
-                    Some(MembershipChange::Knocked) => {
-                        me.msg_type(Some("Knocked".to_string()));
-                        m.user_id().to_string()
-                    }
-                    Some(MembershipChange::KnockAccepted) => {
-                        me.msg_type(Some("KnockAccepted".to_string()));
-                        "accepted knock".to_string()
-                    }
-                    Some(MembershipChange::KnockRetracted) => {
-                        me.msg_type(Some("KnockRetracted".to_string()));
-                        "retracted knock".to_string()
-                    }
-                    Some(MembershipChange::KnockDenied) => {
-                        me.msg_type(Some("KnockDenied".to_string()));
-                        "denied knock".to_string()
-                    }
-                    Some(MembershipChange::NotImplemented) => {
-                        me.msg_type(Some("NotImplemented".to_string()));
-                        "not implemented change".to_string()
-                    }
-                    None => "unknown error".to_string(),
-                };
-                let msg_content = MsgContent::from_text(fallback);
-                me.msg_content(Some(msg_content));
+            SdkTimelineItemContent::MembershipChange(m) => {
+                info!("Edit event applies to membership change event");
+                me.event_type("MembershipChange".to_string());
+                if let Ok(content) = MembershipContent::try_from(m) {
+                    me.content(Some(TimelineEventContent::MembershipChange(content)));
+                }
             }
-            TimelineItemContent::ProfileChange(p) => {
-                info!("Edit event applies to a state event");
+            SdkTimelineItemContent::ProfileChange(p) => {
+                info!("Edit event applies to profile change event");
                 me.event_type("ProfileChange".to_string());
-                if let Some(change) = p.displayname_change() {
-                    let msg_content = match (&change.old, &change.new) {
-                        (Some(old), Some(new)) => {
-                            me.msg_type(Some(("ChangedDisplayName").to_string()));
-                            MsgContent::from_text(format!("{old} -> {new}"))
-                        }
-                        (None, Some(new)) => {
-                            me.msg_type(Some(("SetDisplayName").to_string()));
-                            MsgContent::from_text(new.to_string())
-                        }
-                        (Some(_), None) => {
-                            me.msg_type(Some(("RemoveDisplayName").to_string()));
-                            MsgContent::from_text("removed display name".to_string())
-                        }
-                        (None, None) => {
-                            // why would that ever happen?
-                            MsgContent::from_text("kept name unset".to_string())
-                        }
-                    };
-                    me.msg_content(Some(msg_content));
-                }
-                if let Some(change) = p.avatar_url_change() {
-                    if let Some(uri) = change.new.as_ref() {
-                        me.msg_type(Some(("ChangeProfileAvatar").to_string()));
-                        let msg_content = MsgContent::from_image(
-                            "updated profile avatar".to_string(),
-                            uri.clone(),
-                        );
-                        me.msg_content(Some(msg_content));
-                    }
-                }
+                let content = ProfileContent::from(p);
+                me.content(Some(TimelineEventContent::ProfileChange(content)));
             }
 
-            TimelineItemContent::OtherState(s) => {
+            SdkTimelineItemContent::OtherState(s) => {
                 info!("Edit event applies to a state event");
                 me.handle_other_state(s);
             }
 
-            TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
+            SdkTimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn’t be parsed");
                 me.event_type(event_type.to_string());
             }
-            TimelineItemContent::FailedToParseState {
+            SdkTimelineItemContent::FailedToParseState {
                 event_type,
                 state_key,
                 error,
@@ -322,18 +220,18 @@ impl TimelineEventItem {
                 info!("Edit event applies to state that couldn’t be parsed");
                 me.event_type(event_type.to_string());
             }
-            TimelineItemContent::Poll(s) => {
+            SdkTimelineItemContent::Poll(s) => {
                 info!("Edit event applies to a poll state");
                 me.event_type("m.poll.start".to_string());
                 if let Some(fallback) = s.fallback_text() {
                     let msg_content = MsgContent::from_text(fallback);
-                    me.msg_content(Some(msg_content));
+                    me.content(Some(TimelineEventContent::Message(msg_content)));
                 }
             }
-            TimelineItemContent::CallInvite => {
+            SdkTimelineItemContent::CallInvite => {
                 me.event_type("m.call_invite".to_owned());
             }
-            TimelineItemContent::CallNotify => {
+            SdkTimelineItemContent::CallNotify => {
                 me.event_type("m.call_notify".to_owned());
             }
         };
@@ -364,8 +262,28 @@ impl TimelineEventItem {
         self.msg_type.clone()
     }
 
-    pub fn msg_content(&self) -> Option<MsgContent> {
-        self.msg_content.clone()
+    pub fn message(&self) -> Option<MsgContent> {
+        if let Some(TimelineEventContent::Message(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn membership_content(&self) -> Option<MembershipContent> {
+        if let Some(TimelineEventContent::MembershipChange(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn profile_content(&self) -> Option<ProfileContent> {
+        if let Some(TimelineEventContent::ProfileChange(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
     }
 
     pub fn in_reply_to(&self) -> Option<String> {
@@ -467,7 +385,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted policy room rule".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::PolicyRuleServer(c) => {
                 self.event_type("m.policy.rule.server".to_owned());
@@ -515,7 +433,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted policy server rule".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::PolicyRuleUser(c) => {
                 self.event_type("m.policy.rule.user".to_owned());
@@ -562,7 +480,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted policy user rule".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomAliases(c) => {
                 self.event_type("m.room.aliases".to_owned());
@@ -593,7 +511,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room aliases".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomAvatar(c) => {
                 self.event_type("m.room.avatar".to_owned());
@@ -684,7 +602,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room avatar".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomCanonicalAlias(c) => {
                 self.event_type("m.room.canonical_alias".to_owned());
@@ -714,7 +632,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room canonical alias".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomCreate(c) => {
                 self.event_type("m.room.create".to_owned());
@@ -761,7 +679,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room create".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomEncryption(c) => {
                 self.event_type("m.room.encryption".to_owned());
@@ -798,7 +716,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room encryption".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomGuestAccess(c) => {
                 self.event_type("m.room.guest_access".to_owned());
@@ -829,7 +747,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room guess access".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomHistoryVisibility(c) => {
                 self.event_type("m.room.history_visibility".to_owned());
@@ -860,7 +778,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room history visibility".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomJoinRules(c) => {
                 self.event_type("m.room.join_rules".to_owned());
@@ -891,7 +809,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room join rule".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomName(c) => {
                 self.event_type("m.room.name".to_owned());
@@ -923,7 +841,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room name".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomPinnedEvents(c) => {
                 self.event_type("m.room.pinned_events".to_owned());
@@ -954,7 +872,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room pinned events".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomPowerLevels(c) => {
                 self.event_type("m.room.power_levels".to_owned());
@@ -1008,7 +926,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room power levels".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomServerAcl(c) => {
                 self.event_type("m.room.server_acl".to_owned());
@@ -1041,7 +959,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room server acl".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomThirdPartyInvite(c) => {
                 self.event_type("m.room.third_party_invite".to_owned());
@@ -1086,7 +1004,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room history visibility".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomTombstone(c) => {
                 self.event_type("m.room.tombstone".to_owned());
@@ -1125,7 +1043,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room tombstone".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::RoomTopic(c) => {
                 self.event_type("m.room.topic".to_owned());
@@ -1159,7 +1077,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted room topic".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::SpaceChild(c) => {
                 self.event_type("m.space.child".to_owned());
@@ -1207,7 +1125,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted space child".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             AnyOtherFullStateEventContent::SpaceParent(c) => {
                 self.event_type("m.space.parent".to_owned());
@@ -1241,7 +1159,7 @@ impl TimelineEventItemBuilder {
                         MsgContent::from_text("deleted space parent".to_owned())
                     }
                 };
-                self.msg_content(Some(msg_content));
+                self.content(Some(TimelineEventContent::Message(msg_content)));
             }
             _ => {}
         }
@@ -1254,9 +1172,9 @@ pub struct TimelineVirtualItem {
     desc: Option<String>,
 }
 
-impl TimelineVirtualItem {
-    pub(crate) fn new(event: &VirtualTimelineItem) -> Self {
-        match event {
+impl From<&VirtualTimelineItem> for TimelineVirtualItem {
+    fn from(value: &VirtualTimelineItem) -> TimelineVirtualItem {
+        match value {
             VirtualTimelineItem::DateDivider(ts) => {
                 let desc = if let Some(st) = ts.to_system_time() {
                     let dt: DateTime<Utc> = st.into();
@@ -1275,7 +1193,9 @@ impl TimelineVirtualItem {
             },
         }
     }
+}
 
+impl TimelineVirtualItem {
     pub fn event_type(&self) -> String {
         self.event_type.clone()
     }
@@ -1286,50 +1206,48 @@ impl TimelineVirtualItem {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+enum TimelineItemContent {
+    Event(TimelineEventItem),
+    Virtual(TimelineVirtualItem),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TimelineItem {
-    item_type: String,
-    event_item: Option<TimelineEventItem>,
-    virtual_item: Option<TimelineVirtualItem>,
+    content: TimelineItemContent,
     unique_id: String,
 }
 
 impl TimelineItem {
-    pub(crate) fn new_event_item(my_id: OwnedUserId, event: &EventTimelineItem) -> Self {
+    pub(crate) fn new_event_item(event: &EventTimelineItem, my_id: OwnedUserId) -> Self {
         TimelineItem {
-            item_type: "event".to_string(),
-            event_item: Some(TimelineEventItem::new(event, my_id)),
+            content: TimelineItemContent::Event(TimelineEventItem::new(event, my_id)),
             unique_id: match event.identifier() {
                 TimelineEventItemId::EventId(e) => e.to_string(),
                 TimelineEventItemId::TransactionId(t) => t.to_string(),
             },
-            virtual_item: None,
         }
     }
 
-    pub(crate) fn new_virtual_item(event: &VirtualTimelineItem, unique_id: String) -> Self {
-        TimelineItem {
-            item_type: "virtual".to_string(),
-            event_item: None,
-            unique_id,
-            virtual_item: Some(TimelineVirtualItem::new(event)),
+    pub fn is_virtual(&self) -> bool {
+        match &self.content {
+            TimelineItemContent::Event(content) => false,
+            TimelineItemContent::Virtual(content) => true,
         }
-    }
-
-    pub fn item_type(&self) -> String {
-        self.item_type.clone()
     }
 
     pub fn event_item(&self) -> Option<TimelineEventItem> {
-        self.event_item.clone()
+        if let TimelineItemContent::Event(content) = &self.content {
+            Some(content.clone())
+        } else {
+            None
+        }
     }
 
     pub(crate) fn event_id(&self) -> Option<String> {
-        match &self.event_item {
-            Some(TimelineEventItem {
-                event_id: Some(event_id),
-                ..
-            }) => Some(event_id.to_string()),
-            _ => None,
+        if let TimelineItemContent::Event(content) = &self.content {
+            content.event_id()
+        } else {
+            None
         }
     }
 
@@ -1338,37 +1256,40 @@ impl TimelineItem {
     }
 
     pub(crate) fn event_type(&self) -> String {
-        self.event_item
-            .as_ref()
-            .map(|e| e.event_type())
-            .unwrap_or_else(|| "virtual".to_owned()) // if we can’t find it, it is because we are a virtual event
+        match &self.content {
+            TimelineItemContent::Event(content) => content.event_type(),
+            TimelineItemContent::Virtual(content) => content.event_type(),
+        }
     }
 
     pub(crate) fn origin_server_ts(&self) -> Option<u64> {
-        self.event_item.as_ref().map(|e| e.origin_server_ts())
+        if let TimelineItemContent::Event(content) = &self.content {
+            Some(content.origin_server_ts())
+        } else {
+            None
+        }
     }
 
     pub fn virtual_item(&self) -> Option<TimelineVirtualItem> {
-        self.virtual_item.clone()
-    }
-}
-
-impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
-    fn from(v: (Arc<SdkTimelineItem>, OwnedUserId)) -> TimelineItem {
-        let (item, user_id) = v;
-        let unique_id = item.unique_id();
-        match item.kind() {
-            TimelineItemKind::Event(event_item) => {
-                TimelineItem::new_event_item(user_id, event_item)
-            }
-            TimelineItemKind::Virtual(virtual_item) => {
-                TimelineItem::new_virtual_item(virtual_item, unique_id.0.clone())
-            }
+        if let TimelineItemContent::Virtual(content) = &self.content {
+            Some(content.clone())
+        } else {
+            None
         }
     }
 }
 
-fn do_vecs_match<T: PartialEq>(a: &[T], b: &[T]) -> bool {
-    let matching = a.iter().zip(b.iter()).filter(|&(a, b)| a == b).count();
-    matching == a.len() && matching == b.len()
+impl From<(Arc<SdkTimelineItem>, OwnedUserId)> for TimelineItem {
+    fn from(value: (Arc<SdkTimelineItem>, OwnedUserId)) -> TimelineItem {
+        let (item, user_id) = value;
+        match item.kind() {
+            TimelineItemKind::Event(event_item) => {
+                TimelineItem::new_event_item(event_item, user_id)
+            }
+            TimelineItemKind::Virtual(virtual_item) => TimelineItem {
+                content: TimelineItemContent::Virtual(TimelineVirtualItem::from(virtual_item)),
+                unique_id: item.unique_id().0.clone(),
+            },
+        }
+    }
 }

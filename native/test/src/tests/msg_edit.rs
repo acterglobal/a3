@@ -135,9 +135,9 @@ async fn edit_text_msg() -> Result<()> {
 
 fn match_text_msg(msg: &TimelineItem, body: &str, modified: bool) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
-    if msg.item_type() == "event" {
+    if !msg.is_virtual() {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
+        if let Some(msg_content) = event_item.message() {
             if msg_content.body() == body && event_item.was_edited() == modified {
                 // exclude the pending msg
                 if let Some(event_id) = event_item.event_id() {
@@ -297,9 +297,9 @@ fn match_image_msg(
     content_type: &str,
     modified: bool,
 ) -> Option<(String, String)> {
-    if msg.item_type() == "event" {
+    if !msg.is_virtual() {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
+        if let Some(msg_content) = event_item.message() {
             if event_item.was_edited() == modified {
                 if let Some(mimetype) = msg_content.mimetype() {
                     if mimetype == content_type {

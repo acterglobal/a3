@@ -187,9 +187,9 @@ async fn video_blurhash_support() -> Result<()> {
 }
 
 fn match_media_msg(msg: &TimelineItem, content_type: &str, body: &str) -> Option<Option<String>> {
-    if msg.item_type() == "event" {
+    if !msg.is_virtual() {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
+        if let Some(msg_content) = event_item.message() {
             if let Some(mimetype) = msg_content.mimetype() {
                 if mimetype == content_type && msg_content.body() == body {
                     // exclude the pending msg

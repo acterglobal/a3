@@ -10,18 +10,18 @@ import '../../helpers/mock_tasks_providers.dart';
 void main() {
   group('Bookmarks are first', () {
     test('Pins', () async {
-      final mockedPinsList = SimplyRetuningAsyncPinListNotifier([
+      final mockedPinsList = [
         FakeActerPin(eventId: 'a'),
         FakeActerPin(eventId: 'b'),
         FakeActerPin(eventId: '1'),
         FakeActerPin(eventId: '2'),
         FakeActerPin(eventId: 'c'),
-      ]);
+      ];
 
       List<String> bookmarksLists = ['2', '1', '3'];
       final container = ProviderContainer(
         overrides: [
-          pinListProvider.overrideWith(() => mockedPinsList),
+          pinListProvider.overrideWith((r, a) => mockedPinsList),
           bookmarkByTypeProvider.overrideWith(
             (a, b) => (b == BookmarkType.pins) ? bookmarksLists : [],
           ),

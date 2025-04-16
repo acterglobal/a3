@@ -130,7 +130,7 @@ class MockOptionRsvpStatus extends Mock implements OptionRsvpStatus {
 class MockCalendarEvent extends Mock implements CalendarEvent {
   final RsvpStatus? rsvpStatus;
 
-  MockCalendarEvent({required this.rsvpStatus});
+  MockCalendarEvent({this.rsvpStatus});
 
   @override
   Future<MockOptionRsvpStatus> respondedByMe() async =>

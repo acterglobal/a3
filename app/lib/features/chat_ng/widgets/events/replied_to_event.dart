@@ -108,7 +108,7 @@ class OriginalEventItem extends ConsumerWidget {
     bool isUser,
   ) {
     final msgType = item.msgType();
-    final content = item.msgContent();
+    final content = item.message();
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
