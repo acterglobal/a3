@@ -24,15 +24,20 @@ class MemberUpdateEvent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextSpan? textSpan = buildStateWidget(context, ref, item);
-    if (textSpan == null) return const SizedBox.shrink();
+    final stateText = getStateEventStr(context, ref, item);
+    if (stateText == null) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
-      child: RichText(text: textSpan),
+      child: RichText(
+        text: TextSpan(
+          text: stateText,
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+      ),
     );
   }
 
-  TextSpan? buildStateWidget(
+  String? getStateEventStr(
     BuildContext context,
     WidgetRef ref,
     TimelineEventItem item,
@@ -59,419 +64,296 @@ class MemberUpdateEvent extends ConsumerWidget {
             .valueOrNull ??
         simplifyUserId(userId) ??
         userId;
+    final lang = L10n.of(context);
     return switch (content.change()) {
-      'joined' => buildJoinedEventMessage(context, myId, userId, userName),
-      'left' => buildLeftEventMessage(context, myId, userId, userName),
-      'banned' => buildBannedEventMessage(
-        context,
+      'joined' => getMessageOnJoined(lang, myId, userId, userName),
+      'left' => getMessageOnLeft(lang, myId, userId, userName),
+      'banned' => getMessageOnBanned(
+        lang,
         myId,
         senderId,
         senderName,
         userId,
         userName,
       ),
-      'unbanned' => buildUnbannedEventMessage(
-        context,
+      'unbanned' => getMessageOnUnbanned(
+        lang,
         myId,
         senderId,
         senderName,
         userId,
         userName,
       ),
-      'kicked' => buildKickedEventMessage(
-        context,
+      'kicked' => getMessageOnKicked(
+        lang,
         myId,
         senderId,
         senderName,
         userId,
         userName,
       ),
-      'invited' => buildInvitedEventMessage(
-        context,
+      'invited' => getMessageOnInvited(
+        lang,
         myId,
         senderId,
         senderName,
         userId,
         userName,
       ),
-      'kickedAndBanned' => buildKickedAndBannedEventMessage(
-        context,
+      'kickedAndBanned' => getMessageOnKickedAndBanned(
+        lang,
         myId,
         senderId,
         senderName,
         userId,
         userName,
       ),
-      'invitationAccepted' => buildInvitationAcceptedEventMessage(
-        context,
+      'invitationAccepted' => getMessageOnInvitationAccepted(
+        lang,
         myId,
         userId,
         userName,
       ),
-      'invitationRejected' => buildInvitationRejectedEventMessage(
-        context,
+      'invitationRejected' => getMessageOnInvitationRejected(
+        lang,
         myId,
         userId,
         userName,
       ),
-      'invitationRevoked' => buildInvitationRevokedEventMessage(
-        context,
+      'invitationRevoked' => getMessageOnInvitationRevoked(
+        lang,
         myId,
         userId,
         userName,
       ),
-      'knocked' => buildKnockedEventMessage(
-        context,
+      'knocked' => getMessageOnKnocked(
+        lang,
         myId,
         senderId,
         senderName,
         userId,
         userName,
       ),
-      'knockAccepted' => buildKnockAcceptedEventMessage(
-        context,
+      'knockAccepted' => getMessageOnKnockAccepted(
+        lang,
         myId,
         userId,
         userName,
       ),
-      'knockRetracted' => buildKnockRetractedEventMessage(
-        context,
+      'knockRetracted' => getMessageOnKnockRetracted(
+        lang,
         myId,
         userId,
         userName,
       ),
-      'knockDenied' => buildKnockDeniedEventMessage(
-        context,
-        myId,
-        userId,
-        userName,
-      ),
+      'knockDenied' => getMessageOnKnockDenied(lang, myId, userId, userName),
       _ => null,
     };
   }
 
-  TextSpan buildJoinedEventMessage(
-    BuildContext context,
+  String getMessageOnJoined(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouJoined,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouJoined;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherJoined(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherJoined(userName);
     }
   }
 
-  TextSpan buildLeftEventMessage(
-    BuildContext context,
+  String getMessageOnLeft(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouLeft,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouLeft;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherLeft(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherLeft(userName);
     }
   }
 
-  TextSpan buildBannedEventMessage(
-    BuildContext context,
+  String getMessageOnBanned(
+    L10n lang,
     String myId,
     String senderId,
     String senderName,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (senderId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouBannedOther(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouBannedOther(userName);
     } else if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipOtherBannedYou(senderName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherBannedYou(senderName);
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherBannedOther(senderName, userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherBannedOther(senderName, userName);
     }
   }
 
-  TextSpan buildUnbannedEventMessage(
-    BuildContext context,
+  String getMessageOnUnbanned(
+    L10n lang,
     String myId,
     String senderId,
     String senderName,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (senderId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouUnbannedOther(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouUnbannedOther(userName);
     } else if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipOtherUnbannedYou(senderName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherUnbannedYou(senderName);
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherUnbannedOther(senderName, userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherUnbannedOther(senderName, userName);
     }
   }
 
-  TextSpan buildKickedEventMessage(
-    BuildContext context,
+  String getMessageOnKicked(
+    L10n lang,
     String myId,
     String senderId,
     String senderName,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (senderId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouKickedOther(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouKickedOther(userName);
     } else if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipOtherKickedYou(senderName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherKickedYou(senderName);
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherKickedOther(senderName, userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherKickedOther(senderName, userName);
     }
   }
 
-  TextSpan buildInvitedEventMessage(
-    BuildContext context,
+  String getMessageOnInvited(
+    L10n lang,
     String myId,
     String senderId,
     String senderName,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (senderId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouInvitedOther(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouInvitedOther(userName);
     } else if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipOtherInvitedYou(senderName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherInvitedYou(senderName);
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherInvitedOther(senderName, userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherInvitedOther(senderName, userName);
     }
   }
 
-  TextSpan buildKickedAndBannedEventMessage(
-    BuildContext context,
+  String getMessageOnKickedAndBanned(
+    L10n lang,
     String myId,
     String senderId,
     String senderName,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (senderId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouKickedAndBannedOther(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouKickedAndBannedOther(userName);
     } else if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipOtherKickedAndBannedYou(senderName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherKickedAndBannedYou(senderName);
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherKickedAndBannedOther(
-          senderName,
-          userName,
-        ),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherKickedAndBannedOther(senderName, userName);
     }
   }
 
-  TextSpan buildInvitationAcceptedEventMessage(
-    BuildContext context,
+  String getMessageOnInvitationAccepted(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipInvitationYouAccepted,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipInvitationYouAccepted;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipInvitationOtherAccepted(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipInvitationOtherAccepted(userName);
     }
   }
 
-  TextSpan buildInvitationRejectedEventMessage(
-    BuildContext context,
+  String getMessageOnInvitationRejected(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipInvitationYouRejected,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipInvitationYouRejected;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipInvitationOtherRejected(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipInvitationOtherRejected(userName);
     }
   }
 
-  TextSpan buildInvitationRevokedEventMessage(
-    BuildContext context,
+  String getMessageOnInvitationRevoked(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipInvitationYouRevoked,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipInvitationYouRevoked;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipInvitationOtherRevoked(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipInvitationOtherRevoked(userName);
     }
   }
 
-  TextSpan buildKnockedEventMessage(
-    BuildContext context,
+  String getMessageOnKnocked(
+    L10n lang,
     String myId,
     String senderId,
     String senderName,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (senderId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipYouKnockedOther(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipYouKnockedOther(userName);
     } else if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipOtherKnockedYou(senderName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherKnockedYou(senderName);
     } else {
-      return TextSpan(
-        text: lang.chatMembershipOtherKnockedOther(senderName, userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipOtherKnockedOther(senderName, userName);
     }
   }
 
-  TextSpan buildKnockAcceptedEventMessage(
-    BuildContext context,
+  String getMessageOnKnockAccepted(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipKnockYouAccepted,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipKnockYouAccepted;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipKnockOtherAccepted(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipKnockOtherAccepted(userName);
     }
   }
 
-  TextSpan buildKnockRetractedEventMessage(
-    BuildContext context,
+  String getMessageOnKnockRetracted(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipKnockYouRetracted,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipKnockYouRetracted;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipKnockOtherRetracted(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipKnockOtherRetracted(userName);
     }
   }
 
-  TextSpan buildKnockDeniedEventMessage(
-    BuildContext context,
+  String getMessageOnKnockDenied(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatMembershipKnockYouDenied,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipKnockYouDenied;
     } else {
-      return TextSpan(
-        text: lang.chatMembershipKnockOtherDenied(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatMembershipKnockOtherDenied(userName);
     }
   }
 }

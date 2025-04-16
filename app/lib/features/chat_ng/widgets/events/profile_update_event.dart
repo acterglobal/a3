@@ -24,15 +24,20 @@ class ProfileUpdateEvent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextSpan? textSpan = buildStateWidget(context, ref, item);
-    if (textSpan == null) return const SizedBox.shrink();
+    final stateText = getStateEventStr(context, ref, item);
+    if (stateText == null) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
-      child: RichText(text: textSpan),
+      child: RichText(
+        text: TextSpan(
+          text: stateText,
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+      ),
     );
   }
 
-  TextSpan? buildStateWidget(
+  String? getStateEventStr(
     BuildContext context,
     WidgetRef ref,
     TimelineEventItem item,
@@ -50,154 +55,113 @@ class ProfileUpdateEvent extends ConsumerWidget {
             .valueOrNull ??
         simplifyUserId(userId) ??
         userId;
+    final lang = L10n.of(context);
     switch (content.displayNameChange()) {
       case 'Changed':
-        return buildDisplayNameChangedMessage(
-          context,
+        return getMessageOnDisplayNameChanged(
+          lang,
           myId,
           userId,
           content.displayNameNewVal() ?? '',
           content.displayNameOldVal() ?? '',
         );
       case 'Set':
-        return buildDisplayNameSetMessage(
-          context,
+        return getMessageOnDisplayNameSet(
+          lang,
           myId,
           userId,
           content.displayNameNewVal() ?? '',
         );
       case 'Unset':
-        return buildDisplayNameUnsetMessage(context, myId, userId, userName);
+        return getMessageOnDisplayNameUnset(lang, myId, userId, userName);
     }
     switch (content.avatarUrlChange()) {
       case 'Changed':
-        return buildAvatarUrlChangedMessage(context, myId, userId, userName);
+        return getMessageOnAvatarUrlChanged(lang, myId, userId, userName);
       case 'Set':
-        return buildAvatarUrlSetMessage(context, myId, userId, userName);
+        return getMessageOnAvatarUrlSet(lang, myId, userId, userName);
       case 'Unset':
-        return buildAvatarUrlUnsetMessage(context, myId, userId, userName);
+        return getMessageOnAvatarUrlUnset(lang, myId, userId, userName);
     }
     return null;
   }
 
-  TextSpan buildDisplayNameChangedMessage(
-    BuildContext context,
+  String getMessageOnDisplayNameChanged(
+    L10n lang,
     String myId,
     String userId,
     String newVal,
     String oldVal,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatProfileDisplayNameYouChanged(newVal),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileDisplayNameYouChanged(newVal);
     } else {
-      return TextSpan(
-        text: lang.chatProfileDisplayNameOtherChanged(oldVal, newVal),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileDisplayNameOtherChanged(oldVal, newVal);
     }
   }
 
-  TextSpan buildDisplayNameSetMessage(
-    BuildContext context,
+  String getMessageOnDisplayNameSet(
+    L10n lang,
     String myId,
     String userId,
     String newVal,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatProfileDisplayNameYouSet(newVal),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileDisplayNameYouSet(newVal);
     } else {
-      return TextSpan(
-        text: lang.chatProfileDisplayNameOtherSet(userId, newVal),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileDisplayNameOtherSet(userId, newVal);
     }
   }
 
-  TextSpan buildDisplayNameUnsetMessage(
-    BuildContext context,
+  String getMessageOnDisplayNameUnset(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatProfileDisplayNameYouUnset,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileDisplayNameYouUnset;
     } else {
-      return TextSpan(
-        text: lang.chatProfileDisplayNameOtherUnset(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileDisplayNameOtherUnset(userName);
     }
   }
 
-  TextSpan buildAvatarUrlChangedMessage(
-    BuildContext context,
+  String getMessageOnAvatarUrlChanged(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatProfileAvatarUrlYouChanged,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileAvatarUrlYouChanged;
     } else {
-      return TextSpan(
-        text: lang.chatProfileAvatarUrlOtherChanged(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileAvatarUrlOtherChanged(userName);
     }
   }
 
-  TextSpan buildAvatarUrlSetMessage(
-    BuildContext context,
+  String getMessageOnAvatarUrlSet(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatProfileAvatarUrlYouSet,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileAvatarUrlYouSet;
     } else {
-      return TextSpan(
-        text: lang.chatProfileAvatarUrlOtherSet(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileAvatarUrlOtherSet(userName);
     }
   }
 
-  TextSpan buildAvatarUrlUnsetMessage(
-    BuildContext context,
+  String getMessageOnAvatarUrlUnset(
+    L10n lang,
     String myId,
     String userId,
     String userName,
   ) {
-    final lang = L10n.of(context);
     if (userId == myId) {
-      return TextSpan(
-        text: lang.chatProfileAvatarUrlYouUnset,
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileAvatarUrlYouUnset;
     } else {
-      return TextSpan(
-        text: lang.chatProfileAvatarUrlOtherUnset(userName),
-        style: Theme.of(context).textTheme.labelSmall,
-      );
+      return lang.chatProfileAvatarUrlOtherUnset(userName);
     }
   }
 }
