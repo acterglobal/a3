@@ -1,0 +1,19 @@
+import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+TextStyle? lastMessageTextStyle(
+  BuildContext context,
+  WidgetRef ref,
+  String roomId,
+) {
+  final theme = Theme.of(context);
+  final isUnread = ref.watch(hasUnreadMessages(roomId)).valueOrNull ?? false;
+  final color =
+      isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
+  final textStyle = theme.textTheme.bodySmall?.copyWith(
+    color: color,
+    fontSize: 13,
+  );
+  return textStyle;
+}

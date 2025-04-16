@@ -1,15 +1,25 @@
+import 'package:acter/common/models/types.dart';
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final lastMessageSenderNameProvider =
-    Provider.family<String?, TimelineEventItem?>((ref, eventItem) {
-      final sender = eventItem?.sender();
-      if (sender == null) return null;
-      final senderName = simplifyUserId(sender);
-      if (senderName == null || senderName.isEmpty) return null;
-      return senderName[0].toUpperCase() + senderName.substring(1);
-    });
+final lastMessageDisplayNameProvider = Provider.family<String, MemberInfo>((
+  ref,
+  memberInfo,
+) {
+  final name = ref.watch(
+    memberDisplayNameProvider((
+      roomId: memberInfo.roomId,
+      userId: memberInfo.userId,
+    )),
+  );
+  final displayName =
+      name.valueOrNull ??
+      simplifyUserId(memberInfo.userId) ??
+      memberInfo.userId;
+  return displayName;
+});
 
 final lastMessageTextProvider = Provider.family<String?, TimelineEventItem?>((
   ref,

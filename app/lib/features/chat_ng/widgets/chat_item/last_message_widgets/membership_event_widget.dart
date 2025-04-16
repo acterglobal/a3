@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/utils.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/last_message_text_style.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -23,30 +22,16 @@ class MembershipEventWidget extends ConsumerWidget {
     MembershipContent? content = eventItem.membershipContent();
     if (content == null) return const SizedBox.shrink();
 
-    //Get sender data
+    //Get sender user name
     final senderId = eventItem.sender();
-    final senderNameProvider = ref.watch(
-      memberDisplayNameProvider((roomId: roomId, userId: senderId)),
+    final senderName = ref.watch(
+      lastMessageDisplayNameProvider((roomId: roomId, userId: senderId)),
     );
-    final senderName =
-        senderNameProvider.valueOrNull ?? simplifyUserId(senderId) ?? senderId;
 
-    //Get user data
+    //Get content user name
     final userId = content.userId().toString();
-    final userNameProvider = ref.watch(
-      memberDisplayNameProvider((roomId: roomId, userId: userId)),
-    );
-    final userName =
-        userNameProvider.valueOrNull ?? simplifyUserId(userId) ?? userId;
-
-    //Design variables
-    final theme = Theme.of(context);
-    final isUnread = ref.watch(hasUnreadMessages(roomId)).valueOrNull ?? false;
-    final color =
-        isUnread ? theme.colorScheme.onSurface : theme.colorScheme.surfaceTint;
-    final textStyle = theme.textTheme.bodySmall?.copyWith(
-      color: color,
-      fontSize: 13,
+    final userName = ref.watch(
+      lastMessageDisplayNameProvider((roomId: roomId, userId: userId)),
     );
 
     //Get membership event text
@@ -65,7 +50,7 @@ class MembershipEventWidget extends ConsumerWidget {
     return Text(
       membershipEventText,
       maxLines: 2,
-      style: textStyle,
+      style: lastMessageTextStyle(context, ref, roomId),
       overflow: TextOverflow.ellipsis,
     );
   }
