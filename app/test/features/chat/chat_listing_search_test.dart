@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

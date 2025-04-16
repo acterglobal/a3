@@ -1,12 +1,9 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/pages/chat_select_page.dart';
-import 'package:acter/features/chat/widgets/rooms_list.dart';
-import 'package:acter/features/chat_ng/widgets/rooms_list.dart';
+import 'package:acter/features/chat_ng/pages/chat_select_page.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-typedef RoomListWidgetBuilder = Widget Function(RoomSelectAction);
 
 class ChatNgLayoutBuilder extends StatelessWidget {
   final Widget? centerChild;
@@ -60,7 +57,7 @@ class ChatNgLayoutBuilder extends StatelessWidget {
         if (expanded != null) Flexible(flex: 2, child: expanded),
         // Fallback if neither is in our route
         if (center == null && expanded == null)
-          const Flexible(flex: 2, child: ChatSelectPage()),
+          const Flexible(flex: 2, child: ChatNgSelectPage()),
       ],
     );
   }

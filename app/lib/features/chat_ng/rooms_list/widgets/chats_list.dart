@@ -6,19 +6,19 @@ import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/common/toolkit/widgets/animated_chats_list_widget.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::chat::chats_list');
+final _log = Logger('a3::chat_ng::chats_list');
 
-class ChatsList extends ConsumerWidget {
+class ChatsListNG extends ConsumerWidget {
   final Function(String)? onSelected;
 
-  const ChatsList({super.key, this.onSelected});
+  const ChatsListNG({super.key, this.onSelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -93,9 +93,9 @@ class ChatsList extends ConsumerWidget {
       entries: chats,
       itemBuilder:
           ({required Animation<double> animation, required String roomId}) =>
-              ConvoCard(
+              ChatItemWidget(
                 animation: animation,
-                key: Key('convo-card-$roomId'),
+                key: Key('chat-room-card-$roomId'),
                 roomId: roomId,
                 onTap: () => onSelected?.call(roomId),
               ),
