@@ -62086,6 +62086,8 @@ class Client {
 
   Client._(this._api, this._box);
 
+  int get address => _box.borrow();
+
   /// start the sync
   SyncState startSync() {
     var tmp0 = 0;
