@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class CalendarSyncPermissionWidget extends ConsumerWidget {
-  const CalendarSyncPermissionWidget({super.key});
+class CalendarSyncPermissionWidget extends ConsumerStatefulWidget {
+  final Function()? callNextPage;
+  const CalendarSyncPermissionWidget({super.key, this.callNextPage});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CalendarSyncPermissionWidget> createState() => _CalendarSyncPermissionWidgetState();
+}
+
+class _CalendarSyncPermissionWidgetState extends ConsumerState<CalendarSyncPermissionWidget> {
+  @override
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
 
@@ -18,10 +24,11 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
         child: Stack(
           children: [
             // Close button at the top right
-            Positioned(
-              top: 20,
-              right: 0,
-              child: IconButton(
+            if(widget.callNextPage == null)
+              Positioned(
+                top: 20,
+                right: 0,
+                child: IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.close),
               ),
@@ -41,7 +48,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
                       const SizedBox(height: 20),
                       _buildDescriptionText(lang, textTheme),
                       const SizedBox(height: 20),
-                      _buildActionButton(context, lang, textTheme, ref),
+                      _buildActionButton(context, lang, textTheme),
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -88,7 +95,6 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
     BuildContext context,
     L10n lang,
     TextTheme textTheme,
-    WidgetRef ref,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,7 +114,11 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
         OutlinedButton(
           onPressed: () {
             if (context.mounted) {
-              Navigator.pop(context);
+              if (widget.callNextPage != null) {
+                widget.callNextPage!();
+              } else {
+                Navigator.pop(context);
+              }
             }
           },
           child: Text(lang.askAgain),
@@ -127,7 +137,11 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
 
     if (status.isGranted) {
       if (context.mounted) {
-        Navigator.pop(context);
+        if (widget.callNextPage != null) {
+          widget.callNextPage!();
+        } else {
+          Navigator.pop(context);
+        }
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar

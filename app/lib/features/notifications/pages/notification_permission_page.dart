@@ -1,12 +1,26 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class NotificationPermissionWidget extends StatelessWidget {
-  const NotificationPermissionWidget({super.key});
+class NotificationPermissionWidget extends ConsumerStatefulWidget {
+  final Function()? callNextPage;
+  final bool? isOnboarding;
+  const NotificationPermissionWidget({
+    super.key,
+    this.callNextPage,
+    this.isOnboarding,
+  });
 
+  @override
+  ConsumerState<NotificationPermissionWidget> createState() =>
+      _NotificationPermissionWidgetState();
+}
+
+class _NotificationPermissionWidgetState
+    extends ConsumerState<NotificationPermissionWidget> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
@@ -45,13 +59,14 @@ class NotificationPermissionWidget extends StatelessWidget {
   Widget _buildIcon(BuildContext context) {
     return Column(
       children: [
-        Align(
-          alignment: Alignment.topRight,
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.close),
+        if (widget.callNextPage == null)
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close),
+            ),
           ),
-        ),
         Icon(
           PhosphorIcons.bell(),
           color: Theme.of(context).colorScheme.primary,
@@ -124,8 +139,8 @@ class NotificationPermissionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-              icon ?? PhosphorIcons.checkCircle(),
-              color: iconColor ?? Theme.of(context).colorScheme.secondary,
+            icon ?? PhosphorIcons.checkCircle(),
+            color: iconColor ?? Theme.of(context).colorScheme.secondary,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -165,7 +180,11 @@ class NotificationPermissionWidget extends StatelessWidget {
         OutlinedButton(
           onPressed: () {
             if (context.mounted) {
-              Navigator.pop(context);
+              if (widget.callNextPage != null) {
+                widget.callNextPage!();
+              } else {
+                Navigator.pop(context);
+              }
             }
           },
           child: Text(lang.askAgain),
@@ -184,14 +203,18 @@ class NotificationPermissionWidget extends StatelessWidget {
 
     if (status.isGranted) {
       if (context.mounted) {
-        Navigator.pop(context);
+        if (widget.callNextPage != null) {
+          widget.callNextPage!();
+        } else {
+          Navigator.pop(context);
+        }
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(lang.notificationDenied)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(lang.notificationDenied)));
       }
     } else if (status.isPermanentlyDenied) {
       // Permission permanently denied, show option to go to settings
@@ -202,10 +225,7 @@ class NotificationPermissionWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  lang.permissionPermantlyDenied,
-                  style: textStyle,
-                ),
+                Text(lang.permissionPermantlyDenied, style: textStyle),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: () => openAppSettings(),

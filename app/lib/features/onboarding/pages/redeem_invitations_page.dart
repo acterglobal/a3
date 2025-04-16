@@ -15,17 +15,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 import 'package:acter_avatar/acter_avatar.dart';
 import 'dart:async';
-import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class RedeemInvitationsPage extends ConsumerStatefulWidget {
-  final Function(bool) onRedeemed;
-  final int currentPage;
-  final int totalPages;
+  final Function() callNextPage;
+  
   const RedeemInvitationsPage({
     super.key,
-    required this.onRedeemed,
-    required this.currentPage,
-    required this.totalPages,
+    required this.callNextPage,
   });
 
   @override
@@ -148,7 +144,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     }
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
 
@@ -174,11 +170,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
               ),
             ),
             _buildNavigationButtons(context, lang),
-            OnboardingProgressDots(
-              currentPage: widget.currentPage,
-              totalPages: widget.totalPages,
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -333,7 +325,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       return ActerPrimaryActionButton(
         onPressed: () {
           EasyLoading.dismiss();
-          widget.onRedeemed(true);
+          widget.callNextPage();
         },
         child: Text(lang.wizzardContinue, style: const TextStyle(fontSize: 16)),
       );
@@ -342,7 +334,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     return OutlinedButton(
       onPressed: () {
         EasyLoading.dismiss();
-        widget.onRedeemed(true);
+        widget.callNextPage();
       },
       child: Text(lang.skip),
     );

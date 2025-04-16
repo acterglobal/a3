@@ -6,64 +6,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
 
-  final int currentPage;
-  final int totalPages;
-  final Function(bool) onLinked;
+  final Function() callNextPage;
   final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
 
   LinkEmailPage({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
-    required this.onLinked,
+    required this.callNextPage,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: Center(
+    return Scaffold(body: _buildBody(context, ref));
+  }
+
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
+    return SingleChildScrollView(
+      child: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: kToolbarHeight),
-                      _buildHeadlineText(context),
-                      const SizedBox(height: 30),
-                      _buildEmailInputField(context),
-                      const SizedBox(height: 30),
-                      _buildLinkEmailActionButton(context, ref),
-                      const SizedBox(height: 20),
-                      _buildSkipActionButton(context),
-                    ],
-                  ),
-                ),
-              ),
-              OnboardingProgressDots(
-                currentPage: currentPage,
-                totalPages: totalPages,
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: kToolbarHeight),
+              _buildHeadlineText(context),
+              const SizedBox(height: 30),
+              _buildEmailInputField(context),
+              const SizedBox(height: 30),
+              _buildLinkEmailActionButton(context, ref),
+              const SizedBox(height: 20),
+              _buildSkipActionButton(context),
             ],
           ),
         ),
       ),
     );
   }
+
 
   Widget _buildHeadlineText(BuildContext context) {
     final lang = L10n.of(context);
@@ -119,7 +105,7 @@ class LinkEmailPage extends ConsumerWidget {
       if (!context.mounted) return;
       EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
-      onLinked(true);
+      callNextPage();
     } catch (e) {
       EasyLoading.showToast(
         lang.failedToSubmitEmail(e),
@@ -174,7 +160,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => {onLinked(true)},
+      onPressed: () => {callNextPage()},
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

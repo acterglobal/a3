@@ -6,18 +6,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:acter/features/onboarding/widgets/onboarding_progress_dots.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
-  final int currentPage;
-  final int totalPages;
-  final Function(bool) onEnabled;
+  final Function() callNextPage;
 
   const EncryptionBackupPage({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
-    required this.onEnabled,
+    required this.callNextPage,
   });
 
   @override
@@ -32,8 +27,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
-
-    return Scaffold(
+     return Scaffold(
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -50,11 +44,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
             _buildEncryptionKey(context),
             const Spacer(),
             _buildNavigationButtons(context, lang),
-            OnboardingProgressDots(
-              currentPage: widget.currentPage,
-              totalPages: widget.totalPages,
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -181,7 +171,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: () {  widget.onEnabled(true);},
+          onPressed: () {  widget.callNextPage();},
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
@@ -189,7 +179,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buidSkipButton(BuildContext context, L10n lang) {
-    return OutlinedButton(onPressed: () {  widget.onEnabled(true);}, child: Text(L10n.of(context).skip));
+    return OutlinedButton(onPressed: () {  widget.callNextPage();}, child: Text(L10n.of(context).skip));
   }
 
   Widget _buildActionButton({

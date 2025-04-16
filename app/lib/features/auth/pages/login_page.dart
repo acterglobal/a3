@@ -7,7 +7,6 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
 import 'package:acter/features/auth/widgets/logo_widget.dart';
-import 'package:acter/features/onboarding/providers/post_login_signup_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -212,14 +211,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (loginSuccess == null) {
       if (!mounted) return;
       // Handle all post-login steps
-      final postLoginNotifier = ref.read(postLoginSignupProvider.notifier);
-      var currentStep = PostLoginSignupStep.notifications;
-
-      while (currentStep != PostLoginSignupStep.completed) {
-        await postLoginNotifier.handleStep(context, currentStep);
-        if (!mounted) return;
-        currentStep = ref.read(postLoginSignupProvider).currentStep;
-      }
+      context.goNamed(Routes.onboarding.name,queryParameters: {'isLoginOnboarding': 'true'});
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));

@@ -59,7 +59,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       )) {
         navigator.goNamed(
           Routes.onboarding.name,
-          queryParameters: {'username': username.text},
+          queryParameters: {'username': username.text, 'isLoginOnboarding': 'false'},
         );
       }
     } catch (errorMsg) {

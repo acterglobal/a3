@@ -74,10 +74,13 @@ final generalRoutes = [
     name: Routes.onboarding.name,
     path: Routes.onboarding.route,
     builder: (context, state) {
-      final username = state.uri.queryParameters['username'].expect(
-        'saveUsername route needs username as query param',
+      final username = state.uri.queryParameters['username'];
+      final isLoginOnboarding =
+          state.uri.queryParameters['isLoginOnboarding'] == 'true';
+      return OnboardingPage(
+        username: username,
+        isLoginOnboarding: isLoginOnboarding,
       );
-      return OnboardingPage(username: username);
     },
   ),
   GoRoute(
