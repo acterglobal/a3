@@ -5,9 +5,8 @@ import 'package:device_calendar/device_calendar.dart';
 /// Handles calendar permission request for both Android and iOS platforms
 Future<bool> isShowCalendarPermissionInfoPage() async {
   if (Platform.isAndroid || Platform.isIOS) {
-    final deviceCalendar = DeviceCalendarPlugin();
-    final hasPermission = await deviceCalendar.hasPermissions();
-    return !hasPermission.data!;
+    final status = await Permission.calendarFullAccess.request();
+    return !status.isGranted;
   }
   if (isDesktop) {
     return true;
