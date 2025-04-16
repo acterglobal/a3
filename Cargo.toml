@@ -19,7 +19,6 @@ path = "../uniffi-dart/"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
 default-features = false
-features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
@@ -42,10 +41,10 @@ git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
 default-features = false
 
-# [workspace.dependencies.matrix-sdk-ffi]
-# git = "https://github.com/matrix-org/matrix-rust-sdk"
-# rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
-# default-features = false
+[workspace.dependencies.matrix-sdk-ffi]
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "01bb8093d0bf64e30ab8a41552b6146ff2cda65a"
+default-features = false
 
 [workspace.dependencies.matrix-sdk-ffi-macros]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
