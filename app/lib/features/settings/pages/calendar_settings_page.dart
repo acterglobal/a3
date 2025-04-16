@@ -61,11 +61,17 @@ class CalendarSettingsPage extends ConsumerWidget {
                             ref.read(isCalendarSyncActiveProvider.notifier).set(false);
                           }
                         }
-                      } else {
-                        await clearActerCalendars();
-                        EasyLoading.showToast('Acter Calendars removed');
-                        ref.read(isCalendarSyncActiveProvider.notifier).set(false);
+                      }else{
+                         await initCalendarSync(ignoreRejection: true);
+                         EasyLoading.showToast('Acter Calendars synced');
+                         ref.read(isCalendarSyncActiveProvider.notifier).set(true);
                       }
+
+                    }
+                    else{
+                      await clearActerCalendars();
+                      EasyLoading.showToast('Acter Calendars removed');
+                      ref.read(isCalendarSyncActiveProvider.notifier).set(false);
                     }
                   },
                 ),
