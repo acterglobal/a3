@@ -27,13 +27,16 @@ class GeneralMessageEventWidget extends ConsumerWidget {
     );
     final message = ref.watch(lastMessageTextProvider(eventItem));
 
+    //If message is null, return empty
+    if (message == null) return const SizedBox.shrink();
+
     //Get text style
     final textStyle = lastMessageTextStyle(context, ref, roomId);
 
     //Render
     final List<InlineSpan> spans = [];
     if (!isDM) spans.add(TextSpan(text: '$senderName : ', style: textStyle));
-    spans.add(TextSpan(text: message ?? '', style: textStyle));
+    spans.add(TextSpan(text: message, style: textStyle));
 
     return RichText(text: TextSpan(children: spans, style: textStyle));
   }
