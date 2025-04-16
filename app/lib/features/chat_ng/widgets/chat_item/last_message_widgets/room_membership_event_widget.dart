@@ -6,11 +6,11 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MembershipEventWidget extends ConsumerWidget {
+class RoomMembershipEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
 
-  const MembershipEventWidget({
+  const RoomMembershipEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
@@ -46,11 +46,13 @@ class MembershipEventWidget extends ConsumerWidget {
     //Return empty if text is null
     if (membershipEventText == null) return const SizedBox.shrink();
 
+    final textStyle = lastMessageTextStyle(context, ref, roomId);
+
     //Render membership event text
     return Text(
       membershipEventText,
       maxLines: 2,
-      style: lastMessageTextStyle(context, ref, roomId),
+      style: textStyle,
       overflow: TextOverflow.ellipsis,
     );
   }
