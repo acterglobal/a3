@@ -18,7 +18,7 @@ async fn edit_text_msg() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("edit_text_msg").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -33,7 +33,7 @@ async fn edit_text_msg() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
@@ -154,7 +154,7 @@ async fn edit_image_msg() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("edit_image_msg").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -169,7 +169,7 @@ async fn edit_image_msg() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 

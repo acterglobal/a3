@@ -20,10 +20,10 @@ async fn _setup_accounts(
 
     observer.install_default_acter_push_rules().await?;
 
-    let sync_state1 = admin.start_sync();
+    let sync_state1 = admin.start_sync().await?;
     sync_state1.await_has_synced_history().await?;
 
-    let sync_state2 = observer.start_sync();
+    let sync_state2 = observer.start_sync().await?;
     sync_state2.await_has_synced_history().await?;
 
     Ok(((admin, sync_state1), (observer, sync_state2), room_id))
@@ -78,7 +78,7 @@ async fn invite_and_join() -> Result<()> {
         _setup_accounts("ij-status-notif").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
-    let _third_state = third.start_sync();
+    let _third_state = third.start_sync().await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -214,7 +214,7 @@ async fn invite_and_rejected() -> Result<()> {
         _setup_accounts("ij-status-notif").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
-    let _third_state = third.start_sync();
+    let _third_state = third.start_sync().await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;

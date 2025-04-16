@@ -41,6 +41,15 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   String eventType() => mockEventType ?? 'm.room.message';
 }
 
+class MockOptionTimelineItem extends Mock implements OptionTimelineItem {
+  final TimelineItem? mockItem;
+
+  MockOptionTimelineItem({this.mockItem});
+
+  @override
+  TimelineItem? data() => mockItem;
+}
+
 class MockMsgContent extends Mock implements MsgContent {
   final String? mockBody;
 
@@ -88,5 +97,6 @@ class MockConvo extends Mock implements Convo {
   int numUnreadMessages() => mockNumUnreadMessages;
 
   @override
-  TimelineItem? latestMessage() => mockTimelineItem;
+  Future<OptionTimelineItem> latestMessage() =>
+      Future.value(MockOptionTimelineItem(mockItem: mockTimelineItem));
 }

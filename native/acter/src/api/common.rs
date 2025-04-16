@@ -21,7 +21,7 @@ use std::{ops::Deref, str::FromStr};
 use tracing::error;
 
 use super::api::FfiBuffer;
-use super::RefDetails;
+use super::{RefDetails, TimelineItem};
 
 pub fn duration_from_secs(secs: u64) -> Duration {
     Duration::from_secs(secs)
@@ -78,6 +78,7 @@ impl OptionRsvpStatus {
         self.status.as_ref().map(ToString::to_string)
     }
 }
+
 #[derive(Clone)]
 pub struct OptionComposeDraft {
     draft: Option<ComposeDraft>,
@@ -90,6 +91,20 @@ impl OptionComposeDraft {
 
     pub fn draft(&self) -> Option<ComposeDraft> {
         self.draft.clone()
+    }
+}
+
+pub struct OptionTimelineItem {
+    data: Option<TimelineItem>,
+}
+
+impl OptionTimelineItem {
+    pub(crate) fn new(data: Option<TimelineItem>) -> Self {
+        OptionTimelineItem { data }
+    }
+
+    pub fn data(&self) -> Option<TimelineItem> {
+        self.data.clone()
     }
 }
 

@@ -13,7 +13,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("markdown").await?;
-    let sisko_sync = sisko.start_sync();
+    let sisko_sync = sisko.start_sync().await?;
     sisko_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -28,9 +28,9 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     .await?;
 
     let sisko_convo = sisko.convo(room_id.to_string()).await?;
-    let sisko_timeline = sisko_convo.timeline_stream();
+    let sisko_timeline = sisko_convo.timeline_stream().await?;
 
-    let kyra_sync = kyra.start_sync();
+    let kyra_sync = kyra.start_sync().await?;
     kyra_sync.await_has_synced_history().await?;
 
     for invited in kyra.invited_rooms().iter() {
@@ -60,7 +60,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     Retry::spawn(retry_strategy.clone(), move || {
         let timeline = room_tl.clone();
         async move {
-            for v in timeline.items().await {
+            for v in timeline.items().await? {
                 let Some(event_id) = match_room_msg(&v, "<strong>Hello</strong>") else {
                     continue;
                 };
