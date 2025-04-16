@@ -72,7 +72,7 @@ class ChatEditorUtils {
   static double calculateContentHeight(String text) {
     final lineCount = text.split('\n').length - 1;
 
-    if (lineCount <= 0) {
+    if (lineCount <= 1) {
       return baseHeight;
     }
 
