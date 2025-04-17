@@ -83,10 +83,10 @@ class ChatEventItem extends StatelessWidget {
       'm.policy.rule.room' ||
       'm.policy.rule.server' ||
       'm.policy.rule.user' ||
-      'm.room.create' ||
       'm.room.aliases' ||
       'm.room.avatar' ||
       'm.room.canonical_alias' ||
+      'm.room.create' ||
       'm.room.encryption' ||
       'm.room.guest_access' ||
       'm.room.history_visibility' ||

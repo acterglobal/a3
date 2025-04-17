@@ -1,8 +1,5 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
-use matrix_sdk::ruma::{
-    events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId, OwnedUserId,
-};
+use matrix_sdk::ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId};
 use object::ActivityObject;
 use urlencoding::encode;
 
@@ -13,7 +10,15 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::{MembershipContent, PolicyRuleRoomContent, ProfileContent},
+        status::{
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent, RoomAliasesContent, RoomAvatarContent,
+            RoomCanonicalAliasContent, RoomCreateContent, RoomEncryptionContent,
+            RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
+            RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
+            RoomThirdPartyInviteContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+            SpaceParentContent,
+        },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -27,8 +32,25 @@ pub enum ActivityContent {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
     PolicyRuleRoom(PolicyRuleRoomContent),
-    RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
+    RoomAliases(RoomAliasesContent),
+    RoomAvatar(RoomAvatarContent),
+    RoomCanonicalAlias(RoomCanonicalAliasContent),
+    RoomCreate(RoomCreateContent),
+    RoomEncryption(RoomEncryptionContent),
+    RoomGuestAccess(RoomGuestAccessContent),
+    RoomHistoryVisibility(RoomHistoryVisibilityContent),
+    RoomJoinRules(RoomJoinRulesContent),
+    RoomName(RoomNameContent),
+    RoomPinnedEvents(RoomPinnedEventsContent),
+    RoomPowerLevels(RoomPowerLevelsContent),
+    RoomServerAcl(RoomServerAclContent),
+    RoomThirdPartyInvite(RoomThirdPartyInviteContent),
+    RoomTombstone(RoomTombstoneContent),
+    RoomTopic(RoomTopicContent),
+    SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -138,8 +160,25 @@ impl Activity {
                 }
             }
             ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
+            ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
+            ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
+            ActivityContent::RoomAliases(_) => "roomAliases",
+            ActivityContent::RoomAvatar(_) => "roomAvatar",
+            ActivityContent::RoomCanonicalAlias(_) => "roomCanonicalAlias",
             ActivityContent::RoomCreate(_) => "roomCreate",
+            ActivityContent::RoomEncryption(_) => "roomEncryption",
+            ActivityContent::RoomGuestAccess(_) => "roomGuestAccess",
+            ActivityContent::RoomHistoryVisibility(_) => "roomHistoryVisibility",
+            ActivityContent::RoomJoinRules(_) => "roomJoinRules",
             ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::RoomPinnedEvents(_) => "roomPinnedEvents",
+            ActivityContent::RoomPowerLevels(_) => "roomPowerLevels",
+            ActivityContent::RoomServerAcl(_) => "roomServerAcl",
+            ActivityContent::RoomThirdPartyInvite(_) => "roomThirdPartyInvite",
+            ActivityContent::RoomTombstone(_) => "roomTombstone",
+            ActivityContent::RoomTopic(_) => "roomTopic",
+            ActivityContent::SpaceChild(_) => "spaceChild",
+            ActivityContent::SpaceParent(_) => "spaceParent",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -205,8 +244,25 @@ impl Activity {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
             | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
+            | ActivityContent::RoomAliases(_)
+            | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomCanonicalAlias(_)
             | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => None,
+            | ActivityContent::RoomEncryption(_)
+            | ActivityContent::RoomGuestAccess(_)
+            | ActivityContent::RoomHistoryVisibility(_)
+            | ActivityContent::RoomJoinRules(_)
+            | ActivityContent::RoomName(_)
+            | ActivityContent::RoomPinnedEvents(_)
+            | ActivityContent::RoomPowerLevels(_)
+            | ActivityContent::RoomServerAcl(_)
+            | ActivityContent::RoomThirdPartyInvite(_)
+            | ActivityContent::RoomTombstone(_)
+            | ActivityContent::RoomTopic(_)
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -303,8 +359,25 @@ impl Activity {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
             | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
+            | ActivityContent::RoomAliases(_)
+            | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomCanonicalAlias(_)
             | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => todo!(),
+            | ActivityContent::RoomEncryption(_)
+            | ActivityContent::RoomGuestAccess(_)
+            | ActivityContent::RoomHistoryVisibility(_)
+            | ActivityContent::RoomJoinRules(_)
+            | ActivityContent::RoomName(_)
+            | ActivityContent::RoomPinnedEvents(_)
+            | ActivityContent::RoomPowerLevels(_)
+            | ActivityContent::RoomServerAcl(_)
+            | ActivityContent::RoomThirdPartyInvite(_)
+            | ActivityContent::RoomTombstone(_)
+            | ActivityContent::RoomTopic(_)
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => todo!(),
         }
     }
 
@@ -344,11 +417,62 @@ impl Activity {
                 ActerSupportedRoomStatusEvents::PolicyRuleRoom(c) => {
                     Ok(Self::new(meta, ActivityContent::PolicyRuleRoom(c)))
                 }
+                ActerSupportedRoomStatusEvents::PolicyRuleServer(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleServer(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleUser(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleUser(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomAliases(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomAliases(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomAvatar(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomAvatar(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomCanonicalAlias(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomCanonicalAlias(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
                 }
+                ActerSupportedRoomStatusEvents::RoomEncryption(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomEncryption(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomGuestAccess(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomGuestAccess(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomHistoryVisibility(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomHistoryVisibility(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomJoinRules(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomJoinRules(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomPinnedEvents(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomPinnedEvents(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomPowerLevels(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomPowerLevels(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomServerAcl(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomServerAcl(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomThirdPartyInvite(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomThirdPartyInvite(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomTombstone(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomTombstone(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomTopic(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomTopic(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceChild(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceChild(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceParent(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceParent(c)))
                 }
             },
 
