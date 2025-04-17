@@ -23,11 +23,11 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
         (!isOnSupportedPlatform && ntfyServer.isNotEmpty);
     return SettingsTile.switchTile(
       title: Text(title ?? lang.mobilePushNotifications),
-      description: canPush ? Text(lang.noPushServerConfigured) : null,
+      description: !canPush ? Text(lang.noPushServerConfigured) : null,
       initialValue:
-          !canPush &&
+          canPush &&
           (ref.watch(isPushNotificationsActiveProvider).valueOrNull ?? true),
-      enabled: !canPush,
+      enabled: canPush,
       onToggle:
           (newVal) => handleNotificationSyncToggle(
             context: context,
