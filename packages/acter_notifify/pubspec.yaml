@@ -16,7 +16,7 @@ dependencies:
 
   logging: ^1.2.0
   flutter_local_notifications: ^17.2.2
-  device_info_plus: ^10.1.0
+  device_info_plus: ^11.3.3
   push: ^2.3.0
   convert: ^3.1.1
   firebase_core: ^3.1.0
