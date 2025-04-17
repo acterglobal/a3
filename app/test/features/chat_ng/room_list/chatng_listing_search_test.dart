@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
-import 'package:acter/features/chat/widgets/convo_card.dart';
-import 'package:acter/features/chat/widgets/rooms_list.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/rooms_list.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +24,7 @@ const Map<String, AvatarInfo> _roomsData = {
 };
 
 void main() {
-  group('Chat Listing Search', () {
+  group('ChatNG Listing Search', () {
     final mockedProviders = [
       deviceIdProvider.overrideWith((a) async {
         return 'asdf';
@@ -37,21 +37,23 @@ void main() {
         ProviderScope(
           overrides: mockedProviders,
           child: InActerContextTestWrapper(
-            child: RoomsListWidget(onSelected: (_) {}),
+            child: RoomsListNGWidget(onSelected: (_) {}),
           ),
         ),
       );
       expect(
-        find.byKey(RoomsListWidget.openSearchActionButtonKey),
+        find.byKey(RoomsListNGWidget.openSearchActionButtonKey),
         findsOneWidget,
       );
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsNothing);
-      await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
+      await tester.tap(find.byKey(RoomsListNGWidget.openSearchActionButtonKey));
       await tester.pump();
       // opening the search area
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsOneWidget);
       // close again
-      await tester.tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+      await tester.tap(
+        find.byKey(RoomsListNGWidget.closeSearchActionButtonKey),
+      );
       await tester.pump();
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsNothing);
     });
@@ -60,25 +62,25 @@ void main() {
         ProviderScope(
           overrides: mockedProviders,
           child: InActerContextTestWrapper(
-            child: RoomsListWidget(onSelected: (_) {}),
+            child: RoomsListNGWidget(onSelected: (_) {}),
           ),
         ),
       );
 
       expect(
-        find.byKey(RoomsListWidget.openSearchActionButtonKey),
+        find.byKey(RoomsListNGWidget.openSearchActionButtonKey),
         findsOneWidget,
       );
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsNothing);
       // -- we see all
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
       );
-      await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
+      await tester.tap(find.byKey(RoomsListNGWidget.openSearchActionButtonKey));
       await tester.pump();
       // opening the search area
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsOneWidget);
@@ -87,7 +89,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(2),
@@ -100,7 +102,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(3),
@@ -111,12 +113,14 @@ void main() {
         find.byKey(ActerSearchWidget.clearSearchActionButtonKey),
       );
       // and we close
-      await tester.tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+      await tester.tap(
+        find.byKey(RoomsListNGWidget.closeSearchActionButtonKey),
+      );
       await tester.pumpProviderScope(times: 2);
       // -- we should see all of them again
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -128,25 +132,25 @@ void main() {
         ProviderScope(
           overrides: mockedProviders,
           child: InActerContextTestWrapper(
-            child: RoomsListWidget(onSelected: (_) {}),
+            child: RoomsListNGWidget(onSelected: (_) {}),
           ),
         ),
       );
 
       expect(
-        find.byKey(RoomsListWidget.openSearchActionButtonKey),
+        find.byKey(RoomsListNGWidget.openSearchActionButtonKey),
         findsOneWidget,
       );
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsNothing);
       // -- we see all
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
       );
-      await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
+      await tester.tap(find.byKey(RoomsListNGWidget.openSearchActionButtonKey));
       await tester.pump();
       // opening the search area
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsOneWidget);
@@ -158,7 +162,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
@@ -175,7 +179,7 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
@@ -187,12 +191,14 @@ void main() {
         find.byKey(ActerSearchWidget.clearSearchActionButtonKey),
       );
       // and we close
-      await tester.tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+      await tester.tap(
+        find.byKey(RoomsListNGWidget.closeSearchActionButtonKey),
+      );
       await tester.pumpProviderScope(times: 2);
       // -- we should see all of them again
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
@@ -204,25 +210,25 @@ void main() {
         ProviderScope(
           overrides: mockedProviders,
           child: InActerContextTestWrapper(
-            child: RoomsListWidget(onSelected: (_) {}),
+            child: RoomsListNGWidget(onSelected: (_) {}),
           ),
         ),
       );
 
       expect(
-        find.byKey(RoomsListWidget.openSearchActionButtonKey),
+        find.byKey(RoomsListNGWidget.openSearchActionButtonKey),
         findsOneWidget,
       );
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsNothing);
       // -- we see all
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsExactly(10),
       );
-      await tester.tap(find.byKey(RoomsListWidget.openSearchActionButtonKey));
+      await tester.tap(find.byKey(RoomsListNGWidget.openSearchActionButtonKey));
       await tester.pump();
       // opening the search area
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsOneWidget);
@@ -234,19 +240,21 @@ void main() {
       // -- we only see subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,
       );
       expect(find.text('Room ABC'), findsOne);
-      await tester.tap(find.byKey(RoomsListWidget.closeSearchActionButtonKey));
+      await tester.tap(
+        find.byKey(RoomsListNGWidget.closeSearchActionButtonKey),
+      );
       await tester.pumpProviderScope(times: 2);
       expect(find.byKey(ActerSearchWidget.searchBarKey), findsNothing);
       // -- we still only see the subset
       expect(
         find.byType(
-          ConvoCard,
+          ChatItemWidget,
           skipOffstage: false, // include off-stage or we don't find all of them
         ),
         findsOneWidget,

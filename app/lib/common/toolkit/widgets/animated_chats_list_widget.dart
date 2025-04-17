@@ -107,9 +107,7 @@ class ActerAnimatedListState extends State<ActerAnimatedListWidget> {
     String roomId,
     BuildContext context,
     Animation<double> animation,
-  ) {
-    return widget.itemBuilder(animation: animation, roomId: roomId);
-  }
+  ) => widget.itemBuilder(animation: animation, roomId: roomId);
 
   Widget buildItem(
     BuildContext context,
