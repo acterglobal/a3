@@ -105,7 +105,7 @@ class MentionList extends ConsumerStatefulWidget {
 
 class _MentionHandlerState extends ConsumerState<MentionList> {
   final _scrollController = ScrollController();
-  StreamSubscription<(TransactionTime, Transaction)>? _updateListener;
+  StreamSubscription<EditorTransactionValue>? _updateListener;
   Map<String, String>? _filteredSuggestions;
 
   @override
