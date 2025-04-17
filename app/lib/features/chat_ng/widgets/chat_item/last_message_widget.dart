@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/profile_changes_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -40,6 +41,10 @@ class LastMessageWidget extends ConsumerWidget {
         eventItem: eventItem,
       ),
       'MembershipChange' => RoomMembershipEventWidget(
+        roomId: roomId,
+        eventItem: eventItem,
+      ),
+      'ProfileChange' => ProfileChangesEventWidget(
         roomId: roomId,
         eventItem: eventItem,
       ),
