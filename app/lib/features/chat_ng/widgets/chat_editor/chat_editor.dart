@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
@@ -310,17 +311,22 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     return Expanded(
       child: CallbackShortcuts(
         bindings: <ShortcutActivator, VoidCallback>{
-          const SingleActivator(LogicalKeyboardKey.enter):
-              () => sendMessageAction(
-                roomId: widget.roomId,
-                textEditorState: textEditorState,
-                onTyping: widget.onTyping,
-                context: context,
-                ref: ref,
-                log: _log,
-              ),
-          LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
-              () => textEditorState.insertNewLine(),
+          if (!desktopPlatforms.contains(Theme.of(context).platform))
+            const SingleActivator(LogicalKeyboardKey.enter):
+                () => textEditorState.insertNewLine(),
+          if (desktopPlatforms.contains(Theme.of(context).platform))
+            const SingleActivator(LogicalKeyboardKey.enter):
+                () => sendMessageAction(
+                  roomId: widget.roomId,
+                  textEditorState: textEditorState,
+                  onTyping: widget.onTyping,
+                  context: context,
+                  ref: ref,
+                  log: _log,
+                ),
+          if (!desktopPlatforms.contains(Theme.of(context).platform))
+            LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
+                () => textEditorState.insertNewLine(),
         },
         child: _renderEditor(hintText),
       ),
