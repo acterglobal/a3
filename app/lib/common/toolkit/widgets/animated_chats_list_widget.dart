@@ -1,25 +1,30 @@
-import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
 import 'package:diffutil_dart/diffutil.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::chat::animated_chats_list_widget');
+final _log = Logger('a3::toolkit::animated_list_widget');
 
-class AnimatedChatsListWidget extends StatefulWidget {
-  final Function(String)? onSelected;
+typedef ItemWidgetBuilder =
+    Widget Function({
+      required Animation<double> animation,
+      required String roomId,
+    });
+
+class ActerAnimatedListWidget extends StatefulWidget {
+  final ItemWidgetBuilder itemBuilder;
   final List<String> entries;
 
-  const AnimatedChatsListWidget({
+  const ActerAnimatedListWidget({
     super.key,
     required this.entries,
-    this.onSelected,
+    required this.itemBuilder,
   });
 
   @override
-  AnimatedChatsListState createState() => AnimatedChatsListState();
+  ActerAnimatedListState createState() => ActerAnimatedListState();
 }
 
-class AnimatedChatsListState extends State<AnimatedChatsListWidget> {
+class ActerAnimatedListState extends State<ActerAnimatedListWidget> {
   late GlobalKey<AnimatedListState> _listKey;
   late List<String> _currentList;
 
@@ -30,12 +35,12 @@ class AnimatedChatsListState extends State<AnimatedChatsListWidget> {
   }
 
   void _reset() {
-    _listKey = GlobalKey<AnimatedListState>(debugLabel: 'chat rooms list');
+    _listKey = GlobalKey<AnimatedListState>(debugLabel: 'acter animated list');
     _currentList = List.of(widget.entries);
   }
 
   @override
-  void didUpdateWidget(AnimatedChatsListWidget oldWidget) {
+  void didUpdateWidget(ActerAnimatedListWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_listKey.currentState == null) {
       _log.fine('no state, hard reset');
@@ -102,17 +107,7 @@ class AnimatedChatsListState extends State<AnimatedChatsListWidget> {
     String roomId,
     BuildContext context,
     Animation<double> animation,
-  ) {
-    return ChatItemWidget(
-      animation: animation,
-      key: Key('convo-card-$roomId-removed'),
-      roomId: roomId,
-      onTap: () {
-        final onSelected = widget.onSelected;
-        if (onSelected != null) onSelected(roomId);
-      },
-    );
-  }
+  ) => widget.itemBuilder(animation: animation, roomId: roomId);
 
   Widget buildItem(
     BuildContext context,
@@ -126,15 +121,7 @@ class AnimatedChatsListState extends State<AnimatedChatsListWidget> {
     }
     final roomId = _currentList[index];
     _log.fine('render $roomId');
-    return ChatItemWidget(
-      animation: animation,
-      key: Key('convo-card-$roomId'),
-      roomId: roomId,
-      onTap: () {
-        final onSelected = widget.onSelected;
-        if (onSelected != null) onSelected(roomId);
-      },
-    );
+    return widget.itemBuilder(animation: animation, roomId: roomId);
   }
 
   @override
