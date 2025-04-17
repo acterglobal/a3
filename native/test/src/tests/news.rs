@@ -326,6 +326,9 @@ async fn news_markdown_text_with_reference_test() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces loaded yet");
+            }
             if client.pins().await?.len() != 1 {
                 bail!("not all pins found");
             }

@@ -36,26 +36,23 @@ async fn task_creation_activity() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy, move || {
+    let (task_list, task) = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let task_lists = client.task_lists().await?;
             if task_lists.len() != 1 {
                 bail!("not all task_lists found");
             }
-            Ok(task_lists)
+            let task_list = task_lists.first().unwrap().clone();
+            let tasks = task_list.tasks().await?;
+            if tasks.len() != 1 {
+                bail!("not all tasks found");
+            }
+            Ok((task_list, tasks.first().unwrap().clone()))
         }
     })
     .await?;
 
-    assert_eq!(task_lists.len(), 1);
-
-    let task_list = task_lists.first().unwrap();
-
-    let tasks = task_list.tasks().await?;
-    assert_eq!(tasks.len(), 1);
-
-    let task = tasks.first().unwrap();
 
     let activity = user.activity(task_list.event_id_str()).await?;
     assert_eq!(activity.type_str(), "creation");

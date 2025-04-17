@@ -37,6 +37,9 @@ async fn calendar_creation_activity() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
+            if client.spaces().await?.len() != 1 {
+                bail!("not all spaces found");
+            }
             if client.calendar_events().await?.len() != 1 {
                 bail!("not all calendar_events found");
             }
