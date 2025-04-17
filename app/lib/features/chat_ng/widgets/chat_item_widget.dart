@@ -58,7 +58,7 @@ class ChatItemWidget extends ConsumerWidget {
       onTap: onTap,
       leading: RoomAvatar(roomId: roomId, showParents: true),
       title: _buildChatTitle(context),
-      subtitle: _buildChatSubtitle(context, ref),
+      subtitle: _buildChatSubtitle(context, ref, isChatSelected),
     );
   }
 
@@ -72,13 +72,17 @@ class ChatItemWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildChatSubtitle(BuildContext context, WidgetRef ref) {
+  Widget _buildChatSubtitle(
+    BuildContext context,
+    WidgetRef ref,
+    bool isChatSelected,
+  ) {
     return Row(
       children: [
         Expanded(child: ChatTypingLastMessageContainerWidget(roomId: roomId)),
         BookmarkIconWidget(roomId: roomId),
         MuteIconWidget(roomId: roomId),
-        UnreadCountWidget(roomId: roomId),
+        UnreadCountWidget(roomId: roomId, isSelected: isChatSelected),
       ],
     );
   }
