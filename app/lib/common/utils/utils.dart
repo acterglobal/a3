@@ -32,9 +32,11 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
-String jiffyTime(BuildContext context, int timeInterval) {
+String jiffyTime(BuildContext context, int timeInterval, {DateTime? toWhen}) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
-  final now = Jiffy.now().startOf(Unit.day);
+  final now = Jiffy.parseFromDateTime(
+    toWhen ?? DateTime.now().toUtc(),
+  ).startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
     return jiffyTime.jm;
   } else {

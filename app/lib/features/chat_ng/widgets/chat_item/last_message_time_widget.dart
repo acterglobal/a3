@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -45,7 +46,11 @@ class LastMessageTimeWidget extends ConsumerWidget {
     if (eventItem == null) return const SizedBox.shrink();
 
     return Text(
-      jiffyTime(context, eventItem.originServerTs()),
+      jiffyTime(
+        context,
+        eventItem.originServerTs(),
+        toWhen: ref.watch(utcNowProvider),
+      ),
       style: theme.textTheme.bodySmall?.copyWith(
         color: timeColor,
         fontSize: 12,
