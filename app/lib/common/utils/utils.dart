@@ -39,17 +39,18 @@ String jiffyTime(BuildContext context, int timeInterval, {DateTime? toWhen}) {
   ).startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
     return jiffyTime.jm;
-  } else {
-    final yesterday = now.subtract(days: 1);
-    final week = now.subtract(weeks: 1);
-    if (jiffyTime.isBetween(yesterday, now)) {
-      return 'Yesterday';
-    } else if (jiffyTime.isBetween(week, now)) {
-      return jiffyTime.EEEE;
-    } else {
-      return jiffyTime.yMd;
-    }
   }
+
+  final yesterday = now.subtract(days: 1);
+  if (jiffyTime.isBetween(yesterday, now)) {
+    return L10n.of(context).yesterday;
+  }
+
+  final week = now.subtract(weeks: 1);
+  if (jiffyTime.isBetween(week, now)) {
+    return jiffyTime.EEEE;
+  }
+  return jiffyTime.yMd;
 }
 
 String jiffyDateForActvity(BuildContext context, int timeInterval) {
