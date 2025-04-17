@@ -1,5 +1,7 @@
+import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
+import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +59,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
       if (permissions.showCalendarPermission)
         CalendarSyncPermissionWidget(callNextPage: () => _nextPage()),
+      if (isDesktop)
+        DesktopSetupWidget(callNextPage: () => _nextPage()),
       AnalyticsOptInWidget(
         callNextPage: () {
           _nextPage();

@@ -5,7 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DesktopSetupWidget extends ConsumerStatefulWidget {
-  const DesktopSetupWidget({super.key});
+  final Function() callNextPage;  
+  const DesktopSetupWidget({super.key, required this.callNextPage});
 
   @override
   ConsumerState<DesktopSetupWidget> createState() => _DesktopSetupWidgetState();
@@ -50,20 +51,9 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Close button at the top right
-            Positioned(
-              top: 20,
-              right: 0,
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
-              ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,9 +75,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
                     ],
                   ),
                 ),
-              ),
             ),
-          ],
         ),
       ),
     );
@@ -155,7 +143,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
   Widget _buildActionButton(BuildContext context, L10n lang) {
     final textTheme = Theme.of(context).textTheme;
     return ElevatedButton(
-      onPressed: () => Navigator.pop(context),
+      onPressed: () => widget.callNextPage(),
       child: Text(
         lang.wizzardContinue,
         style: textTheme.bodyMedium?.copyWith(
