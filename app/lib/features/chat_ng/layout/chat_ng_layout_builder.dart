@@ -1,15 +1,15 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/chat/pages/chat_select_page.dart';
-import 'package:acter/features/chat/widgets/rooms_list.dart';
+import 'package:acter/features/chat_ng/pages/chat_select_page.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatLayoutBuilder extends StatelessWidget {
+class ChatNgLayoutBuilder extends StatelessWidget {
   final Widget? centerChild;
   final Widget? expandedChild;
 
-  const ChatLayoutBuilder({this.centerChild, this.expandedChild, super.key});
+  const ChatNgLayoutBuilder({this.centerChild, this.expandedChild, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class ChatLayoutBuilder extends StatelessWidget {
       if (expanded != null) return expanded;
       if (center != null) return center;
       // no children, show the room list
-      return RoomsListWidget(
+      return RoomsListNGWidget(
         onSelected:
             (String roomId) => context.pushNamed(
               Routes.chatroom.name,
@@ -35,7 +35,7 @@ class ChatLayoutBuilder extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Flexible(
-          child: RoomsListWidget(
+          child: RoomsListNGWidget(
             onSelected:
                 (String roomId) =>
                     pushReplacementRouting
@@ -57,7 +57,7 @@ class ChatLayoutBuilder extends StatelessWidget {
         if (expanded != null) Flexible(flex: 2, child: expanded),
         // Fallback if neither is in our route
         if (center == null && expanded == null)
-          const Flexible(flex: 2, child: ChatSelectPage()),
+          const Flexible(flex: 2, child: ChatNgSelectPage()),
       ],
     );
   }
