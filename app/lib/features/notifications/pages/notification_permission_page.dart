@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/utils/typedefs.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +7,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NotificationPermissionWidget extends ConsumerWidget {
-  final Function()? callNextPage;
+  final CallNextPage? callNextPage;
+
   const NotificationPermissionWidget({super.key, this.callNextPage});
 
   @override

@@ -46,7 +46,7 @@ void main() {
     final savePage = tester.widget<SaveUsernamePage>(
       find.byType(SaveUsernamePage),
     );
-    savePage.callNextPage();
+    savePage.callNextPage;
 
     // Let widget animate to next page
     await tester.pumpAndSettle();

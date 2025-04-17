@@ -1,4 +1,5 @@
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +9,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
-  final Function() callNextPage;
+  final CallNextPage? callNextPage;
 
   const EncryptionBackupPage({super.key, required this.callNextPage});
 
@@ -172,7 +173,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled ? () => widget.callNextPage() : null,
+          onPressed: isEnabled ? () => widget.callNextPage : null,
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },

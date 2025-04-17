@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/validation_utils.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -11,7 +12,7 @@ class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
 
-  final Function() callNextPage;
+  final CallNextPage? callNextPage;
   final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
@@ -105,7 +106,7 @@ class LinkEmailPage extends ConsumerWidget {
       if (!context.mounted) return;
       EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
-      callNextPage();
+      callNextPage;
     } catch (e) {
       EasyLoading.showToast(
         lang.failedToSubmitEmail(e),

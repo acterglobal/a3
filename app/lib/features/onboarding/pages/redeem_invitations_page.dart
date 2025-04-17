@@ -3,6 +3,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -17,12 +18,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'dart:async';
 
 class RedeemInvitationsPage extends ConsumerStatefulWidget {
-  final Function() callNextPage;
-  
-  const RedeemInvitationsPage({
-    super.key,
-    required this.callNextPage,
-  });
+  final CallNextPage? callNextPage;
+
+  const RedeemInvitationsPage({super.key, required this.callNextPage});
 
   @override
   ConsumerState<RedeemInvitationsPage> createState() =>
@@ -144,7 +142,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     }
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
 
@@ -325,7 +323,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       return ActerPrimaryActionButton(
         onPressed: () {
           EasyLoading.dismiss();
-          widget.callNextPage();
+          widget.callNextPage;
         },
         child: Text(lang.wizzardContinue, style: const TextStyle(fontSize: 16)),
       );
@@ -334,7 +332,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     return OutlinedButton(
       onPressed: () {
         EasyLoading.dismiss();
-        widget.callNextPage();
+        widget.callNextPage;
       },
       child: Text(lang.skip),
     );

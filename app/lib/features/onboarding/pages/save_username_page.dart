@@ -1,3 +1,4 @@
+import 'package:acter/features/onboarding/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,7 @@ class SaveUsernamePage extends StatelessWidget {
   static const copyUsernameBtn = Key('reg-copy-username-btn');
   static const continueBtn = Key('reg-continue-btn');
   final String username;
-  final Function() callNextPage;
+  final CallNextPage? callNextPage;
 
   SaveUsernamePage({
     super.key,
@@ -127,7 +128,7 @@ class SaveUsernamePage extends StatelessWidget {
       builder: (context, isCopiedValue, child) {
         return OutlinedButton(
           key: continueBtn,
-          onPressed: isCopiedValue ? () => callNextPage() : null,
+          onPressed: isCopiedValue ? () => callNextPage : null,
           style: OutlinedButton.styleFrom(
             side: isCopiedValue ? null : BorderSide(color: disabledColor),
           ),

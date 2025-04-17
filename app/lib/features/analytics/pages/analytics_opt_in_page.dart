@@ -4,12 +4,13 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AnalyticsOptInWidget extends ConsumerWidget {
-  final Function()? callNextPage;
+  final CallNextPage? callNextPage;
   static const continueBtn = Key('analytics-continue-btn');
 
   const AnalyticsOptInWidget({super.key, this.callNextPage});
