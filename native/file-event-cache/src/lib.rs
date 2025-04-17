@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use matrix_sdk::{
     deserialized_responses::TimelineEvent,
     linked_chunk::Position,
-    ruma::{EventId, OwnedEventId},
+    ruma::{events::relation::RelationType, EventId, OwnedEventId},
 };
 use matrix_sdk_base::{
     event_cache::{
@@ -271,9 +271,28 @@ where
         &self,
         room_id: &RoomId,
         event_id: &EventId,
-    ) -> Result<Option<(Position, TimelineEvent)>, Self::Error> {
+    ) -> Result<Option<TimelineEvent>, Self::Error> {
         self.inner
             .find_event(room_id, event_id)
+            .await
+            .map_err(Into::into)
+    }
+
+    async fn find_event_relations(
+        &self,
+        room_id: &RoomId,
+        event_id: &EventId,
+        relation_types: Option<&[RelationType]>,
+    ) -> Result<Vec<Event>, Self::Error> {
+        self.inner
+            .find_event_relations(room_id, event_id, relation_types)
+            .await
+            .map_err(Into::into)
+    }
+
+    async fn save_event(&self, room_id: &RoomId, event: Event) -> Result<(), Self::Error> {
+        self.inner
+            .save_event(room_id, event)
             .await
             .map_err(Into::into)
     }
