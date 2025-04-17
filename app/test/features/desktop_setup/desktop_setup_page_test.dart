@@ -21,7 +21,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: const DesktopSetupWidget(),
+      child: DesktopSetupWidget(callNextPage: () {}),
       overrides: [
         launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
       ],
@@ -40,7 +40,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: const DesktopSetupWidget(),
+      child: DesktopSetupWidget(callNextPage: () {}),
       overrides: [
         launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
       ],
@@ -61,7 +61,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: const DesktopSetupWidget(),
+      child: DesktopSetupWidget(callNextPage: () {}),
       overrides: [
         launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
       ],
@@ -79,7 +79,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: const DesktopSetupWidget(),
+      child: DesktopSetupWidget(callNextPage: () {}),
       overrides: [
         launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
       ],
