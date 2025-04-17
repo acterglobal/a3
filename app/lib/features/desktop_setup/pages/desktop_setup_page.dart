@@ -1,10 +1,7 @@
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/desktop_setup/providers/desktop_setup_provider.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DesktopSetupWidget extends ConsumerStatefulWidget {
@@ -23,6 +20,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
   }
 
   Future<void> _init() async {
+    final launchAtStartup = ref.read(launchAtStartupProvider);
     final isEnabled = await launchAtStartup.isEnabled();
     if (mounted) {
       ref.read(desktopFeaturesProvider.notifier).state = isEnabled;
@@ -30,13 +28,19 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
   }
 
   Future<void> handleEnable() async {
-    await launchAtStartup.enable();
-    await _init();
+    final launchAtStartup = ref.read(launchAtStartupProvider);
+    final success = await launchAtStartup.enable();
+    if (success) {
+      await _init();
+    }
   }
 
   Future<void> handleDisable() async {
-    await launchAtStartup.disable();
-    await _init();
+    final launchAtStartup = ref.read(launchAtStartupProvider);
+    final success = await launchAtStartup.disable();
+    if (success) {
+      await _init();
+    }
   }
 
   @override
@@ -151,7 +155,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
   Widget _buildActionButton(BuildContext context, L10n lang) {
     final textTheme = Theme.of(context).textTheme;
     return ElevatedButton(
-      onPressed: () => context.goNamed(Routes.main.name),
+      onPressed: () => Navigator.pop(context),
       child: Text(
         lang.wizzardContinue,
         style: textTheme.bodyMedium?.copyWith(
