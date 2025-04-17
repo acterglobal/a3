@@ -25,12 +25,17 @@ enum TabEntry {
 class TabsNotifier extends FamilyNotifier<List<TabEntry>, String> {
   @override
   List<TabEntry> build(String spaceId) => [
-    if (ref.watch(topicProvider(spaceId)).valueOrNull != null)
-      TabEntry.overview,
+    // always show overview the first tab
+    TabEntry.overview,
+    // specific feature tabs
     if (ref.watch(isActerSpace(spaceId)).valueOrNull == true)
       ..._getFeatures(spaceId),
+
+    // child space related
     ..._childSpaces(spaceId),
+    // members
     TabEntry.members,
+    // and further actions
     ..._getActions(spaceId),
   ];
 
