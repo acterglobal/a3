@@ -1,0 +1,2 @@
+- [Labs] Chat-NG:
+  - [fix] chat editor now correctly auto-scrolls upon entering new line text.
