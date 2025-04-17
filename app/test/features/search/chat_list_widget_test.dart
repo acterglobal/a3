@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
-import 'package:acter/features/chat/widgets/chat_list_widget.dart';
+import 'package:acter/features/search/widgets/chat_list_widget.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/cupertino.dart';
