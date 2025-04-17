@@ -6,9 +6,9 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../helpers/mock_chat_providers.dart';
-import '../../helpers/test_util.dart';
-import '../../helpers/test_wrapper_widget.dart';
+import '../../../helpers/mock_chat_providers.dart';
+import '../../../helpers/test_util.dart';
+import '../../../helpers/test_wrapper_widget.dart';
 
 const Map<String, AvatarInfo> _roomsData = {
   'roomA': AvatarInfo(uniqueId: 'roomA', displayName: 'Room ABC'),
