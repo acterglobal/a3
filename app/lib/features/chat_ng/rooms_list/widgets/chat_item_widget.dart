@@ -35,16 +35,19 @@ class ChatItemWidget extends ConsumerWidget {
   Widget _buildChatItem(BuildContext context, WidgetRef ref) {
     final isChatSelected =
         showSelectedIndication && roomId == ref.watch(selectedChatIdProvider);
-    return ListTile(
-      selected: isChatSelected,
-      selectedTileColor: Theme.of(context).colorScheme.primary,
-      key: Key('chat-item-widget-$roomId'),
-      dense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      onTap: onTap,
-      leading: RoomAvatar(roomId: roomId, showParents: true),
-      title: _buildChatTitle(context),
-      subtitle: _buildChatSubtitle(context, ref, isChatSelected),
+    return Card(
+      margin: EdgeInsets.only(bottom: 16),
+      child: ListTile(
+        selected: isChatSelected,
+        selectedTileColor: Theme.of(context).colorScheme.primary,
+        key: Key('chat-item-widget-$roomId'),
+        dense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+        onTap: onTap,
+        leading: RoomAvatar(roomId: roomId, showParents: true),
+        title: _buildChatTitle(context),
+        subtitle: _buildChatSubtitle(context, ref, isChatSelected),
+      ),
     );
   }
 
