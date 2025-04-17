@@ -2,6 +2,8 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
+import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart'
+    show CalendarSyncPermissionWidget;
 import 'package:acter/features/calendar_sync/providers/calendar_sync_active_provider.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -37,18 +39,39 @@ class CalendarSettingsPage extends ConsumerWidget {
                           true),
                   onToggle: (newVal) async {
                     if (newVal) {
-                      final hasPermission = await handleCalendarPermission( context, );
-                      if (!hasPermission || !context.mounted) {
-                        return;
+                      final hasPermission = await isShowCalendarPermissionInfoPage();
+                      if (hasPermission) {
+                        if (context.mounted) {
+                          final granted = await showDialog<bool>(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return Dialog.fullscreen(
+                                child: const CalendarSyncPermissionWidget(),
+                              );
+                            },
+                          );
+
+                          if (granted == true && context.mounted) {
+                            await initCalendarSync(ignoreRejection: true);
+                            EasyLoading.showToast('Acter Calendars synced');
+                            ref.read(isCalendarSyncActiveProvider.notifier).set(true);
+                          } else {
+                            // If permission not granted, keep toggle off
+                            ref.read(isCalendarSyncActiveProvider.notifier).set(false);
+                          }
+                        }
+                      }else{
+                         await initCalendarSync(ignoreRejection: true);
+                         EasyLoading.showToast('Acter Calendars synced');
+                         ref.read(isCalendarSyncActiveProvider.notifier).set(true);
                       }
+
                     }
-                    ref.read(isCalendarSyncActiveProvider.notifier).set(newVal);
-                    if (newVal) {
-                      await initCalendarSync(ignoreRejection: true);
-                      EasyLoading.showToast('Acter Calendars synced');
-                    } else {
+                    else{
                       await clearActerCalendars();
-                      EasyLoading.showToast('Acter Calendars removes');
+                      EasyLoading.showToast('Acter Calendars removed');
+                      ref.read(isCalendarSyncActiveProvider.notifier).set(false);
                     }
                   },
                 ),

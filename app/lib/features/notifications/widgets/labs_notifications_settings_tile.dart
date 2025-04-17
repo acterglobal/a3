@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
@@ -44,26 +45,51 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     bool newVal,
   ) async {
     if (newVal) {
-      final hasPermission = await handleNotificationPermission(context);
-      if (!hasPermission || !context.mounted) {
-        return;
+      final hasPermission = await isShowNotificationPermissionInfoPage();
+      if (hasPermission) {
+        if (!context.mounted) return;
+        final granted = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Dialog.fullscreen(
+              child: const NotificationPermissionWidget(),
+            );
+          },
+        );
+
+        if (granted != true || !context.mounted) {
+          ref.read(isPushNotificationsActiveProvider.notifier).set(false);
+          return;
+        }
+      }
+      if (context.mounted) {
+        await _setupPushNotifications(context, ref);
       }
     }
+  }
+
+  Future<void> _setupPushNotifications(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final lang = L10n.of(context);
-    ref.read(isPushNotificationsActiveProvider.notifier).set(newVal);
-    if (!newVal) return;
     final client = await ref.read(alwaysClientProvider.future);
+
     EasyLoading.show(status: lang.changingSettings);
     try {
       var granted = await setupPushNotifications(client, forced: true);
       if (granted) {
         EasyLoading.dismiss();
+        ref.read(isPushNotificationsActiveProvider.notifier).set(true);
         return;
       }
+
       await AppSettings.openAppSettings(type: AppSettingsType.notification);
       granted = await setupPushNotifications(client, forced: true);
       if (granted) {
         EasyLoading.dismiss();
+        ref.read(isPushNotificationsActiveProvider.notifier).set(true);
         return;
       }
       // second attempt, even sending the user to the settings, they do not

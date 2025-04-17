@@ -9,9 +9,10 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AnalyticsOptInWidget extends ConsumerWidget {
+  final Function()? callNextPage;
   static const continueBtn = Key('analytics-continue-btn');
 
-  const AnalyticsOptInWidget({super.key});
+  const AnalyticsOptInWidget({super.key, this.callNextPage});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +29,8 @@ class AnalyticsOptInWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildCloseIconButton(context),
+                if (callNextPage == null)
+                  _buildCloseIconButton(context),
                 const SizedBox(height: 20),
                 _buildTitleText(context, lang),
                 const SizedBox(height: 10),
@@ -242,7 +244,11 @@ class AnalyticsOptInWidget extends ConsumerWidget {
       key: AnalyticsOptInWidget.continueBtn,
       onPressed: () {
         if (context.mounted) {
-          Navigator.pop(context);
+          if (callNextPage != null) {
+            callNextPage!();
+          } else {
+            Navigator.pop(context);
+          }
         }
       },
       child: Text(

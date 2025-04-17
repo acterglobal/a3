@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
-import 'package:acter/features/auth/providers/post_login_signup_provider.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,10 +19,10 @@ class UploadAvatarPage extends ConsumerWidget {
   static const uploadBtn = Key('reg-upload-btn');
   static const skipBtn = Key('reg-skip-btn');
 
-  UploadAvatarPage({super.key});
-
+  final Function() callNextPage;
   final ValueNotifier<PlatformFile?> selectedUserAvatar = ValueNotifier(null);
 
+  UploadAvatarPage({super.key, required this.callNextPage});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(body: _buildBody(context, ref));
@@ -170,9 +169,8 @@ class UploadAvatarPage extends ConsumerWidget {
       key: UploadAvatarPage.skipBtn,
       onPressed: () async {
         if (!context.mounted) return;
-        await ref.read(postLoginSignupProvider).initialize(context);
-        if (!context.mounted) return;
-        context.goNamed(Routes.main.name);
+        // Handle all post-login steps
+        callNextPage();
       },
       child: Text(
         L10n.of(context).skip,
