@@ -1031,6 +1031,9 @@ object TimelineEventItem {
     /// covers some of m.room.member
     fn profile_content() -> Option<ProfileContent>;
 
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1192,6 +1195,31 @@ object JoinRuleBuilder {
     fn join_rule(input: string);
     fn add_room(room: string);
 }
+
+
+//  ########   #######   #######  ##     ##     ######  ########    ###    ######## ########     ######  ##     ##    ###    ##    ##  ######   ######## 
+//  ##     ## ##     ## ##     ## ###   ###    ##    ##    ##      ## ##      ##    ##          ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       
+//  ##     ## ##     ## ##     ## #### ####    ##          ##     ##   ##     ##    ##          ##       ##     ##  ##   ##  ####  ## ##        ##       
+//  ########  ##     ## ##     ## ## ### ##     ######     ##    ##     ##    ##    ######      ##       ######### ##     ## ## ## ## ##   #### ######   
+//  ##   ##   ##     ## ##     ## ##     ##          ##    ##    #########    ##    ##          ##       ##     ## ######### ##  #### ##    ##  ##       
+//  ##    ##  ##     ## ##     ## ##     ##    ##    ##    ##    ##     ##    ##    ##          ##    ## ##     ## ##     ## ##   ### ##    ##  ##       
+//  ##     ##  #######   #######  ##     ##     ######     ##    ##     ##    ##    ########     ######  ##     ## ##     ## ##    ##  ######   ######## 
+
+
+object PolicyRuleRoomContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
 
 //  ########   #######   #######  ##     ##
 //  ##     ## ##     ## ##     ## ###   ###
@@ -1595,6 +1623,11 @@ object Convo {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2637,6 +2670,11 @@ object Space {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {
