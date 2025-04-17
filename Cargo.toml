@@ -13,39 +13,39 @@ rust-version = "1.85"
 [workspace.dependencies.matrix-sdk]
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+rev = "9f92672dc056541b69c1112aa21ec82b7c48491d"
 default-features = false
 features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+rev = "9f92672dc056541b69c1112aa21ec82b7c48491d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+rev = "9f92672dc056541b69c1112aa21ec82b7c48491d"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+rev = "9f92672dc056541b69c1112aa21ec82b7c48491d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+rev = "9f92672dc056541b69c1112aa21ec82b7c48491d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 # path = "../matrix-rust-sdk/testing/matrix-sdk-test"
 git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+rev = "9f92672dc056541b69c1112aa21ec82b7c48491d"
 default-features = false
 
 
