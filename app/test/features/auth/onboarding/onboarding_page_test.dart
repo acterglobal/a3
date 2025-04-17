@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:acter/features/onboarding/pages/onboarding_page.dart';
 import 'package:acter/features/onboarding/providers/onboarding_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../helpers/test_util.dart';
 
