@@ -10,7 +10,7 @@ final _log = Logger('a3::chat::replied_to_notifier');
 class RepliedToMessageNotifier
     extends AutoDisposeFamilyAsyncNotifier<RepliedToMsgState, RoomMsgId> {
   Future<void> retryLoad() async {
-    state = await AsyncValue.guard(() => build(arg));
+    state = AsyncValue.data(await build(arg));
   }
 
   @override
