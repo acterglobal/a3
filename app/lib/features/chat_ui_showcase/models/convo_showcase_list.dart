@@ -36,4 +36,10 @@ final List<MockChatItem> mockChatList = [
   membershipEventInvitedRoom33,
   membershipEventKickedAndBannedRoom34,
   membershipEventKnockedRoom35,
+  profileEventDisplayNameChangedRoom36,
+  profileEventDisplayNameSetRoom37,
+  profileEventDisplayNameUnsetRoom38,
+  profileEventAvatarChangedRoom39,
+  profileEventAvatarSetRoom40,
+  profileEventAvatarUnsetRoom41,
 ];

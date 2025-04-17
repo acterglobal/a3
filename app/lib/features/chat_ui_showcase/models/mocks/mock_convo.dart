@@ -30,6 +30,36 @@ class MockMembershipContent extends Mock implements MembershipContent {
   String change() => mockMembershipType ?? '';
 }
 
+class MockProfileContent extends Mock implements ProfileContent {
+  final String? mockUserId;
+  final String? mockDisplayNameChange;
+  final String? mockDisplayNameOldVal;
+  final String? mockDisplayNameNewVal;
+  final String? mockAvatarUrlChange;
+  MockProfileContent({
+    this.mockUserId,
+    this.mockDisplayNameChange,
+    this.mockDisplayNameOldVal,
+    this.mockDisplayNameNewVal,
+    this.mockAvatarUrlChange,
+  });
+
+  @override
+  UserId userId() => MockUserId(mockUserId: mockUserId);
+
+  @override
+  String? displayNameChange() => mockDisplayNameChange;
+
+  @override
+  String? avatarUrlChange() => mockAvatarUrlChange;
+
+  @override
+  String? displayNameOldVal() => mockDisplayNameOldVal;
+
+  @override
+  String? displayNameNewVal() => mockDisplayNameNewVal;
+}
+
 class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String? mockEventId;
   final String? mockSenderId;
@@ -38,7 +68,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final MsgContent? mockMsgContent;
   final String? mockMsgType;
   final MembershipContent? mockMembershipContent;
-
+  final ProfileContent? mockProfileContent;
   MockTimelineEventItem({
     this.mockEventId,
     this.mockSenderId,
@@ -47,6 +77,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
     this.mockMsgContent,
     this.mockMsgType,
     this.mockMembershipContent,
+    this.mockProfileContent,
   });
 
   @override
@@ -69,6 +100,9 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   MembershipContent? membershipContent() => mockMembershipContent;
+
+  @override
+  ProfileContent? profileContent() => mockProfileContent;
 }
 
 class MockMsgContent extends Mock implements MsgContent {
