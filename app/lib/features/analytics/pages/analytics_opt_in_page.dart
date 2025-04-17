@@ -244,11 +244,7 @@ class AnalyticsOptInWidget extends ConsumerWidget {
       key: AnalyticsOptInWidget.continueBtn,
       onPressed: () {
         if (context.mounted) {
-          if (callNextPage != null) {
-            callNextPage!();
-          } else {
-            Navigator.pop(context);
-          }
+          (callNextPage ?? () => Navigator.pop(context))();
         }
       },
       child: Text(

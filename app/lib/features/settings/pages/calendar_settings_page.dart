@@ -1,10 +1,10 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
-import 'package:acter/common/utils/device_permissions/calendar.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/calendar_sync/calendar_sync.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart'
     show CalendarSyncPermissionWidget;
 import 'package:acter/features/calendar_sync/providers/calendar_sync_active_provider.dart';
+import 'package:acter/features/device_permissions/calendar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -39,8 +39,8 @@ class CalendarSettingsPage extends ConsumerWidget {
                           true),
                   onToggle: (newVal) async {
                     if (newVal) {
-                      final hasPermission = await isShowCalendarPermissionInfoPage();
-                      if (hasPermission) {
+                      final askPermission =  await shouldShowCalendarPermissionInfoPage();
+                      if (askPermission) {
                         if (context.mounted) {
                           final granted = await showDialog<bool>(
                             context: context,

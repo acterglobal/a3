@@ -4,7 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Handles notification permission request for both Android and iOS platforms
-Future<bool> isShowNotificationPermissionInfoPage() async {
+Future<bool> shouldShowNotificationPermissionInfoPage() async {
   if (Platform.isAndroid) {
     final deviceInfo = DeviceInfoPlugin();
     final androidInfo = await deviceInfo.androidInfo;

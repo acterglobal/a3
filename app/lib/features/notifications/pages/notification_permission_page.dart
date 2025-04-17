@@ -5,22 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class NotificationPermissionWidget extends ConsumerStatefulWidget {
+class NotificationPermissionWidget extends ConsumerWidget {
   final Function()? callNextPage;
-  const NotificationPermissionWidget({
-    super.key,
-    this.callNextPage,
-  });
+  const NotificationPermissionWidget({super.key, this.callNextPage});
 
   @override
-  ConsumerState<NotificationPermissionWidget> createState() =>
-      _NotificationPermissionWidgetState();
-}
-
-class _NotificationPermissionWidgetState
-    extends ConsumerState<NotificationPermissionWidget> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
 
@@ -57,11 +47,11 @@ class _NotificationPermissionWidgetState
   Widget _buildIcon(BuildContext context) {
     return Column(
       children: [
-        if (widget.callNextPage == null)
+        if (callNextPage == null)
           Align(
             alignment: Alignment.topRight,
             child: IconButton(
-              onPressed: () => Navigator.pop(context,false),
+              onPressed: () => Navigator.pop(context, false),
               icon: const Icon(Icons.close),
             ),
           ),
@@ -178,11 +168,7 @@ class _NotificationPermissionWidgetState
         OutlinedButton(
           onPressed: () {
             if (context.mounted) {
-              if (widget.callNextPage != null) {
-                widget.callNextPage!();
-              } else {
-                Navigator.pop(context,false);
-              }
+              (callNextPage ?? () => Navigator.pop(context, false))();
             }
           },
           child: Text(lang.askAgain),
@@ -201,11 +187,7 @@ class _NotificationPermissionWidgetState
 
     if (status.isGranted) {
       if (context.mounted) {
-        if (widget.callNextPage != null) {
-          widget.callNextPage!();
-        } else {
-          Navigator.pop(context,true);
-        }
+        (callNextPage ?? () => Navigator.pop(context, true))();
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar

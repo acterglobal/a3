@@ -113,9 +113,6 @@ class LinkEmailPage extends ConsumerWidget {
       );
     } finally {
       EasyLoading.dismiss();
-      // if (context.mounted) {
-      //   context.goNamed(Routes.uploadAvatar.name);
-      // }
     }
   }
 
@@ -160,7 +157,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => {callNextPage()},
+      onPressed: callNextPage,
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

@@ -181,9 +181,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buidSkipButton(BuildContext context, L10n lang) {
     return OutlinedButton(
-      onPressed: () {
-        widget.callNextPage();
-      },
+      onPressed: widget.callNextPage,
       child: Text(L10n.of(context).skip),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:io';
-
-import 'package:acter/common/utils/device_permissions/notification.dart';
 import 'package:acter/config/notifications/init.dart';
+import 'package:acter/features/device_permissions/notification.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
@@ -45,8 +44,8 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
     bool newVal,
   ) async {
     if (newVal) {
-      final hasPermission = await isShowNotificationPermissionInfoPage();
-      if (hasPermission) {
+      final askPermission = await shouldShowNotificationPermissionInfoPage();
+      if (askPermission) {
         if (!context.mounted) return;
         final granted = await showDialog<bool>(
           context: context,
@@ -58,7 +57,7 @@ class _LabNotificationSettingsTile extends ConsumerWidget {
           },
         );
 
-        if (granted != true || !context.mounted) {
+        if (granted != true) {
           ref.read(isPushNotificationsActiveProvider.notifier).set(false);
           return;
         }
