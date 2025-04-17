@@ -1427,10 +1427,10 @@ packages:
     dependency: "direct main"
     description:
       name: launch_at_startup
-      sha256: "1f8a75520913d1038630049e6c44a2575a23ffd28cc8b14fdf37401d1d21de84"
+      sha256: "7db33398b76ec0ed9e27f9f4640553e239977437564046625e215be89c91f084"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.5.1"
   leak_tracker:
     dependency: transitive
     description:
