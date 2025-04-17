@@ -1,15 +1,12 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
-import 'package:acter/features/search/widgets/chat_list_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
 import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:riverpod/riverpod.dart';
 
 import '../../../../helpers/mock_event_providers.dart';
 import '../../../../helpers/test_util.dart';
