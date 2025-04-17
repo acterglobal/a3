@@ -22,7 +22,9 @@ use matrix_sdk_base::ruma::{
     OwnedEventId, OwnedRoomAliasId, OwnedTransactionId, OwnedUserId,
 };
 use matrix_sdk_ui::timeline::{
-    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem, MsgLikeContent, MsgLikeKind, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem, TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem
+    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
+    MsgLikeContent, MsgLikeKind, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -165,11 +167,11 @@ impl TimelineEventItem {
 
         match event.content() {
             SdkTimelineItemContent::MsgLike(msg_like) => match &msg_like.kind {
-                    MsgLikeKind::Message(msg) => {
-                        me.event_type("m.room.message".to_owned());
-                        let msg_type = msg.msgtype();
-                        me.msg_type(Some(msg_type.msgtype().to_string()));
-                        me.content(TimelineEventContent::try_from(msg_type).ok());
+                MsgLikeKind::Message(msg) => {
+                    me.event_type("m.room.message".to_owned());
+                    let msg_type = msg.msgtype();
+                    me.msg_type(Some(msg_type.msgtype().to_string()));
+                    me.content(TimelineEventContent::try_from(msg_type).ok());
                     if let Some(in_reply_to) = &msg_like.in_reply_to {
                         me.in_reply_to(Some(in_reply_to.event_id.clone()));
                     }
@@ -1157,12 +1159,10 @@ impl From<&VirtualTimelineItem> for TimelineVirtualItem {
                     desc,
                 }
             }
-            VirtualTimelineItem::TimelineStart => {
-                TimelineVirtualItem {
-                    event_type: "TimelineStart".to_string(),
-                    desc: None,
-                }
-            }
+            VirtualTimelineItem::TimelineStart => TimelineVirtualItem {
+                event_type: "TimelineStart".to_string(),
+                desc: None,
+            },
             VirtualTimelineItem::ReadMarker => TimelineVirtualItem {
                 event_type: "ReadMarker".to_string(),
                 desc: None,

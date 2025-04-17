@@ -284,16 +284,16 @@ where
         event_id: &EventId,
         relation_types: Option<&[RelationType]>,
     ) -> Result<Vec<Event>, Self::Error> {
-        self.inner.find_event_relations(room_id, event_id, relation_types).await
+        self.inner
+            .find_event_relations(room_id, event_id, relation_types)
+            .await
             .map_err(Into::into)
     }
 
-    async fn save_event(
-        &self,
-        room_id: &RoomId,
-        event: Event,
-    ) -> Result<(), Self::Error> {
-        self.inner.save_event(room_id, event).await
+    async fn save_event(&self, room_id: &RoomId, event: Event) -> Result<(), Self::Error> {
+        self.inner
+            .save_event(room_id, event)
+            .await
             .map_err(Into::into)
     }
 }

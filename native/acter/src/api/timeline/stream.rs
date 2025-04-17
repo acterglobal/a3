@@ -1,6 +1,9 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::room::{edit::EditedContent, reply::{EnforceThread, Reply}};
+use matrix_sdk::room::{
+    edit::EditedContent,
+    reply::{EnforceThread, Reply},
+};
 use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
@@ -182,7 +185,10 @@ impl TimelineStream {
                 timeline
                     .send_reply(
                         content.with_relation(None).into(),
-                        Reply { event_id: event_id, enforce_thread: EnforceThread::MaybeThreaded },
+                        Reply {
+                            event_id,
+                            enforce_thread: EnforceThread::MaybeThreaded,
+                        },
                     )
                     .await?;
                 Ok(true)
