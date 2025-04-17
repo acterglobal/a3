@@ -314,7 +314,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
                 ref: ref,
                 log: _log,
               ),
-        if (!desktopPlatforms.contains(Theme.of(context).platform))
+        if (desktopPlatforms.contains(Theme.of(context).platform))
           LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
               () => textEditorState.insertNewLine(),
       },
