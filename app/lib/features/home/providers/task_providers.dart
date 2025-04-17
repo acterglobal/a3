@@ -19,9 +19,7 @@ class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
         client.subscribeMyOpenTasksStream(); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(
-          () async => await fetchMyOpenTask(client),
-        );
+        state = AsyncValue.data(await fetchMyOpenTask(client));
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);
