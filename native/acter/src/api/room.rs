@@ -37,6 +37,9 @@ use matrix_sdk_base::{
         },
         assign,
         events::{
+            policy::rule::{
+                room::PolicyRuleRoomEventContent, PolicyRuleEventContent, Recommendation,
+            },
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
                 join_rules::{
@@ -1329,7 +1332,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let invited = client
-                    .store()
+                    .state_store()
                     .get_user_ids(me.room.room_id(), RoomMemberships::INVITE)
                     .await?;
                 let mut members = vec![];
@@ -1547,7 +1550,7 @@ impl Room {
                     .to_str()
                     .context("Path was generated from strings. Must be string")?;
                 client
-                    .store()
+                    .state_store()
                     .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
                     .await?;
                 Ok(OptionString::new(Some(path_text.to_string())))
@@ -1603,7 +1606,7 @@ impl Room {
                 } else {
                     [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
-                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                let Some(path_vec) = client.state_store().get_custom_value(&key).await? else {
                     return Ok(OptionString::new(None));
                 };
                 let path_str = std::str::from_utf8(&path_vec)?.to_string();
@@ -1613,7 +1616,7 @@ impl Room {
 
                 // file wasn’t existing, clear cache.
 
-                client.store().remove_custom_value(&key).await?;
+                client.state_store().remove_custom_value(&key).await?;
                 Ok(OptionString::new(None))
             })
             .await?
@@ -1801,6 +1804,37 @@ impl Room {
                         preview: RefPreview::new(None, room_display_name),
                     },
                 ))
+            })
+            .await?
+    }
+
+    // entity: #*:example.org
+    // reason: undesirable content
+    // state key: rule:#*:example.org
+    pub async fn set_policy_rule_room(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change policy rule room in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::PolicyRuleRoom)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change policy rule room in this room");
+                }
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleRoomEventContent(content))
+                    .await?;
+                Ok(response.event_id)
             })
             .await?
     }

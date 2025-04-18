@@ -19,6 +19,9 @@ final _log = Logger('a3::chat::message_provider');
 const _supportedTypes = [
   'MembershipChange',
   'ProfileChange',
+
+  'm.policy.rule.room',
+
   'm.room.message',
   'm.room.redaction',
   'm.room.encrypted',

@@ -1,5 +1,5 @@
-import 'package:acter/common/utils/device_permissions/calendar.dart';
-import 'package:acter/common/utils/device_permissions/notification.dart';
+import 'package:acter/features/device_permissions/calendar.dart';
+import 'package:acter/features/device_permissions/notification.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingPermissions {
@@ -15,8 +15,8 @@ class OnboardingPermissions {
 final onboardingPermissionsProvider = FutureProvider<OnboardingPermissions>((
   ref,
 ) async {
-  final showNotification = await isShowNotificationPermissionInfoPage();
-  final showCalendar = await isShowCalendarPermissionInfoPage();
+  final showNotification = await shouldShowNotificationPermissionInfoPage();
+  final showCalendar = await shouldShowCalendarPermissionInfoPage();
 
   return OnboardingPermissions(
     showNotificationPermission: showNotification,

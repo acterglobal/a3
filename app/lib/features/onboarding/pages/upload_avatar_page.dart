@@ -3,6 +3,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class UploadAvatarPage extends ConsumerWidget {
   static const uploadBtn = Key('reg-upload-btn');
   static const skipBtn = Key('reg-skip-btn');
 
-  final Function() callNextPage;
+  final CallNextPage? callNextPage;
   final ValueNotifier<PlatformFile?> selectedUserAvatar = ValueNotifier(null);
 
   UploadAvatarPage({super.key, required this.callNextPage});
@@ -170,7 +171,7 @@ class UploadAvatarPage extends ConsumerWidget {
       onPressed: () async {
         if (!context.mounted) return;
         // Handle all post-login steps
-        callNextPage();
+        callNextPage;
       },
       child: Text(
         L10n.of(context).skip,
