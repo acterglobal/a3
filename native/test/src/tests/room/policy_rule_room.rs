@@ -141,9 +141,7 @@ fn match_msg(msg: &TimelineItem) -> Option<(String, PolicyRuleRoomContent)> {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let Some(content) = event_item.policy_rule_room_content() else {
-        return None;
-    };
+    let content = event_item.policy_rule_room_content()?;
     let event_id = event_item
         .event_id()
         .expect("event item should have event id");

@@ -4,8 +4,8 @@ import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/features/chat/models/room_list_filter_state/room_list_filter_state.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
-import 'package:acter/features/chat/widgets/chats_list.dart';
-import 'package:acter/features/chat_ng/rooms_list/widgets/rooms_list.dart';
+import 'package:acter/features/chat_ng/globals.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/chats_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -13,29 +13,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-final bucketGlobal = PageStorageBucket();
+typedef RoomSelectAction = Function(String);
 
-class RoomsListWidget extends ConsumerStatefulWidget {
-  static const roomListMenuKey = Key('chat-room-list');
+class RoomsListNGWidget extends ConsumerStatefulWidget {
+  static const roomListMenuKey = Key('chat-ng-room-list');
   static const openSearchActionButtonKey = Key(
-    'chat-rooms-list-open-search-action-btn',
+    'chat-ng-rooms-list-open-search-action-btn',
   );
   static const closeSearchActionButtonKey = Key(
-    'chat-rooms-list-close-search-action-btn',
+    'chat-ng-rooms-list-close-search-action-btn',
   );
 
   final RoomSelectAction onSelected;
 
-  const RoomsListWidget({
+  const RoomsListNGWidget({
     required this.onSelected,
     super.key = roomListMenuKey,
   });
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => RoomsListWidgetState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      RoomsListNGWidgetState();
 }
 
-class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
+class RoomsListNGWidgetState extends ConsumerState<RoomsListNGWidget> {
   final ScrollController controller = ScrollController();
   final FocusNode searchFocus = FocusNode();
 
@@ -74,7 +75,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     }
 
     return Text(
-      title ?? lang.chat,
+      title ?? lang.chatNG,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }
@@ -171,7 +172,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         actions: renderActions(),
       ),
       body: PageStorage(
-        bucket: bucketGlobal,
+        bucket: chatBucket,
         child: Column(
           children: [
             AnimatedOpacity(
@@ -188,7 +189,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             ),
             searchTerms(context),
             Expanded(
-              child: ChatsList(
+              child: ChatsListNG(
                 onSelected: (roomId) {
                   ref
                       .read(roomListFilterProvider.notifier)
@@ -214,7 +215,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                key: RoomsListWidget.closeSearchActionButtonKey,
+                key: RoomsListNGWidget.closeSearchActionButtonKey,
                 onPressed: () {
                   setState(() => _isSearchVisible = false);
                 },
@@ -228,7 +229,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
     return [
       if (!hasFilters)
         IconButton(
-          key: RoomsListWidget.openSearchActionButtonKey,
+          key: RoomsListNGWidget.openSearchActionButtonKey,
           onPressed: () {
             setState(() {
               _isSearchVisible = true;
@@ -240,7 +241,7 @@ class RoomsListWidgetState extends ConsumerState<RoomsListWidget> {
         ),
       if (hasFilters)
         IconButton(
-          key: RoomsListWidget.openSearchActionButtonKey,
+          key: RoomsListNGWidget.openSearchActionButtonKey,
           onPressed: () {
             setState(() => _isSearchVisible = true);
           },

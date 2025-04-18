@@ -1,4 +1,7 @@
-import 'package:acter/features/chat_ng/widgets/chat_item_widget.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
+import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -51,13 +54,14 @@ class ChatListWidget extends ConsumerWidget {
               isShowSeeAllButton: isShowSeeAllButton ?? count < chatList.length,
               onTapSeeAll: onClickSectionHeader.map((cb) => () => cb()),
             ),
-            chatListUI(chatList, count),
+            chatListUI(ref, chatList, count),
           ],
         )
-        : chatListUI(chatList, count);
+        : chatListUI(ref, chatList, count);
   }
 
-  Widget chatListUI(List<Convo> chatList, int count) {
+  Widget chatListUI(WidgetRef ref, List<Convo> chatList, int count) {
+    final isChatNG = ref.watch(isActiveProvider(LabsFeature.chatNG));
     return ListView.builder(
       shrinkWrap: shrinkWrap,
       itemCount: count,
@@ -65,14 +69,20 @@ class ChatListWidget extends ConsumerWidget {
       physics: shrinkWrap ? const NeverScrollableScrollPhysics() : null,
       itemBuilder: (context, index) {
         final roomId = chatList[index].getRoomIdStr();
-        return Card(
-          margin: EdgeInsets.only(bottom: 16),
-          child: ChatItemWidget(
-            showSelectedIndication: showSelectedIndication,
-            roomId: roomId,
-            onTap: () => goToChat(context, roomId),
-          ),
-        );
+        return isChatNG
+            ? ChatItemWidget(
+              roomId: roomId,
+              showSelectedIndication: showSelectedIndication,
+              onTap: () => goToChat(context, roomId),
+            )
+            : Card(
+              margin: EdgeInsets.only(bottom: 16),
+              child: ConvoCard(
+                showSelectedIndication: showSelectedIndication,
+                roomId: roomId,
+                onTap: () => goToChat(context, roomId),
+              ),
+            );
       },
     );
   }

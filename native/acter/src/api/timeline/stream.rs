@@ -1,6 +1,9 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::room::edit::EditedContent;
+use matrix_sdk::room::{
+    edit::EditedContent,
+    reply::{EnforceThread, Reply},
+};
 use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
@@ -178,16 +181,14 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-                let reply_item = timeline
-                    .replied_to_info_from_event_id(&event_id)
-                    .await
-                    .context("Not found which item would be replied to")?;
                 let content = draft.into_room_msg(&room).await?;
                 timeline
                     .send_reply(
                         content.with_relation(None).into(),
-                        reply_item,
-                        ForwardThread::Yes,
+                        Reply {
+                            event_id,
+                            enforce_thread: EnforceThread::MaybeThreaded,
+                        },
                     )
                     .await?;
                 Ok(true)
