@@ -8,7 +8,6 @@ import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/te
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../helpers/mock_chat_providers.dart';
 import '../../../../helpers/test_util.dart';
 
