@@ -195,6 +195,7 @@ class MessageEventItem extends ConsumerWidget {
     final msgType = item.msgType();
     final repliedTo = item.inReplyTo();
     final wasEdited = item.wasEdited();
+    final timestamp = item.originServerTs();
     final content = item.message().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     String? displayName;
@@ -254,6 +255,7 @@ class MessageEventItem extends ConsumerWidget {
         context: context,
         isLastMessageBySender: isLastMessageBySender,
         isEdited: wasEdited,
+        timestamp: timestamp,
         child: child,
       );
     }
@@ -261,6 +263,7 @@ class MessageEventItem extends ConsumerWidget {
       context: context,
       isLastMessageBySender: isLastMessageBySender,
       isEdited: wasEdited,
+      timestamp: timestamp,
       child: child,
     );
   }
