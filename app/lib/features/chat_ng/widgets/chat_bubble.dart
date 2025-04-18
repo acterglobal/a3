@@ -2,6 +2,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -9,6 +10,7 @@ class ChatBubble extends StatelessWidget {
   final int? messageWidth;
   final BoxDecoration decoration;
   final MainAxisAlignment bubbleAlignment;
+  final int? timestamp;
   final bool isEdited;
 
   // default private constructor
@@ -19,6 +21,7 @@ class ChatBubble extends StatelessWidget {
     required this.decoration,
     this.isEdited = false,
     this.messageWidth,
+    this.timestamp,
   });
 
   // factory bubble constructor
@@ -28,6 +31,7 @@ class ChatBubble extends StatelessWidget {
     bool isLastMessageBySender = false,
     bool isEdited = false,
     int? messageWidth,
+    int? timestamp,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
@@ -43,6 +47,7 @@ class ChatBubble extends StatelessWidget {
       ),
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
+      timestamp: timestamp,
       child: child,
     );
   }
@@ -55,6 +60,7 @@ class ChatBubble extends StatelessWidget {
     bool isLastMessageBySender = false,
     bool isEdited = false,
     int? messageWidth,
+    int? timestamp,
   }) {
     final theme = Theme.of(context);
     return ChatBubble._inner(
@@ -71,6 +77,7 @@ class ChatBubble extends StatelessWidget {
       ),
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
+      timestamp: timestamp,
       child: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onPrimary,
@@ -105,18 +112,36 @@ class ChatBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   child,
-                  if (isEdited) ...[
-                    const SizedBox(width: 5),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        L10n.of(context).edited,
-                        style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(
-                          fontSize: 12,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (isEdited) ...[
+                        Text(
+                          L10n.of(context).edited,
+                          style: chatTheme.emptyChatPlaceholderTextStyle
+                              .copyWith(fontSize: 12),
                         ),
-                      ),
-                    ),
-                  ],
+                      ],
+                      if (isEdited && timestamp != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: Text(
+                            '.',
+                            style: chatTheme.emptyChatPlaceholderTextStyle
+                                .copyWith(fontSize: 12),
+                          ),
+                        ),
+                      if (timestamp != null)
+                        Text(
+                          jiffyMsgTimestamp(
+                            context,
+                            timestamp.expect('should not be null'),
+                          ),
+                          style: chatTheme.emptyChatPlaceholderTextStyle
+                              .copyWith(fontSize: 12),
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ),
