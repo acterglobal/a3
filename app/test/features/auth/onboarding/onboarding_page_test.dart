@@ -41,7 +41,6 @@ void main() {
     tester,
   ) async {
     await createWidgetUnderTest(tester: tester, isLogin: true);
-    await tester.pumpAndSettle(); // Wait for the provider to resolve
 
     expect(find.byType(SaveUsernamePage), findsNothing);
   });
@@ -76,6 +75,6 @@ void main() {
     );
 
     // 5 onboarding + permissions (may vary) + analytics
-    expect(indicatorDots.evaluate().length, greaterThanOrEqualTo(6));
+    expect(indicatorDots.evaluate().length, greaterThanOrEqualTo(7));
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
@@ -21,7 +22,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
@@ -70,6 +73,12 @@ Future<void> _startAppInner(
   initializeNotifications();
 
   if (isDesktop) {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    launchAtStartup.setup(
+      appName: packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+      packageName: packageInfo.packageName,
+    );
     app = DesktopSupport(child: app);
   }
 
