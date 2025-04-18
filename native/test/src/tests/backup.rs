@@ -49,7 +49,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         assert_eq!(
             msg.event_item()
                 .expect("has messsage")
-                .msg_content()
+                .message()
                 .expect("is message")
                 .body(),
             "Hi, everyone"
@@ -134,11 +134,61 @@ async fn can_recover_and_read_message() -> Result<()> {
     assert_eq!(
         msg.event_item()
             .expect("has messsage")
-            .msg_content()
+            .message()
             .expect("is message")
             .body(),
         "Hi, everyone" // WE CAN READ IT AGAIN
     );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn key_is_kept_and_reset() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    // enabled backup stores the key
+    let (mut user, _room_id) = random_user_with_random_convo("recovering_message").await?;
+    let _state_sync = user.start_sync();
+
+    let backup_manager = user.backup_manager();
+    let backup_pass = backup_manager.enable().await?;
+    assert_eq!(backup_manager.state_str(), "enabled");
+    assert_eq!(
+        backup_manager.stored_enc_key().await?.text(),
+        Some(backup_pass)
+    );
+    assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
+
+    backup_manager.disable().await?;
+    assert!(backup_manager.stored_enc_key().await?.text().is_none());
+    assert_eq!(backup_manager.stored_enc_key_when().await?, 0);
+    assert_eq!(backup_manager.state_str(), "disabled");
+
+    let backup_pass = backup_manager.enable().await?;
+    assert_eq!(backup_manager.state_str(), "enabled");
+    assert_eq!(
+        backup_manager
+            .stored_enc_key()
+            .await
+            .unwrap()
+            .text()
+            .unwrap(),
+        backup_pass
+    );
+    assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
+
+    let new_pass = backup_manager.reset().await?;
+    assert_eq!(backup_manager.state_str(), "enabled");
+    assert_eq!(
+        backup_manager.stored_enc_key().await?.text(),
+        Some(new_pass)
+    );
+    assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
+
+    backup_manager.destroy_stored_enc_key().await?;
+    assert!(backup_manager.stored_enc_key().await?.text().is_none());
+    assert_eq!(backup_manager.stored_enc_key_when().await?, 0);
 
     Ok(())
 }

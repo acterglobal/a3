@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -215,7 +216,7 @@ class _SubtitleWidget extends ConsumerWidget {
 
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
 
-    RoomEventItem? eventItem = latestMessage?.eventItem();
+    TimelineEventItem? eventItem = latestMessage?.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -235,9 +236,9 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'm.room.canonical_alias':
       case 'm.room.create':
       case 'm.room.encryption':
-      case 'm.room.guest.access':
+      case 'm.room.guest_access':
       case 'm.room.history_visibility':
-      case 'm.room.join.rules':
+      case 'm.room.join_rules':
       case 'm.room.name':
       case 'm.room.pinned_events':
       case 'm.room.power_levels':
@@ -259,8 +260,9 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            MsgContent? msgContent = eventItem.msgContent();
+            MsgContent? msgContent = eventItem.message();
             if (msgContent == null) {
+              _log.severe('failed to get content of room message');
               return const SizedBox.shrink();
             }
             String body = msgContent.body();
@@ -295,7 +297,7 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        MsgContent? msgContent = eventItem.msgContent();
+        MsgContent? msgContent = eventItem.message();
         if (msgContent == null) {
           return const SizedBox();
         }
@@ -330,11 +332,12 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
-        final body =
-            eventItem
-                .msgContent()
-                .expect('m.sticker should have msg content')
-                .body();
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) {
+          _log.severe('failed to get content of sticker event');
+          return const SizedBox.shrink();
+        }
+        final body = msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -405,47 +408,17 @@ class _SubtitleWidget extends ConsumerWidget {
             ),
           ],
         );
-      case 'm.room.member':
-        MsgContent? msgContent = eventItem.msgContent();
-        if (msgContent == null) {
-          return const SizedBox();
-        }
-        String body = msgContent.body();
-        String? formattedBody = msgContent.formattedBody();
-        if (formattedBody != null) {
-          body = simplifyBody(formattedBody);
-        }
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                '${simplifyUserId(sender)} ',
-                style: textTheme.labelMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Flexible(
-              child: Html(
-                // ignore: unnecessary_string_interpolations
-                data: '''$body''',
-                maxLines: 1,
-                defaultTextStyle: textTheme.labelMedium?.copyWith(
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onLinkTap: (url) => {},
-              ),
-            ),
-          ],
-        );
+      case 'MembershipChange':
+        return _MembershipUpdateWidget(roomId: roomId, eventItem: eventItem);
+      case 'ProfileChange':
+        return _ProfileUpdateWidget(roomId: roomId, eventItem: eventItem);
       case 'm.poll.start':
-        final body =
-            eventItem
-                .msgContent()
-                .expect('m.poll.start should have msg content')
-                .body();
+        MsgContent? msgContent = eventItem.message();
+        if (msgContent == null) {
+          _log.severe('failed to get content of poll event');
+          return const SizedBox.shrink();
+        }
+        final body = msgContent.body();
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -510,7 +483,7 @@ class _TrailingWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final latestMessage = ref.watch(latestMessageProvider(roomId)).valueOrNull;
-    RoomEventItem? eventItem = latestMessage?.eventItem();
+    TimelineEventItem? eventItem = latestMessage?.eventItem();
     if (eventItem == null) {
       return const SizedBox.shrink();
     }
@@ -519,5 +492,510 @@ class _TrailingWidget extends ConsumerWidget {
       jiffyTime(context, eventItem.originServerTs()),
       style: Theme.of(context).textTheme.labelMedium,
     );
+  }
+}
+
+class _MembershipUpdateWidget extends ConsumerWidget {
+  final String roomId;
+  final TimelineEventItem eventItem;
+
+  const _MembershipUpdateWidget({
+    required this.roomId,
+    required this.eventItem,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myId = ref.watch(myUserIdStrProvider);
+    MembershipContent? content = eventItem.membershipContent();
+    if (content == null) {
+      _log.severe('failed to get content of membership change');
+      return const SizedBox.shrink();
+    }
+    final senderId = eventItem.sender();
+    final senderName =
+        ref
+            .watch(
+              memberDisplayNameProvider((roomId: roomId, userId: senderId)),
+            )
+            .valueOrNull ??
+        simplifyUserId(senderId) ??
+        senderId;
+    final userId = content.userId().toString();
+    final userName =
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
+        simplifyUserId(userId) ??
+        userId;
+    final lang = L10n.of(context);
+    final stateText = switch (content.change()) {
+      'joined' => getMessageOnJoined(lang, myId, userId, userName),
+      'left' => getMessageOnLeft(lang, myId, userId, userName),
+      'banned' => getMessageOnBanned(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'unbanned' => getMessageOnUnbanned(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'kicked' => getMessageOnKicked(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'invited' => getMessageOnInvited(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'kickedAndBanned' => getMessageOnKickedAndBanned(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'invitationAccepted' => getMessageOnInvitationAccepted(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'invitationRejected' => getMessageOnInvitationRejected(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'invitationRevoked' => getMessageOnInvitationRevoked(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'knocked' => getMessageOnKnocked(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'knockAccepted' => getMessageOnKnockAccepted(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'knockRetracted' => getMessageOnKnockRetracted(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'knockDenied' => getMessageOnKnockDenied(lang, myId, userId, userName),
+      _ => null,
+    };
+    if (stateText == null) return const SizedBox.shrink();
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: Text(
+            stateText,
+            maxLines: 1,
+            style: textTheme.labelMedium?.copyWith(fontStyle: FontStyle.italic),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String getMessageOnJoined(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipYouJoined;
+    } else {
+      return lang.chatMembershipOtherJoined(userName);
+    }
+  }
+
+  String getMessageOnLeft(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipYouLeft;
+    } else {
+      return lang.chatMembershipOtherLeft(userName);
+    }
+  }
+
+  String getMessageOnBanned(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouBannedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherBannedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherBannedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnUnbanned(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouUnbannedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherUnbannedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherUnbannedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnKicked(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouKickedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherKickedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherKickedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnInvited(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouInvitedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherInvitedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherInvitedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnKickedAndBanned(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouKickedAndBannedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherKickedAndBannedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherKickedAndBannedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnInvitationAccepted(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipInvitationYouAccepted;
+    } else {
+      return lang.chatMembershipInvitationOtherAccepted(userName);
+    }
+  }
+
+  String getMessageOnInvitationRejected(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipInvitationYouRejected;
+    } else {
+      return lang.chatMembershipInvitationOtherRejected(userName);
+    }
+  }
+
+  String getMessageOnInvitationRevoked(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipInvitationYouRevoked;
+    } else {
+      return lang.chatMembershipInvitationOtherRevoked(userName);
+    }
+  }
+
+  String getMessageOnKnocked(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouKnockedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherKnockedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherKnockedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnKnockAccepted(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipKnockYouAccepted;
+    } else {
+      return lang.chatMembershipKnockOtherAccepted(userName);
+    }
+  }
+
+  String getMessageOnKnockRetracted(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipKnockYouRetracted;
+    } else {
+      return lang.chatMembershipKnockOtherRetracted(userName);
+    }
+  }
+
+  String getMessageOnKnockDenied(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipKnockYouDenied;
+    } else {
+      return lang.chatMembershipKnockOtherDenied(userName);
+    }
+  }
+}
+
+class _ProfileUpdateWidget extends ConsumerWidget {
+  final String roomId;
+  final TimelineEventItem eventItem;
+
+  const _ProfileUpdateWidget({required this.roomId, required this.eventItem});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final myId = ref.watch(myUserIdStrProvider);
+    ProfileContent? content = eventItem.profileContent();
+    if (content == null) {
+      _log.severe('failed to get content of membership change');
+      return const SizedBox.shrink();
+    }
+    final userId = content.userId().toString();
+    final userName =
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
+        simplifyUserId(userId) ??
+        userId;
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    String? stateText = switch (content.displayNameChange()) {
+      'Changed' => getMessageOnDisplayNameChanged(
+        lang,
+        myId,
+        userId,
+        content.displayNameNewVal() ?? '',
+        content.displayNameOldVal() ?? '',
+      ),
+      'Set' => getMessageOnDisplayNameSet(
+        lang,
+        myId,
+        userId,
+        content.displayNameNewVal() ?? '',
+      ),
+      'Unset' => getMessageOnDisplayNameSet(lang, myId, userId, userName),
+      _ => null,
+    };
+    if (stateText != null) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              stateText,
+              maxLines: 1,
+              style: textTheme.labelMedium?.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }
+    stateText = switch (content.avatarUrlChange()) {
+      'Changed' => getMessageOnAvatarUrlChanged(lang, myId, userId, userName),
+      'Set' => getMessageOnAvatarUrlSet(lang, myId, userId, userName),
+      'Unset' => getMessageOnAvatarUrlUnset(lang, myId, userId, userName),
+      _ => null,
+    };
+    if (stateText != null) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              stateText,
+              maxLines: 1,
+              style: textTheme.labelMedium?.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  String getMessageOnDisplayNameChanged(
+    L10n lang,
+    String myId,
+    String userId,
+    String newVal,
+    String oldVal,
+  ) {
+    if (userId == myId) {
+      return lang.chatProfileDisplayNameYouChanged(newVal);
+    } else {
+      return lang.chatProfileDisplayNameOtherChanged(oldVal, newVal);
+    }
+  }
+
+  String getMessageOnDisplayNameSet(
+    L10n lang,
+    String myId,
+    String userId,
+    String newVal,
+  ) {
+    if (userId == myId) {
+      return lang.chatProfileDisplayNameYouSet(newVal);
+    } else {
+      return lang.chatProfileDisplayNameOtherSet(userId, newVal);
+    }
+  }
+
+  String getMessageOnDisplayNameUnset(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatProfileDisplayNameYouUnset;
+    } else {
+      return lang.chatProfileDisplayNameOtherUnset(userName);
+    }
+  }
+
+  String getMessageOnAvatarUrlChanged(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatProfileAvatarUrlYouChanged;
+    } else {
+      return lang.chatProfileAvatarUrlOtherChanged(userName);
+    }
+  }
+
+  String getMessageOnAvatarUrlSet(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatProfileAvatarUrlYouSet;
+    } else {
+      return lang.chatProfileAvatarUrlOtherSet(userName);
+    }
+  }
+
+  String getMessageOnAvatarUrlUnset(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatProfileAvatarUrlYouUnset;
+    } else {
+      return lang.chatProfileAvatarUrlOtherUnset(userName);
+    }
   }
 }

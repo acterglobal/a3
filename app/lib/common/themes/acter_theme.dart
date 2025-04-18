@@ -20,6 +20,32 @@ extension ActerChatThemeExtension on ThemeData {
   TextButtonThemeData get inlineTextButtonTheme => inlineTextButtonThemeMaker();
 }
 
+extension TypingIndicatorThemeExtension on ThemeData {
+  TypingIndicatorTheme get typingIndicatorTheme => TypingIndicatorTheme(
+    animatedCirclesColor: colorScheme.primary,
+    multipleUserTextStyle: textTheme.bodySmall ?? const TextStyle(),
+    countAvatarColor: colorScheme.secondary,
+    countTextColor: colorScheme.onSecondary,
+  );
+}
+
+/// Typing indicator theme
+class TypingIndicatorTheme {
+  final Color animatedCirclesColor;
+  final double animatedCircleSize;
+  final TextStyle multipleUserTextStyle;
+  final Color countAvatarColor;
+  final Color countTextColor;
+
+  const TypingIndicatorTheme({
+    required this.animatedCirclesColor,
+    this.animatedCircleSize = 6.0,
+    required this.multipleUserTextStyle,
+    required this.countAvatarColor,
+    required this.countTextColor,
+  });
+}
+
 class ActerTheme {
   static final ThemeData theme = ThemeData(
     useMaterial3: true,

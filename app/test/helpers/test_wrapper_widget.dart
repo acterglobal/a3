@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_trigger_auto_complete/acter_trigger_autocomplete.dart';
+import 'package:test_screenshot/test_screenshot.dart';
 
 class InActerContextTestWrapper extends StatelessWidget {
   final Widget child;
@@ -17,7 +18,7 @@ class InActerContextTestWrapper extends StatelessWidget {
       child: MaterialApp(
         theme: ActerTheme.theme,
         title: 'Acter',
-        home: child,
+        home: Screenshotter(child: child),
         builder:
             (context, child) => easyLoadingBuilder(
               context,

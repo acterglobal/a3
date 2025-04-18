@@ -1,7 +1,7 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
     events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId,
+    OwnedEventId, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -13,8 +13,8 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::MembershipChange, ActerModel, ActerSupportedRoomStatusEvents,
-        AnyActerModel, EventMeta, Task,
+        status::{MembershipContent, PolicyRuleRoomContent, ProfileContent},
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
 };
@@ -24,7 +24,9 @@ pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
-    MembershipChange(MembershipChange),
+    MembershipChange(MembershipContent),
+    ProfileChange(ProfileContent),
+    PolicyRuleRoom(PolicyRuleRoomContent),
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
     Boost {
@@ -86,6 +88,10 @@ pub enum ActivityContent {
     TaskDecline {
         object: ActivityObject,
     },
+    ObjectInvitation {
+        object: ActivityObject,
+        invitees: Vec<OwnedUserId>,
+    },
     OtherChanges {
         object: ActivityObject,
     },
@@ -119,7 +125,19 @@ impl Activity {
 
     pub fn type_str(&self) -> String {
         match &self.inner {
-            ActivityContent::MembershipChange(c) => c.as_str(),
+            ActivityContent::MembershipChange(c) => {
+                return c.change();
+            }
+            ActivityContent::ProfileChange(c) => {
+                if c.display_name_change().is_some() {
+                    "displayName"
+                } else if c.avatar_url_change().is_some() {
+                    "avatarUrl"
+                } else {
+                    unreachable!()
+                }
+            }
+            ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::Comment { .. } => "comment",
@@ -148,18 +166,26 @@ impl Activity {
                 RsvpStatus::No => "rsvpNo",
             },
             ActivityContent::TaskAdd { .. } => "taskAdd",
+            ActivityContent::ObjectInvitation { .. } => "objectInvitation",
             ActivityContent::OtherChanges { .. } => "otherChanges",
         }
         .to_owned()
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        #[allow(irrefutable_let_patterns)]
-        let ActivityContent::MembershipChange(c) = &self.inner
-        else {
-            return None;
-        };
-        Some(c.clone())
+    pub fn membership_content(&self) -> Option<MembershipContent> {
+        if let ActivityContent::MembershipChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn profile_content(&self) -> Option<ProfileContent> {
+        if let ActivityContent::ProfileChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
     }
 
     pub fn event_meta(&self) -> &EventMeta {
@@ -177,6 +203,8 @@ impl Activity {
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
             ActivityContent::MembershipChange(_)
+            | ActivityContent::ProfileChange(_)
+            | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => None,
 
@@ -196,7 +224,8 @@ impl Activity {
             | ActivityContent::TaskProgress { object, .. }
             | ActivityContent::TaskDueDateChange { object, .. }
             | ActivityContent::TaskAccept { object }
-            | ActivityContent::TaskDecline { object } => Some(object.clone()),
+            | ActivityContent::TaskDecline { object }
+            | ActivityContent::ObjectInvitation { object, .. } => Some(object.clone()),
         }
     }
 
@@ -244,7 +273,8 @@ impl Activity {
             | ActivityContent::TaskAccept { object, .. }
             | ActivityContent::TaskDecline { object, .. }
             | ActivityContent::OtherChanges { object }
-            | ActivityContent::Creation { object, .. } => object.target_url(),
+            | ActivityContent::Creation { object, .. }
+            | ActivityContent::ObjectInvitation { object, .. } => object.target_url(),
 
             ActivityContent::Attachment { object, .. } => format!(
                 "{}?section=attachments&attachmentId={}",
@@ -271,9 +301,21 @@ impl Activity {
                 format!("/tasks/{}/{}", object.object_id_str(), self.meta.event_id)
             }
             ActivityContent::MembershipChange(_)
+            | ActivityContent::ProfileChange(_)
+            | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => todo!(),
         }
+    }
+
+    pub fn whom(&self) -> Vec<String> {
+        let ActivityContent::ObjectInvitation { ref invitees, .. } = self.content() else {
+            return vec![];
+        };
+        invitees
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 
     pub fn task_list_id_str(&self) -> Option<String> {
@@ -295,6 +337,12 @@ impl Activity {
             AnyActerModel::RoomStatus(s) => match s.inner {
                 ActerSupportedRoomStatusEvents::MembershipChange(c) => {
                     Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
+                }
+                ActerSupportedRoomStatusEvents::ProfileChange(c) => {
+                    Ok(Self::new(meta, ActivityContent::ProfileChange(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleRoom(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleRoom(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
@@ -374,6 +422,27 @@ impl Activity {
                     ActivityContent::Reaction {
                         object,
                         key: e.inner.relates_to.key,
+                    },
+                ))
+            }
+
+            AnyActerModel::ExplicitInvite(e) => {
+                let object = store
+                    .get(&e.inner.to.event_id)
+                    .await
+                    .map_err(|error| {
+                        tracing::error!(?error, "Error loading parent of reaction");
+                    })
+                    .ok()
+                    .and_then(|o| ActivityObject::try_from(&o).ok())
+                    .unwrap_or_else(|| ActivityObject::Unknown {
+                        object_id: e.inner.to.event_id.to_owned(),
+                    });
+                Ok(Self::new(
+                    meta,
+                    ActivityContent::ObjectInvitation {
+                        object,
+                        invitees: e.inner.mention.user_ids.into_iter().collect(),
                     },
                 ))
             }

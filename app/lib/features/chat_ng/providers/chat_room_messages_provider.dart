@@ -13,10 +13,15 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:acter/features/home/providers/client_providers.dart';
 
 final _log = Logger('a3::chat::message_provider');
 const _supportedTypes = [
-  'm.room.member',
+  'MembershipChange',
+  'ProfileChange',
+
+  'm.policy.rule.room',
+
   'm.room.message',
   'm.room.redaction',
   'm.room.encrypted',
@@ -32,7 +37,7 @@ final chatMessagesStateProvider = StateNotifierProvider.family<
   String
 >((ref, roomId) => ChatRoomMessagesNotifier(ref: ref, roomId: roomId));
 
-final chatRoomMessageProvider = StateProvider.family<RoomMessage?, RoomMsgId>((
+final chatRoomMessageProvider = StateProvider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -71,7 +76,7 @@ final renderableChatMessagesProvider = StateProvider.autoDispose
       }).toList();
     });
 
-final _getNextMessageProvider = Provider.family<RoomMessage?, RoomMsgId>((
+final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -86,7 +91,7 @@ final _getNextMessageProvider = Provider.family<RoomMessage?, RoomMsgId>((
   );
 });
 
-final _getPreviousMessageProvider = Provider.family<RoomMessage?, RoomMsgId>((
+final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -180,7 +185,7 @@ final repliedToMsgProvider = AsyncNotifierProvider.autoDispose
     });
 
 final messageReactionsProvider = StateProvider.autoDispose
-    .family<List<ReactionItem>, RoomEventItem>((ref, item) {
+    .family<List<ReactionItem>, TimelineEventItem>((ref, item) {
       List<ReactionItem> reactions = [];
 
       final reactionKeys = asDartStringList(item.reactionKeys());
@@ -198,3 +203,17 @@ final chatEditorStateProvider =
     NotifierProvider.autoDispose<ChatEditorNotifier, ChatEditorState>(
       () => ChatEditorNotifier(),
     );
+
+final chatTypingEventProvider = StreamProvider.autoDispose
+    .family<List<String>, String>((ref, roomId) async* {
+      final client = await ref.watch(alwaysClientProvider.future);
+      final userId = ref.watch(myUserIdStrProvider);
+      await for (final event in client.subscribeToTypingEventStream(roomId)) {
+        yield event
+            .userIds()
+            .toList()
+            .map((i) => i.toString())
+            .where((i) => i != userId)
+            .toList();
+      }
+    });

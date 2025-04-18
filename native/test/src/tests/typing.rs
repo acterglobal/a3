@@ -50,8 +50,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     .await?;
 
     let mut event_rx = kyra.subscribe_to_typing_event(room_id.to_string());
-    let sent = sisko_convo.typing_notice(true).await?;
-    println!("sent: {sent:?}");
+    let _sent = sisko_convo.typing_notice(true).await?;
 
     let mut i = 10;
     let mut found = false;

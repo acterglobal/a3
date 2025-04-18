@@ -63,7 +63,6 @@ void main() {
 
   testWidgets('displays list of pins when data is available', (tester) async {
     // Arrange
-    final mockedNotifier = SimplyRetuningAsyncPinListNotifier([mockPin]);
     final pinNotifier = RetryMockAsyncPinNotifier();
     final mockPin1 = FakeActerPin(pinTitle: 'Fake Pin1');
     final mockPin2 = FakeActerPin(pinTitle: 'Fake Pin2');
@@ -80,7 +79,7 @@ void main() {
         isBookmarkedProvider.overrideWith((a, b) => false),
         roomDisplayNameProvider.overrideWith((a, b) => 'test'),
         pinsProvider.overrideWith((ref, pin) => []),
-        pinListProvider.overrideWith(() => mockedNotifier),
+        pinListProvider.overrideWith((r, a) => [mockPin]),
         pinProvider.overrideWith(() => pinNotifier),
       ],
       child: PinListWidget(pinListProvider: finalListProvider),

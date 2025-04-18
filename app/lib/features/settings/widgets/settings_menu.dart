@@ -109,7 +109,7 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingNotifications),
               ),
-              onTap: () {
+              onTap: () async {
                 if (!isFullPage && context.isLargeScreen) {
                   context.pushReplacementNamed(
                     Routes.settingNotifications.name,
@@ -141,7 +141,7 @@ class SettingsMenu extends ConsumerWidget {
               titleStyles: TextStyle(
                 color: routedColor(context, ref, Routes.settingsCalendar),
               ),
-              onTap: () {
+              onTap: () async {
                 if (!isFullPage && context.isLargeScreen) {
                   context.pushReplacementNamed(Routes.settingsCalendar.name);
                 } else {

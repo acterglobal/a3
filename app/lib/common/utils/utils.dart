@@ -32,22 +32,25 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
-String jiffyTime(BuildContext context, int timeInterval) {
+String jiffyTime(BuildContext context, int timeInterval, {DateTime? toWhen}) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
-  final now = Jiffy.now().startOf(Unit.day);
+  final now = Jiffy.parseFromDateTime(
+    toWhen ?? DateTime.now().toUtc(),
+  ).startOf(Unit.day);
   if (now.isSame(jiffyTime, unit: Unit.day)) {
     return jiffyTime.jm;
-  } else {
-    final yesterday = now.subtract(days: 1);
-    final week = now.subtract(weeks: 1);
-    if (jiffyTime.isBetween(yesterday, now)) {
-      return 'Yesterday';
-    } else if (jiffyTime.isBetween(week, now)) {
-      return jiffyTime.EEEE;
-    } else {
-      return jiffyTime.yMd;
-    }
   }
+
+  final yesterday = now.subtract(days: 1);
+  if (jiffyTime.isBetween(yesterday, now)) {
+    return L10n.of(context).yesterday;
+  }
+
+  final week = now.subtract(weeks: 1);
+  if (jiffyTime.isBetween(week, now)) {
+    return jiffyTime.EEEE;
+  }
+  return jiffyTime.yMd;
 }
 
 String jiffyDateForActvity(BuildContext context, int timeInterval) {
@@ -174,4 +177,20 @@ extension ColorUtils on Color {
     // Combine the components into a single int using bit shifting
     return (alpha << 24) | (red << 16) | (green << 8) | blue;
   }
+}
+
+/// html requires to have some kind of structure even when document is empty, so check for that
+bool hasValidEditorContent({required String plainText, required String html}) {
+  if (plainText.trim().isEmpty) return false;
+  if (html.isEmpty) return false;
+
+  final hasOnlyStructure =
+      html
+          .replaceAll(RegExp(r'<br\s*/?>|<p\s*></p>|<p\s*>\s*</p>'), '')
+          .replaceAll(RegExp(r'<[^>]*>'), '')
+          .replaceAll('&nbsp;', ' ')
+          .trim()
+          .isEmpty;
+
+  return !hasOnlyStructure;
 }

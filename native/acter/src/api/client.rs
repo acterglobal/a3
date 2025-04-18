@@ -40,8 +40,8 @@ use tracing::{error, trace};
 use crate::{Account, Convo, OptionString, Room, Space, ThumbnailSize, RUNTIME};
 
 use super::{
-    api::FfiBuffer, device::DeviceController, invitation::InvitationController,
-    typing::TypingController, verification::VerificationController, VecStringBuilder,
+    api::FfiBuffer, device::DeviceController, typing::TypingController,
+    verification::VerificationController, VecStringBuilder,
 };
 
 mod models;
@@ -72,7 +72,6 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) core: CoreClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
@@ -141,7 +140,7 @@ impl Client {
         }
 
         path.to_str()
-            .map(|s| s.to_string())
+            .map(ToOwned::to_owned)
             .context("Path was generated from strings. Must be string")
     }
 
@@ -171,7 +170,7 @@ impl Client {
                     .client()
                     .join_room_by_id_or_alias(&room_id_or_alias, server_names.as_slice())
                     .await?;
-                Ok(Room::new(core.clone(), joined))
+                Ok(Room::new(core, joined))
             })
             .await?
     }
@@ -186,7 +185,6 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             spaces: Default::default(),
             convos: Default::default(),
-            invitation_controller: InvitationController::new(core.clone()),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(client),
             typing_controller: TypingController::new(),
@@ -212,15 +210,14 @@ impl Client {
     }
 
     async fn get_spaces_and_chats(&self) -> (Vec<Room>, Vec<Room>) {
-        let client = self.core.clone();
+        let core = self.core.clone();
         // only include items we are ourselves are currently joined in
         self.rooms_filtered(RoomStateFilter::JOINED)
             .into_iter()
             .fold(
                 (Vec::new(), Vec::new()),
                 move |(mut spaces, mut convos), room| {
-                    let inner = Room::new(client.clone(), room);
-
+                    let inner = Room::new(core.clone(), room);
                     if inner.is_space() {
                         spaces.push(inner);
                     } else {
@@ -236,7 +233,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let response = client.resolve_room_alias(&alias_id).await?;
-                anyhow::Ok(response.room_id)
+                Ok(response.room_id)
             })
             .await?
     }
@@ -310,7 +307,7 @@ impl Client {
             .client()
             .user_id()
             .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     fn user_id_ref(&self) -> Option<&UserId> {
@@ -519,7 +516,7 @@ impl Client {
             .client()
             .device_id()
             .context("DeviceId not found")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
@@ -543,7 +540,6 @@ impl Client {
         }
         let client = self.core.client().clone();
 
-        self.invitation_controller.remove_event_handler();
         self.verification_controller
             .remove_to_device_event_handler(&client);
         self.verification_controller

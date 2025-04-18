@@ -1,5 +1,4 @@
-const String userMentionChar = '@';
-const String roomMentionChar = '#';
+import 'package:acter/common/widgets/html_editor/services/constants.dart';
 
 enum MentionType {
   user,

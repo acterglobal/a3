@@ -23,7 +23,7 @@ class AsyncMaybeSpaceNotifier extends FamilyAsyncNotifier<Space?, String> {
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update $arg');
-        state = await AsyncValue.guard(() async => await _getSpace(client));
+        state = AsyncValue.data(await _getSpace(client));
       },
       onError: (e, s) {
         _log.severe('space stream errored', e, s);

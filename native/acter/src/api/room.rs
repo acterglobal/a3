@@ -37,6 +37,9 @@ use matrix_sdk_base::{
         },
         assign,
         events::{
+            policy::rule::{
+                room::PolicyRuleRoomEventContent, PolicyRuleEventContent, Recommendation,
+            },
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
                 join_rules::{
@@ -66,7 +69,7 @@ use super::{
     deep_linking::RefDetails,
     push::{notification_mode_from_input, room_notification_mode_name},
 };
-use crate::{OptionBuffer, OptionString, RoomMessage, ThumbnailSize, UserProfile, RUNTIME};
+use crate::{OptionBuffer, OptionString, ThumbnailSize, UserProfile, RUNTIME};
 pub use account_data::UserRoomSettings;
 pub use preview::RoomPreview;
 
@@ -436,7 +439,7 @@ impl SpaceHierarchyRoomInfo {
     }
 
     pub fn avatar_url_str(&self) -> Option<String> {
-        self.avatar_url().map(|a| a.to_string())
+        self.chunk.avatar_url.as_deref().map(ToString::to_string)
     }
 
     /// The join rule of the room.
@@ -471,7 +474,12 @@ impl SpaceHierarchyRoomInfo {
     pub fn via_server_names(&self) -> Vec<String> {
         for v in &self.chunk.children_state {
             let Ok(h) = v.deserialize() else { continue };
-            return h.content.via.into_iter().map(|s| s.to_string()).collect();
+            return h
+                .content
+                .via
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<String>>();
         }
         vec![]
     }
@@ -667,7 +675,7 @@ impl Room {
             .client()
             .user_id()
             .context("You must be logged in to do that")
-            .map(|x| x.to_owned())
+            .map(ToOwned::to_owned)
     }
 
     pub async fn space_relations(&self) -> Result<SpaceRelations> {
@@ -779,7 +787,7 @@ impl Room {
         let my_id = self.user_id()?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            Some(self.app_settings_content().await?.unwrap_or_default())
         } else {
             None
         };
@@ -793,7 +801,7 @@ impl Room {
                     .context("Unable to find me in room")?;
                 Ok(Member {
                     member,
-                    room: me.clone(),
+                    room: me,
                     acter_app_settings,
                 })
             })
@@ -902,7 +910,7 @@ impl Room {
 
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -930,7 +938,7 @@ impl Room {
 
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -952,7 +960,7 @@ impl Room {
         let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -979,7 +987,7 @@ impl Room {
         let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -1007,7 +1015,7 @@ impl Room {
         let uid = UserId::parse(user_id)?;
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -1021,8 +1029,8 @@ impl Room {
                     .context("Unable to find user in room")?;
                 Ok(Member {
                     member,
-                    room: me.clone(),
-                    acter_app_settings: acter_app_settings.clone(),
+                    room: me,
+                    acter_app_settings,
                 })
             })
             .await?
@@ -1157,40 +1165,48 @@ impl Room {
                     Some(thumb_size) => {
                         let source = match &original.content.msgtype {
                             MessageType::Image(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             MessageType::Video(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             MessageType::File(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             MessageType::Location(content) => {
-                                let Some(info) = content.info.clone() else {
+                                if let Some(source) = content
+                                    .info
+                                    .as_deref()
+                                    .and_then(|info| info.thumbnail_source.clone())
+                                {
+                                    source
+                                } else {
                                     return Ok(FfiBuffer::new(vec![]));
-                                };
-                                let Some(thumbnail_source) = info.thumbnail_source else {
-                                    return Ok(FfiBuffer::new(vec![]));
-                                };
-                                thumbnail_source
+                                }
                             }
                             _ => {
                                 bail!("Not an Image, Location, Video or Regular file.")
@@ -1308,7 +1324,7 @@ impl Room {
         let me = self.clone();
         let is_acter_space = self.is_acter_space().await?;
         let acter_app_settings = if is_acter_space {
-            Some(self.app_settings_content().await?)
+            self.app_settings_content().await?
         } else {
             None
         };
@@ -1316,7 +1332,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let invited = client
-                    .store()
+                    .state_store()
                     .get_user_ids(me.room.room_id(), RoomMemberships::INVITE)
                     .await?;
                 let mut members = vec![];
@@ -1345,7 +1361,7 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.core.client().clone();
-        let evt_id = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(&event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1355,86 +1371,82 @@ impl Room {
                     .as_original()
                     .context("Unable to get original msg")?;
                 // get file extension from msg info
-                let (request, mut filename) = match thumb_size.clone() {
+                let (request, mut filename) = match thumb_size.as_ref() {
                     Some(thumb_size) => match &original.content.msgtype {
                         MessageType::Image(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
                         MessageType::Video(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
                         MessageType::File(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
                         MessageType::Location(content) => {
                             let request = content
                                 .info
-                                .as_ref()
+                                .as_deref()
                                 .and_then(|info| info.thumbnail_source.clone())
                                 .map(|source| MediaRequestParameters {
                                     source,
-                                    format: MediaFormat::from(thumb_size),
+                                    format: MediaFormat::from(thumb_size.clone()),
                                 });
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.thumbnail_info)
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.thumbnail_info.as_deref())
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
-                                    mime2ext::mime2ext(mimetype).map(|ext| {
-                                        format!("{}-thumbnail.{}", event_id.clone(), ext)
-                                    })
+                                    mime2ext::mime2ext(mimetype)
+                                        .map(|ext| format!("{}-thumbnail.{}", &event_id, ext))
                                 });
                             (request, filename)
                         }
@@ -1448,11 +1460,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1463,11 +1475,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1478,11 +1490,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1493,11 +1505,11 @@ impl Room {
                             };
                             let filename = content
                                 .info
-                                .clone()
-                                .and_then(|info| info.mimetype)
+                                .as_deref()
+                                .and_then(|info| info.mimetype.as_deref())
                                 .and_then(|mimetype| {
                                     mime2ext::mime2ext(mimetype)
-                                        .map(|ext| format!("{}.{}", event_id.clone(), ext))
+                                        .map(|ext| format!("{}.{}", &event_id, ext))
                                 });
                             (Some(request), filename)
                         }
@@ -1512,14 +1524,15 @@ impl Room {
                 // infer file extension via parsing of file binary
                 if filename.is_none() {
                     if let Some(kind) = infer::get(&data) {
-                        filename = Some(if thumb_size.clone().is_some() {
-                            format!("{}-thumbnail.{}", event_id.clone(), kind.extension())
+                        let fname = if thumb_size.is_some() {
+                            format!("{}-thumbnail.{}", &event_id, kind.extension())
                         } else {
-                            format!("{}.{}", event_id.clone(), kind.extension())
-                        });
+                            format!("{}.{}", &event_id, kind.extension())
+                        };
+                        filename = Some(fname);
                     }
                 }
-                let mut path = PathBuf::from(dir_path.clone());
+                let mut path = PathBuf::from(dir_path);
                 path.push(filename.unwrap_or_else(|| event_id.clone()));
                 let mut file = std::fs::File::create(path.clone())?;
                 file.write_all(&data)?;
@@ -1537,7 +1550,7 @@ impl Room {
                     .to_str()
                     .context("Path was generated from strings. Must be string")?;
                 client
-                    .store()
+                    .state_store()
                     .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
                     .await?;
                 Ok(OptionString::new(Some(path_text.to_string())))
@@ -1551,7 +1564,7 @@ impl Room {
         }
         let room = self.room.clone();
         let client = self.core.client().clone();
-        let evt_id = EventId::parse(event_id.clone())?;
+        let evt_id = EventId::parse(&event_id)?;
 
         RUNTIME
             .spawn(async move {
@@ -1593,7 +1606,7 @@ impl Room {
                 } else {
                     [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat()
                 };
-                let Some(path_vec) = client.store().get_custom_value(&key).await? else {
+                let Some(path_vec) = client.state_store().get_custom_value(&key).await? else {
                     return Ok(OptionString::new(None));
                 };
                 let path_str = std::str::from_utf8(&path_vec)?.to_string();
@@ -1603,7 +1616,7 @@ impl Room {
 
                 // file wasn’t existing, clear cache.
 
-                client.store().remove_custom_value(&key).await?;
+                client.state_store().remove_custom_value(&key).await?;
                 Ok(OptionString::new(None))
             })
             .await?
@@ -1684,6 +1697,7 @@ impl Room {
         let my_id = self.user_id()?;
         let event_id = EventId::parse(event_id)?;
         let sender_id = UserId::parse(sender_id)?;
+        let txn_id = txn_id.map(OwnedTransactionId::from);
 
         RUNTIME
             .spawn(async move {
@@ -1695,13 +1709,7 @@ impl Room {
                 if !permitted {
                     bail!("No permissions to redact this message");
                 }
-                let response = room
-                    .redact(
-                        &event_id,
-                        reason.as_deref(),
-                        txn_id.map(OwnedTransactionId::from),
-                    )
-                    .await?;
+                let response = room.redact(&event_id, reason.as_deref(), txn_id).await?;
                 Ok(response.event_id)
             })
             .await?
@@ -1796,6 +1804,37 @@ impl Room {
                         preview: RefPreview::new(None, room_display_name),
                     },
                 ))
+            })
+            .await?
+    }
+
+    // entity: #*:example.org
+    // reason: undesirable content
+    // state key: rule:#*:example.org
+    pub async fn set_policy_rule_room(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change policy rule room in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::PolicyRuleRoom)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change policy rule room in this room");
+                }
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleRoomEventContent(content))
+                    .await?;
+                Ok(response.event_id)
             })
             .await?
     }

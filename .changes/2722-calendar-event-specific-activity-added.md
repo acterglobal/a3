@@ -1,1 +1,0 @@
-- [Implemented] - Event specific activities added to the Activity Screen, allowing users to view and interact with activities linked to calendar events.

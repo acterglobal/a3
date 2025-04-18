@@ -32,16 +32,17 @@ use super::{client::Client, deep_linking::RefDetails, spaces::Space, RUNTIME};
 
 impl Client {
     pub async fn task_list(&self, key: String, timeout: Option<u8>) -> Result<TaskList> {
-        let me = self.clone();
+        let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::TaskList(content) = me.wait_for(key.clone(), timeout).await?
+                let AnyActerModel::TaskList(content) =
+                    client.wait_for(key.clone(), timeout).await?
                 else {
                     bail!("{key} is not a task");
                 };
-                let room = me.room_by_id_typed(content.room_id())?;
+                let room = client.room_by_id_typed(content.room_id())?;
                 Ok(TaskList {
-                    client: me.clone(),
+                    client,
                     room,
                     content,
                 })
@@ -50,15 +51,16 @@ impl Client {
     }
 
     pub async fn wait_for_task(&self, key: String, timeout: Option<u8>) -> Result<Task> {
-        let me = self.clone();
+        let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let AnyActerModel::Task(content) = me.wait_for(key.clone(), timeout).await? else {
+                let AnyActerModel::Task(content) = client.wait_for(key.clone(), timeout).await?
+                else {
                     bail!("{key} is not a task");
                 };
-                let room = me.room_by_id_typed(content.room_id())?;
+                let room = client.room_by_id_typed(content.room_id())?;
                 Ok(Task {
-                    client: me.clone(),
+                    client,
                     room,
                     content,
                 })
@@ -67,27 +69,25 @@ impl Client {
     }
 
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
-        let me = self.clone();
         Ok(self
             .models_of_list_with_room(IndexKey::Section(SectionIndex::Tasks))
             .await?
-            .map(|(inner, room)| TaskList {
+            .map(|(content, room)| TaskList {
                 client: self.clone(),
                 room,
-                content: inner,
+                content,
             })
             .collect())
     }
 
     pub async fn my_open_tasks(&self) -> Result<Vec<Task>> {
-        let me = self.clone();
         Ok(self
             .models_of_list_with_room(IndexKey::Special(SpecialListsIndex::MyOpenTasks))
             .await?
-            .map(|(inner, room)| Task {
+            .map(|(content, room)| Task {
                 client: self.clone(),
                 room,
-                content: inner,
+                content,
             })
             .collect())
     }
@@ -104,37 +104,37 @@ impl Client {
 
 impl Space {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
-        let client = self.client.clone();
         let room = self.room.clone();
-        Ok(client
+        Ok(self
+            .client
             .models_of_list_with_room_under_check(
                 IndexKey::RoomSection(room.room_id().to_owned(), SectionIndex::Tasks),
                 move |_r| Ok(room.clone()),
             )
             .await?
-            .map(|(inner, room)| TaskList {
-                client: client.clone(),
-                room: room.clone(),
-                content: inner,
+            .map(|(content, room)| TaskList {
+                client: self.client.clone(),
+                room: self.room.clone(),
+                content,
             })
             .collect())
     }
     #[cfg(any(test, feature = "testing"))]
     pub async fn task_list(&self, key: OwnedEventId) -> Result<TaskList> {
         let room_id = self.room_id().to_owned();
-        let (model, room) = self
+        let (content, room) = self
             .client
             .model_with_room::<acter_core::models::TaskList>(key)
             .await?;
 
-        if room_id != model.room_id() {
+        if room_id != content.room_id() {
             bail!("This task doesn’t belong to this room");
         }
 
         Ok(TaskList {
             client: self.client.clone(),
-            room: room.clone(),
-            content: model,
+            room,
+            content,
         })
     }
 }
@@ -529,9 +529,9 @@ impl Task {
     pub fn assignees_str(&self) -> Vec<String> {
         self.content
             .assignees()
-            .into_iter()
-            .map(|a| a.to_string())
-            .collect()
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 
     pub fn priority(&self) -> Option<u8> {
@@ -701,6 +701,13 @@ impl Task {
         let room = self.room.clone();
         let event_id = self.content.event_id().to_owned();
         crate::AttachmentsManager::new(client, room, event_id).await
+    }
+
+    pub async fn invitations(&self) -> Result<crate::ObjectInvitationsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+        crate::ObjectInvitationsManager::new(client, room, event_id).await
     }
 }
 

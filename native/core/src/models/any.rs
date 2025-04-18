@@ -4,6 +4,7 @@ use super::capabilities::Capability;
 use super::comments::{Comment, CommentUpdate};
 use super::conversion::ParseError;
 pub(crate) use super::execution::transition_tree;
+use super::invites::ExplicitInvite;
 use super::meta::EventMeta;
 use super::news::{NewsEntry, NewsEntryUpdate};
 use super::pins::{Pin, PinUpdate};
@@ -32,6 +33,7 @@ use crate::{
         attachments::{AttachmentEventContent, AttachmentUpdateEventContent},
         calendar::{CalendarEventEventContent, CalendarEventUpdateEventContent},
         comments::{CommentEventContent, CommentUpdateEventContent},
+        explicit_invites::ExplicitInviteEventContent,
         news::{NewsEntryEventContent, NewsEntryUpdateEventContent},
         pins::{PinEventContent, PinUpdateEventContent},
         read_receipt::ReadReceiptEventContent,
@@ -140,6 +142,7 @@ pub enum AnyActerModel {
     Rsvp(Rsvp),
     Reaction(Reaction),
     ReadReceipt(ReadReceipt),
+    ExplicitInvite(ExplicitInvite),
 
     RoomStatus(RoomStatus),
 
@@ -171,6 +174,7 @@ impl AnyActerModel {
             AnyActerModel::Rsvp(_) => RsvpEventContent::TYPE,
             AnyActerModel::Reaction(_) => ReactionEventContent::TYPE,
             AnyActerModel::ReadReceipt(_) => ReadReceiptEventContent::TYPE,
+            AnyActerModel::ExplicitInvite(_) => ExplicitInviteEventContent::TYPE,
             AnyActerModel::RoomStatus(_) => "room status",
             AnyActerModel::RedactedActerModel(..) => "unknown_redacted_model",
             #[cfg(any(test, feature = "testing"))]

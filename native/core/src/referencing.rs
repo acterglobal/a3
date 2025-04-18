@@ -30,6 +30,7 @@ pub enum ObjectListIndex {
     ReadReceipt,
     Rsvp,
     Tasks,
+    Invites,
 }
 
 #[derive(
@@ -40,6 +41,7 @@ pub enum ObjectListIndex {
 pub enum SpecialListsIndex {
     MyOpenTasks,
     MyDoneTasks,
+    InvitedTo,
     #[cfg(any(test, feature = "testing"))]
     Test1,
     #[cfg(any(test, feature = "testing"))]
@@ -72,6 +74,8 @@ pub enum ModelParam {
     RsvpStats,
     #[strum(to_string = "read_receipts")]
     ReadReceiptsStats,
+    #[strum(to_string = "invites")]
+    InviteStats,
 }
 
 #[derive(
@@ -104,8 +108,11 @@ impl ExecuteReference {
             ExecuteReference::RoomParam(owned_room_id, room_param) => {
                 format!("{owned_room_id}::{room_param}")
             }
-            // not actually supported
             ExecuteReference::ModelType(model_type) => model_type.to_string(),
+            ExecuteReference::Index(IndexKey::Special(SpecialListsIndex::InvitedTo)) => {
+                "global_invited".to_owned() // this is a special case, we actively store and manage
+            }
+            // not actually supported
             ExecuteReference::Index(_index_key) => todo!(),
             ExecuteReference::Room(_owned_room_id) => todo!(),
             ExecuteReference::RoomAccountData(_owned_room_id, _cow) => todo!(),

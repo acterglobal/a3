@@ -4,7 +4,7 @@ use acter_core::{
         attachments::{AttachmentContent, FallbackAttachmentContent},
         news::{FallbackNewsContent, NewsContent},
         rsvp::RsvpStatus,
-        AnyActerEvent, RefDetails, RefPreview, SyncAnyActerEvent, UtcDateTime,
+        AnyActerEvent, AnySyncActerEvent, RefDetails, RefPreview, UtcDateTime,
     },
     models::{ActerModel, AnyActerModel, Attachment},
     push::default_rules,
@@ -55,7 +55,7 @@ use urlencoding::encode;
 
 use crate::{Client, Rsvp};
 
-use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, MsgContent, RUNTIME};
 
 #[derive(Debug, Clone)]
 pub struct NotificationSender {
@@ -80,7 +80,8 @@ impl NotificationSender {
             image: notif
                 .sender_avatar_url
                 .clone()
-                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+                .map(OwnedMxcUri::from)
+                .map(MediaSource::Plain),
             client,
         }
     }
@@ -121,7 +122,8 @@ impl NotificationRoom {
             image: notif
                 .room_avatar_url
                 .clone()
-                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+                .map(OwnedMxcUri::from)
+                .map(MediaSource::Plain),
             client,
         }
     }
@@ -131,8 +133,7 @@ impl NotificationRoom {
             display_name: room
                 .display_name()
                 .await
-                .map(|e| e.to_string())
-                .unwrap_or("".to_owned()),
+                .map_or("".to_owned(), |x| x.to_string()),
             image: room.avatar_url().clone().map(MediaSource::Plain),
             client,
         }
@@ -259,7 +260,7 @@ impl NotificationItemInner {
             },
             NotificationItemInner::Activity(activity) => match activity.content() {
                 ActivityContent::DescriptionChange { content, .. } => {
-                    content.as_ref().map(|e| MsgContent::from(e.clone()))
+                    content.clone().map(MsgContent::from)
                 }
                 ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
                 ActivityContent::Boost {
@@ -289,6 +290,8 @@ pub struct NotificationItem {
     pub(crate) inner: NotificationItemInner,
     #[builder(setter(into, strip_option), default)]
     pub(crate) msg_content: Option<MsgContent>,
+    #[builder(default)]
+    pub(crate) mentions_you: bool,
 }
 
 impl Deref for NotificationItem {
@@ -324,12 +327,23 @@ impl NotificationItem {
     pub fn room_invite_str(&self) -> Option<String> {
         self.inner.room_invite().map(|r| r.to_string())
     }
+    pub fn mentions_you(&self) -> bool {
+        self.mentions_you
+    }
     pub fn has_image(&self) -> bool {
         self.msg_content.as_ref().and_then(|a| a.source()).is_some()
     }
+
+    pub fn whom(&self) -> Vec<String> {
+        let NotificationItemInner::Activity(a) = &self.inner else {
+            return vec![];
+        };
+        a.whom()
+    }
+
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
-        let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {
+        let Some(source) = self.msg_content.as_ref().and_then(|a| a.source()) else {
             bail!("No media found in item")
         };
         let client = self.client.clone();
@@ -341,7 +355,7 @@ impl NotificationItem {
 
     pub async fn image_path(&self, tmp_dir: String) -> Result<String> {
         #[allow(clippy::diverging_sub_expression)]
-        let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {
+        let Some(source) = self.msg_content.as_ref().and_then(|a| a.source()) else {
             bail!("No media found in item")
         };
         self.client
@@ -403,10 +417,10 @@ impl NotificationItem {
 
         // acter specific items:
         if let RawNotificationEvent::Timeline(raw_tl) = &inner.raw_event {
-            if let Ok(event) = raw_tl.deserialize_as::<SyncAnyActerEvent>() {
+            if let Ok(event) = raw_tl.deserialize_as::<AnySyncActerEvent>() {
                 if !matches!(
                     event,
-                    SyncAnyActerEvent::RegularTimelineEvent(AnySyncTimelineEvent::MessageLike(_))
+                    AnySyncActerEvent::RegularTimelineEvent(AnySyncTimelineEvent::MessageLike(_))
                 ) {
                     return builder
                         .build_for_acter_object(client, event.into_full_any_acter_event(room_id))
@@ -444,6 +458,7 @@ impl NotificationItemBuilder {
         client: Client,
         event: AnyActerEvent,
     ) -> Result<NotificationItem> {
+        let user_id = client.user_id()?;
         let activity = match convert_acter_model(client, event).await {
             Err(error) => {
                 warn!(?error, "Could not convert acter activity");
@@ -549,6 +564,9 @@ impl NotificationItemBuilder {
                 object,
                 content: Some(content),
             } => builder.msg_content(MsgContent::from(content)),
+            ActivityContent::ObjectInvitation { object, invitees } => builder
+                .title(object.title().unwrap_or("Object".to_owned()))
+                .mentions_you(invitees.contains(&user_id)),
             _ => &mut builder,
         };
 

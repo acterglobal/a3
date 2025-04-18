@@ -1,5 +1,5 @@
 use acter_core::{
-    events::SyncAnyActerEvent, executor::Executor, models::AnyActerModel,
+    events::AnySyncActerEvent, executor::Executor, models::AnyActerModel,
     referencing::ExecuteReference, spaces::is_acter_space,
 };
 use anyhow::Result;
@@ -243,13 +243,14 @@ impl Client {
 
         // Any
         self.add_event_handler(
-            |ev: SyncAnyActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
+            |ev: AnySyncActerEvent, room: SdkRoom, Ctx(executor): Ctx<Executor>| async move {
                 let room_id = room.room_id().to_owned();
                 let acter_event = ev.into_full_any_acter_event(room_id);
                 AnyActerModel::execute(&executor, acter_event).await;
             },
         );
     }
+
     fn refresh_history_on_start(
         &self,
         sync_keys: Vec<OwnedRoomId>,
@@ -447,7 +448,6 @@ impl Client {
         let executor = self.executor().clone();
         let client = self.core.client().clone();
 
-        self.invitation_controller.add_event_handler();
         self.typing_controller.add_event_handler(&client);
 
         self.verification_controller
@@ -457,7 +457,6 @@ impl Client {
         // in order to avoid this issue, comment out sync event
         self.verification_controller.add_sync_event_handler(&client);
 
-        let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(1);
@@ -519,7 +518,6 @@ impl Client {
                 {
                     info!("received first sync");
                     trace!(user_id=?client.user_id(), "initial synced");
-                    invitation_controller.load_invitations().await;
 
                     initial.store(false, Ordering::SeqCst);
 
@@ -528,7 +526,7 @@ impl Client {
                     if let Ok(mut w) = state.try_write() {
                         w.has_first_synced = true;
                     };
-                    let sync_keys = response.rooms.join.keys().cloned().collect();
+                    let sync_keys = response.rooms.joined.keys().cloned().collect();
                     // background and keep the handle around.
                     me.refresh_history_on_start(
                         sync_keys,
@@ -538,7 +536,7 @@ impl Client {
                 } else {
                     // see if we have new spaces to catch up upon
                     let mut new_spaces = Vec::new();
-                    for (room_id, joined_state) in response.rooms.join.iter() {
+                    for (room_id, joined_state) in response.rooms.joined.iter() {
                         if history_loading.lock_mut().knows_room(room_id) {
                             continue;
                         }
@@ -559,10 +557,10 @@ impl Client {
 
                 let changed_rooms = response
                     .rooms
-                    .join
+                    .joined
                     .keys()
-                    .chain(response.rooms.leave.keys())
-                    .chain(response.rooms.invite.keys())
+                    .chain(response.rooms.left.keys())
+                    .chain(response.rooms.invited.keys())
                     .collect::<Vec<&OwnedRoomId>>();
 
                 if !changed_rooms.is_empty() {
@@ -573,7 +571,7 @@ impl Client {
                     // account data to inform about
                     let keys = response
                         .rooms
-                        .join
+                        .joined
                         .iter()
                         .flat_map(|(room_id, updates)| {
                             updates.account_data.iter().filter_map(|raw| {

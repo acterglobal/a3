@@ -4,7 +4,6 @@ import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
-import 'package:acter/features/space/widgets/space_info.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/spaces/pages/sub_spaces_page.dart';
@@ -28,7 +27,7 @@ void main() {
     isBookmarkedProvider.overrideWith((a, b) => false),
     spaceInvitedMembersProvider.overrideWith((a, b) => []),
     shouldShowSuggestedProvider.overrideWith((a, b) => false),
-    isActerSpaceForSpace.overrideWith((a, b) => false),
+    isActerSpace.overrideWith((a, b) => false),
     suggestedSpacesProvider.overrideWith((a, b) async {
       return (List<String>.empty(), List<SpaceHierarchyRoomInfo>.empty());
     }),

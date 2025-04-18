@@ -124,10 +124,10 @@ packages:
     dependency: "direct main"
     description:
       name: appflowy_editor
-      sha256: "568a9e73315442157fdd0ff892aa5abed418bec0c1bf8885bb352c26d078a57f"
+      sha256: ce0b9170caca9bfbd525bd924c94733445c1c22137275f8c08c539b31585d0b5
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
+    version: "5.1.0"
   archive:
     dependency: transitive
     description:
@@ -522,7 +522,7 @@ packages:
     source: hosted
     version: "3.0.6"
   csslib:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: csslib
       sha256: "831883fb353c8bdc1d71979e5b342c7d88acfbc643113c14ae51e2442ea0f20f"
@@ -574,10 +574,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: a7fd703482b391a87d60b6061d04dfdeab07826b96f9abd8f5ed98068acc0074
+      sha256: "306b78788d1bb569edb7c55d622953c2414ca12445b41c9117963e03afc5c513"
       url: "https://pub.dev"
     source: hosted
-    version: "10.1.2"
+    version: "11.3.3"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -1503,6 +1503,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.1"
+  matomo_tracker:
+    dependency: "direct main"
+    description:
+      name: matomo_tracker
+      sha256: e5f179b3660193d62b7494abd2179c8dfcab8e66ffa76eeefe3b6f88fb3d8291
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0"
   matrix_link_text:
     dependency: transitive
     description:
@@ -1611,12 +1619,12 @@ packages:
     dependency: "direct dev"
     description:
       name: mockingjay
-      sha256: cea2f3d38d1343beb6908f0ade5724c12304ee74014fbd274b4065a4b7db6536
+      sha256: db8bed9123ca1cd13442a26c90a18cdf6f707ca79160d1c3ac3baa0f8f86cf1d
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.0"
+    version: "1.0.0"
   mocktail:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: mocktail
       sha256: "890df3f9688106f25755f26b1c60589a92b3ab91a22b8b224947ad041bf172d8"
@@ -2308,10 +2316,10 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: "846849e3e9b68f3ef4b60c60cf4b3e02e9321bc7f4d8c4692cf87ffa82fc8a3a"
+      sha256: "6e8bf70b7fef813df4e9a36f658ac46d107db4b4cfe1048b477d4e453a8159f5"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.2"
+    version: "2.5.3"
   shared_preferences_android:
     dependency: transitive
     description:
@@ -2613,6 +2621,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.8"
+  test_screenshot:
+    dependency: "direct dev"
+    description:
+      name: test_screenshot
+      sha256: c441e0249f3094b373e7456eddd345256543a11b8315370c1da029c2ac40e734
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   time:
     dependency: transitive
     description:
@@ -2961,10 +2977,10 @@ packages:
     dependency: transitive
     description:
       name: win32_registry
-      sha256: "21ec76dfc731550fd3e2ce7a33a9ea90b828fdf19a5c3bcf556fa992cfa99852"
+      sha256: "6f1b564492d0147b330dd794fee8f512cec4977957f310f9951b5f9d83618dae"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.5"
+    version: "2.1.0"
   window_manager:
     dependency: "direct main"
     description:

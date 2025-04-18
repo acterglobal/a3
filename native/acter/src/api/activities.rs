@@ -4,7 +4,10 @@ pub use acter_core::activities::object::ActivityObject;
 use acter_core::{
     activities::Activity as CoreActivity,
     events::news::{FallbackNewsContent, NewsContent},
-    models::{status::membership::MembershipChange as CoreMembershipChange, ActerModel},
+    models::{
+        status::{MembershipContent, ProfileContent},
+        ActerModel,
+    },
     referencing::IndexKey,
 };
 use futures::{FutureExt, Stream, StreamExt};
@@ -15,23 +18,6 @@ use tokio_stream::wrappers::BroadcastStream;
 use super::{Client, MsgContent, RefDetails, RUNTIME};
 
 use acter_core::activities::ActivityContent;
-#[derive(Clone, Debug)]
-pub struct MembershipChange(CoreMembershipChange);
-
-impl MembershipChange {
-    pub fn user_id_str(&self) -> String {
-        self.0.user_id.to_string()
-    }
-    pub fn display_name(&self) -> Option<String> {
-        self.0.display_name.clone()
-    }
-    pub fn avatar_url(&self) -> Option<String> {
-        self.0.avatar_url.as_ref().map(|a| a.to_string())
-    }
-    pub fn reason(&self) -> Option<String> {
-        self.0.reason.clone()
-    }
-}
 
 #[derive(Clone, Debug)]
 pub struct Activity {
@@ -42,10 +28,6 @@ pub struct Activity {
 impl Activity {
     pub fn content(&self) -> &ActivityContent {
         self.inner.content()
-    }
-
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        self.inner.membership_change().map(MembershipChange)
     }
 
     pub fn sender_id_str(&self) -> String {
@@ -73,7 +55,7 @@ impl Activity {
     pub fn msg_content(&self) -> Option<MsgContent> {
         match self.inner.content() {
             ActivityContent::DescriptionChange { content, .. } => {
-                content.as_ref().map(|e| MsgContent::from(e.clone()))
+                content.as_ref().map(MsgContent::from)
             }
             ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
             ActivityContent::Boost {
@@ -82,6 +64,21 @@ impl Activity {
             } => MsgContent::try_from(first_slide).ok(),
             _ => None,
         }
+    }
+
+    pub fn membership_content(&self) -> Option<MembershipContent> {
+        self.inner.membership_content()
+    }
+
+    pub fn profile_content(&self) -> Option<ProfileContent> {
+        self.inner.profile_content()
+    }
+
+    pub fn mentions_you(&self) -> bool {
+        let Ok(user_id) = self.client.user_id() else {
+            return false;
+        };
+        self.inner.whom().contains(&user_id.to_string())
     }
 }
 

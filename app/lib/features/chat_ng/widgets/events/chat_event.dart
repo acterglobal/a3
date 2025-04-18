@@ -3,10 +3,11 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomMessage, RoomVirtualItem, RoomEventItem;
+    show TimelineEventItem, TimelineItem, TimelineVirtualItem;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -44,15 +45,15 @@ class ChatEvent extends ConsumerWidget {
     return renderEvent(ctx: context, msg: msg, item: inner, ref: ref);
   }
 
-  Widget renderVirtual(RoomMessage msg, RoomVirtualItem virtual) {
+  Widget renderVirtual(TimelineItem msg, TimelineVirtualItem virtual) {
     // TODO: virtual Objects support
     return const SizedBox.shrink();
   }
 
   Widget renderEvent({
     required BuildContext ctx,
-    required RoomMessage msg,
-    required RoomEventItem item,
+    required TimelineItem msg,
+    required TimelineEventItem item,
     required WidgetRef ref,
   }) {
     final isLastMessageBySender = ref.watch(
@@ -87,20 +88,7 @@ class ChatEvent extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           shouldShowAvatar
-              ? Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: ActerAvatar(
-                  options: AvatarOptions.DM(
-                    ref.watch(
-                      memberAvatarInfoProvider((
-                        roomId: roomId,
-                        userId: item.sender(),
-                      )),
-                    ),
-                    size: 14,
-                  ),
-                ),
-              )
+              ? _buildAvatar(ctx, ref, item.sender())
               : const SizedBox(width: 40),
           Flexible(
             child: ChatEventItem(
@@ -115,6 +103,28 @@ class ChatEvent extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(BuildContext context, WidgetRef ref, String userId) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: GestureDetector(
+        onTap:
+            () => showMemberInfoDrawer(
+              context: context,
+              roomId: roomId,
+              memberId: userId,
+            ),
+        child: ActerAvatar(
+          options: AvatarOptions.DM(
+            ref.watch(
+              memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+            ),
+            size: 14,
+          ),
+        ),
       ),
     );
   }
