@@ -1,4 +1,4 @@
-import 'package:acter/common/themes/app_theme.dart';
+import 'dart:io';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
@@ -60,7 +60,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
       if (permissions.showCalendarPermission)
         CalendarSyncPermissionWidget(callNextPage: () => _nextPage()),
-      if (isDesktop)
+      if (Platform.isWindows)
         DesktopSetupWidget(callNextPage: () => _nextPage()),
       AnalyticsOptInWidget(
         callNextPage: () {
