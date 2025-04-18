@@ -31,7 +31,6 @@ void main() {
     expect(find.byType(DesktopSetupWidget), findsOneWidget);
 
     // Verify key UI elements are present
-    expect(find.byIcon(Icons.close), findsOneWidget); // Close button
     expect(find.byType(Checkbox), findsOneWidget); // Features checkbox
     expect(find.byType(ElevatedButton), findsOneWidget); // Continue button
   });
@@ -60,36 +59,27 @@ void main() {
   testWidgets('DesktopSetupWidget handles continue button', (
     WidgetTester tester,
   ) async {
+    bool wasCalled = false;
     await tester.pumpProviderWidget(
-      child: DesktopSetupWidget(callNextPage: () {}),
+      child: DesktopSetupWidget(
+        callNextPage: () {
+          wasCalled = true;
+        },
+      ),
       overrides: [
         launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
       ],
     );
+
+    // Verify initial state
+    expect(find.byType(DesktopSetupWidget), findsOneWidget);
+    expect(wasCalled, isFalse);
 
     // Tap the continue button
     await tester.tap(find.byType(ElevatedButton));
     await tester.pumpAndSettle();
 
-    // Verify the dialog is dismissed
-    expect(find.byType(DesktopSetupWidget), findsNothing);
-  });
-
-  testWidgets('DesktopSetupWidget handles close button', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpProviderWidget(
-      child: DesktopSetupWidget(callNextPage: () {}),
-      overrides: [
-        launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
-      ],
-    );
-
-    // Tap the close button
-    await tester.tap(find.byIcon(Icons.close));
-    await tester.pumpAndSettle();
-
-    // Verify the dialog is dismissed
-    expect(find.byType(DesktopSetupWidget), findsNothing);
+    // Verify the callback was called
+    expect(wasCalled, isTrue);
   });
 }

@@ -1,11 +1,12 @@
 import 'package:acter/features/desktop_setup/providers/desktop_setup_provider.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DesktopSetupWidget extends ConsumerStatefulWidget {
-  final Function() callNextPage;  
+  final CallNextPage? callNextPage; 
   const DesktopSetupWidget({super.key, required this.callNextPage});
 
   @override
@@ -143,7 +144,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
   Widget _buildActionButton(BuildContext context, L10n lang) {
     final textTheme = Theme.of(context).textTheme;
     return ElevatedButton(
-      onPressed: () => widget.callNextPage(),
+      onPressed: widget.callNextPage,
       child: Text(
         lang.wizzardContinue,
         style: textTheme.bodyMedium?.copyWith(
