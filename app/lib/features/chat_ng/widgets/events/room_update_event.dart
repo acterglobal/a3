@@ -54,6 +54,11 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
+      'm.policy.rule.server' => getMessageOnPolicyRuleServer(
+        lang,
+        isMe,
+        senderName,
+      ),
       'm.room.create' =>
         isMe
             ? lang.chatYouRoomCreate
@@ -190,6 +195,94 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStatePolicyRuleRoomRecommendationYouSet(newVal);
         } else {
           return lang.roomStatePolicyRuleRoomRecommendationOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnPolicyRuleServer(
+    L10n lang,
+    bool isMe,
+    String senderName,
+  ) {
+    final content = item.policyRuleServerContent();
+    if (content == null) {
+      _log.severe('failed to get content of policy rule server change');
+      return null;
+    }
+    switch (content.entityChange()) {
+      case 'Changed':
+        final newVal = content.entityNewVal();
+        final oldVal = content.entityOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerEntityYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerEntityOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.entityNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerEntityYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerEntityOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    switch (content.reasonChange()) {
+      case 'Changed':
+        final newVal = content.reasonNewVal();
+        final oldVal = content.reasonOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerReasonYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerReasonOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.reasonNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerReasonYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerReasonOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    switch (content.recommendationChange()) {
+      case 'Changed':
+        final newVal = content.recommendationNewVal();
+        final oldVal = content.recommendationOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerRecommendationYouChanged(
+            oldVal,
+            newVal,
+          );
+        } else {
+          return lang.roomStatePolicyRuleServerRecommendationOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.recommendationNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerRecommendationYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerRecommendationOtherSet(
             senderName,
             newVal,
           );

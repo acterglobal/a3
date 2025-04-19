@@ -21,6 +21,7 @@ const _supportedTypes = [
   'ProfileChange',
 
   'm.policy.rule.room',
+  'm.policy.rule.server',
 
   'm.room.message',
   'm.room.redaction',
