@@ -15,12 +15,12 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            ChatItemWidget(roomId: davidDmRoom15.roomId),
-            ChatItemWidget(roomId: imageMessageDmRoom16.roomId),
-            ChatItemWidget(roomId: videoMessageDmRoom17.roomId),
-            ChatItemWidget(roomId: audioMessageDmRoom18.roomId),
-            ChatItemWidget(roomId: fileMessageDmRoom19.roomId),
-            ChatItemWidget(roomId: locationMessageDmRoom20.roomId),
+            Card(child: ChatItemWidget(roomId: davidDmRoom15.roomId)),
+            Card(child: ChatItemWidget(roomId: imageMessageDmRoom16.roomId)),
+            Card(child: ChatItemWidget(roomId: videoMessageDmRoom17.roomId)),
+            Card(child: ChatItemWidget(roomId: audioMessageDmRoom18.roomId)),
+            Card(child: ChatItemWidget(roomId: fileMessageDmRoom19.roomId)),
+            Card(child: ChatItemWidget(roomId: locationMessageDmRoom20.roomId)),
           ],
         ),
       );

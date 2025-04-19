@@ -30,26 +30,68 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            ChatItemWidget(roomId: membershipEventjoinedRoom22.roomId),
-            ChatItemWidget(roomId: membershipEventLeftRoom23.roomId),
-            ChatItemWidget(
-              roomId: membershipEventInvitationAcceptedRoom24.roomId,
+            Card(
+              child: ChatItemWidget(roomId: membershipEventjoinedRoom22.roomId),
             ),
-            ChatItemWidget(
-              roomId: membershipEventInvitationRejectedRoom25.roomId,
+            Card(
+              child: ChatItemWidget(roomId: membershipEventLeftRoom23.roomId),
             ),
-            ChatItemWidget(
-              roomId: membershipEventInvitationRevokedRoom26.roomId,
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventInvitationAcceptedRoom24.roomId,
+              ),
             ),
-            ChatItemWidget(roomId: membershipEventKnockAcceptedRoom27.roomId),
-            ChatItemWidget(roomId: membershipEventKnockRetractedRoom28.roomId),
-            ChatItemWidget(roomId: membershipEventKnockDeniedRoom29.roomId),
-            ChatItemWidget(roomId: membershipEventBannedRoom30.roomId),
-            ChatItemWidget(roomId: membershipEventUnbannedRoom31.roomId),
-            ChatItemWidget(roomId: membershipEventKickedRoom32.roomId),
-            ChatItemWidget(roomId: membershipEventInvitedRoom33.roomId),
-            ChatItemWidget(roomId: membershipEventKickedAndBannedRoom34.roomId),
-            ChatItemWidget(roomId: membershipEventKnockedRoom35.roomId),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventInvitationRejectedRoom25.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventInvitationRevokedRoom26.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventKnockAcceptedRoom27.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventKnockRetractedRoom28.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventKnockDeniedRoom29.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(roomId: membershipEventBannedRoom30.roomId),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventUnbannedRoom31.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(roomId: membershipEventKickedRoom32.roomId),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventInvitedRoom33.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventKickedAndBannedRoom34.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: membershipEventKnockedRoom35.roomId,
+              ),
+            ),
           ],
         ),
       );

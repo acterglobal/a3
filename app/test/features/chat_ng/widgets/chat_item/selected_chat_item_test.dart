@@ -46,9 +46,11 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            ChatItemWidget(
-              roomId: emilyDmMutedBookmarkedRoom1.roomId,
-              showSelectedIndication: true,
+            Card(
+              child: ChatItemWidget(
+                roomId: emilyDmMutedBookmarkedRoom1.roomId,
+                showSelectedIndication: true,
+              ),
             ),
           ],
         ),

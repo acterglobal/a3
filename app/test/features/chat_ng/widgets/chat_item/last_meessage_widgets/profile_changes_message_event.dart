@@ -15,12 +15,34 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            ChatItemWidget(roomId: profileEventDisplayNameChangedRoom36.roomId),
-            ChatItemWidget(roomId: profileEventDisplayNameSetRoom37.roomId),
-            ChatItemWidget(roomId: profileEventDisplayNameUnsetRoom38.roomId),
-            ChatItemWidget(roomId: profileEventAvatarChangedRoom39.roomId),
-            ChatItemWidget(roomId: profileEventAvatarSetRoom40.roomId),
-            ChatItemWidget(roomId: profileEventAvatarUnsetRoom41.roomId),
+            Card(
+              child: ChatItemWidget(
+                roomId: profileEventDisplayNameChangedRoom36.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: profileEventDisplayNameSetRoom37.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: profileEventDisplayNameUnsetRoom38.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: profileEventAvatarChangedRoom39.roomId,
+              ),
+            ),
+            Card(
+              child: ChatItemWidget(roomId: profileEventAvatarSetRoom40.roomId),
+            ),
+            Card(
+              child: ChatItemWidget(
+                roomId: profileEventAvatarUnsetRoom41.roomId,
+              ),
+            ),
           ],
         ),
       );
