@@ -25463,13 +25463,6 @@ class Api {
 
   late final _clientIsSyncing =
       _clientIsSyncingPtr.asFunction<int Function(int)>();
-  late final _clientLoggedInPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
-        "__Client_logged_in",
-      );
-
-  late final _clientLoggedIn =
-      _clientLoggedInPtr.asFunction<int Function(int)>();
   late final _clientAccountPtr =
       _lookup<ffi.NativeFunction<_ClientAccountReturn Function(ffi.IntPtr)>>(
         "__Client_account",
@@ -56077,16 +56070,6 @@ class Client {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientIsSyncing(tmp0);
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  /// Whether the client is logged in
-  bool loggedIn() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientLoggedIn(tmp0);
     final tmp3 = tmp1;
     final tmp2 = tmp3 > 0;
     return tmp2;

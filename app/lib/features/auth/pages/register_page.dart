@@ -58,8 +58,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ref: ref,
       )) {
         navigator.goNamed(
-          Routes.saveUsername.name,
-          queryParameters: {'username': username.text},
+          Routes.onboarding.name,
+          queryParameters: {'username': username.text, 'isLoginOnboarding': 'false'},
         );
       }
     } catch (errorMsg) {

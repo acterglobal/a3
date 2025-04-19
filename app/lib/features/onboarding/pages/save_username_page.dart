@@ -1,20 +1,24 @@
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:go_router/go_router.dart';
 
 class SaveUsernamePage extends StatelessWidget {
   static const copyUsernameBtn = Key('reg-copy-username-btn');
   static const continueBtn = Key('reg-continue-btn');
   final String username;
+  final CallNextPage? callNextPage;
 
-  SaveUsernamePage({super.key, required this.username});
+  SaveUsernamePage({
+    super.key,
+    required this.username,
+    required this.callNextPage,
+  });
 
   final ValueNotifier<bool> isCopied = ValueNotifier(false);
 
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(body: _buildBody(context));
   }
@@ -124,10 +128,7 @@ class SaveUsernamePage extends StatelessWidget {
       builder: (context, isCopiedValue, child) {
         return OutlinedButton(
           key: continueBtn,
-          onPressed:
-              isCopiedValue
-                  ? () => context.goNamed(Routes.redeemInvitations.name)
-                  : null,
+          onPressed: isCopiedValue ? () => callNextPage : null,
           style: OutlinedButton.styleFrom(
             side: isCopiedValue ? null : BorderSide(color: disabledColor),
           ),

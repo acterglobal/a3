@@ -41,10 +41,7 @@ class TaskItemsListNotifier
     _poller = _listener.listen(
       (data) async {
         _log.info('got tasks list update');
-        state = await AsyncValue.guard(() async {
-          final freshTaskList = await taskList.refresh();
-          return await _refresh(freshTaskList);
-        });
+        state = AsyncValue.data(await _refresh(taskList));
       },
       onError: (e, s) {
         _log.severe('tasks overview stream errored', e, s);
@@ -76,7 +73,7 @@ class TaskListItemNotifier extends FamilyAsyncNotifier<TaskList, String> {
     _poller = _listener.listen(
       (data) async {
         _log.info('got taskList update');
-        state = await AsyncValue.guard(() async => await _refresh(client, arg));
+        state = AsyncValue.data(await _refresh(client, arg));
       },
       onError: (e, s) {
         _log.severe('tasklist stream errored', e, s);
@@ -103,7 +100,7 @@ class TaskItemNotifier extends FamilyAsyncNotifier<Task, Task> {
     _poller = _listener.listen(
       (data) async {
         _log.info('got tasks list update');
-        state = await AsyncValue.guard(() async => await task.refresh());
+        state = AsyncValue.data(await task.refresh());
       },
       onError: (e, s) {
         _log.severe('task stream errored', e, s);
@@ -132,7 +129,7 @@ class AsyncAllTaskListsNotifier extends AsyncNotifier<List<TaskList>> {
 
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(() async => await _getTasksList(client));
+        state = AsyncValue.data(await _getTasksList(client));
       },
       onError: (e, s) {
         _log.severe('all tasks stream errored', e, s);

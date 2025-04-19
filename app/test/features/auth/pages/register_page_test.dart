@@ -11,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:test_screenshot/test_screenshot.dart';
 
 import '../../../helpers/mock_go_router.dart';
 import '../../../helpers/test_util.dart';
@@ -129,7 +128,6 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify validation message
-        await tester.screenshot(path: 'screenshot.png');
         expect(
           find.text(lang.invalidUsernameFormat, skipOffstage: false),
           findsOneWidget,
@@ -432,7 +430,7 @@ void main() {
         verify(
           () => mockedGoRouter.goNamed(
             any(
-              that: equals(Routes.saveUsername.name),
+              that: equals(Routes.onboarding.name),
             ), // forwarded to the right item
             queryParameters: any(
               named: 'queryParameters',
