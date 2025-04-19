@@ -223,6 +223,7 @@ final hasUnreadMessages = FutureProvider.family<bool, String>((
   ref,
   roomId,
 ) async {
+  if (!ref.watch(isActiveProvider(LabsFeature.chatUnread))) return false;
   final unreadCounters = ref.watch(unreadCountersProvider(roomId)).valueOrNull;
 
   if (unreadCounters == null) return false;

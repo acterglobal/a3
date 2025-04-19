@@ -23,10 +23,10 @@ class UnreadCountWidget extends ConsumerWidget {
 
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
-    final surefaceColor = theme.colorScheme.onSurface;
+    final onSurface = theme.colorScheme.onSurface;
 
-    final textColor = isSelected ? primaryColor : surefaceColor;
-    final backgroundColor = isSelected ? surefaceColor : primaryColor;
+    final textColor = isSelected ? primaryColor : onSurface;
+    final backgroundColor = isSelected ? onSurface : primaryColor;
 
     return Container(
       margin: const EdgeInsets.only(left: 4),
