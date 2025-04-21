@@ -10,9 +10,16 @@ class ActivityRoomTopicItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   final subTitle = activity.roomTopic() ?? '';
     return ActivitySpaceItemContainerWidget(
       actionIcon: PhosphorIconsRegular.pencilSimpleLine,
-      updatedText: L10n.of(context).spaceDescriptionUpdate,
+      updatedText: L10n.of(context).spaceDescriptionUpdate, 
+      subtitle: Text(
+        subTitle,
+        style: Theme.of(context).textTheme.labelMedium,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       originServerTs: activity.originServerTs(),

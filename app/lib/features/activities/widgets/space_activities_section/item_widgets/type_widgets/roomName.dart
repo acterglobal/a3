@@ -9,13 +9,20 @@ class ActivityRoomNameItemWidget extends StatelessWidget {
   const ActivityRoomNameItemWidget({super.key, required this.activity});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
+    final subTitle = activity.roomName() ?? '';
     return ActivitySpaceItemContainerWidget(
-      actionIcon: PhosphorIconsRegular.pencilSimpleLine,
-      updatedText: L10n.of(context).spaceNameUpdate,
-      userId: activity.senderIdStr(),
-      roomId: activity.roomIdStr(),
+      actionIcon: PhosphorIconsRegular.pencilSimpleLine,   
+      updatedText: L10n.of(context).spaceNameUpdate,  
+       subtitle: Text( 
+        subTitle, 
+        style: Theme.of(context).textTheme.labelMedium,  
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,  
+      ), 
+      userId: activity.senderIdStr(),   
+      roomId: activity.roomIdStr(),  
       originServerTs: activity.originServerTs(),
-    );
+    );  
   }
 }
