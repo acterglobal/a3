@@ -30,64 +30,64 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            Card(
+            Material(
               child: ChatItemWidget(roomId: membershipEventjoinedRoom22.roomId),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(roomId: membershipEventLeftRoom23.roomId),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventInvitationAcceptedRoom24.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventInvitationRejectedRoom25.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventInvitationRevokedRoom26.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventKnockAcceptedRoom27.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventKnockRetractedRoom28.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventKnockDeniedRoom29.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(roomId: membershipEventBannedRoom30.roomId),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventUnbannedRoom31.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(roomId: membershipEventKickedRoom32.roomId),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventInvitedRoom33.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventKickedAndBannedRoom34.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: membershipEventKnockedRoom35.roomId,
               ),

@@ -15,30 +15,30 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: profileEventDisplayNameChangedRoom36.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: profileEventDisplayNameSetRoom37.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: profileEventDisplayNameUnsetRoom38.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: profileEventAvatarChangedRoom39.roomId,
               ),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(roomId: profileEventAvatarSetRoom40.roomId),
             ),
-            Card(
+            Material(
               child: ChatItemWidget(
                 roomId: profileEventAvatarUnsetRoom41.roomId,
               ),
