@@ -13,7 +13,6 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 
 final _log = Logger('a3::common::html_editor');
 
@@ -457,9 +456,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           ],
           commandShortcutEvents: [...standardCommandShortcutEvents],
           disableAutoScroll: widget.disableAutoScroll,
-          autoScrollEdgeOffset: ChatEditorUtils.getAutoScrollEdgeOffset(
-            context,
-          ),
+          autoScrollEdgeOffset: 20,
         ),
       ),
     );
@@ -524,10 +521,9 @@ class HtmlEditorState extends State<HtmlEditor> {
             ...standardCharacterShortcutEvents,
             if (roomId != null) ...mentionShortcuts(context, roomId),
           ],
-          disableAutoScroll: widget.disableAutoScroll,
-          autoScrollEdgeOffset: ChatEditorUtils.getAutoScrollEdgeOffset(
-            context,
-          ),
+
+          disableAutoScroll: false,
+          autoScrollEdgeOffset: 20,
         ),
       ),
     );
@@ -562,7 +558,7 @@ class HtmlEditorState extends State<HtmlEditor> {
               context,
             ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
-      mobileDragHandleBallSize: const Size(12, 12),
+
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
     );

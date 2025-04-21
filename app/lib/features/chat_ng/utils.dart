@@ -1,8 +1,5 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> saveMsgDraft(
@@ -65,26 +62,4 @@ class ChatEditorUtils {
 
   /// max height for the editor
   static const double maxHeight = 200.0;
-
-  static const double defaultAutoScrollEdgeOffset = 15.0;
-
-  /// get responsive auto-scroll edge offset based on screen size
-  /// this helps ensure the auto-scroll behavior works well on different screen sizes
-  /// by adjusting the edge offset based on the available height.
-  static double getAutoScrollEdgeOffset(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    // For very small screens
-    if (screenHeight < 600) {
-      return 10.0;
-    }
-
-    // For medium screens
-    if (screenHeight < 1000) {
-      return max(15.0, toolbarOffset * 0.3);
-    }
-
-    // For large screens
-    return max(20.0, toolbarOffset * 0.4);
-  }
 }
