@@ -40,7 +40,7 @@ class _NewsListPageState extends ConsumerState<NewsListPage> {
   final ValueNotifier<bool> useGridMode = ValueNotifier(true);
   final ValueNotifier<bool> stillLoadingForSelectedItem = ValueNotifier(false);
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
-  late ProviderSubscription<AsyncValue<List<UpdateEntry>>>? listener;
+  ProviderSubscription<AsyncValue<List<UpdateEntry>>>? listener;
 
   @override
   void initState() {
