@@ -16,7 +16,7 @@ void main() {
       mockType: PushStyles.roomName.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockObject: MockActivityObject(mockType: 'room'),
+      mockObject: MockActivityObject(mockType: 'roomName'),
     );
 
     await tester.pumpProviderWidget(
@@ -28,7 +28,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.text('sender-id  updated space name'), findsOneWidget);
+    expect(find.text('sender-id updated space name'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -39,7 +39,7 @@ void main() {
       mockType: PushStyles.roomName.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockObject: MockActivityObject(mockType: 'room'),
+      mockObject: MockActivityObject(mockType: 'roomTopic'),
     );
 
     await tester.pumpProviderWidget(
@@ -51,7 +51,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.text('sender-id  updated space description'), findsOneWidget);
+    expect(find.text('sender-id updated space description'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -62,7 +62,7 @@ void main() {
       mockType: PushStyles.roomName.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockObject: MockActivityObject(mockType: 'room'),
+      mockObject: MockActivityObject(mockType: 'roomAvatar'),
     );
 
     await tester.pumpProviderWidget(
