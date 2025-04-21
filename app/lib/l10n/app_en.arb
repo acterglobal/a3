@@ -2656,6 +2656,10 @@
   "spaceNameUpdate": "updated space name",
   "spaceDescriptionUpdate": "updated space description", 
   "spaceAvatarUpdate": "updated avatar",
+  "invitationRevoked": "Declined Invitation of",
+  "invitationAccepted": "Accepted Invitation of",
+  "invited": "Invited",
+  "joined": "Joined",
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {}
 }
