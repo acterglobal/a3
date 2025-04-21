@@ -61,7 +61,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       if (permissions.showCalendarPermission)
         CalendarSyncPermissionWidget(callNextPage: () => _nextPage()),
       if (Platform.isWindows)
-        DesktopSetupWidget(callNextPage: () => _nextPage()),
+        DesktopLaunchAtStartupWidget(callNextPage: () => _nextPage()),
       AnalyticsOptInWidget(
         callNextPage: () {
           _nextPage();

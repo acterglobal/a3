@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 
-class DesktopSetupNotifier extends StateNotifier<bool> {
+class DesktopLaunchAtStartupNotifier extends StateNotifier<bool> {
   final LaunchAtStartup _launchAtStartup;
 
-  DesktopSetupNotifier([LaunchAtStartup? launchAtStartup])
+  DesktopLaunchAtStartupNotifier([LaunchAtStartup? launchAtStartup])
       : _launchAtStartup = launchAtStartup ?? LaunchAtStartup.instance,
         super(false) {
     _initialize();
@@ -27,7 +27,7 @@ class DesktopSetupNotifier extends StateNotifier<bool> {
   }
 }
 
-final desktopSetupNotifierProvider =
-    StateNotifierProvider<DesktopSetupNotifier, bool>(
-  (ref) => DesktopSetupNotifier(),
-); 
+final desktopLaunchAtStartupNotifierProvider =
+    StateNotifierProvider<DesktopLaunchAtStartupNotifier, bool>(
+  (ref) => DesktopLaunchAtStartupNotifier(),
+);

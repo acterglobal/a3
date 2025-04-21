@@ -5,15 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class DesktopSetupWidget extends ConsumerStatefulWidget {
+class DesktopLaunchAtStartupWidget extends ConsumerStatefulWidget {
   final CallNextPage? callNextPage; 
-  const DesktopSetupWidget({super.key, required this.callNextPage});
+  const DesktopLaunchAtStartupWidget({super.key, required this.callNextPage});
 
   @override
-  ConsumerState<DesktopSetupWidget> createState() => _DesktopSetupWidgetState();
+  ConsumerState<DesktopLaunchAtStartupWidget> createState() => _DesktopLaunchAtStartupWidgetState();
 }
 
-class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
+class _DesktopLaunchAtStartupWidgetState extends ConsumerState<DesktopLaunchAtStartupWidget> {
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
@@ -85,7 +85,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
     WidgetRef ref,
   ) {
     final textTheme = Theme.of(context).textTheme;
-    final isEnabled = ref.watch(desktopSetupNotifierProvider);
+    final isEnabled = ref.watch(desktopLaunchAtStartupNotifierProvider);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -94,7 +94,7 @@ class _DesktopSetupWidgetState extends ConsumerState<DesktopSetupWidget> {
           value: isEnabled,
           onChanged: (bool? newValue) {
             if (newValue != null) {
-              ref.read(desktopSetupNotifierProvider.notifier)
+              ref.read(desktopLaunchAtStartupNotifierProvider.notifier)
                   .toggleLaunchAtStartup(newValue);
             }
           },
