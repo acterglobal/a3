@@ -43,16 +43,16 @@ void main() {
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
           ), // April 15th, 2025
         ],
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Card(
-              child: ChatItemWidget(
+        child: Material(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              ChatItemWidget(
                 roomId: emilyDmMutedBookmarkedRoom1.roomId,
                 showSelectedIndication: true,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
 
