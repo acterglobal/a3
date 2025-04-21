@@ -8,7 +8,7 @@ import 'mocks/desktop_setup_mocks.dart';
 
 void main() {
   late MockLaunchAtStartup mockLaunchAtStartup;
-  late DesktopSetupNotifier notifier;
+  late DesktopLaunchAtStartupNotifier notifier;
 
   setUp(() {
     mockLaunchAtStartup = MockLaunchAtStartup();
@@ -18,34 +18,34 @@ void main() {
     when(() => mockLaunchAtStartup.disable()).thenAnswer((_) async => true);
     
     // Create notifier with mock
-    notifier = DesktopSetupNotifier(mockLaunchAtStartup);
+    notifier = DesktopLaunchAtStartupNotifier(mockLaunchAtStartup);
   });
 
-  testWidgets('DesktopSetupWidget renders correctly', (
+  testWidgets('DesktopLaunchAtStartupWidget renders correctly', (
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: DesktopSetupWidget(callNextPage: () {}),
+      child: DesktopLaunchAtStartupWidget(callNextPage: () {}),
       overrides: [
-        desktopSetupNotifierProvider.overrideWith((_) => notifier),
+        desktopLaunchAtStartupNotifierProvider.overrideWith((_) => notifier),
       ],
     );
 
     // Verify the widget renders
-    expect(find.byType(DesktopSetupWidget), findsOneWidget);
+    expect(find.byType(DesktopLaunchAtStartupWidget), findsOneWidget);
 
     // Verify key UI elements are present
     expect(find.byType(Checkbox), findsOneWidget); // Features checkbox
     expect(find.byType(ElevatedButton), findsOneWidget); // Continue button
   });
 
-  testWidgets('DesktopSetupWidget handles enable/disable features', (
+  testWidgets('DesktopLaunchAtStartupWidget handles enable/disable features', (
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: DesktopSetupWidget(callNextPage: () {}),
+      child: DesktopLaunchAtStartupWidget(callNextPage: () {}),
       overrides: [
-        desktopSetupNotifierProvider.overrideWith((_) => notifier),
+        desktopLaunchAtStartupNotifierProvider.overrideWith((_) => notifier),
       ],
     );
 
@@ -76,23 +76,23 @@ void main() {
     verify(() => mockLaunchAtStartup.disable()).called(1);
   });
 
-  testWidgets('DesktopSetupWidget handles continue button', (
+  testWidgets('DesktopLaunchAtStartupWidget handles continue button', (
     WidgetTester tester,
   ) async {
     bool wasCalled = false;
     await tester.pumpProviderWidget(
-      child: DesktopSetupWidget(
+      child: DesktopLaunchAtStartupWidget(
         callNextPage: () {
           wasCalled = true;
         },
       ),
       overrides: [
-        desktopSetupNotifierProvider.overrideWith((_) => notifier),
+        desktopLaunchAtStartupNotifierProvider.overrideWith((_) => notifier),
       ],
     );
 
     // Verify initial state
-    expect(find.byType(DesktopSetupWidget), findsOneWidget);
+    expect(find.byType(DesktopLaunchAtStartupWidget), findsOneWidget);
     expect(wasCalled, isFalse);
 
     // Tap the continue button
