@@ -2,13 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 
 class DesktopSetupNotifier extends StateNotifier<bool> {
-  DesktopSetupNotifier() : super(false) {
+  final LaunchAtStartup _launchAtStartup;
+
+  DesktopSetupNotifier([LaunchAtStartup? launchAtStartup])
+      : _launchAtStartup = launchAtStartup ?? LaunchAtStartup.instance,
+        super(false) {
     _initialize();
   }
 
   Future<void> _initialize() async {
-    final launchAtStartup = LaunchAtStartup.instance;
-    state = await launchAtStartup.isEnabled();
+    state = await _launchAtStartup.isEnabled();
   }
 
   Future<void> toggleLaunchAtStartup(bool enable) async {
@@ -16,11 +19,10 @@ class DesktopSetupNotifier extends StateNotifier<bool> {
     state = enable;
     
     // Then perform the actual operation
-    final launchAtStartup = LaunchAtStartup.instance;
     if (enable) {
-      await launchAtStartup.enable();
+      await _launchAtStartup.enable();
     } else {
-      await launchAtStartup.disable();
+      await _launchAtStartup.disable();
     }
   }
 }

@@ -8,6 +8,7 @@ import 'mocks/desktop_setup_mocks.dart';
 
 void main() {
   late MockLaunchAtStartup mockLaunchAtStartup;
+  late DesktopSetupNotifier notifier;
 
   setUp(() {
     mockLaunchAtStartup = MockLaunchAtStartup();
@@ -15,6 +16,9 @@ void main() {
     when(() => mockLaunchAtStartup.isEnabled()).thenAnswer((_) async => false);
     when(() => mockLaunchAtStartup.enable()).thenAnswer((_) async => true);
     when(() => mockLaunchAtStartup.disable()).thenAnswer((_) async => true);
+    
+    // Create notifier with mock
+    notifier = DesktopSetupNotifier(mockLaunchAtStartup);
   });
 
   testWidgets('DesktopSetupWidget renders correctly', (
@@ -23,7 +27,7 @@ void main() {
     await tester.pumpProviderWidget(
       child: DesktopSetupWidget(callNextPage: () {}),
       overrides: [
-        launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
+        desktopSetupNotifierProvider.overrideWith((_) => notifier),
       ],
     );
 
@@ -41,19 +45,35 @@ void main() {
     await tester.pumpProviderWidget(
       child: DesktopSetupWidget(callNextPage: () {}),
       overrides: [
-        launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
+        desktopSetupNotifierProvider.overrideWith((_) => notifier),
       ],
     );
 
     // Initial state should be unchecked
-    final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
-    expect(checkbox.value, isFalse);
+    final initialCheckbox = tester.widget<Checkbox>(find.byType(Checkbox));
+    expect(initialCheckbox.value, isFalse);
 
     // Tap the checkbox to enable features
     await tester.tap(find.byType(Checkbox));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    
+    // Verify checkbox state updated immediately
+    final updatedCheckbox = tester.widget<Checkbox>(find.byType(Checkbox));
+    expect(updatedCheckbox.value, isTrue);
+    
     // Verify enable was called
     verify(() => mockLaunchAtStartup.enable()).called(1);
+
+    // Tap again to disable
+    await tester.tap(find.byType(Checkbox));
+    await tester.pump();
+    
+    // Verify checkbox state updated to false
+    final disabledCheckbox = tester.widget<Checkbox>(find.byType(Checkbox));
+    expect(disabledCheckbox.value, isFalse);
+    
+    // Verify disable was called
+    verify(() => mockLaunchAtStartup.disable()).called(1);
   });
 
   testWidgets('DesktopSetupWidget handles continue button', (
@@ -67,7 +87,7 @@ void main() {
         },
       ),
       overrides: [
-        launchAtStartupProvider.overrideWithValue(mockLaunchAtStartup),
+        desktopSetupNotifierProvider.overrideWith((_) => notifier),
       ],
     );
 
@@ -77,7 +97,7 @@ void main() {
 
     // Tap the continue button
     await tester.tap(find.byType(ElevatedButton));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     // Verify the callback was called
     expect(wasCalled, isTrue);
