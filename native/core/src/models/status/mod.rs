@@ -18,7 +18,9 @@ use crate::{
 };
 pub use membership::MembershipContent;
 pub use profile::{Change, ProfileContent};
-pub use room_state::{PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent};
+pub use room_state::{
+    PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAliasesContent,
+};
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
@@ -29,6 +31,7 @@ pub enum ActerSupportedRoomStatusEvents {
     PolicyRuleRoom(PolicyRuleRoomContent),
     PolicyRuleServer(PolicyRuleServerContent),
     PolicyRuleUser(PolicyRuleUserContent),
+    RoomAliases(RoomAliasesContent),
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
 }
@@ -133,6 +136,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::PolicyRuleUser(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomAliases(StateEvent::Original(inner)) => {
+                let content = RoomAliasesContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomAliases(content),
                     meta,
                 })
             }

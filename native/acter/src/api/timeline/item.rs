@@ -1,7 +1,7 @@
 use acter_core::{
     models::status::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
-        ProfileContent,
+        ProfileContent, RoomAliasesContent,
     },
     util::do_vecs_match,
 };
@@ -316,6 +316,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_aliases_content(&self) -> Option<RoomAliasesContent> {
+        if let Some(TimelineEventContent::RoomAliases(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -394,36 +402,13 @@ impl TimelineEventItemBuilder {
                 let c = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::PolicyRuleUser(c)));
             }
-            AnyOtherFullStateEventContent::RoomAliases(c) => {
+            AnyOtherFullStateEventContent::RoomAliases(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.aliases".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(old) = &prev.aliases {
-                                if !do_vecs_match::<OwnedRoomAliasId>(old, &content.aliases) {
-                                    result.push("changed aliases".to_owned());
-                                }
-                                if result.is_empty() {
-                                    MsgContent::from_text("empty content".to_owned())
-                                } else {
-                                    MsgContent::from_text(result.join(", "))
-                                }
-                            } else {
-                                MsgContent::from_text("added room aliases".to_owned())
-                            }
-                        } else {
-                            MsgContent::from_text("added room aliases".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room aliases".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomAliasesContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomAliases(c)));
             }
             AnyOtherFullStateEventContent::RoomAvatar(c) => {
                 self.event_type("m.room.avatar".to_owned());

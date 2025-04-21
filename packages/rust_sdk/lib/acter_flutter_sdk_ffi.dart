@@ -7307,6 +7307,47 @@ class Api {
     return tmp7;
   }
 
+  EventId? __convoSetAliasesFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetAliasesFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __commentDraftSendFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -10570,6 +10611,47 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceSetPolicyRuleUserFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetAliasesFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetAliasesFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -19823,6 +19905,17 @@ class Api {
           .asFunction<
             _TimelineEventItemPolicyRuleUserContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomAliasesContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomAliasesContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_aliases_content");
+
+  late final _timelineEventItemRoomAliasesContent =
+      _timelineEventItemRoomAliasesContentPtr
+          .asFunction<
+            _TimelineEventItemRoomAliasesContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -20452,6 +20545,27 @@ class Api {
           .asFunction<
             _PolicyRuleUserContentRecommendationOldValReturn Function(int)
           >();
+  late final _roomAliasesContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomAliasesContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomAliasesContent_change");
+
+  late final _roomAliasesContentChange =
+      _roomAliasesContentChangePtr
+          .asFunction<_RoomAliasesContentChangeReturn Function(int)>();
+  late final _roomAliasesContentNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__RoomAliasesContent_new_val",
+      );
+
+  late final _roomAliasesContentNewVal =
+      _roomAliasesContentNewValPtr.asFunction<int Function(int)>();
+  late final _roomAliasesContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomAliasesContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomAliasesContent_old_val");
+
+  late final _roomAliasesContentOldVal =
+      _roomAliasesContentOldValPtr
+          .asFunction<_RoomAliasesContentOldValReturn Function(int)>();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -21526,6 +21640,14 @@ class Api {
   late final _convoSetPolicyRuleUser =
       _convoSetPolicyRuleUserPtr
           .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _convoSetAliasesPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Convo_set_aliases");
+
+  late final _convoSetAliases =
+      _convoSetAliasesPtr.asFunction<int Function(int, int, int, int)>();
   late final _commentDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -24442,6 +24564,14 @@ class Api {
   late final _spaceSetPolicyRuleUser =
       _spaceSetPolicyRuleUserPtr
           .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _spaceSetAliasesPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__Space_set_aliases");
+
+  late final _spaceSetAliases =
+      _spaceSetAliasesPtr.asFunction<int Function(int, int, int, int)>();
   late final _memberGetProfilePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Member_get_profile",
@@ -29245,6 +29375,21 @@ class Api {
           .asFunction<
             _ConvoSetPolicyRuleUserFuturePollReturn Function(int, int, int)
           >();
+  late final _convoSetAliasesFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetAliasesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_aliases_future_poll");
+
+  late final _convoSetAliasesFuturePoll =
+      _convoSetAliasesFuturePollPtr
+          .asFunction<
+            _ConvoSetAliasesFuturePollReturn Function(int, int, int)
+          >();
   late final _commentDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _CommentDraftSendFuturePollReturn Function(
@@ -30354,6 +30499,21 @@ class Api {
       _spaceSetPolicyRuleUserFuturePollPtr
           .asFunction<
             _SpaceSetPolicyRuleUserFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetAliasesFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetAliasesFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_aliases_future_poll");
+
+  late final _spaceSetAliasesFuturePoll =
+      _spaceSetAliasesFuturePollPtr
+          .asFunction<
+            _SpaceSetAliasesFuturePollReturn Function(int, int, int)
           >();
   late final _memberIgnoreFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -41301,6 +41461,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.aliases
+  RoomAliasesContent? roomAliasesContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomAliasesContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomAliasesContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomAliasesContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -43183,6 +43360,79 @@ class PolicyRuleUserContent {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomAliasesContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomAliasesContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAliasesContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAliasesContentNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAliasesContentOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
     return tmp2;
   }
 
@@ -46042,6 +46292,32 @@ class Convo {
       _api.__convoSetPolicyRuleUserFuturePoll,
     );
     return tmp10;
+  }
+
+  /// set room alias array
+  /// ["#friendlyname:server.name"]
+  Future<EventId> setAliases(String aliases) {
+    final tmp1 = aliases;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._convoSetAliases(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Convo_set_aliases_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__convoSetAliasesFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -53427,6 +53703,32 @@ class Space {
       _api.__spaceSetPolicyRuleUserFuturePoll,
     );
     return tmp10;
+  }
+
+  /// set room alias array
+  /// ["#friendlyname:server.name"]
+  Future<EventId> setAliases(String aliases) {
+    final tmp1 = aliases;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._spaceSetAliases(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Space_set_aliases_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__spaceSetAliasesFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -63016,6 +63318,13 @@ class _TimelineEventItemPolicyRuleUserContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemRoomAliasesContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -63571,6 +63880,24 @@ class _PolicyRuleUserContentRecommendationOldValReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _RoomAliasesContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAliasesContentOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
 }
 
 class _RoomRoomIdStrReturn extends ffi.Struct {
@@ -67492,6 +67819,21 @@ class _ConvoSetPolicyRuleUserFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetAliasesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _CommentDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -68622,6 +68964,21 @@ class _SpaceSetPolicyRuleServerFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceSetPolicyRuleUserFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetAliasesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

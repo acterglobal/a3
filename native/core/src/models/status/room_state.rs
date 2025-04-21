@@ -1,9 +1,14 @@
-use matrix_sdk_base::ruma::events::policy::rule::{
-    room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
-    server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
-    user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
+use matrix_sdk_base::ruma::events::{
+    policy::rule::{
+        room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
+        server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
+        user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
+    },
+    room::aliases::{PossiblyRedactedRoomAliasesEventContent, RoomAliasesEventContent},
 };
 use serde::{Deserialize, Serialize};
+
+use crate::util::do_vecs_match;
 
 // m.policy.rule.room
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -317,5 +322,59 @@ impl PolicyRuleUserContent {
         } else {
             None
         }
+    }
+}
+
+// m.room.aliases
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomAliasesContent {
+    content: RoomAliasesEventContent,
+    prev_content: Option<PossiblyRedactedRoomAliasesEventContent>,
+}
+
+impl RoomAliasesContent {
+    pub fn new(
+        content: RoomAliasesEventContent,
+        prev_content: Option<PossiblyRedactedRoomAliasesEventContent>,
+    ) -> Self {
+        RoomAliasesContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_aliases) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.aliases.as_ref())
+        {
+            if do_vecs_match(&self.content.aliases, prev_aliases) {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn new_val(&self) -> Vec<String> {
+        self.content
+            .aliases
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
+    }
+
+    pub fn old_val(&self) -> Option<Vec<String>> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.aliases.clone())
+            .map(|aliases| {
+                aliases
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<String>>()
+            })
     }
 }

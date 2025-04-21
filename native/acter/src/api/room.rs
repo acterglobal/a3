@@ -42,6 +42,7 @@ use matrix_sdk_base::{
                 user::PolicyRuleUserEventContent, PolicyRuleEventContent, Recommendation,
             },
             room::{
+                aliases::RoomAliasesEventContent,
                 avatar::ImageInfo as AvatarImageInfo,
                 join_rules::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
@@ -1897,6 +1898,31 @@ impl Room {
                 let response = room
                     .send_state_event_for_key(&state_key, PolicyRuleUserEventContent(content))
                     .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_aliases(&self, aliases: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room aliases in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let aliases = serde_json::from_str::<Vec<OwnedRoomAliasId>>(&aliases)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomAliases)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room aliases in this room");
+                }
+                let Some(server_name) = room.room_id().server_name() else {
+                    bail!("failed to get server name for room aliases update")
+                };
+                let content = RoomAliasesEventContent::new(aliases);
+                let response = room.send_state_event_for_key(server_name, content).await?;
                 Ok(response.event_id)
             })
             .await?

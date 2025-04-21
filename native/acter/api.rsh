@@ -1040,6 +1040,9 @@ object TimelineEventItem {
     /// covers m.policy.rule.user
     fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
 
+    /// covers m.room.aliases
+    fn room_aliases_content() -> Option<RoomAliasesContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1252,6 +1255,12 @@ object PolicyRuleUserContent {
     fn recommendation_change() -> Option<string>;
     fn recommendation_new_val() -> string;
     fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAliasesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
 }
 
 
@@ -1672,6 +1681,10 @@ object Convo {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room alias array
+    /// ["#friendlyname:server.name"]
+    fn set_aliases(aliases: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2729,6 +2742,10 @@ object Space {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room alias array
+    /// ["#friendlyname:server.name"]
+    fn set_aliases(aliases: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

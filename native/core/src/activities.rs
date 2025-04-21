@@ -15,7 +15,7 @@ use crate::{
     models::{
         status::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
-            PolicyRuleUserContent, ProfileContent,
+            PolicyRuleUserContent, ProfileContent, RoomAliasesContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
@@ -32,6 +32,7 @@ pub enum ActivityContent {
     PolicyRuleRoom(PolicyRuleRoomContent),
     PolicyRuleServer(PolicyRuleServerContent),
     PolicyRuleUser(PolicyRuleUserContent),
+    RoomAliases(RoomAliasesContent),
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
     Boost {
@@ -145,6 +146,7 @@ impl Activity {
             ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
             ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
             ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
+            ActivityContent::RoomAliases(_) => "roomAliases",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::Comment { .. } => "comment",
@@ -214,6 +216,7 @@ impl Activity {
             | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::PolicyRuleServer(_)
             | ActivityContent::PolicyRuleUser(_)
+            | ActivityContent::RoomAliases(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => None,
 
@@ -314,6 +317,7 @@ impl Activity {
             | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::PolicyRuleServer(_)
             | ActivityContent::PolicyRuleUser(_)
+            | ActivityContent::RoomAliases(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => todo!(),
         }
@@ -360,6 +364,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::PolicyRuleUser(c) => {
                     Ok(Self::new(meta, ActivityContent::PolicyRuleUser(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomAliases(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomAliases(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
