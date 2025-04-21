@@ -24,36 +24,6 @@ class MockAsyncPinNotifier
   }
 }
 
-class SimplyRetuningAsyncPinListNotifier
-    extends FamilyAsyncNotifier<List<ActerPin>, String?>
-    with Mock
-    implements AsyncPinListNotifier {
-  final List<ActerPin> response;
-
-  SimplyRetuningAsyncPinListNotifier(this.response);
-
-  @override
-  Future<List<ActerPin>> build(String? arg) async => response;
-}
-
-class RetryMockAsyncPinListNotifier
-    extends FamilyAsyncNotifier<List<ActerPin>, String?>
-    with Mock
-    implements AsyncPinListNotifier {
-  bool shouldFail = true;
-
-  @override
-  Future<List<ActerPin>> build(String? arg) async {
-    if (shouldFail) {
-      // toggle failure so the retry works
-      shouldFail = !shouldFail;
-      throw 'Expected fail';
-    }
-
-    return [];
-  }
-}
-
 class RetryMockAsyncPinNotifier
     extends AutoDisposeFamilyAsyncNotifier<ActerPin, String>
     with Mock

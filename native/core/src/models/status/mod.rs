@@ -14,6 +14,7 @@ use std::ops::Deref;
 
 mod membership;
 mod profile;
+mod room_state;
 
 use crate::{
     events::AnyActerEvent,
@@ -21,6 +22,7 @@ use crate::{
 };
 pub use membership::MembershipContent;
 pub use profile::{Change, ProfileContent};
+pub use room_state::PolicyRuleRoomContent;
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
@@ -28,6 +30,7 @@ use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 pub enum ActerSupportedRoomStatusEvents {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
+    PolicyRuleRoom(PolicyRuleRoomContent),
     RoomCreate(RoomCreateEventContent),
     RoomAvatar(RoomAvatarEventContent),
     RoomName(RoomNameEventContent),
@@ -112,6 +115,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 };
                 Ok(RoomStatus {
                     inner: inner_status,
+                    meta,
+                })
+            }
+            AnyStateEvent::PolicyRuleRoom(StateEvent::Original(inner)) => {
+                let content = PolicyRuleRoomContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::PolicyRuleRoom(content),
                     meta,
                 })
             }

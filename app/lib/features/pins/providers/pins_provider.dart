@@ -14,7 +14,15 @@ final pinListSearchTermProvider = StateProvider<String>((ref) => '');
 
 //SpaceId == null : GET LIST OF ALL PINs
 //SpaceId != null : GET LIST OF SPACE PINs
-final pinListProvider =
+final pinListProvider = FutureProvider.family<List<ActerPin>, String?>((
+  ref,
+  spaceId,
+) async {
+  final pinList = await ref.watch(_pinListProvider(spaceId).future);
+  return pinList; // this is easier for us to mock
+});
+
+final _pinListProvider =
     AsyncNotifierProvider.family<AsyncPinListNotifier, List<ActerPin>, String?>(
       () => AsyncPinListNotifier(),
     );

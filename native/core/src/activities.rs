@@ -16,7 +16,7 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::{MembershipContent, ProfileContent},
+        status::{MembershipContent, PolicyRuleRoomContent, ProfileContent},
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -29,6 +29,7 @@ pub mod status;
 pub enum ActivityContent {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
+    PolicyRuleRoom(PolicyRuleRoomContent),
     RoomCreate(RoomCreateEventContent),
     RoomAvatar(RoomAvatarEventContent),
     RoomName(RoomNameEventContent),
@@ -141,6 +142,7 @@ impl Activity {
                     unreachable!()
                 }
             }
+            ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomAvatar(_) => "roomAvatar",
             ActivityContent::RoomName(_) => "roomName",
@@ -230,6 +232,7 @@ impl Activity {
         match &self.inner {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
+            | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomName(_)
@@ -329,6 +332,7 @@ impl Activity {
             }
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
+            | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomName(_)
@@ -368,6 +372,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::ProfileChange(c) => {
                     Ok(Self::new(meta, ActivityContent::ProfileChange(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleRoom(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleRoom(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
