@@ -28,7 +28,7 @@ impl InvitationsManager {
             .filter_map(move |u| {
                 let Ok(update) = u else { return None };
                 let new_set: BTreeSet<OwnedRoomId> =
-                    update.invite.keys().map(Clone::clone).collect();
+                    update.invited.keys().map(Clone::clone).collect();
                 if (new_set != prev_set) {
                     prev_set = new_set;
                     Some(true)

@@ -33,9 +33,7 @@ class AsyncSpaceActivitiesNotifier
     _poller = _listener.listen(
       (data) async {
         _log.info('space $arg : activities');
-        state = await AsyncValue.guard(
-          () async => await _getSpaceActivities(client),
-        );
+        state = AsyncValue.data(await _getSpaceActivities(client));
       },
       onError: (e, s) {
         _log.severe('space activities stream errored', e, s);

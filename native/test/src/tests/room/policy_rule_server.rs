@@ -1,4 +1,5 @@
-use acter::api::TimelineItem;
+use acter::{api::TimelineItem, matrix_sdk::ruma::events::policy::rule::Recommendation};
+use acter_core::models::status::PolicyRuleServerContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -43,7 +44,7 @@ async fn test_policy_rule_server() -> Result<()> {
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
-    let mut found_event_id = None;
+    let mut found_result = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -51,8 +52,8 @@ async fn test_policy_rule_server() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(event_id) = match_msg(&value, "Set", "*.example.org") {
-                        found_event_id = Some(event_id);
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
                     }
                 }
                 "Reset" => {
@@ -60,8 +61,8 @@ async fn test_policy_rule_server() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(event_id) = match_msg(value, "Set", "*.example.org") {
-                            found_event_id = Some(event_id);
+                        if let Some(result) = match_msg(value) {
+                            found_result = Some(result);
                             break;
                         }
                     }
@@ -69,23 +70,73 @@ async fn test_policy_rule_server() -> Result<()> {
                 _ => {}
             }
             // yay
-            if found_event_id.is_some() {
+            if found_result.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
+    let (found_event_id, content) =
+        found_result.expect("Even after 30 seconds, policy rule server not received");
     assert_eq!(
         found_event_id,
-        Some(policy_event_id.to_string()),
-        "Even after 30 seconds, policy rule server not received",
+        policy_event_id.to_string(),
+        "Incorrect event id",
+    );
+
+    assert_eq!(
+        content.entity_change(),
+        Some("Set".to_owned()),
+        "entity in policy rule server should be set"
+    );
+    assert_eq!(
+        content.entity_new_val(),
+        "*.example.org",
+        "new val of entity in policy rule server is invalid"
+    );
+    assert_eq!(
+        content.entity_old_val(),
+        None,
+        "old val of entity in policy rule server is invalid"
+    );
+
+    assert_eq!(
+        content.recommendation_change(),
+        Some("Set".to_owned()),
+        "recommendation in policy rule server should be set"
+    );
+    assert_eq!(
+        content.recommendation_new_val(),
+        Recommendation::Ban.as_str(),
+        "new val of recommendation in policy rule server is invalid"
+    );
+    assert_eq!(
+        content.recommendation_old_val(),
+        None,
+        "old val of recommendation in policy rule server is invalid"
+    );
+
+    assert_eq!(
+        content.reason_change(),
+        Some("Set".to_owned()),
+        "reason in policy rule server should be set"
+    );
+    assert_eq!(
+        content.reason_new_val(),
+        "undesirable engagement",
+        "new val of reason in policy rule server is invalid"
+    );
+    assert_eq!(
+        content.reason_old_val(),
+        None,
+        "old val of reason in policy rule server is invalid"
     );
 
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem, change: &str, new_val: &str) -> Option<String> {
+fn match_msg(msg: &TimelineItem) -> Option<(String, PolicyRuleServerContent)> {
     if msg.is_virtual() {
         return None;
     }
@@ -93,14 +144,8 @@ fn match_msg(msg: &TimelineItem, change: &str, new_val: &str) -> Option<String> 
     let Some(content) = event_item.policy_rule_server_content() else {
         return None;
     };
-    let Some(chg) = content.entity_change() else {
-        return None;
-    };
-    if chg != change {
-        return None;
-    }
-    if content.entity_new_val() != new_val {
-        return None;
-    }
-    event_item.event_id()
+    let event_id = event_item
+        .event_id()
+        .expect("event item should have event id");
+    Some((event_id, content))
 }

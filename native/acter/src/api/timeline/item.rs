@@ -31,7 +31,7 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
+    MsgLikeContent, MsgLikeKind, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
     TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
@@ -174,29 +174,40 @@ impl TimelineEventItem {
             .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
 
         match event.content() {
-            SdkTimelineItemContent::Message(msg) => {
-                me.event_type("m.room.message".to_owned());
-                let msg_type = msg.msgtype();
-                me.msg_type(Some(msg_type.msgtype().to_string()));
-                me.content(TimelineEventContent::try_from(msg_type).ok());
-                if let Some(in_reply_to) = msg.in_reply_to() {
-                    me.in_reply_to(Some(in_reply_to.event_id.clone()));
+            SdkTimelineItemContent::MsgLike(msg_like) => match &msg_like.kind {
+                MsgLikeKind::Message(msg) => {
+                    me.event_type("m.room.message".to_owned());
+                    let msg_type = msg.msgtype();
+                    me.msg_type(Some(msg_type.msgtype().to_string()));
+                    me.content(TimelineEventContent::try_from(msg_type).ok());
+                    if let Some(in_reply_to) = &msg_like.in_reply_to {
+                        me.in_reply_to(Some(in_reply_to.event_id.clone()));
+                    }
+                    me.edited(msg.is_edited());
                 }
-                me.edited(msg.is_edited());
-            }
-            SdkTimelineItemContent::RedactedMessage => {
-                info!("Edit event applies to a redacted message");
-                me.event_type("m.room.redaction".to_string());
-            }
-            SdkTimelineItemContent::Sticker(s) => {
-                me.event_type("m.sticker".to_string());
-                // FIXME: proper sticker support needed
-                // me.msg_content(Some(MsgContent::from(s.content())));
-            }
-            SdkTimelineItemContent::UnableToDecrypt(encrypted_msg) => {
-                info!("Edit event applies to event that couldn’t be decrypted");
-                me.event_type("m.room.encrypted".to_string());
-            }
+                MsgLikeKind::Redacted => {
+                    info!("Edit event applies to a redacted message");
+                    me.event_type("m.room.redaction".to_string());
+                }
+                MsgLikeKind::Sticker(s) => {
+                    me.event_type("m.sticker".to_string());
+                    // FIXME: proper sticker support needed
+                    // me.msg_content(Some(MsgContent::from(s.content())));
+                }
+                MsgLikeKind::UnableToDecrypt(encrypted_msg) => {
+                    info!("Edit event applies to event that couldn’t be decrypted");
+                    me.event_type("m.room.encrypted".to_string());
+                }
+
+                MsgLikeKind::Poll(s) => {
+                    info!("Edit event applies to a poll state");
+                    me.event_type("m.poll.start".to_string());
+                    if let Some(fallback) = s.fallback_text() {
+                        let msg_content = MsgContent::from_text(fallback);
+                        me.content(Some(TimelineEventContent::Message(msg_content)));
+                    }
+                }
+            },
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to membership change event");
                 me.event_type("MembershipChange".to_string());
@@ -227,14 +238,6 @@ impl TimelineEventItem {
             } => {
                 info!("Edit event applies to state that couldn’t be parsed");
                 me.event_type(event_type.to_string());
-            }
-            SdkTimelineItemContent::Poll(s) => {
-                info!("Edit event applies to a poll state");
-                me.event_type("m.poll.start".to_string());
-                if let Some(fallback) = s.fallback_text() {
-                    let msg_content = MsgContent::from_text(fallback);
-                    me.content(Some(TimelineEventContent::Message(msg_content)));
-                }
             }
             SdkTimelineItemContent::CallInvite => {
                 me.event_type("m.call_invite".to_owned());
@@ -702,6 +705,10 @@ impl From<&VirtualTimelineItem> for TimelineVirtualItem {
                     desc,
                 }
             }
+            VirtualTimelineItem::TimelineStart => TimelineVirtualItem {
+                event_type: "TimelineStart".to_string(),
+                desc: None,
+            },
             VirtualTimelineItem::ReadMarker => TimelineVirtualItem {
                 event_type: "ReadMarker".to_string(),
                 desc: None,
