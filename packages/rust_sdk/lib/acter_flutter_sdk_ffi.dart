@@ -7262,6 +7262,51 @@ class Api {
     return tmp7;
   }
 
+  EventId? __convoSetPolicyRuleUserFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPolicyRuleUserFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __commentDraftSendFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -10480,6 +10525,51 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceSetPolicyRuleServerFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPolicyRuleUserFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPolicyRuleUserFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -19722,6 +19812,17 @@ class Api {
           .asFunction<
             _TimelineEventItemPolicyRuleServerContentReturn Function(int)
           >();
+  late final _timelineEventItemPolicyRuleUserContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemPolicyRuleUserContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_policy_rule_user_content");
+
+  late final _timelineEventItemPolicyRuleUserContent =
+      _timelineEventItemPolicyRuleUserContentPtr
+          .asFunction<
+            _TimelineEventItemPolicyRuleUserContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -20263,6 +20364,93 @@ class Api {
       _policyRuleServerContentRecommendationOldValPtr
           .asFunction<
             _PolicyRuleServerContentRecommendationOldValReturn Function(int)
+          >();
+  late final _policyRuleUserContentEntityChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentEntityChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_entity_change");
+
+  late final _policyRuleUserContentEntityChange =
+      _policyRuleUserContentEntityChangePtr
+          .asFunction<_PolicyRuleUserContentEntityChangeReturn Function(int)>();
+  late final _policyRuleUserContentEntityNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentEntityNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_entity_new_val");
+
+  late final _policyRuleUserContentEntityNewVal =
+      _policyRuleUserContentEntityNewValPtr
+          .asFunction<_PolicyRuleUserContentEntityNewValReturn Function(int)>();
+  late final _policyRuleUserContentEntityOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentEntityOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_entity_old_val");
+
+  late final _policyRuleUserContentEntityOldVal =
+      _policyRuleUserContentEntityOldValPtr
+          .asFunction<_PolicyRuleUserContentEntityOldValReturn Function(int)>();
+  late final _policyRuleUserContentReasonChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentReasonChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_reason_change");
+
+  late final _policyRuleUserContentReasonChange =
+      _policyRuleUserContentReasonChangePtr
+          .asFunction<_PolicyRuleUserContentReasonChangeReturn Function(int)>();
+  late final _policyRuleUserContentReasonNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentReasonNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_reason_new_val");
+
+  late final _policyRuleUserContentReasonNewVal =
+      _policyRuleUserContentReasonNewValPtr
+          .asFunction<_PolicyRuleUserContentReasonNewValReturn Function(int)>();
+  late final _policyRuleUserContentReasonOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentReasonOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_reason_old_val");
+
+  late final _policyRuleUserContentReasonOldVal =
+      _policyRuleUserContentReasonOldValPtr
+          .asFunction<_PolicyRuleUserContentReasonOldValReturn Function(int)>();
+  late final _policyRuleUserContentRecommendationChangePtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentRecommendationChangeReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_recommendation_change");
+
+  late final _policyRuleUserContentRecommendationChange =
+      _policyRuleUserContentRecommendationChangePtr
+          .asFunction<
+            _PolicyRuleUserContentRecommendationChangeReturn Function(int)
+          >();
+  late final _policyRuleUserContentRecommendationNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentRecommendationNewValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_recommendation_new_val");
+
+  late final _policyRuleUserContentRecommendationNewVal =
+      _policyRuleUserContentRecommendationNewValPtr
+          .asFunction<
+            _PolicyRuleUserContentRecommendationNewValReturn Function(int)
+          >();
+  late final _policyRuleUserContentRecommendationOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _PolicyRuleUserContentRecommendationOldValReturn Function(ffi.IntPtr)
+    >
+  >("__PolicyRuleUserContent_recommendation_old_val");
+
+  late final _policyRuleUserContentRecommendationOldVal =
+      _policyRuleUserContentRecommendationOldValPtr
+          .asFunction<
+            _PolicyRuleUserContentRecommendationOldValReturn Function(int)
           >();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
@@ -21320,6 +21508,23 @@ class Api {
 
   late final _convoSetPolicyRuleServer =
       _convoSetPolicyRuleServerPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _convoSetPolicyRuleUserPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_set_policy_rule_user");
+
+  late final _convoSetPolicyRuleUser =
+      _convoSetPolicyRuleUserPtr
           .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _commentDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
@@ -24219,6 +24424,23 @@ class Api {
 
   late final _spaceSetPolicyRuleServer =
       _spaceSetPolicyRuleServerPtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
+  late final _spaceSetPolicyRuleUserPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Space_set_policy_rule_user");
+
+  late final _spaceSetPolicyRuleUser =
+      _spaceSetPolicyRuleUserPtr
           .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _memberGetProfilePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
@@ -29008,6 +29230,21 @@ class Api {
           .asFunction<
             _ConvoSetPolicyRuleServerFuturePollReturn Function(int, int, int)
           >();
+  late final _convoSetPolicyRuleUserFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPolicyRuleUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_policy_rule_user_future_poll");
+
+  late final _convoSetPolicyRuleUserFuturePoll =
+      _convoSetPolicyRuleUserFuturePollPtr
+          .asFunction<
+            _ConvoSetPolicyRuleUserFuturePollReturn Function(int, int, int)
+          >();
   late final _commentDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _CommentDraftSendFuturePollReturn Function(
@@ -30102,6 +30339,21 @@ class Api {
       _spaceSetPolicyRuleServerFuturePollPtr
           .asFunction<
             _SpaceSetPolicyRuleServerFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPolicyRuleUserFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPolicyRuleUserFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_policy_rule_user_future_poll");
+
+  late final _spaceSetPolicyRuleUserFuturePoll =
+      _spaceSetPolicyRuleUserFuturePollPtr
+          .asFunction<
+            _SpaceSetPolicyRuleUserFuturePollReturn Function(int, int, int)
           >();
   late final _memberIgnoreFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -41032,6 +41284,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.policy.rule.user
+  PolicyRuleUserContent? policyRuleUserContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemPolicyRuleUserContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleUserContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleUserContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -42611,6 +42880,285 @@ class PolicyRuleServerContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._policyRuleServerContentRecommendationOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PolicyRuleUserContent {
+  final Api _api;
+  final _Box _box;
+
+  PolicyRuleUserContent._(this._api, this._box);
+
+  String? entityChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentEntityChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String entityNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentEntityNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? entityOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentEntityOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentReasonChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String reasonNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentReasonNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? reasonOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentReasonOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentRecommendationChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String recommendationNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentRecommendationNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? recommendationOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._policyRuleUserContentRecommendationOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -45438,6 +45986,60 @@ class Convo {
     final tmp10 = _nativeFuture(
       tmp11_1,
       _api.__convoSetPolicyRuleServerFuturePoll,
+    );
+    return tmp10;
+  }
+
+  /// set a moderation policy rule which affects users.
+  /// entity: @alice*:example.org
+  /// reason: undesirable behaviour
+  Future<EventId> setPolicyRuleUser(String entity, String reason) {
+    final tmp1 = entity;
+    final tmp5 = reason;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._convoSetPolicyRuleUser(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(
+      _api,
+      tmp11_0,
+      "__Convo_set_policy_rule_user_future_drop",
+    );
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(
+      tmp11_1,
+      _api.__convoSetPolicyRuleUserFuturePoll,
     );
     return tmp10;
   }
@@ -52769,6 +53371,60 @@ class Space {
     final tmp10 = _nativeFuture(
       tmp11_1,
       _api.__spaceSetPolicyRuleServerFuturePoll,
+    );
+    return tmp10;
+  }
+
+  /// set a moderation policy rule which affects users.
+  /// entity: @alice*:example.org
+  /// reason: undesirable behaviour
+  Future<EventId> setPolicyRuleUser(String entity, String reason) {
+    final tmp1 = entity;
+    final tmp5 = reason;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._spaceSetPolicyRuleUser(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(
+      _api,
+      tmp11_0,
+      "__Space_set_policy_rule_user_future_drop",
+    );
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(
+      tmp11_1,
+      _api.__spaceSetPolicyRuleUserFuturePoll,
     );
     return tmp10;
   }
@@ -62353,6 +63009,13 @@ class _TimelineEventItemPolicyRuleServerContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemPolicyRuleUserContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -62807,6 +63470,99 @@ class _PolicyRuleServerContentRecommendationNewValReturn extends ffi.Struct {
 }
 
 class _PolicyRuleServerContentRecommendationOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentEntityChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentEntityNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleUserContentEntityOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentReasonChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentReasonNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleUserContentReasonOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentRecommendationChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _PolicyRuleUserContentRecommendationNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _PolicyRuleUserContentRecommendationOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -66721,6 +67477,21 @@ class _ConvoSetPolicyRuleServerFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetPolicyRuleUserFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _CommentDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -67836,6 +68607,21 @@ class _SpaceSetPolicyRuleRoomFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceSetPolicyRuleServerFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPolicyRuleUserFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
