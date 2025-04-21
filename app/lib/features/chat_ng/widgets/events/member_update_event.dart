@@ -1,14 +1,20 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show MembershipContent, TimelineEventItem;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::chat_ng::widgets::member_update');
 
 class MemberUpdateEvent extends ConsumerWidget {
   final bool isMe;
   final String roomId;
-  final RoomEventItem item;
+  final TimelineEventItem item;
+
   const MemberUpdateEvent({
     super.key,
     required this.isMe,
@@ -18,100 +24,336 @@ class MemberUpdateEvent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String textMsg = getStateEventStr(context, ref, item);
-
+    final stateText = getStateEventStr(context, ref, item);
+    if (stateText == null) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
       child: RichText(
         text: TextSpan(
-          text: textMsg,
+          text: stateText,
           style: Theme.of(context).textTheme.labelSmall,
         ),
       ),
     );
   }
 
-  String getStateEventStr(
+  String? getStateEventStr(
     BuildContext context,
     WidgetRef ref,
-    RoomEventItem item,
+    TimelineEventItem item,
   ) {
-    final lang = L10n.of(context);
-
+    final myId = ref.watch(myUserIdStrProvider);
     final senderId = item.sender();
-    final eventType = item.eventType();
-    final msgType = item.msgType();
-    final firstName =
+    final senderName =
         ref
             .watch(
               memberDisplayNameProvider((roomId: roomId, userId: senderId)),
             )
-            .valueOrNull;
-    final msgContent = item.msgContent()?.body() ?? '';
-
-    return switch (eventType) {
-      'ProfileChange' => switch (msgType) {
-        'ChangedDisplayName' =>
-          '${lang.chatDisplayNameUpdate(firstName ?? senderId)} $msgContent',
-        'SetDisplayName' =>
-          '${lang.chatDisplayNameSet(firstName ?? senderId)}: $msgContent',
-        'RemoveDisplayName' => lang.chatDisplayNameUnset(firstName ?? senderId),
-        'ChangeProfileAvatar' => lang.chatUserAvatarChange(
-          firstName ?? senderId,
-        ),
-        _ => msgContent,
-      },
-      _ => switch (msgType) {
-        'Joined' =>
-          isMe
-              ? lang.chatYouJoined
-              : firstName != null
-              ? lang.chatJoinedDisplayName(firstName)
-              : lang.chatJoinedUserId(senderId),
-        'Left' =>
-          isMe ? lang.chatYouLeft : lang.chatUserLeft(firstName ?? senderId),
-        'Banned' =>
-          isMe
-              ? lang.chatYouBanned(msgContent)
-              : lang.chatUserBanned(firstName ?? senderId, msgContent),
-        'Unbanned' =>
-          isMe
-              ? lang.chatYouUnbanned(msgContent)
-              : lang.chatUserUnbanned(firstName ?? senderId, msgContent),
-        'Kicked' =>
-          isMe
-              ? lang.chatYouKicked(msgContent)
-              : lang.chatUserKicked(firstName ?? senderId, msgContent),
-        'KickedAndBanned' =>
-          isMe
-              ? lang.chatYouKickedBanned(msgContent)
-              : lang.chatUserKickedBanned(firstName ?? senderId, msgContent),
-        'InvitationAccepted' =>
-          isMe
-              ? lang.chatYouAcceptedInvite
-              : firstName != null
-              ? lang.chatInvitationAcceptedDisplayName(firstName)
-              : lang.chatInvitationAcceptedUserId(senderId),
-        'Invited' =>
-          (() {
-            final inviteeId = msgContent;
-            final inviteeName =
-                ref
-                    .watch(
-                      memberDisplayNameProvider((
-                        roomId: roomId,
-                        userId: inviteeId,
-                      )),
-                    )
-                    .valueOrNull;
-            return isMe
-                ? lang.chatYouInvited(inviteeName ?? inviteeId)
-                : firstName != null && inviteeName != null
-                ? lang.chatInvitedDisplayName(inviteeName, firstName)
-                : lang.chatInvitedUserId(inviteeId, senderId);
-          })(),
-        _ => msgContent,
-      },
+            .valueOrNull ??
+        simplifyUserId(senderId) ??
+        senderId;
+    MembershipContent? content = item.membershipContent();
+    if (content == null) {
+      _log.severe('failed to get content of membership change');
+      return null;
+    }
+    final userId = content.userId().toString();
+    final userName =
+        ref
+            .watch(memberDisplayNameProvider((roomId: roomId, userId: userId)))
+            .valueOrNull ??
+        simplifyUserId(userId) ??
+        userId;
+    final lang = L10n.of(context);
+    return switch (content.change()) {
+      'joined' => getMessageOnJoined(lang, myId, userId, userName),
+      'left' => getMessageOnLeft(lang, myId, userId, userName),
+      'banned' => getMessageOnBanned(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'unbanned' => getMessageOnUnbanned(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'kicked' => getMessageOnKicked(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'invited' => getMessageOnInvited(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'kickedAndBanned' => getMessageOnKickedAndBanned(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'invitationAccepted' => getMessageOnInvitationAccepted(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'invitationRejected' => getMessageOnInvitationRejected(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'invitationRevoked' => getMessageOnInvitationRevoked(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'knocked' => getMessageOnKnocked(
+        lang,
+        myId,
+        senderId,
+        senderName,
+        userId,
+        userName,
+      ),
+      'knockAccepted' => getMessageOnKnockAccepted(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'knockRetracted' => getMessageOnKnockRetracted(
+        lang,
+        myId,
+        userId,
+        userName,
+      ),
+      'knockDenied' => getMessageOnKnockDenied(lang, myId, userId, userName),
+      _ => null,
     };
+  }
+
+  String getMessageOnJoined(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipYouJoined;
+    } else {
+      return lang.chatMembershipOtherJoined(userName);
+    }
+  }
+
+  String getMessageOnLeft(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipYouLeft;
+    } else {
+      return lang.chatMembershipOtherLeft(userName);
+    }
+  }
+
+  String getMessageOnBanned(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouBannedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherBannedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherBannedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnUnbanned(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouUnbannedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherUnbannedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherUnbannedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnKicked(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouKickedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherKickedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherKickedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnInvited(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouInvitedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherInvitedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherInvitedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnKickedAndBanned(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouKickedAndBannedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherKickedAndBannedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherKickedAndBannedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnInvitationAccepted(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipInvitationYouAccepted;
+    } else {
+      return lang.chatMembershipInvitationOtherAccepted(userName);
+    }
+  }
+
+  String getMessageOnInvitationRejected(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipInvitationYouRejected;
+    } else {
+      return lang.chatMembershipInvitationOtherRejected(userName);
+    }
+  }
+
+  String getMessageOnInvitationRevoked(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipInvitationYouRevoked;
+    } else {
+      return lang.chatMembershipInvitationOtherRevoked(userName);
+    }
+  }
+
+  String getMessageOnKnocked(
+    L10n lang,
+    String myId,
+    String senderId,
+    String senderName,
+    String userId,
+    String userName,
+  ) {
+    if (senderId == myId) {
+      return lang.chatMembershipYouKnockedOther(userName);
+    } else if (userId == myId) {
+      return lang.chatMembershipOtherKnockedYou(senderName);
+    } else {
+      return lang.chatMembershipOtherKnockedOther(senderName, userName);
+    }
+  }
+
+  String getMessageOnKnockAccepted(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipKnockYouAccepted;
+    } else {
+      return lang.chatMembershipKnockOtherAccepted(userName);
+    }
+  }
+
+  String getMessageOnKnockRetracted(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipKnockYouRetracted;
+    } else {
+      return lang.chatMembershipKnockOtherRetracted(userName);
+    }
+  }
+
+  String getMessageOnKnockDenied(
+    L10n lang,
+    String myId,
+    String userId,
+    String userName,
+  ) {
+    if (userId == myId) {
+      return lang.chatMembershipKnockYouDenied;
+    } else {
+      return lang.chatMembershipKnockOtherDenied(userName);
+    }
   }
 }

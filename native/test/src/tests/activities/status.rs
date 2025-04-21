@@ -1,39 +1,18 @@
-use acter_core::{activities::ActivityContent, models::status::membership::MembershipChangeType};
+use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
-use matrix_sdk::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
 
-use acter::{Client, SyncState};
-
-use super::get_latest_activity;
-use crate::utils::{random_user, random_users_with_random_space};
-
-async fn _setup_accounts(
-    prefix: &str,
-) -> Result<((Client, SyncState), (Client, SyncState), OwnedRoomId)> {
-    let (users, room_id) = random_users_with_random_space(prefix, 2).await?;
-    let mut admin = users[0].clone();
-    let mut observer = users[1].clone();
-
-    observer.install_default_acter_push_rules().await?;
-
-    let sync_state1 = admin.start_sync();
-    sync_state1.await_has_synced_history().await?;
-
-    let sync_state2 = observer.start_sync();
-    sync_state2.await_has_synced_history().await?;
-
-    Ok(((admin, sync_state1), (observer, sync_state2), room_id))
-}
+use super::{get_latest_activity, setup_accounts};
+use crate::utils::random_user;
 
 #[tokio::test]
 async fn initial_events() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("room-create-activity").await?;
+        setup_accounts("initial-events").await?;
 
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
@@ -75,7 +54,7 @@ async fn invite_and_join() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("invite-and-join").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync();
@@ -113,9 +92,8 @@ async fn invite_and_join() -> Result<()> {
         bail!("not a membership event");
     };
 
-    assert!(matches!(r.change, MembershipChangeType::Invited));
-    assert_eq!(r.as_str(), "invited");
-    assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(r.change(), "invited");
+    assert_eq!(r.user_id(), to_invite_user_name);
 
     // let the third accept the invite
 
@@ -157,10 +135,9 @@ async fn invite_and_join() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::InvitationAccepted));
-    assert_eq!(r.as_str(), "invitationAccepted");
-    assert_eq!(r.user_id, to_invite_user_name);
-    assert_eq!(meta.sender, r.user_id);
+    assert_eq!(r.change(), "invitationAccepted");
+    assert_eq!(r.user_id(), to_invite_user_name);
+    assert_eq!(meta.sender, r.user_id());
 
     Ok(())
 }
@@ -169,8 +146,7 @@ async fn invite_and_join() -> Result<()> {
 async fn kicked() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("kicked").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -202,9 +178,8 @@ async fn kicked() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Kicked));
-    assert_eq!(r.as_str(), "kicked");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "kicked");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
     Ok(())
 }
@@ -214,7 +189,7 @@ async fn invite_and_rejected() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("invite-and-rejected").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync();
@@ -253,9 +228,8 @@ async fn invite_and_rejected() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Invited));
-    assert_eq!(r.as_str(), "invited");
-    assert_eq!(r.user_id, to_invite_user_name);
+    assert_eq!(r.change(), "invited");
+    assert_eq!(r.user_id(), to_invite_user_name);
     assert_eq!(meta.sender, admin.user_id()?);
 
     // let the third accept the invite
@@ -298,10 +272,9 @@ async fn invite_and_rejected() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::InvitationRejected));
-    assert_eq!(r.as_str(), "invitationRejected");
-    assert_eq!(r.user_id, to_invite_user_name);
-    assert_eq!(meta.sender, r.user_id);
+    assert_eq!(r.change(), "invitationRejected");
+    assert_eq!(r.user_id(), to_invite_user_name);
+    assert_eq!(meta.sender, r.user_id());
 
     Ok(())
 }
@@ -311,7 +284,7 @@ async fn kickban_and_unban() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("kickban-and-unban").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let main_room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -343,9 +316,8 @@ async fn kickban_and_unban() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::KickedAndBanned));
-    assert_eq!(r.as_str(), "kickedAndBanned");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "kickedAndBanned");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
 
     // ensure it was sent
@@ -374,9 +346,8 @@ async fn kickban_and_unban() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Unbanned));
-    assert_eq!(r.as_str(), "unbanned");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "unbanned");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
     Ok(())
 }
@@ -385,8 +356,7 @@ async fn kickban_and_unban() -> Result<()> {
 async fn left() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("left").await?;
 
     let room = observer.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -418,9 +388,8 @@ async fn left() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert!(matches!(r.change, MembershipChangeType::Left));
-    assert_eq!(r.as_str(), "left");
-    assert_eq!(r.user_id, observer.user_id()?);
+    assert_eq!(r.change(), "left");
+    assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, observer.user_id()?);
 
     // external API check

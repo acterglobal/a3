@@ -6,6 +6,9 @@ import 'package:acter/features/activities/widgets/space_activities_section/item_
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/joined.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomAvatar.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomName.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomTopic.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpMaybe.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpNo.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpYes.dart';
@@ -45,6 +48,9 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.taskAccept => ActivityTaskAcceptedItemWidget(activity: activity),
       PushStyles.taskDecline => ActivityTaskDeclineItemWidget(activity: activity),
       PushStyles.taskDueDateChange => ActivityTaskDueDateChangedItemWidget(activity: activity),
+      PushStyles.roomName => ActivityRoomNameItemWidget(activity: activity),
+      PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
+      PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
       PushStyles.invitationRevoked => ActivityInvitationRevokedItemWidget(activity: activity),
       PushStyles.invitationAccepted => ActivityInvitationAcceptedItemWidget(activity: activity),
       PushStyles.joined => ActivityJoinedItemWidget(activity: activity),

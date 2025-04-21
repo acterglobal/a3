@@ -54,19 +54,18 @@ impl Client {
     }
 
     pub async fn calendar_event(&self, calendar_id: String) -> Result<CalendarEvent> {
-        let me = self.clone();
         self.model_with_room(EventId::parse(calendar_id)?)
             .await
-            .map(|(model, room)| CalendarEvent::new(me, room, model))
+            .map(|(inner, room)| CalendarEvent::new(self.clone(), room, inner))
     }
 
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
-        let me = self.clone();
-        Ok(self
+        let result = self
             .models_of_list_with_room(IndexKey::Section(SectionIndex::Calendar))
             .await?
             .map(|(inner, room)| CalendarEvent::new(self.clone(), room, inner))
-            .collect())
+            .collect();
+        Ok(result)
     }
 }
 
@@ -74,14 +73,15 @@ impl Space {
     pub async fn calendar_events(&self) -> Result<Vec<CalendarEvent>> {
         let client = self.client.clone();
         let room = self.room.clone();
-        Ok(client
+        let result = client
             .models_of_list_with_room_under_check(
                 IndexKey::RoomSection(room.room_id().to_owned(), SectionIndex::Calendar),
                 move |_r| Ok(room.clone()),
             )
             .await?
             .map(|(inner, room)| CalendarEvent::new(client.clone(), room, inner))
-            .collect())
+            .collect();
+        Ok(result)
     }
 }
 
@@ -228,40 +228,38 @@ impl CalendarEvent {
                 let users = manager
                     .users_at_status_typed(RsvpStatus::Yes)
                     .await?
-                    .into_iter()
-                    .map(|u| u.to_string())
-                    .collect();
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<String>>();
                 Ok(users)
             })
             .await?
     }
 
     pub fn physical_locations(&self) -> Vec<EventLocationInfo> {
-        let calendar_event = self.clone();
-        calendar_event
-            .inner
+        self.inner
             .locations()
             .iter()
             .filter(|e| matches!(e, EventLocation::Physical { .. }))
             .map(EventLocationInfo::new)
-            .collect::<Vec<_>>()
+            .collect()
     }
 
     pub fn virtual_locations(&self) -> Vec<EventLocationInfo> {
-        let calendar_event = self.clone();
-        calendar_event
-            .inner
+        self.inner
             .locations()
             .iter()
             .filter(|e| matches!(e, EventLocation::Virtual { .. }))
             .map(EventLocationInfo::new)
-            .collect::<Vec<_>>()
+            .collect()
     }
 
     pub fn locations(&self) -> Vec<EventLocationInfo> {
-        let calendar_event = self.clone();
-        let locations = calendar_event.inner.locations();
-        locations.iter().map(EventLocationInfo::new).collect()
+        self.inner
+            .locations()
+            .iter()
+            .map(EventLocationInfo::new)
+            .collect()
     }
 
     pub async fn responded_by_me(&self) -> Result<OptionRsvpStatus> {

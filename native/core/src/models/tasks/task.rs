@@ -33,8 +33,8 @@ impl Deref for Task {
 }
 
 impl Task {
-    pub fn title(&self) -> &String {
-        &self.inner.title
+    pub fn title(&self) -> String {
+        self.inner.title.clone()
     }
 
     pub fn assignees(&self) -> Vec<OwnedUserId> {
@@ -276,7 +276,7 @@ impl ActerModel for TaskSelfAssign {
 
         let mut updates = default_model_execute(store, self.into()).await?;
         if let Some(manager) = manager {
-            updates.push(manager.save().await?);
+            updates.extend_from_slice(&manager.save().await?);
         }
         Ok(updates)
     }
@@ -350,7 +350,7 @@ impl ActerModel for TaskSelfUnassign {
 
         let mut updates = default_model_execute(store, self.into()).await?;
         if let Some(manager) = manager {
-            updates.push(manager.save().await?);
+            updates.extend_from_slice(&manager.save().await?);
         }
         Ok(updates)
     }

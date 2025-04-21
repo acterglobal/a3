@@ -30,6 +30,11 @@ enum PushStyles {
   redaction('🗑️'),
   otherChanges('✏️'),
 
+  //Space Name
+  roomName('✏️'),
+  roomTopic('✏️'),
+  roomAvatar('👤'),
+
   invitationAccepted('✅'),
   invited('📨'),
   joined('🤝'),

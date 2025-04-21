@@ -1,11 +1,11 @@
 
-//   ######   ##        #######  ########     ###    ##          ######## ##    ##  ######  
-//  ##    ##  ##       ##     ## ##     ##   ## ##   ##          ##       ###   ## ##    ## 
-//  ##        ##       ##     ## ##     ##  ##   ##  ##          ##       ####  ## ##       
-//  ##   #### ##       ##     ## ########  ##     ## ##          ######   ## ## ##  ######  
-//  ##    ##  ##       ##     ## ##     ## ######### ##          ##       ##  ####       ## 
-//  ##    ##  ##       ##     ## ##     ## ##     ## ##          ##       ##   ### ##    ## 
-//   ######   ########  #######  ########  ##     ## ########    ##       ##    ##  ######  
+//   ######   ##        #######  ########     ###    ##          ######## ##    ##  ######
+//  ##    ##  ##       ##     ## ##     ##   ## ##   ##          ##       ###   ## ##    ##
+//  ##        ##       ##     ## ##     ##  ##   ##  ##          ##       ####  ## ##
+//  ##   #### ##       ##     ## ########  ##     ## ##          ######   ## ## ##  ######
+//  ##    ##  ##       ##     ## ##     ## ######### ##          ##       ##  ####       ##
+//  ##    ##  ##       ##     ## ##     ## ##     ## ##          ##       ##   ### ##    ##
+//   ######   ########  #######  ########  ##     ## ########    ##       ##    ##  ######
 
 
 /// Initialize logging
@@ -62,13 +62,13 @@ fn new_display_builder() -> DisplayBuilder;
 /// position: top-left/top-middle/top-right/center-left/center-middle/center-right/bottom-left/bottom-middle/bottom-right
 fn new_obj_ref_builder(position: Option<string>, reference: RefDetails) -> Result<ObjRefBuilder>;
 
-//  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######  
-//  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ## 
-//  ##     ## ##     ##  ##  #### ####  ##     ##     ##  ##     ## ##       ##       
-//  ########  ########   ##  ## ### ##  ##     ##     ##  ##     ## ######    ######  
-//  ##        ##   ##    ##  ##     ##  ##     ##     ##   ##   ##  ##             ## 
-//  ##        ##    ##   ##  ##     ##  ##     ##     ##    ## ##   ##       ##    ## 
-//  ##        ##     ## #### ##     ## ####    ##    ####    ###    ########  ######  
+//  ########  ########  #### ##     ## #### ######## #### ##     ## ########  ######
+//  ##     ## ##     ##  ##  ###   ###  ##     ##     ##  ##     ## ##       ##    ##
+//  ##     ## ##     ##  ##  #### ####  ##     ##     ##  ##     ## ##       ##
+//  ########  ########   ##  ## ### ##  ##     ##     ##  ##     ## ######    ######
+//  ##        ##   ##    ##  ##     ##  ##     ##     ##   ##   ##  ##             ##
+//  ##        ##    ##   ##  ##     ##  ##     ##     ##    ## ##   ##       ##    ##
+//  ##        ##     ## #### ##     ## ####    ##    ####    ###    ########  ######
 
 
 /// Representing a time frame
@@ -128,7 +128,7 @@ object UrlPreview {
     fn image_source() -> Option<MediaSource>;
 }
 
-/// A locally fetched Url Preview until 
+/// A locally fetched Url Preview until
 /// it is submitted
 object LocalUrlPreview {
     /// the canonical url to use
@@ -208,13 +208,13 @@ object ColorizeBuilder {
 
 
 
-//  ########     ###     ######  ####  ######     ######## ##    ## ########  ########  ######  
-//  ##     ##   ## ##   ##    ##  ##  ##    ##       ##     ##  ##  ##     ## ##       ##    ## 
-//  ##     ##  ##   ##  ##        ##  ##             ##      ####   ##     ## ##       ##       
-//  ########  ##     ##  ######   ##  ##             ##       ##    ########  ######    ######  
-//  ##     ## #########       ##  ##  ##             ##       ##    ##        ##             ## 
-//  ##     ## ##     ## ##    ##  ##  ##    ##       ##       ##    ##        ##       ##    ## 
-//  ########  ##     ##  ######  ####  ######        ##       ##    ##        ########  ######  
+//  ########     ###     ######  ####  ######     ######## ##    ## ########  ########  ######
+//  ##     ##   ## ##   ##    ##  ##  ##    ##       ##     ##  ##  ##     ## ##       ##    ##
+//  ##     ##  ##   ##  ##        ##  ##             ##      ####   ##     ## ##       ##
+//  ########  ##     ##  ######   ##  ##             ##       ##    ########  ######    ######
+//  ##     ## #########       ##  ##  ##             ##       ##    ##        ##             ##
+//  ##     ## ##     ## ##    ##  ##  ##    ##       ##       ##    ##        ##       ##    ##
+//  ########  ##     ##  ######  ####  ######        ##       ##    ##        ########  ######
 
 
 object VecStringBuilder {
@@ -342,13 +342,13 @@ object PasswordChangeEmailTokenResponse {
 
 
 
-//  ##     ## ########  ########     ###    ######## ########  ######  
-//  ##     ## ##     ## ##     ##   ## ##      ##    ##       ##    ## 
-//  ##     ## ##     ## ##     ##  ##   ##     ##    ##       ##       
-//  ##     ## ########  ##     ## ##     ##    ##    ######    ######  
-//  ##     ## ##        ##     ## #########    ##    ##             ## 
-//  ##     ## ##        ##     ## ##     ##    ##    ##       ##    ## 
-//   #######  ##        ########  ##     ##    ##    ########  ######  
+//  ##     ## ########  ########     ###    ######## ########  ######
+//  ##     ## ##     ## ##     ##   ## ##      ##    ##       ##    ##
+//  ##     ## ##     ## ##     ##  ##   ##     ##    ##       ##
+//  ##     ## ########  ##     ## ##     ##    ##    ######    ######
+//  ##     ## ##        ##     ## #########    ##    ##             ##
+//  ##     ## ##        ##     ## ##     ##    ##    ##       ##    ##
+//   #######  ##        ########  ##     ##    ##    ########  ######
 
 
 
@@ -456,13 +456,13 @@ object NewsEntryUpdateBuilder {
 
 
 
-//   ######  ########  #######  ########  #### ########  ######  
-//  ##    ##    ##    ##     ## ##     ##  ##  ##       ##    ## 
-//  ##          ##    ##     ## ##     ##  ##  ##       ##       
-//   ######     ##    ##     ## ########   ##  ######    ######  
-//        ##    ##    ##     ## ##   ##    ##  ##             ## 
-//  ##    ##    ##    ##     ## ##    ##   ##  ##       ##    ## 
-//   ######     ##     #######  ##     ## #### ########  ######  
+//   ######  ########  #######  ########  #### ########  ######
+//  ##    ##    ##    ##     ## ##     ##  ##  ##       ##    ##
+//  ##          ##    ##     ## ##     ##  ##  ##       ##
+//   ######     ##    ##     ## ########   ##  ######    ######
+//        ##    ##    ##     ## ##   ##    ##  ##             ##
+//  ##    ##    ##    ##     ## ##    ##   ##  ##       ##    ##
+//   ######     ##     #######  ##     ## #### ########  ######
 
 
 
@@ -567,13 +567,13 @@ object StoryUpdateBuilder {
 
 
 
-//  ########  #### ##    ##  ######  
-//  ##     ##  ##  ###   ## ##    ## 
-//  ##     ##  ##  ####  ## ##       
-//  ########   ##  ## ## ##  ######  
-//  ##         ##  ##  ####       ## 
-//  ##         ##  ##   ### ##    ## 
-//  ##        #### ##    ##  ######  
+//  ########  #### ##    ##  ######
+//  ##     ##  ##  ###   ## ##    ##
+//  ##     ##  ##  ####  ## ##
+//  ########   ##  ## ## ##  ######
+//  ##         ##  ##  ####       ##
+//  ##         ##  ##   ### ##    ##
+//  ##        #### ##    ##  ######
 
 
 
@@ -678,13 +678,13 @@ object PinUpdateBuilder {
     fn send() -> Future<Result<EventId>>;
 }
 
-//   ######     ###    ##       ######## ##    ## ########     ###    ########  
-//  ##    ##   ## ##   ##       ##       ###   ## ##     ##   ## ##   ##     ## 
-//  ##        ##   ##  ##       ##       ####  ## ##     ##  ##   ##  ##     ## 
-//  ##       ##     ## ##       ######   ## ## ## ##     ## ##     ## ########  
-//  ##       ######### ##       ##       ##  #### ##     ## ######### ##   ##   
-//  ##    ## ##     ## ##       ##       ##   ### ##     ## ##     ## ##    ##  
-//   ######  ##     ## ######## ######## ##    ## ########  ##     ## ##     ## 
+//   ######     ###    ##       ######## ##    ## ########     ###    ########
+//  ##    ##   ## ##   ##       ##       ###   ## ##     ##   ## ##   ##     ##
+//  ##        ##   ##  ##       ##       ####  ## ##     ##  ##   ##  ##     ##
+//  ##       ##     ## ##       ######   ## ## ## ##     ## ##     ## ########
+//  ##       ######### ##       ##       ##  #### ##     ## ######### ##   ##
+//  ##    ## ##     ## ##       ##       ##   ### ##     ## ##     ## ##    ##
+//   ######  ##     ## ######## ######## ##    ## ########  ##     ## ##     ##
 
 
 
@@ -823,13 +823,13 @@ object EventLocationInfo {
 }
 
 
-//  ########   ######  ##     ## ########  
-//  ##     ## ##    ## ##     ## ##     ## 
-//  ##     ## ##       ##     ## ##     ## 
-//  ########   ######  ##     ## ########  
-//  ##   ##         ##  ##   ##  ##        
-//  ##    ##  ##    ##   ## ##   ##        
-//  ##     ##  ######     ###    ##        
+//  ########   ######  ##     ## ########
+//  ##     ## ##    ## ##     ## ##     ##
+//  ##     ## ##       ##     ## ##     ##
+//  ########   ######  ##     ## ########
+//  ##   ##         ##  ##   ##  ##
+//  ##    ##  ##    ##   ## ##   ##
+//  ##     ##  ######     ###    ##
 
 
 
@@ -885,13 +885,13 @@ object Rsvp {
 }
 
 
-//  ########  ########    ###     ######  ######## ####  #######  ##    ## 
-//  ##     ## ##         ## ##   ##    ##    ##     ##  ##     ## ###   ## 
-//  ##     ## ##        ##   ##  ##          ##     ##  ##     ## ####  ## 
-//  ########  ######   ##     ## ##          ##     ##  ##     ## ## ## ## 
-//  ##   ##   ##       ######### ##          ##     ##  ##     ## ##  #### 
-//  ##    ##  ##       ##     ## ##    ##    ##     ##  ##     ## ##   ### 
-//  ##     ## ######## ##     ##  ######     ##    ####  #######  ##    ## 
+//  ########  ########    ###     ######  ######## ####  #######  ##    ##
+//  ##     ## ##         ## ##   ##    ##    ##     ##  ##     ## ###   ##
+//  ##     ## ##        ##   ##  ##          ##     ##  ##     ## ####  ##
+//  ########  ######   ##     ## ##          ##     ##  ##     ## ## ## ##
+//  ##   ##   ##       ######### ##          ##     ##  ##     ## ##  ####
+//  ##    ##  ##       ##     ## ##    ##    ##     ##  ##     ## ##   ###
+//  ##     ## ######## ##     ##  ######     ##    ####  #######  ##    ##
 
 
 object ReactionManager {
@@ -949,13 +949,13 @@ object Reaction {
 }
 
 
-//  ########  ########    ###    ########     ########  ########  ######  ######## #### ########  ########  ######  
-//  ##     ## ##         ## ##   ##     ##    ##     ## ##       ##    ## ##        ##  ##     ##    ##    ##    ## 
-//  ##     ## ##        ##   ##  ##     ##    ##     ## ##       ##       ##        ##  ##     ##    ##    ##       
-//  ########  ######   ##     ## ##     ##    ########  ######   ##       ######    ##  ########     ##     ######  
-//  ##   ##   ##       ######### ##     ##    ##   ##   ##       ##       ##        ##  ##           ##          ## 
-//  ##    ##  ##       ##     ## ##     ##    ##    ##  ##       ##    ## ##        ##  ##           ##    ##    ## 
-//  ##     ## ######## ##     ## ########     ##     ## ########  ######  ######## #### ##           ##     ######  
+//  ########  ########    ###    ########     ########  ########  ######  ######## #### ########  ########  ######
+//  ##     ## ##         ## ##   ##     ##    ##     ## ##       ##    ## ##        ##  ##     ##    ##    ##    ##
+//  ##     ## ##        ##   ##  ##     ##    ##     ## ##       ##       ##        ##  ##     ##    ##    ##
+//  ########  ######   ##     ## ##     ##    ########  ######   ##       ######    ##  ########     ##     ######
+//  ##   ##   ##       ######### ##     ##    ##   ##   ##       ##       ##        ##  ##           ##          ##
+//  ##    ##  ##       ##     ## ##     ##    ##    ##  ##       ##    ## ##        ##  ##           ##    ##    ##
+//  ##     ## ######## ##     ## ########     ##     ## ########  ######  ######## #### ##           ##     ######
 
 
 
@@ -978,13 +978,13 @@ object ReadReceiptsManager {
 }
 
 
-//  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######  
-//  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ## 
-//  ##     ## ##     ## ##     ## #### ####    ##       ##     ## ##       ####  ##    ##    ##       
-//  ########  ##     ## ##     ## ## ### ##    ######   ##     ## ######   ## ## ##    ##     ######  
-//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##  ##       ##  ####    ##          ## 
-//  ##    ##  ##     ## ##     ## ##     ##    ##         ## ##   ##       ##   ###    ##    ##    ## 
-//  ##     ##  #######   #######  ##     ##    ########    ###    ######## ##    ##    ##     ######  
+//  ########   #######   #######  ##     ##    ######## ##     ## ######## ##    ## ########  ######
+//  ##     ## ##     ## ##     ## ###   ###    ##       ##     ## ##       ###   ##    ##    ##    ##
+//  ##     ## ##     ## ##     ## #### ####    ##       ##     ## ##       ####  ##    ##    ##
+//  ########  ##     ## ##     ## ## ### ##    ######   ##     ## ######   ## ## ##    ##     ######
+//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##  ##       ##  ####    ##          ##
+//  ##    ##  ##     ## ##     ## ##     ##    ##         ## ##   ##       ##   ###    ##    ##    ##
+//  ##     ##  #######   #######  ##     ##    ########    ###    ######## ##    ##    ##     ######
 
 /// Sending state of outgoing message.
 object EventSendState {
@@ -1002,7 +1002,7 @@ object EventSendState {
 }
 
 /// A room Message metadata and content
-object RoomEventItem {
+object TimelineEventItem {
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -1022,8 +1022,17 @@ object RoomEventItem {
     /// the type of massage, like text, image, audio, video, file etc
     fn msg_type() -> Option<string>;
 
-    /// covers text/image/audio/video/file/location/emote/sticker
-    fn msg_content() -> Option<MsgContent>;
+    /// covers text/image/audio/video/file/location/emote
+    fn message() -> Option<MsgContent>;
+
+    /// covers some of m.room.member
+    fn membership_content() -> Option<MembershipContent>;
+
+    /// covers some of m.room.member
+    fn profile_content() -> Option<ProfileContent>;
+
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -1047,7 +1056,7 @@ object RoomEventItem {
     fn was_edited() -> bool;
 }
 
-object RoomVirtualItem {
+object TimelineVirtualItem {
     /// DayDivider or ReadMarker
     fn event_type() -> string;
 
@@ -1056,18 +1065,18 @@ object RoomVirtualItem {
 }
 
 /// A room Message metadata and content
-object RoomMessage {
-    /// one of event/virtual
-    fn item_type() -> string;
+object TimelineItem {
+    /// true if virtual, false if event
+    fn is_virtual() -> bool;
 
     /// Unique ID of this event
     fn unique_id() -> string;
 
-    /// valid only if item_type is "event"
-    fn event_item() -> Option<RoomEventItem>;
+    /// valid only if is_virtual = false
+    fn event_item() -> Option<TimelineEventItem>;
 
-    /// valid only if item_type is "virtual"
-    fn virtual_item() -> Option<RoomVirtualItem>;
+    /// valid only if is_virtual = true
+    fn virtual_item() -> Option<TimelineVirtualItem>;
 }
 
 object MsgContent {
@@ -1113,8 +1122,39 @@ object MsgContent {
     /// whether or not this has url previews attached
     fn has_url_previews() -> bool;
 
-    /// the list of url previews 
+    /// the list of url previews
     fn url_previews() -> Vec<UrlPreview>;
+}
+
+object MembershipContent {
+    /// The ID of the user whose profile changed.
+    fn user_id() -> UserId;
+
+    /// The membership change induced by this event.
+    fn change() -> string;
+}
+
+object ProfileContent {
+    /// The ID of the user whose profile changed
+    fn user_id() -> UserId;
+
+    /// The display name change induced by this event
+    fn display_name_change() -> Option<string>;
+
+    /// The old value of display name change
+    fn display_name_old_val() -> Option<string>;
+
+    /// The new value of display name change
+    fn display_name_new_val() -> Option<string>;
+
+    /// The avatar url change induced by this event
+    fn avatar_url_change() -> Option<string>;
+
+    /// The old value of avatar url change
+    fn avatar_url_old_val() -> Option<MxcUri>;
+
+    /// The new value of avatar url change
+    fn avatar_url_new_val() -> Option<MxcUri>;
 }
 
 object ReactionRecord {
@@ -1128,18 +1168,18 @@ object ReactionRecord {
     fn sent_by_me() -> bool;
 }
 
-object RoomMessageDiff {
+object TimelineItemDiff {
     /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
     /// for Append/Reset
-    fn values() -> Option<Vec<RoomMessage>>;
+    fn values() -> Option<Vec<TimelineItem>>;
 
     /// for Insert/Set/Remove
     fn index() -> Option<usize>;
 
     /// for Insert/Set/PushBack/PushFront
-    fn value() -> Option<RoomMessage>;
+    fn value() -> Option<TimelineItem>;
 }
 
 // enum RoomNotificationMode {
@@ -1156,13 +1196,38 @@ object JoinRuleBuilder {
     fn add_room(room: string);
 }
 
-//  ########   #######   #######  ##     ## 
-//  ##     ## ##     ## ##     ## ###   ### 
-//  ##     ## ##     ## ##     ## #### #### 
-//  ########  ##     ## ##     ## ## ### ## 
-//  ##   ##   ##     ## ##     ## ##     ## 
-//  ##    ##  ##     ## ##     ## ##     ## 
-//  ##     ##  #######   #######  ##     ## 
+
+//  ########   #######   #######  ##     ##     ######  ########    ###    ######## ########     ######  ##     ##    ###    ##    ##  ######   ######## 
+//  ##     ## ##     ## ##     ## ###   ###    ##    ##    ##      ## ##      ##    ##          ##    ## ##     ##   ## ##   ###   ## ##    ##  ##       
+//  ##     ## ##     ## ##     ## #### ####    ##          ##     ##   ##     ##    ##          ##       ##     ##  ##   ##  ####  ## ##        ##       
+//  ########  ##     ## ##     ## ## ### ##     ######     ##    ##     ##    ##    ######      ##       ######### ##     ## ## ## ## ##   #### ######   
+//  ##   ##   ##     ## ##     ## ##     ##          ##    ##    #########    ##    ##          ##       ##     ## ######### ##  #### ##    ##  ##       
+//  ##    ##  ##     ## ##     ## ##     ##    ##    ##    ##    ##     ##    ##    ##          ##    ## ##     ## ##     ## ##   ### ##    ##  ##       
+//  ##     ##  #######   #######  ##     ##     ######     ##    ##     ##    ##    ########     ######  ##     ## ##     ## ##    ##  ######   ######## 
+
+
+object PolicyRuleRoomContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+
+//  ########   #######   #######  ##     ##
+//  ##     ## ##     ## ##     ## ###   ###
+//  ##     ## ##     ## ##     ## #### ####
+//  ########  ##     ## ##     ## ## ### ##
+//  ##   ##   ##     ## ##     ## ##     ##
+//  ##    ##  ##     ## ##     ## ##     ##
+//  ##     ##  #######   #######  ##     ##
 
 
 /// Generic Room Properties
@@ -1276,7 +1341,7 @@ object UserRoomSettings {
     /// Set the value of `has_seen_suggested` for this room
     fn set_has_seen_suggested(newValue: bool) -> Future<Result<bool>>;
 
-    /// whether or not the user wants to include this in the 
+    /// whether or not the user wants to include this in the
     /// calendar sync
     fn include_cal_sync() -> bool;
 
@@ -1373,10 +1438,10 @@ object MsgDraft {
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever new diff found
-    fn messages_stream() -> Stream<RoomMessageDiff>;
+    fn messages_stream() -> Stream<TimelineItemDiff>;
 
     /// get the specific message identified by the event_id
-    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+    fn get_message(event_id: string) -> Future<Result<TimelineItem>>;
 
     /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
@@ -1400,13 +1465,13 @@ object TimelineStream {
 }
 
 
-//   ######   #######  ##    ## ##     ##  #######  
-//  ##    ## ##     ## ###   ## ##     ## ##     ## 
-//  ##       ##     ## ####  ## ##     ## ##     ## 
-//  ##       ##     ## ## ## ## ##     ## ##     ## 
-//  ##       ##     ## ##  ####  ##   ##  ##     ## 
-//  ##    ## ##     ## ##   ###   ## ##   ##     ## 
-//   ######   #######  ##    ##    ###     #######  
+//   ######   #######  ##    ## ##     ##  #######
+//  ##    ## ##     ## ###   ## ##     ## ##     ##
+//  ##       ##     ## ####  ## ##     ## ##     ##
+//  ##       ##     ## ## ## ## ##     ## ##     ##
+//  ##       ##     ## ##  ####  ##   ##  ##     ##
+//  ##    ## ##     ## ##   ###   ## ##   ##     ##
+//   ######   #######  ##    ##    ###     #######
 
 
 
@@ -1455,7 +1520,7 @@ object Convo {
     fn num_unread_mentions() -> u64;
 
     /// The last message sent to the room
-    fn latest_message() -> Option<RoomMessage>;
+    fn latest_message() -> Option<TimelineItem>;
 
     /// Latest message timestamp or 0
     fn latest_message_ts() -> u64;
@@ -1558,16 +1623,21 @@ object Convo {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
 }
 
 
-//   ######   #######  ##     ## ##     ## ######## ##    ## ########  ######  
-//  ##    ## ##     ## ###   ### ###   ### ##       ###   ##    ##    ##    ## 
-//  ##       ##     ## #### #### #### #### ##       ####  ##    ##    ##       
-//  ##       ##     ## ## ### ## ## ### ## ######   ## ## ##    ##     ######  
-//  ##       ##     ## ##     ## ##     ## ##       ##  ####    ##          ## 
-//  ##    ## ##     ## ##     ## ##     ## ##       ##   ###    ##    ##    ## 
-//   ######   #######  ##     ## ##     ## ######## ##    ##    ##     ######  
+//   ######   #######  ##     ## ##     ## ######## ##    ## ########  ######
+//  ##    ## ##     ## ###   ### ###   ### ##       ###   ##    ##    ##    ##
+//  ##       ##     ## #### #### #### #### ##       ####  ##    ##    ##
+//  ##       ##     ## ## ### ## ## ### ## ######   ## ## ##    ##     ######
+//  ##       ##     ## ##     ## ##     ## ##       ##  ####    ##          ##
+//  ##    ## ##     ## ##     ## ##     ## ##       ##   ###    ##    ##    ##
+//   ######   #######  ##     ## ##     ## ######## ##    ##    ##     ######
 
 
 object CommentDraft {
@@ -1624,7 +1694,7 @@ object CommentsManager {
 
 
 /// Reference of explicit invitations to a particular item
-object InvitationsManager {
+object ObjectInvitationsManager {
     /// Get the list of users that were invited
     fn invited() -> Vec<string>;
 
@@ -1641,17 +1711,17 @@ object InvitationsManager {
     fn subscribe_stream() -> Stream<bool>;
 
     /// reload the data from the database
-    fn reload() -> Future<Result<InvitationsManager>>;
+    fn reload() -> Future<Result<ObjectInvitationsManager>>;
 }
 
 
-//     ###    ######## ########    ###     ######  ##     ## ##     ## ######## ##    ## ########  ######  
-//    ## ##      ##       ##      ## ##   ##    ## ##     ## ###   ### ##       ###   ##    ##    ##    ## 
-//   ##   ##     ##       ##     ##   ##  ##       ##     ## #### #### ##       ####  ##    ##    ##       
-//  ##     ##    ##       ##    ##     ## ##       ######### ## ### ## ######   ## ## ##    ##     ######  
-//  #########    ##       ##    ######### ##       ##     ## ##     ## ##       ##  ####    ##          ## 
-//  ##     ##    ##       ##    ##     ## ##    ## ##     ## ##     ## ##       ##   ###    ##    ##    ## 
-//  ##     ##    ##       ##    ##     ##  ######  ##     ## ##     ## ######## ##    ##    ##     ######  
+//     ###    ######## ########    ###     ######  ##     ## ##     ## ######## ##    ## ########  ######
+//    ## ##      ##       ##      ## ##   ##    ## ##     ## ###   ### ##       ###   ##    ##    ##    ##
+//   ##   ##     ##       ##     ##   ##  ##       ##     ## #### #### ##       ####  ##    ##    ##
+//  ##     ##    ##       ##    ##     ## ##       ######### ## ### ## ######   ## ## ##    ##     ######
+//  #########    ##       ##    ######### ##       ##     ## ##     ## ##       ##  ####    ##          ##
+//  ##     ##    ##       ##    ##     ## ##    ## ##     ## ##     ## ##       ##   ###    ##    ##    ##
+//  ##     ##    ##       ##    ##     ##  ######  ##     ## ##     ## ######## ##    ##    ##     ######
 
 
 
@@ -1737,13 +1807,13 @@ object AttachmentsManager {
 }
 
 
-//  ########    ###     ######  ##    ##  ######  
-//     ##      ## ##   ##    ## ##   ##  ##    ## 
-//     ##     ##   ##  ##       ##  ##   ##       
-//     ##    ##     ##  ######  #####     ######  
-//     ##    #########       ## ##  ##         ## 
-//     ##    ##     ## ##    ## ##   ##  ##    ## 
-//     ##    ##     ##  ######  ##    ##  ######  
+//  ########    ###     ######  ##    ##  ######
+//     ##      ## ##   ##    ## ##   ##  ##    ##
+//     ##     ##   ##  ##       ##  ##   ##
+//     ##    ##     ##  ######  #####     ######
+//     ##    #########       ## ##  ##         ##
+//     ##    ##     ## ##    ## ##   ##  ##    ##
+//     ##    ##     ##  ######  ##    ##  ######
 
 
 
@@ -1837,7 +1907,7 @@ object Task {
     fn attachments() -> Future<Result<AttachmentsManager>>;
 
     /// get the invitations manager for this task
-    fn invitations() -> Future<Result<InvitationsManager>>;
+    fn invitations() -> Future<Result<ObjectInvitationsManager>>;
 }
 
 object TaskUpdateBuilder {
@@ -2087,13 +2157,13 @@ object TaskListUpdateBuilder {
 }
 
 
-//   ######  ########     ###     ######  ########    ########  ######## ##       
-//  ##    ## ##     ##   ## ##   ##    ## ##          ##     ## ##       ##       
-//  ##       ##     ##  ##   ##  ##       ##          ##     ## ##       ##       
-//   ######  ########  ##     ## ##       ######      ########  ######   ##       
-//        ## ##        ######### ##       ##          ##   ##   ##       ##       
-//  ##    ## ##        ##     ## ##    ## ##          ##    ##  ##       ##       
-//   ######  ##        ##     ##  ######  ########    ##     ## ######## ######## 
+//   ######  ########     ###     ######  ########    ########  ######## ##
+//  ##    ## ##     ##   ## ##   ##    ## ##          ##     ## ##       ##
+//  ##       ##     ##  ##   ##  ##       ##          ##     ## ##       ##
+//   ######  ########  ##     ## ##       ######      ########  ######   ##
+//        ## ##        ######### ##       ##          ##   ##   ##       ##
+//  ##    ## ##        ##     ## ##    ## ##          ##    ##  ##       ##
+//   ######  ##        ##     ##  ######  ########    ##     ## ######## ########
 
 
 
@@ -2259,27 +2329,13 @@ object ActerAppSettingsBuilder {
 
 
 
-//     ###     ######  ######## #### ##     ## #### ######## #### ########  ######  
-//    ## ##   ##    ##    ##     ##  ##     ##  ##     ##     ##  ##       ##    ## 
-//   ##   ##  ##          ##     ##  ##     ##  ##     ##     ##  ##       ##       
-//  ##     ## ##          ##     ##  ##     ##  ##     ##     ##  ######    ######  
-//  ######### ##          ##     ##   ##   ##   ##     ##     ##  ##             ## 
-//  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ## 
-//  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######  
-
-object MembershipChange {
-    /// user_id of the member that has changed
-    fn user_id_str() -> string;
-
-    /// avatar_url of the member that has changed
-    fn avatar_url() -> Option<string>;
-
-    /// display_name of the member that has changed
-    fn display_name() -> Option<string>;
-
-    /// reason if any was provided
-    fn reason() -> Option<string>;
-}
+//     ###     ######  ######## #### ##     ## #### ######## #### ########  ######
+//    ## ##   ##    ##    ##     ##  ##     ##  ##     ##     ##  ##       ##    ##
+//   ##   ##  ##          ##     ##  ##     ##  ##     ##     ##  ##       ##
+//  ##     ## ##          ##     ##  ##     ##  ##     ##     ##  ######    ######
+//  ######### ##          ##     ##   ##   ##   ##     ##     ##  ##             ##
+//  ##     ## ##    ##    ##     ##    ## ##    ##     ##     ##  ##       ##    ##
+//  ##     ##  ######     ##    ####    ###    ####    ##    #### ########  ######
 
 object ActivityObject {
     fn type_str() -> string;
@@ -2313,9 +2369,6 @@ object Activity {
     /// e.g. image, video, audio, file, link, location, etc.
     fn sub_type_str() -> Option<string>;
 
-    /// the details of this membership change activity
-    fn membership_change() -> Option<MembershipChange>;
-
     /// if the added information is a reference
     fn ref_details() -> Option<RefDetails>;
 
@@ -2328,6 +2381,15 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
+    /// get avatar uri when space avatar changed
+    fn room_avatar() -> Option<MxcUri>;
+
+    /// get name when space name changed
+    fn room_name() -> Option<string>;
+
+    /// get topic when space topic changed
+    fn room_topic() -> Option<string>;
+
     /// see title
     fn name() -> Option<string>;
 
@@ -2336,6 +2398,12 @@ object Activity {
 
     /// content of this activity (e.g. comment), if any
     fn msg_content() -> Option<MsgContent>;
+
+    /// the details of this membership change activity
+    fn membership_content() -> Option<MembershipContent>;
+
+    /// the details of this profile change activity
+    fn profile_content() -> Option<ProfileContent>;
 
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
@@ -2348,7 +2416,7 @@ object Activity {
     fn whom() -> Vec<string>;
 
     /// does this mention the user
-    fn mentions_you() -> bool; 
+    fn mentions_you() -> bool;
 
 }
 
@@ -2362,13 +2430,13 @@ object Activities {
 
 
 
-//  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ## 
-//  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
-//  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ## 
-//  ########  ##     ## ##     ## ## ### ##    ########  ########  ######   ##     ##  ##  ######   ##  ##  ## 
-//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##   ##        ##   ##   ##  ##       ##  ##  ## 
-//  ##    ##  ##     ## ##     ## ##     ##    ##        ##    ##  ##         ## ##    ##  ##       ##  ##  ## 
-//  ##     ##  #######   #######  ##     ##    ##        ##     ## ########    ###    #### ########  ###  ###  
+//  ########   #######   #######  ##     ##    ########  ########  ######## ##     ## #### ######## ##      ##
+//  ##     ## ##     ## ##     ## ###   ###    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ##
+//  ##     ## ##     ## ##     ## #### ####    ##     ## ##     ## ##       ##     ##  ##  ##       ##  ##  ##
+//  ########  ##     ## ##     ## ## ### ##    ########  ########  ######   ##     ##  ##  ######   ##  ##  ##
+//  ##   ##   ##     ## ##     ## ##     ##    ##        ##   ##   ##        ##   ##   ##  ##       ##  ##  ##
+//  ##    ##  ##     ## ##     ## ##     ##    ##        ##    ##  ##         ## ##    ##  ##       ##  ##  ##
+//  ##     ##  #######   #######  ##     ##    ##        ##     ## ########    ###    #### ########  ###  ###
 
 
 object RoomPreview {
@@ -2388,13 +2456,13 @@ object RoomPreview {
 
 
 
-//   ######     ###    ######## ########  ######    #######  ########  ##    ## 
-//  ##    ##   ## ##      ##    ##       ##    ##  ##     ## ##     ##  ##  ##  
-//  ##        ##   ##     ##    ##       ##        ##     ## ##     ##   ####   
-//  ##       ##     ##    ##    ######   ##   #### ##     ## ########     ##    
-//  ##       #########    ##    ##       ##    ##  ##     ## ##   ##      ##    
-//  ##    ## ##     ##    ##    ##       ##    ##  ##     ## ##    ##     ##    
-//   ######  ##     ##    ##    ########  ######    #######  ##     ##    ##    
+//   ######     ###    ######## ########  ######    #######  ########  ##    ##
+//  ##    ##   ## ##      ##    ##       ##    ##  ##     ## ##     ##  ##  ##
+//  ##        ##   ##     ##    ##       ##        ##     ## ##     ##   ####
+//  ##       ##     ##    ##    ######   ##   #### ##     ## ########     ##
+//  ##       #########    ##    ##       ##    ##  ##     ## ##   ##      ##
+//  ##    ## ##     ##    ##    ##       ##    ##  ##     ## ##    ##     ##
+//   ######  ##     ##    ##    ########  ######    #######  ##     ##    ##
 
 
 object Category {
@@ -2426,13 +2494,13 @@ object CategoriesBuilder {
 }
 
 
-//  ########  ####  ######  ########  ##          ###    ##    ## 
-//  ##     ##  ##  ##    ## ##     ## ##         ## ##    ##  ##  
-//  ##     ##  ##  ##       ##     ## ##        ##   ##    ####   
-//  ##     ##  ##   ######  ########  ##       ##     ##    ##    
-//  ##     ##  ##        ## ##        ##       #########    ##    
-//  ##     ##  ##  ##    ## ##        ##       ##     ##    ##    
-//  ########  ####  ######  ##        ######## ##     ##    ##    
+//  ########  ####  ######  ########  ##          ###    ##    ##
+//  ##     ##  ##  ##    ## ##     ## ##         ## ##    ##  ##
+//  ##     ##  ##  ##       ##     ## ##        ##   ##    ####
+//  ##     ##  ##   ######  ########  ##       ##     ##    ##
+//  ##     ##  ##        ## ##        ##       #########    ##
+//  ##     ##  ##  ##    ## ##        ##       ##     ##    ##
+//  ########  ####  ######  ##        ######## ##     ##    ##
 
 
 object Display {
@@ -2451,13 +2519,13 @@ object DisplayBuilder {
 }
 
 
-//   ######  ########     ###     ######  ######## 
-//  ##    ## ##     ##   ## ##   ##    ## ##       
-//  ##       ##     ##  ##   ##  ##       ##       
-//   ######  ########  ##     ## ##       ######   
-//        ## ##        ######### ##       ##       
-//  ##    ## ##        ##     ## ##    ## ##       
-//   ######  ##        ##     ##  ######  ######## 
+//   ######  ########     ###     ######  ########
+//  ##    ## ##     ##   ## ##   ##    ## ##
+//  ##       ##     ##  ##   ##  ##       ##
+//   ######  ########  ##     ## ##       ######
+//        ## ##        ######### ##       ##
+//  ##    ## ##        ##     ## ##    ## ##
+//   ######  ##        ##     ##  ######  ########
 
 
 object Space {
@@ -2611,6 +2679,11 @@ object Space {
 
     /// get the internal reference object, defined in Room
     fn ref_details() -> Future<Result<RefDetails>>;
+
+    /// set a moderation policy rule which affects room IDs and room aliases.
+    /// entity: #*:example.org
+    /// reason: undesirable content
+    fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {
@@ -2687,13 +2760,13 @@ object Member {
 }
 
 
-//     ###    ########  ########      ######  ######## ######## ######## #### ##    ##  ######    ######  
-//    ## ##   ##     ## ##     ##    ##    ## ##          ##       ##     ##  ###   ## ##    ##  ##    ## 
-//   ##   ##  ##     ## ##     ##    ##       ##          ##       ##     ##  ####  ## ##        ##       
-//  ##     ## ########  ########      ######  ######      ##       ##     ##  ## ## ## ##   ####  ######  
-//  ######### ##        ##                 ## ##          ##       ##     ##  ##  #### ##    ##        ## 
-//  ##     ## ##        ##           ##    ## ##          ##       ##     ##  ##   ### ##    ##  ##    ## 
-//  ##     ## ##        ##            ######  ########    ##       ##    #### ##    ##  ######    ######  
+//     ###    ########  ########      ######  ######## ######## ######## #### ##    ##  ######    ######
+//    ## ##   ##     ## ##     ##    ##    ## ##          ##       ##     ##  ###   ## ##    ##  ##    ##
+//   ##   ##  ##     ## ##     ##    ##       ##          ##       ##     ##  ####  ## ##        ##
+//  ##     ## ########  ########      ######  ######      ##       ##     ##  ## ## ## ##   ####  ######
+//  ######### ##        ##                 ## ##          ##       ##     ##  ##  #### ##    ##        ##
+//  ##     ## ##        ##           ##    ## ##          ##       ##     ##  ##   ### ##    ##  ##    ##
+//  ##     ## ##        ##            ######  ########    ##       ##    #### ##    ##  ######    ######
 
 
 
@@ -2731,14 +2804,74 @@ object ActerUserAppSettingsBuilder {
 }
 
 
+//  ########  ######## ########  ##     ## ####  ######   ######  ####  #######  ##    ##  ######  
+//  ##     ## ##       ##     ## ###   ###  ##  ##    ## ##    ##  ##  ##     ## ###   ## ##    ## 
+//  ##     ## ##       ##     ## #### ####  ##  ##       ##        ##  ##     ## ####  ## ##       
+//  ########  ######   ########  ## ### ##  ##   ######   ######   ##  ##     ## ## ## ##  ######  
+//  ##        ##       ##   ##   ##     ##  ##        ##       ##  ##  ##     ## ##  ####       ## 
+//  ##        ##       ##    ##  ##     ##  ##  ##    ## ##    ##  ##  ##     ## ##   ### ##    ## 
+//  ##        ######## ##     ## ##     ## ####  ######   ######  ####  #######  ##    ##  ######  
 
-//     ###     ######   ######   #######  ##     ## ##    ## ######## 
-//    ## ##   ##    ## ##    ## ##     ## ##     ## ###   ##    ##    
-//   ##   ##  ##       ##       ##     ## ##     ## ####  ##    ##    
-//  ##     ## ##       ##       ##     ## ##     ## ## ## ##    ##    
-//  ######### ##       ##       ##     ## ##     ## ##  ####    ##    
-//  ##     ## ##    ## ##    ## ##     ## ##     ## ##   ###    ##    
-//  ##     ##  ######   ######   #######   #######  ##    ##    ##    
+
+/// make app permissions builder
+fn new_app_permissions_builder() -> AppPermissionsBuilder;
+
+object AppPermissionsBuilder {
+    // whether or not News/Boosts should be activated
+    fn news(value: bool);
+    // whether or not pins should be activated
+    fn pins(value: bool);
+    // whether or not stories should be activated
+    fn stories(value: bool);
+    // whether or not calendar_events should be activated
+    fn calendar_events(value: bool);
+    // whether or not the tasks feature should be activated
+    fn tasks(value: bool);
+
+    /// specific permissions levels needed to post boosts
+    fn news_permisisons(value: u32);
+    /// specific permissions levels needed to post stories
+    fn stories_permisisons(value: u32);
+    /// specific permissions levels needed to post calender events
+    fn calendar_events_permisisons(value: u32);
+    /// specific permissions levels needed for task lists
+    fn task_lists_permisisons(value: u32);
+    /// specific permissions levels needed for tasks
+    fn tasks_permisisons(value: u32);
+    /// specific permissions levels needed for pins
+    fn pins_permisisons(value: u32);
+    /// specific permissions levels needed for comments
+    fn comments_permisisons(value: u32);
+    /// specific permissions levels needed for attachments
+    fn attachments_permisisons(value: u32);
+    /// specific permissions levels needed to rsvp
+    fn rsvp_permisisons(value: u32);
+
+    /// set level to kick a user
+    fn kick(value: u32);
+    /// set level to ban a user
+    fn ban(value: u32);
+    /// set level to ban a user
+    fn invite(value: u32);
+    /// set level to redact user content
+    fn redact(value: u32);
+
+    /// set default sending level if not specified
+    fn events_default(value: u32);
+    /// set the detault level users have when entering 
+    fn users_default(value: u32);
+    /// set the default state level needed if not specified
+    fn state_default(value: u32);
+}
+
+
+//     ###     ######   ######   #######  ##     ## ##    ## ########
+//    ## ##   ##    ## ##    ## ##     ## ##     ## ###   ##    ##
+//   ##   ##  ##       ##       ##     ## ##     ## ####  ##    ##
+//  ##     ## ##       ##       ##     ## ##     ## ## ## ##    ##
+//  ######### ##       ##       ##     ## ##     ## ##  ####    ##
+//  ##     ## ##    ## ##    ## ##     ## ##     ## ##   ###    ##
+//  ##     ##  ######   ######   #######   #######  ##    ##    ##
 
 
 
@@ -2836,13 +2969,13 @@ object ThreePidEmailTokenResponse {
 }
 
 
-//  ########   #######   #######  ##    ## ##     ##    ###    ########  ##    ##  ######  
-//  ##     ## ##     ## ##     ## ##   ##  ###   ###   ## ##   ##     ## ##   ##  ##    ## 
-//  ##     ## ##     ## ##     ## ##  ##   #### ####  ##   ##  ##     ## ##  ##   ##       
-//  ########  ##     ## ##     ## #####    ## ### ## ##     ## ########  #####     ######  
-//  ##     ## ##     ## ##     ## ##  ##   ##     ## ######### ##   ##   ##  ##         ## 
-//  ##     ## ##     ## ##     ## ##   ##  ##     ## ##     ## ##    ##  ##   ##  ##    ## 
-//  ########   #######   #######  ##    ## ##     ## ##     ## ##     ## ##    ##  ######  
+//  ########   #######   #######  ##    ## ##     ##    ###    ########  ##    ##  ######
+//  ##     ## ##     ## ##     ## ##   ##  ###   ###   ## ##   ##     ## ##   ##  ##    ##
+//  ##     ## ##     ## ##     ## ##  ##   #### ####  ##   ##  ##     ## ##  ##   ##
+//  ########  ##     ## ##     ## #####    ## ### ## ##     ## ########  #####     ######
+//  ##     ## ##     ## ##     ## ##  ##   ##     ## ######### ##   ##   ##  ##         ##
+//  ##     ## ##     ## ##     ## ##   ##  ##     ## ##     ## ##    ##  ##   ##  ##    ##
+//  ########   #######   #######  ##    ## ##     ## ##     ## ##     ## ##    ##  ######
 
 
 object Bookmarks {
@@ -2868,13 +3001,13 @@ object SyncState {
 }
 
 
-//   ######  ########    ###    ########   ######  ##     ## 
-//  ##    ## ##         ## ##   ##     ## ##    ## ##     ## 
-//  ##       ##        ##   ##  ##     ## ##       ##     ## 
-//   ######  ######   ##     ## ########  ##       ######### 
-//        ## ##       ######### ##   ##   ##       ##     ## 
-//  ##    ## ##       ##     ## ##    ##  ##    ## ##     ## 
-//   ######  ######## ##     ## ##     ##  ######  ##     ## 
+//   ######  ########    ###    ########   ######  ##     ##
+//  ##    ## ##         ## ##   ##     ## ##    ## ##     ##
+//  ##       ##        ##   ##  ##     ## ##       ##     ##
+//   ######  ######   ##     ## ########  ##       #########
+//        ## ##       ######### ##   ##   ##       ##     ##
+//  ##    ## ##       ##     ## ##    ##  ##    ## ##     ##
+//   ######  ######## ##     ## ##     ##  ######  ##     ##
 
 
 
@@ -2917,13 +3050,13 @@ object PublicSearchResult {
 
 
 
-//  ##    ##  #######  ######## #### ######## ####  ######     ###    ######## ####  #######  ##    ##  ######  
-//  ###   ## ##     ##    ##     ##  ##        ##  ##    ##   ## ##      ##     ##  ##     ## ###   ## ##    ## 
-//  ####  ## ##     ##    ##     ##  ##        ##  ##        ##   ##     ##     ##  ##     ## ####  ## ##       
-//  ## ## ## ##     ##    ##     ##  ######    ##  ##       ##     ##    ##     ##  ##     ## ## ## ##  ######  
-//  ##  #### ##     ##    ##     ##  ##        ##  ##       #########    ##     ##  ##     ## ##  ####       ## 
-//  ##   ### ##     ##    ##     ##  ##        ##  ##    ## ##     ##    ##     ##  ##     ## ##   ### ##    ## 
-//  ##    ##  #######     ##    #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ##  ######  
+//  ##    ##  #######  ######## #### ######## ####  ######     ###    ######## ####  #######  ##    ##  ######
+//  ###   ## ##     ##    ##     ##  ##        ##  ##    ##   ## ##      ##     ##  ##     ## ###   ## ##    ##
+//  ####  ## ##     ##    ##     ##  ##        ##  ##        ##   ##     ##     ##  ##     ## ####  ## ##
+//  ## ## ## ##     ##    ##     ##  ######    ##  ##       ##     ##    ##     ##  ##     ## ## ## ##  ######
+//  ##  #### ##     ##    ##     ##  ##        ##  ##       #########    ##     ##  ##     ## ##  ####       ##
+//  ##   ### ##     ##    ##     ##  ##        ##  ##    ## ##     ##    ##     ##  ##     ## ##   ### ##    ##
+//  ##    ##  #######     ##    #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ##  ######
 
 
 object NotificationSender {
@@ -2968,7 +3101,7 @@ object NotificationItem {
     fn new_date() -> Option<UtcDateTime>;
 
     /// does this mention the user
-    fn mentions_you() -> bool; 
+    fn mentions_you() -> bool;
 
     /// does this involve other users than the sender?
     fn whom() -> Vec<string>;
@@ -2988,13 +3121,13 @@ object Pusher {
 }
 
 
-//   ######  ########  ########    ###    ######## ######## 
-//  ##    ## ##     ## ##         ## ##      ##    ##       
-//  ##       ##     ## ##        ##   ##     ##    ##       
-//  ##       ########  ######   ##     ##    ##    ######   
-//  ##       ##   ##   ##       #########    ##    ##       
-//  ##    ## ##    ##  ##       ##     ##    ##    ##       
-//   ######  ##     ## ######## ##     ##    ##    ######## 
+//   ######  ########  ########    ###    ######## ########
+//  ##    ## ##     ## ##         ## ##      ##    ##
+//  ##       ##     ## ##        ##   ##     ##    ##
+//  ##       ########  ######   ##     ##    ##    ######
+//  ##       ##   ##   ##       #########    ##    ##
+//  ##    ## ##    ##  ##       ##     ##    ##    ##
+//   ######  ##     ## ######## ##     ##    ##    ########
 
 
 
@@ -3025,6 +3158,7 @@ object CreateConvoSettingsBuilder {
 }
 
 object CreateConvoSettings {}
+
 
 /// make space settings builder
 fn new_space_settings_builder() -> CreateSpaceSettingsBuilder;
@@ -3057,19 +3191,34 @@ object CreateSpaceSettingsBuilder {
     /// the space will be a subspace of the parent space
     fn set_parent(value: string);
 
+    /// set the permissions for apps and events for the space creation
+    fn set_permissions(value: AppPermissionsBuilder);
+
     fn build() -> CreateSpaceSettings;
 }
 
 object CreateSpaceSettings {}
 
+object InvitationsManager {
+    /// current set of rooms that the user is invited to
+    fn room_invitations() -> Future<Result<Vec<RoomInvitation>>>;
 
-//   ######  ##       #### ######## ##    ## ######## 
-//  ##    ## ##        ##  ##       ###   ##    ##    
-//  ##       ##        ##  ##       ####  ##    ##    
-//  ##       ##        ##  ######   ## ## ##    ##    
-//  ##       ##        ##  ##       ##  ####    ##    
-//  ##    ## ##        ##  ##       ##   ###    ##    
-//   ######  ######## #### ######## ##    ##    ##    
+    /// current set of objects that the user is invited to
+    fn object_invitations() -> Future<Result<Vec<string>>>;
+
+    /// whenever an update occurs
+    fn subscribe_stream() -> Stream<bool>;
+
+}
+
+
+//   ######  ##       #### ######## ##    ## ########
+//  ##    ## ##        ##  ##       ###   ##    ##
+//  ##       ##        ##  ##       ####  ##    ##
+//  ##       ##        ##  ######   ## ## ##    ##
+//  ##       ##        ##  ##       ##  ####    ##
+//  ##    ## ##        ##  ##       ##   ###    ##
+//   ######  ######## #### ######## ##    ##    ##
 
 
 /// Main entry point for `acter`.
@@ -3088,9 +3237,6 @@ object Client {
 
     /// Whether the client is syncing
     fn is_syncing() -> bool;
-
-    /// Whether the client is logged in
-    fn logged_in() -> bool;
 
     /// return the account of the logged in user, if given
     fn account() -> Result<Account>;
@@ -3138,7 +3284,7 @@ object Client {
     fn space(room_id_or_alias: string) -> Future<Result<Space>>;
 
     /// Get the invitation event stream
-    fn invitations_rx() -> Stream<Vec<Invitation>>;
+    fn invitations() -> InvitationsManager;
 
     /// the users out of room
     fn suggested_users(room_name: Option<string>) -> Future<Result<Vec<UserProfile>>>;
@@ -3372,19 +3518,17 @@ object NotificationSettings {
 }
 
 
-//  #### ##    ## ##     ## #### ########    ###    ######## ####  #######  ##    ##  ######  
-//   ##  ###   ## ##     ##  ##     ##      ## ##      ##     ##  ##     ## ###   ## ##    ## 
-//   ##  ####  ## ##     ##  ##     ##     ##   ##     ##     ##  ##     ## ####  ## ##       
-//   ##  ## ## ## ##     ##  ##     ##    ##     ##    ##     ##  ##     ## ## ## ##  ######  
-//   ##  ##  ####  ##   ##   ##     ##    #########    ##     ##  ##     ## ##  ####       ## 
-//   ##  ##   ###   ## ##    ##     ##    ##     ##    ##     ##  ##     ## ##   ### ##    ## 
-//  #### ##    ##    ###    ####    ##    ##     ##    ##    ####  #######  ##    ##  ######  
+//  #### ##    ## ##     ## #### ########    ###    ######## ####  #######  ##    ##  ######
+//   ##  ###   ## ##     ##  ##     ##      ## ##      ##     ##  ##     ## ###   ## ##    ##
+//   ##  ####  ## ##     ##  ##     ##     ##   ##     ##     ##  ##     ## ####  ## ##
+//   ##  ## ## ## ##     ##  ##     ##    ##     ##    ##     ##  ##     ## ## ## ##  ######
+//   ##  ##  ####  ##   ##   ##     ##    #########    ##     ##  ##     ## ##  ####       ##
+//   ##  ##   ###   ## ##    ##     ##    ##     ##    ##     ##  ##     ## ##   ### ##    ##
+//  #### ##    ##    ###    ####    ##    ##     ##    ##    ####  #######  ##    ##  ######
 
 
 
-object Invitation {
-    /// get the timestamp of this invitation in milliseconds
-    fn origin_server_ts() -> Option<u64>;
+object RoomInvitation {
 
     /// whether this is an invite to a DM
     fn is_dm() -> bool;
@@ -3409,13 +3553,13 @@ object Invitation {
 }
 
 
-//   ######  ##     ## ########  ######## ########     #### ##    ## ##     ## #### ########    ###    ######## ####  #######  ##    ##  ######  
-//  ##    ## ##     ## ##     ## ##       ##     ##     ##  ###   ## ##     ##  ##     ##      ## ##      ##     ##  ##     ## ###   ## ##    ## 
-//  ##       ##     ## ##     ## ##       ##     ##     ##  ####  ## ##     ##  ##     ##     ##   ##     ##     ##  ##     ## ####  ## ##       
-//   ######  ##     ## ########  ######   ########      ##  ## ## ## ##     ##  ##     ##    ##     ##    ##     ##  ##     ## ## ## ##  ######  
-//        ## ##     ## ##        ##       ##   ##       ##  ##  ####  ##   ##   ##     ##    #########    ##     ##  ##     ## ##  ####       ## 
-//  ##    ## ##     ## ##        ##       ##    ##      ##  ##   ###   ## ##    ##     ##    ##     ##    ##     ##  ##     ## ##   ### ##    ## 
-//   ######   #######  ##        ######## ##     ##    #### ##    ##    ###    ####    ##    ##     ##    ##    ####  #######  ##    ##  ######  
+//   ######  ##     ## ########  ######## ########     #### ##    ## ##     ## #### ########    ###    ######## ####  #######  ##    ##  ######
+//  ##    ## ##     ## ##     ## ##       ##     ##     ##  ###   ## ##     ##  ##     ##      ## ##      ##     ##  ##     ## ###   ## ##    ##
+//  ##       ##     ## ##     ## ##       ##     ##     ##  ####  ## ##     ##  ##     ##     ##   ##     ##     ##  ##     ## ####  ## ##
+//   ######  ##     ## ########  ######   ########      ##  ## ## ## ##     ##  ##     ##    ##     ##    ##     ##  ##     ## ## ## ##  ######
+//        ## ##     ## ##        ##       ##   ##       ##  ##  ####  ##   ##   ##     ##    #########    ##     ##  ##     ## ##  ####       ##
+//  ##    ## ##     ## ##        ##       ##    ##      ##  ##   ###   ## ##    ##     ##    ##     ##    ##     ##  ##     ## ##   ### ##    ##
+//   ######   #######  ##        ######## ##     ##    #### ##    ##    ###    ####    ##    ##     ##    ##    ####  #######  ##    ##  ######
 
 
 object SuperInvites {
@@ -3495,13 +3639,13 @@ object SuperInvitesTokenUpdateBuilder {
 }
 
 
-//  ##     ## ######## ########  #### ######## ####  ######     ###    ######## ####  #######  ##    ## 
-//  ##     ## ##       ##     ##  ##  ##        ##  ##    ##   ## ##      ##     ##  ##     ## ###   ## 
-//  ##     ## ##       ##     ##  ##  ##        ##  ##        ##   ##     ##     ##  ##     ## ####  ## 
-//  ##     ## ######   ########   ##  ######    ##  ##       ##     ##    ##     ##  ##     ## ## ## ## 
-//   ##   ##  ##       ##   ##    ##  ##        ##  ##       #########    ##     ##  ##     ## ##  #### 
-//    ## ##   ##       ##    ##   ##  ##        ##  ##    ## ##     ##    ##     ##  ##     ## ##   ### 
-//     ###    ######## ##     ## #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ## 
+//  ##     ## ######## ########  #### ######## ####  ######     ###    ######## ####  #######  ##    ##
+//  ##     ## ##       ##     ##  ##  ##        ##  ##    ##   ## ##      ##     ##  ##     ## ###   ##
+//  ##     ## ##       ##     ##  ##  ##        ##  ##        ##   ##     ##     ##  ##     ## ####  ##
+//  ##     ## ######   ########   ##  ######    ##  ##       ##     ##    ##     ##  ##     ## ## ## ##
+//   ##   ##  ##       ##   ##    ##  ##        ##  ##       #########    ##     ##  ##     ## ##  ####
+//    ## ##   ##       ##    ##   ##  ##        ##  ##    ## ##     ##    ##     ##  ##     ## ##   ###
+//     ###    ######## ##     ## #### ##       ####  ######  ##     ##    ##    ####  #######  ##    ##
 
 
 
@@ -3559,13 +3703,13 @@ object VerificationEmoji {
 }
 
 
-//   ######  ########  ######   ######  ####  #######  ##    ##  ######  
-//  ##    ## ##       ##    ## ##    ##  ##  ##     ## ###   ## ##    ## 
-//  ##       ##       ##       ##        ##  ##     ## ####  ## ##       
-//   ######  ######    ######   ######   ##  ##     ## ## ## ##  ######  
-//        ## ##             ##       ##  ##  ##     ## ##  ####       ## 
-//  ##    ## ##       ##    ## ##    ##  ##  ##     ## ##   ### ##    ## 
-//   ######  ########  ######   ######  ####  #######  ##    ##  ######  
+//   ######  ########  ######   ######  ####  #######  ##    ##  ######
+//  ##    ## ##       ##    ## ##    ##  ##  ##     ## ###   ## ##    ##
+//  ##       ##       ##       ##        ##  ##     ## ####  ## ##
+//   ######  ######    ######   ######   ##  ##     ## ## ## ##  ######
+//        ## ##             ##       ##  ##  ##     ## ##  ####       ##
+//  ##    ## ##       ##    ## ##    ##  ##  ##     ## ##   ### ##    ##
+//   ######  ########  ######   ######  ####  #######  ##    ##  ######
 
 
 
@@ -3586,13 +3730,13 @@ object SessionManager {
     fn terminate_verification(flow_id: string) -> Future<Result<bool>>;
 }
 
-//  ########  ######## ##     ## ####  ######  ########  ######  
-//  ##     ## ##       ##     ##  ##  ##    ## ##       ##    ## 
-//  ##     ## ##       ##     ##  ##  ##       ##       ##       
-//  ##     ## ######   ##     ##  ##  ##       ######    ######  
-//  ##     ## ##        ##   ##   ##  ##       ##             ## 
-//  ##     ## ##         ## ##    ##  ##    ## ##       ##    ## 
-//  ########  ########    ###    ####  ######  ########  ######  
+//  ########  ######## ##     ## ####  ######  ########  ######
+//  ##     ## ##       ##     ##  ##  ##    ## ##       ##    ##
+//  ##     ## ##       ##     ##  ##  ##       ##       ##
+//  ##     ## ######   ##     ##  ##  ##       ######    ######
+//  ##     ## ##        ##   ##   ##  ##       ##             ##
+//  ##     ## ##         ## ##    ##  ##    ## ##       ##    ##
+//  ########  ########    ###    ####  ######  ########  ######
 
 
 
@@ -3630,13 +3774,13 @@ object DeviceRecord {
 
 
 
-//     ########     ###     ######  ##    ## ##     ## ########     ##     ##    ###    ##    ##    ###     ######   ######## ########  
-//     ##     ##   ## ##   ##    ## ##   ##  ##     ## ##     ##    ###   ###   ## ##   ###   ##   ## ##   ##    ##  ##       ##     ## 
-//     ##     ##  ##   ##  ##       ##  ##   ##     ## ##     ##    #### ####  ##   ##  ####  ##  ##   ##  ##        ##       ##     ## 
-//     ########  ##     ## ##       #####    ##     ## ########     ## ### ## ##     ## ## ## ## ##     ## ##   #### ######   ########  
-//     ##     ## ######### ##       ##  ##   ##     ## ##           ##     ## ######### ##  #### ######### ##    ##  ##       ##   ##   
-//     ##     ## ##     ## ##    ## ##   ##  ##     ## ##           ##     ## ##     ## ##   ### ##     ## ##    ##  ##       ##    ##  
-//     ########  ##     ##  ######  ##    ##  #######  ##           ##     ## ##     ## ##    ## ##     ##  ######   ######## ##     ## 
+//     ########     ###     ######  ##    ## ##     ## ########     ##     ##    ###    ##    ##    ###     ######   ######## ########
+//     ##     ##   ## ##   ##    ## ##   ##  ##     ## ##     ##    ###   ###   ## ##   ###   ##   ## ##   ##    ##  ##       ##     ##
+//     ##     ##  ##   ##  ##       ##  ##   ##     ## ##     ##    #### ####  ##   ##  ####  ##  ##   ##  ##        ##       ##     ##
+//     ########  ##     ## ##       #####    ##     ## ########     ## ### ## ##     ## ## ## ## ##     ## ##   #### ######   ########
+//     ##     ## ######### ##       ##  ##   ##     ## ##           ##     ## ######### ##  #### ######### ##    ##  ##       ##   ##
+//     ##     ## ##     ## ##    ## ##   ##  ##     ## ##           ##     ## ##     ## ##   ### ##     ## ##    ##  ##       ##    ##
+//     ########  ##     ##  ######  ##    ##  #######  ##           ##     ## ##     ## ##    ## ##     ##  ######   ######## ##     ##
 
 
 /// Manage Encryption Backups

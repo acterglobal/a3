@@ -1,5 +1,5 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
-    show RoomEventItem;
+    show TimelineEventItem;
 
 // State to represent reply message status
 sealed class RepliedToMsgState {
@@ -19,6 +19,6 @@ class RepliedToMsgError extends RepliedToMsgState {
 }
 
 class RepliedToMsgData extends RepliedToMsgState {
-  final RoomEventItem repliedToItem;
+  final TimelineEventItem repliedToItem;
   const RepliedToMsgData(this.repliedToItem);
 }

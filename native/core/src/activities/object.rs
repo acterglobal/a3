@@ -121,11 +121,11 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
             }),
             AnyActerModel::CalendarEvent(e) => Ok(ActivityObject::CalendarEvent {
                 object_id: e.event_id().to_owned(),
-                title: e.title().clone(),
+                title: e.title(),
             }),
             AnyActerModel::Pin(e) => Ok(ActivityObject::Pin {
                 object_id: e.event_id().to_owned(),
-                title: e.title().clone(),
+                title: e.title(),
             }),
             AnyActerModel::TaskList(e) => Ok(ActivityObject::TaskList {
                 object_id: e.event_id().to_owned(),
@@ -134,7 +134,7 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
             AnyActerModel::Task(e) => Ok(ActivityObject::Task {
                 object_id: e.event_id().to_owned(),
                 tl_id: e.task_list_id.event_id.clone(),
-                title: e.title().clone(),
+                title: e.title(),
             }),
             AnyActerModel::RedactedActerModel(_)
             | AnyActerModel::ExplicitInvite(_)

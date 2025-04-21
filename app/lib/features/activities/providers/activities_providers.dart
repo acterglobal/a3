@@ -23,6 +23,9 @@ final supportedActivityTypes = [
   PushStyles.taskAccept,
   PushStyles.taskDecline,
   PushStyles.taskDueDateChange,
+  PushStyles.roomName,
+  PushStyles.roomTopic,
+  PushStyles.roomAvatar,
   PushStyles.invitationAccepted,
   PushStyles.invited,
   PushStyles.joined,
@@ -30,7 +33,7 @@ final supportedActivityTypes = [
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {
-  final invitations = ref.watch(invitationListProvider);
+  final invitations = ref.watch(invitationListProvider).valueOrNull ?? [];
   if (invitations.isNotEmpty) {
     return UrgencyBadge.urgent;
   }
