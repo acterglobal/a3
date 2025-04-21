@@ -1,6 +1,7 @@
 use acter_core::{
     models::status::{
-        MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, ProfileContent,
+        MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
+        ProfileContent,
     },
     util::do_vecs_match,
 };
@@ -307,6 +308,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn policy_rule_user_content(&self) -> Option<PolicyRuleUserContent> {
+        if let Some(TimelineEventContent::PolicyRuleUser(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -377,52 +386,13 @@ impl TimelineEventItemBuilder {
                 let c = PolicyRuleServerContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::PolicyRuleServer(c)));
             }
-            AnyOtherFullStateEventContent::PolicyRuleUser(c) => {
+            AnyOtherFullStateEventContent::PolicyRuleUser(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.policy.rule.user".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        let PolicyRuleUserEventContent(cur) = content;
-                        if let Some(PossiblyRedactedPolicyRuleUserEventContent(prev)) = prev_content
-                        {
-                            let mut result = vec![];
-                            if let Some(entity) = prev.entity.clone() {
-                                if entity != cur.entity {
-                                    result.push("changed entity".to_owned());
-                                }
-                            } else {
-                                result.push("added entity".to_owned());
-                            }
-                            if let Some(reason) = prev.reason.clone() {
-                                if reason != cur.reason {
-                                    result.push("changed reason".to_owned());
-                                }
-                            } else {
-                                result.push("added reason".to_owned());
-                            }
-                            if let Some(recommendation) = prev.recommendation.clone() {
-                                if recommendation.ne(&cur.recommendation) {
-                                    result.push("changed recommendation".to_owned());
-                                }
-                            } else {
-                                result.push("added recommendation".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added policy user rule".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted policy user rule".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = PolicyRuleUserContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::PolicyRuleUser(c)));
             }
             AnyOtherFullStateEventContent::RoomAliases(c) => {
                 self.event_type("m.room.aliases".to_owned());

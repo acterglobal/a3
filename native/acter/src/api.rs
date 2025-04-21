@@ -67,7 +67,8 @@ pub use acter_core::{
     },
     models::{
         status::{
-            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, ProfileContent,
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent,
         },
         ActerModel, Tag, TextMessageContent,
     },

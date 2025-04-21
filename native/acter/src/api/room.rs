@@ -39,7 +39,7 @@ use matrix_sdk_base::{
         events::{
             policy::rule::{
                 room::PolicyRuleRoomEventContent, server::PolicyRuleServerEventContent,
-                PolicyRuleEventContent, Recommendation,
+                user::PolicyRuleUserEventContent, PolicyRuleEventContent, Recommendation,
             },
             room::{
                 avatar::ImageInfo as AvatarImageInfo,
@@ -1865,6 +1865,37 @@ impl Room {
                 let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
                 let response = room
                     .send_state_event_for_key(&state_key, PolicyRuleServerEventContent(content))
+                    .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // entity: @alice*:example.org
+    // reason: undesirable behaviour
+    // state key: rule:@alice*:example.org
+    pub async fn set_policy_rule_user(
+        &self,
+        entity: String,
+        reason: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change policy rule user in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let state_key = format!("rule:{}", &entity);
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::PolicyRuleUser)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change policy rule user in this room");
+                }
+                let content = PolicyRuleEventContent::new(entity, Recommendation::Ban, reason);
+                let response = room
+                    .send_state_event_for_key(&state_key, PolicyRuleUserEventContent(content))
                     .await?;
                 Ok(response.event_id)
             })
