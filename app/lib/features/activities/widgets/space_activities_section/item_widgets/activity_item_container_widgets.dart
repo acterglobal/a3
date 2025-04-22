@@ -20,7 +20,6 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
   final ActivityObject? activityObject;
   final String userId;
   final String roomId;
-  final String? membershipChangeDisplayName;
   final Widget? subtitle;
   final int originServerTs;
 
@@ -32,7 +31,6 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     this.activityObject,
     required this.userId,
     required this.roomId,
-    this.membershipChangeDisplayName,
     this.subtitle,
     required this.originServerTs,
   });

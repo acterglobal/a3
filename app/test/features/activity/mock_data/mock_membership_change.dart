@@ -24,22 +24,4 @@ class MockMembershipContent extends Mock implements MembershipContent {
 
   @override
   UserId userId() => MockUserId(mockUserId ?? 'mock-user-id');
-
-  @override
-  String userIdStr() => mockUserId ?? 'mock-user-id';
-
-  @override
-  String? avatarUrl() => mockAvatarUrl;
-
-  @override
-  String? displayName() => mockDisplayName;
-
-  @override
-  String? reason() => mockReason;
-
-  @override
-  RoomId roomId() => MockRoomId(mockRoomId ?? 'mock-room-id');
-
-  @override
-  int originServerTs() => mockOriginServerTs ?? 1234567890;
 }
