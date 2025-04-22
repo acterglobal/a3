@@ -1,39 +1,18 @@
 use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
-use matrix_sdk::ruma::OwnedRoomId;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
 
-use acter::{Client, SyncState};
-
-use super::get_latest_activity;
-use crate::utils::{random_user, random_users_with_random_space};
-
-async fn _setup_accounts(
-    prefix: &str,
-) -> Result<((Client, SyncState), (Client, SyncState), OwnedRoomId)> {
-    let (users, room_id) = random_users_with_random_space(prefix, 2).await?;
-    let mut admin = users[0].clone();
-    let mut observer = users[1].clone();
-
-    observer.install_default_acter_push_rules().await?;
-
-    let sync_state1 = admin.start_sync();
-    sync_state1.await_has_synced_history().await?;
-
-    let sync_state2 = observer.start_sync();
-    sync_state2.await_has_synced_history().await?;
-
-    Ok(((admin, sync_state1), (observer, sync_state2), room_id))
-}
+use super::{get_latest_activity, setup_accounts};
+use crate::utils::random_user;
 
 #[tokio::test]
 async fn initial_events() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("room-create-activity").await?;
+        setup_accounts("initial-events").await?;
 
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
@@ -75,7 +54,7 @@ async fn invite_and_join() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("invite-and-join").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync();
@@ -167,8 +146,7 @@ async fn invite_and_join() -> Result<()> {
 async fn kicked() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("kicked").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -211,7 +189,7 @@ async fn invite_and_rejected() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("invite-and-rejected").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync();
@@ -306,7 +284,7 @@ async fn kickban_and_unban() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("kickban-and-unban").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let main_room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -378,8 +356,7 @@ async fn kickban_and_unban() -> Result<()> {
 async fn left() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("left").await?;
 
     let room = observer.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;

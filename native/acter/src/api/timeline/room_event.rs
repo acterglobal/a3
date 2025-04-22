@@ -1,4 +1,7 @@
-use acter_core::models::status::{MembershipContent, PolicyRuleRoomContent, ProfileContent};
+use acter_core::models::status::{
+    MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
+    ProfileContent,
+};
 use matrix_sdk_base::ruma::events::room::message::MessageType;
 use serde::{Deserialize, Serialize};
 
@@ -11,6 +14,8 @@ pub enum TimelineEventContent {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
     PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
 }
 
 impl TryFrom<&MessageType> for TimelineEventContent {
