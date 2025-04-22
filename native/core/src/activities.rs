@@ -16,7 +16,10 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::{MembershipContent, PolicyRuleRoomContent, ProfileContent},
+        status::{
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent,
+        },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -30,6 +33,8 @@ pub enum ActivityContent {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
     PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
     RoomCreate(RoomCreateEventContent),
     RoomAvatar(RoomAvatarEventContent),
     RoomName(RoomNameEventContent),
@@ -143,6 +148,8 @@ impl Activity {
                 }
             }
             ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
+            ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
+            ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomAvatar(_) => "roomAvatar",
             ActivityContent::RoomName(_) => "roomName",
@@ -233,6 +240,8 @@ impl Activity {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
             | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomName(_)
@@ -333,6 +342,8 @@ impl Activity {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
             | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomName(_)
@@ -375,6 +386,12 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::PolicyRuleRoom(c) => {
                     Ok(Self::new(meta, ActivityContent::PolicyRuleRoom(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleServer(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleServer(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleUser(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleUser(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
