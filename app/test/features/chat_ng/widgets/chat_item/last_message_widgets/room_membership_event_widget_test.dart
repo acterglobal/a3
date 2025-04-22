@@ -390,6 +390,23 @@ void main() {
         expect(find.textContaining('You banned david.'), findsOneWidget);
       });
 
+      testWidgets('Banned message - On me', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventBannedRoom30
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('emily banned you.'), findsOneWidget);
+      });
+
       testWidgets('Banned message - Other banned other', (
         WidgetTester tester,
       ) async {
@@ -424,6 +441,23 @@ void main() {
         );
 
         expect(find.textContaining('You unbanned david.'), findsOneWidget);
+      });
+
+      testWidgets('Unbanned message - On me', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventUnbannedRoom31
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('emily unbanned you.'), findsOneWidget);
       });
 
       testWidgets('Unbanned message - Other unbanned other', (
@@ -462,6 +496,23 @@ void main() {
         expect(find.textContaining('You kicked david.'), findsOneWidget);
       });
 
+      testWidgets('Kicked message - On me', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventKickedRoom32
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('emily kicked you.'), findsOneWidget);
+      });
+
       testWidgets('Kicked message - Other kicked other', (
         WidgetTester tester,
       ) async {
@@ -496,6 +547,23 @@ void main() {
         );
 
         expect(find.textContaining('You invited david.'), findsOneWidget);
+      });
+
+      testWidgets('Invited message - On me', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventInvitedRoom33
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('emily invited you.'), findsOneWidget);
       });
 
       testWidgets('Invited message - Other invited other', (
@@ -535,6 +603,28 @@ void main() {
 
         expect(
           find.textContaining('You kicked and banned david.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Kicked and banned message - On me', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            membershipEventKickedAndBannedRoom34
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('emily kicked and banned you.'),
           findsOneWidget,
         );
       });
