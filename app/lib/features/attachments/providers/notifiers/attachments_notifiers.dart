@@ -26,13 +26,11 @@ class AttachmentsManagerNotifier
     _listener = manager.subscribeStream(); // keep it resident in memory
     _poller = _listener.listen(
       (e) async {
-        state = await AsyncValue.guard(() async {
-          _log.info('attempting to reload');
-          final newManager = await manager.reload();
-          final count = newManager.attachmentsCount();
-          _log.info('manager updated. attachments: $count');
-          return newManager;
-        });
+        _log.info('attempting to reload');
+        final newManager = await manager.reload();
+        final count = newManager.attachmentsCount();
+        _log.info('manager updated. attachments: $count');
+        state = AsyncValue.data(newManager);
       },
       onError: (e, s) {
         _log.severe('stream errored', e, s);

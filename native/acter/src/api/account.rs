@@ -122,7 +122,7 @@ impl Account {
 
                 // set the internal cached key so the next fetch properly updates this
                 client
-                    .store()
+                    .state_store()
                     .set_kv_data(
                         StateStoreDataKey::UserAvatarUrl(&user_id),
                         StateStoreDataValue::UserAvatarUrl(new_url.clone()),

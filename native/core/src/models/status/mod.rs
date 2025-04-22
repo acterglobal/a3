@@ -1,6 +1,10 @@
 use matrix_sdk::ruma::{
     events::{
-        room::{create::RoomCreateEventContent, member::MembershipChange as MChange},
+        room::{
+            avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
+            member::MembershipChange as MChange, name::RoomNameEventContent,
+            topic::RoomTopicEventContent,
+        },
         AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
     OwnedEventId, UserId,
@@ -10,6 +14,7 @@ use std::ops::Deref;
 
 mod membership;
 mod profile;
+mod room_state;
 
 use crate::{
     events::AnyActerEvent,
@@ -17,6 +22,7 @@ use crate::{
 };
 pub use membership::MembershipContent;
 pub use profile::{Change, ProfileContent};
+pub use room_state::{PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent};
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
@@ -24,8 +30,13 @@ use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 pub enum ActerSupportedRoomStatusEvents {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
+    PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
     RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    RoomAvatar(RoomAvatarEventContent),
+    RoomName(RoomNameEventContent),
+    RoomTopic(RoomTopicEventContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -62,8 +73,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
                 meta,
             }),
+            AnyStateEvent::RoomAvatar(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomAvatar(inner.content.clone()),
+                meta,
+            }),
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
+                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.clone()),
+                meta,
+            }),
+            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomTopic(inner.content.clone()),
                 meta,
             }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {
@@ -98,6 +117,36 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 };
                 Ok(RoomStatus {
                     inner: inner_status,
+                    meta,
+                })
+            }
+            AnyStateEvent::PolicyRuleRoom(StateEvent::Original(inner)) => {
+                let content = PolicyRuleRoomContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::PolicyRuleRoom(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::PolicyRuleServer(StateEvent::Original(inner)) => {
+                let content = PolicyRuleServerContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::PolicyRuleServer(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::PolicyRuleUser(StateEvent::Original(inner)) => {
+                let content = PolicyRuleUserContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::PolicyRuleUser(content),
                     meta,
                 })
             }

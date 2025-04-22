@@ -169,7 +169,8 @@ dependencies:
   collection: ^1.18.0
   preload_page_view: ^0.2.0
   mocktail: ^1.0.4
-  # Matomo Analytics
+  launch_at_startup: ^0.5.1
+  package_info_plus: ^8.3.0
   matomo_tracker: ^6.0.0
 
 dev_dependencies:
