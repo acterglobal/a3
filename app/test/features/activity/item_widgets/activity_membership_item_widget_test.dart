@@ -15,7 +15,7 @@ void main() {
       mockType: PushStyles.invitationRevoked.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockMembershipChange: MockMembershipChange(
+      mockMembershipContent: MockMembershipContent(
         mockDisplayName: 'user-display-name',
       ),
     );
@@ -36,7 +36,7 @@ void main() {
       mockType: PushStyles.invitationAccepted.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockMembershipChange: MockMembershipChange(
+      mockMembershipContent: MockMembershipContent(
         mockDisplayName: 'user-display-name',
       ),
     );
@@ -58,7 +58,7 @@ void main() {
       mockType: PushStyles.joined.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockMembershipChange: MockMembershipChange(
+      mockMembershipContent: MockMembershipContent(
         mockDisplayName: 'user-display-name',
       ),
     );
@@ -79,7 +79,7 @@ void main() {
       mockType: PushStyles.invited.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
-      mockMembershipChange: MockMembershipChange(
+      mockMembershipContent: MockMembershipContent(
         mockDisplayName: 'user-display-name',
       ),
     );

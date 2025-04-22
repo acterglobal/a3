@@ -1,18 +1,29 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../../helpers/mock_basics.dart';
 
-class MockMembershipChange extends Mock implements MembershipChange {
+class MockMembershipContent extends Mock implements MembershipContent {
   final String? mockUserId;
   final String? mockAvatarUrl;
   final String? mockDisplayName;
   final String? mockReason;
+  final String? mockRoomId;
+  final int? mockOriginServerTs;
 
-  MockMembershipChange({
+  MockMembershipContent({
     this.mockUserId,
     this.mockAvatarUrl,
     this.mockDisplayName,
     this.mockReason,
+    this.mockRoomId,
+    this.mockOriginServerTs,
   });
+
+  @override
+  String change() => 'mock-change';
+
+  @override
+  UserId userId() => MockUserId(mockUserId ?? 'mock-user-id');
 
   @override
   String userIdStr() => mockUserId ?? 'mock-user-id';
@@ -27,7 +38,8 @@ class MockMembershipChange extends Mock implements MembershipChange {
   String? reason() => mockReason;
 
   @override
-  void drop() {
-    // No-op for mock implementation
-  }
+  RoomId roomId() => MockRoomId(mockRoomId ?? 'mock-room-id');
+
+  @override
+  int originServerTs() => mockOriginServerTs ?? 1234567890;
 }

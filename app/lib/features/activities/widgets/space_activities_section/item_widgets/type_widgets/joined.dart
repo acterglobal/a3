@@ -16,7 +16,7 @@ class ActivityJoinedItemWidget extends StatelessWidget {
       activityObject: activityObject,
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
-      membershipChangeDisplayName: activity.membershipChange()?.displayName(),
+      membershipChangeDisplayName: activity.membershipContent()?.change(),
       originServerTs: activity.originServerTs(),
     );
   }
