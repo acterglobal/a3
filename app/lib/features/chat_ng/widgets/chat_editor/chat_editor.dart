@@ -198,7 +198,8 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   void _updateContentHeight() {
-    final lineCount = textEditorState.intoMarkdown().split('\n').length - 1;
+    final text = textEditorState.intoMarkdown();
+    final lineCount = text.split('\n').length - 1;
 
     double newHeight =
         lineCount > 1 ? ChatEditorUtils.maxHeight : ChatEditorUtils.baseHeight;

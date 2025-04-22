@@ -73,6 +73,7 @@ class _TestableEditorState extends ConsumerState<TestableEditor> {
 
   void updateContentHeight(String text) {
     final lineCount = text.split('\n').length - 1;
+
     double newHeight =
         lineCount > 1 ? ChatEditorUtils.maxHeight : ChatEditorUtils.baseHeight;
 
@@ -383,6 +384,81 @@ void main() {
 
       await tester.binding.setSurfaceSize(null);
       keyboardStateController.close(); // Don't forget to close the controller
+    });
+
+    testWidgets('handles long text without line breaks properly', (
+      tester,
+    ) async {
+      await loadTestFonts();
+      await tester.binding.setSurfaceSize(const Size(400, 250));
+
+      // Create a controller to manage the keyboard visibility
+      final keyboardStateController = StreamController<bool>.broadcast();
+      keyboardStateController.add(true); // Keyboard is visible
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          keyboardVisibleProvider.overrideWith(
+            (ref) => keyboardStateController.stream,
+          ),
+        ],
+        child: const Center(
+          child: SizedBox(
+            width: 400,
+            height: 250,
+            child: TestableEditor(initialKeyboardVisible: true),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final editorFinder = find.byType(HtmlEditor);
+      expect(editorFinder, findsOneWidget);
+
+      final editorState = tester.widget<HtmlEditor>(editorFinder).editorState;
+
+      // long text without line breaks, should wrap naturally
+      const longText =
+          'This is a very long message that should wrap across multiple lines even without explicit line breaks. It needs to be long enough to trigger word-wrapping based on the container width alone, testing the autoscroll behavior for long content.';
+
+      final transaction = editorState!.transaction;
+      final docNode = editorState.getNodeAtPath([0]);
+      transaction.replaceText(
+        docNode!,
+        0,
+        docNode.delta?.length ?? 0,
+        longText,
+      );
+      editorState.apply(transaction);
+
+      final state = tester.state<_TestableEditorState>(
+        find.byType(TestableEditor),
+      );
+
+      state.updateContentHeight(longText);
+
+      state._contentHeightNotifier.value =
+          ChatEditorUtils.maxHeight + ChatEditorUtils.toolbarOffset;
+
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(TestableEditor),
+        matchesGoldenFile('goldens/editor_long_text_without_breaks.png'),
+      );
+
+      final height = state._contentHeightNotifier.value;
+
+      // verify that the height is at max + toolbar offset
+      expect(
+        height,
+        equals(ChatEditorUtils.maxHeight + ChatEditorUtils.toolbarOffset),
+      );
+
+      await tester.binding.setSurfaceSize(null);
+      keyboardStateController.close();
     });
   });
 }
