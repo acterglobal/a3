@@ -2701,13 +2701,13 @@
   "@userHasNotAllowed": {},
   "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
   "@calendarSyncDesc": {},
-  "spaceNameUpdate": "updated space name",
-  "spaceDescriptionUpdate": "updated space description", 
-  "spaceAvatarUpdate": "updated avatar",
   "invitationRevoked": "Declined Invitation of",
   "invitationAccepted": "Accepted Invitation of",
   "invited": "Invited",
   "joined": "Joined",
+  "spaceNameUpdate": "{username} updated space name",
+  "spaceDescriptionUpdate": "{username}  updated space description",
+  "spaceAvatarUpdate": "{username}  updated space avatar",
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {}
 }

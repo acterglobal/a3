@@ -1,26 +1,20 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //Main container for all activity item widgets
-class ActivitySpaceItemContainerWidget extends ConsumerWidget {
-  final IconData? actionIcon;
-  final String userId;
-  final String roomId;
-  final Widget? subtitle;
-  final String updatedText;
+class ActivitySpaceProfileChangeContainerWidget extends ConsumerWidget {
+  final Widget? leadingWidget;
+  final String titleText;
+  final Widget? subtitleWidget;
   final int originServerTs;
 
-  const ActivitySpaceItemContainerWidget({
+  const ActivitySpaceProfileChangeContainerWidget({
     super.key,
-    this.actionIcon,
-    required this.userId,
-    required this.roomId,
-    this.subtitle,
+    this.leadingWidget,
+    required this.titleText,
+    this.subtitleWidget,
     required this.originServerTs,
-    required this.updatedText,
   });
 
   @override
@@ -45,18 +39,12 @@ class ActivitySpaceItemContainerWidget extends ConsumerWidget {
   }
 
   Widget buildUserInfoUI(BuildContext context, WidgetRef ref) {
-    final memberInfo = ref.watch(
-      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
-    );
-    final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     return ListTile(
       horizontalTitleGap: 10,
       contentPadding: EdgeInsets.zero,
-      leading: actionIcon != null
-          ? Icon(actionIcon, size: 40)
-          : ActerAvatar(options: AvatarOptions(avatarInfo, size: 50)),
-      title: Text('${memberInfo.displayName ?? userId} $updatedText'),
-      subtitle: subtitle ?? const SizedBox.shrink(),
+      leading: leadingWidget ?? const SizedBox.shrink(),
+      title: Text(titleText),
+      subtitle: subtitleWidget ?? const SizedBox.shrink(),
     );
   }
 }
