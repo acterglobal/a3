@@ -11,7 +11,7 @@ class ActivityRoomNameItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) { 
     final subTitle = activity.roomName() ?? '';
-    return ActivitySpaceItemContainerWidget(
+    return ActivitySpaceProfileChangeContainerWidget(
       actionIcon: PhosphorIconsRegular.pencilSimpleLine,   
       updatedText: L10n.of(context).spaceNameUpdate,  
        subtitle: Text( 

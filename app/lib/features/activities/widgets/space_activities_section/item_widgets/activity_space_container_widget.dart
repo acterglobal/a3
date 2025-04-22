@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //Main container for all activity item widgets
-class ActivitySpaceItemContainerWidget extends ConsumerWidget {
+class ActivitySpaceProfileChangeContainerWidget extends ConsumerWidget {
   final IconData? actionIcon;
   final String userId;
   final String roomId;
@@ -13,7 +13,7 @@ class ActivitySpaceItemContainerWidget extends ConsumerWidget {
   final String updatedText;
   final int originServerTs;
 
-  const ActivitySpaceItemContainerWidget({
+  const ActivitySpaceProfileChangeContainerWidget({
     super.key,
     this.actionIcon,
     required this.userId,
