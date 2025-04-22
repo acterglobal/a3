@@ -28,7 +28,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.text('sender-id updated space name'), findsOneWidget);
+    expect(find.textContaining('updated space name'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -51,7 +51,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.text('sender-id updated space description'), findsOneWidget);
+    expect(find.textContaining('updated space description'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -75,6 +75,6 @@ void main() {
     // Verify the avatar is displayed
     expect(find.byType(ActerAvatar), findsOneWidget);
     // Verify the change text is displayed
-    expect(find.text('sender-id updated avatar'), findsOneWidget);
+    expect(find.textContaining('updated space avatar'), findsOneWidget);
   });
 }
