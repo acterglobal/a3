@@ -51,7 +51,30 @@ void main() {
     });
 
     group('Display name changed message', () {
-      testWidgets('Display name changed message', (WidgetTester tester) async {
+      testWidgets('Display name changed message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            profileEventDisplayNameChangedRoom36
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You changed the display name to David M.'),
+          findsOneWidget,
+        );
+      });
+      testWidgets('Display name changed message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             profileEventDisplayNameChangedRoom36
                 .mockConvo
@@ -73,7 +96,31 @@ void main() {
         );
       });
 
-      testWidgets('Display name set message', (WidgetTester tester) async {
+      testWidgets('Display name set message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            profileEventDisplayNameSetRoom37
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You set the display name to David Miller.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Display name set message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             profileEventDisplayNameSetRoom37
                 .mockConvo
@@ -93,7 +140,31 @@ void main() {
         );
       });
 
-      testWidgets('Display name removed message', (WidgetTester tester) async {
+      testWidgets('Display name removed message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            profileEventDisplayNameUnsetRoom38
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You unset the display name.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Display name removed message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             profileEventDisplayNameUnsetRoom38
                 .mockConvo
@@ -114,7 +185,29 @@ void main() {
       });
     });
     group('Avatar changed message', () {
-      testWidgets('Avatar changed message', (WidgetTester tester) async {
+      testWidgets('Avatar changed message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            profileEventAvatarChangedRoom39
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You changed the user avatar.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Avatar changed message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             profileEventAvatarChangedRoom39
                 .mockConvo
@@ -134,7 +227,24 @@ void main() {
         );
       });
 
-      testWidgets('Avatar set message', (WidgetTester tester) async {
+      testWidgets('Avatar set message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            profileEventAvatarSetRoom40
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('You set the user avatar.'), findsOneWidget);
+      });
+
+      testWidgets('Avatar set message - Other', (WidgetTester tester) async {
         final mockEventItemData =
             profileEventAvatarSetRoom40
                 .mockConvo
@@ -154,7 +264,29 @@ void main() {
         );
       });
 
-      testWidgets('Avatar removed message', (WidgetTester tester) async {
+      testWidgets('Avatar removed message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            profileEventAvatarUnsetRoom41
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You unset the user avatar.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Avatar removed message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             profileEventAvatarUnsetRoom41
                 .mockConvo
