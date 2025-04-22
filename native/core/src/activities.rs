@@ -1,7 +1,10 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
-    events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId, OwnedUserId,
+    events::room::{
+        avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
+        message::TextMessageEventContent, name::RoomNameEventContent, topic::RoomTopicEventContent,
+    },
+    OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -33,7 +36,9 @@ pub enum ActivityContent {
     PolicyRuleServer(PolicyRuleServerContent),
     PolicyRuleUser(PolicyRuleUserContent),
     RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    RoomAvatar(RoomAvatarEventContent),
+    RoomName(RoomNameEventContent),
+    RoomTopic(RoomTopicEventContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -146,7 +151,9 @@ impl Activity {
             ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
             ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
             ActivityContent::RoomCreate(_) => "roomCreate",
+            ActivityContent::RoomAvatar(_) => "roomAvatar",
             ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -207,6 +214,27 @@ impl Activity {
         }
     }
 
+    pub fn room_avatar(&self) -> Option<OwnedMxcUri> {
+        match &self.inner {
+            ActivityContent::RoomAvatar(c) => c.url.clone(),
+            _ => None,
+        }
+    }
+
+    pub fn room_name(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomName(c) => Some(c.name.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn room_topic(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomTopic(c) => Some(c.topic.clone()),
+            _ => None,
+        }
+    }
+
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
             ActivityContent::MembershipChange(_)
@@ -215,7 +243,9 @@ impl Activity {
             | ActivityContent::PolicyRuleServer(_)
             | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => None,
+            | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomName(_)
+            | ActivityContent::RoomTopic(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -315,7 +345,9 @@ impl Activity {
             | ActivityContent::PolicyRuleServer(_)
             | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => todo!(),
+            | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomName(_)
+            | ActivityContent::RoomTopic(_) => todo!(),
         }
     }
 
@@ -364,8 +396,14 @@ impl Activity {
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
                 }
+                ActerSupportedRoomStatusEvents::RoomAvatar(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomAvatar(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomTopic(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomTopic(c)))
                 }
             },
 
