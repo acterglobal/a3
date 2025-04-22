@@ -51,7 +51,24 @@ void main() {
     });
 
     group('Member changes with 2 cases', () {
-      testWidgets('Joined message', (WidgetTester tester) async {
+      testWidgets('Joined message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventjoinedRoom22
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@emily:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('You joined the room.'), findsOneWidget);
+      });
+
+      testWidgets('Joined message - Other', (WidgetTester tester) async {
         final mockEventItemData =
             membershipEventjoinedRoom22
                 .mockConvo
@@ -68,7 +85,24 @@ void main() {
         expect(find.textContaining('david joined the room.'), findsOneWidget);
       });
 
-      testWidgets('Left message', (WidgetTester tester) async {
+      testWidgets('Left message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventLeftRoom23
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('You left the room.'), findsOneWidget);
+      });
+
+      testWidgets('Left message - Other', (WidgetTester tester) async {
         final mockEventItemData =
             membershipEventLeftRoom23
                 .mockConvo
@@ -85,7 +119,28 @@ void main() {
         expect(find.textContaining('david left the room.'), findsOneWidget);
       });
 
-      testWidgets('Invitation accepted message', (WidgetTester tester) async {
+      testWidgets('Invitation accepted message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            membershipEventInvitationAcceptedRoom24
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('You accepted the invite.'), findsOneWidget);
+      });
+
+      testWidgets('Invitation accepted message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             membershipEventInvitationAcceptedRoom24
                 .mockConvo
@@ -105,7 +160,28 @@ void main() {
         );
       });
 
-      testWidgets('Invitation rejected message', (WidgetTester tester) async {
+      testWidgets('Invitation rejected message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            membershipEventInvitationRejectedRoom25
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(find.textContaining('You rejected the invite.'), findsOneWidget);
+      });
+
+      testWidgets('Invitation rejected message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             membershipEventInvitationRejectedRoom25
                 .mockConvo
@@ -125,7 +201,31 @@ void main() {
         );
       });
 
-      testWidgets('Invitation revoked message', (WidgetTester tester) async {
+      testWidgets('Invitation revoked message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            membershipEventInvitationRevokedRoom26
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@emily:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You had their invite revoked.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Invitation revoked message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             membershipEventInvitationRevokedRoom26
                 .mockConvo
@@ -145,7 +245,29 @@ void main() {
         );
       });
 
-      testWidgets('Knock accepted message', (WidgetTester tester) async {
+      testWidgets('Knock accepted message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventKnockAcceptedRoom27
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@emily:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You had their knock accepted.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Knock accepted message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             membershipEventKnockAcceptedRoom27
                 .mockConvo
@@ -165,7 +287,31 @@ void main() {
         );
       });
 
-      testWidgets('Knock retracted message', (WidgetTester tester) async {
+      testWidgets('Knock retracted message - Mine', (
+        WidgetTester tester,
+      ) async {
+        final mockEventItemData =
+            membershipEventKnockRetractedRoom28
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@david:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You retracted their knock.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Knock retracted message - Other', (
+        WidgetTester tester,
+      ) async {
         final mockEventItemData =
             membershipEventKnockRetractedRoom28
                 .mockConvo
@@ -185,7 +331,27 @@ void main() {
         );
       });
 
-      testWidgets('Knock denied message', (WidgetTester tester) async {
+      testWidgets('Knock denied message - Mine', (WidgetTester tester) async {
+        final mockEventItemData =
+            membershipEventKnockDeniedRoom29
+                .mockConvo
+                .mockTimelineItem
+                ?.mockTimelineEventItem;
+
+        await createWidgetUnderTest(
+          tester: tester,
+          roomId: 'room-id',
+          myUserId: '@emily:acter.global',
+          mockEventItem: mockEventItemData!,
+        );
+
+        expect(
+          find.textContaining('You had their knock denied.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('Knock denied message - Other', (WidgetTester tester) async {
         final mockEventItemData =
             membershipEventKnockDeniedRoom29
                 .mockConvo
