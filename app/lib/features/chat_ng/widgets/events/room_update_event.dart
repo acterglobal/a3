@@ -64,6 +64,7 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
+      'm.room.aliases' => getMessageOnRoomAliases(lang, isMe, senderName),
       'm.room.create' =>
         isMe
             ? lang.chatYouRoomCreate
@@ -88,10 +89,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateRoomAvatar
             : lang.chatUpdateRoomAvatar(firstName ?? senderId),
-      'm.room.aliases' =>
-        isMe
-            ? lang.chatYouUpdateRoomAliases
-            : lang.chatUpdateRoomAliases(firstName ?? senderId),
       'm.room.canonical_alias' =>
         isMe
             ? lang.chatYouUpdateRoomCanonicalAlias
@@ -369,6 +366,29 @@ class RoomUpdateEvent extends ConsumerWidget {
             senderName,
             newVal,
           );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomAliases(L10n lang, bool isMe, String senderName) {
+    final content = item.roomAliasesContent();
+    if (content == null) {
+      _log.severe('failed to get content of room aliases change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomAliasesYouChanged;
+        } else {
+          return lang.roomStateRoomAliasesOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomAliasesYouSet;
+        } else {
+          return lang.roomStateRoomAliasesOtherSet(senderName);
         }
     }
     return null;
