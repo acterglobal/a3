@@ -13,7 +13,10 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::{MembershipContent, PolicyRuleRoomContent, ProfileContent},
+        status::{
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent,
+        },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
@@ -27,6 +30,8 @@ pub enum ActivityContent {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
     PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
     RoomCreate(RoomCreateEventContent),
     RoomName(String),
     Boost {
@@ -138,6 +143,8 @@ impl Activity {
                 }
             }
             ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
+            ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
+            ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::Comment { .. } => "comment",
@@ -205,6 +212,8 @@ impl Activity {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
             | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => None,
 
@@ -303,6 +312,8 @@ impl Activity {
             ActivityContent::MembershipChange(_)
             | ActivityContent::ProfileChange(_)
             | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomName(_) => todo!(),
         }
@@ -343,6 +354,12 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::PolicyRuleRoom(c) => {
                     Ok(Self::new(meta, ActivityContent::PolicyRuleRoom(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleServer(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleServer(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleUser(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleUser(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
