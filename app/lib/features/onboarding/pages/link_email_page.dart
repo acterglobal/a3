@@ -106,7 +106,7 @@ class LinkEmailPage extends ConsumerWidget {
       if (!context.mounted) return;
       EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
-      callNextPage;
+      callNextPage?.call();
     } catch (e) {
       EasyLoading.showToast(
         lang.failedToSubmitEmail(e),
@@ -158,7 +158,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: callNextPage,
+      onPressed: () => callNextPage?.call(),
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

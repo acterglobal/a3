@@ -67,7 +67,7 @@ class ChatItemWidget extends ConsumerWidget {
         Expanded(child: ChatTypingLastMessageContainerWidget(roomId: roomId)),
         BookmarkIconWidget(roomId: roomId),
         MuteIconWidget(roomId: roomId),
-        UnreadCountWidget(roomId: roomId,isSelected: isChatSelected),
+        UnreadCountWidget(roomId: roomId, isSelected: isChatSelected),
       ],
     );
   }
