@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
@@ -6,6 +7,8 @@ import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
 import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ng/layout/chat_ng_layout_builder.dart';
+import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
+import 'package:acter/features/chat_ui_showcase/pages/chat_room_showcase_page.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
@@ -68,6 +71,28 @@ Page<dynamic> _chatPageBuilder({
 }
 
 final chatShellRoutes = [
+  if (includeChatShowcase) ...[
+    GoRoute(
+      name: Routes.chatListShowcase.name,
+      path: Routes.chatListShowcase.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return MaterialPage(key: state.pageKey, child: ChatListShowcasePage());
+      },
+    ),
+    GoRoute(
+      name: Routes.chatRoomShowcase.name,
+      path: Routes.chatRoomShowcase.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        final roomId = state.pathParameters['roomId'];
+        return MaterialPage(
+          key: state.pageKey,
+          child: ChatRoomShowcasePage(roomId: roomId ?? ''),
+        );
+      },
+    ),
+  ],
   GoRoute(
     name: Routes.chat.name,
     path: Routes.chat.route,
