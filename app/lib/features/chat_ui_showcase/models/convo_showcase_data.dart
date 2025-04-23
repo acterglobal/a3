@@ -356,11 +356,11 @@ final videoMessageDmRoom17 = createMockChatItem(
 
 final audioMessageDmRoom18 = createMockChatItem(
   roomId: 'mock-room-18',
-  displayName: 'David Chen',
-  activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
+  displayName: 'Max Leon',
+  activeMembersIds: ['@maxleon:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
   timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
+    mockSenderId: '@maxleon:acter.global',
     mockOriginServerTs: 1743318966000, // March 30, 2025
     mockMsgType: 'm.audio',
     mockEventType: 'm.room.message',
