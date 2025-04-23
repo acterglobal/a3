@@ -25,7 +25,7 @@ class ChatListShowcasePage extends StatelessWidget {
                 ChatItemWidget(
                   onTap:
                       () => context.pushNamed(
-                        Routes.chatMessageShowcase.name,
+                        Routes.chatRoomShowcase.name,
                         pathParameters: {'roomId': roomId},
                       ),
                   animation: animation,

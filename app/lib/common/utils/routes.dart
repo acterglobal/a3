@@ -93,7 +93,7 @@ enum Routes {
   settingsLabs('/settings/labs'),
   settingsChat('/settings/chat'),
   chatListShowcase('/settings/chat/chat-showcase'),
-  chatMessageShowcase('/settings/chat/chat-showcase/:roomId([^/]+)'),
+  chatRoomShowcase('/settings/chat/chat-showcase/:roomId([^/]+)'),
   settingsCalendar('/settings/calendar'),
   settingsCustomizations('/settings/customizations'),
   settingSessions('/settings/sessions'),

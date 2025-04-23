@@ -10,7 +10,7 @@ import 'package:acter/common/widgets/side_sheet_page.dart';
 import 'package:acter/features/auth/pages/forgot_password.dart';
 import 'package:acter/features/auth/pages/login_page.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
-import 'package:acter/features/chat_ui_showcase/pages/chat_messages_showcase_page.dart';
+import 'package:acter/features/chat_ui_showcase/pages/chat_room_showcase_page.dart';
 import 'package:acter/features/onboarding/pages/onboarding_page.dart';
 import 'package:acter/features/bug_report/pages/bug_report_page.dart';
 import 'package:acter/features/chat/widgets/create_chat.dart';
@@ -247,16 +247,16 @@ final generalRoutes = [
     ),
     GoRoute(
       parentNavigatorKey: rootNavKey,
-      name: Routes.chatMessageShowcase.name,
-      path: Routes.chatMessageShowcase.route,
+      name: Routes.chatRoomShowcase.name,
+      path: Routes.chatRoomShowcase.route,
       redirect: authGuardRedirect,
       pageBuilder: (context, state) {
         final roomId = state.pathParameters['roomId'].expect(
-          'chatMessageShowcase route needs roomId as path param',
+          'chatRoomShowcase route needs roomId as path param',
         );
         return MaterialPage(
           key: state.pageKey,
-          child: ChatMessagesShowcasePage(roomId: roomId),
+          child: ChatRoomShowcasePage(roomId: roomId),
         );
       },
     ),
