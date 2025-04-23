@@ -2434,6 +2434,15 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
+    /// get avatar uri when space avatar changed
+    fn room_avatar() -> Option<MxcUri>;
+
+    /// get name when space name changed
+    fn room_name() -> Option<string>;
+
+    /// get topic when space topic changed
+    fn room_topic() -> Option<string>;
+
     /// see title
     fn name() -> Option<string>;
 

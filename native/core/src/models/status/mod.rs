@@ -1,6 +1,10 @@
 use matrix_sdk::ruma::{
     events::{
-        room::{create::RoomCreateEventContent, member::MembershipChange as MChange},
+        room::{
+            avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
+            member::MembershipChange as MChange, name::RoomNameEventContent,
+            topic::RoomTopicEventContent,
+        },
         AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
     OwnedEventId, UserId,
@@ -33,7 +37,9 @@ pub enum ActerSupportedRoomStatusEvents {
     PolicyRuleUser(PolicyRuleUserContent),
     RoomAvatar(RoomAvatarContent),
     RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    RoomAvatar(RoomAvatarEventContent),
+    RoomName(RoomNameEventContent),
+    RoomTopic(RoomTopicEventContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -70,8 +76,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
                 meta,
             }),
+            AnyStateEvent::RoomAvatar(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomAvatar(inner.content.clone()),
+                meta,
+            }),
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
+                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.clone()),
+                meta,
+            }),
+            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomTopic(inner.content.clone()),
                 meta,
             }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {

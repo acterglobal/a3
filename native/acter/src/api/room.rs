@@ -1039,14 +1039,14 @@ impl Room {
 
     pub async fn notification_mode(&self) -> Result<String> {
         let room = self.room.clone();
-        RUNTIME
+        Ok(RUNTIME
             .spawn(async move {
                 room.user_defined_notification_mode()
                     .await
                     .map(|x| room_notification_mode_name(&x))
+                    .unwrap_or("none".to_string())
             })
-            .await?
-            .context("Mode not set")
+            .await?)
     }
 
     pub async fn default_notification_mode(&self) -> Result<String> {
