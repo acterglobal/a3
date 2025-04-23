@@ -38,6 +38,10 @@ class GeneralMessageEventWidget extends ConsumerWidget {
     if (!isDM) spans.add(TextSpan(text: '$senderName : ', style: textStyle));
     spans.add(TextSpan(text: message, style: textStyle));
 
-    return RichText(text: TextSpan(children: spans, style: textStyle));
+    return RichText(
+      text: TextSpan(children: spans, style: textStyle),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
