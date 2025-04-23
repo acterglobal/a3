@@ -1,8 +1,8 @@
 use matrix_sdk::ruma::{
     events::{
         room::{
-            create::RoomCreateEventContent, member::MembershipChange as MChange,
-            name::RoomNameEventContent, topic::RoomTopicEventContent,
+            member::MembershipChange as MChange, name::RoomNameEventContent,
+            topic::RoomTopicEventContent,
         },
         AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
@@ -23,6 +23,7 @@ pub use membership::MembershipContent;
 pub use profile::{Change, ProfileContent};
 pub use room_state::{
     PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
+    RoomCreateContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -35,7 +36,7 @@ pub enum ActerSupportedRoomStatusEvents {
     PolicyRuleServer(PolicyRuleServerContent),
     PolicyRuleUser(PolicyRuleUserContent),
     RoomAvatar(RoomAvatarContent),
-    RoomCreate(RoomCreateEventContent),
+    RoomCreate(RoomCreateContent),
     RoomName(RoomNameEventContent),
     RoomTopic(RoomTopicEventContent),
 }
@@ -70,10 +71,6 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             ))
         };
         match &event {
-            AnyStateEvent::RoomCreate(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
-                meta,
-            }),
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.clone()),
                 meta,
@@ -154,6 +151,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::RoomAvatar(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomCreate(StateEvent::Original(inner)) => {
+                let content = RoomCreateContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomCreate(content),
                     meta,
                 })
             }
