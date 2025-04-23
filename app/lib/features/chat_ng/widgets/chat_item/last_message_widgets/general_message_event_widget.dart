@@ -35,7 +35,10 @@ class GeneralMessageEventWidget extends ConsumerWidget {
 
     //Render
     final List<InlineSpan> spans = [];
-    if (!isDM) spans.add(TextSpan(text: '$senderName : ', style: textStyle));
+    if (!isDM) {
+      spans.add(TextSpan(text: senderName, style: textStyle));
+      spans.add(TextSpan(text: ': ', style: textStyle));
+    }
     spans.add(TextSpan(text: message, style: textStyle));
 
     return RichText(
