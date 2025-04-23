@@ -36,7 +36,8 @@ void main() {
           isActiveProvider(LabsFeature.chatNG).overrideWith((ref) => true),
           isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => true),
           selectedChatIdProvider.overrideWith(
-            () => MockSelectedChatIdNotifier(emilyDmMutedBookmarked.roomId),
+            () =>
+                MockSelectedChatIdNotifier(emilyDmMutedBookmarkedRoom1.roomId),
           ),
           utcNowProvider.overrideWith(
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
@@ -45,9 +46,11 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            ChatItemWidget(
-              roomId: emilyDmMutedBookmarked.roomId,
-              showSelectedIndication: true,
+            Material(
+              child: ChatItemWidget(
+                roomId: emilyDmMutedBookmarkedRoom1.roomId,
+                showSelectedIndication: true,
+              ),
             ),
           ],
         ),
