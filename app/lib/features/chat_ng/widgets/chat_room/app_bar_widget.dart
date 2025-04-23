@@ -42,6 +42,7 @@ class ChatRoomAppBarWidget extends StatelessWidget
   }
 
   Widget _buildRoomTitle(BuildContext context) {
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
     return GestureDetector(
       onTap: onProfileTap,
       child: Column(
@@ -50,7 +51,7 @@ class ChatRoomAppBarWidget extends StatelessWidget
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DisplayNameWidget(roomId: roomId),
-          _buildRoomMembersCount(context),
+          if (!isDM) _buildRoomMembersCount(context),
         ],
       ),
     );
