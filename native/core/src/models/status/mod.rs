@@ -1,6 +1,9 @@
 use matrix_sdk::ruma::{
     events::{
-        room::{create::RoomCreateEventContent, member::MembershipChange as MChange},
+        room::{
+            create::RoomCreateEventContent, member::MembershipChange as MChange,
+            name::RoomNameEventContent, topic::RoomTopicEventContent,
+        },
         AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
     OwnedEventId, UserId,
@@ -18,7 +21,9 @@ use crate::{
 };
 pub use membership::MembershipContent;
 pub use profile::{Change, ProfileContent};
-pub use room_state::PolicyRuleRoomContent;
+pub use room_state::{
+    PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
+};
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
 
@@ -27,8 +32,12 @@ pub enum ActerSupportedRoomStatusEvents {
     MembershipChange(MembershipContent),
     ProfileChange(ProfileContent),
     PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
+    RoomAvatar(RoomAvatarContent),
     RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    RoomName(RoomNameEventContent),
+    RoomTopic(RoomTopicEventContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -66,7 +75,11 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 meta,
             }),
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.name.clone()),
+                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.clone()),
+                meta,
+            }),
+            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => Ok(RoomStatus {
+                inner: ActerSupportedRoomStatusEvents::RoomTopic(inner.content.clone()),
                 meta,
             }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {
@@ -111,6 +124,36 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::PolicyRuleRoom(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::PolicyRuleServer(StateEvent::Original(inner)) => {
+                let content = PolicyRuleServerContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::PolicyRuleServer(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::PolicyRuleUser(StateEvent::Original(inner)) => {
+                let content = PolicyRuleUserContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::PolicyRuleUser(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomAvatar(StateEvent::Original(inner)) => {
+                let content = RoomAvatarContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomAvatar(content),
                     meta,
                 })
             }

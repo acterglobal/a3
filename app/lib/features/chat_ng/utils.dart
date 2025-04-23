@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
@@ -58,35 +56,14 @@ bool isMemberEvent(String eventType) =>
     ['MembershipChange', 'ProfileChange'].contains(eventType);
 
 class ChatEditorUtils {
-  /// Base height for the editor (single line)
+  /// base height for the editor (single line)
   static const double baseHeight = 56.0;
 
-  /// Height per additional line
-  static const double lineHeight = 20.0;
+  /// toolbar offset for the editor
+  static const double toolbarOffset = 50.0;
 
-  /// Maximum allowed height for the editor
+  /// max height for the editor
   static const double maxHeight = 200.0;
-
-  /// Height threshold for enabling auto-scrolling
-  static const double scrollThreshold = 96.0;
-
-  /// Returns the appropriate height for the editor based on line count
-  static double calculateContentHeight(String text) {
-    final lineCount = text.split('\n').length - 1;
-
-    if (lineCount <= 1) {
-      return baseHeight;
-    }
-
-    double height = baseHeight;
-    height += lineCount * lineHeight;
-
-    return min(height, maxHeight);
-  }
-
-  static bool shouldEnableScrolling(double contentHeight) {
-    return contentHeight > scrollThreshold;
-  }
 }
 
 /// format a timestamp to either 12-hour or 24-hour format based on device settings.

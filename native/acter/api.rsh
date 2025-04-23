@@ -1034,6 +1034,15 @@ object TimelineEventItem {
     /// covers m.policy.rule.room
     fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
 
+    /// covers m.policy.rule.server
+    fn policy_rule_server_content() -> Option<PolicyRuleServerContent>;
+
+    /// covers m.policy.rule.user
+    fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1218,6 +1227,40 @@ object PolicyRuleRoomContent {
     fn recommendation_change() -> Option<string>;
     fn recommendation_new_val() -> string;
     fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleServerContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object PolicyRuleUserContent {
+    fn entity_change() -> Option<string>;
+    fn entity_new_val() -> string;
+    fn entity_old_val() -> Option<string>;
+
+    fn reason_change() -> Option<string>;
+    fn reason_new_val() -> string;
+    fn reason_old_val() -> Option<string>;
+
+    fn recommendation_change() -> Option<string>;
+    fn recommendation_new_val() -> string;
+    fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
 }
 
 
@@ -1628,6 +1671,16 @@ object Convo {
     /// entity: #*:example.org
     /// reason: undesirable content
     fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects servers.
+    /// entity: *.example.org
+    /// reason: undesirable engagement
+    fn set_policy_rule_server(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects users.
+    /// entity: @alice*:example.org
+    /// reason: undesirable behaviour
+    fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2381,6 +2434,15 @@ object Activity {
     /// the object this activity happened on, if any
     fn object() -> Option<ActivityObject>;
 
+    /// get avatar uri when space avatar changed
+    fn room_avatar() -> Option<string>;
+
+    /// get name when space name changed
+    fn room_name() -> Option<string>;
+
+    /// get topic when space topic changed
+    fn room_topic() -> Option<string>;
+
     /// see title
     fn name() -> Option<string>;
 
@@ -2675,6 +2737,16 @@ object Space {
     /// entity: #*:example.org
     /// reason: undesirable content
     fn set_policy_rule_room(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects servers.
+    /// entity: *.example.org
+    /// reason: undesirable engagement
+    fn set_policy_rule_server(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set a moderation policy rule which affects users.
+    /// entity: @alice*:example.org
+    /// reason: undesirable behaviour
+    fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

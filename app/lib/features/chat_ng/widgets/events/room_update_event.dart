@@ -54,6 +54,17 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
+      'm.policy.rule.server' => getMessageOnPolicyRuleServer(
+        lang,
+        isMe,
+        senderName,
+      ),
+      'm.policy.rule.user' => getMessageOnPolicyRuleUser(
+        lang,
+        isMe,
+        senderName,
+      ),
+      'm.room.avatar' => getMessageOnRoomAvatar(lang, isMe, senderName),
       'm.room.create' =>
         isMe
             ? lang.chatYouRoomCreate
@@ -74,10 +85,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
             : '${lang.chatUpdateRoomTopic(firstName ?? senderId)}: $msgContent',
-      'm.room.avatar' =>
-        isMe
-            ? lang.chatYouUpdateRoomAvatar
-            : lang.chatUpdateRoomAvatar(firstName ?? senderId),
       'm.room.aliases' =>
         isMe
             ? lang.chatYouUpdateRoomAliases
@@ -193,6 +200,201 @@ class RoomUpdateEvent extends ConsumerWidget {
             senderName,
             newVal,
           );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnPolicyRuleServer(
+    L10n lang,
+    bool isMe,
+    String senderName,
+  ) {
+    final content = item.policyRuleServerContent();
+    if (content == null) {
+      _log.severe('failed to get content of policy rule server change');
+      return null;
+    }
+    switch (content.entityChange()) {
+      case 'Changed':
+        final newVal = content.entityNewVal();
+        final oldVal = content.entityOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerEntityYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerEntityOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.entityNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerEntityYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerEntityOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    switch (content.reasonChange()) {
+      case 'Changed':
+        final newVal = content.reasonNewVal();
+        final oldVal = content.reasonOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerReasonYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerReasonOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.reasonNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerReasonYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerReasonOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    switch (content.recommendationChange()) {
+      case 'Changed':
+        final newVal = content.recommendationNewVal();
+        final oldVal = content.recommendationOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerRecommendationYouChanged(
+            oldVal,
+            newVal,
+          );
+        } else {
+          return lang.roomStatePolicyRuleServerRecommendationOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.recommendationNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleServerRecommendationYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleServerRecommendationOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnPolicyRuleUser(L10n lang, bool isMe, String senderName) {
+    final content = item.policyRuleUserContent();
+    if (content == null) {
+      _log.severe('failed to get content of policy rule user change');
+      return null;
+    }
+    switch (content.entityChange()) {
+      case 'Changed':
+        final newVal = content.entityNewVal();
+        final oldVal = content.entityOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleUserEntityYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStatePolicyRuleUserEntityOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.entityNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleUserEntityYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleUserEntityOtherSet(senderName, newVal);
+        }
+    }
+    switch (content.reasonChange()) {
+      case 'Changed':
+        final newVal = content.reasonNewVal();
+        final oldVal = content.reasonOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleUserReasonYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStatePolicyRuleUserReasonOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.reasonNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleUserReasonYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleUserReasonOtherSet(senderName, newVal);
+        }
+    }
+    switch (content.recommendationChange()) {
+      case 'Changed':
+        final newVal = content.recommendationNewVal();
+        final oldVal = content.recommendationOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStatePolicyRuleUserRecommendationYouChanged(
+            oldVal,
+            newVal,
+          );
+        } else {
+          return lang.roomStatePolicyRuleUserRecommendationOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.recommendationNewVal();
+        if (isMe) {
+          return lang.roomStatePolicyRuleUserRecommendationYouSet(newVal);
+        } else {
+          return lang.roomStatePolicyRuleUserRecommendationOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomAvatar(L10n lang, bool isMe, String senderName) {
+    final content = item.roomAvatarContent();
+    if (content == null) {
+      _log.severe('failed to get content of room avatar change');
+      return null;
+    }
+    switch (content.urlChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouChanged;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouSet;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherSet(senderName);
+        }
+      case 'Unset':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouUnset;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherUnset(senderName);
         }
     }
     return null;
