@@ -1,10 +1,12 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_view.dart';
 import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/chat_ng/widgets/chat_room/app_bar_widget.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatRoomNgPage extends ConsumerWidget {
   static const roomPageKey = Key('chat-room-ng-page');
@@ -19,7 +21,15 @@ class ChatRoomNgPage extends ConsumerWidget {
       builder:
           (context, orientation) => Scaffold(
             resizeToAvoidBottomInset: orientation == Orientation.portrait,
-            appBar: ChatRoomAppBarWidget(roomId: roomId, ref: ref),
+            appBar: ChatRoomAppBarWidget(
+              roomId: roomId,
+              ref: ref,
+              onProfileTap:
+                  () => context.pushNamed(
+                    Routes.chatProfile.name,
+                    pathParameters: {'roomId': roomId},
+                  ),
+            ),
             body: Column(
               children: [
                 Expanded(child: ChatMessages(roomId: roomId)),
