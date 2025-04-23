@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::api::Client;
 use super::error::Result;
+use crate::api::Client;
 
 #[derive(Debug, Clone, uniffi::Object)]
 pub struct UniffiClient {
@@ -9,11 +9,12 @@ pub struct UniffiClient {
 }
 
 impl UniffiClient {
-   pub(crate) fn wrap(client: Client) -> Self {
-        Self { client: Arc::new(client) }
+    pub(crate) fn wrap(client: Client) -> Self {
+        Self {
+            client: Arc::new(client),
+        }
     }
 }
-
 
 #[uniffi::export]
 impl UniffiClient {

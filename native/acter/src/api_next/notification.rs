@@ -2,11 +2,10 @@ use matrix_sdk_ui::notification_client::{
     NotificationEvent, NotificationItem as SdkNotificationItem,
 };
 
+use super::error::Result;
+use crate::api::Client;
 use crate::{api::NotificationItem as ApiNotificationItem, login_with_token};
 use std::sync::Arc;
-use crate::api::Client;
-use super::error::Result;
-
 
 #[derive(Debug, uniffi::Record)]
 pub struct UniffiNotificationItem {
@@ -123,4 +122,3 @@ pub async fn get_notification_item(
     )
     .await)
 }
-

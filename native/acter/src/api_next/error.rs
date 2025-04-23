@@ -1,4 +1,3 @@
-
 use core::result::Result as CoreResult;
 
 #[derive(Debug, uniffi::Error, thiserror::Error)]
@@ -11,6 +10,5 @@ pub enum ActerError {
     #[error("{0}")]
     Anyhow(#[from] anyhow::Error),
 }
-
 
 pub type Result<T> = CoreResult<T, ActerError>;

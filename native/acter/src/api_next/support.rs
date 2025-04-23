@@ -1,13 +1,10 @@
-
-
 use std::sync::Arc;
 
 use acter_core::client;
 
-use crate::api::{Client};
 use super::client::UniffiClient;
+use crate::api::Client;
 use std::os::raw::c_void;
-
 
 #[no_mangle]
 pub extern "C" fn acter_support_ffigen_client_to_uniffi_client(client_ref: isize) -> *const c_void {
