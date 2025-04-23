@@ -3,6 +3,7 @@ import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/profile_changes_event_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../../../helpers/test_util.dart';
@@ -15,7 +16,7 @@ void main() {
       required String myUserId,
       required MockTimelineEventItem mockEventItem,
     }) async {
-      final senderUserId = mockEventItem.sender().toString();
+      final senderUserId = mockEventItem.sender();
       final contentUserId =
           mockEventItem.profileContent()?.userId().toString() ?? '';
 
@@ -24,11 +25,11 @@ void main() {
           lastMessageDisplayNameProvider((
             roomId: roomId,
             userId: senderUserId,
-          )),
+          )).overrideWith((ref) => senderUserId),
           lastMessageDisplayNameProvider((
             roomId: roomId,
             userId: contentUserId,
-          )),
+          )).overrideWith((ref) => contentUserId),
           myUserIdStrProvider.overrideWith((ref) => myUserId),
         ],
         child: ProfileChangesEventWidget(
@@ -59,16 +60,24 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('You changed the display name to David M.'),
+          find.textContaining(
+            lang.chatProfileDisplayNameYouChanged(
+              profileContent!.displayNameNewVal() ?? '',
+            ),
+          ),
           findsOneWidget,
         );
       });
@@ -80,17 +89,24 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
           find.textContaining(
-            'David M. changed the display name to David Miller.',
+            lang.chatProfileDisplayNameOtherChanged(
+              profileContent!.displayNameOldVal() ?? '',
+              profileContent.displayNameNewVal() ?? '',
+            ),
           ),
           findsOneWidget,
         );
@@ -104,16 +120,24 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('You set the display name to David Miller.'),
+          find.textContaining(
+            lang.chatProfileDisplayNameYouSet(
+              profileContent!.displayNameNewVal() ?? '',
+            ),
+          ),
           findsOneWidget,
         );
       });
@@ -126,16 +150,25 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final profileContent = mockEventItemData!.profileContent();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('David Miller set the display name to david.'),
+          find.textContaining(
+            lang.chatProfileDisplayNameOtherSet(
+              '@david:acter.global',
+              profileContent!.displayNameNewVal() ?? '',
+            ),
+          ),
           findsOneWidget,
         );
       });
@@ -156,8 +189,11 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('You unset the display name.'),
+          find.textContaining(lang.chatProfileDisplayNameYouUnset),
           findsOneWidget,
         );
       });
@@ -178,8 +214,13 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('david unset the display name.'),
+          find.textContaining(
+            lang.chatProfileDisplayNameOtherUnset('@david:acter.global'),
+          ),
           findsOneWidget,
         );
       });
@@ -199,8 +240,11 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('You changed the user avatar.'),
+          find.textContaining(lang.chatProfileAvatarUrlYouChanged),
           findsOneWidget,
         );
       });
@@ -221,8 +265,13 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('david changed the user avatar.'),
+          find.textContaining(
+            lang.chatProfileAvatarUrlOtherChanged('@david:acter.global'),
+          ),
           findsOneWidget,
         );
       });
@@ -241,7 +290,13 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
-        expect(find.textContaining('You set the user avatar.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatProfileAvatarUrlYouSet),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Avatar set message - Other', (WidgetTester tester) async {
@@ -258,8 +313,13 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('david set the user avatar.'),
+          find.textContaining(
+            lang.chatProfileAvatarUrlOtherSet('@david:acter.global'),
+          ),
           findsOneWidget,
         );
       });
@@ -278,8 +338,11 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('You unset the user avatar.'),
+          find.textContaining(lang.chatProfileAvatarUrlYouUnset),
           findsOneWidget,
         );
       });
@@ -300,8 +363,13 @@ void main() {
           mockEventItem: mockEventItemData!,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(ProfileChangesEventWidget)),
+        );
         expect(
-          find.textContaining('david unset the user avatar.'),
+          find.textContaining(
+            lang.chatProfileAvatarUrlOtherUnset('@david:acter.global'),
+          ),
           findsOneWidget,
         );
       });
