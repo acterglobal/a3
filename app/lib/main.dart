@@ -53,10 +53,7 @@ Future<void> startAppForTesting(Widget app) async {
   return await _startAppInner(app, false);
 }
 
-Future<void> _startAppInner(
-  Widget app,
-  bool withAnalytics,
-) async {
+Future<void> _startAppInner(Widget app, bool withAnalytics) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
@@ -91,10 +88,15 @@ Future<void> _startAppInner(
     await MatomoTracker.instance.initialize(
       siteId: Env.matomoSiteId,
       url: Env.matomoUrl,
+      cookieless: true,
+      pingInterval: null,
+      dispatchSettings: const DispatchSettings.persistent(
+        dequeueInterval: Duration(seconds: 60),
+      ),
     );
 
     MatomoTracker.instance.setOptOut(optOut: true);
-    
+
     await SentryFlutter.init((options) {
       // we use the dart-define default env for the default stuff.
       options.dsn = Env.sentryDsn;
@@ -103,7 +105,9 @@ Future<void> _startAppInner(
 
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
-      options.beforeSend = (SentryEvent evt, Hint hint) => sentryBeforeSend(mainProviderContainer, evt, hint);
+      options.beforeSend =
+          (SentryEvent evt, Hint hint) =>
+              sentryBeforeSend(mainProviderContainer, evt, hint);
     }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
@@ -139,12 +143,6 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final language = ref.watch(localeProvider);
-    ref.listen(matomoAnalyticsProvider, (previous, next) {
-      if (next.hasValue) {
-        final isEnabled = next.value ?? false;
-        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
-      }
-    });
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
     EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;

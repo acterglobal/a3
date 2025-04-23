@@ -301,6 +301,8 @@ jobs:
           RAGESHAKE_APP_VERSION=${{inputs.release_env}}/${{inputs.version}}/${{ matrix.name }}
           DEFAULT_HOMESERVER_URL=${{vars.DEFAULT_HOMESERVER_URL}}
           DEFAULT_HOMESERVER_NAME=${{vars.DEFAULT_HOMESERVER_NAME}}
+          MATOMO_URL=${{ secrets.MATOMO_URL }}
+          MATOMO_SITE_ID=${{ secrets.MATOMO_SITE_ID }}
           ${{ matrix.env_extra }}
           ${{ inputs.env_extra  }}
           EOF

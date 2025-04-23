@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 
 final _log = Logger('a3::router');
 
@@ -179,6 +180,10 @@ final goRouter = GoRouter(
   navigatorKey: rootNavKey,
   initialLocation: Routes.main.route,
   restorationScopeId: 'acter-routes',
+  observers: [
+    // Log the route changes to matomo
+    MatomoGlobalObserver(),
+  ],
   routes: [
     ...generalRoutes,
     StatefulShellRoute.indexedStack(
