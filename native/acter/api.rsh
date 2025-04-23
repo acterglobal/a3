@@ -2435,7 +2435,7 @@ object Activity {
     fn object() -> Option<ActivityObject>;
 
     /// get avatar uri when space avatar changed
-    fn room_avatar() -> Option<MxcUri>;
+    fn room_avatar() -> Option<string>;
 
     /// get name when space name changed
     fn room_name() -> Option<string>;

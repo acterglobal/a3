@@ -1,9 +1,8 @@
 use matrix_sdk::ruma::{
     events::{
         room::{
-            avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
-            member::MembershipChange as MChange, name::RoomNameEventContent,
-            topic::RoomTopicEventContent,
+            create::RoomCreateEventContent, member::MembershipChange as MChange,
+            name::RoomNameEventContent, topic::RoomTopicEventContent,
         },
         AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
@@ -37,7 +36,6 @@ pub enum ActerSupportedRoomStatusEvents {
     PolicyRuleUser(PolicyRuleUserContent),
     RoomAvatar(RoomAvatarContent),
     RoomCreate(RoomCreateEventContent),
-    RoomAvatar(RoomAvatarEventContent),
     RoomName(RoomNameEventContent),
     RoomTopic(RoomTopicEventContent),
 }
@@ -74,10 +72,6 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
         match &event {
             AnyStateEvent::RoomCreate(StateEvent::Original(inner)) => Ok(RoomStatus {
                 inner: ActerSupportedRoomStatusEvents::RoomCreate(inner.content.clone()),
-                meta,
-            }),
-            AnyStateEvent::RoomAvatar(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomAvatar(inner.content.clone()),
                 meta,
             }),
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {

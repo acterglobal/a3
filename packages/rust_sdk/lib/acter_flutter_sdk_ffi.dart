@@ -51331,19 +51331,34 @@ class Activity {
   }
 
   /// get avatar uri when space avatar changed
-  MxcUri? roomAvatar() {
+  String? roomAvatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._activityRoomAvatar(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
     if (tmp3 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MxcUri");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = MxcUri._(_api, tmp4_1);
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -64805,6 +64820,10 @@ class _ActivityRoomAvatarReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _ActivityRoomNameReturn extends ffi.Struct {
