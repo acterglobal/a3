@@ -37,7 +37,10 @@ class MediaMessageEventWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (!isDM) Text('$senderName : ', style: textStyle),
+        if (!isDM) ...[
+          Text(senderName, style: textStyle),
+          Text(': ', style: textStyle),
+        ],
         Icon(icon, size: 14, color: textStyle?.color),
         const SizedBox(width: 4),
         Text(
