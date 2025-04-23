@@ -1,4 +1,6 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/onboarding/pages/action/encryption_key_manager.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -71,14 +73,14 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildEncryptionKey(BuildContext context) {
     final encKey = ref.watch(enableEncrptionBackUpProvider);
-
+    final userId = ref.watch(myUserIdStrProvider);
     return encKey.when(
       data: (data) {
         return Column(
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            _buildActionButtons(context, data),
+            _buildActionButtons(context, data, userId),
           ],
         );
       },
@@ -126,9 +128,16 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, String encryptionKey) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildActionButtons(
+    BuildContext context,
+    String encryptionKey,
+    String userId,
+  ) {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 24,
+      runSpacing: 24,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         _buildActionButton(
           icon: Icons.copy,
@@ -143,7 +152,6 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           },
           context: context,
         ),
-        const SizedBox(width: 24),
         _buildActionButton(
           icon: PhosphorIcons.share(),
           onTap: () async {
@@ -152,10 +160,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           },
           context: context,
         ),
-        EncryptionKeyManager(
-          userId: userId,
-          encryptionKey: encryptionKey,
-        ),
+        EncryptionKeyManager(userId: userId, encryptionKey: encryptionKey),
       ],
     );
   }
