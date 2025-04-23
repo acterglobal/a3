@@ -323,7 +323,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       return ActerPrimaryActionButton(
         onPressed: () {
           EasyLoading.dismiss();
-          widget.callNextPage;
+          widget.callNextPage?.call();
         },
         child: Text(lang.wizzardContinue, style: const TextStyle(fontSize: 16)),
       );
@@ -332,7 +332,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
     return OutlinedButton(
       onPressed: () {
         EasyLoading.dismiss();
-        widget.callNextPage;
+        widget.callNextPage?.call();
       },
       child: Text(lang.skip),
     );

@@ -128,7 +128,7 @@ class SaveUsernamePage extends StatelessWidget {
       builder: (context, isCopiedValue, child) {
         return OutlinedButton(
           key: continueBtn,
-          onPressed: isCopiedValue ? () => callNextPage : null,
+          onPressed: isCopiedValue ? () => callNextPage?.call() : null,
           style: OutlinedButton.styleFrom(
             side: isCopiedValue ? null : BorderSide(color: disabledColor),
           ),
