@@ -17,14 +17,6 @@ class GeneralMessageEventWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //Providers
-    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
-    final senderName = ref.watch(
-      lastMessageDisplayNameProvider((
-        roomId: roomId,
-        userId: eventItem.sender(),
-      )),
-    );
     final message = ref.watch(lastMessageTextProvider(eventItem));
 
     //If message is null, return empty
@@ -33,12 +25,23 @@ class GeneralMessageEventWidget extends ConsumerWidget {
     //Get text style
     final textStyle = lastMessageTextStyle(context, ref, roomId);
 
+    //Providers
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+
     //Render
     final List<InlineSpan> spans = [];
     if (!isDM) {
+      final senderName = ref.watch(
+        lastMessageDisplayNameProvider((
+          roomId: roomId,
+          userId: eventItem.sender(),
+        )),
+      );
+
       spans.add(TextSpan(text: senderName, style: textStyle));
       spans.add(TextSpan(text: ': ', style: textStyle));
     }
+
     spans.add(TextSpan(text: message, style: textStyle));
 
     return RichText(
