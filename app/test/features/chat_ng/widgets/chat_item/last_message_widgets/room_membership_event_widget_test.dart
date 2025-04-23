@@ -3,6 +3,7 @@ import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../../../helpers/test_util.dart';
@@ -24,11 +25,11 @@ void main() {
           lastMessageDisplayNameProvider((
             roomId: roomId,
             userId: senderUserId,
-          )),
+          )).overrideWith((ref) => senderUserId),
           lastMessageDisplayNameProvider((
             roomId: roomId,
             userId: contentUserId,
-          )),
+          )).overrideWith((ref) => contentUserId),
           myUserIdStrProvider.overrideWith((ref) => myUserId),
         ],
         child: RoomMembershipEventWidget(
@@ -57,15 +58,22 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You joined the room.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipYouJoined),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Joined message - Other', (WidgetTester tester) async {
@@ -74,15 +82,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('david joined the room.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipOtherJoined(contentUserId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Left message - Mine', (WidgetTester tester) async {
@@ -91,15 +107,19 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You left the room.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(find.textContaining(lang.chatMembershipYouLeft), findsOneWidget);
       });
 
       testWidgets('Left message - Other', (WidgetTester tester) async {
@@ -108,15 +128,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('david left the room.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipOtherLeft(contentUserId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Invitation accepted message - Mine', (
@@ -127,15 +155,22 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You accepted the invite.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipInvitationYouAccepted),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Invitation accepted message - Other', (
@@ -146,16 +181,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('david accepted the invite.'),
+          find.textContaining(
+            lang.chatMembershipInvitationOtherAccepted(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -168,15 +210,22 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You rejected the invite.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipInvitationYouRejected),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Invitation rejected message - Other', (
@@ -187,16 +236,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('david rejected the invite.'),
+          find.textContaining(
+            lang.chatMembershipInvitationOtherRejected(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -209,16 +265,20 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('You had their invite revoked.'),
+          find.textContaining(lang.chatMembershipInvitationYouRevoked),
           findsOneWidget,
         );
       });
@@ -231,16 +291,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('david had their invite revoked.'),
+          find.textContaining(
+            lang.chatMembershipInvitationOtherRevoked(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -251,16 +318,20 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('You had their knock accepted.'),
+          find.textContaining(lang.chatMembershipKnockYouAccepted),
           findsOneWidget,
         );
       });
@@ -273,16 +344,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('david had their knock accepted.'),
+          find.textContaining(
+            lang.chatMembershipKnockOtherAccepted(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -295,16 +373,20 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('You retracted their knock.'),
+          find.textContaining(lang.chatMembershipKnockYouRetracted),
           findsOneWidget,
         );
       });
@@ -317,16 +399,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('david retracted their knock.'),
+          find.textContaining(
+            lang.chatMembershipKnockOtherRetracted(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -337,16 +426,20 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: senderId,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('You had their knock denied.'),
+          find.textContaining(lang.chatMembershipKnockYouDenied),
           findsOneWidget,
         );
       });
@@ -357,16 +450,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('david had their knock denied.'),
+          find.textContaining(
+            lang.chatMembershipKnockOtherDenied(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -379,15 +479,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: mockEventItemData.sender().toString(),
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You banned david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipYouBannedOther(contentUserId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Banned message - On me', (WidgetTester tester) async {
@@ -396,15 +504,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId:
+              mockEventItemData.membershipContent()?.userId().toString() ?? '',
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily banned you.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipOtherBannedYou(senderId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Banned message - Other banned other', (
@@ -415,15 +531,26 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
+        final contentUserId =
+            mockEventItemData.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily banned david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(
+            lang.chatMembershipOtherBannedOther(senderId, contentUserId),
+          ),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Unbanned message - Mine', (WidgetTester tester) async {
@@ -432,15 +559,25 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: mockEventItemData.sender().toString(),
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You unbanned david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(
+            lang.chatMembershipYouUnbannedOther(contentUserId),
+          ),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Unbanned message - On me', (WidgetTester tester) async {
@@ -449,15 +586,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId:
+              mockEventItemData.membershipContent()?.userId().toString() ?? '',
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily unbanned you.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipOtherUnbannedYou(senderId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Unbanned message - Other unbanned other', (
@@ -468,15 +613,26 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
+        final contentUserId =
+            mockEventItemData.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily unbanned david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(
+            lang.chatMembershipOtherUnbannedOther(senderId, contentUserId),
+          ),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Kicked message - Mine', (WidgetTester tester) async {
@@ -485,15 +641,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: mockEventItemData.sender().toString(),
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You kicked david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipYouKickedOther(contentUserId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Kicked message - On me', (WidgetTester tester) async {
@@ -502,15 +666,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId:
+              mockEventItemData.membershipContent()?.userId().toString() ?? '',
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily kicked you.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipOtherKickedYou(senderId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Kicked message - Other kicked other', (
@@ -521,15 +693,26 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
+        final contentUserId =
+            mockEventItemData.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily kicked david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(
+            lang.chatMembershipOtherKickedOther(senderId, contentUserId),
+          ),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Invited message - Mine', (WidgetTester tester) async {
@@ -538,15 +721,25 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: mockEventItemData.sender().toString(),
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('You invited david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(
+            lang.chatMembershipYouInvitedOther(contentUserId),
+          ),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Invited message - On me', (WidgetTester tester) async {
@@ -555,15 +748,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId:
+              mockEventItemData.membershipContent()?.userId().toString() ?? '',
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily invited you.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(lang.chatMembershipOtherInvitedYou(senderId)),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Invited message - Other invited other', (
@@ -574,15 +775,26 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
+        final contentUserId =
+            mockEventItemData.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
-        expect(find.textContaining('emily invited david.'), findsOneWidget);
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
+        expect(
+          find.textContaining(
+            lang.chatMembershipOtherInvitedOther(senderId, contentUserId),
+          ),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Kicked and banned message - Mine', (
@@ -593,16 +805,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final contentUserId =
+            mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId: mockEventItemData.sender().toString(),
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('You kicked and banned david.'),
+          find.textContaining(
+            lang.chatMembershipYouKickedAndBannedOther(contentUserId),
+          ),
           findsOneWidget,
         );
       });
@@ -615,16 +834,23 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@david:acter.global',
-          mockEventItem: mockEventItemData!,
+          myUserId:
+              mockEventItemData.membershipContent()?.userId().toString() ?? '',
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('emily kicked and banned you.'),
+          find.textContaining(
+            lang.chatMembershipOtherKickedAndBannedYou(senderId),
+          ),
           findsOneWidget,
         );
       });
@@ -637,16 +863,27 @@ void main() {
                 .mockConvo
                 .mockTimelineItem
                 ?.mockTimelineEventItem;
+        final senderId = mockEventItemData!.sender().toString();
+        final contentUserId =
+            mockEventItemData.membershipContent()?.userId().toString() ?? '';
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: 'user-id',
-          mockEventItem: mockEventItemData!,
+          mockEventItem: mockEventItemData,
         );
 
+        final lang = L10n.of(
+          tester.element(find.byType(RoomMembershipEventWidget)),
+        );
         expect(
-          find.textContaining('emily kicked and banned david.'),
+          find.textContaining(
+            lang.chatMembershipOtherKickedAndBannedOther(
+              senderId,
+              contentUserId,
+            ),
+          ),
           findsOneWidget,
         );
       });
