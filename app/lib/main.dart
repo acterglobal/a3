@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
@@ -7,12 +8,12 @@ import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/create_or_join_space_tutorials.dart';
 import 'package:acter/common/tutorial_dialogs/space_overview_tutorials/space_overview_tutorials.dart';
 import 'package:acter/common/utils/logging.dart';
-import 'package:acter/common/utils/main.dart';
 import 'package:acter/config/desktop.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/cli/main.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter/router/router.dart';
@@ -21,6 +22,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
@@ -42,14 +46,17 @@ Widget makeApp() {
 }
 
 Future<void> startAppForTesting(Widget app) async {
-  // make sure our test isn’t distracted by the onboarding wizzards
+  // make sure our test isn't distracted by the onboarding wizzards
   setCreateOrJoinSpaceTutorialAsViewed();
   setBottomNavigationTutorialsAsViewed();
   setSpaceOverviewTutorialsAsViewed();
   return await _startAppInner(app, false);
 }
 
-Future<void> _startAppInner(Widget app, bool withSentry) async {
+Future<void> _startAppInner(
+  Widget app,
+  bool withAnalytics,
+) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
@@ -66,6 +73,12 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
   initializeNotifications();
 
   if (isDesktop) {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    launchAtStartup.setup(
+      appName: packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+      packageName: packageInfo.packageName,
+    );
     app = DesktopSupport(child: app);
   }
 
@@ -74,8 +87,14 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
     container: mainProviderContainer,
     child: app,
   );
+  if (withAnalytics) {
+    await MatomoTracker.instance.initialize(
+      siteId: Env.matomoSiteId,
+      url: Env.matomoUrl,
+    );
 
-  if (withSentry) {
+    MatomoTracker.instance.setOptOut(optOut: true);
+    
     await SentryFlutter.init((options) {
       // we use the dart-define default env for the default stuff.
       options.dsn = Env.sentryDsn;
@@ -84,7 +103,7 @@ Future<void> _startAppInner(Widget app, bool withSentry) async {
 
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
-      options.beforeSend = sentryBeforeSend;
+      options.beforeSend = (SentryEvent evt, Hint hint) => sentryBeforeSend(mainProviderContainer, evt, hint);
     }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
@@ -120,7 +139,12 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final language = ref.watch(localeProvider);
-
+    ref.listen(matomoAnalyticsProvider, (previous, next) {
+      if (next.hasValue) {
+        final isEnabled = next.value ?? false;
+        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
+      }
+    });
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
     EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;

@@ -1,7 +1,10 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
-    events::room::{create::RoomCreateEventContent, message::TextMessageEventContent},
-    OwnedEventId, OwnedUserId,
+    events::room::{
+        avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
+        message::TextMessageEventContent, name::RoomNameEventContent, topic::RoomTopicEventContent,
+    },
+    OwnedEventId, OwnedMxcUri, OwnedUserId,
 };
 use object::ActivityObject;
 use urlencoding::encode;
@@ -13,8 +16,11 @@ use crate::{
         UtcDateTime,
     },
     models::{
-        status::membership::MembershipChange, ActerModel, ActerSupportedRoomStatusEvents,
-        AnyActerModel, EventMeta, Task,
+        status::{
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent,
+        },
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
     store::Store,
 };
@@ -24,9 +30,15 @@ pub mod status;
 
 #[derive(Clone, Debug)]
 pub enum ActivityContent {
-    MembershipChange(MembershipChange),
+    MembershipChange(MembershipContent),
+    ProfileChange(ProfileContent),
+    PolicyRuleRoom(PolicyRuleRoomContent),
+    PolicyRuleServer(PolicyRuleServerContent),
+    PolicyRuleUser(PolicyRuleUserContent),
     RoomCreate(RoomCreateEventContent),
-    RoomName(String),
+    RoomAvatar(RoomAvatarEventContent),
+    RoomName(RoomNameEventContent),
+    RoomTopic(RoomTopicEventContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -123,9 +135,25 @@ impl Activity {
 
     pub fn type_str(&self) -> String {
         match &self.inner {
-            ActivityContent::MembershipChange(c) => c.as_str(),
+            ActivityContent::MembershipChange(c) => {
+                return c.change();
+            }
+            ActivityContent::ProfileChange(c) => {
+                if c.display_name_change().is_some() {
+                    "displayName"
+                } else if c.avatar_url_change().is_some() {
+                    "avatarUrl"
+                } else {
+                    unreachable!()
+                }
+            }
+            ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
+            ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
+            ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
             ActivityContent::RoomCreate(_) => "roomCreate",
+            ActivityContent::RoomAvatar(_) => "roomAvatar",
             ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -158,13 +186,20 @@ impl Activity {
         .to_owned()
     }
 
-    pub fn membership_change(&self) -> Option<MembershipChange> {
-        #[allow(irrefutable_let_patterns)]
-        let ActivityContent::MembershipChange(c) = &self.inner
-        else {
-            return None;
-        };
-        Some(c.clone())
+    pub fn membership_content(&self) -> Option<MembershipContent> {
+        if let ActivityContent::MembershipChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn profile_content(&self) -> Option<ProfileContent> {
+        if let ActivityContent::ProfileChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
     }
 
     pub fn event_meta(&self) -> &EventMeta {
@@ -179,11 +214,38 @@ impl Activity {
         }
     }
 
+    pub fn room_avatar(&self) -> Option<OwnedMxcUri> {
+        match &self.inner {
+            ActivityContent::RoomAvatar(c) => c.url.clone(),
+            _ => None,
+        }
+    }
+
+    pub fn room_name(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomName(c) => Some(c.name.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn room_topic(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomTopic(c) => Some(c.topic.clone()),
+            _ => None,
+        }
+    }
+
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
             ActivityContent::MembershipChange(_)
+            | ActivityContent::ProfileChange(_)
+            | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => None,
+            | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomName(_)
+            | ActivityContent::RoomTopic(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -278,8 +340,14 @@ impl Activity {
                 format!("/tasks/{}/{}", object.object_id_str(), self.meta.event_id)
             }
             ActivityContent::MembershipChange(_)
+            | ActivityContent::ProfileChange(_)
+            | ActivityContent::PolicyRuleRoom(_)
+            | ActivityContent::PolicyRuleServer(_)
+            | ActivityContent::PolicyRuleUser(_)
             | ActivityContent::RoomCreate(_)
-            | ActivityContent::RoomName(_) => todo!(),
+            | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomName(_)
+            | ActivityContent::RoomTopic(_) => todo!(),
         }
     }
 
@@ -287,7 +355,10 @@ impl Activity {
         let ActivityContent::ObjectInvitation { ref invitees, .. } = self.content() else {
             return vec![];
         };
-        invitees.iter().map(|i| i.to_string()).collect()
+        invitees
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
     }
 
     pub fn task_list_id_str(&self) -> Option<String> {
@@ -310,11 +381,29 @@ impl Activity {
                 ActerSupportedRoomStatusEvents::MembershipChange(c) => {
                     Ok(Self::new(meta, ActivityContent::MembershipChange(c)))
                 }
+                ActerSupportedRoomStatusEvents::ProfileChange(c) => {
+                    Ok(Self::new(meta, ActivityContent::ProfileChange(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleRoom(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleRoom(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleServer(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleServer(c)))
+                }
+                ActerSupportedRoomStatusEvents::PolicyRuleUser(c) => {
+                    Ok(Self::new(meta, ActivityContent::PolicyRuleUser(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
                 }
+                ActerSupportedRoomStatusEvents::RoomAvatar(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomAvatar(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomTopic(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomTopic(c)))
                 }
             },
 

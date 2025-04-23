@@ -114,11 +114,11 @@ PODS:
   - SDWebImage/Core (5.21.0)
   - sensors_plus (0.0.1):
     - Flutter
-  - Sentry/HybridSDK (8.44.0)
-  - sentry_flutter (8.13.2):
+  - Sentry/HybridSDK (8.46.0)
+  - sentry_flutter (8.14.2):
     - Flutter
     - FlutterMacOS
-    - Sentry/HybridSDK (= 8.44.0)
+    - Sentry/HybridSDK (= 8.46.0)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -280,7 +280,7 @@ SPEC CHECKSUMS:
   camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
   connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
   device_calendar: 9cb33f88a02e19652ec7b8b122ca778f751b1f7b
-  device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
+  device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   emoji_picker_flutter: 8e50ec5caac456a23a78637e02c6293ea0ac8771
@@ -310,8 +310,8 @@ SPEC CHECKSUMS:
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   sensors_plus: 7229095999f30740798f0eeef5cd120357a8f4f2
-  Sentry: 0f9bc9adfc0b960e7f3bb5ec67e9a3d8193f3bdb
-  sentry_flutter: 64a43fb39ab4c7f67d8a4cad52b49e22439e58b7
+  Sentry: da60d980b197a46db0b35ea12cb8f39af48d8854
+  sentry_flutter: 2df8b0aab7e4aba81261c230cbea31c82a62dd1b
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
@@ -321,6 +321,6 @@ SPEC CHECKSUMS:
   volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
   wakelock_plus: 373cfe59b235a6dd5837d0fb88791d2f13a90d56
 
-PODFILE CHECKSUM: d2243213672c3c48aae53c36642ba411a6be7309
+PODFILE CHECKSUM: fcb1d6a8b69ef1614eadff3ce844375007098b37
 
 COCOAPODS: 1.16.2

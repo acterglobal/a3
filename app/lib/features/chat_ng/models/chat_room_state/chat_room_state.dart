@@ -31,12 +31,12 @@ class ChatRoomState with _$ChatRoomState {
 
   const factory ChatRoomState({
     @Default([]) List<String> messageList,
-    @Default({}) Map<String, RoomMessage> messages,
+    @Default({}) Map<String, TimelineItem> messages,
     @Default(ChatRoomLoadingState.initial()) ChatRoomLoadingState loading,
     @Default(true) bool hasMore,
   }) = _ChatRoomState;
 
-  RoomMessage? message(String uniqueId) => messages[uniqueId];
+  TimelineItem? message(String uniqueId) => messages[uniqueId];
 
   ChatRoomState copyWithRemovedMessageAt(
     int idx,
@@ -56,7 +56,7 @@ class ChatRoomState with _$ChatRoomState {
 
   ChatRoomState copyWithNewMessageAt(
     int idx,
-    RoomMessage m,
+    TimelineItem m,
     AnimatedListState? listState,
   ) {
     final uniqueId = m.uniqueId();

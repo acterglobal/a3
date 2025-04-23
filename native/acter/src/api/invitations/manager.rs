@@ -28,7 +28,7 @@ impl InvitationsManager {
             .filter_map(move |u| {
                 let Ok(update) = u else { return None };
                 let new_set: BTreeSet<OwnedRoomId> =
-                    update.invite.keys().map(Clone::clone).collect();
+                    update.invited.keys().map(Clone::clone).collect();
                 if (new_set != prev_set) {
                     prev_set = new_set;
                     Some(true)
@@ -69,7 +69,11 @@ impl InvitationsManager {
         Ok(RUNTIME
             .spawn(async move {
                 let manager = MyInvitesManager::load(core.store()).await;
-                manager.invited_to().iter().map(|s| s.to_string()).collect()
+                manager
+                    .invited_to()
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect()
             })
             .await?)
     }

@@ -55,7 +55,7 @@ use urlencoding::encode;
 
 use crate::{Client, Rsvp};
 
-use crate::{api::api::FfiBuffer, MsgContent, RoomMessage, RUNTIME};
+use crate::{api::api::FfiBuffer, MsgContent, RUNTIME};
 
 #[derive(Debug, Clone)]
 pub struct NotificationSender {
@@ -80,7 +80,8 @@ impl NotificationSender {
             image: notif
                 .sender_avatar_url
                 .clone()
-                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+                .map(OwnedMxcUri::from)
+                .map(MediaSource::Plain),
             client,
         }
     }
@@ -121,7 +122,8 @@ impl NotificationRoom {
             image: notif
                 .room_avatar_url
                 .clone()
-                .map(|u| MediaSource::Plain(OwnedMxcUri::from(u))),
+                .map(OwnedMxcUri::from)
+                .map(MediaSource::Plain),
             client,
         }
     }
@@ -131,8 +133,7 @@ impl NotificationRoom {
             display_name: room
                 .display_name()
                 .await
-                .map(|e| e.to_string())
-                .unwrap_or("".to_owned()),
+                .map_or("".to_owned(), |x| x.to_string()),
             image: room.avatar_url().clone().map(MediaSource::Plain),
             client,
         }
@@ -259,7 +260,7 @@ impl NotificationItemInner {
             },
             NotificationItemInner::Activity(activity) => match activity.content() {
                 ActivityContent::DescriptionChange { content, .. } => {
-                    content.as_ref().map(|e| MsgContent::from(e.clone()))
+                    content.clone().map(MsgContent::from)
                 }
                 ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
                 ActivityContent::Boost {
@@ -342,7 +343,7 @@ impl NotificationItem {
 
     pub async fn image(&self) -> Result<FfiBuffer<u8>> {
         #[allow(clippy::diverging_sub_expression)]
-        let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {
+        let Some(source) = self.msg_content.as_ref().and_then(|a| a.source()) else {
             bail!("No media found in item")
         };
         let client = self.client.clone();
@@ -354,7 +355,7 @@ impl NotificationItem {
 
     pub async fn image_path(&self, tmp_dir: String) -> Result<String> {
         #[allow(clippy::diverging_sub_expression)]
-        let Some(Some(source)) = self.msg_content.clone().map(|a| a.source()) else {
+        let Some(source) = self.msg_content.as_ref().and_then(|a| a.source()) else {
             bail!("No media found in item")
         };
         self.client

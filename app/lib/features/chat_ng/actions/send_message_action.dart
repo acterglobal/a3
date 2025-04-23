@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -25,17 +26,23 @@ Future<void> sendMessageAction({
   final lang = L10n.of(context);
   final body = textEditorState.intoMarkdown();
   final html = textEditorState.intoHtml();
-  final bodyProcessedText = textEditorState.mentionsParsedText(body, null);
+
+  if (!hasValidEditorContent(plainText: body, html: html)) {
+    return;
+  }
+
+  final bodyProcessedText = textEditorState.toMentionText(body, null);
   ref.read(chatInputProvider.notifier).startSending();
   try {
     // end the typing notification
     onTyping?.map((cb) => cb(false));
 
     // make the actual draft
+    final chatEditorState = ref.read(chatEditorStateProvider);
     final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
     if (html.isNotEmpty) {
-      final htmlProcessedText = textEditorState.mentionsParsedText(body, html);
+      final htmlProcessedText = textEditorState.toMentionText(body, html);
       draft = client.textHtmlDraft(htmlProcessedText.$1, bodyProcessedText.$1);
       if (htmlProcessedText.$2.isNotEmpty) {
         for (MentionAttributes m in htmlProcessedText.$2) {
@@ -52,7 +59,6 @@ Future<void> sendMessageAction({
     }
 
     // actually send it out
-    final chatEditorState = ref.read(chatEditorStateProvider);
     final stream = await ref.read(timelineStreamProvider(roomId).future);
 
     if (chatEditorState.isReplying) {

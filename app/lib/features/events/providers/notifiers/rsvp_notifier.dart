@@ -30,9 +30,7 @@ class AsyncRsvpStatusNotifier
       'rsvp',
     ); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await _getMyResponse(client, calEvtId),
-      );
+      state = AsyncValue.data(await _getMyResponse(client, calEvtId));
     });
     return await _getMyResponse(client, calEvtId);
   }

@@ -21,7 +21,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let convo = Retry::spawn(retry_strategy.clone(), || async {
-        sisko.convo(room_id.as_str().try_into()?).await
+        sisko.convo(room_id.as_str().into()).await
     })
     .await?;
 
@@ -67,7 +67,7 @@ async fn space_invitation_shows_up() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let space = Retry::spawn(retry_strategy.clone(), || async {
-        sisko.space(room_id.as_str().try_into()?).await
+        sisko.space(room_id.as_str().into()).await
     })
     .await?;
 
