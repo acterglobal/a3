@@ -1,9 +1,9 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/utils.dart';
-
 
 class ChatBubble extends StatelessWidget {
   final Widget child;
@@ -113,39 +113,42 @@ class ChatBubble extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     child,
-                    if (isEdited) ...[
-                      const SizedBox(height: 4),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          L10n.of(context).edited,
-                          style: chatTheme.emptyChatPlaceholderTextStyle
-                              .copyWith(fontSize: 12),
-                        ),
-                      ],
-                      if (isEdited && timestamp != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2),
-                          child: Text(
-                            '.',
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (isEdited) ...[
+                          Text(
+                            L10n.of(context).edited,
                             style: chatTheme.emptyChatPlaceholderTextStyle
                                 .copyWith(fontSize: 12),
                           ),
-                        ),
-                      if (timestamp != null)
-                        Text(
-                          jiffyMsgTimestamp(
-                            context,
-                            timestamp.expect('should not be null'),
+                        ],
+                        if (isEdited && timestamp != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: Text(
+                              '.',
+                              style: chatTheme.emptyChatPlaceholderTextStyle
+                                  .copyWith(fontSize: 12),
+                            ),
                           ),
-                          style: chatTheme.emptyChatPlaceholderTextStyle
-                              .copyWith(fontSize: 12),
-                        ),
-                    ],
-                  ),
-                ],
+                        if (timestamp != null)
+                          Text(
+                            jiffyMsgTimestamp(
+                              context,
+                              timestamp.expect('should not be null'),
+                            ),
+                            style: chatTheme.emptyChatPlaceholderTextStyle
+                                .copyWith(fontSize: 12),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
