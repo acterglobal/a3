@@ -108,7 +108,7 @@ class _DesktopLaunchAtStartupWidgetState extends ConsumerState<DesktopLaunchAtSt
   Widget _buildActionButton(BuildContext context, L10n lang) {
     final textTheme = Theme.of(context).textTheme;
     return ElevatedButton(
-      onPressed: widget.callNextPage,
+      onPressed: () => widget.callNextPage?.call(),
       child: Text(
         lang.wizzardContinue,
         style: textTheme.bodyMedium?.copyWith(
