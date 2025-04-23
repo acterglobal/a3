@@ -266,6 +266,7 @@ class HtmlEditor extends StatefulWidget {
   final Widget? footer;
   final bool editable;
   final bool shrinkWrap;
+  final bool disableAutoScroll;
   final EditorState? editorState;
   final EdgeInsets? editorPadding;
   final EditorScrollController? scrollController;
@@ -285,6 +286,7 @@ class HtmlEditor extends StatefulWidget {
     this.textStyleConfiguration,
     this.editable = false,
     this.shrinkWrap = false,
+    this.disableAutoScroll = false,
     this.editorPadding = const EdgeInsets.all(10),
     this.scrollController,
     this.header,
@@ -298,9 +300,9 @@ class HtmlEditor extends StatefulWidget {
 class HtmlEditorState extends State<HtmlEditor> {
   late EditorState editorState;
   late EditorScrollController editorScrollController;
-  final TextDirection _textDirection = TextDirection.ltr;
+
   // we store this to the stream stays alive
-  StreamSubscription<(TransactionTime, Transaction)>? _changeListener;
+  StreamSubscription<EditorTransactionValue>? _changeListener;
 
   @override
   void initState() {
@@ -426,7 +428,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         linkItem,
         buildHighlightColorItem(),
       ],
-      textDirection: _textDirection,
+      textDirection: Directionality.of(context),
       editorState: editorState,
       editorScrollController: editorScrollController,
       style: FloatingToolbarStyle(
@@ -434,7 +436,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
       ),
       child: Directionality(
-        textDirection: _textDirection,
+        textDirection: Directionality.of(context),
         child: AppFlowyEditor(
           // widget pass through
           editable: widget.editable,
@@ -453,7 +455,8 @@ class HtmlEditorState extends State<HtmlEditor> {
             if (roomId != null) ...mentionShortcuts(context, roomId),
           ],
           commandShortcutEvents: [...standardCommandShortcutEvents],
-          disableAutoScroll: true,
+          disableAutoScroll: widget.disableAutoScroll,
+          autoScrollEdgeOffset: 20,
         ),
       ),
     );
@@ -480,51 +483,48 @@ class HtmlEditorState extends State<HtmlEditor> {
       ],
       toolbarHeight: 50,
       editorState: editorState,
-      child: Column(
-        children: [
-          Expanded(
-            child: MobileFloatingToolbar(
-              editorScrollController: editorScrollController,
-              editorState: editorState,
-              toolbarBuilder: (context, anchor, closeToolbar) {
-                return AdaptiveTextSelectionToolbar.editable(
-                  clipboardStatus: ClipboardStatus.pasteable,
-                  onCopy: () {
-                    copyCommand.execute(editorState);
-                    closeToolbar();
-                  },
-                  onCut: () => cutCommand.execute(editorState),
-                  onPaste: () => pasteCommand.execute(editorState),
-                  onSelectAll: () => selectAllCommand.execute(editorState),
-                  onLiveTextInput: null,
-                  onLookUp: null,
-                  onSearchWeb: null,
-                  onShare: null,
-                  anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
-                );
-              },
-              child: AppFlowyEditor(
-                // widget pass through
-                editable: widget.editable,
-                shrinkWrap: widget.shrinkWrap,
-                autoFocus: false,
-                header: widget.header,
-                // local states
-                editorState: editorState,
-                editorScrollController:
-                    widget.scrollController ?? editorScrollController,
-                editorStyle: mobileEditorStyle(),
-                footer: generateFooter(),
-                blockComponentBuilders: _buildBlockComponentBuilders(),
-                characterShortcutEvents: [
-                  ...standardCharacterShortcutEvents,
-                  if (roomId != null) ...mentionShortcuts(context, roomId),
-                ],
-                disableAutoScroll: true,
-              ),
-            ),
-          ),
-        ],
+      child: MobileFloatingToolbar(
+        editorScrollController: editorScrollController,
+        editorState: editorState,
+        floatingToolbarHeight: 50,
+        toolbarBuilder: (context, anchor, closeToolbar) {
+          return AdaptiveTextSelectionToolbar.editable(
+            clipboardStatus: ClipboardStatus.pasteable,
+            onCopy: () {
+              copyCommand.execute(editorState);
+              closeToolbar();
+            },
+            onCut: () => cutCommand.execute(editorState),
+            onPaste: () => pasteCommand.execute(editorState),
+            onSelectAll: () => selectAllCommand.execute(editorState),
+            onLiveTextInput: null,
+            onLookUp: null,
+            onSearchWeb: null,
+            onShare: null,
+            anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
+          );
+        },
+        child: AppFlowyEditor(
+          // widget pass through
+          editable: widget.editable,
+          shrinkWrap: widget.shrinkWrap,
+          autoFocus: false,
+          header: widget.header,
+          // local states
+          editorState: editorState,
+          editorScrollController:
+              widget.scrollController ?? editorScrollController,
+          editorStyle: mobileEditorStyle(),
+          footer: generateFooter(),
+          blockComponentBuilders: _buildBlockComponentBuilders(),
+          characterShortcutEvents: [
+            ...standardCharacterShortcutEvents,
+            if (roomId != null) ...mentionShortcuts(context, roomId),
+          ],
+
+          disableAutoScroll: false,
+          autoScrollEdgeOffset: 20,
+        ),
       ),
     );
   }
@@ -558,7 +558,7 @@ class HtmlEditorState extends State<HtmlEditor> {
               context,
             ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
-      mobileDragHandleBallSize: const Size(12, 12),
+
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
     );
