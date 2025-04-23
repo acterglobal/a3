@@ -64,6 +64,7 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
+      'm.room.avatar' => getMessageOnRoomAvatar(lang, isMe, senderName),
       'm.room.create' =>
         isMe
             ? lang.chatYouRoomCreate
@@ -84,10 +85,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
             : '${lang.chatUpdateRoomTopic(firstName ?? senderId)}: $msgContent',
-      'm.room.avatar' =>
-        isMe
-            ? lang.chatYouUpdateRoomAvatar
-            : lang.chatUpdateRoomAvatar(firstName ?? senderId),
       'm.room.aliases' =>
         isMe
             ? lang.chatYouUpdateRoomAliases
@@ -369,6 +366,35 @@ class RoomUpdateEvent extends ConsumerWidget {
             senderName,
             newVal,
           );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomAvatar(L10n lang, bool isMe, String senderName) {
+    final content = item.roomAvatarContent();
+    if (content == null) {
+      _log.severe('failed to get content of room avatar change');
+      return null;
+    }
+    switch (content.urlChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouChanged;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouSet;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherSet(senderName);
+        }
+      case 'Unset':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouUnset;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherUnset(senderName);
         }
     }
     return null;
