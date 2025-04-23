@@ -65,10 +65,7 @@ class RoomUpdateEvent extends ConsumerWidget {
         senderName,
       ),
       'm.room.avatar' => getMessageOnRoomAvatar(lang, isMe, senderName),
-      'm.room.create' =>
-        isMe
-            ? lang.chatYouRoomCreate
-            : lang.chatRoomCreate(firstName ?? senderId),
+      'm.room.create' => getMessageOnRoomCreate(lang, isMe, senderName),
       'm.room.join_rules' =>
         isMe
             ? '${lang.chatYouUpdateJoinRules}: $msgContent'
@@ -398,5 +395,13 @@ class RoomUpdateEvent extends ConsumerWidget {
         }
     }
     return null;
+  }
+
+  String getMessageOnRoomCreate(L10n lang, bool isMe, String senderName) {
+    if (isMe) {
+      return lang.roomStateRoomCreateYou;
+    } else {
+      return lang.roomStateRoomCreateOther(senderName);
+    }
   }
 }
