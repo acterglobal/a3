@@ -1040,6 +1040,9 @@ object TimelineEventItem {
     /// covers m.policy.rule.user
     fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
 
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1252,6 +1255,12 @@ object PolicyRuleUserContent {
     fn recommendation_change() -> Option<string>;
     fn recommendation_new_val() -> string;
     fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
 }
 
 
@@ -2426,7 +2435,7 @@ object Activity {
     fn object() -> Option<ActivityObject>;
 
     /// get avatar uri when space avatar changed
-    fn room_avatar() -> Option<MxcUri>;
+    fn room_avatar() -> Option<string>;
 
     /// get name when space name changed
     fn room_name() -> Option<string>;

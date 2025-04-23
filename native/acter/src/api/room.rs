@@ -42,7 +42,7 @@ use matrix_sdk_base::{
                 user::PolicyRuleUserEventContent, PolicyRuleEventContent, Recommendation,
             },
             room::{
-                avatar::ImageInfo as AvatarImageInfo,
+                avatar::ImageInfo,
                 join_rules::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
                 },
@@ -833,7 +833,7 @@ impl Room {
                 let response = client.media().upload(&content_type, buf, None).await?;
 
                 let content_uri = response.content_uri;
-                let info = assign!(AvatarImageInfo::new(), {
+                let info = assign!(ImageInfo::new(), {
                     blurhash: response.blurhash,
                     mimetype: Some(content_type.to_string()),
                 });
