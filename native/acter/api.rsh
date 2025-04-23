@@ -1040,6 +1040,9 @@ object TimelineEventItem {
     /// covers m.policy.rule.user
     fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
 
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1252,6 +1255,12 @@ object PolicyRuleUserContent {
     fn recommendation_change() -> Option<string>;
     fn recommendation_new_val() -> string;
     fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
 }
 
 

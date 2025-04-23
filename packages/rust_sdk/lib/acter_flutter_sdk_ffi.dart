@@ -19823,6 +19823,17 @@ class Api {
           .asFunction<
             _TimelineEventItemPolicyRuleUserContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomAvatarContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomAvatarContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_avatar_content");
+
+  late final _timelineEventItemRoomAvatarContent =
+      _timelineEventItemRoomAvatarContentPtr
+          .asFunction<
+            _TimelineEventItemRoomAvatarContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -20452,6 +20463,27 @@ class Api {
           .asFunction<
             _PolicyRuleUserContentRecommendationOldValReturn Function(int)
           >();
+  late final _roomAvatarContentUrlChangePtr = _lookup<
+    ffi.NativeFunction<_RoomAvatarContentUrlChangeReturn Function(ffi.IntPtr)>
+  >("__RoomAvatarContent_url_change");
+
+  late final _roomAvatarContentUrlChange =
+      _roomAvatarContentUrlChangePtr
+          .asFunction<_RoomAvatarContentUrlChangeReturn Function(int)>();
+  late final _roomAvatarContentUrlNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomAvatarContentUrlNewValReturn Function(ffi.IntPtr)>
+  >("__RoomAvatarContent_url_new_val");
+
+  late final _roomAvatarContentUrlNewVal =
+      _roomAvatarContentUrlNewValPtr
+          .asFunction<_RoomAvatarContentUrlNewValReturn Function(int)>();
+  late final _roomAvatarContentUrlOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomAvatarContentUrlOldValReturn Function(ffi.IntPtr)>
+  >("__RoomAvatarContent_url_old_val");
+
+  late final _roomAvatarContentUrlOldVal =
+      _roomAvatarContentUrlOldValPtr
+          .asFunction<_RoomAvatarContentUrlOldValReturn Function(int)>();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -41301,6 +41333,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.avatar
+  RoomAvatarContent? roomAvatarContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomAvatarContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomAvatarContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomAvatarContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -43159,6 +43208,111 @@ class PolicyRuleUserContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._policyRuleUserContentRecommendationOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomAvatarContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomAvatarContent._(this._api, this._box);
+
+  String? urlChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAvatarContentUrlChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? urlNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAvatarContentUrlNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? urlOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomAvatarContentUrlOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -63016,6 +63170,13 @@ class _TimelineEventItemPolicyRuleUserContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemRoomAvatarContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -63563,6 +63724,39 @@ class _PolicyRuleUserContentRecommendationNewValReturn extends ffi.Struct {
 }
 
 class _PolicyRuleUserContentRecommendationOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAvatarContentUrlChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAvatarContentUrlNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomAvatarContentUrlOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

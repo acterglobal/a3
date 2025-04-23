@@ -1,7 +1,7 @@
 use acter_core::{
     models::status::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
-        ProfileContent,
+        ProfileContent, RoomAvatarContent,
     },
     util::do_vecs_match,
 };
@@ -316,6 +316,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_avatar_content(&self) -> Option<RoomAvatarContent> {
+        if let Some(TimelineEventContent::RoomAvatar(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -425,96 +433,13 @@ impl TimelineEventItemBuilder {
                 };
                 self.content(Some(TimelineEventContent::Message(msg_content)));
             }
-            AnyOtherFullStateEventContent::RoomAvatar(c) => {
+            AnyOtherFullStateEventContent::RoomAvatar(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.avatar".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.url.ne(&content.url) {
-                                result.push("changed url".to_owned());
-                            }
-                            match (prev.info.clone(), content.info.clone()) {
-                                (Some(old), Some(cur)) => {
-                                    if old.blurhash != cur.blurhash {
-                                        result.push("changed info blurhash".to_owned());
-                                    }
-                                    if old.height != cur.height {
-                                        result.push("changed info height".to_owned());
-                                    }
-                                    if old.mimetype != cur.mimetype {
-                                        result.push("changed info mimetype".to_owned());
-                                    }
-                                    if old.size != cur.size {
-                                        result.push("changed info size".to_owned());
-                                    }
-                                    match (old.thumbnail_info, cur.thumbnail_info) {
-                                        (Some(old_info), Some(cur_info)) => {
-                                            if old_info.height != cur_info.height {
-                                                result.push(
-                                                    "changed info thumbnail height".to_owned(),
-                                                );
-                                            }
-                                            if old_info.height != cur_info.height {
-                                                result.push(
-                                                    "changed info thumbnail height".to_owned(),
-                                                );
-                                            }
-                                            if old_info.mimetype != cur_info.mimetype {
-                                                result.push(
-                                                    "changed info thumbnail mimetype".to_owned(),
-                                                );
-                                            }
-                                            if old_info.size != cur_info.size {
-                                                result
-                                                    .push("changed info thumbnail size".to_owned());
-                                            }
-                                            if old_info.width != cur_info.width {
-                                                result.push(
-                                                    "changed info thumbnail width".to_owned(),
-                                                );
-                                            }
-                                        }
-                                        (Some(old_info), None) => {
-                                            result.push("removed info thumbnail info".to_owned());
-                                        }
-                                        (None, Some(cur_info)) => {
-                                            result.push("added info thumbnail info".to_owned());
-                                        }
-                                        (None, None) => {}
-                                    }
-                                    if old.thumbnail_url != cur.thumbnail_url {
-                                        result.push("changed info thumbnail url".to_owned());
-                                    }
-                                    if old.width != cur.width {
-                                        result.push("changed info width".to_owned());
-                                    }
-                                }
-                                (Some(old), None) => {
-                                    result.push("removed info".to_owned());
-                                }
-                                (None, Some(cur)) => {
-                                    result.push("added info".to_owned());
-                                }
-                                (None, None) => {}
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room avatar".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room avatar".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomAvatarContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomAvatar(c)));
             }
             AnyOtherFullStateEventContent::RoomCanonicalAlias(c) => {
                 self.event_type("m.room.canonical_alias".to_owned());
