@@ -52,8 +52,11 @@ pub use crate::store::Store;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{events::AnyActerEvent, models::conversion::ParseError, Result};
+    use crate::{
+        error::ModelRedactedDetails, events::AnyActerEvent, models::conversion::ParseError, Result,
+    };
 
+    use anyhow::bail;
     use matrix_sdk_base::ruma::owned_event_id;
     #[test]
     fn ensure_minimal_tasklist_parses() -> Result<()> {
@@ -83,7 +86,7 @@ mod tests {
 
     #[test]
     #[allow(unused_variables)]
-    fn ensure_redacted_news_parses() -> Result<()> {
+    fn ensure_redacted_news_parses() -> anyhow::Result<()> {
         let json_raw = r#"{
             "content": {},
             "origin_server_ts": 1689158713657,
@@ -111,7 +114,7 @@ mod tests {
                 "age": 56316493
               }
             },
-            "event_id": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+            "event_id": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
             "user_id": "@emilvincentz:effektio.org",
             "redacted_because": {
               "type": "m.room.redaction",
@@ -134,26 +137,25 @@ mod tests {
           }"#;
         let event = serde_json::from_str::<AnyActerEvent>(json_raw)?;
         let acter_ev_result = AnyActerModel::try_from(event.clone());
-        let model_type = "global.acter.dev.news".to_owned();
         let event_id = owned_event_id!("$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY");
-        assert!(
-            matches!(
-                acter_ev_result,
-                Err(ParseError::ModelRedacted {
-                    ref model_type,
-                    meta: EventMeta { ref event_id, .. },
-                    ..
-                })
-            ),
-            "Didn’t receive expected error: {acter_ev_result:?}"
-        );
+        let Err(ParseError::ModelRedacted(details)) = acter_ev_result else {
+            bail!("Not the expected error!")
+        };
+
+        let ModelRedactedDetails {
+            model_type,
+            meta,
+            reason,
+        } = *details;
+        assert_eq!(model_type, "global.acter.dev.news");
+        assert_eq!(meta.event_id, event_id);
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }
 
     #[test]
     #[allow(unused_variables)]
-    fn ensure_redacted_pin_parses() -> Result<()> {
+    fn ensure_redacted_pin_parses() -> anyhow::Result<()> {
         let json_raw = r#"{
             "content": {},
             "origin_server_ts": 1689158713657,
@@ -206,17 +208,11 @@ mod tests {
         let acter_ev_result = AnyActerModel::try_from(event);
         let model_type = "global.acter.dev.pin".to_owned();
         let event_id = owned_event_id!("$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c");
-        assert!(
-            matches!(
-                acter_ev_result,
-                Err(ParseError::ModelRedacted {
-                    ref model_type,
-                    meta: EventMeta { ref event_id, .. },
-                    ..
-                })
-            ),
-            "Didn’t receive expected error: {acter_ev_result:?}"
-        );
+
+        let Err(ParseError::ModelRedacted(details)) = acter_ev_result else {
+            bail!("Not the expected error!")
+        };
+
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }

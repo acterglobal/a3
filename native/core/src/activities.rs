@@ -20,7 +20,7 @@ use crate::{
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
         },
-        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
     store::Store,
 };
@@ -85,7 +85,7 @@ pub enum ActivityContent {
     // tasks and task list specific
     TaskAdd {
         object: ActivityObject,
-        task: Task,
+        task_title: String,
     },
     TaskProgress {
         object: ActivityObject,
@@ -215,7 +215,7 @@ impl Activity {
     pub fn title(&self) -> Option<String> {
         match &self.inner {
             ActivityContent::Attachment { content, .. } => content.name(),
-            ActivityContent::TaskAdd { task, .. } => Some(task.title.clone()),
+            ActivityContent::TaskAdd { task_title, .. } => Some(task_title.clone()),
             _ => None,
         }
     }
@@ -694,7 +694,10 @@ impl Activity {
 
                 Ok(Self::new(
                     meta,
-                    ActivityContent::TaskAdd { object, task: e },
+                    ActivityContent::TaskAdd {
+                        object,
+                        task_title: e.inner.title,
+                    },
                 ))
             }
             AnyActerModel::TaskUpdate(e) => {
