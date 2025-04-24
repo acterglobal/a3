@@ -26,6 +26,7 @@ const _supportedTypes = [
   'm.room.avatar',
   'm.room.create',
   'm.room.encryption',
+  'm.room.guest_access',
 
   'm.room.message',
   'm.room.redaction',
