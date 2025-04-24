@@ -19834,6 +19834,17 @@ class Api {
           .asFunction<
             _TimelineEventItemRoomAvatarContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomCreateContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomCreateContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_create_content");
+
+  late final _timelineEventItemRoomCreateContent =
+      _timelineEventItemRoomCreateContentPtr
+          .asFunction<
+            _TimelineEventItemRoomCreateContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -41371,6 +41382,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.create
+  RoomCreateContent? roomCreateContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomCreateContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomCreateContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomCreateContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -43360,6 +43388,18 @@ class RoomAvatarContent {
     }
     return tmp2;
   }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomCreateContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomCreateContent._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -63288,6 +63328,13 @@ class _TimelineEventItemPolicyRuleUserContentReturn extends ffi.Struct {
 }
 
 class _TimelineEventItemRoomAvatarContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _TimelineEventItemRoomCreateContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

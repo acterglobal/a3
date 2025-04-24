@@ -1,8 +1,7 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
     events::room::{
-        create::RoomCreateEventContent, message::TextMessageEventContent,
-        name::RoomNameEventContent, topic::RoomTopicEventContent,
+        message::TextMessageEventContent, name::RoomNameEventContent, topic::RoomTopicEventContent,
     },
     OwnedEventId, OwnedUserId,
 };
@@ -18,7 +17,7 @@ use crate::{
     models::{
         status::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
-            PolicyRuleUserContent, ProfileContent, RoomAvatarContent,
+            PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
@@ -36,7 +35,7 @@ pub enum ActivityContent {
     PolicyRuleServer(PolicyRuleServerContent),
     PolicyRuleUser(PolicyRuleUserContent),
     RoomAvatar(RoomAvatarContent),
-    RoomCreate(RoomCreateEventContent),
+    RoomCreate(RoomCreateContent),
     RoomName(RoomNameEventContent),
     RoomTopic(RoomTopicEventContent),
     Boost {

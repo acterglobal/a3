@@ -1043,6 +1043,9 @@ object TimelineEventItem {
     /// covers m.room.avatar
     fn room_avatar_content() -> Option<RoomAvatarContent>;
 
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1262,6 +1265,8 @@ object RoomAvatarContent {
     fn url_new_val() -> Option<string>;
     fn url_old_val() -> Option<string>;
 }
+
+object RoomCreateContent {}
 
 
 //  ########   #######   #######  ##     ##

@@ -4,7 +4,7 @@ use matrix_sdk_base::ruma::events::{
         server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
         user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
     },
-    room::avatar::RoomAvatarEventContent,
+    room::{avatar::RoomAvatarEventContent, create::RoomCreateEventContent},
 };
 use serde::{Deserialize, Serialize};
 
@@ -369,5 +369,24 @@ impl RoomAvatarContent {
             .as_ref()
             .and_then(|prev| prev.url.as_ref())
             .map(ToString::to_string)
+    }
+}
+
+// m.room.create
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomCreateContent {
+    content: RoomCreateEventContent,
+    prev_content: Option<RoomCreateEventContent>,
+}
+
+impl RoomCreateContent {
+    pub fn new(
+        content: RoomCreateEventContent,
+        prev_content: Option<RoomCreateEventContent>,
+    ) -> Self {
+        RoomCreateContent {
+            content,
+            prev_content,
+        }
     }
 }
