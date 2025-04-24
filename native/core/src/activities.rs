@@ -18,7 +18,7 @@ use crate::{
         status::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
-            RoomEncryptionContent,
+            RoomEncryptionContent, RoomGuestAccessContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
     },
@@ -38,6 +38,7 @@ pub enum ActivityContent {
     RoomAvatar(RoomAvatarContent),
     RoomCreate(RoomCreateContent),
     RoomEncryption(RoomEncryptionContent),
+    RoomGuestAccess(RoomGuestAccessContent),
     RoomName(RoomNameEventContent),
     RoomTopic(RoomTopicEventContent),
     Boost {
@@ -154,6 +155,7 @@ impl Activity {
             ActivityContent::RoomAvatar(_) => "roomAvatar",
             ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomEncryption(_) => "roomEncryption",
+            ActivityContent::RoomGuestAccess(_) => "roomGuestAccess",
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
@@ -247,6 +249,7 @@ impl Activity {
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomEncryption(_)
+            | ActivityContent::RoomGuestAccess(_)
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomTopic(_) => None,
 
@@ -350,6 +353,7 @@ impl Activity {
             | ActivityContent::RoomAvatar(_)
             | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomEncryption(_)
+            | ActivityContent::RoomGuestAccess(_)
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomTopic(_) => todo!(),
         }
@@ -405,6 +409,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::RoomEncryption(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomEncryption(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomGuestAccess(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomGuestAccess(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))

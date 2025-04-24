@@ -8,6 +8,7 @@ use matrix_sdk_base::ruma::events::{
         avatar::RoomAvatarEventContent,
         create::RoomCreateEventContent,
         encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
+        guest_access::{PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent},
     },
 };
 use serde::{Deserialize, Serialize};
@@ -436,6 +437,51 @@ impl RoomEncryptionContent {
         self.prev_content
             .as_ref()
             .and_then(|prev| prev.algorithm.as_ref())
+            .map(ToString::to_string)
+    }
+}
+
+// m.room.guest_access
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomGuestAccessContent {
+    content: RoomGuestAccessEventContent,
+    prev_content: Option<PossiblyRedactedRoomGuestAccessEventContent>,
+}
+
+impl RoomGuestAccessContent {
+    pub fn new(
+        content: RoomGuestAccessEventContent,
+        prev_content: Option<PossiblyRedactedRoomGuestAccessEventContent>,
+    ) -> Self {
+        RoomGuestAccessContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_guest_access) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.guest_access.as_ref())
+        {
+            if self.content.guest_access == *prev_guest_access {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn new_val(&self) -> String {
+        self.content.guest_access.to_string()
+    }
+
+    pub fn old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.guest_access.as_ref())
             .map(ToString::to_string)
     }
 }
