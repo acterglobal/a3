@@ -27,6 +27,7 @@ const _supportedTypes = [
   'm.room.create',
   'm.room.encryption',
   'm.room.guest_access',
+  'm.room.history_visibility',
 
   'm.room.message',
   'm.room.redaction',
