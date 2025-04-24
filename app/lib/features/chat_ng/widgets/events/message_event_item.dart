@@ -131,6 +131,7 @@ class MessageEventItem extends ConsumerWidget {
     final msgType = item.msgType();
     final content = item.message();
     final wasEdited = item.wasEdited();
+    final timestamp = item.originServerTs();
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
@@ -138,12 +139,13 @@ class MessageEventItem extends ConsumerWidget {
       'm.emote' ||
       'm.notice' ||
       'm.server_notice' ||
-      'm.text' => buildTextMsgEvent(context, ref, item),
+      'm.text' => buildTextMsgEvent(context, ref, item, timestamp),
       'm.image' => alignedWidget(
         ImageMessageEvent(
           messageId: messageId,
           roomId: roomId,
           content: content,
+          timestamp: timestamp,
         ),
       ),
       'm.video' => alignedWidget(
@@ -151,6 +153,7 @@ class MessageEventItem extends ConsumerWidget {
           roomId: roomId,
           messageId: messageId,
           content: content,
+          timestamp: timestamp,
         ),
       ),
       'm.file' => alignedWidget(
@@ -163,6 +166,7 @@ class MessageEventItem extends ConsumerWidget {
                 roomId: roomId,
                 messageId: messageId,
                 content: content,
+                timestamp: timestamp,
               ),
             )
             : ChatBubble(
@@ -173,6 +177,7 @@ class MessageEventItem extends ConsumerWidget {
                 roomId: roomId,
                 messageId: messageId,
                 content: content,
+                timestamp: timestamp,
               ),
             ),
       ),
@@ -191,11 +196,12 @@ class MessageEventItem extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     TimelineEventItem item,
+    int timestamp,
   ) {
     final msgType = item.msgType();
     final repliedTo = item.inReplyTo();
     final wasEdited = item.wasEdited();
-    final timestamp = item.originServerTs();
+
     final content = item.message().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     String? displayName;

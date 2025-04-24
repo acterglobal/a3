@@ -5,21 +5,25 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/video_dialog.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:acter/common/extensions/options.dart';
 
 class VideoMessageEvent extends ConsumerWidget {
   final String roomId;
   final String messageId;
   final MsgContent content;
+  final int? timestamp;
 
   const VideoMessageEvent({
     super.key,
     required this.roomId,
     required this.messageId,
     required this.content,
+    this.timestamp,
   });
 
   @override
@@ -85,6 +89,14 @@ class VideoMessageEvent extends ConsumerWidget {
                 ],
               ),
             ),
+            if (timestamp != null)
+              Container(
+                padding: const EdgeInsets.only(right: 8, bottom: 8),
+                alignment: Alignment.bottomRight,
+                child: MessageTimestampWidget(
+                  timestamp: timestamp.expect('should not be null'),
+                ),
+              ),
           ],
         ),
       ),
@@ -133,23 +145,35 @@ class VideoMessageEvent extends ConsumerWidget {
   }
 
   Widget videoThumbFileView(BuildContext context, File thumbFile) {
-    return Image.file(
-      thumbFile,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (wasSynchronouslyLoaded) {
-          return child;
-        }
-        return AnimatedOpacity(
-          opacity: frame == null ? 0 : 1,
-          duration: const Duration(seconds: 1),
-          curve: Curves.easeOut,
-          child: child,
-        );
-      },
-      errorBuilder: (context, url, error) {
-        return Text(L10n.of(context).couldNotLoadImage(error.toString()));
-      },
-      fit: BoxFit.cover,
+    return Stack(
+      children: [
+        Image.file(
+          thumbFile,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            }
+            return AnimatedOpacity(
+              opacity: frame == null ? 0 : 1,
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeOut,
+              child: child,
+            );
+          },
+          errorBuilder: (context, url, error) {
+            return Text(L10n.of(context).couldNotLoadImage(error.toString()));
+          },
+          fit: BoxFit.cover,
+        ),
+        if (timestamp != null)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: MessageTimestampWidget(
+              timestamp: timestamp.expect('should not be null'),
+            ),
+          ),
+      ],
     );
   }
 }
