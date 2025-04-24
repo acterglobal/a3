@@ -1,10 +1,9 @@
-use acter::{
-    api::TimelineItem, matrix_sdk::ruma::events::room::history_visibility::HistoryVisibility,
-};
+use acter::api::TimelineItem;
 use acter_core::models::status::RoomHistoryVisibilityContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
+use matrix_sdk_base::ruma::events::room::history_visibility::HistoryVisibility;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
