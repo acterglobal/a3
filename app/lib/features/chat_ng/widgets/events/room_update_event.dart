@@ -66,6 +66,7 @@ class RoomUpdateEvent extends ConsumerWidget {
       ),
       'm.room.avatar' => getMessageOnRoomAvatar(lang, isMe, senderName),
       'm.room.create' => getMessageOnRoomCreate(lang, isMe, senderName),
+      'm.room.encryption' => getMessageOnRoomEncryption(lang, isMe, senderName),
       'm.room.join_rules' =>
         isMe
             ? '${lang.chatYouUpdateJoinRules}: $msgContent'
@@ -94,10 +95,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
             : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
-      'm.room.encryption' =>
-        isMe
-            ? lang.chatYouUpdateRoomEncryption
-            : lang.chatUpdateRoomEncryption(firstName ?? senderId),
       'm.room.guest_access' =>
         isMe
             ? lang.chatYouUpdateRoomGuestAccess
@@ -403,5 +400,41 @@ class RoomUpdateEvent extends ConsumerWidget {
     } else {
       return lang.roomStateRoomCreateOther(senderName);
     }
+  }
+
+  String? getMessageOnRoomEncryption(L10n lang, bool isMe, String senderName) {
+    final content = item.roomEncryptionContent();
+    if (content == null) {
+      _log.severe('failed to get content of room encryption change');
+      return null;
+    }
+    switch (content.algorithmChange()) {
+      case 'Changed':
+        final newVal = content.algorithmNewVal();
+        final oldVal = content.algorithmOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomEncryptionAlgorithmYouChanged(
+            oldVal,
+            newVal,
+          );
+        } else {
+          return lang.roomStateRoomEncryptionAlgorithmOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.algorithmNewVal();
+        if (isMe) {
+          return lang.roomStateRoomEncryptionAlgorithmYouSet(newVal);
+        } else {
+          return lang.roomStateRoomEncryptionAlgorithmOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    return null;
   }
 }

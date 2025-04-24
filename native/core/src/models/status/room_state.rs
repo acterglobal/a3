@@ -4,7 +4,11 @@ use matrix_sdk_base::ruma::events::{
         server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
         user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
     },
-    room::{avatar::RoomAvatarEventContent, create::RoomCreateEventContent},
+    room::{
+        avatar::RoomAvatarEventContent,
+        create::RoomCreateEventContent,
+        encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
+    },
 };
 use serde::{Deserialize, Serialize};
 
@@ -388,5 +392,50 @@ impl RoomCreateContent {
             content,
             prev_content,
         }
+    }
+}
+
+// m.room.encryption
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomEncryptionContent {
+    content: RoomEncryptionEventContent,
+    prev_content: Option<PossiblyRedactedRoomEncryptionEventContent>,
+}
+
+impl RoomEncryptionContent {
+    pub fn new(
+        content: RoomEncryptionEventContent,
+        prev_content: Option<PossiblyRedactedRoomEncryptionEventContent>,
+    ) -> Self {
+        RoomEncryptionContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn algorithm_change(&self) -> Option<String> {
+        if let Some(prev_algorithm) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.algorithm.as_ref())
+        {
+            if self.content.algorithm == *prev_algorithm {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn algorithm_new_val(&self) -> String {
+        self.content.algorithm.to_string()
+    }
+
+    pub fn algorithm_old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.algorithm.as_ref())
+            .map(ToString::to_string)
     }
 }

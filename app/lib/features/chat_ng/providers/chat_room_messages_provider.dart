@@ -25,6 +25,7 @@ const _supportedTypes = [
   'm.policy.rule.user',
   'm.room.avatar',
   'm.room.create',
+  'm.room.encryption',
 
   'm.room.message',
   'm.room.redaction',
