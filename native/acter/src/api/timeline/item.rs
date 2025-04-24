@@ -2,7 +2,7 @@ use acter_core::{
     models::status::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
-        RoomGuestAccessContent, RoomHistoryVisibilityContent,
+        RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
     },
     util::do_vecs_match,
 };
@@ -357,6 +357,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_join_rules_content(&self) -> Option<RoomJoinRulesContent> {
+        if let Some(TimelineEventContent::RoomJoinRules(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -538,36 +546,13 @@ impl TimelineEventItemBuilder {
                 let c = RoomHistoryVisibilityContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomHistoryVisibility(c)));
             }
-            AnyOtherFullStateEventContent::RoomJoinRules(c) => {
+            AnyOtherFullStateEventContent::RoomJoinRules(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.join_rules".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(old) = prev_content {
-                            let mut result = vec![];
-                            if old.join_rule.ne(&content.join_rule) {
-                                result.push(format!(
-                                    "changed '{}' -> '{}'",
-                                    old.join_rule.as_str(),
-                                    &content.join_rule.as_str()
-                                ));
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.join_rule.as_str().to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room join rule".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomJoinRulesContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomJoinRules(c)));
             }
             AnyOtherFullStateEventContent::RoomName(c) => {
                 self.event_type("m.room.name".to_owned());
