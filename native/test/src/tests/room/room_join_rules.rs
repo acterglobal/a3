@@ -38,7 +38,9 @@ async fn test_room_join_rules() -> Result<()> {
 
     let new_join_rule = JoinRule::Knock;
     let default_join_rule = JoinRule::Invite;
-    let rule_event_id = convo.set_join_rules(new_join_rule.as_str().to_owned()).await?;
+    let rule_event_id = convo
+        .set_join_rules(new_join_rule.as_str().to_owned())
+        .await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
