@@ -1052,6 +1052,9 @@ object TimelineEventItem {
     /// covers m.room.guest_access
     fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
 
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1281,6 +1284,12 @@ object RoomEncryptionContent {
 }
 
 object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
     fn change() -> Option<string>;
     fn new_val() -> string;
     fn old_val() -> Option<string>;
@@ -1712,6 +1721,10 @@ object Convo {
     /// set room guest access
     /// can_join or forbidden
     fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2786,6 +2799,10 @@ object Space {
     /// set room guest access
     /// can_join or forbidden
     fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

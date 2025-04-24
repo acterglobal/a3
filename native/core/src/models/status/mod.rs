@@ -23,7 +23,7 @@ pub use membership::MembershipContent;
 pub use profile::{Change, ProfileContent};
 pub use room_state::{
     PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
-    RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent,
+    RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -39,6 +39,7 @@ pub enum ActerSupportedRoomStatusEvents {
     RoomCreate(RoomCreateContent),
     RoomEncryption(RoomEncryptionContent),
     RoomGuestAccess(RoomGuestAccessContent),
+    RoomHistoryVisibility(RoomHistoryVisibilityContent),
     RoomName(RoomNameEventContent),
     RoomTopic(RoomTopicEventContent),
 }
@@ -183,6 +184,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::RoomGuestAccess(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomHistoryVisibility(StateEvent::Original(inner)) => {
+                let content = RoomHistoryVisibilityContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomHistoryVisibility(content),
                     meta,
                 })
             }
