@@ -1,4 +1,6 @@
-use acter::{api::TimelineItem, matrix_sdk::ruma::events::room::history_visibility::HistoryVisibility};
+use acter::{
+    api::TimelineItem, matrix_sdk::ruma::events::room::history_visibility::HistoryVisibility,
+};
 use acter_core::models::status::RoomHistoryVisibilityContent;
 use anyhow::Result;
 use core::time::Duration;
