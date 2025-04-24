@@ -1974,6 +1974,35 @@ impl Room {
             })
             .await?
     }
+
+    // initial rule is Invite
+    pub async fn set_join_rules(&self, join_rule: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room join rules in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let join_rule = match (join_rule.as_str()) {
+            "invite" => JoinRule::Invite,
+            "knock" => JoinRule::Knock,
+            "private" => JoinRule::Private,
+            "public" => JoinRule::Public,
+            _ => bail!("invalid join rule"),
+        };
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomJoinRules)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room join rules in this room");
+                }
+                let content = RoomJoinRulesEventContent::new(join_rule);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
 }
 
 impl Deref for Room {

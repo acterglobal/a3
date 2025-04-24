@@ -10,6 +10,7 @@ use matrix_sdk_base::ruma::events::{
         encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
         guest_access::{PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent},
         history_visibility::RoomHistoryVisibilityEventContent,
+        join_rules::RoomJoinRulesEventContent,
     },
 };
 use serde::{Deserialize, Serialize};
@@ -525,5 +526,46 @@ impl RoomHistoryVisibilityContent {
         self.prev_content
             .as_ref()
             .map(|prev| prev.history_visibility.to_string())
+    }
+}
+
+// m.room.join_rules
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomJoinRulesContent {
+    content: RoomJoinRulesEventContent,
+    prev_content: Option<RoomJoinRulesEventContent>,
+}
+
+impl RoomJoinRulesContent {
+    pub fn new(
+        content: RoomJoinRulesEventContent,
+        prev_content: Option<RoomJoinRulesEventContent>,
+    ) -> Self {
+        RoomJoinRulesContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.join_rule == prev_content.join_rule {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn new_val(&self) -> String {
+        self.content.join_rule.as_str().to_owned()
+    }
+
+    pub fn old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.join_rule.as_str().to_owned())
     }
 }

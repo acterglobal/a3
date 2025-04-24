@@ -1,9 +1,9 @@
 use acter::api::TimelineItem;
-use acter_core::models::status::RoomHistoryVisibilityContent;
+use acter_core::models::status::RoomJoinRulesContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
-use matrix_sdk_base::ruma::events::room::history_visibility::HistoryVisibility;
+use matrix_sdk_base::ruma::events::room::join_rules::JoinRule;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -13,10 +13,10 @@ use tokio_retry::{
 use crate::utils::random_user_with_random_convo;
 
 #[tokio::test]
-async fn test_room_history_visibility() -> Result<()> {
+async fn test_room_join_rules() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("room_history_visibility").await?;
+    let (mut user, room_id) = random_user_with_random_convo("room_join_rules").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -36,10 +36,10 @@ async fn test_room_history_visibility() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let new_visibility = HistoryVisibility::Invited;
-    let default_visibility = HistoryVisibility::Shared;
-    let visibility_event_id = convo
-        .set_history_visibility(new_visibility.to_string())
+    let new_join_rule = JoinRule::Knock;
+    let default_join_rule = JoinRule::Invite;
+    let rule_event_id = convo
+        .set_join_rules(new_join_rule.as_str().to_owned())
         .await?;
 
     // room state event may reach via pushback action or reset action
@@ -78,34 +78,34 @@ async fn test_room_history_visibility() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let (found_event_id, content) =
-        found_result.expect("Even after 30 seconds, room history visibility not received");
-    assert_eq!(found_event_id, visibility_event_id, "event id should match");
+        found_result.expect("Even after 30 seconds, room join rules not received");
+    assert_eq!(found_event_id, rule_event_id, "event id should match");
 
     assert_eq!(
         content.change(),
         Some("Changed".to_owned()),
-        "room history visibility should be changed"
+        "room join rules should be changed"
     );
     assert_eq!(
         content.new_val(),
-        new_visibility.to_string(),
-        "new val of room history visibility is invalid"
+        new_join_rule.as_str().to_owned(),
+        "new val of room join rules is invalid"
     );
     assert_eq!(
         content.old_val(),
-        Some(default_visibility.to_string()),
-        "old val of room history visibility is invalid"
+        Some(default_join_rule.as_str().to_owned()),
+        "old val of room join rules is invalid"
     );
 
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem) -> Option<(String, RoomHistoryVisibilityContent)> {
+fn match_msg(msg: &TimelineItem) -> Option<(String, RoomJoinRulesContent)> {
     if msg.is_virtual() {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.room_history_visibility_content()?;
+    let content = event_item.room_join_rules_content()?;
     let event_id = event_item
         .event_id()
         .expect("event item should have event id");

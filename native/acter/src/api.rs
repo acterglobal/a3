@@ -70,6 +70,7 @@ pub use acter_core::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+            RoomJoinRulesContent,
         },
         ActerModel, Tag, TextMessageContent,
     },

@@ -6,4 +6,5 @@ mod room_create;
 mod room_encryption;
 mod room_guest_access;
 mod room_history_visibility;
+mod room_join_rules;
 mod user_settings;

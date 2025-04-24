@@ -19,6 +19,7 @@ use crate::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+            RoomJoinRulesContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -40,6 +41,7 @@ pub enum ActivityContent {
     RoomEncryption(RoomEncryptionContent),
     RoomGuestAccess(RoomGuestAccessContent),
     RoomHistoryVisibility(RoomHistoryVisibilityContent),
+    RoomJoinRules(RoomJoinRulesContent),
     RoomName(RoomNameEventContent),
     RoomTopic(RoomTopicEventContent),
     Boost {
@@ -158,6 +160,7 @@ impl Activity {
             ActivityContent::RoomEncryption(_) => "roomEncryption",
             ActivityContent::RoomGuestAccess(_) => "roomGuestAccess",
             ActivityContent::RoomHistoryVisibility(_) => "roomHistoryVisibility",
+            ActivityContent::RoomJoinRules(_) => "roomJoinRules",
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
@@ -253,6 +256,7 @@ impl Activity {
             | ActivityContent::RoomEncryption(_)
             | ActivityContent::RoomGuestAccess(_)
             | ActivityContent::RoomHistoryVisibility(_)
+            | ActivityContent::RoomJoinRules(_)
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomTopic(_) => None,
 
@@ -358,6 +362,7 @@ impl Activity {
             | ActivityContent::RoomEncryption(_)
             | ActivityContent::RoomGuestAccess(_)
             | ActivityContent::RoomHistoryVisibility(_)
+            | ActivityContent::RoomJoinRules(_)
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomTopic(_) => todo!(),
         }
@@ -419,6 +424,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::RoomHistoryVisibility(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomHistoryVisibility(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomJoinRules(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomJoinRules(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))
