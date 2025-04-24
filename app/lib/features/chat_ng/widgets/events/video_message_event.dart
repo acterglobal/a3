@@ -168,7 +168,7 @@ class VideoMessageEvent extends ConsumerWidget {
         if (timestamp != null)
           Positioned(
             bottom: 0,
-            right: 0,
+            right: 8,
             child: MessageTimestampWidget(
               timestamp: timestamp.expect('should not be null'),
             ),
