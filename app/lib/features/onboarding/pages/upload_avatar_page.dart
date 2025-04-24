@@ -171,7 +171,7 @@ class UploadAvatarPage extends ConsumerWidget {
       onPressed: () async {
         if (!context.mounted) return;
         // Handle all post-login steps
-        callNextPage;
+        callNextPage?.call();
       },
       child: Text(
         L10n.of(context).skip,

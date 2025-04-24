@@ -239,6 +239,27 @@ impl Activity {
         }
     }
 
+    pub fn room_avatar(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomAvatar(c) => c.url_new_val(),
+            _ => None,
+        }
+    }
+
+    pub fn room_name(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomName(c) => Some(c.new_val()),
+            _ => None,
+        }
+    }
+
+    pub fn room_topic(&self) -> Option<String> {
+        match &self.inner {
+            ActivityContent::RoomTopic(c) => Some(c.new_val()),
+            _ => None,
+        }
+    }
+
     pub fn object(&self) -> Option<ActivityObject> {
         match &self.inner {
             ActivityContent::MembershipChange(_)

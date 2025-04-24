@@ -1,7 +1,6 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -84,7 +83,7 @@ class ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatTheme = Theme.of(context).chatTheme;
     final size = MediaQuery.sizeOf(context);
-    final msgWidth = messageWidth.map((w) => w.toDouble());
+    final msgWidth = messageWidth?.toDouble();
     final defaultWidth =
         context.isLargeScreen ? size.width * 0.5 : size.width * 0.75;
 
@@ -95,29 +94,32 @@ class ChatBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           const SizedBox(width: 5),
-          Container(
-            constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
-            width: msgWidth,
-            decoration: decoration,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  child,
-                  if (isEdited) ...[
-                    const SizedBox(width: 5),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        L10n.of(context).edited,
-                        style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(
-                          fontSize: 12,
+          IntrinsicWidth(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
+              decoration: decoration,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    child,
+                    if (isEdited) ...[
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          L10n.of(context).edited,
+                          style: chatTheme.emptyChatPlaceholderTextStyle
+                              .copyWith(fontSize: 12),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

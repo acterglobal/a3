@@ -1,4 +1,5 @@
 use acter::api::TimelineItem;
+use acter_core::models::status::RoomAvatarContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -48,7 +49,7 @@ async fn test_room_avatar() -> Result<()> {
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
-    let mut found_event_id = None;
+    let mut found_result = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -56,8 +57,8 @@ async fn test_room_avatar() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(event_id) = match_msg(&value, "Set", uri.to_string()) {
-                        found_event_id = Some(event_id);
+                    if let Some(result) = match_msg(&value) {
+                        found_result = Some(result);
                     }
                 }
                 "Reset" => {
@@ -65,8 +66,8 @@ async fn test_room_avatar() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(event_id) = match_msg(value, "Set", uri.to_string()) {
-                            found_event_id = Some(event_id);
+                        if let Some(result) = match_msg(value) {
+                            found_result = Some(result);
                             break;
                         }
                     }
@@ -74,22 +75,36 @@ async fn test_room_avatar() -> Result<()> {
                 _ => {}
             }
             // yay
-            if found_event_id.is_some() {
+            if found_result.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        found_event_id.is_some(),
-        "Even after 30 seconds, room avatar not received",
+    let (_found_event_id, content) =
+        found_result.expect("Even after 30 seconds, room avatar not received");
+
+    assert_eq!(
+        content.url_change(),
+        Some("Set".to_owned()),
+        "url in room avatar should be set"
+    );
+    assert_eq!(
+        content.url_new_val(),
+        Some(uri.to_string()),
+        "new val of url in room avatar is invalid"
+    );
+    assert_eq!(
+        content.url_old_val(),
+        None,
+        "old val of url in room avatar is invalid"
     );
 
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem, change: &str, new_val: String) -> Option<String> {
+fn match_msg(msg: &TimelineItem) -> Option<(String, RoomAvatarContent)> {
     if msg.is_virtual() {
         return None;
     }
@@ -97,14 +112,8 @@ fn match_msg(msg: &TimelineItem, change: &str, new_val: String) -> Option<String
     let Some(content) = event_item.room_avatar_content() else {
         return None;
     };
-    let Some(chg) = content.url_change() else {
-        return None;
-    };
-    if chg != change {
-        return None;
-    }
-    if content.url_new_val() != Some(new_val) {
-        return None;
-    }
-    event_item.event_id()
+    let event_id = event_item
+        .event_id()
+        .expect("event item should have event id");
+    Some((event_id, content))
 }
