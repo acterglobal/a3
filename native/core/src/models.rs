@@ -114,7 +114,7 @@ mod tests {
                 "age": 56316493
               }
             },
-            "event_id": "$WAfv0heG198eXRIRPVVuli2Guc9pI2PB_spOcS8NXco",
+            "event_id": "$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY",
             "user_id": "@emilvincentz:effektio.org",
             "redacted_because": {
               "type": "m.room.redaction",
@@ -137,7 +137,6 @@ mod tests {
           }"#;
         let event = serde_json::from_str::<AnyActerEvent>(json_raw)?;
         let acter_ev_result = AnyActerModel::try_from(event.clone());
-        let model_type = "global.acter.dev.news".to_owned();
         let event_id = owned_event_id!("$2_k7NsG2GOGfyeNOvV55OovysVl7WGKgGEY2hv6VosY");
         let Err(ParseError::ModelRedacted(details)) = acter_ev_result else {
             bail!("Not the expected error!")
@@ -148,7 +147,8 @@ mod tests {
             meta,
             reason,
         } = *details;
-        assert!(model_type == model_type && meta.event_id == event_id);
+        assert_eq!(model_type, "global.acter.dev.news");
+        assert_eq!(meta.event_id, event_id);
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }
