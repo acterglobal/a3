@@ -36,8 +36,9 @@ async fn test_room_encryption() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let algorithm = EventEncryptionAlgorithm::OlmV1Curve25519AesSha2.as_str();
-    let encryption_event_id = convo.set_encryption(algorithm.to_owned()).await?;
+    let new_algorithm = EventEncryptionAlgorithm::OlmV1Curve25519AesSha2;
+    let default_algorithm = EventEncryptionAlgorithm::MegolmV1AesSha2;
+    let encryption_event_id = convo.set_encryption(new_algorithm.to_string()).await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -85,12 +86,12 @@ async fn test_room_encryption() -> Result<()> {
     );
     assert_eq!(
         content.algorithm_new_val(),
-        algorithm.to_owned(),
+        new_algorithm.to_string(),
         "new val of algorithm in room encryption is invalid"
     );
     assert_eq!(
         content.algorithm_old_val(),
-        Some(EventEncryptionAlgorithm::MegolmV1AesSha2.to_string()),
+        Some(default_algorithm.to_string()),
         "old val of algorithm in room encryption is invalid"
     );
 
