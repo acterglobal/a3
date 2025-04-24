@@ -1046,6 +1046,9 @@ object TimelineEventItem {
     /// covers m.room.create
     fn room_create_content() -> Option<RoomCreateContent>;
 
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1267,6 +1270,12 @@ object RoomAvatarContent {
 }
 
 object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
 
 
 //  ########   #######   #######  ##     ##
@@ -1686,6 +1695,10 @@ object Convo {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2752,6 +2765,10 @@ object Space {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

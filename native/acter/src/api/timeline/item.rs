@@ -1,7 +1,7 @@
 use acter_core::{
     models::status::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
-        ProfileContent, RoomAvatarContent, RoomCreateContent,
+        ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
     },
     util::do_vecs_match,
 };
@@ -332,6 +332,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_encryption_content(&self) -> Option<RoomEncryptionContent> {
+        if let Some(TimelineEventContent::RoomEncryption(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -487,42 +495,13 @@ impl TimelineEventItemBuilder {
                 let c = RoomCreateContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomCreate(c)));
             }
-            AnyOtherFullStateEventContent::RoomEncryption(c) => {
+            AnyOtherFullStateEventContent::RoomEncryption(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.encryption".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(algorithm) = prev.algorithm.clone() {
-                                if algorithm.ne(&content.algorithm) {
-                                    result.push("changed algorithm".to_owned());
-                                }
-                            } else {
-                                result.push("added algorithm".to_owned());
-                            }
-                            if prev.rotation_period_ms != content.rotation_period_ms {
-                                result.push("changed rotation period ms".to_owned());
-                            }
-                            if prev.rotation_period_msgs != content.rotation_period_msgs {
-                                result.push("changed rotation period msgs".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room encryption".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room encryption".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomEncryptionContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomEncryption(c)));
             }
             AnyOtherFullStateEventContent::RoomGuestAccess(c) => {
                 self.event_type("m.room.guest_access".to_owned());

@@ -43,6 +43,7 @@ use matrix_sdk_base::{
             },
             room::{
                 avatar::ImageInfo,
+                encryption::RoomEncryptionEventContent,
                 join_rules::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
                 },
@@ -55,8 +56,8 @@ use matrix_sdk_base::{
         room::RoomType,
         serde::Raw,
         space::SpaceRoomJoinRule,
-        EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri, OwnedRoomAliasId, OwnedRoomId,
-        OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
+        EventEncryptionAlgorithm, EventId, IdParseError, Int, OwnedEventId, OwnedMxcUri,
+        OwnedRoomAliasId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId, ServerName, UserId,
     },
     RoomDisplayName, RoomMemberships, RoomState,
 };
@@ -1897,6 +1898,30 @@ impl Room {
                 let response = room
                     .send_state_event_for_key(&state_key, PolicyRuleUserEventContent(content))
                     .await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    // initial algorithm is m.megolm.v1.aes-sha2
+    pub async fn set_encryption(&self, algorithm: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room encryption in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let algorithm = EventEncryptionAlgorithm::from(algorithm.as_str());
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomEncryption)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room encryption in this room");
+                }
+                let content = RoomEncryptionEventContent::new(algorithm);
+                let response = room.send_state_event(content).await?;
                 Ok(response.event_id)
             })
             .await?
