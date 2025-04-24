@@ -2382,8 +2382,6 @@
   "@chatUpdateRoomTopic": {},
   "chatYouUpdateRoomTopic": "Du hast die Raumbeschreibung geändert",
   "@chatYouUpdateRoomTopic": {},
-  "chatUpdateRoomHistoryVisibility": "{name} hat die Raumsichtbarkeit geändert",
-  "@chatUpdateRoomHistoryVisibility": {},
   "betaVersion": "Beta-Version",
   "@betaVersion": {},
   "goingTo": "Gehe zu",
