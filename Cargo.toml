@@ -18,33 +18,33 @@ path = "../uniffi-dart/"
 
 [workspace.dependencies.matrix-sdk]
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-base]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ffi]
@@ -59,8 +59,8 @@ default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 # path = "../matrix-rust-sdk/testing/matrix-sdk-test"
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
-rev = "a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 

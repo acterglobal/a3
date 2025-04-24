@@ -1,1 +1,0 @@
-- [Implemented] : A desktop setup wizard with a user interface added with launch-at-startup functionality for macOS.

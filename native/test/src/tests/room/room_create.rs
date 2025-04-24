@@ -1,5 +1,5 @@
-use acter::{api::TimelineItem, matrix_sdk::ruma::events::policy::rule::Recommendation};
-use acter_core::models::status::PolicyRuleServerContent;
+use acter::api::TimelineItem;
+use acter_core::models::status::RoomCreateContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -12,10 +12,10 @@ use tokio_retry::{
 use crate::utils::random_user_with_random_convo;
 
 #[tokio::test]
-async fn test_policy_rule_server() -> Result<()> {
+async fn test_room_create() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("policy_rule_server").await?;
+    let (mut user, room_id) = random_user_with_random_convo("room_create").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -34,13 +34,6 @@ async fn test_policy_rule_server() -> Result<()> {
     let timeline = convo.timeline_stream();
     let stream = timeline.messages_stream();
     pin_mut!(stream);
-
-    let policy_event_id = convo
-        .set_policy_rule_server(
-            "*.example.org".to_owned(),
-            "undesirable engagement".to_owned(),
-        )
-        .await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -77,71 +70,18 @@ async fn test_policy_rule_server() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let (found_event_id, content) =
-        found_result.expect("Even after 30 seconds, policy rule server not received");
-    assert_eq!(
-        found_event_id,
-        policy_event_id.to_string(),
-        "Incorrect event id",
-    );
-
-    assert_eq!(
-        content.entity_change(),
-        Some("Set".to_owned()),
-        "entity in policy rule server should be set"
-    );
-    assert_eq!(
-        content.entity_new_val(),
-        "*.example.org",
-        "new val of entity in policy rule server is invalid"
-    );
-    assert_eq!(
-        content.entity_old_val(),
-        None,
-        "old val of entity in policy rule server is invalid"
-    );
-
-    assert_eq!(
-        content.recommendation_change(),
-        Some("Set".to_owned()),
-        "recommendation in policy rule server should be set"
-    );
-    assert_eq!(
-        content.recommendation_new_val(),
-        Recommendation::Ban.as_str(),
-        "new val of recommendation in policy rule server is invalid"
-    );
-    assert_eq!(
-        content.recommendation_old_val(),
-        None,
-        "old val of recommendation in policy rule server is invalid"
-    );
-
-    assert_eq!(
-        content.reason_change(),
-        Some("Set".to_owned()),
-        "reason in policy rule server should be set"
-    );
-    assert_eq!(
-        content.reason_new_val(),
-        "undesirable engagement",
-        "new val of reason in policy rule server is invalid"
-    );
-    assert_eq!(
-        content.reason_old_val(),
-        None,
-        "old val of reason in policy rule server is invalid"
-    );
+    let (_found_event_id, _content) =
+        found_result.expect("Even after 30 seconds, room create not received");
 
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem) -> Option<(String, PolicyRuleServerContent)> {
+fn match_msg(msg: &TimelineItem) -> Option<(String, RoomCreateContent)> {
     if msg.is_virtual() {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.policy_rule_server_content()?;
+    let content = event_item.room_create_content()?;
     let event_id = event_item
         .event_id()
         .expect("event item should have event id");

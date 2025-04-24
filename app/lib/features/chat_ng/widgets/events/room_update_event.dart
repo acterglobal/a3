@@ -64,10 +64,19 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
-      'm.room.create' =>
-        isMe
-            ? lang.chatYouRoomCreate
-            : lang.chatRoomCreate(firstName ?? senderId),
+      'm.room.avatar' => getMessageOnRoomAvatar(lang, isMe, senderName),
+      'm.room.create' => getMessageOnRoomCreate(lang, isMe, senderName),
+      'm.room.encryption' => getMessageOnRoomEncryption(lang, isMe, senderName),
+      'm.room.guest_access' => getMessageOnRoomGuestAccess(
+        lang,
+        isMe,
+        senderName,
+      ),
+      'm.room.history_visibility' => getMessageOnRoomHistoryVisibility(
+        lang,
+        isMe,
+        senderName,
+      ),
       'm.room.join_rules' =>
         isMe
             ? '${lang.chatYouUpdateJoinRules}: $msgContent'
@@ -84,10 +93,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
             : '${lang.chatUpdateRoomTopic(firstName ?? senderId)}: $msgContent',
-      'm.room.avatar' =>
-        isMe
-            ? lang.chatYouUpdateRoomAvatar
-            : lang.chatUpdateRoomAvatar(firstName ?? senderId),
       'm.room.aliases' =>
         isMe
             ? lang.chatYouUpdateRoomAliases
@@ -96,18 +101,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateRoomCanonicalAlias
             : lang.chatUpdateRoomCanonicalAlias(firstName ?? senderId),
-      'm.room.history_visibility' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
-            : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
-      'm.room.encryption' =>
-        isMe
-            ? lang.chatYouUpdateRoomEncryption
-            : lang.chatUpdateRoomEncryption(firstName ?? senderId),
-      'm.room.guest_access' =>
-        isMe
-            ? lang.chatYouUpdateRoomGuestAccess
-            : lang.chatUpdateRoomGuestAccess(firstName ?? senderId),
       'm.room.third_party_invite' =>
         isMe
             ? lang.chatYouUpdateRoomThirdPartyInvite
@@ -366,6 +359,146 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStatePolicyRuleUserRecommendationYouSet(newVal);
         } else {
           return lang.roomStatePolicyRuleUserRecommendationOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomAvatar(L10n lang, bool isMe, String senderName) {
+    final content = item.roomAvatarContent();
+    if (content == null) {
+      _log.severe('failed to get content of room avatar change');
+      return null;
+    }
+    switch (content.urlChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouChanged;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouSet;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherSet(senderName);
+        }
+      case 'Unset':
+        if (isMe) {
+          return lang.roomStateRoomAvatarUrlYouUnset;
+        } else {
+          return lang.roomStateRoomAvatarUrlOtherUnset(senderName);
+        }
+    }
+    return null;
+  }
+
+  String getMessageOnRoomCreate(L10n lang, bool isMe, String senderName) {
+    if (isMe) {
+      return lang.roomStateRoomCreateYou;
+    } else {
+      return lang.roomStateRoomCreateOther(senderName);
+    }
+  }
+
+  String? getMessageOnRoomEncryption(L10n lang, bool isMe, String senderName) {
+    final content = item.roomEncryptionContent();
+    if (content == null) {
+      _log.severe('failed to get content of room encryption change');
+      return null;
+    }
+    switch (content.algorithmChange()) {
+      case 'Changed':
+        final newVal = content.algorithmNewVal();
+        final oldVal = content.algorithmOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomEncryptionAlgorithmYouChanged(
+            oldVal,
+            newVal,
+          );
+        } else {
+          return lang.roomStateRoomEncryptionAlgorithmOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.algorithmNewVal();
+        if (isMe) {
+          return lang.roomStateRoomEncryptionAlgorithmYouSet(newVal);
+        } else {
+          return lang.roomStateRoomEncryptionAlgorithmOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomGuestAccess(L10n lang, bool isMe, String senderName) {
+    final content = item.roomGuestAccessContent();
+    if (content == null) {
+      _log.severe('failed to get content of room guest access change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomGuestAccessYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomGuestAccessOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomGuestAccessYouSet(newVal);
+        } else {
+          return lang.roomStateRoomGuestAccessOtherSet(senderName, newVal);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomHistoryVisibility(
+    L10n lang,
+    bool isMe,
+    String senderName,
+  ) {
+    final content = item.roomHistoryVisibilityContent();
+    if (content == null) {
+      _log.severe('failed to get content of room history visibility change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomHistoryVisibilityYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomHistoryVisibilityOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomHistoryVisibilityYouSet(newVal);
+        } else {
+          return lang.roomStateRoomHistoryVisibilityOtherSet(
             senderName,
             newVal,
           );

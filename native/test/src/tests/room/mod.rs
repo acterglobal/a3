@@ -1,4 +1,9 @@
 mod policy_rule_room;
 mod policy_rule_server;
 mod policy_rule_user;
+mod room_avatar;
+mod room_create;
+mod room_encryption;
+mod room_guest_access;
+mod room_history_visibility;
 mod user_settings;

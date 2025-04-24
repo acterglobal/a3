@@ -1040,6 +1040,21 @@ object TimelineEventItem {
     /// covers m.policy.rule.user
     fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
 
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1252,6 +1267,32 @@ object PolicyRuleUserContent {
     fn recommendation_change() -> Option<string>;
     fn recommendation_new_val() -> string;
     fn recommendation_old_val() -> Option<string>;
+}
+
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
+}
+
+object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
 }
 
 
@@ -1672,6 +1713,18 @@ object Convo {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2426,7 +2479,7 @@ object Activity {
     fn object() -> Option<ActivityObject>;
 
     /// get avatar uri when space avatar changed
-    fn room_avatar() -> Option<MxcUri>;
+    fn room_avatar() -> Option<string>;
 
     /// get name when space name changed
     fn room_name() -> Option<string>;
@@ -2738,6 +2791,18 @@ object Space {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

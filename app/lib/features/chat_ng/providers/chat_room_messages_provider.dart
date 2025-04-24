@@ -23,6 +23,11 @@ const _supportedTypes = [
   'm.policy.rule.room',
   'm.policy.rule.server',
   'm.policy.rule.user',
+  'm.room.avatar',
+  'm.room.create',
+  'm.room.encryption',
+  'm.room.guest_access',
+  'm.room.history_visibility',
 
   'm.room.message',
   'm.room.redaction',
