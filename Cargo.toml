@@ -2,8 +2,9 @@
 resolver = "2"
 members = [
   "native/*",
-  "util/mr_minutes"
-, "util/sari"]
+  "util/mr_minutes",
+  "util/sari"
+]
 
 default-members = ["native/acter"]
 

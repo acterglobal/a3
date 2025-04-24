@@ -36,12 +36,26 @@ dependencies = [
     "setup-ios",
 ]
 
+[tasks.ffi]
+script_runner = "@duckscript"
+dependencies = [
+    "desktop",
+    "ffigen",
+]
+
+[tasks.uniffi]
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
+command = "cargo"
+args = ["run", "-p", "sari", "build"]
+
 [tasks.ffigen]
 script_runner = "@duckscript"
 script = [
     """
     cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/acter/bindings.dart \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/acter_flutter_sdk_ffi.dart
+        ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/acter_flutter_sdk_ffi.dart
+    extra = readfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/acter/ffi_bindings_extra.dart
+    appendfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/acter_flutter_sdk_ffi.dart ${extra}
     """,
 ]
 dependencies = [
@@ -192,8 +206,6 @@ args = [
     "--target",
     "${CARGO_BUILD_TARGET}",
     "-Zbuild-std",
-    "--features",
-    "uniffi",
 ]
 
 [tasks.cargo-build-release]
@@ -205,37 +217,9 @@ args = [
     "--target",
     "${CARGO_BUILD_TARGET}",
     "-Zbuild-std",
-    "--features",
-    "uniffi",
     "--release",
 ]
 
-[tasks.cargo-build-uniffi-dev]
-private = true
-condition = { env_true = ["DEV"], env_set = ["CARGO_BUILD_TARGET"] }
-command = "cargo"
-args = [
-    "build",
-    "--target",
-    "${CARGO_BUILD_TARGET}",
-    "-Zbuild-std",
-    "--features",
-    "uniffi"
-]
-
-[tasks.cargo-build-uniffi-release]
-private = true
-condition = { env_true = ["RELEASE"], env_set = ["CARGO_BUILD_TARGET"] }
-command = "cargo"
-args = [
-    "build",
-    "--target",
-    "${CARGO_BUILD_TARGET}",
-    "-Zbuild-std",
-    "--features",
-    "uniffi",
-    "--release"
-]
 
 [tasks.make-ios-swift]
 private = true
@@ -343,37 +327,37 @@ args = [
 private = true
 condition = { env_true = ["DEV"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios" }
-run_task = "cargo-build-uniffi-dev"
+run_task = "cargo-build-dev"
 
 [tasks.ios-aarch64-apple-ios-release]
 private = true
 condition = { env_true = ["RELEASE"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios" }
-run_task = "cargo-build-uniffi-release"
+run_task = "cargo-build-release"
 
 [tasks.ios-x86_64-apple-ios]
 private = true
 condition = { env_true = ["DEV"] }
 env = { CARGO_BUILD_TARGET = "x86_64-apple-ios" }
-run_task = "cargo-build-uniffi-dev"
+run_task = "cargo-build-dev"
 
 [tasks.ios-x86_64-apple-ios-release]
 private = true
 condition = { env_true = ["RELEASE"] }
 env = { CARGO_BUILD_TARGET = "x86_64-apple-ios" }
-run_task = "cargo-build-uniffi-release"
+run_task = "cargo-build-release"
 
 [tasks.ios-aarch64-apple-ios-sim]
 private = true
 condition = { env_true = ["DEV"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios-sim" }
-run_task = "cargo-build-uniffi-dev"
+run_task = "cargo-build-dev"
 
 [tasks.ios-aarch64-apple-ios-sim-release]
 private = true
 condition = { env_true = ["RELEASE"] }
 env = { CARGO_BUILD_TARGET = "aarch64-apple-ios-sim" }
-run_task = "cargo-build-uniffi-release"
+run_task = "cargo-build-release"
 
 [tasks.post-ios]
 script_runner = "@shell"
