@@ -3,6 +3,7 @@ use acter_core::models::status::RoomGuestAccessContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
+use matrix_sdk_base::ruma::events::room::guest_access::GuestAccess;
 use tokio::time::sleep;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -35,8 +36,8 @@ async fn test_room_guest_access() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let guest_access = "can_join";
-    let access_event_id = convo.set_guest_access(guest_access.to_owned()).await?;
+    let guest_access = GuestAccess::CanJoin;
+    let access_event_id = convo.set_guest_access(guest_access.to_string()).await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -84,7 +85,7 @@ async fn test_room_guest_access() -> Result<()> {
     );
     assert_eq!(
         content.new_val(),
-        guest_access,
+        guest_access.to_string(),
         "new val of room guest access is invalid"
     );
     assert_eq!(
