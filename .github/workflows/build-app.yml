@@ -432,21 +432,6 @@ jobs:
           name: ${{ matrix.name }}
           path: ${{ matrix.artifact_prefix }}-${{ inputs.version }}.*
 
-      - uses: actions/upload-artifact@v4
-        name: "Upload debug artifacts"
-        if: ${{ matrix.with_debug_symbols }}
-        with:
-          name: ${{ matrix.name }}-debug-symbols
-          path: app/debug_symbols/*
-
-      - name: "Upload debug artifacts to sentry"
-        if: ${{matrix.with_debug_symbols && inputs.release_tag }}
-        working-directory: app
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_RELEASE: ${{ inputs.version }}
-        run: flutter packages pub run sentry_dart_plugin
-
       - name: Upload specific files to Release
         if: ${{! matrix.exclude_from_release && inputs.release_tag && matrix.specific_upload_artifacts}}
         env:
@@ -474,3 +459,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run:
           gh release upload ${{inputs.release_tag}} ${{ matrix.artifact_prefix }}-${{ inputs.version }}.zip
+
+      - uses: actions/upload-artifact@v4
+        name: "Upload debug artifacts"
+        if: ${{ matrix.with_debug_symbols }}
+        with:
+          name: ${{ matrix.name }}-debug-symbols
+          path: app/debug_symbols/*
+
+      - name: "Upload debug artifacts to sentry"
+        if: ${{matrix.with_debug_symbols && inputs.release_tag }}
+        working-directory: app
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+          SENTRY_ORG: ${{ env.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ env.SENTRY_PROJECT }}
+          SENTRY_RELEASE: ${{ inputs.version }}
+        run: flutter packages pub run sentry_dart_plugin

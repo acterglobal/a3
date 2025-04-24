@@ -284,6 +284,7 @@ impl TasksState {
 }
 
 #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 enum Tool {
     News,
     Tasks(TasksState),

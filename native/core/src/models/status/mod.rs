@@ -71,9 +71,9 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             redacted: None,
         };
         let make_err = |event| {
-            ParseError::UnsupportedEvent(AnyActerEvent::RegularTimelineEvent(
+            ParseError::UnsupportedEvent(Box::new(AnyActerEvent::RegularTimelineEvent(
                 AnyTimelineEvent::State(event),
-            ))
+            )))
         };
         match &event {
             AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {

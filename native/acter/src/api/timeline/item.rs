@@ -953,6 +953,7 @@ impl TimelineVirtualItem {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[allow(clippy::large_enum_variant)]
 enum TimelineItemContent {
     Event(TimelineEventItem),
     Virtual(TimelineVirtualItem),
