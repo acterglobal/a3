@@ -72,6 +72,11 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
+      'm.room.history_visibility' => getMessageOnRoomHistoryVisibility(
+        lang,
+        isMe,
+        senderName,
+      ),
       'm.room.join_rules' =>
         isMe
             ? '${lang.chatYouUpdateJoinRules}: $msgContent'
@@ -96,10 +101,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateRoomCanonicalAlias
             : lang.chatUpdateRoomCanonicalAlias(firstName ?? senderId),
-      'm.room.history_visibility' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
-            : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
       'm.room.third_party_invite' =>
         isMe
             ? lang.chatYouUpdateRoomThirdPartyInvite
@@ -464,6 +465,43 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStateRoomGuestAccessYouSet(newVal);
         } else {
           return lang.roomStateRoomGuestAccessOtherSet(senderName, newVal);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomHistoryVisibility(
+    L10n lang,
+    bool isMe,
+    String senderName,
+  ) {
+    final content = item.roomHistoryVisibilityContent();
+    if (content == null) {
+      _log.severe('failed to get content of room history visibility change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomHistoryVisibilityYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomHistoryVisibilityOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomHistoryVisibilityYouSet(newVal);
+        } else {
+          return lang.roomStateRoomHistoryVisibilityOtherSet(
+            senderName,
+            newVal,
+          );
         }
     }
     return null;

@@ -5,4 +5,5 @@ mod room_avatar;
 mod room_create;
 mod room_encryption;
 mod room_guest_access;
+mod room_history_visibility;
 mod user_settings;

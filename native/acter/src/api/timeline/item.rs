@@ -2,7 +2,7 @@ use acter_core::{
     models::status::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
-        RoomGuestAccessContent,
+        RoomGuestAccessContent, RoomHistoryVisibilityContent,
     },
     util::do_vecs_match,
 };
@@ -349,6 +349,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_history_visibility_content(&self) -> Option<RoomHistoryVisibilityContent> {
+        if let Some(TimelineEventContent::RoomHistoryVisibility(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -520,36 +528,15 @@ impl TimelineEventItemBuilder {
                 let c = RoomGuestAccessContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomGuestAccess(c)));
             }
-            AnyOtherFullStateEventContent::RoomHistoryVisibility(c) => {
+            AnyOtherFullStateEventContent::RoomHistoryVisibility(
+                FullStateEventContent::Original {
+                    content,
+                    prev_content,
+                },
+            ) => {
                 self.event_type("m.room.history_visibility".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.history_visibility.ne(&content.history_visibility) {
-                                result.push(format!(
-                                    "changed '{}' -> '{}'",
-                                    prev.history_visibility.as_str(),
-                                    &content.history_visibility.as_str()
-                                ));
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.history_visibility.as_str().to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room history visibility".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomHistoryVisibilityContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomHistoryVisibility(c)));
             }
             AnyOtherFullStateEventContent::RoomJoinRules(c) => {
                 self.event_type("m.room.join_rules".to_owned());

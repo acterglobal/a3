@@ -45,6 +45,7 @@ use matrix_sdk_base::{
                 avatar::ImageInfo,
                 encryption::RoomEncryptionEventContent,
                 guest_access::{GuestAccess, RoomGuestAccessEventContent},
+                history_visibility::{HistoryVisibility, RoomHistoryVisibilityEventContent},
                 join_rules::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
                 },
@@ -1945,6 +1946,29 @@ impl Room {
                     bail!("No permissions to change room guest access in this room");
                 }
                 let content = RoomGuestAccessEventContent::new(guest_access);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // invited, joined, shared, or world_readable
+    pub async fn set_history_visibility(&self, history_visibility: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room history visiblity in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let history_visibility = HistoryVisibility::from(history_visibility.as_str());
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomHistoryVisibility)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room history visibility in this room");
+                }
+                let content = RoomHistoryVisibilityEventContent::new(history_visibility);
                 let response = room.send_state_event(content).await?;
                 Ok(response.event_id)
             })
