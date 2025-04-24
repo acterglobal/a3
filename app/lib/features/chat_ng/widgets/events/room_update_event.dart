@@ -67,6 +67,11 @@ class RoomUpdateEvent extends ConsumerWidget {
       'm.room.avatar' => getMessageOnRoomAvatar(lang, isMe, senderName),
       'm.room.create' => getMessageOnRoomCreate(lang, isMe, senderName),
       'm.room.encryption' => getMessageOnRoomEncryption(lang, isMe, senderName),
+      'm.room.guest_access' => getMessageOnRoomGuestAccess(
+        lang,
+        isMe,
+        senderName,
+      ),
       'm.room.join_rules' =>
         isMe
             ? '${lang.chatYouUpdateJoinRules}: $msgContent'
@@ -95,10 +100,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? '${lang.chatYouUpdateRoomHistoryVisibility}: $msgContent'
             : '${lang.chatUpdateRoomHistoryVisibility(firstName ?? senderId)}: $msgContent',
-      'm.room.guest_access' =>
-        isMe
-            ? lang.chatYouUpdateRoomGuestAccess
-            : lang.chatUpdateRoomGuestAccess(firstName ?? senderId),
       'm.room.third_party_invite' =>
         isMe
             ? lang.chatYouUpdateRoomThirdPartyInvite
@@ -433,6 +434,36 @@ class RoomUpdateEvent extends ConsumerWidget {
             senderName,
             newVal,
           );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomGuestAccess(L10n lang, bool isMe, String senderName) {
+    final content = item.roomGuestAccessContent();
+    if (content == null) {
+      _log.severe('failed to get content of room guest access change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomGuestAccessYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomGuestAccessOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomGuestAccessYouSet(newVal);
+        } else {
+          return lang.roomStateRoomGuestAccessOtherSet(senderName, newVal);
         }
     }
     return null;

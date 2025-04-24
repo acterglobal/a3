@@ -4,4 +4,5 @@ mod policy_rule_user;
 mod room_avatar;
 mod room_create;
 mod room_encryption;
+mod room_guest_access;
 mod user_settings;

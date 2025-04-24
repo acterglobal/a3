@@ -1049,6 +1049,9 @@ object TimelineEventItem {
     /// covers m.room.encryption
     fn room_encryption_content() -> Option<RoomEncryptionContent>;
 
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1275,6 +1278,12 @@ object RoomEncryptionContent {
     fn algorithm_change() -> Option<string>;
     fn algorithm_new_val() -> string;
     fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
 }
 
 
@@ -1699,6 +1708,10 @@ object Convo {
     /// set room encryption
     /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
     fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2769,6 +2782,10 @@ object Space {
     /// set room encryption
     /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
     fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {
