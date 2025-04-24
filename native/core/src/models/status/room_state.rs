@@ -9,6 +9,7 @@ use matrix_sdk_base::ruma::events::{
         create::RoomCreateEventContent,
         encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
         guest_access::{PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent},
+        history_visibility::RoomHistoryVisibilityEventContent,
     },
 };
 use serde::{Deserialize, Serialize};
@@ -483,5 +484,46 @@ impl RoomGuestAccessContent {
             .as_ref()
             .and_then(|prev| prev.guest_access.as_ref())
             .map(ToString::to_string)
+    }
+}
+
+// m.room.history_visibility
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomHistoryVisibilityContent {
+    content: RoomHistoryVisibilityEventContent,
+    prev_content: Option<RoomHistoryVisibilityEventContent>,
+}
+
+impl RoomHistoryVisibilityContent {
+    pub fn new(
+        content: RoomHistoryVisibilityEventContent,
+        prev_content: Option<RoomHistoryVisibilityEventContent>,
+    ) -> Self {
+        RoomHistoryVisibilityContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.history_visibility == prev_content.history_visibility {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn new_val(&self) -> String {
+        self.content.history_visibility.to_string()
+    }
+
+    pub fn old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.history_visibility.to_string())
     }
 }
