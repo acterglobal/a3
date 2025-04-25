@@ -2468,7 +2468,7 @@
   "@roomStateRoomServerAclAllowYouChanged": {},
   "roomStateRoomServerAclAllowOtherSet": "{senderId} hat die Erlaubnis des Raum Server ACL gesetzt.",
   "@roomStateRoomServerAclAllowOtherSet": {},
-  "roomStateRoomServerAclAllowYouSet": "Du hast die Erlaubnis des Raum Server ACL auf {newVal} gesetzt.",
+  "roomStateRoomServerAclAllowYouSet": "Du hast die Erlaubnis des Raum Server ACL gesetzt.",
   "@roomStateRoomServerAclAllowYouSet": {},
   "roomStateRoomServerAclDenyOtherChanged": "{senderId} hat die Ablehnung des Raum Server ACL geändert.",
   "@roomStateRoomServerAclDenyOtherChanged": {},
