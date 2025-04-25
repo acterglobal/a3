@@ -77,18 +77,12 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
-      'm.room.join_rules' =>
-        isMe
-            ? '${lang.chatYouUpdateJoinRules}: $msgContent'
-            : '${lang.chatUpdateJoinRules(firstName ?? senderId)}: $msgContent',
+      'm.room.join_rules' => getMessageOnRoomJoinRules(lang, isMe, senderName),
+      'm.room.name' => getMessageOnRoomName(lang, isMe, senderName),
       'm.room.power_levels' =>
         isMe
             ? lang.chatYouUpdatePowerLevels
             : lang.chatUpdatePowerLevels(firstName ?? senderId),
-      'm.room.name' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomName}: $msgContent'
-            : '${lang.chatUpdateRoomName(firstName ?? senderId)}: $msgContent',
       'm.room.topic' =>
         isMe
             ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
@@ -502,6 +496,62 @@ class RoomUpdateEvent extends ConsumerWidget {
             senderName,
             newVal,
           );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomJoinRules(L10n lang, bool isMe, String senderName) {
+    final content = item.roomJoinRulesContent();
+    if (content == null) {
+      _log.severe('failed to get content of room join rules change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomJoinRulesYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomJoinRulesOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomJoinRulesYouSet(newVal);
+        } else {
+          return lang.roomStateRoomJoinRulesOtherSet(senderName, newVal);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomName(L10n lang, bool isMe, String senderName) {
+    final content = item.roomNameContent();
+    if (content == null) {
+      _log.severe('failed to get content of room name change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomNameYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomNameOtherChanged(senderName, oldVal, newVal);
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomNameYouSet(newVal);
+        } else {
+          return lang.roomStateRoomNameOtherSet(senderName, newVal);
         }
     }
     return null;

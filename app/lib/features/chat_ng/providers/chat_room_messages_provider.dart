@@ -28,6 +28,8 @@ const _supportedTypes = [
   'm.room.encryption',
   'm.room.guest_access',
   'm.room.history_visibility',
+  'm.room.join_rules',
+  'm.room.name',
 
   'm.room.message',
   'm.room.redaction',
