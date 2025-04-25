@@ -3,7 +3,7 @@ use acter_core::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
-        RoomNameContent, RoomPinnedEventsContent,
+        RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
     },
     util::do_vecs_match,
 };
@@ -382,6 +382,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_power_levels_content(&self) -> Option<RoomPowerLevelsContent> {
+        if let Some(TimelineEventContent::RoomPowerLevels(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -587,59 +595,13 @@ impl TimelineEventItemBuilder {
                 let c = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomPinnedEvents(c)));
             }
-            AnyOtherFullStateEventContent::RoomPowerLevels(c) => {
+            AnyOtherFullStateEventContent::RoomPowerLevels(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.power_levels".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.ban != content.ban {
-                                result.push("changed ban level".to_owned());
-                            }
-                            if prev.events.ne(&content.events) {
-                                result.push("changed events level".to_owned());
-                            }
-                            if prev.events_default != content.events_default {
-                                result.push("changed events default level".to_owned());
-                            }
-                            if prev.invite != content.invite {
-                                result.push("changed invite level".to_owned());
-                            }
-                            if prev.kick != content.kick {
-                                result.push("changed kick level".to_owned());
-                            }
-                            if prev.notifications.room != content.notifications.room {
-                                result.push("changed notifications level".to_owned());
-                            }
-                            if prev.redact != content.redact {
-                                result.push("changed redact level".to_owned());
-                            }
-                            if prev.state_default != content.state_default {
-                                result.push("changed state default level".to_owned());
-                            }
-                            if prev.users.ne(&content.users) {
-                                result.push("changed users levels".to_owned());
-                            }
-                            if prev.users_default != content.users_default {
-                                result.push("changed users default level".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room power levels".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room power levels".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomPowerLevels(c)));
             }
             AnyOtherFullStateEventContent::RoomServerAcl(c) => {
                 self.event_type("m.room.server_acl".to_owned());

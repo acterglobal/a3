@@ -15,7 +15,9 @@ use matrix_sdk_base::ruma::events::{
         pinned_events::{
             PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
         },
+        power_levels::RoomPowerLevelsEventContent,
     },
+    TimelineEventType,
 };
 use serde::{Deserialize, Serialize};
 
@@ -672,5 +674,229 @@ impl RoomPinnedEventsContent {
                     .map(ToString::to_string)
                     .collect::<Vec<String>>()
             })
+    }
+}
+
+// m.room.power_levels
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomPowerLevelsContent {
+    content: RoomPowerLevelsEventContent,
+    prev_content: Option<RoomPowerLevelsEventContent>,
+}
+
+impl RoomPowerLevelsContent {
+    pub fn new(
+        content: RoomPowerLevelsEventContent,
+        prev_content: Option<RoomPowerLevelsEventContent>,
+    ) -> Self {
+        RoomPowerLevelsContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn ban_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.ban == prev_content.ban {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn ban_new_val(&self) -> i64 {
+        self.content.ban.into()
+    }
+
+    pub fn ban_old_val(&self) -> Option<i64> {
+        self.prev_content.as_ref().map(|prev| prev.ban.into())
+    }
+
+    pub fn events_change(&self, event_type: String) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            let event_type = TimelineEventType::from(event_type);
+            if self.content.events[&event_type] == prev_content.events[&event_type] {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn events_new_val(&self, event_type: String) -> i64 {
+        let key = TimelineEventType::from(event_type);
+        self.content.events[&key].into()
+    }
+
+    pub fn events_old_val(&self, event_type: String) -> Option<i64> {
+        let key = TimelineEventType::from(event_type);
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.events[&key].into())
+    }
+
+    pub fn events_default_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.events_default == prev_content.events_default {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn events_default_new_val(&self) -> i64 {
+        self.content.events_default.into()
+    }
+
+    pub fn events_default_old_val(&self) -> Option<i64> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.events_default.into())
+    }
+
+    pub fn invite_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.invite == prev_content.invite {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn invite_new_val(&self) -> i64 {
+        self.content.invite.into()
+    }
+
+    pub fn invite_old_val(&self) -> Option<i64> {
+        self.prev_content.as_ref().map(|prev| prev.invite.into())
+    }
+
+    pub fn kick_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.kick == prev_content.kick {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn kick_new_val(&self) -> i64 {
+        self.content.kick.into()
+    }
+
+    pub fn kick_old_val(&self) -> Option<i64> {
+        self.prev_content.as_ref().map(|prev| prev.kick.into())
+    }
+
+    pub fn notifications_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.notifications.room == prev_content.notifications.room {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn notifications_new_val(&self) -> i64 {
+        self.content.notifications.room.into()
+    }
+
+    pub fn notifications_old_val(&self) -> Option<i64> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.notifications.room.into())
+    }
+
+    pub fn redact_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.redact == prev_content.redact {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn redact_new_val(&self) -> i64 {
+        self.content.redact.into()
+    }
+
+    pub fn redact_old_val(&self) -> Option<i64> {
+        self.prev_content.as_ref().map(|prev| prev.redact.into())
+    }
+
+    pub fn state_default_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.state_default == prev_content.state_default {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn state_default_new_val(&self) -> i64 {
+        self.content.state_default.into()
+    }
+
+    pub fn state_default_old_val(&self) -> Option<i64> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.state_default.into())
+    }
+
+    pub fn users_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.users == prev_content.users {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn users_default_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.users_default == prev_content.users_default {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn users_default_new_val(&self) -> i64 {
+        self.content.users_default.into()
+    }
+
+    pub fn users_default_old_val(&self) -> Option<i64> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.users_default.into())
     }
 }

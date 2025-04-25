@@ -31,6 +31,7 @@ const _supportedTypes = [
   'm.room.join_rules',
   'm.room.name',
   'm.room.pinned_events',
+  'm.room.power_levels',
 
   'm.room.message',
   'm.room.redaction',

@@ -1064,6 +1064,9 @@ object TimelineEventItem {
     /// covers m.room.pinned_events
     fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
 
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1320,6 +1323,46 @@ object RoomPinnedEventsContent {
     fn change() -> Option<string>;
     fn new_val() -> Vec<string>;
     fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomPowerLevelsContent {
+    fn ban_change() -> Option<string>;
+    fn ban_new_val() -> i64;
+    fn ban_old_val() -> Option<i64>;
+
+    fn events_change(event_type: string) -> Option<string>;
+    fn events_new_val(event_type: string) -> i64;
+    fn events_old_val(event_type: string) -> Option<i64>;
+
+    fn events_default_change() -> Option<string>;
+    fn events_default_new_val() -> i64;
+    fn events_default_old_val() -> Option<i64>;
+
+    fn invite_change() -> Option<string>;
+    fn invite_new_val() -> i64;
+    fn invite_old_val() -> Option<i64>;
+
+    fn kick_change() -> Option<string>;
+    fn kick_new_val() -> i64;
+    fn kick_old_val() -> Option<i64>;
+
+    fn notifications_change() -> Option<string>;
+    fn notifications_new_val() -> i64;
+    fn notifications_old_val() -> Option<i64>;
+
+    fn redact_change() -> Option<string>;
+    fn redact_new_val() -> i64;
+    fn redact_old_val() -> Option<i64>;
+
+    fn state_default_change() -> Option<string>;
+    fn state_default_new_val() -> i64;
+    fn state_default_old_val() -> Option<i64>;
+
+    fn users_change() -> Option<string>;
+
+    fn users_default_change() -> Option<string>;
+    fn users_default_new_val() -> i64;
+    fn users_default_old_val() -> Option<i64>;
 }
 
 
@@ -1760,6 +1803,34 @@ object Convo {
     /// set room pinned events
     /// event id array
     fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
 }
 
 
@@ -2846,6 +2917,34 @@ object Space {
     /// set room pinned events
     /// event id array
     fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {
