@@ -22,6 +22,7 @@ pub use room_state::{
     PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
     RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
     RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+    RoomServerAclContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -42,6 +43,7 @@ pub enum ActerSupportedRoomStatusEvents {
     RoomName(RoomNameContent),
     RoomPinnedEvents(RoomPinnedEventsContent),
     RoomPowerLevels(RoomPowerLevelsContent),
+    RoomServerAcl(RoomServerAclContent),
     RoomTopic(RoomTopicEventContent),
 }
 
@@ -231,6 +233,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::RoomPowerLevels(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomServerAcl(StateEvent::Original(inner)) => {
+                let content = RoomServerAclContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomServerAcl(content),
                     meta,
                 })
             }

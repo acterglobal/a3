@@ -18,6 +18,7 @@ use crate::{
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
             RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+            RoomServerAclContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -43,6 +44,7 @@ pub enum ActivityContent {
     RoomName(RoomNameContent),
     RoomPinnedEvents(RoomPinnedEventsContent),
     RoomPowerLevels(RoomPowerLevelsContent),
+    RoomServerAcl(RoomServerAclContent),
     RoomTopic(RoomTopicEventContent),
     Boost {
         first_slide: Option<NewsContent>,
@@ -164,6 +166,7 @@ impl Activity {
             ActivityContent::RoomName(_) => "roomName",
             ActivityContent::RoomPinnedEvents(_) => "roomPinnedEvents",
             ActivityContent::RoomPowerLevels(_) => "roomPowerLevels",
+            ActivityContent::RoomServerAcl(_) => "roomServerAcl",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
@@ -262,6 +265,7 @@ impl Activity {
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomPinnedEvents(_)
             | ActivityContent::RoomPowerLevels(_)
+            | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTopic(_) => None,
 
             ActivityContent::Boost { .. } => None,
@@ -370,6 +374,7 @@ impl Activity {
             | ActivityContent::RoomName(_)
             | ActivityContent::RoomPinnedEvents(_)
             | ActivityContent::RoomPowerLevels(_)
+            | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTopic(_) => todo!(),
         }
     }
@@ -442,6 +447,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::RoomPowerLevels(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomPowerLevels(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomServerAcl(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomServerAcl(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomTopic(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomTopic(c)))

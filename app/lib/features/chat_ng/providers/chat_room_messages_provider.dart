@@ -32,6 +32,7 @@ const _supportedTypes = [
   'm.room.name',
   'm.room.pinned_events',
   'm.room.power_levels',
+  'm.room.server_acl',
 
   'm.room.message',
   'm.room.redaction',
