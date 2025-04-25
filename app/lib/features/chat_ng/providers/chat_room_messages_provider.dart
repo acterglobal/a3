@@ -30,6 +30,7 @@ const _supportedTypes = [
   'm.room.history_visibility',
   'm.room.join_rules',
   'm.room.name',
+  'm.room.pinned_events',
 
   'm.room.message',
   'm.room.redaction',
