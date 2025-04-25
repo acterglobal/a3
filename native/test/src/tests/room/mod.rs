@@ -8,4 +8,5 @@ mod room_guest_access;
 mod room_history_visibility;
 mod room_join_rules;
 mod room_name;
+mod room_pinned_events;
 mod user_settings;
