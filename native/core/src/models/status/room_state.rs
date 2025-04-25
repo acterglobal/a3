@@ -16,6 +16,7 @@ use matrix_sdk_base::ruma::events::{
             PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
         },
         power_levels::RoomPowerLevelsEventContent,
+        server_acl::RoomServerAclEventContent,
     },
     TimelineEventType,
 };
@@ -898,5 +899,86 @@ impl RoomPowerLevelsContent {
         self.prev_content
             .as_ref()
             .map(|prev| prev.users_default.into())
+    }
+}
+
+// m.room.server_acl
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomServerAclContent {
+    content: RoomServerAclEventContent,
+    prev_content: Option<RoomServerAclEventContent>,
+}
+
+impl RoomServerAclContent {
+    pub fn new(
+        content: RoomServerAclEventContent,
+        prev_content: Option<RoomServerAclEventContent>,
+    ) -> Self {
+        RoomServerAclContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn allow_ip_literals_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.allow_ip_literals == prev_content.allow_ip_literals {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn allow_ip_literals_new_val(&self) -> bool {
+        self.content.allow_ip_literals
+    }
+
+    pub fn allow_ip_literals_old_val(&self) -> Option<bool> {
+        self.prev_content
+            .as_ref()
+            .map(|prev| prev.allow_ip_literals)
+    }
+
+    pub fn allow_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if do_vecs_match(&self.content.allow, &prev_content.allow) {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn allow_new_val(&self) -> Vec<String> {
+        self.content.allow.clone()
+    }
+
+    pub fn allow_old_val(&self) -> Option<Vec<String>> {
+        self.prev_content.as_ref().map(|prev| prev.allow.clone())
+    }
+
+    pub fn deny_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if do_vecs_match(&self.content.deny, &prev_content.deny) {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn deny_new_val(&self) -> Vec<String> {
+        self.content.deny.clone()
+    }
+
+    pub fn deny_old_val(&self) -> Option<Vec<String>> {
+        self.prev_content.as_ref().map(|prev| prev.deny.clone())
     }
 }

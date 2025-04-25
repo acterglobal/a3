@@ -1067,6 +1067,9 @@ object TimelineEventItem {
     /// covers m.room.power_levels
     fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
 
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1363,6 +1366,20 @@ object RoomPowerLevelsContent {
     fn users_default_change() -> Option<string>;
     fn users_default_new_val() -> i64;
     fn users_default_old_val() -> Option<i64>;
+}
+
+object RoomServerAclContent {
+    fn allow_ip_literals_change() -> Option<string>;
+    fn allow_ip_literals_new_val() -> bool;
+    fn allow_ip_literals_old_val() -> Option<bool>;
+
+    fn allow_change() -> Option<string>;
+    fn allow_new_val() -> Vec<string>;
+    fn allow_old_val() -> Option<Vec<string>>;
+
+    fn deny_change() -> Option<string>;
+    fn deny_new_val() -> Vec<string>;
+    fn deny_old_val() -> Option<Vec<string>>;
 }
 
 
@@ -1831,6 +1848,12 @@ object Convo {
 
     /// set notifications of power levels
     fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2945,6 +2968,12 @@ object Space {
 
     /// set notifications of power levels
     fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

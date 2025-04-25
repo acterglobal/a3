@@ -3,7 +3,7 @@ use acter_core::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
-        RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+        RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
     },
     util::do_vecs_match,
 };
@@ -390,6 +390,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_server_acl_content(&self) -> Option<RoomServerAclContent> {
+        if let Some(TimelineEventContent::RoomServerAcl(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -603,38 +611,13 @@ impl TimelineEventItemBuilder {
                 let c = RoomPowerLevelsContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomPowerLevels(c)));
             }
-            AnyOtherFullStateEventContent::RoomServerAcl(c) => {
+            AnyOtherFullStateEventContent::RoomServerAcl(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.server_acl".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if !do_vecs_match::<String>(&prev.allow, &content.allow) {
-                                result.push("changed allow list".to_owned());
-                            }
-                            if prev.allow_ip_literals != content.allow_ip_literals {
-                                result.push("changed allow ip literals".to_owned());
-                            }
-                            if !do_vecs_match::<String>(&prev.deny, &content.deny) {
-                                result.push("changed deny list".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room server acl".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room server acl".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomServerAclContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomServerAcl(c)));
             }
             AnyOtherFullStateEventContent::RoomThirdPartyInvite(c) => {
                 self.event_type("m.room.third_party_invite".to_owned());

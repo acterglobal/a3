@@ -52,6 +52,7 @@ use matrix_sdk_base::{
                 message::{MessageType, RoomMessageEvent},
                 pinned_events::RoomPinnedEventsEventContent,
                 power_levels::RoomPowerLevelsEventContent,
+                server_acl::RoomServerAclEventContent,
                 MediaSource,
             },
             space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
@@ -2258,6 +2259,37 @@ impl Room {
                 let content = assign!(RoomPowerLevelsEventContent::new(), {
                     notifications,
                 });
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    // allow_ip_literals: true
+    // allow: ["*"]
+    // deny: ["1.1.1.1"]
+    pub async fn set_server_acl(
+        &self,
+        allow_ip_literals: bool,
+        allow: String,
+        deny: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room server acl in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let allow = serde_json::from_str::<Vec<String>>(&allow)?;
+        let deny = serde_json::from_str::<Vec<String>>(&deny)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomServerAcl)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room server acl in this room");
+                }
+                let content = RoomServerAclEventContent::new(allow_ip_literals, allow, deny);
                 let response = room.send_state_event(content).await?;
                 Ok(response.event_id)
             })
