@@ -89,6 +89,7 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe,
         senderName,
       ),
+      'm.room.server_acl' => getMessageOnRoomServerAcl(lang, isMe, senderName),
       'm.room.topic' =>
         isMe
             ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
@@ -105,7 +106,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateRoomThirdPartyInvite
             : lang.chatUpdateRoomThirdPartyInvite(firstName ?? senderId),
-      'm.room.server_acl' => lang.chatUpdateRoomServerAcl,
       'm.room.tombstone' => '${lang.chatUpdateRoomTombstone}: $msgContent',
       'm.space.parent' =>
         isMe
@@ -1118,6 +1118,70 @@ class RoomUpdateEvent extends ConsumerWidget {
             senderName,
             newVal,
           );
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomServerAcl(L10n lang, bool isMe, String senderName) {
+    final content = item.roomServerAclContent();
+    if (content == null) {
+      _log.severe('failed to get content of room server acl change');
+      return null;
+    }
+    switch (content.allowIpLiteralsChange()) {
+      case 'Changed':
+        final newVal = content.allowIpLiteralsNewVal();
+        final oldVal = content.allowIpLiteralsOldVal() ?? false;
+        if (isMe) {
+          return lang.roomStateRoomServerAclAllowIpLiteralsYouChanged(
+            oldVal,
+            newVal,
+          );
+        } else {
+          return lang.roomStateRoomServerAclAllowIpLiteralsOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.allowIpLiteralsNewVal();
+        if (isMe) {
+          return lang.roomStateRoomServerAclAllowIpLiteralsYouSet(newVal);
+        } else {
+          return lang.roomStateRoomServerAclAllowIpLiteralsOtherSet(
+            senderName,
+            newVal,
+          );
+        }
+    }
+    switch (content.allowChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomServerAclAllowYouChanged;
+        } else {
+          return lang.roomStateRoomServerAclAllowOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomServerAclAllowYouSet;
+        } else {
+          return lang.roomStateRoomServerAclAllowOtherSet(senderName);
+        }
+    }
+    switch (content.denyChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomServerAclDenyYouChanged;
+        } else {
+          return lang.roomStateRoomServerAclDenyOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomServerAclDenyYouSet;
+        } else {
+          return lang.roomStateRoomServerAclDenyOtherSet(senderName);
         }
     }
     return null;
