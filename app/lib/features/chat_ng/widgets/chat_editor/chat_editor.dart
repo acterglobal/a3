@@ -196,12 +196,37 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
+  int _getActualLineCount(String text, double maxWidth) {
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: textStyle),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: maxWidth);
+    // Get the number of lines the text actually occupies
+    return textPainter.computeLineMetrics().length;
+  }
+
   void _updateContentHeight() {
     final text = textEditorState.intoMarkdown();
-    final lineCount = text.split('\n').length - 1;
 
-    double newHeight =
-        lineCount > 1 ? ChatEditorUtils.maxHeight : ChatEditorUtils.baseHeight;
+    final actualLineCount =
+        _getActualLineCount(text, MediaQuery.sizeOf(context).width) - 1;
+
+    double newHeight = ChatEditorUtils.baseHeight;
+
+    if (text.isEmpty || actualLineCount == 0 || actualLineCount == 1) {
+      newHeight = ChatEditorUtils.baseHeight;
+    } else if (actualLineCount == 2) {
+      newHeight = ChatEditorUtils.baseHeight + 30;
+    } else if (actualLineCount == 3) {
+      newHeight = ChatEditorUtils.baseHeight + 60;
+    } else if (actualLineCount == 4) {
+      newHeight = ChatEditorUtils.baseHeight + 90;
+    } else if (actualLineCount == 5) {
+      newHeight = ChatEditorUtils.baseHeight + 120;
+    } else {
+      newHeight = ChatEditorUtils.maxHeight;
+    }
 
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     if (isKeyboardVisible == true) {
