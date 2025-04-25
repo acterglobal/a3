@@ -50,6 +50,7 @@ use matrix_sdk_base::{
                     AllowRule, JoinRule, Restricted, RoomJoinRulesEventContent, RoomMembership,
                 },
                 message::{MessageType, RoomMessageEvent},
+                pinned_events::RoomPinnedEventsEventContent,
                 MediaSource,
             },
             space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
@@ -1998,6 +1999,28 @@ impl Room {
                     bail!("No permissions to change room join rules in this room");
                 }
                 let content = RoomJoinRulesEventContent::new(join_rule);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_pinned_events(&self, event_ids: String) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room pinned events in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let pinned = serde_json::from_str::<Vec<OwnedEventId>>(&event_ids)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomPinnedEvents)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room pinned events in this room");
+                }
+                let content = RoomPinnedEventsEventContent::new(pinned);
                 let response = room.send_state_event(content).await?;
                 Ok(response.event_id)
             })

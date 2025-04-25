@@ -17,7 +17,7 @@ use crate::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
-            RoomJoinRulesContent, RoomNameContent,
+            RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -41,6 +41,7 @@ pub enum ActivityContent {
     RoomHistoryVisibility(RoomHistoryVisibilityContent),
     RoomJoinRules(RoomJoinRulesContent),
     RoomName(RoomNameContent),
+    RoomPinnedEvents(RoomPinnedEventsContent),
     RoomTopic(RoomTopicEventContent),
     Boost {
         first_slide: Option<NewsContent>,
@@ -160,6 +161,7 @@ impl Activity {
             ActivityContent::RoomHistoryVisibility(_) => "roomHistoryVisibility",
             ActivityContent::RoomJoinRules(_) => "roomJoinRules",
             ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::RoomPinnedEvents(_) => "roomPinnedEvents",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
@@ -256,6 +258,7 @@ impl Activity {
             | ActivityContent::RoomHistoryVisibility(_)
             | ActivityContent::RoomJoinRules(_)
             | ActivityContent::RoomName(_)
+            | ActivityContent::RoomPinnedEvents(_)
             | ActivityContent::RoomTopic(_) => None,
 
             ActivityContent::Boost { .. } => None,
@@ -362,6 +365,7 @@ impl Activity {
             | ActivityContent::RoomHistoryVisibility(_)
             | ActivityContent::RoomJoinRules(_)
             | ActivityContent::RoomName(_)
+            | ActivityContent::RoomPinnedEvents(_)
             | ActivityContent::RoomTopic(_) => todo!(),
         }
     }
@@ -428,6 +432,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomPinnedEvents(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomPinnedEvents(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomTopic(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomTopic(c)))
