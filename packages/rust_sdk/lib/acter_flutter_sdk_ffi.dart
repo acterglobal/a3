@@ -7528,6 +7528,411 @@ class Api {
     return tmp7;
   }
 
+  EventId? __convoSetPowerLevelsBanFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsBanFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsEventsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsEventsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsEventsDefaultFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsEventsDefaultFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsInviteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsInviteFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsKickFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsKickFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsRedactFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsStateDefaultFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsStateDefaultFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsUsersDefaultFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsUsersDefaultFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __convoSetPowerLevelsNotificationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetPowerLevelsNotificationsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __commentDraftSendFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -11012,6 +11417,411 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceSetPinnedEventsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsBanFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsBanFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsEventsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsEventsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsEventsDefaultFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsEventsDefaultFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsInviteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsInviteFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsKickFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsKickFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsRedactFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsRedactFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsStateDefaultFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsStateDefaultFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsUsersDefaultFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsUsersDefaultFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetPowerLevelsNotificationsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetPowerLevelsNotificationsFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -20351,6 +21161,17 @@ class Api {
           .asFunction<
             _TimelineEventItemRoomPinnedEventsContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomPowerLevelsContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomPowerLevelsContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_power_levels_content");
+
+  late final _timelineEventItemRoomPowerLevelsContent =
+      _timelineEventItemRoomPowerLevelsContentPtr
+          .asFunction<
+            _TimelineEventItemRoomPowerLevelsContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -21155,6 +21976,284 @@ class Api {
   late final _roomPinnedEventsContentOldVal =
       _roomPinnedEventsContentOldValPtr
           .asFunction<_RoomPinnedEventsContentOldValReturn Function(int)>();
+  late final _roomPowerLevelsContentBanChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentBanChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_ban_change");
+
+  late final _roomPowerLevelsContentBanChange =
+      _roomPowerLevelsContentBanChangePtr
+          .asFunction<_RoomPowerLevelsContentBanChangeReturn Function(int)>();
+  late final _roomPowerLevelsContentBanNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_ban_new_val",
+      );
+
+  late final _roomPowerLevelsContentBanNewVal =
+      _roomPowerLevelsContentBanNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentBanOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentBanOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_ban_old_val");
+
+  late final _roomPowerLevelsContentBanOldVal =
+      _roomPowerLevelsContentBanOldValPtr
+          .asFunction<_RoomPowerLevelsContentBanOldValReturn Function(int)>();
+  late final _roomPowerLevelsContentEventsChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_events_change");
+
+  late final _roomPowerLevelsContentEventsChange =
+      _roomPowerLevelsContentEventsChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentEventsNewValPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Int64 Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__RoomPowerLevelsContent_events_new_val");
+
+  late final _roomPowerLevelsContentEventsNewVal =
+      _roomPowerLevelsContentEventsNewValPtr
+          .asFunction<int Function(int, int, int, int)>();
+  late final _roomPowerLevelsContentEventsOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsOldValReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__RoomPowerLevelsContent_events_old_val");
+
+  late final _roomPowerLevelsContentEventsOldVal =
+      _roomPowerLevelsContentEventsOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsOldValReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _roomPowerLevelsContentEventsDefaultChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsDefaultChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_events_default_change");
+
+  late final _roomPowerLevelsContentEventsDefaultChange =
+      _roomPowerLevelsContentEventsDefaultChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsDefaultChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentEventsDefaultNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_events_default_new_val",
+      );
+
+  late final _roomPowerLevelsContentEventsDefaultNewVal =
+      _roomPowerLevelsContentEventsDefaultNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentEventsDefaultOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentEventsDefaultOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_events_default_old_val");
+
+  late final _roomPowerLevelsContentEventsDefaultOldVal =
+      _roomPowerLevelsContentEventsDefaultOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentEventsDefaultOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentInviteChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentInviteChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_invite_change");
+
+  late final _roomPowerLevelsContentInviteChange =
+      _roomPowerLevelsContentInviteChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentInviteChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentInviteNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_invite_new_val",
+      );
+
+  late final _roomPowerLevelsContentInviteNewVal =
+      _roomPowerLevelsContentInviteNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentInviteOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentInviteOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_invite_old_val");
+
+  late final _roomPowerLevelsContentInviteOldVal =
+      _roomPowerLevelsContentInviteOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentInviteOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentKickChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentKickChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_kick_change");
+
+  late final _roomPowerLevelsContentKickChange =
+      _roomPowerLevelsContentKickChangePtr
+          .asFunction<_RoomPowerLevelsContentKickChangeReturn Function(int)>();
+  late final _roomPowerLevelsContentKickNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_kick_new_val",
+      );
+
+  late final _roomPowerLevelsContentKickNewVal =
+      _roomPowerLevelsContentKickNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentKickOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentKickOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_kick_old_val");
+
+  late final _roomPowerLevelsContentKickOldVal =
+      _roomPowerLevelsContentKickOldValPtr
+          .asFunction<_RoomPowerLevelsContentKickOldValReturn Function(int)>();
+  late final _roomPowerLevelsContentNotificationsChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentNotificationsChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_notifications_change");
+
+  late final _roomPowerLevelsContentNotificationsChange =
+      _roomPowerLevelsContentNotificationsChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentNotificationsChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentNotificationsNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_notifications_new_val",
+      );
+
+  late final _roomPowerLevelsContentNotificationsNewVal =
+      _roomPowerLevelsContentNotificationsNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentNotificationsOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentNotificationsOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_notifications_old_val");
+
+  late final _roomPowerLevelsContentNotificationsOldVal =
+      _roomPowerLevelsContentNotificationsOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentNotificationsOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentRedactChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentRedactChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_redact_change");
+
+  late final _roomPowerLevelsContentRedactChange =
+      _roomPowerLevelsContentRedactChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentRedactChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentRedactNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_redact_new_val",
+      );
+
+  late final _roomPowerLevelsContentRedactNewVal =
+      _roomPowerLevelsContentRedactNewValPtr.asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentRedactOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentRedactOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_redact_old_val");
+
+  late final _roomPowerLevelsContentRedactOldVal =
+      _roomPowerLevelsContentRedactOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentRedactOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentStateDefaultChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentStateDefaultChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_state_default_change");
+
+  late final _roomPowerLevelsContentStateDefaultChange =
+      _roomPowerLevelsContentStateDefaultChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentStateDefaultChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentStateDefaultNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_state_default_new_val",
+      );
+
+  late final _roomPowerLevelsContentStateDefaultNewVal =
+      _roomPowerLevelsContentStateDefaultNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentStateDefaultOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentStateDefaultOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_state_default_old_val");
+
+  late final _roomPowerLevelsContentStateDefaultOldVal =
+      _roomPowerLevelsContentStateDefaultOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentStateDefaultOldValReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentUsersChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentUsersChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_users_change");
+
+  late final _roomPowerLevelsContentUsersChange =
+      _roomPowerLevelsContentUsersChangePtr
+          .asFunction<_RoomPowerLevelsContentUsersChangeReturn Function(int)>();
+  late final _roomPowerLevelsContentUsersDefaultChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentUsersDefaultChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_users_default_change");
+
+  late final _roomPowerLevelsContentUsersDefaultChange =
+      _roomPowerLevelsContentUsersDefaultChangePtr
+          .asFunction<
+            _RoomPowerLevelsContentUsersDefaultChangeReturn Function(int)
+          >();
+  late final _roomPowerLevelsContentUsersDefaultNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function(ffi.IntPtr)>>(
+        "__RoomPowerLevelsContent_users_default_new_val",
+      );
+
+  late final _roomPowerLevelsContentUsersDefaultNewVal =
+      _roomPowerLevelsContentUsersDefaultNewValPtr
+          .asFunction<int Function(int)>();
+  late final _roomPowerLevelsContentUsersDefaultOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomPowerLevelsContentUsersDefaultOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomPowerLevelsContent_users_default_old_val");
+
+  late final _roomPowerLevelsContentUsersDefaultOldVal =
+      _roomPowerLevelsContentUsersDefaultOldValPtr
+          .asFunction<
+            _RoomPowerLevelsContentUsersDefaultOldValReturn Function(int)
+          >();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -22270,6 +23369,77 @@ class Api {
 
   late final _convoSetPinnedEvents =
       _convoSetPinnedEventsPtr.asFunction<int Function(int, int, int, int)>();
+  late final _convoSetPowerLevelsBanPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_ban",
+      );
+
+  late final _convoSetPowerLevelsBan =
+      _convoSetPowerLevelsBanPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsEventsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Convo_set_power_levels_events");
+
+  late final _convoSetPowerLevelsEvents =
+      _convoSetPowerLevelsEventsPtr
+          .asFunction<int Function(int, int, int, int, int)>();
+  late final _convoSetPowerLevelsEventsDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_events_default",
+      );
+
+  late final _convoSetPowerLevelsEventsDefault =
+      _convoSetPowerLevelsEventsDefaultPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsInvitePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_invite",
+      );
+
+  late final _convoSetPowerLevelsInvite =
+      _convoSetPowerLevelsInvitePtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsKickPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_kick",
+      );
+
+  late final _convoSetPowerLevelsKick =
+      _convoSetPowerLevelsKickPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsRedactPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_redact",
+      );
+
+  late final _convoSetPowerLevelsRedact =
+      _convoSetPowerLevelsRedactPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsStateDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_state_default",
+      );
+
+  late final _convoSetPowerLevelsStateDefault =
+      _convoSetPowerLevelsStateDefaultPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsUsersDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_users_default",
+      );
+
+  late final _convoSetPowerLevelsUsersDefault =
+      _convoSetPowerLevelsUsersDefaultPtr.asFunction<int Function(int, int)>();
+  late final _convoSetPowerLevelsNotificationsPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Convo_set_power_levels_notifications",
+      );
+
+  late final _convoSetPowerLevelsNotifications =
+      _convoSetPowerLevelsNotificationsPtr.asFunction<int Function(int, int)>();
   late final _commentDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -25248,6 +26418,77 @@ class Api {
 
   late final _spaceSetPinnedEvents =
       _spaceSetPinnedEventsPtr.asFunction<int Function(int, int, int, int)>();
+  late final _spaceSetPowerLevelsBanPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_ban",
+      );
+
+  late final _spaceSetPowerLevelsBan =
+      _spaceSetPowerLevelsBanPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsEventsPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Int32,
+      )
+    >
+  >("__Space_set_power_levels_events");
+
+  late final _spaceSetPowerLevelsEvents =
+      _spaceSetPowerLevelsEventsPtr
+          .asFunction<int Function(int, int, int, int, int)>();
+  late final _spaceSetPowerLevelsEventsDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_events_default",
+      );
+
+  late final _spaceSetPowerLevelsEventsDefault =
+      _spaceSetPowerLevelsEventsDefaultPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsInvitePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_invite",
+      );
+
+  late final _spaceSetPowerLevelsInvite =
+      _spaceSetPowerLevelsInvitePtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsKickPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_kick",
+      );
+
+  late final _spaceSetPowerLevelsKick =
+      _spaceSetPowerLevelsKickPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsRedactPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_redact",
+      );
+
+  late final _spaceSetPowerLevelsRedact =
+      _spaceSetPowerLevelsRedactPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsStateDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_state_default",
+      );
+
+  late final _spaceSetPowerLevelsStateDefault =
+      _spaceSetPowerLevelsStateDefaultPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsUsersDefaultPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_users_default",
+      );
+
+  late final _spaceSetPowerLevelsUsersDefault =
+      _spaceSetPowerLevelsUsersDefaultPtr.asFunction<int Function(int, int)>();
+  late final _spaceSetPowerLevelsNotificationsPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
+        "__Space_set_power_levels_notifications",
+      );
+
+  late final _spaceSetPowerLevelsNotifications =
+      _spaceSetPowerLevelsNotificationsPtr.asFunction<int Function(int, int)>();
   late final _memberGetProfilePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Member_get_profile",
@@ -30126,6 +31367,157 @@ class Api {
           .asFunction<
             _ConvoSetPinnedEventsFuturePollReturn Function(int, int, int)
           >();
+  late final _convoSetPowerLevelsBanFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsBanFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_ban_future_poll");
+
+  late final _convoSetPowerLevelsBanFuturePoll =
+      _convoSetPowerLevelsBanFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsBanFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoSetPowerLevelsEventsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_events_future_poll");
+
+  late final _convoSetPowerLevelsEventsFuturePoll =
+      _convoSetPowerLevelsEventsFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsEventsFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoSetPowerLevelsEventsDefaultFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsEventsDefaultFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_events_default_future_poll");
+
+  late final _convoSetPowerLevelsEventsDefaultFuturePoll =
+      _convoSetPowerLevelsEventsDefaultFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsEventsDefaultFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _convoSetPowerLevelsInviteFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsInviteFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_invite_future_poll");
+
+  late final _convoSetPowerLevelsInviteFuturePoll =
+      _convoSetPowerLevelsInviteFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsInviteFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoSetPowerLevelsKickFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsKickFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_kick_future_poll");
+
+  late final _convoSetPowerLevelsKickFuturePoll =
+      _convoSetPowerLevelsKickFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsKickFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoSetPowerLevelsRedactFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_redact_future_poll");
+
+  late final _convoSetPowerLevelsRedactFuturePoll =
+      _convoSetPowerLevelsRedactFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsRedactFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoSetPowerLevelsStateDefaultFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsStateDefaultFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_state_default_future_poll");
+
+  late final _convoSetPowerLevelsStateDefaultFuturePoll =
+      _convoSetPowerLevelsStateDefaultFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsStateDefaultFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _convoSetPowerLevelsUsersDefaultFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsUsersDefaultFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_users_default_future_poll");
+
+  late final _convoSetPowerLevelsUsersDefaultFuturePoll =
+      _convoSetPowerLevelsUsersDefaultFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsUsersDefaultFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _convoSetPowerLevelsNotificationsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetPowerLevelsNotificationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_power_levels_notifications_future_poll");
+
+  late final _convoSetPowerLevelsNotificationsFuturePoll =
+      _convoSetPowerLevelsNotificationsFuturePollPtr
+          .asFunction<
+            _ConvoSetPowerLevelsNotificationsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _commentDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _CommentDraftSendFuturePollReturn Function(
@@ -31310,6 +32702,157 @@ class Api {
       _spaceSetPinnedEventsFuturePollPtr
           .asFunction<
             _SpaceSetPinnedEventsFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsBanFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsBanFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_ban_future_poll");
+
+  late final _spaceSetPowerLevelsBanFuturePoll =
+      _spaceSetPowerLevelsBanFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsBanFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsEventsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsEventsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_events_future_poll");
+
+  late final _spaceSetPowerLevelsEventsFuturePoll =
+      _spaceSetPowerLevelsEventsFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsEventsFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsEventsDefaultFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsEventsDefaultFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_events_default_future_poll");
+
+  late final _spaceSetPowerLevelsEventsDefaultFuturePoll =
+      _spaceSetPowerLevelsEventsDefaultFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsEventsDefaultFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _spaceSetPowerLevelsInviteFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsInviteFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_invite_future_poll");
+
+  late final _spaceSetPowerLevelsInviteFuturePoll =
+      _spaceSetPowerLevelsInviteFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsInviteFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsKickFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsKickFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_kick_future_poll");
+
+  late final _spaceSetPowerLevelsKickFuturePoll =
+      _spaceSetPowerLevelsKickFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsKickFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsRedactFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsRedactFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_redact_future_poll");
+
+  late final _spaceSetPowerLevelsRedactFuturePoll =
+      _spaceSetPowerLevelsRedactFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsRedactFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetPowerLevelsStateDefaultFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsStateDefaultFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_state_default_future_poll");
+
+  late final _spaceSetPowerLevelsStateDefaultFuturePoll =
+      _spaceSetPowerLevelsStateDefaultFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsStateDefaultFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _spaceSetPowerLevelsUsersDefaultFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsUsersDefaultFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_users_default_future_poll");
+
+  late final _spaceSetPowerLevelsUsersDefaultFuturePoll =
+      _spaceSetPowerLevelsUsersDefaultFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsUsersDefaultFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _spaceSetPowerLevelsNotificationsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetPowerLevelsNotificationsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_power_levels_notifications_future_poll");
+
+  late final _spaceSetPowerLevelsNotificationsFuturePoll =
+      _spaceSetPowerLevelsNotificationsFuturePollPtr
+          .asFunction<
+            _SpaceSetPowerLevelsNotificationsFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
           >();
   late final _memberIgnoreFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -42393,6 +43936,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.power_levels
+  RoomPowerLevelsContent? roomPowerLevelsContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomPowerLevelsContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomPowerLevelsContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomPowerLevelsContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -44970,6 +46530,560 @@ class RoomPinnedEventsContent {
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp5 = FfiListFfiString._(_api, tmp4_1);
     final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomPowerLevelsContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomPowerLevelsContent._(this._api, this._box);
+
+  String? banChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentBanChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int banNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentBanNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? banOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentBanOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? eventsChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int eventsNewVal(String eventType) {
+    final tmp1 = eventType;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._roomPowerLevelsContentEventsNewVal(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final tmp6 = tmp7;
+    return tmp6;
+  }
+
+  int? eventsOldVal(String eventType) {
+    final tmp1 = eventType;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._roomPowerLevelsContentEventsOldVal(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    if (tmp7 == 0) {
+      return null;
+    }
+    final tmp6 = tmp8;
+    return tmp6;
+  }
+
+  String? eventsDefaultChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsDefaultChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int eventsDefaultNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsDefaultNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? eventsDefaultOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentEventsDefaultOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? inviteChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentInviteChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int inviteNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentInviteNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? inviteOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentInviteOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? kickChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentKickChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int kickNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentKickNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? kickOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentKickOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? notificationsChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentNotificationsChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int notificationsNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentNotificationsNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? notificationsOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentNotificationsOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? redactChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentRedactChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int redactNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentRedactNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? redactOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentRedactOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? stateDefaultChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentStateDefaultChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int stateDefaultNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentStateDefaultNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? stateDefaultOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentStateDefaultOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  String? usersChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? usersDefaultChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersDefaultChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  int usersDefaultNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersDefaultNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  int? usersDefaultOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomPowerLevelsContentUsersDefaultOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -47966,6 +50080,223 @@ class Convo {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__convoSetPinnedEventsFuturePoll);
     return tmp6;
+  }
+
+  /// set ban of power levels
+  Future<EventId> setPowerLevelsBan(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsBan(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_ban_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__convoSetPowerLevelsBanFuturePoll);
+    return tmp4;
+  }
+
+  /// set events of power levels
+  /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+  Future<EventId> setPowerLevelsEvents(String eventType, int level) {
+    final tmp1 = eventType;
+    final tmp5 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._convoSetPowerLevelsEvents(tmp0, tmp2, tmp3, tmp4, tmp6);
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(
+      _api,
+      tmp9_0,
+      "__Convo_set_power_levels_events_future_drop",
+    );
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(
+      tmp9_1,
+      _api.__convoSetPowerLevelsEventsFuturePoll,
+    );
+    return tmp8;
+  }
+
+  /// set events_default of power levels
+  Future<EventId> setPowerLevelsEventsDefault(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsEventsDefault(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_events_default_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsEventsDefaultFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set invite of power levels
+  Future<EventId> setPowerLevelsInvite(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsInvite(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_invite_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsInviteFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set kick of power levels
+  Future<EventId> setPowerLevelsKick(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsKick(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_kick_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsKickFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set redact of power levels
+  Future<EventId> setPowerLevelsRedact(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsRedact(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_redact_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsRedactFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set state_default of power levels
+  Future<EventId> setPowerLevelsStateDefault(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsStateDefault(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_state_default_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsStateDefaultFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set users_default of power levels
+  Future<EventId> setPowerLevelsUsersDefault(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsUsersDefault(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_users_default_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsUsersDefaultFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set notifications of power levels
+  Future<EventId> setPowerLevelsNotifications(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._convoSetPowerLevelsNotifications(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Convo_set_power_levels_notifications_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__convoSetPowerLevelsNotificationsFuturePoll,
+    );
+    return tmp4;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -55584,6 +57915,223 @@ class Space {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__spaceSetPinnedEventsFuturePoll);
     return tmp6;
+  }
+
+  /// set ban of power levels
+  Future<EventId> setPowerLevelsBan(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsBan(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_ban_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(tmp5_1, _api.__spaceSetPowerLevelsBanFuturePoll);
+    return tmp4;
+  }
+
+  /// set events of power levels
+  /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+  Future<EventId> setPowerLevelsEvents(String eventType, int level) {
+    final tmp1 = eventType;
+    final tmp5 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp6 = tmp5;
+    final tmp7 = _api._spaceSetPowerLevelsEvents(tmp0, tmp2, tmp3, tmp4, tmp6);
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(
+      _api,
+      tmp9_0,
+      "__Space_set_power_levels_events_future_drop",
+    );
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = _nativeFuture(
+      tmp9_1,
+      _api.__spaceSetPowerLevelsEventsFuturePoll,
+    );
+    return tmp8;
+  }
+
+  /// set events_default of power levels
+  Future<EventId> setPowerLevelsEventsDefault(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsEventsDefault(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_events_default_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsEventsDefaultFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set invite of power levels
+  Future<EventId> setPowerLevelsInvite(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsInvite(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_invite_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsInviteFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set kick of power levels
+  Future<EventId> setPowerLevelsKick(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsKick(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_kick_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsKickFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set redact of power levels
+  Future<EventId> setPowerLevelsRedact(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsRedact(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_redact_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsRedactFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set state_default of power levels
+  Future<EventId> setPowerLevelsStateDefault(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsStateDefault(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_state_default_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsStateDefaultFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set users_default of power levels
+  Future<EventId> setPowerLevelsUsersDefault(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsUsersDefault(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_users_default_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsUsersDefaultFuturePoll,
+    );
+    return tmp4;
+  }
+
+  /// set notifications of power levels
+  Future<EventId> setPowerLevelsNotifications(int level) {
+    final tmp1 = level;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._spaceSetPowerLevelsNotifications(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(
+      _api,
+      tmp5_0,
+      "__Space_set_power_levels_notifications_future_drop",
+    );
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = _nativeFuture(
+      tmp5_1,
+      _api.__spaceSetPowerLevelsNotificationsFuturePoll,
+    );
+    return tmp4;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -65229,6 +67777,13 @@ class _TimelineEventItemRoomPinnedEventsContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemRoomPowerLevelsContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -65989,6 +68544,179 @@ class _RoomPinnedEventsContentOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentBanChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentBanOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentEventsChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentEventsOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentEventsDefaultChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentEventsDefaultOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentInviteChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentInviteOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentKickChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentKickOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentNotificationsChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentNotificationsOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentRedactChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentRedactOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentStateDefaultChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentStateDefaultOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomPowerLevelsContentUsersChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentUsersDefaultChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomPowerLevelsContentUsersDefaultOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
   external int arg1;
 }
 
@@ -70019,6 +72747,141 @@ class _ConvoSetPinnedEventsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetPowerLevelsBanFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsEventsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsEventsDefaultFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsInviteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsKickFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsStateDefaultFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsUsersDefaultFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoSetPowerLevelsNotificationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _CommentDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -71224,6 +74087,141 @@ class _SpaceSetJoinRulesFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceSetPinnedEventsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsBanFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsEventsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsEventsDefaultFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsInviteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsKickFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsRedactFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsStateDefaultFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsUsersDefaultFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetPowerLevelsNotificationsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
