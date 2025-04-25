@@ -196,7 +196,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
-  int _getActualLineCount(String text, double maxWidth) {
+  int _getActualLineCount(String text) {
+    //Considering 80 is the width of the emoji picker and send button
+    final maxWidth = MediaQuery.sizeOf(context).width - 80;
+
     final textStyle = Theme.of(context).textTheme.bodyLarge;
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: textStyle),
@@ -208,9 +211,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   void _updateContentHeight() {
     final text = textEditorState.intoMarkdown();
-
-    final actualLineCount =
-        _getActualLineCount(text, MediaQuery.sizeOf(context).width) - 1;
+    final actualLineCount = _getActualLineCount(text) - 1;
 
     double newHeight = ChatEditorUtils.baseHeight;
 
