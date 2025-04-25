@@ -1,8 +1,6 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{
-    events::room::{
-        message::TextMessageEventContent, name::RoomNameEventContent, topic::RoomTopicEventContent,
-    },
+    events::room::{message::TextMessageEventContent, topic::RoomTopicEventContent},
     OwnedEventId, OwnedUserId,
 };
 use object::ActivityObject;
@@ -19,7 +17,7 @@ use crate::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
-            RoomJoinRulesContent,
+            RoomJoinRulesContent, RoomNameContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -42,7 +40,7 @@ pub enum ActivityContent {
     RoomGuestAccess(RoomGuestAccessContent),
     RoomHistoryVisibility(RoomHistoryVisibilityContent),
     RoomJoinRules(RoomJoinRulesContent),
-    RoomName(RoomNameEventContent),
+    RoomName(RoomNameContent),
     RoomTopic(RoomTopicEventContent),
     Boost {
         first_slide: Option<NewsContent>,
@@ -232,7 +230,7 @@ impl Activity {
 
     pub fn room_name(&self) -> Option<String> {
         match &self.inner {
-            ActivityContent::RoomName(c) => Some(c.name.clone()),
+            ActivityContent::RoomName(c) => Some(c.new_val()),
             _ => None,
         }
     }

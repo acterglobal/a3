@@ -1058,6 +1058,9 @@ object TimelineEventItem {
     /// covers m.room.join_rules
     fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
 
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1299,6 +1302,12 @@ object RoomHistoryVisibilityContent {
 }
 
 object RoomJoinRulesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomNameContent {
     fn change() -> Option<string>;
     fn new_val() -> string;
     fn old_val() -> Option<string>;
