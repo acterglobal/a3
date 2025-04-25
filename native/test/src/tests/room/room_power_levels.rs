@@ -214,7 +214,9 @@ async fn test_room_power_levels_events_default() -> Result<()> {
 
     let new_level: i64 = 50;
     let default_level = 0;
-    let default_event_id = convo.set_power_levels_events_default(new_level as i32).await?;
+    let default_event_id = convo
+        .set_power_levels_events_default(new_level as i32)
+        .await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -559,7 +561,9 @@ async fn test_room_power_levels_state_default() -> Result<()> {
 
     let new_level: i64 = 100;
     let default_level = 50;
-    let default_event_id = convo.set_power_levels_state_default(new_level as i32).await?;
+    let default_event_id = convo
+        .set_power_levels_state_default(new_level as i32)
+        .await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -646,7 +650,9 @@ async fn test_room_power_levels_users_default() -> Result<()> {
 
     let new_level: i64 = 50;
     let default_level = 0;
-    let default_event_id = convo.set_power_levels_users_default(new_level as i32).await?;
+    let default_event_id = convo
+        .set_power_levels_users_default(new_level as i32)
+        .await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -733,7 +739,9 @@ async fn test_room_power_levels_notifications() -> Result<()> {
 
     let new_level: i64 = 100;
     let default_level = 50;
-    let notifications_event_id = convo.set_power_levels_notifications(new_level as i32).await?;
+    let notifications_event_id = convo
+        .set_power_levels_notifications(new_level as i32)
+        .await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -772,7 +780,10 @@ async fn test_room_power_levels_notifications() -> Result<()> {
     }
     let (found_event_id, content) =
         found_result.expect("Even after 30 seconds, room power levels not received");
-    assert_eq!(found_event_id, notifications_event_id, "event id should match");
+    assert_eq!(
+        found_event_id, notifications_event_id,
+        "event id should match"
+    );
 
     assert_eq!(
         content.notifications_change(),
