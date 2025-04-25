@@ -1,9 +1,9 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 
 class ChatBubble extends StatelessWidget {
   final Widget child;
@@ -120,13 +120,12 @@ class ChatBubble extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        if (isEdited) ...[
+                        if (isEdited)
                           Text(
                             L10n.of(context).edited,
                             style: chatTheme.emptyChatPlaceholderTextStyle
                                 .copyWith(fontSize: 12),
                           ),
-                        ],
                         if (isEdited && timestamp != null)
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -137,13 +136,8 @@ class ChatBubble extends StatelessWidget {
                             ),
                           ),
                         if (timestamp != null)
-                          Text(
-                            jiffyMsgTimestamp(
-                              context,
-                              timestamp.expect('should not be null'),
-                            ),
-                            style: chatTheme.emptyChatPlaceholderTextStyle
-                                .copyWith(fontSize: 12),
+                          MessageTimestampWidget(
+                            timestamp: timestamp.expect('should not be null'),
                           ),
                       ],
                     ),

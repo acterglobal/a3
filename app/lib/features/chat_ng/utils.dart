@@ -1,8 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 
 Future<void> saveMsgDraft(
   String text,
@@ -64,17 +62,4 @@ class ChatEditorUtils {
 
   /// max height for the editor
   static const double maxHeight = 200.0;
-}
-
-/// format a timestamp to either 12-hour or 24-hour format based on device settings.
-String jiffyMsgTimestamp(BuildContext context, int timeInterval) {
-  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
-
-  final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
-
-  if (use24HourFormat) {
-    return jiffyTime.Hm;
-  } else {
-    return jiffyTime.jm;
-  }
 }
