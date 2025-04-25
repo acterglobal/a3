@@ -9,4 +9,5 @@ mod room_history_visibility;
 mod room_join_rules;
 mod room_name;
 mod room_pinned_events;
+mod room_power_levels;
 mod user_settings;
