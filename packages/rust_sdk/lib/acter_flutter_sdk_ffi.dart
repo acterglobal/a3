@@ -22003,14 +22003,24 @@ class Api {
           .asFunction<_RoomPowerLevelsContentBanOldValReturn Function(int)>();
   late final _roomPowerLevelsContentEventsChangePtr = _lookup<
     ffi.NativeFunction<
-      _RoomPowerLevelsContentEventsChangeReturn Function(ffi.IntPtr)
+      _RoomPowerLevelsContentEventsChangeReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__RoomPowerLevelsContent_events_change");
 
   late final _roomPowerLevelsContentEventsChange =
       _roomPowerLevelsContentEventsChangePtr
           .asFunction<
-            _RoomPowerLevelsContentEventsChangeReturn Function(int)
+            _RoomPowerLevelsContentEventsChangeReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
           >();
   late final _roomPowerLevelsContentEventsNewValPtr = _lookup<
     ffi.NativeFunction<
@@ -46598,35 +46608,52 @@ class RoomPowerLevelsContent {
     return tmp2;
   }
 
-  String? eventsChange() {
+  String? eventsChange(String eventType) {
+    final tmp1 = eventType;
     var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomPowerLevelsContentEventsChange(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._roomPowerLevelsContentEventsChange(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
       return null;
     }
-    if (tmp5 == 0) {
+    if (tmp9 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp8_ptr = ffi.Pointer.fromAddress(tmp8);
+    List<int> tmp8_buf = [];
+    final tmp8_precast = tmp8_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp9; i++) {
+      int char = tmp8_precast.elementAt(i).value;
+      tmp8_buf.add(char);
     }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    final tmp6 = utf8.decode(tmp8_buf, allowMalformed: true);
+    if (tmp10 > 0) {
+      final ffi.Pointer<ffi.Void> tmp8_0;
+      tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      _api.__deallocate(tmp8_0, tmp10 * 1, 1);
     }
-    return tmp2;
+    return tmp6;
   }
 
   int eventsNewVal(String eventType) {

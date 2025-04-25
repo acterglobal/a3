@@ -715,9 +715,10 @@ impl RoomPowerLevelsContent {
         self.prev_content.as_ref().map(|prev| prev.ban.into())
     }
 
-    pub fn events_change(&self) -> Option<String> {
+    pub fn events_change(&self, event_type: String) -> Option<String> {
         if let Some(prev_content) = &self.prev_content {
-            if self.content.events == prev_content.events {
+            let event_type = TimelineEventType::from(event_type);
+            if self.content.events[&event_type] == prev_content.events[&event_type] {
                 None
             } else {
                 Some("Changed".to_owned())
