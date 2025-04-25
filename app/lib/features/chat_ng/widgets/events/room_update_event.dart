@@ -79,6 +79,11 @@ class RoomUpdateEvent extends ConsumerWidget {
       ),
       'm.room.join_rules' => getMessageOnRoomJoinRules(lang, isMe, senderName),
       'm.room.name' => getMessageOnRoomName(lang, isMe, senderName),
+      'm.room.pinned_events' => getMessageOnRoomPinnedEvents(
+        lang,
+        isMe,
+        senderName,
+      ),
       'm.room.power_levels' =>
         isMe
             ? lang.chatYouUpdatePowerLevels
@@ -101,10 +106,6 @@ class RoomUpdateEvent extends ConsumerWidget {
             : lang.chatUpdateRoomThirdPartyInvite(firstName ?? senderId),
       'm.room.server_acl' => lang.chatUpdateRoomServerAcl,
       'm.room.tombstone' => '${lang.chatUpdateRoomTombstone}: $msgContent',
-      'm.room.pinned_events' =>
-        isMe
-            ? lang.chatYouUpdateRoomPinnedEvents
-            : lang.chatUpdateRoomPinnedEvents(firstName ?? senderId),
       'm.space.parent' =>
         isMe
             ? lang.chatYouUpdateSpaceParent
@@ -552,6 +553,33 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStateRoomNameYouSet(newVal);
         } else {
           return lang.roomStateRoomNameOtherSet(senderName, newVal);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomPinnedEvents(
+    L10n lang,
+    bool isMe,
+    String senderName,
+  ) {
+    final content = item.roomPinnedEventsContent();
+    if (content == null) {
+      _log.severe('failed to get content of room pinned events change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomPinnedEventsYouChanged;
+        } else {
+          return lang.roomStateRoomPinnedEventsOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomPinnedEventsYouSet;
+        } else {
+          return lang.roomStateRoomPinnedEventsOtherSet(senderName);
         }
     }
     return null;

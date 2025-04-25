@@ -1061,6 +1061,9 @@ object TimelineEventItem {
     /// covers m.room.name
     fn room_name_content() -> Option<RoomNameContent>;
 
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1311,6 +1314,12 @@ object RoomNameContent {
     fn change() -> Option<string>;
     fn new_val() -> string;
     fn old_val() -> Option<string>;
+}
+
+object RoomPinnedEventsContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
 }
 
 
@@ -1747,6 +1756,10 @@ object Convo {
     /// set room join rules
     /// invite, knock, private, or public
     fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2829,6 +2842,10 @@ object Space {
     /// set room join rules
     /// invite, knock, private, or public
     fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

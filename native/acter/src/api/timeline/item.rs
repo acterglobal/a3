@@ -3,7 +3,7 @@ use acter_core::{
         MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
-        RoomNameContent,
+        RoomNameContent, RoomPinnedEventsContent,
     },
     util::do_vecs_match,
 };
@@ -374,6 +374,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_pinned_events_content(&self) -> Option<RoomPinnedEventsContent> {
+        if let Some(TimelineEventContent::RoomPinnedEvents(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -571,36 +579,13 @@ impl TimelineEventItemBuilder {
                 let c = RoomNameContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomName(c)));
             }
-            AnyOtherFullStateEventContent::RoomPinnedEvents(c) => {
+            AnyOtherFullStateEventContent::RoomPinnedEvents(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.pinned_events".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(pinned) = prev.pinned.clone() {
-                                if !do_vecs_match::<OwnedEventId>(&pinned, &content.pinned) {
-                                    result.push("changed room pinned events".to_owned());
-                                }
-                            } else {
-                                result.push("added room pinned events".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added room pinned events".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room pinned events".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomPinnedEventsContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomPinnedEvents(c)));
             }
             AnyOtherFullStateEventContent::RoomPowerLevels(c) => {
                 self.event_type("m.room.power_levels".to_owned());

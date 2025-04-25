@@ -12,9 +12,14 @@ use matrix_sdk_base::ruma::events::{
         history_visibility::RoomHistoryVisibilityEventContent,
         join_rules::RoomJoinRulesEventContent,
         name::{PossiblyRedactedRoomNameEventContent, RoomNameEventContent},
+        pinned_events::{
+            PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
+        },
     },
 };
 use serde::{Deserialize, Serialize};
+
+use crate::util::do_vecs_match;
 
 // m.policy.rule.room
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -612,5 +617,60 @@ impl RoomNameContent {
         self.prev_content
             .as_ref()
             .and_then(|prev| prev.name.clone())
+    }
+}
+
+// m.room.pinned_events
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomPinnedEventsContent {
+    content: RoomPinnedEventsEventContent,
+    prev_content: Option<PossiblyRedactedRoomPinnedEventsEventContent>,
+}
+
+impl RoomPinnedEventsContent {
+    pub fn new(
+        content: RoomPinnedEventsEventContent,
+        prev_content: Option<PossiblyRedactedRoomPinnedEventsEventContent>,
+    ) -> Self {
+        RoomPinnedEventsContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_pinned) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.pinned.as_ref())
+        {
+            if do_vecs_match(&self.content.pinned, prev_pinned) {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn new_val(&self) -> Vec<String> {
+        self.content
+            .pinned
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
+    }
+
+    pub fn old_val(&self) -> Option<Vec<String>> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.pinned.as_ref())
+            .map(|pinned| {
+                pinned
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<String>>()
+            })
     }
 }
