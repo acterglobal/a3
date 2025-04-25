@@ -11,6 +11,7 @@ use matrix_sdk_base::ruma::events::{
         guest_access::{PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent},
         history_visibility::RoomHistoryVisibilityEventContent,
         join_rules::RoomJoinRulesEventContent,
+        name::{PossiblyRedactedRoomNameEventContent, RoomNameEventContent},
     },
 };
 use serde::{Deserialize, Serialize};
@@ -567,5 +568,49 @@ impl RoomJoinRulesContent {
         self.prev_content
             .as_ref()
             .map(|prev| prev.join_rule.as_str().to_owned())
+    }
+}
+
+// m.room.name
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomNameContent {
+    content: RoomNameEventContent,
+    prev_content: Option<PossiblyRedactedRoomNameEventContent>,
+}
+
+impl RoomNameContent {
+    pub fn new(
+        content: RoomNameEventContent,
+        prev_content: Option<PossiblyRedactedRoomNameEventContent>,
+    ) -> Self {
+        RoomNameContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_name) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.name.as_ref())
+        {
+            if self.content.name == *prev_name {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn new_val(&self) -> String {
+        self.content.name.clone()
+    }
+
+    pub fn old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.name.clone())
     }
 }

@@ -1,7 +1,7 @@
 use acter_core::models::status::{
     MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent,
     ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
-    RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
+    RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent, RoomNameContent,
 };
 use matrix_sdk_base::ruma::events::room::message::MessageType;
 use serde::{Deserialize, Serialize};
@@ -23,6 +23,7 @@ pub enum TimelineEventContent {
     RoomGuestAccess(RoomGuestAccessContent),
     RoomHistoryVisibility(RoomHistoryVisibilityContent),
     RoomJoinRules(RoomJoinRulesContent),
+    RoomName(RoomNameContent),
 }
 
 impl TryFrom<&MessageType> for TimelineEventContent {
