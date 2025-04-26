@@ -33,6 +33,7 @@ const _supportedTypes = [
   'm.room.pinned_events',
   'm.room.power_levels',
   'm.room.server_acl',
+  'm.room.tombstone',
 
   'm.room.message',
   'm.room.redaction',

@@ -90,6 +90,7 @@ class RoomUpdateEvent extends ConsumerWidget {
         senderName,
       ),
       'm.room.server_acl' => getMessageOnRoomServerAcl(lang, isMe, senderName),
+      'm.room.tombstone' => getMessageOnRoomTombstone(lang, isMe, senderName),
       'm.room.topic' =>
         isMe
             ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
@@ -106,7 +107,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateRoomThirdPartyInvite
             : lang.chatUpdateRoomThirdPartyInvite(firstName ?? senderId),
-      'm.room.tombstone' => '${lang.chatUpdateRoomTombstone}: $msgContent',
       'm.space.parent' =>
         isMe
             ? lang.chatYouUpdateSpaceParent
@@ -1182,6 +1182,52 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStateRoomServerAclDenyYouSet;
         } else {
           return lang.roomStateRoomServerAclDenyOtherSet(senderName);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomTombstone(L10n lang, bool isMe, String senderName) {
+    final content = item.roomTombstoneContent();
+    if (content == null) {
+      _log.severe('failed to get content of room tombstone change');
+      return null;
+    }
+    switch (content.bodyChange()) {
+      case 'Changed':
+        final newVal = content.bodyNewVal();
+        final oldVal = content.bodyOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomTombstoneBodyYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomTombstoneBodyOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.bodyNewVal();
+        if (isMe) {
+          return lang.roomStateRoomTombstoneBodyYouSet(newVal);
+        } else {
+          return lang.roomStateRoomTombstoneBodyOtherSet(senderName, newVal);
+        }
+    }
+    switch (content.replacementRoomChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateRoomTombstoneReplacementRoomYouChanged;
+        } else {
+          return lang.roomStateRoomTombstoneReplacementRoomOtherChanged(
+            senderName,
+          );
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateRoomTombstoneReplacementRoomYouSet;
+        } else {
+          return lang.roomStateRoomTombstoneReplacementRoomOtherSet(senderName);
         }
     }
     return null;
