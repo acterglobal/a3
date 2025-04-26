@@ -18,7 +18,7 @@ use crate::{
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
             RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
-            RoomServerAclContent,
+            RoomServerAclContent, RoomTombstoneContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -45,6 +45,7 @@ pub enum ActivityContent {
     RoomPinnedEvents(RoomPinnedEventsContent),
     RoomPowerLevels(RoomPowerLevelsContent),
     RoomServerAcl(RoomServerAclContent),
+    RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicEventContent),
     Boost {
         first_slide: Option<NewsContent>,
@@ -167,6 +168,7 @@ impl Activity {
             ActivityContent::RoomPinnedEvents(_) => "roomPinnedEvents",
             ActivityContent::RoomPowerLevels(_) => "roomPowerLevels",
             ActivityContent::RoomServerAcl(_) => "roomServerAcl",
+            ActivityContent::RoomTombstone(_) => "roomTombstone",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
@@ -266,6 +268,7 @@ impl Activity {
             | ActivityContent::RoomPinnedEvents(_)
             | ActivityContent::RoomPowerLevels(_)
             | ActivityContent::RoomServerAcl(_)
+            | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_) => None,
 
             ActivityContent::Boost { .. } => None,
@@ -375,6 +378,7 @@ impl Activity {
             | ActivityContent::RoomPinnedEvents(_)
             | ActivityContent::RoomPowerLevels(_)
             | ActivityContent::RoomServerAcl(_)
+            | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_) => todo!(),
         }
     }
@@ -450,6 +454,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::RoomServerAcl(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomServerAcl(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomTombstone(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomTombstone(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomTopic(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomTopic(c)))

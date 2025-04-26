@@ -7974,6 +7974,47 @@ class Api {
     return tmp7;
   }
 
+  EventId? __convoSetTombstoneFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoSetTombstoneFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   EventId? __commentDraftSendFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -11904,6 +11945,47 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _spaceSetServerAclFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __spaceSetTombstoneFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _spaceSetTombstoneFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -21265,6 +21347,17 @@ class Api {
           .asFunction<
             _TimelineEventItemRoomServerAclContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomTombstoneContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomTombstoneContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_tombstone_content");
+
+  late final _timelineEventItemRoomTombstoneContent =
+      _timelineEventItemRoomTombstoneContentPtr
+          .asFunction<
+            _TimelineEventItemRoomTombstoneContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -22437,6 +22530,66 @@ class Api {
   late final _roomServerAclContentDenyOldVal =
       _roomServerAclContentDenyOldValPtr
           .asFunction<_RoomServerAclContentDenyOldValReturn Function(int)>();
+  late final _roomTombstoneContentBodyChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentBodyChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_body_change");
+
+  late final _roomTombstoneContentBodyChange =
+      _roomTombstoneContentBodyChangePtr
+          .asFunction<_RoomTombstoneContentBodyChangeReturn Function(int)>();
+  late final _roomTombstoneContentBodyNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentBodyNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_body_new_val");
+
+  late final _roomTombstoneContentBodyNewVal =
+      _roomTombstoneContentBodyNewValPtr
+          .asFunction<_RoomTombstoneContentBodyNewValReturn Function(int)>();
+  late final _roomTombstoneContentBodyOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentBodyOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_body_old_val");
+
+  late final _roomTombstoneContentBodyOldVal =
+      _roomTombstoneContentBodyOldValPtr
+          .asFunction<_RoomTombstoneContentBodyOldValReturn Function(int)>();
+  late final _roomTombstoneContentReplacementRoomChangePtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentReplacementRoomChangeReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_replacement_room_change");
+
+  late final _roomTombstoneContentReplacementRoomChange =
+      _roomTombstoneContentReplacementRoomChangePtr
+          .asFunction<
+            _RoomTombstoneContentReplacementRoomChangeReturn Function(int)
+          >();
+  late final _roomTombstoneContentReplacementRoomNewValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentReplacementRoomNewValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_replacement_room_new_val");
+
+  late final _roomTombstoneContentReplacementRoomNewVal =
+      _roomTombstoneContentReplacementRoomNewValPtr
+          .asFunction<
+            _RoomTombstoneContentReplacementRoomNewValReturn Function(int)
+          >();
+  late final _roomTombstoneContentReplacementRoomOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _RoomTombstoneContentReplacementRoomOldValReturn Function(ffi.IntPtr)
+    >
+  >("__RoomTombstoneContent_replacement_room_old_val");
+
+  late final _roomTombstoneContentReplacementRoomOldVal =
+      _roomTombstoneContentReplacementRoomOldValPtr
+          .asFunction<
+            _RoomTombstoneContentReplacementRoomOldValReturn Function(int)
+          >();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -23641,6 +23794,23 @@ class Api {
   late final _convoSetServerAcl =
       _convoSetServerAclPtr
           .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _convoSetTombstonePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Convo_set_tombstone");
+
+  late final _convoSetTombstone =
+      _convoSetTombstonePtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _commentDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -26708,6 +26878,23 @@ class Api {
   late final _spaceSetServerAcl =
       _spaceSetServerAclPtr
           .asFunction<int Function(int, int, int, int, int, int, int, int)>();
+  late final _spaceSetTombstonePtr = _lookup<
+    ffi.NativeFunction<
+      ffi.IntPtr Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__Space_set_tombstone");
+
+  late final _spaceSetTombstone =
+      _spaceSetTombstonePtr
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _memberGetProfilePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Member_get_profile",
@@ -31752,6 +31939,21 @@ class Api {
           .asFunction<
             _ConvoSetServerAclFuturePollReturn Function(int, int, int)
           >();
+  late final _convoSetTombstoneFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoSetTombstoneFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_set_tombstone_future_poll");
+
+  late final _convoSetTombstoneFuturePoll =
+      _convoSetTombstoneFuturePollPtr
+          .asFunction<
+            _ConvoSetTombstoneFuturePollReturn Function(int, int, int)
+          >();
   late final _commentDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _CommentDraftSendFuturePollReturn Function(
@@ -33102,6 +33304,21 @@ class Api {
       _spaceSetServerAclFuturePollPtr
           .asFunction<
             _SpaceSetServerAclFuturePollReturn Function(int, int, int)
+          >();
+  late final _spaceSetTombstoneFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceSetTombstoneFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_set_tombstone_future_poll");
+
+  late final _spaceSetTombstoneFuturePoll =
+      _spaceSetTombstoneFuturePollPtr
+          .asFunction<
+            _SpaceSetTombstoneFuturePollReturn Function(int, int, int)
           >();
   late final _memberIgnoreFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -44219,6 +44436,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.tombstone
+  RoomTombstoneContent? roomTombstoneContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomTombstoneContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomTombstoneContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomTombstoneContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -47563,6 +47797,196 @@ class RoomServerAclContent {
   }
 }
 
+class RoomTombstoneContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomTombstoneContent._(this._api, this._box);
+
+  String? bodyChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentBodyChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String bodyNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentBodyNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? bodyOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentBodyOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? replacementRoomChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentReplacementRoomChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String replacementRoomNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentReplacementRoomNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? replacementRoomOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTombstoneContentReplacementRoomOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Generic Room Properties
 class Room {
   final Api _api;
@@ -50823,6 +51247,51 @@ class Convo {
     tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
     final tmp12 = _nativeFuture(tmp13_1, _api.__convoSetServerAclFuturePoll);
     return tmp12;
+  }
+
+  /// set room tombstone
+  Future<EventId> setTombstone(String body, String replacementRoomId) {
+    final tmp1 = body;
+    final tmp5 = replacementRoomId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._convoSetTombstone(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Convo_set_tombstone_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__convoSetTombstoneFuturePoll);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -58714,6 +59183,51 @@ class Space {
     tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
     final tmp12 = _nativeFuture(tmp13_1, _api.__spaceSetServerAclFuturePoll);
     return tmp12;
+  }
+
+  /// set room tombstone
+  Future<EventId> setTombstone(String body, String replacementRoomId) {
+    final tmp1 = body;
+    final tmp5 = replacementRoomId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._spaceSetTombstone(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Space_set_tombstone_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__spaceSetTombstoneFuturePoll);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -68373,6 +68887,13 @@ class _TimelineEventItemRoomServerAclContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemRoomTombstoneContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -69361,6 +69882,68 @@ class _RoomServerAclContentDenyOldValReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _RoomTombstoneContentBodyChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentBodyNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomTombstoneContentBodyOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentReplacementRoomChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTombstoneContentReplacementRoomNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomTombstoneContentReplacementRoomOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
 }
 
 class _RoomRoomIdStrReturn extends ffi.Struct {
@@ -73540,6 +74123,21 @@ class _ConvoSetServerAclFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoSetTombstoneFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
 class _CommentDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -74895,6 +75493,21 @@ class _SpaceSetPowerLevelsNotificationsFuturePollReturn extends ffi.Struct {
 }
 
 class _SpaceSetServerAclFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _SpaceSetTombstoneFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

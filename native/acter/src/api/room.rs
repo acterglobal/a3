@@ -53,6 +53,7 @@ use matrix_sdk_base::{
                 pinned_events::RoomPinnedEventsEventContent,
                 power_levels::RoomPowerLevelsEventContent,
                 server_acl::RoomServerAclEventContent,
+                tombstone::RoomTombstoneEventContent,
                 MediaSource,
             },
             space::{child::HierarchySpaceChildEvent, parent::SpaceParentEventContent},
@@ -2290,6 +2291,32 @@ impl Room {
                     bail!("No permissions to change room server acl in this room");
                 }
                 let content = RoomServerAclEventContent::new(allow_ip_literals, allow, deny);
+                let response = room.send_state_event(content).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+
+    pub async fn set_tombstone(
+        &self,
+        body: String,
+        replacement_room_id: String,
+    ) -> Result<OwnedEventId> {
+        if !self.is_joined() {
+            bail!("Unable to change room tombstone in a room we are not in");
+        }
+        let room = self.room.clone();
+        let my_id = self.user_id()?;
+        let replacement_room = RoomId::parse(replacement_room_id)?;
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_state(&my_id, StateEventType::RoomTombstone)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to change room tombstone in this room");
+                }
+                let content = RoomTombstoneEventContent::new(body, replacement_room);
                 let response = room.send_state_event(content).await?;
                 Ok(response.event_id)
             })
