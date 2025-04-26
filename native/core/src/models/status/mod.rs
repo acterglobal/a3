@@ -22,7 +22,7 @@ pub use room_state::{
     PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
     RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
     RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
-    RoomServerAclContent,
+    RoomServerAclContent, RoomTombstoneContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -44,6 +44,7 @@ pub enum ActerSupportedRoomStatusEvents {
     RoomPinnedEvents(RoomPinnedEventsContent),
     RoomPowerLevels(RoomPowerLevelsContent),
     RoomServerAcl(RoomServerAclContent),
+    RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicEventContent),
 }
 
@@ -243,6 +244,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::RoomServerAcl(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomTombstone(StateEvent::Original(inner)) => {
+                let content = RoomTombstoneContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomTombstone(content),
                     meta,
                 })
             }

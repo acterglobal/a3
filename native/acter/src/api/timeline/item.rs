@@ -4,6 +4,7 @@ use acter_core::{
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
         RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
+        RoomTombstoneContent,
     },
     util::do_vecs_match,
 };
@@ -398,6 +399,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_tombstone_content(&self) -> Option<RoomTombstoneContent> {
+        if let Some(TimelineEventContent::RoomTombstone(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -664,44 +673,13 @@ impl TimelineEventItemBuilder {
                 };
                 self.content(Some(TimelineEventContent::Message(msg_content)));
             }
-            AnyOtherFullStateEventContent::RoomTombstone(c) => {
+            AnyOtherFullStateEventContent::RoomTombstone(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.tombstone".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(body) = prev.body.clone() {
-                                if body != content.body {
-                                    result
-                                        .push(format!("changed '{}' -> '{}'", body, content.body));
-                                }
-                            } else {
-                                result.push(content.body.to_owned());
-                            }
-                            if let Some(replacement_room) = prev.replacement_room.clone() {
-                                if replacement_room != content.replacement_room {
-                                    result.push("changed tombstone replacement room".to_owned());
-                                }
-                            } else {
-                                result.push("added tombstone replacement room".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.body.to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room tombstone".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomTombstoneContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomTombstone(c)));
             }
             AnyOtherFullStateEventContent::RoomTopic(c) => {
                 self.event_type("m.room.topic".to_owned());

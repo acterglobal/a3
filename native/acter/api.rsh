@@ -1070,6 +1070,9 @@ object TimelineEventItem {
     /// covers m.room.server_acl
     fn room_server_acl_content() -> Option<RoomServerAclContent>;
 
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1380,6 +1383,16 @@ object RoomServerAclContent {
     fn deny_change() -> Option<string>;
     fn deny_new_val() -> Vec<string>;
     fn deny_old_val() -> Option<Vec<string>>;
+}
+
+object RoomTombstoneContent {
+    fn body_change() -> Option<string>;
+    fn body_new_val() -> string;
+    fn body_old_val() -> Option<string>;
+
+    fn replacement_room_change() -> Option<string>;
+    fn replacement_room_new_val() -> string;
+    fn replacement_room_old_val() -> Option<string>;
 }
 
 
@@ -1854,6 +1867,9 @@ object Convo {
     /// allow: ["*"]
     /// deny: ["1.1.1.1"]
     fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2974,6 +2990,9 @@ object Space {
     /// allow: ["*"]
     /// deny: ["1.1.1.1"]
     fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

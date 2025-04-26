@@ -17,6 +17,7 @@ use matrix_sdk_base::ruma::events::{
         },
         power_levels::RoomPowerLevelsEventContent,
         server_acl::RoomServerAclEventContent,
+        tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
     },
     TimelineEventType,
 };
@@ -980,5 +981,75 @@ impl RoomServerAclContent {
 
     pub fn deny_old_val(&self) -> Option<Vec<String>> {
         self.prev_content.as_ref().map(|prev| prev.deny.clone())
+    }
+}
+
+// m.room.tombstone
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomTombstoneContent {
+    content: RoomTombstoneEventContent,
+    prev_content: Option<PossiblyRedactedRoomTombstoneEventContent>,
+}
+
+impl RoomTombstoneContent {
+    pub fn new(
+        content: RoomTombstoneEventContent,
+        prev_content: Option<PossiblyRedactedRoomTombstoneEventContent>,
+    ) -> Self {
+        RoomTombstoneContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn body_change(&self) -> Option<String> {
+        if let Some(prev_body) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.body.as_ref())
+        {
+            if self.content.body == *prev_body {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn body_new_val(&self) -> String {
+        self.content.body.clone()
+    }
+
+    pub fn body_old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.body.clone())
+    }
+
+    pub fn replacement_room_change(&self) -> Option<String> {
+        if let Some(prev_replacement_room) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.replacement_room.as_ref())
+        {
+            if self.content.replacement_room == *prev_replacement_room {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn replacement_room_new_val(&self) -> String {
+        self.content.replacement_room.to_string()
+    }
+
+    pub fn replacement_room_old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.replacement_room.as_ref())
+            .map(ToString::to_string)
     }
 }
