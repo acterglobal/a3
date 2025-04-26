@@ -4,7 +4,7 @@ use acter_core::{
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
         RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
-        RoomTombstoneContent,
+        RoomTombstoneContent, RoomTopicContent,
     },
     util::do_vecs_match,
 };
@@ -407,6 +407,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn room_topic_content(&self) -> Option<RoomTopicContent> {
+        if let Some(TimelineEventContent::RoomTopic(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -681,39 +689,13 @@ impl TimelineEventItemBuilder {
                 let c = RoomTombstoneContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomTombstone(c)));
             }
-            AnyOtherFullStateEventContent::RoomTopic(c) => {
+            AnyOtherFullStateEventContent::RoomTopic(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.room.topic".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if let Some(topic) = prev.topic.clone() {
-                                if topic != content.topic {
-                                    result.push(format!(
-                                        "changed '{}' -> '{}'",
-                                        topic, content.topic
-                                    ));
-                                }
-                            } else {
-                                result.push(content.topic.to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text(content.topic.to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted room topic".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let c = RoomTopicContent::new(content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::RoomTopic(c)));
             }
             AnyOtherFullStateEventContent::SpaceChild(c) => {
                 self.event_type("m.space.child".to_owned());

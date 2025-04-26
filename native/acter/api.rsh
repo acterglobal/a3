@@ -1073,6 +1073,9 @@ object TimelineEventItem {
     /// covers m.room.tombstone
     fn room_tombstone_content() -> Option<RoomTombstoneContent>;
 
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1393,6 +1396,12 @@ object RoomTombstoneContent {
     fn replacement_room_change() -> Option<string>;
     fn replacement_room_new_val() -> string;
     fn replacement_room_old_val() -> Option<string>;
+}
+
+object RoomTopicContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
 }
 
 

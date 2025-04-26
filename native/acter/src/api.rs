@@ -71,7 +71,7 @@ pub use acter_core::{
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
             RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
-            RoomServerAclContent, RoomTombstoneContent,
+            RoomServerAclContent, RoomTombstoneContent, RoomTopicContent,
         },
         ActerModel, Tag, TextMessageContent,
     },

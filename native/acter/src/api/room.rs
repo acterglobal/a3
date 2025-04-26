@@ -1725,6 +1725,7 @@ impl Room {
             .await?
     }
 
+    // initial level of room creator is 100
     pub async fn update_power_level(&self, user_id: String, level: i32) -> Result<OwnedEventId> {
         if !self.is_joined() {
             bail!("Unable to update power level in a room we are not in");
