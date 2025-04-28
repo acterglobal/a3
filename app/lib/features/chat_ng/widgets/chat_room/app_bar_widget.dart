@@ -12,16 +12,14 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 final _log = Logger('a3::chat_ng::room::app_bar_widget');
 
-class ChatRoomAppBarWidget extends StatelessWidget
+class ChatRoomAppBarWidget extends ConsumerWidget
     implements PreferredSizeWidget {
   final String roomId;
-  final WidgetRef ref;
   final VoidCallback? onProfileTap;
 
   const ChatRoomAppBarWidget({
     super.key,
     required this.roomId,
-    required this.ref,
     this.onProfileTap,
   });
 
@@ -29,19 +27,19 @@ class ChatRoomAppBarWidget extends StatelessWidget
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppBar(
       title: Row(
         children: [
           _buildRoomAvatar(context),
-          Expanded(child: _buildRoomTitle(context)),
+          Expanded(child: _buildRoomTitle(context, ref)),
         ],
       ),
-      actions: _buildActions(context),
+      actions: _buildActions(context, ref),
     );
   }
 
-  Widget _buildRoomTitle(BuildContext context) {
+  Widget _buildRoomTitle(BuildContext context, WidgetRef ref) {
     final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
     return GestureDetector(
       onTap: onProfileTap,
@@ -51,13 +49,13 @@ class ChatRoomAppBarWidget extends StatelessWidget
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DisplayNameWidget(roomId: roomId),
-          if (!isDM) _buildRoomMembersCount(context),
+          if (!isDM) _buildRoomMembersCount(context, ref),
         ],
       ),
     );
   }
 
-  Widget _buildRoomMembersCount(BuildContext context) {
+  Widget _buildRoomMembersCount(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final textStyle = Theme.of(context).textTheme.labelMedium;
     final membersLoader = ref.watch(membersIdsProvider(roomId));
@@ -83,7 +81,7 @@ class ChatRoomAppBarWidget extends StatelessWidget
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) {
+  List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;

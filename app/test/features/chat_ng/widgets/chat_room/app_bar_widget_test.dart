@@ -4,33 +4,12 @@ import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/display_name_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_room/app_bar_widget.dart';
 import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
-import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../helpers/test_util.dart';
-
-class TestAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  final MockChatItem mockChatItem;
-  final VoidCallback? onProfileTap;
-
-  const TestAppBar({super.key, required this.mockChatItem, this.onProfileTap});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ChatRoomAppBarWidget(
-      roomId: mockChatItem.roomId,
-      ref: ref,
-      onProfileTap: onProfileTap,
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
 
 void main() {
   group('ChatRoomAppBarWidget', () {
@@ -65,14 +44,9 @@ void main() {
             );
           }),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [L10n.delegate],
-          home: Scaffold(
-            appBar: TestAppBar(
-              mockChatItem: mockChatItem,
-              onProfileTap: onProfileTap,
-            ),
-          ),
+        child: ChatRoomAppBarWidget(
+          roomId: mockChatItem.roomId,
+          onProfileTap: onProfileTap,
         ),
       );
       // Wait for the async providers to load

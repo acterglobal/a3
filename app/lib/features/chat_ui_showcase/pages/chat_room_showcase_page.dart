@@ -10,7 +10,7 @@ class ChatRoomShowcasePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: ChatRoomAppBarWidget(roomId: roomId, ref: ref),
+      appBar: ChatRoomAppBarWidget(roomId: roomId),
       body: Column(
         children: [
           Expanded(child: Center(child: Text('Room ID: $roomId'))),

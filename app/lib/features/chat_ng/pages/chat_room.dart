@@ -23,7 +23,6 @@ class ChatRoomNgPage extends ConsumerWidget {
             resizeToAvoidBottomInset: orientation == Orientation.portrait,
             appBar: ChatRoomAppBarWidget(
               roomId: roomId,
-              ref: ref,
               onProfileTap:
                   () => context.pushNamed(
                     Routes.chatProfile.name,
