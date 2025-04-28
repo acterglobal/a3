@@ -43,9 +43,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   late EditorScrollController scrollController;
   StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
-  final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(56.0);
+  final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(
+    ChatEditorUtils.baseHeight,
+  );
   Timer? _debounceTimer;
-  Timer? _heightDebounceTimer;
 
   @override
   void initState() {
@@ -55,11 +56,19 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
       _editorUpdate(data.$2);
-
       _updateContentHeight();
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
+
+    // apply toolbar offset when keyboard is visible
+    ref.listenManual(keyboardVisibleProvider, (prev, next) {
+      if (next.valueOrNull == true) {
+        _contentHeightNotifier.value += ChatEditorUtils.toolbarOffset;
+      } else {
+        _contentHeightNotifier.value -= ChatEditorUtils.toolbarOffset;
+      }
+    });
 
     ref.listenManual(chatEditorStateProvider, (prev, next) async {
       final body = textEditorState.intoMarkdown();
@@ -88,7 +97,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   void dispose() {
     _updateListener?.cancel();
     _debounceTimer?.cancel();
-    _heightDebounceTimer?.cancel();
     _contentHeightNotifier.dispose();
     super.dispose();
   }
@@ -189,27 +197,45 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
+  int _getActualLineCount(String text) {
+    //Considering 50 is the width of the emoji picker and send button
+    final editorWidth = MediaQuery.sizeOf(context).width - 50;
+
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: textStyle),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: editorWidth);
+    // Get the number of lines the text actually occupies
+    return textPainter.computeLineMetrics().length;
+  }
+
   void _updateContentHeight() {
-    _heightDebounceTimer?.cancel();
+    final text = textEditorState.intoMarkdown();
+    final actualLineCount = _getActualLineCount(text) - 1;
 
-    // use a timer to debounce multiple rapid updates
-    _heightDebounceTimer = Timer(const Duration(milliseconds: 50), () {
-      if (!mounted) return;
+    double newHeight = ChatEditorUtils.baseHeight;
 
-      final text = textEditorState.intoMarkdown();
-      double newHeight = ChatEditorUtils.calculateContentHeight(text);
-      newHeight = min(newHeight, 200.0);
+    if (text.isEmpty || actualLineCount < 2) {
+      newHeight = ChatEditorUtils.baseHeight;
+    } else {
+      final offset = 30 * (actualLineCount - 1);
+      newHeight = min(
+        ChatEditorUtils.maxHeight,
+        ChatEditorUtils.baseHeight + offset,
+      );
+    }
 
-      if (_contentHeightNotifier.value != newHeight) {
-        _contentHeightNotifier.value = newHeight;
-      }
-    });
+    final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
+    if (isKeyboardVisible == true) {
+      newHeight += ChatEditorUtils.toolbarOffset;
+    }
+
+    _contentHeightNotifier.value = newHeight;
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
-    final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     final emojiPickerVisible = ref.watch(
       chatInputProvider.select((value) => value.emojiPickerVisible),
     );
@@ -240,11 +266,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
             return renderEditorUI(emojiPickerVisible, isEncrypted, height);
           },
         ),
+
         // Emoji Picker UI
         if (emojiPickerVisible) ChatEmojiPicker(editorState: textEditorState),
-        // adjust bottom viewport so toolbar doesn't obscure field when visible
-        if (isKeyboardVisible != null && isKeyboardVisible)
-          SizedBox(height: viewInsets + 50),
       ],
     );
   }
@@ -277,19 +301,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           leadingBtn(emojiPickerVisible),
-          editorField(isEncrypted),
+          Expanded(child: editorField(isEncrypted)),
           trailingBtn(),
         ],
       ),
-    );
-  }
-
-  // emoji button
-  Widget leadingBtn(bool emojiPickerVisible) {
-    return IconButton(
-      padding: const EdgeInsets.only(left: 12, top: 12),
-      onPressed: () => _toggleEmojiPicker(emojiPickerVisible),
-      icon: const Icon(Icons.emoji_emotions, size: 20),
     );
   }
 
@@ -307,9 +322,14 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       orElse: () => L10n.of(context).newMessage,
     );
 
-    return Expanded(
-      child: CallbackShortcuts(
-        bindings: <ShortcutActivator, VoidCallback>{
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        if (!isDesktop(
+          context,
+        )) // for android as it'll use return key on keyboard for newline
+          const SingleActivator(LogicalKeyboardKey.enter):
+              () => textEditorState.insertNewLine(),
+        if (isDesktop(context))
           const SingleActivator(LogicalKeyboardKey.enter):
               () => sendMessageAction(
                 roomId: widget.roomId,
@@ -319,37 +339,42 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
                 ref: ref,
                 log: _log,
               ),
+        if (isDesktop(context))
           LogicalKeySet(LogicalKeyboardKey.enter, LogicalKeyboardKey.shift):
               () => textEditorState.insertNewLine(),
-        },
-        child: _renderEditor(hintText),
-      ),
+      },
+      child: _renderEditor(hintText),
     );
   }
 
   Widget _renderEditor(String? hintText) {
-    final needsScrolling =
-        _contentHeightNotifier.value >
-        ChatEditorUtils.scrollThreshold; // Threshold to enable auto scroll
-
     return HtmlEditor(
       footer: null,
       // if provided, will activate mentions
       roomId: widget.roomId,
       hintText: hintText,
       editable: true,
-      shrinkWrap: needsScrolling,
-      // only enable scrolling when content height would exceed appflowy editor compatible scrolling height
-      disableAutoScroll: !needsScrolling,
+      shrinkWrap: false,
+      disableAutoScroll: false,
       editorState: textEditorState,
       scrollController: scrollController,
-      editorPadding: const EdgeInsets.only(left: 12, right: 12, top: 12),
+      editorPadding: const EdgeInsets.only(top: 12),
       onChanged: (body, html) {
         final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
         widget.onTyping?.call(isTyping);
       },
+      onSave: null,
     );
   }
+
+  // emoji button
+  Widget leadingBtn(bool emojiPickerVisible) => Padding(
+    padding: const EdgeInsets.only(top: 4, left: 4),
+    child: IconButton(
+      onPressed: () => _toggleEmojiPicker(emojiPickerVisible),
+      icon: const Icon(Icons.emoji_emotions, size: 20),
+    ),
+  );
 
   // attachment/send button
   Widget trailingBtn() {
@@ -366,7 +391,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderSendBtn() => Padding(
-    padding: const EdgeInsets.only(right: 12, top: 12),
+    padding: const EdgeInsets.only(top: 4, left: 4, right: 4),
     child: IconButton.filled(
       alignment: Alignment.center,
       key: ChatEditor.sendBtnKey,
@@ -385,7 +410,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   );
 
   Widget _renderAttachmentBtn() => Padding(
-    padding: const EdgeInsets.only(right: 12, top: 12),
+    padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
     child: IconButton(
       onPressed:
           () => selectAttachment(

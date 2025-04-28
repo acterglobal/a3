@@ -1,11 +1,5 @@
 use chrono::{NaiveDate, NaiveTime, Utc};
-use matrix_sdk::ruma::{
-    events::room::{
-        avatar::RoomAvatarEventContent, create::RoomCreateEventContent,
-        message::TextMessageEventContent, name::RoomNameEventContent, topic::RoomTopicEventContent,
-    },
-    OwnedEventId, OwnedMxcUri, OwnedUserId,
-};
+use matrix_sdk::ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId};
 use object::ActivityObject;
 use urlencoding::encode;
 
@@ -18,9 +12,13 @@ use crate::{
     models::{
         status::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
-            PolicyRuleUserContent, ProfileContent,
+            PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
+            RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+            RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+            RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+            SpaceParentContent,
         },
-        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta, Task,
+        ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
     store::Store,
 };
@@ -35,10 +33,20 @@ pub enum ActivityContent {
     PolicyRuleRoom(PolicyRuleRoomContent),
     PolicyRuleServer(PolicyRuleServerContent),
     PolicyRuleUser(PolicyRuleUserContent),
-    RoomCreate(RoomCreateEventContent),
-    RoomAvatar(RoomAvatarEventContent),
-    RoomName(RoomNameEventContent),
-    RoomTopic(RoomTopicEventContent),
+    RoomAvatar(RoomAvatarContent),
+    RoomCreate(RoomCreateContent),
+    RoomEncryption(RoomEncryptionContent),
+    RoomGuestAccess(RoomGuestAccessContent),
+    RoomHistoryVisibility(RoomHistoryVisibilityContent),
+    RoomJoinRules(RoomJoinRulesContent),
+    RoomName(RoomNameContent),
+    RoomPinnedEvents(RoomPinnedEventsContent),
+    RoomPowerLevels(RoomPowerLevelsContent),
+    RoomServerAcl(RoomServerAclContent),
+    RoomTombstone(RoomTombstoneContent),
+    RoomTopic(RoomTopicContent),
+    SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -82,7 +90,7 @@ pub enum ActivityContent {
     // tasks and task list specific
     TaskAdd {
         object: ActivityObject,
-        task: Task,
+        task_title: String,
     },
     TaskProgress {
         object: ActivityObject,
@@ -150,10 +158,20 @@ impl Activity {
             ActivityContent::PolicyRuleRoom(_) => "policyRuleRoom",
             ActivityContent::PolicyRuleServer(_) => "policyRuleServer",
             ActivityContent::PolicyRuleUser(_) => "policyRuleUser",
-            ActivityContent::RoomCreate(_) => "roomCreate",
             ActivityContent::RoomAvatar(_) => "roomAvatar",
+            ActivityContent::RoomCreate(_) => "roomCreate",
+            ActivityContent::RoomEncryption(_) => "roomEncryption",
+            ActivityContent::RoomGuestAccess(_) => "roomGuestAccess",
+            ActivityContent::RoomHistoryVisibility(_) => "roomHistoryVisibility",
+            ActivityContent::RoomJoinRules(_) => "roomJoinRules",
             ActivityContent::RoomName(_) => "roomName",
+            ActivityContent::RoomPinnedEvents(_) => "roomPinnedEvents",
+            ActivityContent::RoomPowerLevels(_) => "roomPowerLevels",
+            ActivityContent::RoomServerAcl(_) => "roomServerAcl",
+            ActivityContent::RoomTombstone(_) => "roomTombstone",
             ActivityContent::RoomTopic(_) => "roomTopic",
+            ActivityContent::SpaceChild(_) => "spaceChild",
+            ActivityContent::SpaceParent(_) => "spaceParent",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -209,28 +227,28 @@ impl Activity {
     pub fn title(&self) -> Option<String> {
         match &self.inner {
             ActivityContent::Attachment { content, .. } => content.name(),
-            ActivityContent::TaskAdd { task, .. } => Some(task.title.clone()),
+            ActivityContent::TaskAdd { task_title, .. } => Some(task_title.clone()),
             _ => None,
         }
     }
 
-    pub fn room_avatar(&self) -> Option<OwnedMxcUri> {
+    pub fn room_avatar(&self) -> Option<String> {
         match &self.inner {
-            ActivityContent::RoomAvatar(c) => c.url.clone(),
+            ActivityContent::RoomAvatar(c) => c.url_new_val(),
             _ => None,
         }
     }
 
     pub fn room_name(&self) -> Option<String> {
         match &self.inner {
-            ActivityContent::RoomName(c) => Some(c.name.clone()),
+            ActivityContent::RoomName(c) => Some(c.new_val()),
             _ => None,
         }
     }
 
     pub fn room_topic(&self) -> Option<String> {
         match &self.inner {
-            ActivityContent::RoomTopic(c) => Some(c.topic.clone()),
+            ActivityContent::RoomTopic(c) => Some(c.new_val()),
             _ => None,
         }
     }
@@ -242,10 +260,20 @@ impl Activity {
             | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::PolicyRuleServer(_)
             | ActivityContent::PolicyRuleUser(_)
-            | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomCreate(_)
+            | ActivityContent::RoomEncryption(_)
+            | ActivityContent::RoomGuestAccess(_)
+            | ActivityContent::RoomHistoryVisibility(_)
+            | ActivityContent::RoomJoinRules(_)
             | ActivityContent::RoomName(_)
-            | ActivityContent::RoomTopic(_) => None,
+            | ActivityContent::RoomPinnedEvents(_)
+            | ActivityContent::RoomPowerLevels(_)
+            | ActivityContent::RoomServerAcl(_)
+            | ActivityContent::RoomTombstone(_)
+            | ActivityContent::RoomTopic(_)
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -344,10 +372,20 @@ impl Activity {
             | ActivityContent::PolicyRuleRoom(_)
             | ActivityContent::PolicyRuleServer(_)
             | ActivityContent::PolicyRuleUser(_)
-            | ActivityContent::RoomCreate(_)
             | ActivityContent::RoomAvatar(_)
+            | ActivityContent::RoomCreate(_)
+            | ActivityContent::RoomEncryption(_)
+            | ActivityContent::RoomGuestAccess(_)
+            | ActivityContent::RoomHistoryVisibility(_)
+            | ActivityContent::RoomJoinRules(_)
             | ActivityContent::RoomName(_)
-            | ActivityContent::RoomTopic(_) => todo!(),
+            | ActivityContent::RoomPinnedEvents(_)
+            | ActivityContent::RoomPowerLevels(_)
+            | ActivityContent::RoomServerAcl(_)
+            | ActivityContent::RoomTombstone(_)
+            | ActivityContent::RoomTopic(_)
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => todo!(),
         }
     }
 
@@ -393,17 +431,47 @@ impl Activity {
                 ActerSupportedRoomStatusEvents::PolicyRuleUser(c) => {
                     Ok(Self::new(meta, ActivityContent::PolicyRuleUser(c)))
                 }
+                ActerSupportedRoomStatusEvents::RoomAvatar(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomAvatar(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomCreate(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomCreate(c)))
                 }
-                ActerSupportedRoomStatusEvents::RoomAvatar(c) => {
-                    Ok(Self::new(meta, ActivityContent::RoomAvatar(c)))
+                ActerSupportedRoomStatusEvents::RoomEncryption(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomEncryption(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomGuestAccess(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomGuestAccess(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomHistoryVisibility(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomHistoryVisibility(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomJoinRules(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomJoinRules(c)))
                 }
                 ActerSupportedRoomStatusEvents::RoomName(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomName(c)))
                 }
+                ActerSupportedRoomStatusEvents::RoomPinnedEvents(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomPinnedEvents(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomPowerLevels(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomPowerLevels(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomServerAcl(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomServerAcl(c)))
+                }
+                ActerSupportedRoomStatusEvents::RoomTombstone(c) => {
+                    Ok(Self::new(meta, ActivityContent::RoomTombstone(c)))
+                }
                 ActerSupportedRoomStatusEvents::RoomTopic(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomTopic(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceChild(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceChild(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceParent(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceParent(c)))
                 }
             },
 
@@ -673,7 +741,10 @@ impl Activity {
 
                 Ok(Self::new(
                     meta,
-                    ActivityContent::TaskAdd { object, task: e },
+                    ActivityContent::TaskAdd {
+                        object,
+                        task_title: e.inner.title,
+                    },
                 ))
             }
             AnyActerModel::TaskUpdate(e) => {
