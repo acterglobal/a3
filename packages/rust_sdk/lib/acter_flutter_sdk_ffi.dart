@@ -21472,6 +21472,17 @@ class Api {
           .asFunction<
             _TimelineEventItemSpaceChildContentReturn Function(int)
           >();
+  late final _timelineEventItemSpaceParentContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemSpaceParentContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_space_parent_content");
+
+  late final _timelineEventItemSpaceParentContent =
+      _timelineEventItemSpaceParentContentPtr
+          .asFunction<
+            _TimelineEventItemSpaceParentContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -22799,6 +22810,59 @@ class Api {
   late final _spaceChildContentSuggestedOldVal =
       _spaceChildContentSuggestedOldValPtr
           .asFunction<_SpaceChildContentSuggestedOldValReturn Function(int)>();
+  late final _spaceParentContentRoomIdPtr = _lookup<
+    ffi.NativeFunction<_SpaceParentContentRoomIdReturn Function(ffi.IntPtr)>
+  >("__SpaceParentContent_room_id");
+
+  late final _spaceParentContentRoomId =
+      _spaceParentContentRoomIdPtr
+          .asFunction<_SpaceParentContentRoomIdReturn Function(int)>();
+  late final _spaceParentContentViaChangePtr = _lookup<
+    ffi.NativeFunction<_SpaceParentContentViaChangeReturn Function(ffi.IntPtr)>
+  >("__SpaceParentContent_via_change");
+
+  late final _spaceParentContentViaChange =
+      _spaceParentContentViaChangePtr
+          .asFunction<_SpaceParentContentViaChangeReturn Function(int)>();
+  late final _spaceParentContentViaNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__SpaceParentContent_via_new_val",
+      );
+
+  late final _spaceParentContentViaNewVal =
+      _spaceParentContentViaNewValPtr.asFunction<int Function(int)>();
+  late final _spaceParentContentViaOldValPtr = _lookup<
+    ffi.NativeFunction<_SpaceParentContentViaOldValReturn Function(ffi.IntPtr)>
+  >("__SpaceParentContent_via_old_val");
+
+  late final _spaceParentContentViaOldVal =
+      _spaceParentContentViaOldValPtr
+          .asFunction<_SpaceParentContentViaOldValReturn Function(int)>();
+  late final _spaceParentContentCanonicalChangePtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceParentContentCanonicalChangeReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceParentContent_canonical_change");
+
+  late final _spaceParentContentCanonicalChange =
+      _spaceParentContentCanonicalChangePtr
+          .asFunction<_SpaceParentContentCanonicalChangeReturn Function(int)>();
+  late final _spaceParentContentCanonicalNewValPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
+        "__SpaceParentContent_canonical_new_val",
+      );
+
+  late final _spaceParentContentCanonicalNewVal =
+      _spaceParentContentCanonicalNewValPtr.asFunction<int Function(int)>();
+  late final _spaceParentContentCanonicalOldValPtr = _lookup<
+    ffi.NativeFunction<
+      _SpaceParentContentCanonicalOldValReturn Function(ffi.IntPtr)
+    >
+  >("__SpaceParentContent_canonical_old_val");
+
+  late final _spaceParentContentCanonicalOldVal =
+      _spaceParentContentCanonicalOldValPtr
+          .asFunction<_SpaceParentContentCanonicalOldValReturn Function(int)>();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -44765,6 +44829,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.space.parent
+  SpaceParentContent? spaceParentContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemSpaceParentContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SpaceParentContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = SpaceParentContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -48634,6 +48715,162 @@ class SpaceChildContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._spaceChildContentSuggestedOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class SpaceParentContent {
+  final Api _api;
+  final _Box _box;
+
+  SpaceParentContent._(this._api, this._box);
+
+  RoomId roomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentRoomId(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_RoomId");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = RoomId._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  String? viaChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentViaChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  FfiListFfiString viaNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentViaNewVal(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  FfiListFfiString? viaOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentViaOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListFfiString");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListFfiString._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  String? canonicalChange() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentCanonicalChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  bool canonicalNewVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentCanonicalNewVal(tmp0);
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  bool? canonicalOldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._spaceParentContentCanonicalOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -69681,6 +69918,13 @@ class _TimelineEventItemSpaceChildContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemSpaceParentContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -70840,6 +71084,55 @@ class _SpaceChildContentSuggestedChangeReturn extends ffi.Struct {
 }
 
 class _SpaceChildContentSuggestedOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _SpaceParentContentRoomIdReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _SpaceParentContentViaChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceParentContentViaOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _SpaceParentContentCanonicalChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _SpaceParentContentCanonicalOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

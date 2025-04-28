@@ -1079,6 +1079,9 @@ object TimelineEventItem {
     /// covers m.space.child
     fn space_child_content() -> Option<SpaceChildContent>;
 
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1421,6 +1424,18 @@ object SpaceChildContent {
     fn suggested_change() -> Option<string>;
     fn suggested_new_val() -> bool;
     fn suggested_old_val() -> Option<bool>;
+}
+
+object SpaceParentContent {
+    fn room_id() -> Result<RoomId>;
+
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn canonical_change() -> Option<string>;
+    fn canonical_new_val() -> bool;
+    fn canonical_old_val() -> Option<bool>;
 }
 
 
