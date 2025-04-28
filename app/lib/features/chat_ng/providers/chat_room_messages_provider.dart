@@ -35,6 +35,7 @@ const _supportedTypes = [
   'm.room.server_acl',
   'm.room.tombstone',
   'm.room.topic',
+  'm.space.child',
 
   'm.room.message',
   'm.room.redaction',

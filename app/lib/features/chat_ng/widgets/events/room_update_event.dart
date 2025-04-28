@@ -91,6 +91,7 @@ class RoomUpdateEvent extends ConsumerWidget {
       'm.room.server_acl' => getMessageOnRoomServerAcl(lang, isMe, senderName),
       'm.room.tombstone' => getMessageOnRoomTombstone(lang, isMe, senderName),
       'm.room.topic' => getMessageOnRoomTopic(lang, isMe, senderName),
+      'm.space.child' => getMessageOnSpaceChild(lang, isMe, senderName),
       'm.room.aliases' =>
         isMe
             ? lang.chatYouUpdateRoomAliases
@@ -107,10 +108,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateSpaceParent
             : lang.chatUpdateSpaceParent(firstName ?? senderId),
-      'm.space.child' =>
-        isMe
-            ? lang.chatYouUpdateSpaceChildren
-            : lang.chatUpdateSpaceChildren(firstName ?? senderId),
       _ => null,
     };
   }
@@ -1254,6 +1251,77 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStateRoomTopicYouSet(newVal);
         } else {
           return lang.roomStateRoomTopicOtherSet(senderName, newVal);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnSpaceChild(L10n lang, bool isMe, String senderName) {
+    final content = item.spaceChildContent();
+    if (content == null) {
+      _log.severe('failed to get content of space child change');
+      return null;
+    }
+    switch (content.viaChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateSpaceChildViaYouChanged;
+        } else {
+          return lang.roomStateSpaceChildViaOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateSpaceChildViaYouSet;
+        } else {
+          return lang.roomStateSpaceChildViaOtherSet(senderName);
+        }
+    }
+    switch (content.orderChange()) {
+      case 'Changed':
+        final newVal = content.orderNewVal() ?? '';
+        final oldVal = content.orderOldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateSpaceChildOrderYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateSpaceChildOrderOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.orderNewVal() ?? '';
+        if (isMe) {
+          return lang.roomStateSpaceChildOrderYouSet(newVal);
+        } else {
+          return lang.roomStateSpaceChildOrderOtherSet(senderName, newVal);
+        }
+      case 'Unset':
+        if (isMe) {
+          return lang.roomStateSpaceChildOrderYouUnset;
+        } else {
+          return lang.roomStateSpaceChildOrderOtherUnset(senderName);
+        }
+    }
+    switch (content.suggestedChange()) {
+      case 'Changed':
+        final newVal = content.suggestedNewVal();
+        final oldVal = content.suggestedOldVal() ?? false;
+        if (isMe) {
+          return lang.roomStateSpaceChildSuggestedYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateSpaceChildSuggestedOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.suggestedNewVal();
+        if (isMe) {
+          return lang.roomStateSpaceChildSuggestedYouSet(newVal);
+        } else {
+          return lang.roomStateSpaceChildSuggestedOtherSet(senderName, newVal);
         }
     }
     return null;
