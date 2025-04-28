@@ -91,10 +91,7 @@ class RoomUpdateEvent extends ConsumerWidget {
       ),
       'm.room.server_acl' => getMessageOnRoomServerAcl(lang, isMe, senderName),
       'm.room.tombstone' => getMessageOnRoomTombstone(lang, isMe, senderName),
-      'm.room.topic' =>
-        isMe
-            ? '${lang.chatYouUpdateRoomTopic}: $msgContent'
-            : '${lang.chatUpdateRoomTopic(firstName ?? senderId)}: $msgContent',
+      'm.room.topic' => getMessageOnRoomTopic(lang, isMe, senderName),
       'm.room.aliases' =>
         isMe
             ? lang.chatYouUpdateRoomAliases
@@ -1228,6 +1225,36 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStateRoomTombstoneReplacementRoomYouSet;
         } else {
           return lang.roomStateRoomTombstoneReplacementRoomOtherSet(senderName);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnRoomTopic(L10n lang, bool isMe, String senderName) {
+    final content = item.roomTopicContent();
+    if (content == null) {
+      _log.severe('failed to get content of room topic change');
+      return null;
+    }
+    switch (content.change()) {
+      case 'Changed':
+        final newVal = content.newVal();
+        final oldVal = content.oldVal() ?? '';
+        if (isMe) {
+          return lang.roomStateRoomTopicYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateRoomTopicOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        final newVal = content.newVal();
+        if (isMe) {
+          return lang.roomStateRoomTopicYouSet(newVal);
+        } else {
+          return lang.roomStateRoomTopicOtherSet(senderName, newVal);
         }
     }
     return null;
