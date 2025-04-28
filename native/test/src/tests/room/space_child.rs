@@ -84,6 +84,7 @@ async fn test_space_child() -> Result<()> {
 
     let room_id = content.room_id().ok();
     assert_eq!(room_id, Some(child_room_id), "room id should be present");
+
     assert_eq!(
         content.via_change(),
         Some("Set".to_owned()),
@@ -94,12 +95,14 @@ async fn test_space_child() -> Result<()> {
         via.clone(),
         "new val of via is invalid"
     );
+
     assert_eq!(
         content.order_change(),
         None,
         "change of order should be none"
     );
     assert_eq!(content.order_new_val(), None, "new val of order is invalid");
+
     assert_eq!(
         content.suggested_change(),
         Some("Set".to_owned()),
