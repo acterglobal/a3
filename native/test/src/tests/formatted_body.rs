@@ -80,7 +80,7 @@ fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
         return None;
     }
     let event_item = msg.event_item()?;
-    let msg_content = event_item.message()?;
+    let msg_content = event_item.msg_content()?;
     let _fresh_body = msg_content.body();
     let formatted = msg_content.formatted_body()?;
 

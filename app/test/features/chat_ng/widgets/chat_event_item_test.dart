@@ -66,7 +66,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   String sender() => _sender;
 
   @override
-  MsgContent? message() => _msgContent;
+  MsgContent? msgContent() => _msgContent;
 
   @override
   EventSendState? sendState() => _sendState;

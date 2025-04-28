@@ -21273,13 +21273,13 @@ class Api {
   late final _timelineEventItemMsgType =
       _timelineEventItemMsgTypePtr
           .asFunction<_TimelineEventItemMsgTypeReturn Function(int)>();
-  late final _timelineEventItemMessagePtr = _lookup<
-    ffi.NativeFunction<_TimelineEventItemMessageReturn Function(ffi.IntPtr)>
-  >("__TimelineEventItem_message");
+  late final _timelineEventItemMsgContentPtr = _lookup<
+    ffi.NativeFunction<_TimelineEventItemMsgContentReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_msg_content");
 
-  late final _timelineEventItemMessage =
-      _timelineEventItemMessagePtr
-          .asFunction<_TimelineEventItemMessageReturn Function(int)>();
+  late final _timelineEventItemMsgContent =
+      _timelineEventItemMsgContentPtr
+          .asFunction<_TimelineEventItemMsgContentReturn Function(int)>();
   late final _timelineEventItemMembershipContentPtr = _lookup<
     ffi.NativeFunction<
       _TimelineEventItemMembershipContentReturn Function(ffi.IntPtr)
@@ -44507,10 +44507,10 @@ class TimelineEventItem {
   }
 
   /// covers text/image/audio/video/file/location/emote
-  MsgContent? message() {
+  MsgContent? msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemMessage(tmp0);
+    final tmp1 = _api._timelineEventItemMsgContent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -69785,7 +69785,7 @@ class _TimelineEventItemMsgTypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TimelineEventItemMessageReturn extends ffi.Struct {
+class _TimelineEventItemMsgContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

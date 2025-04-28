@@ -22,5 +22,5 @@ final lastMessageDisplayNameProvider = Provider.family<String, MemberInfo>((
 });
 
 final lastMessageTextProvider = Provider.family<String?, TimelineEventItem?>(
-  (ref, eventItem) => eventItem?.message()?.body(),
+  (ref, eventItem) => eventItem?.msgContent()?.body(),
 );

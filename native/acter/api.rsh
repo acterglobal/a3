@@ -1023,7 +1023,7 @@ object TimelineEventItem {
     fn msg_type() -> Option<string>;
 
     /// covers text/image/audio/video/file/location/emote
-    fn message() -> Option<MsgContent>;
+    fn msg_content() -> Option<MsgContent>;
 
     /// covers some of m.room.member
     fn membership_content() -> Option<MembershipContent>;

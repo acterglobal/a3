@@ -271,7 +271,7 @@ impl TimelineEventItem {
         self.msg_type.clone()
     }
 
-    pub fn message(&self) -> Option<MsgContent> {
+    pub fn msg_content(&self) -> Option<MsgContent> {
         if let Some(TimelineEventContent::Message(c)) = &self.content {
             Some(c.clone())
         } else {
