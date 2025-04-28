@@ -1,26 +1,32 @@
-use matrix_sdk_base::ruma::events::{
-    policy::rule::{
-        room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
-        server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
-        user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
-    },
-    room::{
-        avatar::RoomAvatarEventContent,
-        create::RoomCreateEventContent,
-        encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
-        guest_access::{PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent},
-        history_visibility::RoomHistoryVisibilityEventContent,
-        join_rules::RoomJoinRulesEventContent,
-        name::{PossiblyRedactedRoomNameEventContent, RoomNameEventContent},
-        pinned_events::{
-            PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
+use matrix_sdk_base::ruma::{
+    events::{
+        policy::rule::{
+            room::{PolicyRuleRoomEventContent, PossiblyRedactedPolicyRuleRoomEventContent},
+            server::{PolicyRuleServerEventContent, PossiblyRedactedPolicyRuleServerEventContent},
+            user::{PolicyRuleUserEventContent, PossiblyRedactedPolicyRuleUserEventContent},
         },
-        power_levels::RoomPowerLevelsEventContent,
-        server_acl::RoomServerAclEventContent,
-        tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
-        topic::{PossiblyRedactedRoomTopicEventContent, RoomTopicEventContent},
+        room::{
+            avatar::RoomAvatarEventContent,
+            create::RoomCreateEventContent,
+            encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
+            guest_access::{
+                PossiblyRedactedRoomGuestAccessEventContent, RoomGuestAccessEventContent,
+            },
+            history_visibility::RoomHistoryVisibilityEventContent,
+            join_rules::RoomJoinRulesEventContent,
+            name::{PossiblyRedactedRoomNameEventContent, RoomNameEventContent},
+            pinned_events::{
+                PossiblyRedactedRoomPinnedEventsEventContent, RoomPinnedEventsEventContent,
+            },
+            power_levels::RoomPowerLevelsEventContent,
+            server_acl::RoomServerAclEventContent,
+            tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
+            topic::{PossiblyRedactedRoomTopicEventContent, RoomTopicEventContent},
+        },
+        space::child::{PossiblyRedactedSpaceChildEventContent, SpaceChildEventContent},
+        TimelineEventType,
     },
-    TimelineEventType,
+    OwnedRoomId, RoomId,
 };
 use serde::{Deserialize, Serialize};
 
@@ -1096,5 +1102,117 @@ impl RoomTopicContent {
         self.prev_content
             .as_ref()
             .and_then(|prev| prev.topic.clone())
+    }
+}
+
+// m.space.child
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpaceChildContent {
+    state_key: String,
+    content: SpaceChildEventContent,
+    prev_content: Option<PossiblyRedactedSpaceChildEventContent>,
+}
+
+impl SpaceChildContent {
+    pub fn new(
+        state_key: String,
+        content: SpaceChildEventContent,
+        prev_content: Option<PossiblyRedactedSpaceChildEventContent>,
+    ) -> Self {
+        SpaceChildContent {
+            state_key,
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn room_id(&self) -> Result<OwnedRoomId, crate::Error> {
+        match RoomId::parse(self.state_key.clone()) {
+            Ok(r_id) => Ok(r_id),
+            Err(e) => Err(crate::Error::IdParseError(e)),
+        }
+    }
+
+    pub fn via_change(&self) -> Option<String> {
+        if let Some(prev_via) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.via.as_ref())
+        {
+            if do_vecs_match(&self.content.via, prev_via) {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn via_new_val(&self) -> Vec<String> {
+        self.content
+            .via
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
+    }
+
+    pub fn via_old_val(&self) -> Option<Vec<String>> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.via.as_ref())
+            .map(|via| via.iter().map(ToString::to_string).collect::<Vec<String>>())
+    }
+
+    pub fn order_change(&self) -> Option<String> {
+        let prev_order = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.order.clone());
+        match (self.content.order.clone(), prev_order) {
+            (Some(new_val), Some(old_val)) => {
+                if new_val != old_val {
+                    return Some("Changed".to_owned());
+                }
+            }
+            (None, Some(_old_val)) => {
+                return Some("Unset".to_owned());
+            }
+            (Some(_new_val), None) => {
+                return Some("Set".to_owned());
+            }
+            (None, None) => {}
+        }
+        None
+    }
+
+    pub fn order_new_val(&self) -> Option<String> {
+        self.content.order.clone()
+    }
+
+    pub fn order_old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.order.clone())
+    }
+
+    pub fn suggested_change(&self) -> Option<String> {
+        if let Some(prev_content) = &self.prev_content {
+            if self.content.suggested == prev_content.suggested {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn suggested_new_val(&self) -> bool {
+        self.content.suggested
+    }
+
+    pub fn suggested_old_val(&self) -> Option<bool> {
+        self.prev_content.as_ref().map(|prev| prev.suggested)
     }
 }

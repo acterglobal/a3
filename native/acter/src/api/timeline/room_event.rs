@@ -3,7 +3,7 @@ use acter_core::models::status::{
     ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
     RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent, RoomNameContent,
     RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent, RoomTombstoneContent,
-    RoomTopicContent,
+    RoomTopicContent, SpaceChildContent,
 };
 use matrix_sdk_base::ruma::events::room::message::MessageType;
 use serde::{Deserialize, Serialize};
@@ -31,6 +31,7 @@ pub enum TimelineEventContent {
     RoomServerAcl(RoomServerAclContent),
     RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicContent),
+    SpaceChild(SpaceChildContent),
 }
 
 impl TryFrom<&MessageType> for TimelineEventContent {

@@ -86,7 +86,7 @@ async fn test_room_tombstone() -> Result<()> {
     assert_eq!(
         content.body_change(),
         Some("Set".to_owned()),
-        "body in room tombstone should be changed"
+        "body in room tombstone should be set"
     );
     assert_eq!(
         content.body_new_val(),
@@ -97,7 +97,7 @@ async fn test_room_tombstone() -> Result<()> {
     assert_eq!(
         content.replacement_room_change(),
         Some("Set".to_owned()),
-        "replacement in room tombstone should be changed"
+        "replacement in room tombstone should be set"
     );
     assert_eq!(
         content.replacement_room_new_val(),

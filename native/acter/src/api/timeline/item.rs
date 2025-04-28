@@ -4,7 +4,7 @@ use acter_core::{
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
         RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
-        RoomTombstoneContent, RoomTopicContent,
+        RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
     },
     util::do_vecs_match,
 };
@@ -415,6 +415,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn space_child_content(&self) -> Option<SpaceChildContent> {
+        if let Some(TimelineEventContent::SpaceChild(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -697,53 +705,14 @@ impl TimelineEventItemBuilder {
                 let c = RoomTopicContent::new(content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::RoomTopic(c)));
             }
-            AnyOtherFullStateEventContent::SpaceChild(c) => {
+            AnyOtherFullStateEventContent::SpaceChild(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.space.child".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            match (prev.order.clone(), content.order.clone()) {
-                                (Some(old), Some(cur)) => {
-                                    if old != cur {
-                                        result.push("changed order of space child".to_owned());
-                                    }
-                                }
-                                (Some(old), None) => {
-                                    result.push("removed order of space child".to_owned());
-                                }
-                                (None, Some(cur)) => {
-                                    result.push("added order of space child".to_owned());
-                                }
-                                (None, None) => {}
-                            }
-                            if prev.suggested != content.suggested {
-                                result.push("changed suggested of space child".to_owned());
-                            }
-                            if let Some(via) = prev.via.clone() {
-                                if !do_vecs_match(&via, &content.via) {
-                                    result.push("changed via of space child".to_owned());
-                                }
-                            } else {
-                                result.push("added via of space child".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added space child".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted space child".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let state_key = state.state_key().to_owned();
+                let c = SpaceChildContent::new(state_key, content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::SpaceChild(c)));
             }
             AnyOtherFullStateEventContent::SpaceParent(c) => {
                 self.event_type("m.space.parent".to_owned());

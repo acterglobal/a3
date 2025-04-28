@@ -1,5 +1,5 @@
-use acter::api::TimelineItem;
-use acter_core::models::status::RoomTopicContent;
+use acter::api::{CreateConvoSettingsBuilder, TimelineItem};
+use acter_core::models::status::SpaceChildContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -12,12 +12,15 @@ use tokio_retry::{
 use crate::utils::random_user_with_random_convo;
 
 #[tokio::test]
-async fn test_room_topic() -> Result<()> {
+async fn test_space_child() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("room_topic").await?;
+    let (mut user, room_id) = random_user_with_random_convo("space_child").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
+
+    let settings = CreateConvoSettingsBuilder::default().build()?;
+    let child_room_id = user.create_convo(Box::new(settings)).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -35,8 +38,10 @@ async fn test_room_topic() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let topic = "Here is test channel";
-    let topic_event_id = convo.set_topic(topic.to_owned()).await?;
+    let child_event_id = convo
+        .add_child_room(child_room_id.to_string(), None, true)
+        .await?;
+    let via = vec!["localhost".to_owned()];
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -57,7 +62,7 @@ async fn test_room_topic() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(result) = match_msg(value) {
+                        if let Some(result) = match_msg(&value) {
                             found_result = Some(result);
                             break;
                         }
@@ -74,25 +79,46 @@ async fn test_room_topic() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let (found_event_id, content) =
-        found_result.expect("Even after 30 seconds, room topic not received");
-    assert_eq!(found_event_id, topic_event_id, "event id should match");
+        found_result.expect("Even after 30 seconds, space child not received");
+    assert_eq!(found_event_id, child_event_id, "event id should match");
 
+    let room_id = content.room_id().ok();
+    assert_eq!(room_id, Some(child_room_id), "room id should be present");
     assert_eq!(
-        content.change(),
+        content.via_change(),
         Some("Set".to_owned()),
-        "room topic should be set"
+        "change of via should be set"
     );
-    assert_eq!(content.new_val(), topic, "new val of room topic is invalid");
+    assert_eq!(
+        content.via_new_val(),
+        via.clone(),
+        "new val of via is invalid"
+    );
+    assert_eq!(
+        content.order_change(),
+        None,
+        "change of order should be none"
+    );
+    assert_eq!(content.order_new_val(), None, "new val of order is invalid");
+    assert_eq!(
+        content.suggested_change(),
+        Some("Set".to_owned()),
+        "change of suggested should be set"
+    );
+    assert!(
+        content.suggested_new_val(),
+        "new val of suggested is invalid"
+    );
 
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem) -> Option<(String, RoomTopicContent)> {
+fn match_msg(msg: &TimelineItem) -> Option<(String, SpaceChildContent)> {
     if msg.is_virtual() {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.room_topic_content()?;
+    let content = event_item.space_child_content()?;
     let event_id = event_item
         .event_id()
         .expect("event item should have event id");

@@ -1076,6 +1076,9 @@ object TimelineEventItem {
     /// covers m.room.topic
     fn room_topic_content() -> Option<RoomTopicContent>;
 
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
 
@@ -1404,6 +1407,22 @@ object RoomTopicContent {
     fn old_val() -> Option<string>;
 }
 
+object SpaceChildContent {
+    fn room_id() -> Result<RoomId>;
+
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn order_change() -> Option<string>;
+    fn order_new_val() -> Option<string>;
+    fn order_old_val() -> Option<string>;
+
+    fn suggested_change() -> Option<string>;
+    fn suggested_new_val() -> bool;
+    fn suggested_old_val() -> Option<bool>;
+}
+
 
 //  ########   #######   #######  ##     ##
 //  ##     ## ##     ## ##     ## ###   ###
@@ -1460,6 +1479,13 @@ object Room {
 
     /// remove a parent room
     fn remove_parent_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
+
+    /// add the child room and return event id of that event
+    /// order: Must consist of ASCII characters within the range \x20 (space) and \x7E (~), inclusive.
+    fn add_child_room(room_id: string, order: Option<string>, suggested: bool) -> Future<Result<string>>;
+
+    /// remove the child room
+    fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
