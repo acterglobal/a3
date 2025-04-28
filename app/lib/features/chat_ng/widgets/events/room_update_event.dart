@@ -46,7 +46,6 @@ class RoomUpdateEvent extends ConsumerWidget {
             )
             .valueOrNull;
     final senderName = firstName ?? simplifyUserId(senderId) ?? senderId;
-    final msgContent = item.message()?.body() ?? '';
 
     return switch (item.eventType()) {
       'm.policy.rule.room' => getMessageOnPolicyRuleRoom(
