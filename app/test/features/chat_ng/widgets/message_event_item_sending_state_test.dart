@@ -18,10 +18,15 @@ class MockMsgContent extends Mock implements MsgContent {
 class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String _msgType;
   final EventSendState? _sendState;
+  final int? _originServerTs;
 
-  MockTimelineEventItem({required String msgType, EventSendState? sendState})
-    : _msgType = msgType,
-      _sendState = sendState;
+  MockTimelineEventItem({
+    required String msgType,
+    EventSendState? sendState,
+    int? originServerTs,
+  }) : _msgType = msgType,
+       _sendState = sendState,
+       _originServerTs = originServerTs;
 
   @override
   String msgType() => _msgType;
@@ -40,6 +45,10 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   String sender() => 'test-sender';
+
+  @override
+  int originServerTs() =>
+      _originServerTs ?? DateTime.now().millisecondsSinceEpoch;
 }
 
 class MockEventSendState extends Mock implements EventSendState {

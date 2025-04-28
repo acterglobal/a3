@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
@@ -196,12 +197,34 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     }
   }
 
+  int _getActualLineCount(String text) {
+    //Considering 50 is the width of the emoji picker and send button
+    final editorWidth = MediaQuery.sizeOf(context).width - 50;
+
+    final textStyle = Theme.of(context).textTheme.bodyLarge;
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: textStyle),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: editorWidth);
+    // Get the number of lines the text actually occupies
+    return textPainter.computeLineMetrics().length;
+  }
+
   void _updateContentHeight() {
     final text = textEditorState.intoMarkdown();
-    final lineCount = text.split('\n').length - 1;
+    final actualLineCount = _getActualLineCount(text) - 1;
 
-    double newHeight =
-        lineCount > 1 ? ChatEditorUtils.maxHeight : ChatEditorUtils.baseHeight;
+    double newHeight = ChatEditorUtils.baseHeight;
+
+    if (text.isEmpty || actualLineCount < 2) {
+      newHeight = ChatEditorUtils.baseHeight;
+    } else {
+      final offset = 30 * (actualLineCount - 1);
+      newHeight = min(
+        ChatEditorUtils.maxHeight,
+        ChatEditorUtils.baseHeight + offset,
+      );
+    }
 
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
     if (isKeyboardVisible == true) {
