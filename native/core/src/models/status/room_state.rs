@@ -18,6 +18,7 @@ use matrix_sdk_base::ruma::events::{
         power_levels::RoomPowerLevelsEventContent,
         server_acl::RoomServerAclEventContent,
         tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
+        topic::{PossiblyRedactedRoomTopicEventContent, RoomTopicEventContent},
     },
     TimelineEventType,
 };
@@ -1051,5 +1052,49 @@ impl RoomTombstoneContent {
             .as_ref()
             .and_then(|prev| prev.replacement_room.as_ref())
             .map(ToString::to_string)
+    }
+}
+
+// m.room.topic
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoomTopicContent {
+    content: RoomTopicEventContent,
+    prev_content: Option<PossiblyRedactedRoomTopicEventContent>,
+}
+
+impl RoomTopicContent {
+    pub fn new(
+        content: RoomTopicEventContent,
+        prev_content: Option<PossiblyRedactedRoomTopicEventContent>,
+    ) -> Self {
+        RoomTopicContent {
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn change(&self) -> Option<String> {
+        if let Some(prev_topic) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.topic.as_ref())
+        {
+            if self.content.topic == *prev_topic {
+                return None;
+            } else {
+                return Some("Changed".to_owned());
+            }
+        }
+        Some("Set".to_owned())
+    }
+
+    pub fn new_val(&self) -> String {
+        self.content.topic.clone()
+    }
+
+    pub fn old_val(&self) -> Option<String> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.topic.clone())
     }
 }

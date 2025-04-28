@@ -1,7 +1,6 @@
 use matrix_sdk::ruma::{
     events::{
-        room::{member::MembershipChange as MChange, topic::RoomTopicEventContent},
-        AnyStateEvent, AnyTimelineEvent, StateEvent,
+        room::member::MembershipChange as MChange, AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
     OwnedEventId, UserId,
 };
@@ -22,7 +21,7 @@ pub use room_state::{
     PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
     RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
     RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
-    RoomServerAclContent, RoomTombstoneContent,
+    RoomServerAclContent, RoomTombstoneContent, RoomTopicContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -45,7 +44,7 @@ pub enum ActerSupportedRoomStatusEvents {
     RoomPowerLevels(RoomPowerLevelsContent),
     RoomServerAcl(RoomServerAclContent),
     RoomTombstone(RoomTombstoneContent),
-    RoomTopic(RoomTopicEventContent),
+    RoomTopic(RoomTopicContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -78,10 +77,6 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             )))
         };
         match &event {
-            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomTopic(inner.content.clone()),
-                meta,
-            }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {
                 let membership_change = inner.content.membership_change(
                     inner.prev_content().map(|c| c.details()),
@@ -254,6 +249,16 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::RoomTombstone(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => {
+                let content = RoomTopicContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomTopic(content),
                     meta,
                 })
             }

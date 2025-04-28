@@ -34,6 +34,7 @@ const _supportedTypes = [
   'm.room.power_levels',
   'm.room.server_acl',
   'm.room.tombstone',
+  'm.room.topic',
 
   'm.room.message',
   'm.room.redaction',

@@ -21358,6 +21358,15 @@ class Api {
           .asFunction<
             _TimelineEventItemRoomTombstoneContentReturn Function(int)
           >();
+  late final _timelineEventItemRoomTopicContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRoomTopicContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_room_topic_content");
+
+  late final _timelineEventItemRoomTopicContent =
+      _timelineEventItemRoomTopicContentPtr
+          .asFunction<_TimelineEventItemRoomTopicContentReturn Function(int)>();
   late final _timelineEventItemInReplyToPtr = _lookup<
     ffi.NativeFunction<_TimelineEventItemInReplyToReturn Function(ffi.IntPtr)>
   >("__TimelineEventItem_in_reply_to");
@@ -22590,6 +22599,27 @@ class Api {
           .asFunction<
             _RoomTombstoneContentReplacementRoomOldValReturn Function(int)
           >();
+  late final _roomTopicContentChangePtr = _lookup<
+    ffi.NativeFunction<_RoomTopicContentChangeReturn Function(ffi.IntPtr)>
+  >("__RoomTopicContent_change");
+
+  late final _roomTopicContentChange =
+      _roomTopicContentChangePtr
+          .asFunction<_RoomTopicContentChangeReturn Function(int)>();
+  late final _roomTopicContentNewValPtr = _lookup<
+    ffi.NativeFunction<_RoomTopicContentNewValReturn Function(ffi.IntPtr)>
+  >("__RoomTopicContent_new_val");
+
+  late final _roomTopicContentNewVal =
+      _roomTopicContentNewValPtr
+          .asFunction<_RoomTopicContentNewValReturn Function(int)>();
+  late final _roomTopicContentOldValPtr = _lookup<
+    ffi.NativeFunction<_RoomTopicContentOldValReturn Function(ffi.IntPtr)>
+  >("__RoomTopicContent_old_val");
+
+  late final _roomTopicContentOldVal =
+      _roomTopicContentOldValPtr
+          .asFunction<_RoomTopicContentOldValReturn Function(int)>();
   late final _roomRoomIdStrPtr =
       _lookup<ffi.NativeFunction<_RoomRoomIdStrReturn Function(ffi.IntPtr)>>(
         "__Room_room_id_str",
@@ -44453,6 +44483,23 @@ class TimelineEventItem {
     return tmp2;
   }
 
+  /// covers m.room.topic
+  RoomTopicContent? roomTopicContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRoomTopicContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomTopicContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomTopicContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// original event id, if this msg is reply to another msg
   String? inReplyTo() {
     var tmp0 = 0;
@@ -47954,6 +48001,107 @@ class RoomTombstoneContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomTombstoneContentReplacementRoomOldVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomTopicContent {
+  final Api _api;
+  final _Box _box;
+
+  RoomTopicContent._(this._api, this._box);
+
+  String? change() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTopicContentChange(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String newVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTopicContentNewVal(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    if (tmp4 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String? oldVal() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomTopicContentOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -68894,6 +69042,13 @@ class _TimelineEventItemRoomTombstoneContentReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineEventItemRoomTopicContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -69936,6 +70091,37 @@ class _RoomTombstoneContentReplacementRoomNewValReturn extends ffi.Struct {
 }
 
 class _RoomTombstoneContentReplacementRoomOldValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTopicContentChangeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _RoomTopicContentNewValReturn extends ffi.Struct {
+  @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+}
+
+class _RoomTopicContentOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
