@@ -92,6 +92,7 @@ class RoomUpdateEvent extends ConsumerWidget {
       'm.room.tombstone' => getMessageOnRoomTombstone(lang, isMe, senderName),
       'm.room.topic' => getMessageOnRoomTopic(lang, isMe, senderName),
       'm.space.child' => getMessageOnSpaceChild(lang, isMe, senderName),
+      'm.space.parent' => getMessageOnSpaceParent(lang, isMe, senderName),
       'm.room.aliases' =>
         isMe
             ? lang.chatYouUpdateRoomAliases
@@ -104,10 +105,6 @@ class RoomUpdateEvent extends ConsumerWidget {
         isMe
             ? lang.chatYouUpdateRoomThirdPartyInvite
             : lang.chatUpdateRoomThirdPartyInvite(firstName ?? senderId),
-      'm.space.parent' =>
-        isMe
-            ? lang.chatYouUpdateSpaceParent
-            : lang.chatUpdateSpaceParent(firstName ?? senderId),
       _ => null,
     };
   }
@@ -1322,6 +1319,49 @@ class RoomUpdateEvent extends ConsumerWidget {
           return lang.roomStateSpaceChildSuggestedYouSet(newVal);
         } else {
           return lang.roomStateSpaceChildSuggestedOtherSet(senderName, newVal);
+        }
+    }
+    return null;
+  }
+
+  String? getMessageOnSpaceParent(L10n lang, bool isMe, String senderName) {
+    final content = item.spaceParentContent();
+    if (content == null) {
+      _log.severe('failed to get content of space parent change');
+      return null;
+    }
+    switch (content.viaChange()) {
+      case 'Changed':
+        if (isMe) {
+          return lang.roomStateSpaceParentViaYouChanged;
+        } else {
+          return lang.roomStateSpaceParentViaOtherChanged(senderName);
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateSpaceParentViaYouSet;
+        } else {
+          return lang.roomStateSpaceParentViaOtherSet(senderName);
+        }
+    }
+    switch (content.canonicalChange()) {
+      case 'Changed':
+        final newVal = content.canonicalNewVal();
+        final oldVal = content.canonicalOldVal() ?? false;
+        if (isMe) {
+          return lang.roomStateSpaceParentCanonicalYouChanged(oldVal, newVal);
+        } else {
+          return lang.roomStateSpaceParentCanonicalOtherChanged(
+            senderName,
+            oldVal,
+            newVal,
+          );
+        }
+      case 'Set':
+        if (isMe) {
+          return lang.roomStateSpaceParentViaYouSet;
+        } else {
+          return lang.roomStateSpaceParentViaOtherSet(senderName);
         }
     }
     return null;

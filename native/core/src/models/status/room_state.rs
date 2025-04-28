@@ -23,7 +23,10 @@ use matrix_sdk_base::ruma::{
             tombstone::{PossiblyRedactedRoomTombstoneEventContent, RoomTombstoneEventContent},
             topic::{PossiblyRedactedRoomTopicEventContent, RoomTopicEventContent},
         },
-        space::child::{PossiblyRedactedSpaceChildEventContent, SpaceChildEventContent},
+        space::{
+            child::{PossiblyRedactedSpaceChildEventContent, SpaceChildEventContent},
+            parent::{PossiblyRedactedSpaceParentEventContent, SpaceParentEventContent},
+        },
         TimelineEventType,
     },
     OwnedRoomId, RoomId,
@@ -1214,5 +1217,85 @@ impl SpaceChildContent {
 
     pub fn suggested_old_val(&self) -> Option<bool> {
         self.prev_content.as_ref().map(|prev| prev.suggested)
+    }
+}
+
+// m.space.parent
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpaceParentContent {
+    state_key: String,
+    content: SpaceParentEventContent,
+    prev_content: Option<PossiblyRedactedSpaceParentEventContent>,
+}
+
+impl SpaceParentContent {
+    pub fn new(
+        state_key: String,
+        content: SpaceParentEventContent,
+        prev_content: Option<PossiblyRedactedSpaceParentEventContent>,
+    ) -> Self {
+        SpaceParentContent {
+            state_key,
+            content,
+            prev_content,
+        }
+    }
+
+    pub fn room_id(&self) -> Result<OwnedRoomId, crate::Error> {
+        match RoomId::parse(self.state_key.as_str()) {
+            Ok(room_id) => Ok(room_id),
+            Err(e) => Err(crate::Error::IdParseError(e)),
+        }
+    }
+
+    pub fn via_change(&self) -> Option<String> {
+        if let Some(prev_via) = self
+            .prev_content
+            .as_ref()
+            .and_then(|prev| prev.via.as_ref())
+        {
+            if do_vecs_match(&self.content.via, prev_via) {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn via_new_val(&self) -> Vec<String> {
+        self.content
+            .via
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<String>>()
+    }
+
+    pub fn via_old_val(&self) -> Option<Vec<String>> {
+        self.prev_content
+            .as_ref()
+            .and_then(|prev| prev.via.as_ref())
+            .map(|via| via.iter().map(ToString::to_string).collect::<Vec<String>>())
+    }
+
+    pub fn canonical_change(&self) -> Option<String> {
+        if let Some(prev_canonical) = self.prev_content.as_ref().map(|prev| prev.canonical) {
+            if self.content.canonical == prev_canonical {
+                None
+            } else {
+                Some("Changed".to_owned())
+            }
+        } else {
+            Some("Set".to_owned())
+        }
+    }
+
+    pub fn canonical_new_val(&self) -> bool {
+        self.content.canonical
+    }
+
+    pub fn canonical_old_val(&self) -> Option<bool> {
+        self.prev_content.as_ref().map(|prev| prev.canonical)
     }
 }

@@ -22,6 +22,7 @@ pub use room_state::{
     RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
     RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
     RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+    SpaceParentContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -46,6 +47,7 @@ pub enum ActerSupportedRoomStatusEvents {
     RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicContent),
     SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -272,6 +274,18 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::SpaceChild(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::SpaceParent(StateEvent::Original(inner)) => {
+                let state_key = event.state_key().to_owned();
+                let content = SpaceParentContent::new(
+                    state_key,
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::SpaceParent(content),
                     meta,
                 })
             }

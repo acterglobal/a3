@@ -36,6 +36,7 @@ const _supportedTypes = [
   'm.room.tombstone',
   'm.room.topic',
   'm.space.child',
+  'm.space.parent',
 
   'm.room.message',
   'm.room.redaction',

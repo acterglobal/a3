@@ -4,7 +4,7 @@ use acter_core::{
         ProfileContent, RoomAvatarContent, RoomCreateContent, RoomEncryptionContent,
         RoomGuestAccessContent, RoomHistoryVisibilityContent, RoomJoinRulesContent,
         RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent, RoomServerAclContent,
-        RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+        RoomTombstoneContent, RoomTopicContent, SpaceChildContent, SpaceParentContent,
     },
     util::do_vecs_match,
 };
@@ -423,6 +423,14 @@ impl TimelineEventItem {
         }
     }
 
+    pub fn space_parent_content(&self) -> Option<SpaceParentContent> {
+        if let Some(TimelineEventContent::SpaceParent(c)) = &self.content {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
     }
@@ -714,39 +722,14 @@ impl TimelineEventItemBuilder {
                 let c = SpaceChildContent::new(state_key, content.clone(), prev_content.clone());
                 self.content(Some(TimelineEventContent::SpaceChild(c)));
             }
-            AnyOtherFullStateEventContent::SpaceParent(c) => {
+            AnyOtherFullStateEventContent::SpaceParent(FullStateEventContent::Original {
+                content,
+                prev_content,
+            }) => {
                 self.event_type("m.space.parent".to_owned());
-                let msg_content = match c {
-                    FullStateEventContent::Original {
-                        content,
-                        prev_content,
-                    } => {
-                        if let Some(prev) = prev_content {
-                            let mut result = vec![];
-                            if prev.canonical != content.canonical {
-                                result.push("changed canonical of space parent".to_owned());
-                            }
-                            if let Some(via) = prev.via.clone() {
-                                if !do_vecs_match(&via, &content.via) {
-                                    result.push("changed via of space parent".to_owned());
-                                }
-                            } else {
-                                result.push("added via of space parent".to_owned());
-                            }
-                            if result.is_empty() {
-                                MsgContent::from_text("empty content".to_owned())
-                            } else {
-                                MsgContent::from_text(result.join(", "))
-                            }
-                        } else {
-                            MsgContent::from_text("added space parent".to_owned())
-                        }
-                    }
-                    FullStateEventContent::Redacted(r) => {
-                        MsgContent::from_text("deleted space parent".to_owned())
-                    }
-                };
-                self.content(Some(TimelineEventContent::Message(msg_content)));
+                let state_key = state.state_key().to_owned();
+                let c = SpaceParentContent::new(state_key, content.clone(), prev_content.clone());
+                self.content(Some(TimelineEventContent::SpaceParent(c)));
             }
             _ => {}
         }

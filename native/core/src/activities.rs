@@ -16,6 +16,7 @@ use crate::{
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
             RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
             RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+            SpaceParentContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -45,6 +46,7 @@ pub enum ActivityContent {
     RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicContent),
     SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -169,6 +171,7 @@ impl Activity {
             ActivityContent::RoomTombstone(_) => "roomTombstone",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::SpaceChild(_) => "spaceChild",
+            ActivityContent::SpaceParent(_) => "spaceParent",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -269,7 +272,8 @@ impl Activity {
             | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_)
-            | ActivityContent::SpaceChild(_) => None,
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -380,7 +384,8 @@ impl Activity {
             | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_)
-            | ActivityContent::SpaceChild(_) => todo!(),
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => todo!(),
         }
     }
 
@@ -464,6 +469,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::SpaceChild(c) => {
                     Ok(Self::new(meta, ActivityContent::SpaceChild(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceParent(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceParent(c)))
                 }
             },
 

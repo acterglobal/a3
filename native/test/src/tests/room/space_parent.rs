@@ -1,5 +1,5 @@
 use acter::api::{CreateConvoSettingsBuilder, TimelineItem};
-use acter_core::models::status::SpaceChildContent;
+use acter_core::models::status::SpaceParentContent;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -12,15 +12,15 @@ use tokio_retry::{
 use crate::utils::random_user_with_random_convo;
 
 #[tokio::test]
-async fn test_space_child() -> Result<()> {
+async fn test_space_parent() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("space_child").await?;
+    let (mut user, room_id) = random_user_with_random_convo("space_parent").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
     let settings = CreateConvoSettingsBuilder::default().build()?;
-    let child_room_id = user.create_convo(Box::new(settings)).await?;
+    let parent_room_id = user.create_convo(Box::new(settings)).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -38,8 +38,8 @@ async fn test_space_child() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let child_event_id = convo
-        .add_child_room(child_room_id.to_string(), None, true)
+    let parent_event_id = convo
+        .add_parent_room(parent_room_id.to_string(), false)
         .await?;
     let via = vec!["localhost".to_owned()];
 
@@ -79,11 +79,11 @@ async fn test_space_child() -> Result<()> {
         sleep(Duration::from_secs(1)).await;
     }
     let (found_event_id, content) =
-        found_result.expect("Even after 30 seconds, space child not received");
-    assert_eq!(found_event_id, child_event_id, "event id should match");
+        found_result.expect("Even after 30 seconds, space parent not received");
+    assert_eq!(found_event_id, parent_event_id, "event id should match");
 
     let room_id = content.room_id().ok();
-    assert_eq!(room_id, Some(child_room_id), "room id should be present");
+    assert_eq!(room_id, Some(parent_room_id), "room id should be present");
 
     assert_eq!(
         content.via_change(),
@@ -97,31 +97,24 @@ async fn test_space_child() -> Result<()> {
     );
 
     assert_eq!(
-        content.order_change(),
-        None,
-        "change of order should be none"
-    );
-    assert_eq!(content.order_new_val(), None, "new val of order is invalid");
-
-    assert_eq!(
-        content.suggested_change(),
+        content.canonical_change(),
         Some("Set".to_owned()),
-        "change of suggested should be set"
+        "change of canonical should be set"
     );
     assert!(
-        content.suggested_new_val(),
-        "new val of suggested is invalid"
+        !content.canonical_new_val(),
+        "new val of canonical is invalid"
     );
 
     Ok(())
 }
 
-fn match_msg(msg: &TimelineItem) -> Option<(String, SpaceChildContent)> {
+fn match_msg(msg: &TimelineItem) -> Option<(String, SpaceParentContent)> {
     if msg.is_virtual() {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.space_child_content()?;
+    let content = event_item.space_parent_content()?;
     let event_id = event_item
         .event_id()
         .expect("event item should have event id");
