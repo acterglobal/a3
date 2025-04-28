@@ -9,12 +9,10 @@ import 'package:acter/features/share/action/shareTo.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EncryptionKeyManager extends ConsumerWidget {
-  final String userId;
   final String encryptionKey;
 
   const EncryptionKeyManager({
     super.key,
-    required this.userId,
     required this.encryptionKey,
   });
 
@@ -23,95 +21,84 @@ class EncryptionKeyManager extends ConsumerWidget {
     EasyLoading.showSuccess('Key copied to clipboard');
   }
 
-
   @override
-Widget build(BuildContext context, WidgetRef ref) {
-  final availableApps = <Widget>[];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final availableApps = <Widget>[];
 
-  void addButtonIfInstalled(bool isInstalled, IconData icon, Future<void> Function() onTap) {
-    if (isInstalled) {
-      availableApps.add(
-        _buildActionButton(icon: icon, onTap: () async {
-         await _buildShareContent();
-          if (!context.mounted) return;
-          await Future.delayed(const Duration(seconds: 2));
-          await onTap();
-        }, context: context),
-      );
+    void addButtonIfInstalled(
+      bool isInstalled,
+      IconData icon,
+      Future<void> Function() onTap,
+    ) {
+      if (isInstalled) {
+        availableApps.add(
+          _buildActionButton(
+            icon: icon,
+            onTap: () async {
+              await _buildShareContent();
+              if (!context.mounted) return;
+              await Future.delayed(const Duration(seconds: 2));
+              await onTap();
+            },
+            context: context,
+          ),
+        );
+      }
     }
+
+    // 1Password (no platform restriction)
+    addButtonIfInstalled(
+      ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
+      Icons.security,
+      () => shareToOnePassword(context: context),
+    );
+
+    // Bitwarden (no platform restriction)
+    addButtonIfInstalled(
+      ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
+      Icons.vpn_key,
+      () => shareToBitwarden(context: context),
+    );
+
+    // Keeper (iOS only)
+    addButtonIfInstalled(
+      Platform.isIOS &&
+          ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
+      Icons.lock_person,
+      () => shareToKeeper(context: context),
+    );
+
+    // LastPass (iOS only)
+    addButtonIfInstalled(
+      Platform.isIOS &&
+          ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
+      Icons.password,
+      () => shareToLastPass(context: context),
+    );
+
+    // Enpass (iOS only)
+    addButtonIfInstalled(
+      Platform.isIOS &&
+          ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
+      PhosphorIcons.vault(),
+      () => shareToEnpass(context: context),
+    );
+
+    // ProtonPass (iOS only)
+    addButtonIfInstalled(
+      Platform.isIOS &&
+          ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
+      Icons.shield,
+      () => shareToProtonPass(context: context),
+    );
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      alignment: WrapAlignment.start,
+      children: availableApps,
+    );
   }
-
-// 1Password (no platform restriction)
-  addButtonIfInstalled(
-    ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
-    Icons.security,
-    () => shareToOnePassword(
-      context: context,
-      text: 'userId: $userId\nencryptionKey: $encryptionKey',
-    ),
-  );
-
-  // Bitwarden (no platform restriction)
-  addButtonIfInstalled(
-    ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
-    Icons.vpn_key,
-    () => shareToBitwarden(
-      context: context,
-      text: 'userId: $userId\nencryptionKey: $encryptionKey',
-    ),
-  );
-
-  // Keeper (iOS only)
-  addButtonIfInstalled(
-    Platform.isIOS &&
-        ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
-    Icons.lock_person,
-    () => shareToKeeper(
-      context: context,
-      text: 'userId: $userId\nencryptionKey: $encryptionKey',
-    ),
-  );
-
-  // LastPass (iOS only)
-  addButtonIfInstalled(
-    Platform.isIOS &&
-        ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
-    Icons.password,
-    () => shareToLastPass(
-      context: context,
-      text: 'userId: $userId\nencryptionKey: $encryptionKey',
-    ),
-  );
-
-  // Enpass (iOS only)
-  addButtonIfInstalled(
-    Platform.isIOS &&
-        ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
-    PhosphorIcons.vault(),
-    () => shareToEnpass(
-      context: context,
-      text: 'userId: $userId\nencryptionKey: $encryptionKey',
-    ),
-  );
-
-  // ProtonPass (iOS only)
-  addButtonIfInstalled(
-    Platform.isIOS &&
-        ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
-    Icons.shield,
-    () => shareToProtonPass(
-      context: context,
-      text: 'userId: $userId\nencryptionKey: $encryptionKey',
-    ),
-  );
-
-  return Wrap(
-    spacing: 16,
-    runSpacing: 16,
-    alignment: WrapAlignment.start,
-    children: availableApps,
-  );
-}
 
   Widget _buildActionButton({
     required IconData icon,

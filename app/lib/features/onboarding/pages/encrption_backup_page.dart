@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/onboarding/pages/action/encryption_key_manager.dart';
 import 'package:acter/features/onboarding/types.dart';
@@ -73,14 +72,13 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildEncryptionKey(BuildContext context) {
     final encKey = ref.watch(enableEncrptionBackUpProvider);
-    final userId = ref.watch(myUserIdStrProvider);
     return encKey.when(
       data: (data) {
         return Column(
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            _buildActionButtons(context, data, userId),
+            _buildActionButtons(context, data),
           ],
         );
       },
@@ -130,8 +128,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildActionButtons(
     BuildContext context,
-    String encryptionKey,
-    String userId,
+    String encryptionKey
   ) {
     return Wrap(
       alignment: WrapAlignment.center,
@@ -160,7 +157,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           },
           context: context,
         ),
-        EncryptionKeyManager(userId: userId, encryptionKey: encryptionKey),
+        EncryptionKeyManager(encryptionKey: encryptionKey),
       ],
     );
   }
