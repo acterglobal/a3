@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,11 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/app_install_check_provider.dart';
 import 'package:acter/features/share/action/shareTo.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
-class EncryptionKeyManager extends ConsumerWidget {
+class PasswordManagerBackupWidget extends ConsumerWidget {
   final String encryptionKey;
 
-  const EncryptionKeyManager({
+  const PasswordManagerBackupWidget({
     super.key,
     required this.encryptionKey,
   });
@@ -24,6 +24,31 @@ class EncryptionKeyManager extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final availableApps = <Widget>[];
+
+    // Add copy button
+    availableApps.add(
+      _buildActionButton(
+        icon: Icons.copy,
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: encryptionKey));
+          if (context.mounted) {
+            EasyLoading.showToast('Key copied to clipboard');
+          }
+        },
+        context: context,
+      ),
+    );
+
+    // Add share button
+    availableApps.add(
+      _buildActionButton(
+        icon: PhosphorIcons.share(),
+        onTap: () async {
+          await Share.share(encryptionKey);
+        },
+        context: context,
+      ),
+    );
 
     void addButtonIfInstalled(
       bool isInstalled,
@@ -119,3 +144,4 @@ class EncryptionKeyManager extends ConsumerWidget {
     );
   }
 }
+
