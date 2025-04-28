@@ -15,7 +15,7 @@ use crate::{
             PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
             RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
-            RoomServerAclContent, RoomTombstoneContent, RoomTopicContent,
+            RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -44,6 +44,7 @@ pub enum ActivityContent {
     RoomServerAcl(RoomServerAclContent),
     RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicContent),
+    SpaceChild(SpaceChildContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -167,6 +168,7 @@ impl Activity {
             ActivityContent::RoomServerAcl(_) => "roomServerAcl",
             ActivityContent::RoomTombstone(_) => "roomTombstone",
             ActivityContent::RoomTopic(_) => "roomTopic",
+            ActivityContent::SpaceChild(_) => "spaceChild",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -266,7 +268,8 @@ impl Activity {
             | ActivityContent::RoomPowerLevels(_)
             | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTombstone(_)
-            | ActivityContent::RoomTopic(_) => None,
+            | ActivityContent::RoomTopic(_)
+            | ActivityContent::SpaceChild(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -376,7 +379,8 @@ impl Activity {
             | ActivityContent::RoomPowerLevels(_)
             | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTombstone(_)
-            | ActivityContent::RoomTopic(_) => todo!(),
+            | ActivityContent::RoomTopic(_)
+            | ActivityContent::SpaceChild(_) => todo!(),
         }
     }
 
@@ -457,6 +461,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::RoomTopic(c) => {
                     Ok(Self::new(meta, ActivityContent::RoomTopic(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceChild(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceChild(c)))
                 }
             },
 
