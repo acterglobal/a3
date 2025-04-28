@@ -220,6 +220,142 @@ impl Activity {
         }
     }
 
+    pub fn policy_rule_room_content(&self) -> Option<PolicyRuleRoomContent> {
+        if let ActivityContent::PolicyRuleRoom(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_server_content(&self) -> Option<PolicyRuleServerContent> {
+        if let ActivityContent::PolicyRuleServer(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_user_content(&self) -> Option<PolicyRuleUserContent> {
+        if let ActivityContent::PolicyRuleUser(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_avatar_content(&self) -> Option<RoomAvatarContent> {
+        if let ActivityContent::RoomAvatar(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_create_content(&self) -> Option<RoomCreateContent> {
+        if let ActivityContent::RoomCreate(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_encryption_content(&self) -> Option<RoomEncryptionContent> {
+        if let ActivityContent::RoomEncryption(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_guest_access_content(&self) -> Option<RoomGuestAccessContent> {
+        if let ActivityContent::RoomGuestAccess(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_history_visibility_content(&self) -> Option<RoomHistoryVisibilityContent> {
+        if let ActivityContent::RoomHistoryVisibility(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_join_rules_content(&self) -> Option<RoomJoinRulesContent> {
+        if let ActivityContent::RoomJoinRules(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_name_content(&self) -> Option<RoomNameContent> {
+        if let ActivityContent::RoomName(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_pinned_events_content(&self) -> Option<RoomPinnedEventsContent> {
+        if let ActivityContent::RoomPinnedEvents(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_power_levels_content(&self) -> Option<RoomPowerLevelsContent> {
+        if let ActivityContent::RoomPowerLevels(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_server_acl_content(&self) -> Option<RoomServerAclContent> {
+        if let ActivityContent::RoomServerAcl(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_tombstone_content(&self) -> Option<RoomTombstoneContent> {
+        if let ActivityContent::RoomTombstone(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_topic_content(&self) -> Option<RoomTopicContent> {
+        if let ActivityContent::RoomTopic(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn space_child_content(&self) -> Option<SpaceChildContent> {
+        if let ActivityContent::SpaceChild(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn space_parent_content(&self) -> Option<SpaceParentContent> {
+        if let ActivityContent::SpaceParent(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
     pub fn event_meta(&self) -> &EventMeta {
         &self.meta
     }
