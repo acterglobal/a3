@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
@@ -215,18 +216,14 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
     double newHeight = ChatEditorUtils.baseHeight;
 
-    if (text.isEmpty || actualLineCount == 0 || actualLineCount == 1) {
+    if (text.isEmpty || actualLineCount < 2) {
       newHeight = ChatEditorUtils.baseHeight;
-    } else if (actualLineCount == 2) {
-      newHeight = ChatEditorUtils.baseHeight + 30;
-    } else if (actualLineCount == 3) {
-      newHeight = ChatEditorUtils.baseHeight + 60;
-    } else if (actualLineCount == 4) {
-      newHeight = ChatEditorUtils.baseHeight + 90;
-    } else if (actualLineCount == 5) {
-      newHeight = ChatEditorUtils.baseHeight + 120;
     } else {
-      newHeight = ChatEditorUtils.maxHeight;
+      final offset = 30 * (actualLineCount - 1);
+      newHeight = min(
+        ChatEditorUtils.maxHeight,
+        ChatEditorUtils.baseHeight + offset,
+      );
     }
 
     final isKeyboardVisible = ref.watch(keyboardVisibleProvider).valueOrNull;
