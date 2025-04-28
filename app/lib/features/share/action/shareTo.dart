@@ -61,20 +61,15 @@ Future<void> shareToOnePassword({
   required BuildContext context,
   required String text,
 }) async {
-  final url =
-      'onepassword://create?title=${Uri.encodeComponent("Acter Backup")}&text=${Uri.encodeComponent(text)}';
+  final url = 'onepassword://';
   await _shareTo(context: context, url: url);
 }
-
+                                                                                                                                                                                                                                           
 Future<void> shareToBitwarden({
   required BuildContext context,
   required String text,
 }) async {
-  final url =
-      'bitwarden://add-item?'
-      'type=note&'
-      'name=${Uri.encodeComponent("Acter Backup")}&'
-      'notes=${Uri.encodeComponent(text)}';
+  final url = 'bitwarden://';
   await _shareTo(context: context, url: url);
 }
 
@@ -82,11 +77,7 @@ Future<void> shareToKeeper({
   required BuildContext context,
   required String text,
 }) async {
-  final url =
-      'keeper://add?'
-      'title=${Uri.encodeComponent("Acter Backup")}&'
-      'notes=${Uri.encodeComponent(text)}&'
-      'type=note';
+  final url = 'keeper://';
   await _shareTo(context: context, url: url);
 }
 
@@ -94,12 +85,7 @@ Future<void> shareToLastPass({
   required BuildContext context,
   required String text,
 }) async {
-  final url =
-      'lastpass://create?'
-      'type=note&'
-      'name=${Uri.encodeComponent("Acter Backup")}&'
-      'notes=${Uri.encodeComponent(text)}&'
-      'source=Acter';
+  final url = 'lastpass://';
   await _shareTo(context: context, url: url);
 }
 
@@ -107,11 +93,7 @@ Future<void> shareToEnpass({
   required BuildContext context,
   required String text,
 }) async {
-  final url =
-      'enpass://add?'
-      'title=${Uri.encodeComponent("Acter Backup")}&'
-      'note=${Uri.encodeComponent(text)}&'
-      'category=secure-note';
+  final url = 'enpass://';
   await _shareTo(context: context, url: url);
 }
 
@@ -119,15 +101,6 @@ Future<void> shareToProtonPass({
   required BuildContext context,
   required String text,
 }) async {
-  final url =
-      Platform.isAndroid
-          ? 'ch.protonmail.pass://add?' 
-              'type=note&' 
-              'title=${Uri.encodeComponent("Acter Backup")}&' 
-              'note=${Uri.encodeComponent(text)}'
-          : 'protonpass://add?' 
-              'type=note&' 
-              'title=${Uri.encodeComponent("Acter Backup")}&' 
-              'note=${Uri.encodeComponent(text)}';
+  final url = 'protonpass://';
   await _shareTo(context: context, url: url);
 }

@@ -33,23 +33,19 @@ final isAppInstalledProvider = FutureProvider.family<bool, ExternalApps>(
         Platform.isAndroid ? 'org.thoughtcrime.securesms' : 'sgnl://',
       ),
       ExternalApps.onePassword => await appCheck.isAppInstalled(
-        Platform.isAndroid ? 'com.onepassword.android' : 'onepassword:',
+        Platform.isAndroid ? 'com.onepassword.android' : 'onepassword://',
       ),
       ExternalApps.bitwarden => await appCheck.isAppInstalled(
         Platform.isAndroid ? 'com.x8bit.bitwarden' : 'bitwarden://',
       ),
-      ExternalApps.keeper => await appCheck.isAppInstalled(
-        Platform.isAndroid ? 'com.callpod.android_apps.keeper' : 'keeper://',
-      ),
-      ExternalApps.lastPass => await appCheck.isAppInstalled(
-        Platform.isAndroid ? 'com.lastpass.lpandroid' : 'lastpass://',
-      ),
-      ExternalApps.enpass => await appCheck.isAppInstalled(
-        Platform.isAndroid ? 'io.enpass.app' : 'enpass://',
-      ),
-      ExternalApps.protonPass => await appCheck.isAppInstalled(
-        Platform.isAndroid ? 'proton.android.pass' : 'protonpass://',
-      ),
+      ExternalApps.keeper =>
+        Platform.isIOS ? appCheck.isAppInstalled('keeper://') : false,
+      ExternalApps.lastPass =>
+        Platform.isIOS ? await appCheck.isAppInstalled('lastpass://') : false,
+      ExternalApps.enpass =>
+        Platform.isIOS ? await appCheck.isAppInstalled('enpass://') : false,
+      ExternalApps.protonPass =>
+        Platform.isIOS ? await appCheck.isAppInstalled('protonpass://') : false,
     };
   }, // this means we are running
 );

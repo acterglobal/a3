@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/app_install_check_provider.dart';
@@ -15,167 +18,100 @@ class EncryptionKeyManager extends ConsumerWidget {
     required this.encryptionKey,
   });
 
-  Future<String> _buildShareContent() async {
-    return 'userId: $userId\nencryptionKey: $encryptionKey';
+  Future<void> _buildShareContent() async {
+    await Clipboard.setData(ClipboardData(text: encryptionKey));
+    EasyLoading.showSuccess('Key copied to clipboard');
   }
+
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final is1PasswordInstalled =
-        ref
-            .watch(isAppInstalledProvider(ExternalApps.onePassword))
-            .valueOrNull ==
-        true;
-    final isBitwardenInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull ==
-        true;
-    final isKeeperInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull ==
-        true;
-    final isLastPassInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull ==
-        true;
-    final isEnpassInstalled =
-        ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull ==
-        true;
-    final isProtonPassInstalled =
-        ref
-            .watch(isAppInstalledProvider(ExternalApps.protonPass))
-            .valueOrNull ==
-        true;
+Widget build(BuildContext context, WidgetRef ref) {
+  final availableApps = <Widget>[];
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildActionButton(
-          icon: Icons.security,
-          onTap:
-              is1PasswordInstalled
-                  ? () async {
-                    final shareData = await _buildShareContent();
-                    if (!context.mounted) return;
-                    await shareToOnePassword(context: context, text: shareData);
-                    if (context.mounted) {
-                      EasyLoading.showToast(
-                        'Password copied to clipboard. Please paste it in 1Password.',
-                      );
-                    }
-                  }
-                  : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          '1Password is not installed on your device',
-                        ),
-                      ),
-                    );
-                  },
-          context: context,
-        ),
-        const SizedBox(width: 10),
-        _buildActionButton(
-          icon: Icons.vpn_key,
-          onTap:
-              isBitwardenInstalled
-                  ? () async {
-                    final shareData = await _buildShareContent();
-                    if (!context.mounted) return;
-                    await shareToBitwarden(context: context, text: shareData);
-                  }
-                  : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Bitwarden is not installed on your device',
-                        ),
-                      ),
-                    );
-                  },
-          context: context,
-        ),
-        const SizedBox(width: 10),
-        _buildActionButton(
-          icon: Icons.lock_person,
-          onTap:
-              isKeeperInstalled
-                  ? () async {
-                    final shareData = await _buildShareContent();
-                    if (!context.mounted) return;
-                    await shareToKeeper(context: context, text: shareData);
-                  }
-                  : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Keeper is not installed on your device'),
-                      ),
-                    );
-                  },
-          context: context,
-        ),
-        const SizedBox(width: 10),
-        _buildActionButton(
-          icon: Icons.password,
-          onTap:
-              isLastPassInstalled
-                  ? () async {
-                    final shareData = await _buildShareContent();
-                    if (!context.mounted) return;
-                    await shareToLastPass(context: context, text: shareData);
-                  }
-                  : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'LastPass is not installed on your device',
-                        ),
-                      ),
-                    );
-                  },
-          context: context,
-        ),
-        const SizedBox(width: 10),
-        _buildActionButton(
-          icon: PhosphorIcons.vault(),
-          onTap:
-              isEnpassInstalled
-                  ? () async {
-                    final shareData = await _buildShareContent();
-                    if (!context.mounted) return;
-                    await shareToEnpass(context: context, text: shareData);
-                  }
-                  : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Enpass is not installed on your device'),
-                      ),
-                    );
-                  },
-          context: context,
-        ),
-        const SizedBox(width: 10),
-        _buildActionButton(
-          icon: Icons.shield,
-          onTap:
-              isProtonPassInstalled
-                  ? () async {
-                    final shareData = await _buildShareContent();
-                    if (!context.mounted) return;
-                    await shareToProtonPass(context: context, text: shareData);
-                  }
-                  : () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'ProtonPass is not installed on your device',
-                        ),
-                      ),
-                    );
-                  },
-          context: context,
-        ),
-      ],
-    );
+  void addButtonIfInstalled(bool isInstalled, IconData icon, Future<void> Function() onTap) {
+    if (isInstalled) {
+      availableApps.add(
+        _buildActionButton(icon: icon, onTap: () async {
+         await _buildShareContent();
+          if (!context.mounted) return;
+          await Future.delayed(const Duration(seconds: 2));
+          await onTap();
+        }, context: context),
+      );
+    }
   }
+
+// 1Password (no platform restriction)
+  addButtonIfInstalled(
+    ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
+    Icons.security,
+    () => shareToOnePassword(
+      context: context,
+      text: 'userId: $userId\nencryptionKey: $encryptionKey',
+    ),
+  );
+
+  // Bitwarden (no platform restriction)
+  addButtonIfInstalled(
+    ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
+    Icons.vpn_key,
+    () => shareToBitwarden(
+      context: context,
+      text: 'userId: $userId\nencryptionKey: $encryptionKey',
+    ),
+  );
+
+  // Keeper (iOS only)
+  addButtonIfInstalled(
+    Platform.isIOS &&
+        ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
+    Icons.lock_person,
+    () => shareToKeeper(
+      context: context,
+      text: 'userId: $userId\nencryptionKey: $encryptionKey',
+    ),
+  );
+
+  // LastPass (iOS only)
+  addButtonIfInstalled(
+    Platform.isIOS &&
+        ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
+    Icons.password,
+    () => shareToLastPass(
+      context: context,
+      text: 'userId: $userId\nencryptionKey: $encryptionKey',
+    ),
+  );
+
+  // Enpass (iOS only)
+  addButtonIfInstalled(
+    Platform.isIOS &&
+        ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
+    PhosphorIcons.vault(),
+    () => shareToEnpass(
+      context: context,
+      text: 'userId: $userId\nencryptionKey: $encryptionKey',
+    ),
+  );
+
+  // ProtonPass (iOS only)
+  addButtonIfInstalled(
+    Platform.isIOS &&
+        ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
+    Icons.shield,
+    () => shareToProtonPass(
+      context: context,
+      text: 'userId: $userId\nencryptionKey: $encryptionKey',
+    ),
+  );
+
+  return Wrap(
+    spacing: 16,
+    runSpacing: 16,
+    alignment: WrapAlignment.start,
+    children: availableApps,
+  );
+}
 
   Widget _buildActionButton({
     required IconData icon,
