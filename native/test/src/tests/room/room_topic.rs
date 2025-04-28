@@ -82,11 +82,7 @@ async fn test_room_topic() -> Result<()> {
         Some("Set".to_owned()),
         "room topic should be changed"
     );
-    assert_eq!(
-        content.new_val(),
-        topic,
-        "new val of room topic is invalid"
-    );
+    assert_eq!(content.new_val(), topic, "new val of room topic is invalid");
 
     Ok(())
 }
