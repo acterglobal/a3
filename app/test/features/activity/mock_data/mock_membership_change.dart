@@ -4,23 +4,15 @@ import '../../../helpers/mock_basics.dart';
 
 class MockMembershipContent extends Mock implements MembershipContent {
   final String? mockUserId;
-  final String? mockAvatarUrl;
-  final String? mockDisplayName;
-  final String? mockReason;
-  final String? mockRoomId;
-  final int? mockOriginServerTs;
+  final String? mockChange;
 
   MockMembershipContent({
     this.mockUserId,
-    this.mockAvatarUrl,
-    this.mockDisplayName,
-    this.mockReason,
-    this.mockRoomId,
-    this.mockOriginServerTs,
+    this.mockChange,
   });
 
   @override
-  String change() => 'mock-change';
+  String change() => mockChange ?? 'mock-change';
 
   @override
   UserId userId() => MockUserId(mockUserId ?? 'mock-user-id');

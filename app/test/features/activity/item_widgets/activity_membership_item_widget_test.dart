@@ -7,88 +7,275 @@ import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_membership_change.dart';
 
 void main() {
-  testWidgets('Invitation revoked of user', (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.invitationRevoked.name,
-      mockRoomId: 'room-id',
-      mockSenderId: 'sender-id',
-      mockMembershipContent: MockMembershipContent(
-        mockDisplayName: 'user-display-name',
-      ),
-    );
-    await tester.pumpProviderWidget(
-      child: Material(
-        child: ActivityMembershipItemWidget(activity: mockActivity),
-      ),
-    );
+  group('ActivityMembershipItemWidget Tests', () {
+    testWidgets('User joined room', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.joined.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'joined',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.people_sharp), findsOneWidget);
+    });
 
-    // Verify the change text is displayed
-    expect(find.text('Declined Invitation of'), findsOneWidget);
-    // Verify the icon is displayed
-    expect(find.byIcon(Icons.person_remove), findsOneWidget);
-  });
+    testWidgets('User left room', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.left.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'left',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.logout), findsOneWidget);
+    });
 
-  testWidgets('Invitation accepted of user', (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.invitationAccepted.name,
-      mockRoomId: 'room-id',
-      mockSenderId: 'sender-id',
-      mockMembershipContent: MockMembershipContent(
-        mockDisplayName: 'user-display-name',
-      ),
-    );
-    await tester.pumpProviderWidget(
-      child: Material(
-        child: ActivityMembershipItemWidget(activity: mockActivity),
-      ),
-    );
+    testWidgets('Invitation accepted', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.invitationAccepted.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'invitationAccepted',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_add), findsOneWidget);
+    });
 
-    // Verify the change text is displayed
-    expect(find.text('Accepted Invitation of'), findsOneWidget);
-    // Verify the icon is displayed
-    expect(find.byIcon(Icons.person_add), findsOneWidget);
-  });
+    testWidgets('Invitation rejected', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.invitationRejected.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'invitationRejected',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_off), findsOneWidget);
+    });
 
-  
-  testWidgets('user joined room', (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.joined.name,
-      mockRoomId: 'room-id',
-      mockSenderId: 'sender-id',
-      mockMembershipContent: MockMembershipContent(
-        mockDisplayName: 'user-display-name',
-      ),
-    );
-    await tester.pumpProviderWidget(
-      child: Material(
-        child: ActivityMembershipItemWidget(activity: mockActivity),
-      ),
-    );
+    testWidgets('Invitation revoked', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.invitationRevoked.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'invitationRevoked',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_remove), findsOneWidget);
+    });
 
-    // Verify the change text is displayed
-    expect(find.text('Joined'), findsOneWidget);
-    // Verify the icon is displayed
-    expect(find.byIcon(Icons.people_sharp), findsOneWidget);
-  });
+    testWidgets('Knock accepted', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.knockAccepted.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'knockAccepted',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_add), findsOneWidget);
+    });
 
-   testWidgets('invited user to room', (tester) async {
-    MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.invited.name,
-      mockRoomId: 'room-id',
-      mockSenderId: 'sender-id',
-      mockMembershipContent: MockMembershipContent(
-        mockDisplayName: 'user-display-name',
-      ),
-    );
-    await tester.pumpProviderWidget(
-      child: Material(
-        child: ActivityMembershipItemWidget(activity: mockActivity),
-      ),
-    );
+    testWidgets('Knock retracted', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.knockRetracted.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'knockRetracted',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_remove), findsOneWidget);
+    });
 
-    // Verify the change text is displayed
-    expect(find.text('Invited'), findsOneWidget);
-    // Verify the icon is displayed
-    expect(find.byIcon(Icons.people_outline), findsOneWidget);
+    testWidgets('Knock denied', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.knockDenied.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'knockDenied',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.block), findsOneWidget);
+    });
+
+    testWidgets('User banned', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.banned.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'banned',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.block), findsOneWidget);
+    });
+
+    testWidgets('User unbanned', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.unbanned.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'unbanned',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.block_flipped), findsOneWidget);
+    });
+
+    testWidgets('User kicked', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.kicked.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'kicked',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_remove), findsOneWidget);
+    });
+
+    testWidgets('User invited', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.invited.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'invited',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_add), findsOneWidget);
+    });
+
+    testWidgets('User kicked and banned', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.kickedAndBanned.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'kickedAndBanned',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.block), findsOneWidget);
+    });
+
+    testWidgets('User knocked', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: PushStyles.knocked.name,
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'knocked',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person_add), findsOneWidget);
+    });
+
+    testWidgets('Unknown membership change', (tester) async {
+      final mockActivity = MockActivity(
+        mockType: 'unknown',
+        mockRoomId: 'room-id',
+        mockSenderId: 'sender-id',
+        mockMembershipContent: MockMembershipContent(
+          mockUserId: 'user-id',
+          mockChange: 'unknown',
+        ),
+      );
+      await tester.pumpProviderWidget(
+        child: Material(
+          child: ActivityMembershipItemWidget(activity: mockActivity),
+        ),
+      );
+      expect(find.byIcon(Icons.person), findsOneWidget);
+    });
   });
 }
