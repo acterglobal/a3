@@ -16,15 +16,12 @@ tracing = ["dep:tracing-subscriber", "dep:tracing-appender", "dep:tracing-log"]
 tracing-console = ["tracing", "dep:console-subscriber", "tokio/tracing"]
 dart = []
 uniffi = ["dep:uniffi", "dep:thiserror", "dep:matrix-sdk-ffi"]
-ffi-next = ["dep:uniffi-dart"]
 proxyman = ["dep:reqwest", "dep:openssl"]
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/acterglobal/ffi-gen", branch = "main" }
-# ffi-gen = { path = "../../../ffi-gen" }
+ffi-gen = { workspace = true }
 cbindgen = "0.28.0"
 uniffi = { version = "0.28.3", features = [ "build" ] }
-uniffi-dart = { workspace = true, features = ["build"], optional = true }
 
 [dependencies]
 anyhow = "1.0.79"
