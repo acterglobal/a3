@@ -24,6 +24,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.people_sharp), findsOneWidget);
+      expect(find.textContaining('joined'), findsOneWidget);
     });
 
     testWidgets('User left room', (tester) async {
@@ -42,6 +43,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.logout), findsOneWidget);
+      expect(find.textContaining('left'), findsOneWidget);
     });
 
     testWidgets('Invitation accepted', (tester) async {
@@ -60,6 +62,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_add), findsOneWidget);
+      expect(find.textContaining('accepted'), findsOneWidget);
     });
 
     testWidgets('Invitation rejected', (tester) async {
@@ -78,6 +81,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_off), findsOneWidget);
+      expect(find.textContaining('rejected'), findsOneWidget);
     });
 
     testWidgets('Invitation revoked', (tester) async {
@@ -96,6 +100,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_remove), findsOneWidget);
+      expect(find.textContaining('revoked'), findsOneWidget);
     });
 
     testWidgets('Knock accepted', (tester) async {
@@ -114,6 +119,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_add), findsOneWidget);
+      expect(find.textContaining('accepted'), findsOneWidget);
     });
 
     testWidgets('Knock retracted', (tester) async {
@@ -132,6 +138,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_remove), findsOneWidget);
+      expect(find.textContaining('retracted'), findsOneWidget);
     });
 
     testWidgets('Knock denied', (tester) async {
@@ -150,6 +157,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.block), findsOneWidget);
+      expect(find.textContaining('denied'), findsOneWidget);
     });
 
     testWidgets('User banned', (tester) async {
@@ -168,6 +176,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.block), findsOneWidget);
+      expect(find.textContaining('banned'), findsOneWidget);
     });
 
     testWidgets('User unbanned', (tester) async {
@@ -186,6 +195,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.block_flipped), findsOneWidget);
+      expect(find.textContaining('unbanned'), findsOneWidget);
     });
 
     testWidgets('User kicked', (tester) async {
@@ -204,6 +214,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_remove), findsOneWidget);
+      expect(find.textContaining('kicked'), findsOneWidget);
     });
 
     testWidgets('User invited', (tester) async {
@@ -222,6 +233,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_add), findsOneWidget);
+      expect(find.textContaining('invited'), findsOneWidget);
     });
 
     testWidgets('User kicked and banned', (tester) async {
@@ -240,6 +252,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.block), findsOneWidget);
+      expect(find.textContaining('kicked and banned'), findsOneWidget);
     });
 
     testWidgets('User knocked', (tester) async {
@@ -258,6 +271,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person_add), findsOneWidget);
+      expect(find.textContaining('knocked'), findsOneWidget);
     });
 
     testWidgets('Unknown membership change', (tester) async {
@@ -276,6 +290,7 @@ void main() {
         ),
       );
       expect(find.byIcon(Icons.person), findsOneWidget);
+      expect(find.textContaining('unknown'), findsOneWidget);
     });
   });
 }
