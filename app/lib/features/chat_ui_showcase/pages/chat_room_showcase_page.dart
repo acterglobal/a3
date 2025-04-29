@@ -26,7 +26,9 @@ class ChatRoomShowcasePage extends ConsumerWidget {
     initialItemCount: mockChatEventList.length,
     reverse: true,
     itemBuilder:
-        (_, index, animation) =>
-            ChatEvent(roomId: roomId, eventId: mockChatEventList[index]),
+        (_, index, animation) => ChatEvent(
+          roomId: roomId,
+          eventId: mockChatEventList[index].mockEventId,
+        ),
   );
 }

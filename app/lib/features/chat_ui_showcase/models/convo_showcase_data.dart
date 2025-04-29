@@ -1,3 +1,4 @@
+import 'package:acter/features/chat_ui_showcase/models/chat_event_showcase_list.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_room.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_timeline_stream.dart';
@@ -49,7 +50,9 @@ MockChatItem createMockChatItem({
       mockTimelineItem: MockTimelineItem(
         mockTimelineEventItem: timelineEventItem,
       ),
-      mockTimelineStream: MockTimelineStream(),
+      mockTimelineStream: MockTimelineStream(
+        mockTimelineItemDiffs: mockChatEventList,
+      ),
     ),
   );
 }
