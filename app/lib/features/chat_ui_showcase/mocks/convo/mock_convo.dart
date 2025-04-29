@@ -1,5 +1,6 @@
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_stream.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/general/mock_option_compose_draft.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -12,6 +13,7 @@ class MockConvo extends Mock implements Convo {
   final int mockNumUnreadMessages;
   final MockTimelineItem? mockTimelineItem;
   final MockTimelineStream mockTimelineStream;
+  final MockOptionComposeDraft? mockMsgDraft;
 
   MockConvo({
     required this.mockConvoId,
@@ -22,6 +24,7 @@ class MockConvo extends Mock implements Convo {
     this.mockNumUnreadMentions = 0,
     this.mockNumUnreadMessages = 0,
     this.mockTimelineItem,
+    this.mockMsgDraft,
   });
 
   @override
@@ -47,4 +50,7 @@ class MockConvo extends Mock implements Convo {
 
   @override
   TimelineStream timelineStream() => mockTimelineStream;
+
+  @override
+  Future<OptionComposeDraft> msgDraft() => Future.value(mockMsgDraft);
 }
