@@ -1346,7 +1346,7 @@ object RoomPowerLevelsContent {
     fn ban_old_val() -> Option<i64>;
 
     fn events_change(event_type: string) -> Option<string>;
-    fn events_new_val(event_type: string) -> i64;
+    fn events_new_val(event_type: string) -> Option<i64>;
     fn events_old_val(event_type: string) -> Option<i64>;
 
     fn events_default_change() -> Option<string>;

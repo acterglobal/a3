@@ -175,7 +175,7 @@ async fn test_room_power_levels_events() -> Result<()> {
     );
     assert_eq!(
         content.events_new_val(event_type.to_string()),
-        new_level,
+        Some(new_level),
         "new val of room power levels is invalid"
     );
     assert_eq!(
