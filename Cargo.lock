@@ -72,7 +72,6 @@ dependencies = [
  "tracing-subscriber",
  "tracing-wasm",
  "uniffi 0.28.3",
- "uniffi 0.29.1",
  "url",
  "url-preview",
  "urlencoding",
