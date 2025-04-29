@@ -30,7 +30,7 @@ dependencies = [
  "derive_builder",
  "eyeball-im 0.7.0 (git+https://github.com/jplatte/eyeball?branch=main)",
  "fern",
- "ffi-gen",
+ "ffi-gen 0.1.13",
  "ffi-gen-macro",
  "futures",
  "futures-signals",
@@ -71,8 +71,7 @@ dependencies = [
  "tracing-log",
  "tracing-subscriber",
  "tracing-wasm",
- "uniffi",
- "uniffi-dart",
+ "uniffi 0.28.3",
  "url",
  "url-preview",
  "urlencoding",
@@ -1914,6 +1913,17 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
+dependencies = [
+ "anyhow",
+ "genco",
+ "heck 0.4.1",
+ "pest",
+ "pest_derive",
+]
+
+[[package]]
+name = "ffi-gen"
+version = "0.1.13"
 source = "git+https://github.com/acterglobal/ffi-gen?branch=main#0a2fd39d55e9bdae1fdf56568785eca4908f1bb2"
 dependencies = [
  "anyhow",
@@ -1928,7 +1938,7 @@ name = "ffi-gen-macro"
 version = "0.1.2"
 source = "git+https://github.com/acterglobal/ffi-gen?branch=main#0a2fd39d55e9bdae1fdf56568785eca4908f1bb2"
 dependencies = [
- "ffi-gen",
+ "ffi-gen 0.1.13 (git+https://github.com/acterglobal/ffi-gen?branch=main)",
  "proc-macro2",
  "quote",
  "syn 2.0.100",
@@ -3494,6 +3504,65 @@ dependencies = [
 [[package]]
 name = "matrix-sdk"
 version = "0.11.0"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+dependencies = [
+ "anyhow",
+ "anymap2",
+ "aquamarine",
+ "as_variant",
+ "async-channel",
+ "async-stream",
+ "async-trait",
+ "backon",
+ "bytes",
+ "bytesize",
+ "cfg-if",
+ "event-listener",
+ "eyeball",
+ "eyeball-im 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "futures-core",
+ "futures-util",
+ "gloo-timers",
+ "growable-bloom-filter",
+ "http 1.3.1",
+ "imbl",
+ "indexmap 2.9.0",
+ "js_int",
+ "language-tags",
+ "matrix-sdk-base 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-common 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-ffi-macros",
+ "matrix-sdk-indexeddb 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-sqlite 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "mime",
+ "mime2ext",
+ "oauth2",
+ "once_cell",
+ "percent-encoding",
+ "pin-project-lite",
+ "reqwest 0.12.15",
+ "ruma",
+ "serde",
+ "serde_html_form",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "tracing",
+ "uniffi 0.28.3",
+ "url",
+ "urlencoding",
+ "uuid",
+ "vodozemac",
+ "zeroize",
+]
+
+[[package]]
+name = "matrix-sdk"
+version = "0.11.0"
 source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
  "anyhow",
@@ -3548,61 +3617,31 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk"
+name = "matrix-sdk-base"
 version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
- "anyhow",
- "anymap2",
- "aquamarine",
  "as_variant",
- "async-channel",
- "async-stream",
  "async-trait",
- "backon",
- "bytes",
- "bytesize",
- "event-listener",
+ "bitflags 2.9.0",
+ "decancer",
  "eyeball",
  "eyeball-im 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "futures-core",
  "futures-util",
- "gloo-timers",
  "growable-bloom-filter",
- "http 1.3.1",
- "imbl",
- "indexmap 2.9.0",
- "js_int",
- "language-tags",
- "matrix-sdk-base 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-common 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-ffi-macros",
- "matrix-sdk-indexeddb 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-sqlite 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "mime",
- "mime2ext",
- "oauth2",
+ "matrix-sdk-common 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-crypto 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-store-encryption 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
  "once_cell",
- "percent-encoding",
- "pin-project-lite",
- "reqwest 0.12.15",
+ "regex",
  "ruma",
  "serde",
- "serde_html_form",
  "serde_json",
- "sha2",
- "tempfile",
  "thiserror 2.0.12",
  "tokio",
- "tokio-stream",
- "tokio-util",
  "tracing",
- "uniffi",
- "url",
- "urlencoding",
- "uuid",
- "vodozemac",
- "zeroize",
+ "unicode-normalization",
+ "uniffi 0.28.3",
 ]
 
 [[package]]
@@ -3633,31 +3672,27 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk-base"
+name = "matrix-sdk-common"
 version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
- "as_variant",
  "async-trait",
- "bitflags 2.9.0",
- "decancer",
- "eyeball",
  "eyeball-im 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "futures-core",
  "futures-util",
- "growable-bloom-filter",
- "matrix-sdk-common 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-crypto 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-store-encryption 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "once_cell",
- "regex",
+ "gloo-timers",
+ "imbl",
  "ruma",
  "serde",
  "serde_json",
  "thiserror 2.0.12",
  "tokio",
  "tracing",
- "unicode-normalization",
- "uniffi",
+ "tracing-subscriber",
+ "uniffi 0.28.3",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]
@@ -3684,27 +3719,44 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk-common"
+name = "matrix-sdk-crypto"
 version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
+ "aes",
+ "aquamarine",
+ "as_variant",
  "async-trait",
- "eyeball-im 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bs58",
+ "byteorder",
+ "cfg-if",
+ "ctr",
+ "eyeball",
  "futures-core",
  "futures-util",
- "gloo-timers",
- "imbl",
+ "hkdf",
+ "hmac",
+ "itertools 0.14.0",
+ "js_option",
+ "matrix-sdk-common 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "pbkdf2",
+ "rand 0.8.5",
+ "rmp-serde",
  "ruma",
  "serde",
  "serde_json",
+ "sha2",
+ "subtle",
  "thiserror 2.0.12",
+ "time",
  "tokio",
+ "tokio-stream",
  "tracing",
- "tracing-subscriber",
- "uniffi",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
+ "ulid",
+ "uniffi 0.28.3",
+ "url",
+ "vodozemac",
+ "zeroize",
 ]
 
 [[package]]
@@ -3748,50 +3800,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk-crypto"
-version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
-dependencies = [
- "aes",
- "aquamarine",
- "as_variant",
- "async-trait",
- "bs58",
- "byteorder",
- "cfg-if",
- "ctr",
- "eyeball",
- "futures-core",
- "futures-util",
- "hkdf",
- "hmac",
- "itertools 0.14.0",
- "js_option",
- "matrix-sdk-common 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "pbkdf2",
- "rand 0.8.5",
- "rmp-serde",
- "ruma",
- "serde",
- "serde_json",
- "sha2",
- "subtle",
- "thiserror 2.0.12",
- "time",
- "tokio",
- "tokio-stream",
- "tracing",
- "ulid",
- "uniffi",
- "url",
- "vodozemac",
- "zeroize",
-]
-
-[[package]]
 name = "matrix-sdk-ffi"
 version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
  "anyhow",
  "as_variant",
@@ -3801,9 +3812,9 @@ dependencies = [
  "futures-util",
  "language-tags",
  "log-panics",
- "matrix-sdk 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
+ "matrix-sdk 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
  "matrix-sdk-ffi-macros",
- "matrix-sdk-ui 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
+ "matrix-sdk-ui 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
  "mime",
  "once_cell",
  "paranoid-android",
@@ -3816,7 +3827,7 @@ dependencies = [
  "tracing-appender",
  "tracing-core",
  "tracing-subscriber",
- "uniffi",
+ "uniffi 0.28.3",
  "url",
  "uuid",
  "vergen",
@@ -3826,11 +3837,39 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-ffi-macros"
 version = "0.7.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.100",
+]
+
+[[package]]
+name = "matrix-sdk-indexeddb"
+version = "0.11.0"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64 0.22.1",
+ "getrandom 0.2.15",
+ "gloo-utils",
+ "hkdf",
+ "indexed_db_futures",
+ "js-sys",
+ "matrix-sdk-crypto 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-store-encryption 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "ruma",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "sha2",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
+ "wasm-bindgen",
+ "web-sys",
+ "zeroize",
 ]
 
 [[package]]
@@ -3862,31 +3901,27 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk-indexeddb"
+name = "matrix-sdk-sqlite"
 version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
- "anyhow",
+ "as_variant",
  "async-trait",
- "base64 0.22.1",
- "getrandom 0.2.15",
- "gloo-utils",
- "hkdf",
- "indexed_db_futures",
- "js-sys",
- "matrix-sdk-crypto 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-store-encryption 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
+ "deadpool-sqlite",
+ "itertools 0.14.0",
+ "matrix-sdk-base 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-crypto 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-store-encryption 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "num_cpus",
+ "rmp-serde",
  "ruma",
+ "rusqlite",
  "serde",
- "serde-wasm-bindgen",
  "serde_json",
- "sha2",
  "thiserror 2.0.12",
  "tokio",
  "tracing",
- "wasm-bindgen",
- "web-sys",
- "zeroize",
+ "vodozemac",
 ]
 
 [[package]]
@@ -3914,32 +3949,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "matrix-sdk-sqlite"
-version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
-dependencies = [
- "async-trait",
- "deadpool-sqlite",
- "itertools 0.14.0",
- "matrix-sdk-base 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-crypto 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-store-encryption 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "num_cpus",
- "rmp-serde",
- "ruma",
- "rusqlite",
- "serde",
- "serde_json",
- "thiserror 2.0.12",
- "tokio",
- "tracing",
- "vodozemac",
-]
-
-[[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.11.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
  "base64 0.22.1",
  "blake3",
@@ -3958,7 +3970,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
  "base64 0.22.1",
  "blake3",
@@ -4034,6 +4046,45 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-ui"
 version = "0.11.0"
+source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+dependencies = [
+ "as_variant",
+ "async-once-cell",
+ "async-rx",
+ "async-stream",
+ "async_cell",
+ "chrono",
+ "emojis",
+ "eyeball",
+ "eyeball-im 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "eyeball-im-util",
+ "futures-core",
+ "futures-util",
+ "fuzzy-matcher",
+ "growable-bloom-filter",
+ "imbl",
+ "indexmap 2.9.0",
+ "itertools 0.14.0",
+ "matrix-sdk 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "matrix-sdk-base 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1)",
+ "mime",
+ "once_cell",
+ "pin-project-lite",
+ "ruma",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.12",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "unicode-normalization",
+ "unicode-segmentation",
+ "uniffi 0.28.3",
+]
+
+[[package]]
+name = "matrix-sdk-ui"
+version = "0.11.0"
 source = "git+https://github.com/matrix-org/matrix-rust-sdk?rev=8c3f55456f668ea3548658c9d9573a87f3a94cf1#8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 dependencies = [
  "as_variant",
@@ -4067,45 +4118,6 @@ dependencies = [
  "tracing",
  "unicode-normalization",
  "unicode-segmentation",
-]
-
-[[package]]
-name = "matrix-sdk-ui"
-version = "0.11.0"
-source = "git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531#a2d4f8e097b2ecf8bcafce09cd373791bdf80531"
-dependencies = [
- "as_variant",
- "async-once-cell",
- "async-rx",
- "async-stream",
- "async_cell",
- "chrono",
- "emojis",
- "eyeball",
- "eyeball-im 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "eyeball-im-util",
- "futures-core",
- "futures-util",
- "fuzzy-matcher",
- "growable-bloom-filter",
- "imbl",
- "indexmap 2.9.0",
- "itertools 0.14.0",
- "matrix-sdk 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "matrix-sdk-base 0.11.0 (git+https://github.com/gnunicorn/matrix-rust-sdk?rev=a2d4f8e097b2ecf8bcafce09cd373791bdf80531)",
- "mime",
- "once_cell",
- "pin-project-lite",
- "ruma",
- "serde",
- "serde_json",
- "thiserror 2.0.12",
- "tokio",
- "tokio-stream",
- "tracing",
- "unicode-normalization",
- "unicode-segmentation",
- "uniffi",
 ]
 
 [[package]]
@@ -5247,6 +5259,45 @@ dependencies = [
  "libc",
  "untrusted",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "rinja"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3dc4940d00595430b3d7d5a01f6222b5e5b51395d1120bdb28d854bb8abb17a5"
+dependencies = [
+ "itoa",
+ "rinja_derive",
+]
+
+[[package]]
+name = "rinja_derive"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08d9ed0146aef6e2825f1b1515f074510549efba38d71f4554eec32eb36ba18b"
+dependencies = [
+ "basic-toml",
+ "memchr",
+ "mime",
+ "mime_guess",
+ "proc-macro2",
+ "quote",
+ "rinja_parser",
+ "rustc-hash",
+ "serde",
+ "syn 2.0.100",
+]
+
+[[package]]
+name = "rinja_parser"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93f9a866e2e00a7a1fb27e46e9e324a6f7c0e7edc4543cae1d38f4e4a100c610"
+dependencies = [
+ "memchr",
+ "nom 7.1.3",
+ "serde",
 ]
 
 [[package]]
@@ -6847,15 +6898,30 @@ dependencies = [
  "camino",
  "cargo_metadata",
  "clap",
- "uniffi_bindgen",
- "uniffi_build",
- "uniffi_core",
- "uniffi_macros",
+ "uniffi_bindgen 0.28.3",
+ "uniffi_build 0.28.3",
+ "uniffi_core 0.28.3",
+ "uniffi_macros 0.28.3",
+]
+
+[[package]]
+name = "uniffi"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe34585ac0275accf6c284d0080cc2840f3898c551cda869ec291b5a4218712c"
+dependencies = [
+ "anyhow",
+ "cargo_metadata",
+ "uniffi_bindgen 0.29.1",
+ "uniffi_build 0.29.1",
+ "uniffi_core 0.29.1",
+ "uniffi_macros 0.29.1",
 ]
 
 [[package]]
 name = "uniffi-dart"
 version = "0.1.0"
+source = "git+https://github.com/acterglobal/uniffi-dart?branch=ben-ffi-next#416d2eaec3f40d00f07239163bd3808d75bf1be4"
 dependencies = [
  "anyhow",
  "camino",
@@ -6867,9 +6933,9 @@ dependencies = [
  "serde",
  "stringcase 0.4.0",
  "toml 0.5.11",
- "uniffi",
- "uniffi_bindgen",
- "uniffi_build",
+ "uniffi 0.29.1",
+ "uniffi_bindgen 0.29.1",
+ "uniffi_build 0.29.1",
  "uniffi_dart_macro",
 ]
 
@@ -6892,8 +6958,31 @@ dependencies = [
  "serde",
  "textwrap",
  "toml 0.5.11",
- "uniffi_meta",
- "uniffi_udl",
+ "uniffi_meta 0.28.3",
+ "uniffi_udl 0.28.3",
+]
+
+[[package]]
+name = "uniffi_bindgen"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a792af1424cc8b3c43b44c1a6cb7935ed1fbe5584a74f70e8bab9799740266d"
+dependencies = [
+ "anyhow",
+ "camino",
+ "cargo_metadata",
+ "fs-err",
+ "glob",
+ "goblin",
+ "heck 0.5.0",
+ "once_cell",
+ "paste",
+ "rinja",
+ "serde",
+ "textwrap",
+ "toml 0.5.11",
+ "uniffi_meta 0.29.1",
+ "uniffi_udl 0.29.1",
 ]
 
 [[package]]
@@ -6904,7 +6993,18 @@ checksum = "4c7cf32576e08104b7dc2a6a5d815f37616e66c6866c2a639fe16e6d2286b75b"
 dependencies = [
  "anyhow",
  "camino",
- "uniffi_bindgen",
+ "uniffi_bindgen 0.28.3",
+]
+
+[[package]]
+name = "uniffi_build"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "00c4138211f2ae951018fcce6a978e1fcd1a47c3fd0bc0d5472a520520060db1"
+dependencies = [
+ "anyhow",
+ "camino",
+ "uniffi_bindgen 0.29.1",
 ]
 
 [[package]]
@@ -6933,8 +7033,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "uniffi_core"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c18baace68a52666d33d12d73ca335ecf27a302202cefb53b1f974512bb72417"
+dependencies = [
+ "anyhow",
+ "async-compat",
+ "bytes",
+ "once_cell",
+ "static_assertions",
+]
+
+[[package]]
 name = "uniffi_dart_macro"
 version = "0.1.0"
+source = "git+https://github.com/acterglobal/uniffi-dart?branch=ben-ffi-next#416d2eaec3f40d00f07239163bd3808d75bf1be4"
 dependencies = [
  "futures",
  "proc-macro2",
@@ -6942,7 +7056,17 @@ dependencies = [
  "stringcase 0.3.0",
  "syn 1.0.109",
  "tokio",
- "uniffi",
+ "uniffi 0.29.1",
+]
+
+[[package]]
+name = "uniffi_internal_macros"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9902d4ed16c65e6c0222241024dd0bfeed07ea3deb7c470eb175e5f5ef406cd"
+dependencies = [
+ "quote",
+ "syn 2.0.100",
 ]
 
 [[package]]
@@ -6960,7 +7084,24 @@ dependencies = [
  "serde",
  "syn 2.0.100",
  "toml 0.5.11",
- "uniffi_meta",
+ "uniffi_meta 0.28.3",
+]
+
+[[package]]
+name = "uniffi_macros"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d82c82ef945c51082d8763635334b994e63e77650f09d0fae6d28dd08b1de83"
+dependencies = [
+ "camino",
+ "fs-err",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "syn 2.0.100",
+ "toml 0.5.11",
+ "uniffi_meta 0.29.1",
 ]
 
 [[package]]
@@ -6973,6 +7114,17 @@ dependencies = [
  "bytes",
  "siphasher 0.3.11",
  "uniffi_checksum_derive",
+]
+
+[[package]]
+name = "uniffi_meta"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d6027b971c2aa86350dd180aee9819729c7b99bacd381534511ff29d2c09cea"
+dependencies = [
+ "anyhow",
+ "siphasher 0.3.11",
+ "uniffi_internal_macros",
 ]
 
 [[package]]
@@ -6996,8 +7148,20 @@ checksum = "037820a4cfc4422db1eaa82f291a3863c92c7d1789dc513489c36223f9b4cdfc"
 dependencies = [
  "anyhow",
  "textwrap",
- "uniffi_meta",
+ "uniffi_meta 0.28.3",
  "uniffi_testing",
+ "weedle2",
+]
+
+[[package]]
+name = "uniffi_udl"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52300b7a4ab02dc159a038a13d5bfe27aefbad300d91b0b501b3dda094c1e0a2"
+dependencies = [
+ "anyhow",
+ "textwrap",
+ "uniffi_meta 0.29.1",
  "weedle2",
 ]
 
