@@ -1,8 +1,15 @@
-import 'package:acter/features/chat_ui_showcase/models/mocks/showcase_data/chat_event_showcase_list.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/convo/mock_convo.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/room/mock_room.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/timeline/mock_timeline_stream.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/user/mock_user.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_membership_content.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_profile_content.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_ffi_list_timeline_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item_diff.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase_data/chat_event_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_convo.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/room/mock_room.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_stream.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/user/mock_user.dart';
 
 class MockChatItem {
   final String roomId;

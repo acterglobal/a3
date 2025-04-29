@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/convo/mock_convo.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_convo.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_message_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';

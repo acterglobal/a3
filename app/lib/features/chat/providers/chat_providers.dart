@@ -14,7 +14,7 @@ import 'package:acter/features/chat/providers/notifiers/chat_room_notifier.dart'
 import 'package:acter/features/chat/providers/notifiers/media_chat_notifier.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
 import 'package:acter/features/chat/utils.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/showcase_data/convo_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase_data/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
