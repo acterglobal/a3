@@ -37,18 +37,29 @@ dependencies = [
 ]
 
 [tasks.ffi]
-script_runner = "@duckscript"
 dependencies = [
-    "desktop",
-    "ffigen",
+    "desktop-build",
+    "ffi-nobuild"
 ]
+
+[tasks.ffi-nobuild]
+private = true
+dependencies = [
+    "desktop-build",
+    "uniffi",
+    "copy-ffigen",
+    "format-ffi",
+]
+
+[tasks.ffigen]
+dependencies = [ 'ffi' ]
 
 [tasks.uniffi]
 cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
 command = "cargo"
 args = ["run", "-p", "sari", "build"]
 
-[tasks.ffigen]
+[tasks.copy-ffigen]
 script_runner = "@duckscript"
 script = [
     """
@@ -57,10 +68,6 @@ script = [
     extra = readfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/acter/ffi_bindings_extra.dart
     appendfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/acter_flutter_sdk_ffi.dart ${extra}
     """,
-]
-dependencies = [
-    "uniffi",
-    "check-ffi"
 ]
 
 [tasks.init]
@@ -84,30 +91,11 @@ install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
 
-[tasks.check-ffi]
-dependencies = [
-    "check-ffi-debug",
-    "check-ffi-release",
-    "format-ffi",
-]
-
 [tasks.format-ffi]
-
 script_runner = "@shell"
 script = [
     "dart format ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/rust_sdk/lib"
     ]
-
-[tasks.check-ffi-debug]
-condition = { env_true = ["DEV"] }
-private = true
-command = "cargo"
-args = ["check", "-p", "acter"]
-
-[tasks.check-ffi-release]
-condition = { env_true = ["RELEASE"] }
-command = "cargo"
-args = ["check", "--release", "-p", "acter"]
 
 [tasks.test-flow]
 disabled = true
@@ -563,9 +551,16 @@ dependencies = ["ffigen"]
 # Build rust SDK for desktop
 dependencies = [
     "desktop-build",
+    "ffi-nobuild",
+]
+
+[tasks.desktop-build]
+private = true
+# Build rust SDK for desktop
+dependencies = [
+    "desktop-build-dev",
     "desktop-build-release",
     "desktop-build-release-mac",
-    "ffigen",
     "copy-desktop-lib",
     "copy-desktop-lib-release",
 ]
@@ -598,7 +593,7 @@ env = { RUSTFLAGS="--cfg tokio_unstable", MACOSX_DEPLOYMENT_TARGET = 12 }
 command = "cargo"
 args = ["build", "--lib", "--features", "proxyman"]
 
-[tasks.desktop-build]
+[tasks.desktop-build-dev]
 private = true
 condition = { env_true = ["DEV"] }
 env = { MACOSX_DEPLOYMENT_TARGET = 12 }
