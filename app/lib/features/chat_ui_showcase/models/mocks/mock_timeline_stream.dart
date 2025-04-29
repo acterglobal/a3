@@ -1,20 +1,44 @@
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
+class MockFfiListTimelineItem extends Mock implements FfiListTimelineItem {
+  final List<MockTimelineItem> timelineItems;
+
+  MockFfiListTimelineItem({required this.timelineItems});
+
+  @override
+  List<MockTimelineItem> toList({bool growable = false}) =>
+      timelineItems.toList(growable: growable);
+}
+
 class MockTimelineItemDiff extends Mock implements TimelineItemDiff {
-  final String mockEventId;
-  final String mockSenderId;
-  final int mockOriginServerTs;
-  final String mockEventType;
-  final String mockMsgType;
+  final String mockAction;
+  final MockFfiListTimelineItem? mockTimelineItemList;
+  final int? mockIndex;
+  final MockTimelineItem? mockTimelineItem;
 
   MockTimelineItemDiff({
-    required this.mockEventId,
-    required this.mockSenderId,
-    required this.mockOriginServerTs,
-    required this.mockEventType,
-    required this.mockMsgType,
+    this.mockAction = 'Append',
+    this.mockTimelineItemList,
+    this.mockIndex,
+    this.mockTimelineItem,
   });
+
+  @override
+  String action() => mockAction;
+
+  @override
+  FfiListTimelineItem? values() => mockTimelineItemList;
+
+  @override
+  int? index() => mockIndex;
+
+  @override
+  TimelineItem? value() => mockTimelineItem;
+
+  @override
+  void drop() {}
 }
 
 class MockTimelineStream extends Mock implements TimelineStream {

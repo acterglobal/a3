@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_room.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_timeline_stream.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,6 +11,11 @@ class MockTimelineItem extends Mock implements TimelineItem {
 
   @override
   TimelineEventItem? eventItem() => mockTimelineEventItem;
+
+  @override
+  String uniqueId() =>
+      mockTimelineEventItem?.mockEventId ??
+      Random().nextInt(1000000).toString();
 }
 
 class MockUserId extends Mock implements UserId {
@@ -70,6 +77,8 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String? mockMsgType;
   final MembershipContent? mockMembershipContent;
   final ProfileContent? mockProfileContent;
+  final MockFfiListFfiString? mockReactionKeys;
+  final bool? mockWasEdited;
 
   MockTimelineEventItem({
     this.mockEventId,
@@ -80,6 +89,8 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
     this.mockMsgType,
     this.mockMembershipContent,
     this.mockProfileContent,
+    this.mockReactionKeys,
+    this.mockWasEdited,
   });
 
   @override
@@ -105,6 +116,13 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   ProfileContent? profileContent() => mockProfileContent;
+
+  @override
+  FfiListFfiString reactionKeys() =>
+      mockReactionKeys ?? MockFfiListFfiString(mockStrings: []);
+
+  @override
+  bool wasEdited() => mockWasEdited ?? false;
 }
 
 class MockMsgContent extends Mock implements MsgContent {

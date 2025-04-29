@@ -51,7 +51,18 @@ MockChatItem createMockChatItem({
         mockTimelineEventItem: timelineEventItem,
       ),
       mockTimelineStream: MockTimelineStream(
-        mockTimelineItemDiffs: mockChatEventList,
+        mockTimelineItemDiffs: [
+          MockTimelineItemDiff(
+            mockAction: 'Append',
+            mockTimelineItemList: MockFfiListTimelineItem(
+              timelineItems: mockChatEventList,
+            ),
+            mockIndex: 0,
+            mockTimelineItem: MockTimelineItem(
+              mockTimelineEventItem: timelineEventItem,
+            ),
+          ),
+        ],
       ),
     ),
   );
