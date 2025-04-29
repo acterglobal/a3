@@ -1,5 +1,6 @@
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_room.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_timeline_stream.dart';
 import 'package:acter/features/chat_ui_showcase/models/mocks/mock_user.dart';
 
 class MockChatItem {
@@ -48,6 +49,7 @@ MockChatItem createMockChatItem({
       mockTimelineItem: MockTimelineItem(
         mockTimelineEventItem: timelineEventItem,
       ),
+      mockTimelineStream: MockTimelineStream(),
     ),
   );
 }

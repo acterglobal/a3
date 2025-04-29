@@ -1,3 +1,4 @@
+import 'package:acter/features/chat_ui_showcase/models/mocks/mock_timeline_stream.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -69,6 +70,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final String? mockMsgType;
   final MembershipContent? mockMembershipContent;
   final ProfileContent? mockProfileContent;
+
   MockTimelineEventItem({
     this.mockEventId,
     this.mockSenderId,
@@ -121,9 +123,11 @@ class MockConvo extends Mock implements Convo {
   final int mockNumUnreadMentions;
   final int mockNumUnreadMessages;
   final MockTimelineItem? mockTimelineItem;
+  final MockTimelineStream mockTimelineStream;
 
   MockConvo({
     required this.mockConvoId,
+    required this.mockTimelineStream,
     this.mockIsDm = true,
     this.mockIsBookmarked = true,
     this.mockNumUnreadNotificationCount = 0,
@@ -152,4 +156,7 @@ class MockConvo extends Mock implements Convo {
 
   @override
   TimelineItem? latestMessage() => mockTimelineItem;
+
+  @override
+  TimelineStream timelineStream() => mockTimelineStream;
 }
