@@ -9,30 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //Main container for all activity item widgets
-class ActivityMembershipItemContainerWidget extends ConsumerWidget {
-  final Color? actionIconColor;
-  final ActivityObject? activityObject;
-  final String userId;
-  final String roomId;
-  final String? senderId;
-  final Widget? subtitle;
-  final int originServerTs;
-  final MembershipContent? membershipContent;
+class ActivityMembershipItemWidget extends ConsumerWidget {
+  final Activity activity;
 
-  const ActivityMembershipItemContainerWidget({
+  const ActivityMembershipItemWidget({
     super.key,
-    this.actionIconColor,
-    this.activityObject,
-    required this.userId,
-    required this.roomId,
-    this.senderId,
-    this.subtitle,
-    required this.originServerTs,
-    this.membershipContent,
+    required this.activity,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final activityObject = activity.object();
+    final originServerTs = activity.originServerTs();
     return Card(
         margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
         child: Padding(
@@ -42,7 +30,7 @@ class ActivityMembershipItemContainerWidget extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
-              buildActionInfoUI(context, ref),
+              buildActionInfoUI(context, ref, activityObject),
               const SizedBox(height: 6),
               buildUserInfoUI(context, ref),
               TimeAgoWidget(originServerTs: originServerTs),
@@ -52,9 +40,10 @@ class ActivityMembershipItemContainerWidget extends ConsumerWidget {
     );
   }
 
-  Widget buildActionInfoUI(BuildContext context, WidgetRef ref) {
+  Widget buildActionInfoUI(BuildContext context, WidgetRef ref, ActivityObject? activityObject) {
     final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
-    final membershipInfo = _getMembershipInfo(context, ref);
+    final membershipInfo = _getMembershipInfo(context, ref, activityObject);
+    final actionIconColor = Theme.of(context).colorScheme.onSurface;
     
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,6 +64,8 @@ class ActivityMembershipItemContainerWidget extends ConsumerWidget {
   }
 
   Widget buildUserInfoUI(BuildContext context, WidgetRef ref) {
+    final roomId = activity.roomIdStr();
+    final userId = activity.membershipContent()?.userId().toString() ?? '';
     final memberInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
@@ -86,14 +77,14 @@ class ActivityMembershipItemContainerWidget extends ConsumerWidget {
     );
   }
 
-  ({IconData icon, String text}) _getMembershipInfo(BuildContext context, WidgetRef ref) {
+  ({IconData icon, String text}) _getMembershipInfo(BuildContext context, WidgetRef ref, ActivityObject? activityObject) {
     final lang = L10n.of(context);
     final myId = ref.watch(myUserIdStrProvider);
-    final isActionOnMe = userId == myId;
-    final senderName = ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: senderId ?? ''))).displayName ?? senderId ?? '';
-    final targetName = ref.watch(memberAvatarInfoProvider((roomId: roomId, userId: userId))).displayName ?? userId;
+    final isActionOnMe = activity.membershipContent()?.userId().toString() == myId;
+    final senderName = ref.watch(memberAvatarInfoProvider((roomId: activity.roomIdStr(), userId: activity.senderIdStr()))).displayName ?? activity.senderIdStr();
+    final targetName = ref.watch(memberAvatarInfoProvider((roomId: activity.roomIdStr(), userId: activity.membershipContent()?.userId().toString() ?? ''))).displayName ?? activity.membershipContent()?.userId().toString() ?? '';
 
-    return switch (membershipContent?.change()) {
+    return switch (activity.membershipContent()?.change()) {
       'joined' => (
           icon: Icons.people_sharp,
           text: lang.chatMembershipOtherJoined(targetName)
@@ -164,7 +155,7 @@ class ActivityMembershipItemContainerWidget extends ConsumerWidget {
         ),
       _ => (
           icon: Icons.person,
-          text: membershipContent?.change() ?? ''
+          text: activity.membershipContent()?.change() ?? ''
         ),
     };
   }

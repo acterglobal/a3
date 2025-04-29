@@ -1,4 +1,4 @@
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/membership_item.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

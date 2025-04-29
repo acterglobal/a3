@@ -1,4 +1,4 @@
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/membership_item.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
@@ -48,20 +48,7 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.roomName => ActivityRoomNameItemWidget(activity: activity),
       PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
       PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
-      PushStyles.invitationRevoked => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.invitationAccepted => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.invitationRejected => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.joined => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.invited => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.knocked => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.knockAccepted => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.knockRetracted => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.knockDenied => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.banned => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.unbanned => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.left => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.kicked => ActivityMembershipItemWidget(activity: activity),
-      PushStyles.kickedAndBanned => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.invitationRevoked || PushStyles.invitationAccepted || PushStyles.invitationRejected || PushStyles.joined || PushStyles.invited || PushStyles.knocked || PushStyles.knockAccepted || PushStyles.knockRetracted || PushStyles.knockDenied || PushStyles.banned || PushStyles.unbanned || PushStyles.left || PushStyles.kicked || PushStyles.kickedAndBanned => ActivityMembershipItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
   }
