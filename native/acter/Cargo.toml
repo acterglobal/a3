@@ -21,7 +21,7 @@ proxyman = ["dep:reqwest", "dep:openssl"]
 [build-dependencies]
 ffi-gen = { workspace = true }
 cbindgen = "0.28.0"
-uniffi = { version = "0.28.3", features = [ "build" ] }
+uniffi = { workspace = true, features = [ "build" ] }
 
 [dependencies]
 anyhow = "1.0.79"

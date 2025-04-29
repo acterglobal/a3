@@ -30,7 +30,7 @@ dependencies = [
  "derive_builder",
  "eyeball-im 0.7.0 (git+https://github.com/jplatte/eyeball?branch=main)",
  "fern",
- "ffi-gen 0.1.13",
+ "ffi-gen 0.1.13 (git+https://github.com/acterglobal/ffi-gen?branch=ben-ffi-next)",
  "ffi-gen-macro",
  "futures",
  "futures-signals",
@@ -72,6 +72,7 @@ dependencies = [
  "tracing-subscriber",
  "tracing-wasm",
  "uniffi 0.28.3",
+ "uniffi 0.29.1",
  "url",
  "url-preview",
  "urlencoding",
@@ -1913,6 +1914,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
+source = "git+https://github.com/acterglobal/ffi-gen?branch=ben-ffi-next#445f5a18f2b294c9a4f992cd94cefc226129fdc7"
 dependencies = [
  "anyhow",
  "genco",

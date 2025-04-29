@@ -12,14 +12,20 @@ default-members = ["native/acter"]
 rust-version = "1.85"
 
 [workspace.dependencies.ffi-gen]
-path = "../ffi-gen/"
-#git = "https://github.com/acterglobal/ffi-gen"
-#branch = "ben-ffi-next"
+#path = "../ffi-gen/"
+git = "https://github.com/acterglobal/ffi-gen"
+branch = "ben-ffi-next"
+
+
 
 [workspace.dependencies.uniffi-dart]
 #path = "../uniffi-dart/"
 git = "https://github.com/acterglobal/uniffi-dart"
 branch = "ben-ffi-next"
+
+
+[workspace.dependencies.uniffi]
+version = "0.29.1"
 
 [workspace.dependencies.matrix-sdk]
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
