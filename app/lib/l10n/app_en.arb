@@ -2857,8 +2857,6 @@
   "@userHasNotAllowed": {},
   "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
   "@calendarSyncDesc": {},
-  "invitationRevoked": "Declined Invitation of",
-  "invitationAccepted": "Accepted Invitation of",
   "spaceNameUpdate": "{username} updated space name",
   "spaceDescriptionUpdate": "{username}  updated space description",
   "spaceAvatarUpdate": "{username}  updated space avatar",
