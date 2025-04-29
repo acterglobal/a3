@@ -8,8 +8,15 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-//Main container for all activity item widgets
+/// A widget that displays membership change events in a space's activity feed.
+/// 
+/// This widget shows information about various membership changes like:
+/// - Users joining/leaving a space
+/// - Invitations being sent/accepted/rejected
+/// - Users being banned/unbanned
+/// - Knock requests and their status
 class ActivityMembershipItemWidget extends ConsumerWidget {
+  /// The activity containing membership change information
   final Activity activity;
 
   const ActivityMembershipItemWidget({
@@ -21,26 +28,28 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activityObject = activity.object();
     final originServerTs = activity.originServerTs();
+    
     return Card(
-        margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              buildActionInfoUI(context, ref, activityObject),
-              const SizedBox(height: 6),
-              buildUserInfoUI(context, ref),
-              TimeAgoWidget(originServerTs: originServerTs),
-            ],
-          ),
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildActionInfoUI(context, ref, activityObject),
+            const SizedBox(height: 6),
+            _buildUserInfoUI(context, ref),
+            TimeAgoWidget(originServerTs: originServerTs),
+          ],
         ),
+      ),
     );
   }
 
-  Widget buildActionInfoUI(BuildContext context, WidgetRef ref, ActivityObject? activityObject) {
+  /// Builds the UI section showing the membership change action and its details
+  Widget _buildActionInfoUI(BuildContext context, WidgetRef ref, ActivityObject? activityObject) {
     final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
     final membershipInfo = _getMembershipInfo(context, ref, activityObject);
     final actionIconColor = Theme.of(context).colorScheme.onSurface;
@@ -63,26 +72,37 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
     );
   }
 
-  Widget buildUserInfoUI(BuildContext context, WidgetRef ref) {
+  /// Builds the UI section showing the user involved in the membership change
+  Widget _buildUserInfoUI(BuildContext context, WidgetRef ref) {
     final roomId = activity.roomIdStr();
     final userId = activity.membershipContent()?.userId().toString() ?? '';
     final memberInfo = ref.watch(
       memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
+    
     return ListTile(
       horizontalTitleGap: 6,
-      contentPadding: EdgeInsets.only(top: 10),
+      contentPadding: const EdgeInsets.only(top: 10),
       leading: ActerAvatar(options: AvatarOptions.DM(memberInfo, size: 32)),
       title: Text(memberInfo.displayName ?? userId),
     );
   }
 
-  ({IconData icon, String text}) _getMembershipInfo(BuildContext context, WidgetRef ref, ActivityObject? activityObject) {
+  /// Returns the appropriate icon and text for the membership change type
+  ({IconData icon, String text}) _getMembershipInfo(
+    BuildContext context,
+    WidgetRef ref,
+    ActivityObject? activityObject,
+  ) {
     final lang = L10n.of(context);
     final myId = ref.watch(myUserIdStrProvider);
     final isActionOnMe = activity.membershipContent()?.userId().toString() == myId;
-    final senderName = ref.watch(memberAvatarInfoProvider((roomId: activity.roomIdStr(), userId: activity.senderIdStr()))).displayName ?? activity.senderIdStr();
-    final targetName = ref.watch(memberAvatarInfoProvider((roomId: activity.roomIdStr(), userId: activity.membershipContent()?.userId().toString() ?? ''))).displayName ?? activity.membershipContent()?.userId().toString() ?? '';
+    final senderName = _getMemberDisplayName(ref, activity.roomIdStr(), activity.senderIdStr());
+    final targetName = _getMemberDisplayName(
+      ref,
+      activity.roomIdStr(),
+      activity.membershipContent()?.userId().toString() ?? '',
+    );
 
     return switch (activity.membershipContent()?.change()) {
       'joined' => (
@@ -158,5 +178,13 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
           text: activity.membershipContent()?.change() ?? ''
         ),
     };
+  }
+
+  /// Helper method to get a member's display name
+  String _getMemberDisplayName(WidgetRef ref, String roomId, String userId) {
+    final memberInfo = ref.watch(
+      memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+    );
+    return memberInfo.displayName ?? userId;
   }
 }
