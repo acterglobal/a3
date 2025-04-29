@@ -2859,8 +2859,6 @@
   "@calendarSyncDesc": {},
   "invitationRevoked": "Declined Invitation of",
   "invitationAccepted": "Accepted Invitation of",
-  "invited": "Invited",
-  "joined": "Joined",
   "spaceNameUpdate": "{username} updated space name",
   "spaceDescriptionUpdate": "{username}  updated space description",
   "spaceAvatarUpdate": "{username}  updated space avatar",
