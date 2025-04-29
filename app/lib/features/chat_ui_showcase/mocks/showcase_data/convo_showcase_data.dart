@@ -3,7 +3,6 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_profile_content
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_ffi_list_timeline_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item_diff.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
-import 'package:acter/features/chat_ui_showcase/mocks/showcase_data/chat_event_showcase_list.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_convo.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/room/mock_room.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
@@ -36,7 +35,7 @@ MockChatItem createMockChatItem({
   int? unreadMentions,
   int? unreadMessages,
   List<MockUser>? typingUsers,
-  MockTimelineEventItem? timelineEventItem,
+  List<MockTimelineEventItem>? timelineEventItems,
 }) {
   return MockChatItem(
     roomId: roomId,
@@ -55,18 +54,22 @@ MockChatItem createMockChatItem({
       mockNumUnreadMentions: unreadMentions ?? 0,
       mockNumUnreadMessages: unreadMessages ?? 0,
       mockTimelineItem: MockTimelineItem(
-        mockTimelineEventItem: timelineEventItem,
+        mockTimelineEventItem: timelineEventItems?.first,
       ),
       mockTimelineStream: MockTimelineStream(
         mockTimelineItemDiffs: [
           MockTimelineItemDiff(
             mockAction: 'Append',
             mockTimelineItemList: MockFfiListTimelineItem(
-              timelineItems: mockChatEventList,
+              timelineItems:
+                  timelineEventItems
+                      ?.map((e) => MockTimelineItem(mockTimelineEventItem: e))
+                      .toList() ??
+                  [],
             ),
             mockIndex: 0,
             mockTimelineItem: MockTimelineItem(
-              mockTimelineEventItem: timelineEventItem,
+              mockTimelineEventItem: timelineEventItems?.first,
             ),
           ),
         ],
@@ -85,11 +88,13 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   unreadNotificationCount: 4,
   unreadMentions: 2,
   unreadMessages: 2,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1744182966000, // April 9, 2025
-    mockMsgContent: MockMsgContent(mockBody: 'Hey, whats the update?'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1744182966000, // April 9, 2025
+      mockMsgContent: MockMsgContent(mockBody: 'Hey, whats the update?'),
+    ),
+  ],
 );
 
 final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
@@ -105,13 +110,15 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
   unreadNotificationCount: 2,
   unreadMessages: 2,
   typingUsers: [MockUser(mockDisplayName: 'Emily')],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@sarah:acter.global',
-    mockOriginServerTs: 1744096566000, // April 8, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@sarah:acter.global',
+      mockOriginServerTs: 1744096566000, // April 8, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
+      ),
     ),
-  ),
+  ],
 );
 
 final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
@@ -123,11 +130,13 @@ final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
     '@david:acter.global',
     '@patricia:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@robert:acter.global',
-    mockOriginServerTs: 1744010166000, // April 7, 2025
-    mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@robert:acter.global',
+      mockOriginServerTs: 1744010166000, // April 7, 2025
+      mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
+    ),
+  ],
 );
 
 final designReviewMutedBookmarkedWithUnreadRoom4 = createMockChatItem(
@@ -143,13 +152,15 @@ final designReviewMutedBookmarkedWithUnreadRoom4 = createMockChatItem(
     '@james:acter.global',
   ],
   isBookmarked: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emma:acter.global',
-    mockOriginServerTs: 1743923766000, // April 6, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'UI components updated. Please review.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emma:acter.global',
+      mockOriginServerTs: 1743923766000, // April 6, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'UI components updated. Please review.',
+      ),
     ),
-  ),
+  ],
 );
 
 final groupDmWithMichaelKumarpalsinhBenRoom5 = createMockChatItem(
@@ -162,13 +173,15 @@ final groupDmWithMichaelKumarpalsinhBenRoom5 = createMockChatItem(
   ],
   isDm: true,
   isBookmarked: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@michael:acter.global',
-    mockOriginServerTs: 1743837366000, // April 5, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Can we schedule a quick sync about the API changes?',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@michael:acter.global',
+      mockOriginServerTs: 1743837366000, // April 5, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Can we schedule a quick sync about the API changes?',
+      ),
     ),
-  ),
+  ],
 );
 
 final sarahDmWithTypingRoom6 = createMockChatItem(
@@ -177,14 +190,16 @@ final sarahDmWithTypingRoom6 = createMockChatItem(
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
   typingUsers: [MockUser(mockDisplayName: 'Sarah')],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@sarah:acter.global',
-    mockOriginServerTs: 1743750966000, // April 4, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody:
-          'The meeting notes are ready. I\'ve highlighted the action items.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@sarah:acter.global',
+      mockOriginServerTs: 1743750966000, // April 4, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'The meeting notes are ready. I\'ve highlighted the action items.',
+      ),
     ),
-  ),
+  ],
 );
 
 final projectAlphaWithMultipleTypingRoom7 = createMockChatItem(
@@ -201,11 +216,15 @@ final projectAlphaWithMultipleTypingRoom7 = createMockChatItem(
     '@patricia:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@jennifer:acter.global',
-    mockOriginServerTs: 1743664566000, // April 3, 2025
-    mockMsgContent: MockMsgContent(mockBody: 'Sprint retro tomorrow at 11 AM.'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@jennifer:acter.global',
+      mockOriginServerTs: 1743664566000, // April 3, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Sprint retro tomorrow at 11 AM.',
+      ),
+    ),
+  ],
 );
 
 final lisaDmBookmarkedImageMessageRoom8 = createMockChatItem(
@@ -214,13 +233,15 @@ final lisaDmBookmarkedImageMessageRoom8 = createMockChatItem(
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
   isBookmarked: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@lisa:acter.global',
-    mockOriginServerTs: 1743578166000, // April 2, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'The documentation is updated with the latest API changes.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@lisa:acter.global',
+      mockOriginServerTs: 1743578166000, // April 2, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'The documentation is updated with the latest API changes.',
+      ),
     ),
-  ),
+  ],
 );
 
 final teamUpdatesBookmarkedVideoMessageRoom9 = createMockChatItem(
@@ -233,13 +254,15 @@ final teamUpdatesBookmarkedVideoMessageRoom9 = createMockChatItem(
     '@daniel:acter.global',
   ],
   isBookmarked: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1743491766000, // April 1, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'New features deployed. Monitor for issues.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1743491766000, // April 1, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'New features deployed. Monitor for issues.',
+      ),
     ),
-  ),
+  ],
 );
 
 final groupDmWithEmmaKumarpalsinhBenRoom10 = createMockChatItem(
@@ -251,14 +274,16 @@ final groupDmWithEmmaKumarpalsinhBenRoom10 = createMockChatItem(
     '@ben:acter.global',
   ],
   isDm: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emma:acter.global',
-    mockOriginServerTs: 1743405366000, // March 31, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody:
-          'Let me know when you\'re free to discuss the design system updates.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emma:acter.global',
+      mockOriginServerTs: 1743405366000, // March 31, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'Let me know when you\'re free to discuss the design system updates.',
+      ),
     ),
-  ),
+  ],
 );
 
 final alexDmRoom11 = createMockChatItem(
@@ -266,13 +291,15 @@ final alexDmRoom11 = createMockChatItem(
   displayName: 'Alex Thompson',
   activeMembersIds: ['@alex:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@alex:acter.global',
-    mockOriginServerTs: 1743318966000, // March 30, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'See you at the team meeting tomorrow at 10 AM.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@alex:acter.global',
+      mockOriginServerTs: 1743318966000, // March 30, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'See you at the team meeting tomorrow at 10 AM.',
+      ),
     ),
-  ),
+  ],
 );
 
 final marketingTeamRoom12 = createMockChatItem(
@@ -284,13 +311,15 @@ final marketingTeamRoom12 = createMockChatItem(
     '@james:acter.global',
     '@patricia:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@christopher:acter.global',
-    mockOriginServerTs: 1743232566000, // March 29, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Campaign approved. Launch next week.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@christopher:acter.global',
+      mockOriginServerTs: 1743232566000, // March 29, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Campaign approved. Launch next week.',
+      ),
     ),
-  ),
+  ],
 );
 
 final lisaDmRoom13 = createMockChatItem(
@@ -298,13 +327,15 @@ final lisaDmRoom13 = createMockChatItem(
   displayName: 'Lisa Park',
   activeMembersIds: ['@lisa:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@lisa:acter.global',
-    mockOriginServerTs: 1743146166000, // March 28, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Document reviewed and approved. Ready for implementation.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@lisa:acter.global',
+      mockOriginServerTs: 1743146166000, // March 28, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Document reviewed and approved. Ready for implementation.',
+      ),
     ),
-  ),
+  ],
 );
 
 final productFeedbackGroupRoom14 = createMockChatItem(
@@ -316,11 +347,13 @@ final productFeedbackGroupRoom14 = createMockChatItem(
     '@patricia:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@daniel:acter.global',
-    mockOriginServerTs: 1743059766000, // March 27, 2025
-    mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@daniel:acter.global',
+      mockOriginServerTs: 1743059766000, // March 27, 2025
+      mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
+    ),
+  ],
 );
 
 final davidDmRoom15 = createMockChatItem(
@@ -328,13 +361,15 @@ final davidDmRoom15 = createMockChatItem(
   displayName: 'David Miller',
   activeMembersIds: ['@david:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742973366000, // March 26, 2025
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Task completed and merged to main branch.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742973366000, // March 26, 2025
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Task completed and merged to main branch.',
+      ),
     ),
-  ),
+  ],
 );
 
 final imageMessageDmRoom16 = createMockChatItem(
@@ -342,15 +377,17 @@ final imageMessageDmRoom16 = createMockChatItem(
   displayName: 'Meeko',
   activeMembersIds: ['@meeko:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@meeko:acter.global',
-    mockOriginServerTs: 1743318966000, // March 30, 2025
-    mockMsgType: 'm.image',
-    mockEventType: 'm.room.message',
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Image message about the API changes',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@meeko:acter.global',
+      mockOriginServerTs: 1743318966000, // March 30, 2025
+      mockMsgType: 'm.image',
+      mockEventType: 'm.room.message',
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Image message about the API changes',
+      ),
     ),
-  ),
+  ],
 );
 
 final videoMessageDmRoom17 = createMockChatItem(
@@ -366,15 +403,17 @@ final videoMessageDmRoom17 = createMockChatItem(
     '@james:acter.global',
     '@patricia:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1743318966000, // March 30, 2025
-    mockMsgType: 'm.video',
-    mockEventType: 'm.room.message',
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Video message about the API changes',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1743318966000, // March 30, 2025
+      mockMsgType: 'm.video',
+      mockEventType: 'm.room.message',
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Video message about the API changes',
+      ),
     ),
-  ),
+  ],
 );
 
 final audioMessageDmRoom18 = createMockChatItem(
@@ -382,15 +421,17 @@ final audioMessageDmRoom18 = createMockChatItem(
   displayName: 'Max Leon',
   activeMembersIds: ['@maxleon:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@maxleon:acter.global',
-    mockOriginServerTs: 1743318966000, // March 30, 2025
-    mockMsgType: 'm.audio',
-    mockEventType: 'm.room.message',
-    mockMsgContent: MockMsgContent(
-      mockBody: 'Voice message about the API changes',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@maxleon:acter.global',
+      mockOriginServerTs: 1743318966000, // March 30, 2025
+      mockMsgType: 'm.audio',
+      mockEventType: 'm.room.message',
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Voice message about the API changes',
+      ),
     ),
-  ),
+  ],
 );
 
 final fileMessageDmRoom19 = createMockChatItem(
@@ -399,13 +440,15 @@ final fileMessageDmRoom19 = createMockChatItem(
   activeMembersIds: ['@jennifer:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
   isBookmarked: true,
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@jennifer:acter.global',
-    mockOriginServerTs: 1743232566000, // March 29, 2025
-    mockMsgType: 'm.file',
-    mockEventType: 'm.room.message',
-    mockMsgContent: MockMsgContent(mockBody: 'Project proposal document'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@jennifer:acter.global',
+      mockOriginServerTs: 1743232566000, // March 29, 2025
+      mockMsgType: 'm.file',
+      mockEventType: 'm.room.message',
+      mockMsgContent: MockMsgContent(mockBody: 'Project proposal document'),
+    ),
+  ],
 );
 
 final locationMessageDmRoom20 = createMockChatItem(
@@ -420,13 +463,15 @@ final locationMessageDmRoom20 = createMockChatItem(
     '@alex:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@michael:acter.global',
-    mockOriginServerTs: 1743146166000, // March 28, 2025
-    mockMsgType: 'm.location',
-    mockEventType: 'm.room.message',
-    mockMsgContent: MockMsgContent(mockBody: 'Meeting location'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@michael:acter.global',
+      mockOriginServerTs: 1743146166000, // March 28, 2025
+      mockMsgType: 'm.location',
+      mockEventType: 'm.room.message',
+      mockMsgContent: MockMsgContent(mockBody: 'Meeting location'),
+    ),
+  ],
 );
 
 final redactionEventRoom21 = createMockChatItem(
@@ -437,12 +482,14 @@ final redactionEventRoom21 = createMockChatItem(
     '@alex:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800566000, // March 24, 2025
-    mockEventType: 'm.room.redaction',
-    mockMsgContent: MockMsgContent(mockBody: 'Message was redacted'),
-  ),
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800566000, // March 24, 2025
+      mockEventType: 'm.room.redaction',
+      mockMsgContent: MockMsgContent(mockBody: 'Message was redacted'),
+    ),
+  ],
 );
 
 final membershipEventjoinedRoom22 = createMockChatItem(
@@ -453,30 +500,34 @@ final membershipEventjoinedRoom22 = createMockChatItem(
     '@alex:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800566000, // March 24, 2025
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'joined',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800566000, // March 24, 2025
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'joined',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventLeftRoom23 = createMockChatItem(
   roomId: 'mock-room-23',
   displayName: 'General',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800567000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'left',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800567000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'left',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventInvitationAcceptedRoom24 = createMockChatItem(
@@ -487,45 +538,51 @@ final membershipEventInvitationAcceptedRoom24 = createMockChatItem(
     '@alex:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800568000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'invitationAccepted',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800568000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'invitationAccepted',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventInvitationRejectedRoom25 = createMockChatItem(
   roomId: 'mock-room-25',
   displayName: 'Project Beta',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800569000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'invitationRejected',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800569000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'invitationRejected',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventInvitationRevokedRoom26 = createMockChatItem(
   roomId: 'mock-room-26',
   displayName: 'Project Gamma',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800570000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'invitationRevoked',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800570000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'invitationRevoked',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventKnockAcceptedRoom27 = createMockChatItem(
@@ -536,60 +593,68 @@ final membershipEventKnockAcceptedRoom27 = createMockChatItem(
     '@alex:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800571000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'knockAccepted',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800571000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'knockAccepted',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventKnockRetractedRoom28 = createMockChatItem(
   roomId: 'mock-room-28',
   displayName: 'Study Group',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800572000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'knockRetracted',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800572000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'knockRetracted',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventKnockDeniedRoom29 = createMockChatItem(
   roomId: 'mock-room-29',
   displayName: 'Team Meeting',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800573000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'knockDenied',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800573000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'knockDenied',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventBannedRoom30 = createMockChatItem(
   roomId: 'mock-room-30',
   displayName: 'Community',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800574000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'banned',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800574000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'banned',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventUnbannedRoom31 = createMockChatItem(
@@ -600,15 +665,17 @@ final membershipEventUnbannedRoom31 = createMockChatItem(
     '@alex:acter.global',
     '@david:acter.global',
   ],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800575000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'unbanned',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800575000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'unbanned',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventKickedRoom32 = createMockChatItem(
@@ -617,45 +684,51 @@ final membershipEventKickedRoom32 = createMockChatItem(
   unreadNotificationCount: 1,
   unreadMessages: 1,
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800576000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'kicked',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800576000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'kicked',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventInvitedRoom33 = createMockChatItem(
   roomId: 'mock-room-33',
   displayName: 'New Project',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800577000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'invited',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800577000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'invited',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventKickedAndBannedRoom34 = createMockChatItem(
   roomId: 'mock-room-34',
   displayName: 'Moderated Room',
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@emily:acter.global',
-    mockOriginServerTs: 1742800578000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'kickedAndBanned',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@emily:acter.global',
+      mockOriginServerTs: 1742800578000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'kickedAndBanned',
+      ),
     ),
-  ),
+  ],
 );
 
 final membershipEventKnockedRoom35 = createMockChatItem(
@@ -664,106 +737,120 @@ final membershipEventKnockedRoom35 = createMockChatItem(
   unreadNotificationCount: 1,
   unreadMessages: 1,
   activeMembersIds: ['@emily:acter.global', '@alex:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800579000,
-    mockEventType: 'MembershipChange',
-    mockMembershipContent: MockMembershipContent(
-      mockUserId: '@david:acter.global',
-      mockMembershipType: 'knocked',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800579000,
+      mockEventType: 'MembershipChange',
+      mockMembershipContent: MockMembershipContent(
+        mockUserId: '@david:acter.global',
+        mockMembershipType: 'knocked',
+      ),
     ),
-  ),
+  ],
 );
 
 final profileEventDisplayNameChangedRoom36 = createMockChatItem(
   roomId: 'mock-room-36',
   displayName: 'Profile Changes',
   activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800580000,
-    mockEventType: 'ProfileChange',
-    mockProfileContent: MockProfileContent(
-      mockUserId: '@david:acter.global',
-      mockDisplayNameChange: 'Changed',
-      mockDisplayNameOldVal: 'David Miller',
-      mockDisplayNameNewVal: 'David M.',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800580000,
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@david:acter.global',
+        mockDisplayNameChange: 'Changed',
+        mockDisplayNameOldVal: 'David Miller',
+        mockDisplayNameNewVal: 'David M.',
+      ),
     ),
-  ),
+  ],
 );
 
 final profileEventDisplayNameSetRoom37 = createMockChatItem(
   roomId: 'mock-room-37',
   displayName: 'Profile Updates',
   activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800581000,
-    mockEventType: 'ProfileChange',
-    mockProfileContent: MockProfileContent(
-      mockUserId: '@david:acter.global',
-      mockDisplayNameChange: 'Set',
-      mockDisplayNameNewVal: 'David Miller',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800581000,
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@david:acter.global',
+        mockDisplayNameChange: 'Set',
+        mockDisplayNameNewVal: 'David Miller',
+      ),
     ),
-  ),
+  ],
 );
 
 final profileEventDisplayNameUnsetRoom38 = createMockChatItem(
   roomId: 'mock-room-38',
   displayName: 'Profile Management',
   activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800582000,
-    mockEventType: 'ProfileChange',
-    mockProfileContent: MockProfileContent(
-      mockUserId: '@david:acter.global',
-      mockDisplayNameChange: 'Unset',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800582000,
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@david:acter.global',
+        mockDisplayNameChange: 'Unset',
+      ),
     ),
-  ),
+  ],
 );
 
 final profileEventAvatarChangedRoom39 = createMockChatItem(
   roomId: 'mock-room-39',
   displayName: 'Avatar Updates',
   activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800583000,
-    mockEventType: 'ProfileChange',
-    mockProfileContent: MockProfileContent(
-      mockUserId: '@david:acter.global',
-      mockAvatarUrlChange: 'Changed',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800583000,
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@david:acter.global',
+        mockAvatarUrlChange: 'Changed',
+      ),
     ),
-  ),
+  ],
 );
 
 final profileEventAvatarSetRoom40 = createMockChatItem(
   roomId: 'mock-room-40',
   displayName: 'Avatar Management',
   activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800584000,
-    mockEventType: 'ProfileChange',
-    mockProfileContent: MockProfileContent(
-      mockUserId: '@david:acter.global',
-      mockAvatarUrlChange: 'Set',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800584000,
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@david:acter.global',
+        mockAvatarUrlChange: 'Set',
+      ),
     ),
-  ),
+  ],
 );
 
 final profileEventAvatarUnsetRoom41 = createMockChatItem(
   roomId: 'mock-room-41',
   displayName: 'Profile Cleanup',
   activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
-  timelineEventItem: MockTimelineEventItem(
-    mockSenderId: '@david:acter.global',
-    mockOriginServerTs: 1742800585000,
-    mockEventType: 'ProfileChange',
-    mockProfileContent: MockProfileContent(
-      mockUserId: '@david:acter.global',
-      mockAvatarUrlChange: 'Unset',
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockSenderId: '@david:acter.global',
+      mockOriginServerTs: 1742800585000,
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@david:acter.global',
+        mockAvatarUrlChange: 'Unset',
+      ),
     ),
-  ),
+  ],
 );
