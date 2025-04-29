@@ -59,6 +59,7 @@ script = [
     """,
 ]
 dependencies = [
+    "uniffi",
     "check-ffi"
 ]
 
