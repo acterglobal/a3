@@ -1,7 +1,4 @@
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invitationAccepted.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invitationRevoked.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invited.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/joined.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/membership_item.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,7 +18,7 @@ void main() {
     );
     await tester.pumpProviderWidget(
       child: Material(
-        child: ActivityInvitationRevokedItemWidget(activity: mockActivity),
+        child: ActivityMembershipItemWidget(activity: mockActivity),
       ),
     );
 
@@ -42,7 +39,7 @@ void main() {
     );
     await tester.pumpProviderWidget(
       child: Material(
-        child: ActivityInvitationAcceptedItemWidget(activity: mockActivity),
+        child: ActivityMembershipItemWidget(activity: mockActivity),
       ),
     );
 
@@ -64,7 +61,7 @@ void main() {
     );
     await tester.pumpProviderWidget(
       child: Material(
-        child: ActivityJoinedItemWidget(activity: mockActivity),
+        child: ActivityMembershipItemWidget(activity: mockActivity),
       ),
     );
 
@@ -85,7 +82,7 @@ void main() {
     );
     await tester.pumpProviderWidget(
       child: Material(
-        child: ActivityInvitedItemWidget(activity: mockActivity),
+        child: ActivityMembershipItemWidget(activity: mockActivity),
       ),
     );
 

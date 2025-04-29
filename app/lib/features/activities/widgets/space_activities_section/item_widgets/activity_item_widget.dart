@@ -1,9 +1,7 @@
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/membership_item.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invitationAccepted.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invited.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/joined.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomAvatar.dart';
@@ -22,7 +20,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/invitationRevoked.dart';
 
 class ActivityItemWidget extends ConsumerWidget {
   final Activity activity;
@@ -51,10 +48,20 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.roomName => ActivityRoomNameItemWidget(activity: activity),
       PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
       PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
-      PushStyles.invitationRevoked => ActivityInvitationRevokedItemWidget(activity: activity),
-      PushStyles.invitationAccepted => ActivityInvitationAcceptedItemWidget(activity: activity),
-      PushStyles.joined => ActivityJoinedItemWidget(activity: activity),
-      PushStyles.invited => ActivityInvitedItemWidget(activity: activity),
+      PushStyles.invitationRevoked => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.invitationAccepted => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.invitationRejected => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.joined => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.invited => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.knocked => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.knockAccepted => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.knockRetracted => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.knockDenied => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.banned => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.unbanned => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.left => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.kicked => ActivityMembershipItemWidget(activity: activity),
+      PushStyles.kickedAndBanned => ActivityMembershipItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
   }

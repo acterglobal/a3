@@ -36,9 +36,19 @@ enum PushStyles {
   roomAvatar('👤'),
 
   invitationAccepted('✅'),
+  invitationRejected('❌'),
+  invitationRevoked('❌'),
+  knockAccepted('👋'),
+  knockRetracted('👋'),
+  knockDenied('👋'),
   invited('📨'),
   joined('🤝'),
-  invitationRevoked('❌');
+  left('👋'),
+  knocked('👋'),
+  kicked('👋'),
+  kickedAndBanned('👋'),
+  banned('👋'),
+  unbanned('👋');
 
   const PushStyles(this.emoji);
 
