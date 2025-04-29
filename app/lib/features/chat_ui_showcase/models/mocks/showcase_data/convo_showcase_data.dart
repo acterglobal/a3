@@ -1,8 +1,8 @@
-import 'package:acter/features/chat_ui_showcase/models/chat_event_showcase_list.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_room.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_timeline_stream.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_user.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/showcase_data/chat_event_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/convo/mock_convo.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/room/mock_room.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/timeline/mock_timeline_stream.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/user/mock_user.dart';
 
 class MockChatItem {
   final String roomId;

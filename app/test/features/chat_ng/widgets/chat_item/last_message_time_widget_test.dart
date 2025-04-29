@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_convo.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/convo/mock_convo.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_time_widget.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';

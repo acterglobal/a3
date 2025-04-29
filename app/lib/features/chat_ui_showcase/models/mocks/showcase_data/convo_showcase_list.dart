@@ -1,4 +1,4 @@
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/showcase_data/convo_showcase_data.dart';
 
 final List<MockChatItem> mockChatList = [
   emilyDmMutedBookmarkedRoom1,

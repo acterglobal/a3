@@ -1,7 +1,7 @@
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_view.dart';
 import 'package:acter/features/chat_ng/widgets/chat_room/app_bar_widget.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
-import 'package:acter/features/chat_ui_showcase/models/chat_event_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/showcase_data/chat_event_showcase_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

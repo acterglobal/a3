@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_room.dart';
-import 'package:acter/features/chat_ui_showcase/models/mocks/mock_timeline_stream.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/room/mock_room.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/timeline/mock_timeline_stream.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 

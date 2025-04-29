@@ -3,7 +3,7 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/display_name_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_room/app_bar_widget.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
+import 'package:acter/features/chat_ui_showcase/models/mocks/showcase_data/convo_showcase_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
