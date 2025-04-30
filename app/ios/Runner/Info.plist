@@ -65,6 +65,12 @@
         <string>whatsapp</string>
         <string>sgnl</string>
         <string>tg</string>
+		<string>onepassword</string>
+		<string>bitwarden</string>
+		<string>keeper</string>
+		<string>lastpass</string>
+		<string>enpass</string> 
+		<string>protonpass</string>
     </array>
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
