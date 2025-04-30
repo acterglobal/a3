@@ -26,27 +26,23 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
 
-    Widget? addButtonIfInstalled(
-      bool isInstalled,
-      IconData icon,
-      Future<void> Function() onTap,
-    ) {
-      if (isInstalled) {
-        return _buildWithFirsCopyButton(
-          context: context,
-          icon: icon,
-          onTap: onTap,
-          lang: lang,
-        );
-      }
-      return null;
-    }
+    bool isAppInstalled(WidgetRef ref, ExternalApps app) {
+      return ref.watch(isAppInstalledProvider(app)).valueOrNull == true;
+    } 
+
+    final isOnePasswordInstalled = isAppInstalled(ref, ExternalApps.onePassword);
+    final isBitwardenInstalled = isAppInstalled(ref, ExternalApps.bitwarden);
+    final isKeeperInstalled = isAppInstalled(ref, ExternalApps.keeper);
+    final isLastPassInstalled = isAppInstalled(ref, ExternalApps.lastPass);
+    final isEnpassInstalled = isAppInstalled(ref, ExternalApps.enpass);
+    final isProtonPassInstalled = isAppInstalled(ref, ExternalApps.protonPass);
+
 
     return Wrap(
       spacing: 16,
       runSpacing: 16,
       alignment: WrapAlignment.start,
-      children: [
+      children: [ 
         // Copy button
         _buildWithFirsCopyButton(
           context: context,
@@ -69,56 +65,82 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
           lang: lang,
         ),
         // 1Password (no platform restriction)
-        addButtonIfInstalled(
-          ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
-          Icons.security,
-          () => openOnePassword(context: context),
-        ),
+        if (isOnePasswordInstalled)
+          _buildActionButton(
+             context: context,
+             lang: lang,
+            icon: Icons.security,
+            onTap: () => openOnePassword(context: context),
+           
+          ),
         // Bitwarden (no platform restriction)
-        addButtonIfInstalled(
-          ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
-          Icons.vpn_key,
-          () => openBitwarden(context: context),
-        ),
+        if (isBitwardenInstalled)
+          _buildActionButton(
+            context: context,
+            lang: lang,
+            icon: Icons.vpn_key,
+            onTap: () => openBitwarden(context: context),
+           
+          ),
         // Keeper (iOS only)
-        addButtonIfInstalled(
-          Platform.isIOS &&
-              ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
-          Icons.lock_person,
-          () => openKeeper(context: context),
-        ),
+        if (isKeeperInstalled && Platform.isIOS)
+          _buildActionButton(
+            context: context,
+            lang: lang,
+            icon: Icons.lock_person,
+            onTap: () => openKeeper(context: context),
+           
+          ),
         // LastPass (iOS only)
-        addButtonIfInstalled(
-          Platform.isIOS &&
-              ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
-          Icons.password,
-          () => openLastPass(context: context),
-        ),
+        if (isLastPassInstalled && Platform.isIOS)
+          _buildActionButton(
+            context: context,
+            lang: lang,
+            icon: Icons.password,
+            onTap: () => openLastPass(context: context),
+           
+          ),
         // Enpass (iOS only)
-        addButtonIfInstalled(
-          Platform.isIOS &&
-              ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
-          PhosphorIcons.vault(),
-          () => openEnpass(context: context),
-        ),
+        if (isEnpassInstalled && Platform.isIOS)
+          _buildActionButton(
+            context: context,
+            lang: lang,
+            icon: PhosphorIcons.vault(),
+            onTap: () => openEnpass(context: context),
+           
+          ),
         // ProtonPass (iOS only)
-        addButtonIfInstalled(
-          Platform.isIOS &&
-              ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
-          Icons.shield,
-          () => openProtonPass(context: context),
-        ),
+        if (isProtonPassInstalled && Platform.isIOS)
+          _buildActionButton(
+            context: context,
+            lang: lang,
+            icon: Icons.shield,
+            onTap: () => openProtonPass(context: context),
+           
+          ),
       ].whereType<Widget>().toList(),
     );
   }
 
   Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
     required BuildContext context,
+    required L10n lang,
+    required IconData icon,
+    required VoidCallback onTap 
   }) {
     return InkWell(
-      onTap: onTap,
+      onTap: () async {
+        await Clipboard.setData(ClipboardData(text: encryptionKey));
+        if (context.mounted) {
+          EasyLoading.showSuccess(lang.keyCopied);
+        }
+        
+        // Then perform the action
+        if (!context.mounted) return;
+        await Future.delayed(const Duration(seconds: 2));
+        onTap();
+      
+      },
       child: Container(
         width: 48,
         height: 48,
@@ -140,6 +162,7 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
     return _buildActionButton(
       icon: icon,
       context: context,
+      lang: lang,
       onTap: () async {
          await _buildShareContent(lang);
             if (!context.mounted) return;
