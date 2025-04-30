@@ -55,10 +55,8 @@ async fn test_space_child() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
     assert_eq!(activity.room_id_str(), room_id.to_string());
     assert_eq!(activity.type_str(), "spaceChild");
-    assert_eq!(
-        activity.origin_server_ts(),
-        Into::<u64>::into(meta.origin_server_ts.get())
-    );
+    let ts: u64 = meta.origin_server_ts.get().into();
+    assert_eq!(activity.origin_server_ts(), ts);
 
     // check the content of activity
     let content = activity
