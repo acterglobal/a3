@@ -1,0 +1,1 @@
+- Fix in Chat-NG: swipe to reply doesn't confuse items anymore.
