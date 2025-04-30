@@ -62,7 +62,7 @@ async fn test_space_child() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(result) = match_msg(&value) {
+                        if let Some(result) = match_msg(value) {
                             found_result = Some(result);
                             break;
                         }
