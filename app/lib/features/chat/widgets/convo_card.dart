@@ -260,7 +260,7 @@ class _SubtitleWidget extends ConsumerWidget {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent == null) {
               _log.severe('failed to get content of room message');
               return const SizedBox.shrink();
@@ -297,7 +297,7 @@ class _SubtitleWidget extends ConsumerWidget {
             );
         }
       case 'm.reaction':
-        MsgContent? msgContent = eventItem.message();
+        MsgContent? msgContent = eventItem.msgContent();
         if (msgContent == null) {
           return const SizedBox();
         }
@@ -332,7 +332,7 @@ class _SubtitleWidget extends ConsumerWidget {
           ],
         );
       case 'm.sticker':
-        MsgContent? msgContent = eventItem.message();
+        MsgContent? msgContent = eventItem.msgContent();
         if (msgContent == null) {
           _log.severe('failed to get content of sticker event');
           return const SizedBox.shrink();
@@ -413,7 +413,7 @@ class _SubtitleWidget extends ConsumerWidget {
       case 'ProfileChange':
         return _ProfileUpdateWidget(roomId: roomId, eventItem: eventItem);
       case 'm.poll.start':
-        MsgContent? msgContent = eventItem.message();
+        MsgContent? msgContent = eventItem.msgContent();
         if (msgContent == null) {
           _log.severe('failed to get content of poll event');
           return const SizedBox.shrink();
