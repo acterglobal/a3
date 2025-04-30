@@ -1,4 +1,3 @@
-use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -39,9 +38,9 @@ async fn initial_events() -> Result<()> {
     // .await?;
     // assert_eq!(created.type_str(), "created");
 
-    // let ActivityContent::MembershipChange(r) = activity.content() else {
-    //     bail!("not a membership event");}
-    // ;
+    // let Some(r) = activity.membership_content() else {
+    //     bail!("not a membership event");
+    // };
     // assert!(matches!(r.change, MembershipChangeType::Invited));
     // assert_eq!(r.as_str(), "invited");
     // assert_eq!(r.user_id, to_invite_user_name);
@@ -88,7 +87,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
 
@@ -130,7 +129,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -173,7 +172,7 @@ async fn kicked() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -223,7 +222,7 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -267,7 +266,7 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -311,7 +310,7 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -341,7 +340,7 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -383,7 +382,7 @@ async fn left() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
