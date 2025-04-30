@@ -50,8 +50,9 @@ class ActivityMembershipItemWidget extends ConsumerWidget {
 
   /// Builds the UI section showing the membership change action and its details
   Widget _buildActionInfoUI(BuildContext context, WidgetRef ref, ActivityObject? activityObject) {
-    final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
     final membershipInfo = _getMembershipInfo(context, ref, activityObject);
+
+    final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
     final actionIconColor = Theme.of(context).colorScheme.onSurface;
     
     return Row(
