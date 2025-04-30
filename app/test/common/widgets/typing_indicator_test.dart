@@ -1,5 +1,7 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,13 +12,18 @@ import 'package:acter_avatar/acter_avatar.dart';
 void main() {
   group('Typing Indicator Widget Tests', () {
     testWidgets('should display single user typing', (tester) async {
-      final testUser = AvatarInfo(
+      final MockAvatarInfo testUser = MockAvatarInfo(
         uniqueId: 'test_user',
-        displayName: 'Test User',
+        mockDisplayName: 'Test User',
       );
-
       await tester.pumpProviderWidget(
-        child: TypingIndicator(typingUsers: [testUser]),
+        overrides: [
+          chatTypingEventProvider.overrideWith(
+            (ref, roomId) => Stream.value(['test_user']),
+          ),
+          memberAvatarInfoProvider.overrideWith((ref, info) => testUser),
+        ],
+        child: TypingIndicator(roomId: 'test_room'),
       );
 
       await tester.pump(const Duration(milliseconds: 300));
@@ -27,18 +34,28 @@ void main() {
       expect(find.byType(AnimatedCircles), findsOneWidget);
     });
 
-    testWidgets('should display multiple users typing', (tester) async {
-      final testUser = AvatarInfo(
+    testWidgets('should display 2 or more users typing', (tester) async {
+      final MockAvatarInfo testUser = MockAvatarInfo(
         uniqueId: 'test_user',
-        displayName: 'Test User',
+        mockDisplayName: 'Test User',
       );
-      final testUser2 = AvatarInfo(
+      final MockAvatarInfo testUser2 = MockAvatarInfo(
         uniqueId: 'test_user2',
-        displayName: 'Test User 2',
+        mockDisplayName: 'Test User 2',
       );
 
       await tester.pumpProviderWidget(
-        child: TypingIndicator(typingUsers: [testUser, testUser2]),
+        overrides: [
+          chatTypingEventProvider.overrideWith(
+            (ref, roomId) => Stream.value(['test_user', 'test_user2']),
+          ),
+          memberAvatarInfoProvider.overrideWith((ref, info) {
+            if (info.userId == 'test_user') return testUser;
+            if (info.userId == 'test_user2') return testUser2;
+            return MockAvatarInfo(uniqueId: info.userId);
+          }),
+        ],
+        child: TypingIndicator(roomId: 'test_room'),
       );
 
       await tester.pump(const Duration(milliseconds: 300));
@@ -49,15 +66,33 @@ void main() {
       expect(find.byType(AnimatedCircles), findsOneWidget);
     });
 
-    testWidgets('should display multiple users typing', (tester) async {
-      final typingUsers = [
-        MockAvatarInfo(uniqueId: 'user1', mockDisplayName: 'Alice'),
-        MockAvatarInfo(uniqueId: 'user2', mockDisplayName: 'Bob'),
-        MockAvatarInfo(uniqueId: 'user3', mockDisplayName: 'Charlie'),
-      ];
-
+    testWidgets('should display 3 or more users typing', (tester) async {
+      final MockAvatarInfo testUser = MockAvatarInfo(
+        uniqueId: 'test_user',
+        mockDisplayName: 'Test User',
+      );
+      final MockAvatarInfo testUser2 = MockAvatarInfo(
+        uniqueId: 'test_user2',
+        mockDisplayName: 'Test User 2',
+      );
+      final MockAvatarInfo testUser3 = MockAvatarInfo(
+        uniqueId: 'test_user3',
+        mockDisplayName: 'Test User 3',
+      );
       await tester.pumpProviderWidget(
-        child: TypingIndicator(typingUsers: typingUsers),
+        overrides: [
+          chatTypingEventProvider.overrideWith(
+            (ref, roomId) =>
+                Stream.value(['test_user', 'test_user2', 'test_user3']),
+          ),
+          memberAvatarInfoProvider.overrideWith((ref, info) {
+            if (info.userId == 'test_user') return testUser;
+            if (info.userId == 'test_user2') return testUser2;
+            if (info.userId == 'test_user3') return testUser3;
+            return MockAvatarInfo(uniqueId: info.userId);
+          }),
+        ],
+        child: TypingIndicator(roomId: 'test_room'),
       );
 
       await tester.pump(const Duration(milliseconds: 300));
@@ -67,7 +102,7 @@ void main() {
       expect(find.text('1'), findsOneWidget);
       // verify the text contains the display name
       expect(
-        find.textContaining('Alice and 2 others are typing'),
+        find.textContaining('Test User and 2 others are typing'),
         findsOneWidget,
       );
 

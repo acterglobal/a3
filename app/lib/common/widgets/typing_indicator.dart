@@ -1,3 +1,5 @@
+import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -6,28 +8,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
 class TypingIndicator extends ConsumerWidget {
-  const TypingIndicator({super.key, required this.typingUsers});
+  const TypingIndicator({super.key, required this.roomId});
 
-  final List<AvatarInfo> typingUsers;
+  final String roomId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context).typingIndicatorTheme;
 
-    return TypingWidget(typingUsers: typingUsers, theme: theme);
+    return TypingWidget(roomId: roomId, theme: theme);
   }
 }
 
 /// Typing Widget.
-class TypingWidget extends StatelessWidget {
-  const TypingWidget({
-    super.key,
-    required this.typingUsers,
-    required this.theme,
-  });
+class TypingWidget extends ConsumerWidget {
+  const TypingWidget({super.key, required this.roomId, required this.theme});
 
-  final List<AvatarInfo> typingUsers;
+  final String roomId;
   final TypingIndicatorTheme theme;
+
+  List<AvatarInfo> _getTypingUsers(WidgetRef ref) {
+    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
+    final userIds = users?.map((userId) => userId.toString()).toList() ?? [];
+    return userIds
+        .map(
+          (userId) => ref.watch(
+            memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+          ),
+        )
+        .toList();
+  }
 
   String _buildTypingText(List<AvatarInfo> users, L10n l10n) {
     if (users.isEmpty) return '';
@@ -45,9 +55,12 @@ class TypingWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = L10n.of(context);
+    final typingUsers = _getTypingUsers(ref);
     final text = _buildTypingText(typingUsers, l10n);
+
+    if (typingUsers.isEmpty) return const SizedBox.shrink();
 
     return Row(
       mainAxisSize: MainAxisSize.min,
