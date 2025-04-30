@@ -751,11 +751,7 @@ impl RoomPowerLevelsContent {
 
     pub fn events_new_val(&self, event_type: String) -> Option<i64> {
         let key = TimelineEventType::from(event_type);
-        self.content
-            .events
-            .get(&key)
-            .map(Clone::clone)
-            .map(Into::into)
+        self.content.events.get(&key).copied().map(Into::into)
     }
 
     pub fn events_old_val(&self, event_type: String) -> Option<i64> {
@@ -763,7 +759,7 @@ impl RoomPowerLevelsContent {
         self.prev_content
             .as_ref()
             .and_then(|prev| prev.events.get(&key))
-            .map(Clone::clone)
+            .copied()
             .map(Into::into)
     }
 
