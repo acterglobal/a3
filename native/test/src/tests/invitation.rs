@@ -1,7 +1,13 @@
-use acter::{matrix_sdk_ui::timeline::{MsgLikeContent, MsgLikeKind, RoomExt, TimelineItemContent}, Client, Room};
+use acter::{
+    matrix_sdk_ui::timeline::{MsgLikeContent, MsgLikeKind, RoomExt, TimelineItemContent},
+    Client, Room,
+};
 use anyhow::{bail, Result};
 use futures::{FutureExt, StreamExt};
-use matrix_sdk::{ruma::{events::room::message::RoomMessageEventContent, OwnedRoomId, UserId}, RoomState};
+use matrix_sdk::{
+    ruma::{events::room::message::RoomMessageEventContent, OwnedRoomId, UserId},
+    RoomState,
+};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -55,9 +61,11 @@ async fn chat_invitation_shows_up() -> Result<()> {
     Ok(())
 }
 
-
-
-async fn invite_user(client: &Client, room_id: &OwnedRoomId, other_user_id: &UserId) -> Result<Room> {
+async fn invite_user(
+    client: &Client,
+    room_id: &OwnedRoomId,
+    other_user_id: &UserId,
+) -> Result<Room> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let room = Retry::spawn(retry_strategy.clone(), || async {
@@ -65,11 +73,10 @@ async fn invite_user(client: &Client, room_id: &OwnedRoomId, other_user_id: &Use
     })
     .await?;
 
-    room.invite_user_by_id(&other_user_id).await?;
+    room.invite_user_by_id(other_user_id).await?;
 
     Ok(room)
 }
-
 
 #[tokio::test]
 async fn space_invitation_shows_up() -> Result<()> {
@@ -112,7 +119,6 @@ async fn space_invitation_shows_up() -> Result<()> {
     Ok(())
 }
 
-
 #[tokio::test]
 async fn space_invitation_disappears_when_joined() -> Result<()> {
     let _ = env_logger::try_init();
@@ -124,7 +130,6 @@ async fn space_invitation_disappears_when_joined() -> Result<()> {
     let _kyra_syncer = kyra.start_sync();
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-
 
     let invites = kyra.invitations();
     let stream = invites.subscribe_stream();
@@ -172,10 +177,8 @@ async fn space_invitation_disappears_when_joined() -> Result<()> {
     // we have seen an update on the stream as well
     assert_eq!(stream.next().await, Some(true));
 
-
     Ok(())
 }
-
 
 #[tokio::test]
 async fn invitations_update_count_when_joined() -> Result<()> {
@@ -199,7 +202,6 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
     // sisko's invite
-
 
     let manager = invites.clone();
 
@@ -230,14 +232,13 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     invite_user(&gundom, &gundom_room_id, &kyra.user_id()?).await?;
     // and has been seen
     assert_eq!(stream.next().await, Some(true));
-    
 
     room.join().await?;
     let manager = invites.clone();
 
     Retry::spawn(retry_strategy.clone(), || async {
         let invited = manager.room_invitations().await?;
-        if invited.len() != 2  {
+        if invited.len() != 2 {
             Err(anyhow::anyhow!("not yet updated"))
         } else {
             Ok(true)
@@ -251,7 +252,6 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     assert_eq!(stream.next().now_or_never(), None);
 
     Ok(())
-
 }
 
 #[tokio::test]
@@ -277,7 +277,6 @@ async fn no_invite_count_update_on_message() -> Result<()> {
 
     // sisko's invite
 
-
     let manager = invites.clone();
 
     let invited = Retry::spawn(retry_strategy.clone(), || async {
@@ -313,7 +312,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
 
     Retry::spawn(retry_strategy.clone(), || async {
         let invited = manager.room_invitations().await?;
-        if invited.len() != 2  {
+        if invited.len() != 2 {
             Err(anyhow::anyhow!("not yet updated"))
         } else {
             Ok(true)
@@ -330,14 +329,20 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     let room = kyra.room(sisko_room_id.as_str().into()).await?;
     let timeline = room.timeline().await?;
 
-    sisko_room.send(RoomMessageEventContent::text_plain("hello")).await?;
+    sisko_room
+        .send(RoomMessageEventContent::text_plain("hello"))
+        .await?;
 
     // ensure we received the message
     Retry::spawn(retry_strategy.clone(), || async {
         let Some(event) = timeline.latest_event().await else {
             bail!("no event");
         };
-        let TimelineItemContent::MsgLike(MsgLikeContent{ kind: MsgLikeKind::Message(msg), .. }) = event.content() else {
+        let TimelineItemContent::MsgLike(MsgLikeContent {
+            kind: MsgLikeKind::Message(msg),
+            ..
+        }) = event.content()
+        else {
             bail!("not a text message");
         };
         if msg.body() == "hello" {
@@ -352,10 +357,8 @@ async fn no_invite_count_update_on_message() -> Result<()> {
 
     assert_eq!(stream.next().now_or_never(), None);
 
-
     Ok(())
 }
-
 
 #[tokio::test]
 async fn invitations_update_count_when_rejected() -> Result<()> {
@@ -379,7 +382,6 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
     invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
     // sisko's invite
-
 
     let manager = invites.clone();
 
@@ -405,7 +407,6 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
 
     // second stream
 
-
     invite_user(&worf, &worf_room_id, &kyra.user_id()?).await?;
     // and has been seen
     assert_eq!(stream.next().await, Some(true));
@@ -419,7 +420,7 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
 
     Retry::spawn(retry_strategy.clone(), || async {
         let invited = manager.room_invitations().await?;
-        if invited.len() != 2  {
+        if invited.len() != 2 {
             Err(anyhow::anyhow!("not yet updated"))
         } else {
             Ok(true)
@@ -429,7 +430,6 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
 
     // we have seen an update on the stream as well
     assert_eq!(stream.next().await, Some(true));
-
 
     Ok(())
 }
