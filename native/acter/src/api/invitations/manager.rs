@@ -13,6 +13,7 @@ use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 
 use super::RoomInvitation;
 
+#[derive(Debug, Clone)]
 pub struct InvitationsManager {
     client: Client,
 }
