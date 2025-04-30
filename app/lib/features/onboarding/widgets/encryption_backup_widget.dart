@@ -25,105 +25,92 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final availableApps = <Widget>[];
 
-    // Add copy button
-    availableApps.add(
-      _buildActionButton(
-        icon: Icons.copy,
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: encryptionKey));
-          if (context.mounted) {
-            EasyLoading.showToast(lang.keyCopied);
-          }
-        },
-        context: context,
-      ),
-    );
-
-    // Add share button
-    availableApps.add(
-      _buildActionButton(
-        icon: PhosphorIcons.share(),
-        onTap: () async {
-          await Share.share(encryptionKey);
-        },
-        context: context,
-      ),
-    );
-
-    void addButtonIfInstalled(
+    Widget? addButtonIfInstalled(
       bool isInstalled,
       IconData icon,
       Future<void> Function() onTap,
     ) {
       if (isInstalled) {
-        availableApps.add(
-          _buildActionButton(
-            icon: icon,
-            onTap: () async {
-              await _buildShareContent(lang);
-              if (!context.mounted) return;
-              await Future.delayed(const Duration(seconds: 2));
-              await onTap();
-            },
-            context: context,
-          ),
+        return _buildActionButton(
+          icon: icon,
+          onTap: () async {
+            await _buildShareContent(lang);
+            if (!context.mounted) return;
+            await Future.delayed(const Duration(seconds: 2));
+            await onTap();
+          },
+          context: context,
         );
       }
+      return null;
     }
-
-    // 1Password (no platform restriction)
-    addButtonIfInstalled(
-      ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
-      Icons.security,
-      () => shareToOnePassword(context: context),
-    );
-
-    // Bitwarden (no platform restriction)
-    addButtonIfInstalled(
-      ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
-      Icons.vpn_key,
-      () => shareToBitwarden(context: context),
-    );
-
-    // Keeper (iOS only)
-    addButtonIfInstalled(
-      Platform.isIOS &&
-          ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
-      Icons.lock_person,
-      () => shareToKeeper(context: context),
-    );
-
-    // LastPass (iOS only)
-    addButtonIfInstalled(
-      Platform.isIOS &&
-          ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
-      Icons.password,
-      () => shareToLastPass(context: context),
-    );
-
-    // Enpass (iOS only)
-    addButtonIfInstalled(
-      Platform.isIOS &&
-          ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
-      PhosphorIcons.vault(),
-      () => shareToEnpass(context: context),
-    );
-
-    // ProtonPass (iOS only)
-    addButtonIfInstalled(
-      Platform.isIOS &&
-          ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
-      Icons.shield,
-      () => shareToProtonPass(context: context),
-    );
 
     return Wrap(
       spacing: 16,
       runSpacing: 16,
       alignment: WrapAlignment.start,
-      children: availableApps,
+      children: [
+        // Copy button
+        _buildActionButton(
+          icon: Icons.copy,
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: encryptionKey));
+            if (context.mounted) {
+              EasyLoading.showToast(lang.keyCopied);
+            }
+          },
+          context: context,
+        ),
+        // Share button
+        _buildActionButton(
+          icon: PhosphorIcons.share(),
+          onTap: () async {
+            await Share.share(encryptionKey);
+          },
+          context: context,
+        ),
+        // 1Password (no platform restriction)
+        addButtonIfInstalled(
+          ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
+          Icons.security,
+          () => shareToOnePassword(context: context),
+        ),
+        // Bitwarden (no platform restriction)
+        addButtonIfInstalled(
+          ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
+          Icons.vpn_key,
+          () => shareToBitwarden(context: context),
+        ),
+        // Keeper (iOS only)
+        addButtonIfInstalled(
+          Platform.isIOS &&
+              ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
+          Icons.lock_person,
+          () => shareToKeeper(context: context),
+        ),
+        // LastPass (iOS only)
+        addButtonIfInstalled(
+          Platform.isIOS &&
+              ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
+          Icons.password,
+          () => shareToLastPass(context: context),
+        ),
+        // Enpass (iOS only)
+        addButtonIfInstalled(
+          Platform.isIOS &&
+              ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
+          PhosphorIcons.vault(),
+          () => shareToEnpass(context: context),
+        ),
+        // ProtonPass (iOS only)
+        addButtonIfInstalled(
+          Platform.isIOS &&
+              ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
+          Icons.shield,
+          () => shareToProtonPass(context: context),
+        ),
+      ].whereType<Widget>().toList(),
     );
   }
 
