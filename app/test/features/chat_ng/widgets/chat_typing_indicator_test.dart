@@ -61,7 +61,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(TypingIndicator), findsOneWidget);
+      expect(find.byKey(TypingWidget.typingRendererKey), findsOneWidget);
 
       expect(find.text('Alice and Bob are typing'), findsOneWidget);
     });
@@ -89,7 +89,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(TypingIndicator), findsNothing);
+      expect(find.byKey(TypingWidget.typingRendererKey), findsNothing);
     });
 
     testWidgets('displays single user typing correctly', (tester) async {
@@ -121,7 +121,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(TypingIndicator), findsOneWidget);
+      expect(find.byKey(TypingWidget.typingRendererKey), findsOneWidget);
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.text('Alice is typing'), findsOneWidget);
       expect(find.byType(AnimatedCircles), findsOneWidget);
@@ -176,7 +176,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(TypingIndicator), findsOneWidget);
+      expect(find.byKey(TypingWidget.typingRendererKey), findsOneWidget);
       expect(find.byType(ActerAvatar), findsNWidgets(2));
       expect(find.text('2'), findsOneWidget);
       expect(find.text('Alice and 3 others are typing'), findsOneWidget);

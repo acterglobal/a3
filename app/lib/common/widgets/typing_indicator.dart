@@ -22,6 +22,7 @@ class TypingIndicator extends ConsumerWidget {
 
 /// Typing Widget.
 class TypingWidget extends ConsumerWidget {
+  static const typingRendererKey = Key('typing_widget_renderer');
   const TypingWidget({super.key, required this.roomId, required this.theme});
 
   final String roomId;
@@ -63,6 +64,7 @@ class TypingWidget extends ConsumerWidget {
     if (typingUsers.isEmpty) return const SizedBox.shrink();
 
     return Row(
+      key: TypingWidget.typingRendererKey,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

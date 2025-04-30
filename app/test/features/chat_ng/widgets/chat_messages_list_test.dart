@@ -6,8 +6,10 @@ import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -281,6 +283,11 @@ void main() {
           ).overrideWith((ref) => GlobalKey<AnimatedListState>()),
         ],
         child: MaterialApp(
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
           home: Scaffold(
             body: SizedBox(
               width: 800,
@@ -357,6 +364,11 @@ void main() {
           ).overrideWith((ref) => animatedListKey),
         ],
         child: MaterialApp(
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
           home: Scaffold(body: ChatMessages(roomId: testRoomId)),
         ),
       );
