@@ -521,7 +521,7 @@ impl Activity {
             | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_)
             | ActivityContent::SpaceChild(_)
-            | ActivityContent::SpaceParent(_) => todo!(),
+            | ActivityContent::SpaceParent(_) => "/activities".to_string(), // fallback for state events
         }
     }
 
@@ -973,7 +973,9 @@ impl Activity {
                 "Converting model into activity not yet supported".to_string(),
             )),
             #[cfg(any(test, feature = "testing"))]
-            AnyActerModel::TestModel(_) => todo!(),
+            AnyActerModel::TestModel(_) => Err(crate::Error::Custom(
+                "Converting test model into activity not supported".to_string(),
+            )),
         }
     }
 }
