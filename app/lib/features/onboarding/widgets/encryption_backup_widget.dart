@@ -32,15 +32,11 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
       Future<void> Function() onTap,
     ) {
       if (isInstalled) {
-        return _buildActionButton(
-          icon: icon,
-          onTap: () async {
-            await _buildShareContent(lang);
-            if (!context.mounted) return;
-            await Future.delayed(const Duration(seconds: 2));
-            await onTap();
-          },
+        return _buildWithFirsCopyButton(
           context: context,
+          icon: icon,
+          onTap: onTap,
+          lang: lang,
         );
       }
       return null;
@@ -52,7 +48,8 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
       alignment: WrapAlignment.start,
       children: [
         // Copy button
-        _buildActionButton(
+        _buildWithFirsCopyButton(
+          context: context,
           icon: Icons.copy,
           onTap: () async {
             await Clipboard.setData(ClipboardData(text: encryptionKey));
@@ -60,15 +57,16 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
               EasyLoading.showToast(lang.keyCopied);
             }
           },
-          context: context,
+          lang: lang,
         ),
         // Share button
-        _buildActionButton(
+        _buildWithFirsCopyButton(
+          context: context,
           icon: PhosphorIcons.share(),
           onTap: () async {
             await Share.share(encryptionKey);
           },
-          context: context,
+          lang: lang,
         ),
         // 1Password (no platform restriction)
         addButtonIfInstalled(
@@ -130,6 +128,25 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
         ),
         child: Icon(icon),
       ),
+    );
+  }
+
+  Widget _buildWithFirsCopyButton({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onTap,
+    required L10n lang,
+  }) {
+    return _buildActionButton(
+      icon: icon,
+      context: context,
+      onTap: () async {
+         await _buildShareContent(lang);
+            if (!context.mounted) return;
+            await Future.delayed(const Duration(seconds: 2));
+            onTap();
+       
+      },
     );
   }
 }
