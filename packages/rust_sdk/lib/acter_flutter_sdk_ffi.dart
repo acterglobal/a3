@@ -22335,13 +22335,25 @@ class Api {
           >();
   late final _roomPowerLevelsContentEventsNewValPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Int64 Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _RoomPowerLevelsContentEventsNewValReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__RoomPowerLevelsContent_events_new_val");
 
   late final _roomPowerLevelsContentEventsNewVal =
       _roomPowerLevelsContentEventsNewValPtr
-          .asFunction<int Function(int, int, int, int)>();
+          .asFunction<
+            _RoomPowerLevelsContentEventsNewValReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _roomPowerLevelsContentEventsOldValPtr = _lookup<
     ffi.NativeFunction<
       _RoomPowerLevelsContentEventsOldValReturn Function(
@@ -47676,7 +47688,7 @@ class RoomPowerLevelsContent {
     return tmp6;
   }
 
-  int eventsNewVal(String eventType) {
+  int? eventsNewVal(String eventType) {
     final tmp1 = eventType;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -47697,8 +47709,12 @@ class RoomPowerLevelsContent {
       tmp3,
       tmp4,
     );
-    final tmp7 = tmp5;
-    final tmp6 = tmp7;
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    if (tmp7 == 0) {
+      return null;
+    }
+    final tmp6 = tmp8;
     return tmp6;
   }
 
@@ -71141,6 +71157,13 @@ class _RoomPowerLevelsContentEventsChangeReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _RoomPowerLevelsContentEventsNewValReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _RoomPowerLevelsContentEventsOldValReturn extends ffi.Struct {
