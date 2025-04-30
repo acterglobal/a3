@@ -1,4 +1,3 @@
-use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
 use matrix_sdk_base::ruma::events::room::join_rules::JoinRule;
 use tokio_retry::{

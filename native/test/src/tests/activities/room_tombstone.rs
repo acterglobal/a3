@@ -1,4 +1,3 @@
-use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
 use nanoid::nanoid;
 use tokio_retry::{
