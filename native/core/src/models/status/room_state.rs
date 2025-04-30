@@ -730,26 +730,37 @@ impl RoomPowerLevelsContent {
     pub fn events_change(&self, event_type: String) -> Option<String> {
         if let Some(prev_content) = &self.prev_content {
             let event_type = TimelineEventType::from(event_type);
-            if self.content.events[&event_type] == prev_content.events[&event_type] {
-                None
-            } else {
-                Some("Changed".to_owned())
+            let new_val = self.content.events.get(&event_type);
+            let old_val = prev_content.events.get(&event_type);
+            match (new_val, old_val) {
+                (Some(new_val), Some(old_val)) => {
+                    if new_val == old_val {
+                        None
+                    } else {
+                        Some("Changed".to_owned())
+                    }
+                }
+                (None, Some(_old_val)) => Some("Unset".to_owned()),
+                (Some(_new_val), None) => Some("Set".to_owned()),
+                (None, None) => None,
             }
         } else {
             Some("Set".to_owned())
         }
     }
 
-    pub fn events_new_val(&self, event_type: String) -> i64 {
+    pub fn events_new_val(&self, event_type: String) -> Option<i64> {
         let key = TimelineEventType::from(event_type);
-        self.content.events[&key].into()
+        self.content.events.get(&key).copied().map(Into::into)
     }
 
     pub fn events_old_val(&self, event_type: String) -> Option<i64> {
         let key = TimelineEventType::from(event_type);
         self.prev_content
             .as_ref()
-            .map(|prev| prev.events[&key].into())
+            .and_then(|prev| prev.events.get(&key))
+            .copied()
+            .map(Into::into)
     }
 
     pub fn events_default_change(&self) -> Option<String> {

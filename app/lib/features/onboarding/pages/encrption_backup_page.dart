@@ -1,12 +1,10 @@
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/encryption_backup_feature/widgets/encryption_backup_widget.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
   final CallNextPage? callNextPage;
@@ -71,14 +69,13 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildEncryptionKey(BuildContext context) {
     final encKey = ref.watch(enableEncrptionBackUpProvider);
-
     return encKey.when(
       data: (data) {
         return Column(
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            _buildActionButtons(context, data),
+            PasswordManagerBackupWidget(encryptionKey: data),
           ],
         );
       },
@@ -126,36 +123,6 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, String encryptionKey) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildActionButton(
-          icon: Icons.copy,
-          onTap: () async {
-            await Clipboard.setData(ClipboardData(text: encryptionKey));
-            isEnableNextButton.value = true;
-            if (context.mounted) {
-              EasyLoading.showToast(
-                L10n.of(context).encryptionBackupRecoveryCopiedToClipboard,
-              );
-            }
-          },
-          context: context,
-        ),
-        const SizedBox(width: 24),
-        _buildActionButton(
-          icon: PhosphorIcons.share(),
-          onTap: () async {
-            await Share.share(encryptionKey);
-            isEnableNextButton.value = true;
-          },
-          context: context,
-        ),
-      ],
-    );
-  }
-
   Widget _buildNavigationButtons(BuildContext context, L10n lang) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -184,25 +151,6 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     return OutlinedButton(
       onPressed: () => widget.callNextPage?.call(),
       child: Text(L10n.of(context).skip),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    required BuildContext context,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-        ),
-        child: Icon(icon),
-      ),
     );
   }
 }
