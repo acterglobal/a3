@@ -105,11 +105,9 @@ fn match_msg(msg: &TimelineItem) -> Option<(String, RoomHistoryVisibilityContent
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let Some(content) = event_item.room_history_visibility_content() else {
-        return None;
-    };
+    let content = event_item.room_history_visibility_content()?;
     let event_id = event_item
         .event_id()
         .expect("event item should have event id");
-    Some((event_id, content.clone()))
+    Some((event_id, content))
 }

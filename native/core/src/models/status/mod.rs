@@ -1,10 +1,6 @@
 use matrix_sdk::ruma::{
     events::{
-        room::{
-            member::MembershipChange as MChange, name::RoomNameEventContent,
-            topic::RoomTopicEventContent,
-        },
-        AnyStateEvent, AnyTimelineEvent, StateEvent,
+        room::member::MembershipChange as MChange, AnyStateEvent, AnyTimelineEvent, StateEvent,
     },
     OwnedEventId, UserId,
 };
@@ -24,6 +20,9 @@ pub use profile::{Change, ProfileContent};
 pub use room_state::{
     PolicyRuleRoomContent, PolicyRuleServerContent, PolicyRuleUserContent, RoomAvatarContent,
     RoomCreateContent, RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+    RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+    RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+    SpaceParentContent,
 };
 
 use super::{conversion::ParseError, ActerModel, Capability, EventMeta, Store};
@@ -40,8 +39,15 @@ pub enum ActerSupportedRoomStatusEvents {
     RoomEncryption(RoomEncryptionContent),
     RoomGuestAccess(RoomGuestAccessContent),
     RoomHistoryVisibility(RoomHistoryVisibilityContent),
-    RoomName(RoomNameEventContent),
-    RoomTopic(RoomTopicEventContent),
+    RoomJoinRules(RoomJoinRulesContent),
+    RoomName(RoomNameContent),
+    RoomPinnedEvents(RoomPinnedEventsContent),
+    RoomPowerLevels(RoomPowerLevelsContent),
+    RoomServerAcl(RoomServerAclContent),
+    RoomTombstone(RoomTombstoneContent),
+    RoomTopic(RoomTopicContent),
+    SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -74,14 +80,6 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
             )))
         };
         match &event {
-            AnyStateEvent::RoomName(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomName(inner.content.clone()),
-                meta,
-            }),
-            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => Ok(RoomStatus {
-                inner: ActerSupportedRoomStatusEvents::RoomTopic(inner.content.clone()),
-                meta,
-            }),
             AnyStateEvent::RoomMember(StateEvent::Original(inner)) => {
                 let membership_change = inner.content.membership_change(
                     inner.prev_content().map(|c| c.details()),
@@ -194,6 +192,100 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
                 );
                 Ok(RoomStatus {
                     inner: ActerSupportedRoomStatusEvents::RoomHistoryVisibility(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomJoinRules(StateEvent::Original(inner)) => {
+                let content = RoomJoinRulesContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomJoinRules(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomName(StateEvent::Original(inner)) => {
+                let content = RoomNameContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomName(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomPinnedEvents(StateEvent::Original(inner)) => {
+                let content = RoomPinnedEventsContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomPinnedEvents(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomPowerLevels(StateEvent::Original(inner)) => {
+                let content = RoomPowerLevelsContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomPowerLevels(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomServerAcl(StateEvent::Original(inner)) => {
+                let content = RoomServerAclContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomServerAcl(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomTombstone(StateEvent::Original(inner)) => {
+                let content = RoomTombstoneContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomTombstone(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::RoomTopic(StateEvent::Original(inner)) => {
+                let content = RoomTopicContent::new(
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::RoomTopic(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::SpaceChild(StateEvent::Original(inner)) => {
+                let state_key = event.state_key().to_owned();
+                let content = SpaceChildContent::new(
+                    state_key,
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::SpaceChild(content),
+                    meta,
+                })
+            }
+            AnyStateEvent::SpaceParent(StateEvent::Original(inner)) => {
+                let state_key = event.state_key().to_owned();
+                let content = SpaceParentContent::new(
+                    state_key,
+                    inner.content.clone(),
+                    inner.unsigned.prev_content.clone(),
+                );
+                Ok(RoomStatus {
+                    inner: ActerSupportedRoomStatusEvents::SpaceParent(content),
                     meta,
                 })
             }

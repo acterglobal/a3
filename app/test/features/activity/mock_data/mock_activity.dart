@@ -10,6 +10,7 @@ class MockActivity extends Mock implements Activity {
   final String? mockRoomId;
   final ActivityObject? mockObject;
   final MsgContent? mockMsgContent;
+  final MembershipContent? mockMembershipContent;
   final int? mockOriginServerTs;
   final RefDetails? mockRefDetails;
 
@@ -22,6 +23,7 @@ class MockActivity extends Mock implements Activity {
     this.mockRoomId,
     this.mockObject,
     this.mockMsgContent,
+    this.mockMembershipContent,
     this.mockOriginServerTs,
     this.mockRefDetails,
   });
@@ -55,4 +57,7 @@ class MockActivity extends Mock implements Activity {
 
   @override
   RefDetails? refDetails() => mockRefDetails;
+
+  @override
+  MembershipContent? membershipContent() => mockMembershipContent;
 }

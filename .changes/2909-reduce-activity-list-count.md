@@ -1,0 +1,1 @@
+- [Fix] : Previously, up to 100 entries were shown at once in activities page, which led to excessive scrolling. Now, it's reduced the default visible count to 25 entries.

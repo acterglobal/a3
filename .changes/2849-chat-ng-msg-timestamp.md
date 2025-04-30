@@ -1,0 +1,1 @@
+- [Labs] Chat NG: Added message timestamp to supported message types in chat.
