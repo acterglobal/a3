@@ -1,6 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -9,6 +10,21 @@ class CutomizationPage extends ConsumerWidget {
   final CallNextPage? callNextPage;
 
   const CutomizationPage({super.key, required this.callNextPage});
+
+  Future<void> _updateSelectedItems(String title, bool isSelected) async {
+    final prefs = await sharedPrefs();
+    final selectedItems = prefs.getStringList('selected_organizations') ?? [];
+    
+    if (isSelected) {
+      if (!selectedItems.contains(title)) {
+        selectedItems.add(title);
+      }
+    } else {
+      selectedItems.remove(title);
+    }
+    
+    await prefs.setStringList('selected_organizations', selectedItems);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,7 +62,7 @@ class CutomizationPage extends ConsumerWidget {
     return Text(
       L10n.of(context).yourActer,
       style: theme.textTheme.headlineMedium?.copyWith(
-        color: theme.colorScheme.secondary,
+        color: theme.colorScheme.onSurface,
       ),
       textAlign: TextAlign.center,
     );
@@ -107,7 +123,10 @@ class CutomizationPage extends ConsumerWidget {
             ),
           ),
           child: InkWell(
-            onTap: () => selected.value = !selected.value,
+            onTap: () {
+              selected.value = !selected.value;
+              _updateSelectedItems(title, selected.value);
+            },
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 15),
               title: Text(title, style: textTheme.bodyMedium),
