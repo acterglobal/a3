@@ -61,7 +61,7 @@ urlencoding = { workspace = true }
 uuid = { version = "1.6.1", features = ["v4"] }
 
 # for uniffi support
-uniffi = { version = "0.28.3", features = ["cli"], optional = true }
+uniffi = { workspace = true, features = ["cli"], optional = true }
 matrix-sdk-ffi = { workspace = true, optional = true }
 thiserror = { version = "2.0.11", optional = true }
 

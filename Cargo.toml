@@ -12,10 +12,7 @@ default-members = ["native/acter"]
 rust-version = "1.85"
 
 [workspace.dependencies.ffi-gen]
-#path = "../ffi-gen/"
 git = "https://github.com/acterglobal/ffi-gen"
-branch = "ben-ffi-next"
-
 
 
 [workspace.dependencies.uniffi-dart]
