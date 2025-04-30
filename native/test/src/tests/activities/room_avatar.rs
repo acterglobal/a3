@@ -60,9 +60,7 @@ async fn test_room_avatar() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomAvatar(content) = activity.content() else {
-        bail!("not a room avatar event");
-    };
+    let content = activity.room_avatar_content()?;
 
     assert_eq!(
         content.url_change(),

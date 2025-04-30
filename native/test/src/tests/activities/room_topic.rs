@@ -56,9 +56,7 @@ async fn test_room_topic() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomTopic(content) = activity.content() else {
-        bail!("not a room topic event");
-    };
+    let content = activity.room_topic_content()?;
 
     assert_eq!(
         content.change(),

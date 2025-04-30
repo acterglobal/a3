@@ -62,9 +62,7 @@ async fn test_space_child() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::SpaceChild(content) = activity.content() else {
-        bail!("not a space child event");
-    };
+    let content = activity.space_child_content()?;
 
     let room_id = content.room_id().ok();
     assert_eq!(room_id, Some(child_room_id), "room id should be present");

@@ -68,9 +68,7 @@ async fn test_room_guest_access() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomGuestAccess(content) = activity.content() else {
-        bail!("not a room guest access event");
-    };
+    let content = activity.room_guest_access_content()?;
 
     assert_eq!(
         content.change(),

@@ -63,9 +63,7 @@ async fn test_room_pinned_events() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomPinnedEvents(content) = activity.content() else {
-        bail!("not a room pinned events event");
-    };
+    let content = activity.room_pinned_events_content()?;
 
     assert_eq!(
         content.change(),

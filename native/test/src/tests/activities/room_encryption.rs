@@ -58,9 +58,7 @@ async fn test_room_encryption() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomEncryption(content) = activity.content() else {
-        bail!("not a room encryption event");
-    };
+    let content = activity.room_encryption_content()?;
 
     assert_eq!(
         content.algorithm_change(),

@@ -50,9 +50,7 @@ async fn test_room_create() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomCreate(_content) = activity.content() else {
-        bail!("not a room create event");
-    };
+    let _content = activity.room_create_content()?;
 
     Ok(())
 }

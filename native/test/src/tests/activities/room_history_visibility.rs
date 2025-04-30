@@ -61,9 +61,7 @@ async fn test_room_history_visibility() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::RoomHistoryVisibility(content) = activity.content() else {
-        bail!("not a room history visibility event");
-    };
+    let content = activity.room_history_visibility_content()?;
 
     assert_eq!(
         content.change(),

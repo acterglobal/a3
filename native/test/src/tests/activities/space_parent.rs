@@ -62,9 +62,7 @@ async fn test_space_parent() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::SpaceParent(content) = activity.content() else {
-        bail!("not a space parent event");
-    };
+    let content = activity.space_parent_content()?;
 
     let room_id = content.room_id().ok();
     assert_eq!(room_id, Some(parent_room_id), "room id should be present");

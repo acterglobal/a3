@@ -62,9 +62,7 @@ async fn test_policy_rule_room() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::PolicyRuleRoom(content) = activity.content() else {
-        bail!("not a policy rule room event");
-    };
+    let content = activity.policy_rule_room_content()?;
 
     assert_eq!(
         content.entity_change(),

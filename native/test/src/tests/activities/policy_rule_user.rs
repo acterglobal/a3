@@ -62,9 +62,7 @@ async fn test_policy_rule_user() -> Result<()> {
     );
 
     // check the content of activity
-    let ActivityContent::PolicyRuleUser(content) = activity.content() else {
-        bail!("not a policy rule user event");
-    };
+    let content = activity.policy_rule_user_content()?;
 
     assert_eq!(
         content.entity_change(),
