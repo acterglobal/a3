@@ -2864,8 +2864,9 @@
   "desktopSetupInfo": "When you close the Acter Window, Acter won't directly exit the program but minimize to the system tray to keep listening for notifications for you. If you want to exit Acter you need to do that from the system tray.",
   "activateFeatures": "Activate recommended Features",
   "keyCopied": "Key copied to clipboard",
-  "@keyCopied": {}
+  "@keyCopied": {},
   "gotIt": "Got It",
+  "@gotIt": {},
   "yourActer": "Your Acter",
   "@yourActer": {},
   "goingToOrganize": "What are you going to organize?",
