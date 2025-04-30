@@ -62,7 +62,9 @@ async fn test_space_parent() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.space_parent_content()?;
+    let content = activity
+        .space_parent_content()
+        .expect("not a space parent event");
 
     let room_id = content.room_id().ok();
     assert_eq!(room_id, Some(parent_room_id), "room id should be present");

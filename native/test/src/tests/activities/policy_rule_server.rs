@@ -62,7 +62,9 @@ async fn test_policy_rule_server() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.policy_rule_server_content()?;
+    let content = activity
+        .policy_rule_server_content()
+        .expect("not a policy rule server event");
 
     assert_eq!(
         content.entity_change(),

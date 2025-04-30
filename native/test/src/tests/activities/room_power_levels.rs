@@ -55,7 +55,9 @@ async fn test_room_power_levels_ban() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.ban_change(),
@@ -130,7 +132,9 @@ async fn test_room_power_levels_events() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.events_change(event_type.to_string()),
@@ -204,7 +208,9 @@ async fn test_room_power_levels_events_default() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.events_default_change(),
@@ -276,7 +282,9 @@ async fn test_room_power_levels_invite() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.invite_change(),
@@ -348,7 +356,9 @@ async fn test_room_power_levels_kick() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.kick_change(),
@@ -420,7 +430,9 @@ async fn test_room_power_levels_redact() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.redact_change(),
@@ -494,7 +506,9 @@ async fn test_room_power_levels_state_default() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.state_default_change(),
@@ -568,7 +582,9 @@ async fn test_room_power_levels_users_default() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.users_default_change(),
@@ -642,7 +658,9 @@ async fn test_room_power_levels_notifications() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_power_levels_content()?;
+    let content = activity
+        .room_power_levels_content()
+        .expect("not a room power levels event");
 
     assert_eq!(
         content.notifications_change(),

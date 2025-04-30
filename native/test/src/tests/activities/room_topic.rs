@@ -56,7 +56,9 @@ async fn test_room_topic() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_topic_content()?;
+    let content = activity
+        .room_topic_content()
+        .expect("not a room topic event");
 
     assert_eq!(
         content.change(),

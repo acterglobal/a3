@@ -57,7 +57,7 @@ async fn test_room_name() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_name_content()?;
+    let content = activity.room_name_content().expect("not a room name event");
 
     assert_eq!(
         content.change(),

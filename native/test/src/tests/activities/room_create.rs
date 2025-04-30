@@ -50,7 +50,9 @@ async fn test_room_create() -> Result<()> {
     );
 
     // check the content of activity
-    let _content = activity.room_create_content()?;
+    let _content = activity
+        .room_create_content()
+        .expect("not a room create event");
 
     Ok(())
 }

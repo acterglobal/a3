@@ -63,7 +63,9 @@ async fn test_room_pinned_events() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_pinned_events_content()?;
+    let content = activity
+        .room_pinned_events_content()
+        .expect("not a room pinned events event");
 
     assert_eq!(
         content.change(),

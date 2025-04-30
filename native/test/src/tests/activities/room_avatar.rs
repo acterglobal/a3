@@ -60,7 +60,9 @@ async fn test_room_avatar() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_avatar_content()?;
+    let content = activity
+        .room_avatar_content()
+        .expect("not a room avatar event");
 
     assert_eq!(
         content.url_change(),

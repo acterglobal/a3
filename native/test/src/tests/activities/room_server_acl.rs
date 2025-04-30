@@ -60,7 +60,9 @@ async fn test_room_server_acl() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_server_acl_content()?;
+    let content = activity
+        .room_server_acl_content()
+        .expect("not a room server acl event");
 
     assert_eq!(
         content.allow_ip_literals_change(),

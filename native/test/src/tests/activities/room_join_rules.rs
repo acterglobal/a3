@@ -61,7 +61,9 @@ async fn test_room_join_rules() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_join_rules_content()?;
+    let content = activity
+        .room_join_rules_content()
+        .expect("not a room join rules event");
 
     assert_eq!(
         content.change(),

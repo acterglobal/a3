@@ -68,7 +68,9 @@ async fn test_room_guest_access() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_guest_access_content()?;
+    let content = activity
+        .room_guest_access_content()
+        .expect("not a room guest access event");
 
     assert_eq!(
         content.change(),

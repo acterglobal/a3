@@ -62,7 +62,9 @@ async fn test_room_tombstone() -> Result<()> {
     );
 
     // check the content of activity
-    let content = activity.room_tombstone_content()?;
+    let content = activity
+        .room_tombstone_content()
+        .expect("not a room tombstone event");
 
     assert_eq!(
         content.body_change(),
