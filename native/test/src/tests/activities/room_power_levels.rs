@@ -44,11 +44,7 @@ async fn test_room_power_levels_ban() -> Result<()> {
 
     // external API check
     let meta = activity.event_meta();
-    assert_eq!(
-        meta.event_id.clone(),
-        ban_event_id,
-        "event id should match"
-    );
+    assert_eq!(meta.event_id.clone(), ban_event_id, "event id should match");
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
     assert_eq!(activity.room_id_str(), room_id.to_string());
@@ -88,7 +84,7 @@ async fn test_room_power_levels_events() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        setup_accounts("room-name").await?;
+        setup_accounts("room-power-levels-events").await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;

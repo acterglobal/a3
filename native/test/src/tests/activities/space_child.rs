@@ -13,8 +13,7 @@ async fn test_space_child() -> Result<()> {
     let _ = env_logger::try_init();
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        setup_accounts("room-name").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("space-child").await?;
 
     let settings = CreateConvoSettingsBuilder::default().build()?;
     let child_room_id = admin.create_convo(Box::new(settings)).await?;

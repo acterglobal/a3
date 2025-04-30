@@ -12,8 +12,7 @@ async fn test_room_topic() -> Result<()> {
     let _ = env_logger::try_init();
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        setup_accounts("room-topic").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("room-topic").await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;

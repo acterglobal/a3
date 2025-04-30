@@ -49,11 +49,7 @@ async fn test_room_server_acl() -> Result<()> {
 
     // external API check
     let meta = activity.event_meta();
-    assert_eq!(
-        meta.event_id.clone(),
-        acl_event_id,
-        "event id should match"
-    );
+    assert_eq!(meta.event_id.clone(), acl_event_id, "event id should match");
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
     assert_eq!(activity.room_id_str(), room_id.to_string());
