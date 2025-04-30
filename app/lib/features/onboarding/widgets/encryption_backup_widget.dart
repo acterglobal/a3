@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -16,13 +17,14 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
     required this.encryptionKey,
   });
 
-  Future<void> _buildShareContent() async {
+  Future<void> _buildShareContent(L10n lang) async {
     await Clipboard.setData(ClipboardData(text: encryptionKey));
-    EasyLoading.showSuccess('Key copied to clipboard');
+    EasyLoading.showSuccess(lang.keyCopied);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final lang = L10n.of(context);
     final availableApps = <Widget>[];
 
     // Add copy button
@@ -32,7 +34,7 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
         onTap: () async {
           await Clipboard.setData(ClipboardData(text: encryptionKey));
           if (context.mounted) {
-            EasyLoading.showToast('Key copied to clipboard');
+            EasyLoading.showToast(lang.keyCopied);
           }
         },
         context: context,
@@ -60,7 +62,7 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
           _buildActionButton(
             icon: icon,
             onTap: () async {
-              await _buildShareContent();
+              await _buildShareContent(lang);
               if (!context.mounted) return;
               await Future.delayed(const Duration(seconds: 2));
               await onTap();
