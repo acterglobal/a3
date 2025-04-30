@@ -2867,5 +2867,11 @@
   "activateFeatures": "Activate recommended Features",
   "gotIt": "Got It",
   "keyCopied": "Key copied to clipboard",
-  "@keyCopied": {}
+  "@keyCopied": {},
+  "recommendedSpaces": "Recommended Spaces",
+  "@recommendedSpaces": {},
+  "recommendedSpacesDesc": "An actyer-curated list of groups and partner, ideally based on the previously selected activities.",
+  "@recommendedSpacesDesc": {},
+  "joinAndContinue": "Join & Continue",
+  "@joinAndContinue": {}
 }
