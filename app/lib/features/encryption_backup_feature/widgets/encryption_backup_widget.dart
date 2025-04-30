@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter/common/providers/app_install_check_provider.dart';
-import 'package:acter/features/share/action/shareTo.dart';
+import 'package:acter/features/encryption_backup_feature/actions/external_storing.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -72,41 +72,41 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
         addButtonIfInstalled(
           ref.watch(isAppInstalledProvider(ExternalApps.onePassword)).valueOrNull == true,
           Icons.security,
-          () => shareToOnePassword(context: context),
+          () => openOnePassword(context: context),
         ),
         // Bitwarden (no platform restriction)
         addButtonIfInstalled(
           ref.watch(isAppInstalledProvider(ExternalApps.bitwarden)).valueOrNull == true,
           Icons.vpn_key,
-          () => shareToBitwarden(context: context),
+          () => openBitwarden(context: context),
         ),
         // Keeper (iOS only)
         addButtonIfInstalled(
           Platform.isIOS &&
               ref.watch(isAppInstalledProvider(ExternalApps.keeper)).valueOrNull == true,
           Icons.lock_person,
-          () => shareToKeeper(context: context),
+          () => openKeeper(context: context),
         ),
         // LastPass (iOS only)
         addButtonIfInstalled(
           Platform.isIOS &&
               ref.watch(isAppInstalledProvider(ExternalApps.lastPass)).valueOrNull == true,
           Icons.password,
-          () => shareToLastPass(context: context),
+          () => openLastPass(context: context),
         ),
         // Enpass (iOS only)
         addButtonIfInstalled(
           Platform.isIOS &&
               ref.watch(isAppInstalledProvider(ExternalApps.enpass)).valueOrNull == true,
           PhosphorIcons.vault(),
-          () => shareToEnpass(context: context),
+          () => openEnpass(context: context),
         ),
         // ProtonPass (iOS only)
         addButtonIfInstalled(
           Platform.isIOS &&
               ref.watch(isAppInstalledProvider(ExternalApps.protonPass)).valueOrNull == true,
           Icons.shield,
-          () => shareToProtonPass(context: context),
+          () => openProtonPass(context: context),
         ),
       ].whereType<Widget>().toList(),
     );

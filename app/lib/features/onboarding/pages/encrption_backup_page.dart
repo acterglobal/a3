@@ -1,5 +1,5 @@
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
-import 'package:acter/features/onboarding/widgets/encryption_backup_widget.dart';
+import 'package:acter/features/encryption_backup_feature/widgets/encryption_backup_widget.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';

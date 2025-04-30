@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:acter/features/onboarding/widgets/encryption_backup_widget.dart';
+import 'package:acter/features/encryption_backup_feature/widgets/encryption_backup_widget.dart';
 import 'package:acter/common/providers/app_install_check_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
