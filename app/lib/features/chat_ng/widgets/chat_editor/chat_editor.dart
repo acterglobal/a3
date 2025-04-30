@@ -287,7 +287,10 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       width: MediaQuery.sizeOf(context).width,
-      height: contentHeight,
+      height: max(
+        contentHeight,
+        ChatEditorUtils.baseHeight,
+      ), // always stay above the base height
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.only(
