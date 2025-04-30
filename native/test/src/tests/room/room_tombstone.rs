@@ -16,8 +16,7 @@ use crate::utils::random_user_with_random_convo;
 async fn test_room_tombstone() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let prefix = "room_tombstone";
-    let (mut user, room_id) = random_user_with_random_convo(prefix).await?;
+    let (mut user, room_id) = random_user_with_random_convo("room_tombstone").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
