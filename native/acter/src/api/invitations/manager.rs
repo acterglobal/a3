@@ -7,12 +7,14 @@ use acter_core::{
 };
 use anyhow::Result;
 use futures::{stream::select, Stream};
+use log::{trace, warn};
 use ruma::OwnedRoomId;
 use tokio::sync::broadcast::Receiver;
 use tokio_stream::{wrappers::BroadcastStream, StreamExt};
 
 use super::RoomInvitation;
 
+#[derive(Debug, Clone)]
 pub struct InvitationsManager {
     client: Client,
 }
@@ -24,11 +26,16 @@ impl InvitationsManager {
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
         let mut prev_set: BTreeSet<OwnedRoomId> = Default::default();
+        let core = self.client.core.clone();
         let room_stream = BroadcastStream::new(self.client.subscribe_to_all_room_updates())
             .filter_map(move |u| {
-                let Ok(update) = u else { return None };
-                let new_set: BTreeSet<OwnedRoomId> =
-                    update.invited.keys().map(Clone::clone).collect();
+                // an update was seen, check if the set of rooms we are invited to has changed
+                let new_set: BTreeSet<OwnedRoomId> = core
+                    .client()
+                    .invited_rooms()
+                    .iter()
+                    .map(|r| r.room_id().to_owned())
+                    .collect();
                 if (new_set != prev_set) {
                     prev_set = new_set;
                     Some(true)
@@ -37,9 +44,9 @@ impl InvitationsManager {
                 }
             });
 
-        let object_invites = BroadcastStream::new(self.client.subscribe(ExecuteReference::Index(
-            IndexKey::Special(SpecialListsIndex::InvitedTo),
-        )))
+        let object_invites = tokio_stream::wrappers::BroadcastStream::new(self.client.subscribe(
+            ExecuteReference::Index(IndexKey::Special(SpecialListsIndex::InvitedTo)),
+        ))
         .map(|_| true);
 
         select(room_stream, object_invites)
