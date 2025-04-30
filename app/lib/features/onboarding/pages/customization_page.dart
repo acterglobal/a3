@@ -6,28 +6,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class CutomizationPage extends ConsumerWidget {
+class CutomizationPage extends ConsumerStatefulWidget {
   final CallNextPage? callNextPage;
 
   const CutomizationPage({super.key, required this.callNextPage});
 
+  @override
+  ConsumerState<CutomizationPage> createState() => _CutomizationPageState();
+}
+
+class _CutomizationPageState extends ConsumerState<CutomizationPage> {
+  List<String> selectedItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedItems();
+  }
+
+  Future<void> _loadSelectedItems() async {
+    final prefs = await sharedPrefs();
+    final items = prefs.getStringList('selected_organizations') ?? [];
+    setState(() {
+      selectedItems = items;
+    });
+  }
+
   Future<void> _updateSelectedItems(String title, bool isSelected) async {
     final prefs = await sharedPrefs();
-    final selectedItems = prefs.getStringList('selected_organizations') ?? [];
+    final currentItems = List<String>.from(selectedItems);
     
     if (isSelected) {
-      if (!selectedItems.contains(title)) {
-        selectedItems.add(title);
+      if (!currentItems.contains(title)) {
+        currentItems.add(title);
       }
     } else {
-      selectedItems.remove(title);
+      currentItems.remove(title);
     }
     
-    await prefs.setStringList('selected_organizations', selectedItems);
+    await prefs.setStringList('selected_organizations', currentItems);
+    setState(() {
+      selectedItems = currentItems;
+    });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -108,54 +132,45 @@ class CutomizationPage extends ConsumerWidget {
   ) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final selected = ValueNotifier<bool>(false);
+    final isSelected = selectedItems.contains(title);
 
-    return ValueListenableBuilder<bool>(
-      valueListenable: selected,
-      builder: (context, isSelected, child) {
-        return Card(
-          margin: const EdgeInsets.only(top: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: isSelected ? colorScheme.primary : Colors.transparent,
-              width: 2,
-            ),
-          ),
-          child: InkWell(
-            onTap: () {
-              selected.value = !selected.value;
-              _updateSelectedItems(title, selected.value);
-            },
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-              title: Text(title, style: textTheme.bodyMedium),
-              leading: Icon(icon),
-            ),
-          ),
-        );
-      },
+    return Card(
+      margin: const EdgeInsets.only(top: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: isSelected ? colorScheme.primary : Colors.transparent,
+          width: 2,
+        ),
+      ),
+      child: InkWell(
+        onTap: () async {
+          await _updateSelectedItems(title, !isSelected);
+        },
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+          title: Text(title, style: textTheme.bodyMedium),
+          leading: Icon(icon),
+        ),
+      ),
     );
   }
 
   // Action buttons
   Widget _actionButtons(BuildContext context) {
     final lang = L10n.of(context);
+    final isEnabled = selectedItems.isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () {
-            callNextPage?.call();
-          },
+          onPressed: isEnabled ? () => widget.callNextPage?.call() : null,
           child: Text(lang.wizzardContinue),
         ),
         const SizedBox(height: 10),
         OutlinedButton(
-          onPressed: () {
-            callNextPage?.call();
-          },
+          onPressed: () => widget.callNextPage?.call(),
           child: Text(lang.skip),
         ),
       ],
