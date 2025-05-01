@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
