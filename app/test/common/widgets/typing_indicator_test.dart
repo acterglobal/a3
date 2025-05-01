@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
@@ -21,7 +20,12 @@ void main() {
           chatTypingEventProvider.overrideWith(
             (ref, roomId) => Stream.value(['test_user']),
           ),
-          memberAvatarInfoProvider.overrideWith((ref, info) => testUser),
+          chatTypingUsersAvatarInfoProvider.overrideWith(
+            (ref, arg) => [testUser],
+          ),
+          chatTypingUsersDisplayNameProvider.overrideWith(
+            (ref, arg) => ['Test User'],
+          ),
         ],
         child: TypingIndicator(roomId: 'test_room'),
       );
@@ -49,11 +53,12 @@ void main() {
           chatTypingEventProvider.overrideWith(
             (ref, roomId) => Stream.value(['test_user', 'test_user2']),
           ),
-          memberAvatarInfoProvider.overrideWith((ref, info) {
-            if (info.userId == 'test_user') return testUser;
-            if (info.userId == 'test_user2') return testUser2;
-            return MockAvatarInfo(uniqueId: info.userId);
-          }),
+          chatTypingUsersAvatarInfoProvider.overrideWith(
+            (ref, arg) => [testUser, testUser2],
+          ),
+          chatTypingUsersDisplayNameProvider.overrideWith(
+            (ref, arg) => ['Test User', 'Test User 2'],
+          ),
         ],
         child: TypingIndicator(roomId: 'test_room'),
       );
@@ -85,12 +90,12 @@ void main() {
             (ref, roomId) =>
                 Stream.value(['test_user', 'test_user2', 'test_user3']),
           ),
-          memberAvatarInfoProvider.overrideWith((ref, info) {
-            if (info.userId == 'test_user') return testUser;
-            if (info.userId == 'test_user2') return testUser2;
-            if (info.userId == 'test_user3') return testUser3;
-            return MockAvatarInfo(uniqueId: info.userId);
-          }),
+          chatTypingUsersAvatarInfoProvider.overrideWith(
+            (ref, arg) => [testUser, testUser2, testUser3],
+          ),
+          chatTypingUsersDisplayNameProvider.overrideWith(
+            (ref, arg) => ['Test User', 'Test User 2', 'Test User 3'],
+          ),
         ],
         child: TypingIndicator(roomId: 'test_room'),
       );

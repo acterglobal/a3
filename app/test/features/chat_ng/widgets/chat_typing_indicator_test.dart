@@ -42,6 +42,12 @@ void main() {
             mockDisplayName: info.userId == 'user1' ? 'Alice' : 'Bob',
           ),
         ),
+        memberDisplayNameProvider.overrideWith((ref, query) {
+          return Future.value(query.userId == 'user1' ? 'Alice' : 'Bob');
+        }),
+        chatTypingUsersDisplayNameProvider.overrideWith(
+          (ref, arg) => ['Alice', 'Bob'],
+        ),
       ];
 
       await tester.pumpProviderWidget(
@@ -103,6 +109,12 @@ void main() {
           (ref, info) =>
               MockAvatarInfo(uniqueId: info.userId, mockDisplayName: 'Alice'),
         ),
+        memberDisplayNameProvider.overrideWith((ref, query) {
+          return Future.value('Alice');
+        }),
+        chatTypingUsersDisplayNameProvider.overrideWith(
+          (ref, arg) => ['Alice'],
+        ),
       ];
 
       await tester.pumpProviderWidget(
@@ -158,6 +170,18 @@ void main() {
             ),
           };
         }),
+        memberDisplayNameProvider.overrideWith((ref, query) {
+          return Future.value(switch (query.userId) {
+            'user1' => 'Alice',
+            'user2' => 'Bob',
+            'user3' => 'Charlie',
+            'user4' => 'Dave',
+            _ => query.userId,
+          });
+        }),
+        chatTypingUsersDisplayNameProvider.overrideWith(
+          (ref, arg) => ['Alice', 'Bob', 'Charlie', 'Dave'],
+        ),
       ];
 
       await tester.pumpProviderWidget(
