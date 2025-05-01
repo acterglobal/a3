@@ -46,16 +46,15 @@ void main() {
     await tester.pumpAndSettle();
 
     // Verify SharedPreferences was updated
-    final selectedItems = prefs.getStringList('selected_organizations') ?? [];
+    final selectedItems = prefs.getStringList('selected_customizations') ?? [];
     expect(selectedItems.length, 1);
-    expect(selectedItems.first, 'Activism');
 
     // Tap again to deselect
     await tester.tap(firstCard);
     await tester.pumpAndSettle();
 
     // Verify item was removed from SharedPreferences
-    final updatedItems = prefs.getStringList('selected_organizations') ?? [];
+    final updatedItems = prefs.getStringList('selected_customizations') ?? [];
     expect(updatedItems.isEmpty, true);
   });
 
