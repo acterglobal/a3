@@ -2889,8 +2889,6 @@
   "@networkingLearning": {},
   "lookAround": "I just want to look around for now",
   "@lookAround": {},
-  "selectedOrganizations": "selected_organizations",
-  "@selectedOrganizations": {},
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {}
 }

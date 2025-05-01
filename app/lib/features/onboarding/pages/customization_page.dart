@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/onboarding/actions/organization_actions.dart';
+import 'package:acter/features/onboarding/actions/customization_actions.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class CustomizationPage extends ConsumerStatefulWidget {
 }
 
 class _CustomizationPageState extends ConsumerState<CustomizationPage> {
-  List<OrganizationType> selectedItems = [];
+  List<CustomizationType> selectedItems = [];
 
   @override
   void initState() {
@@ -25,18 +25,17 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   }
 
   Future<void> _loadSelectedItems() async {
-    final items = await OrganizationActions.loadSelectedOrganizations(L10n.of(context));
+    final items = await loadSelectedCustomizations();
     setState(() {
       selectedItems = items;
     });
   }
 
-  Future<void> _updateSelectedItems(OrganizationType type, bool isSelected) async {
-    await OrganizationActions.updateSelectedOrganizations(
+  Future<void> _updateSelectedItems(CustomizationType type, bool isSelected) async {
+    await updateSelectedCustomizations(
       selectedItems,
       type,
-      isSelected,
-      L10n.of(context),
+      isSelected
     );
     setState(() {
       if (isSelected) {
@@ -130,15 +129,15 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   List<Widget> _buildOrganizeCards(BuildContext context) {
     final lang = L10n.of(context);
     final items = [
-      (OrganizationType.activism, lang.activism, PhosphorIcons.handPalm()),
-      (OrganizationType.localGroup, lang.localGroup, Icons.location_on_outlined),
-      (OrganizationType.unionizing, lang.unionizing, Icons.format_underline_rounded),
-      (OrganizationType.cooperation, lang.cooperation, Icons.groups),
-      (OrganizationType.networkingLearning, lang.networkingLearning, PhosphorIcons.network()),
-      (OrganizationType.communityDrivenProjects, lang.communityDrivenProjects, Icons.connect_without_contact_sharp),
-      (OrganizationType.forAnEvent, lang.forAnEvent, PhosphorIcons.calendarCheck()),
-      (OrganizationType.justFrdAndFamily, lang.justFrdAndFamily, Icons.other_houses_outlined),
-      (OrganizationType.lookAround, lang.lookAround, Icons.person_pin),
+      (CustomizationType.activism, lang.activism, PhosphorIcons.handPalm()),
+      (CustomizationType.localGroup, lang.localGroup, Icons.location_on_outlined),
+      (CustomizationType.unionizing, lang.unionizing, Icons.format_underline_rounded),
+      (CustomizationType.cooperation, lang.cooperation, Icons.groups),
+      (CustomizationType.networkingLearning, lang.networkingLearning, PhosphorIcons.network()),
+      (CustomizationType.communityDrivenProjects, lang.communityDrivenProjects, Icons.connect_without_contact_sharp),
+      (CustomizationType.forAnEvent, lang.forAnEvent, PhosphorIcons.calendarCheck()),
+      (CustomizationType.justFrdAndFamily, lang.justFrdAndFamily, Icons.other_houses_outlined),
+      (CustomizationType.lookAround, lang.lookAround, Icons.person_pin),
     ];
 
     return items
@@ -149,7 +148,7 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   // Single card widget
   Widget _buildOrganizeCardItem(
     BuildContext context,
-    OrganizationType type,
+    CustomizationType type,
     String title,
     IconData icon,
   ) {
