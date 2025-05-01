@@ -54,9 +54,9 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Container(
+        child: Column(
+          children: [
+            Container(
               constraints: const BoxConstraints(maxWidth: 500),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -67,14 +67,37 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
                   const SizedBox(height: 10),
                   _buildTitleText(context),
                   const SizedBox(height: 20),
-                  ..._buildOrganizeCards(context),
-                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ..._buildOrganizeCards(context),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 10),
                   _actionButtons(context),
                   const SizedBox(height: 50),
                 ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
