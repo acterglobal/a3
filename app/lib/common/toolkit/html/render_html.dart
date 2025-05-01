@@ -1,10 +1,12 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/html/render_html_ng.dart';
+import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart' as matrix_html;
+import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef PillBuilder =
@@ -59,7 +61,6 @@ class RenderHtml extends ConsumerWidget {
   final bool shrinkToFit;
   final int? maxLines;
   final bool renderNewlines;
-  final PillBuilder? pillBuilder;
   final String roomId;
   const RenderHtml({
     super.key,
@@ -69,7 +70,6 @@ class RenderHtml extends ConsumerWidget {
     this.shrinkToFit = false,
     this.maxLines,
     this.renderNewlines = false,
-    this.pillBuilder,
     required this.roomId,
   });
 
@@ -94,7 +94,16 @@ class RenderHtml extends ConsumerWidget {
         shrinkToFit: shrinkToFit,
         maxLines: maxLines,
         renderNewlines: renderNewlines,
-        pillBuilder: pillBuilder,
+        pillBuilder:
+            ({
+              required String identifier,
+              required String url,
+              void Function(String)? onTap,
+            }) => ActerPillBuilder(
+              identifier: identifier,
+              uri: url,
+              roomId: roomId,
+            ),
       );
     }
   }
