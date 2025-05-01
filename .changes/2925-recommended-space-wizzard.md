@@ -1,0 +1,1 @@
+- [Implemented] : Added a recommended space to user onboarding for users without a redeemed invitation code. 
