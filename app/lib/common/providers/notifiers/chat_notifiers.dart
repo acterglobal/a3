@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Convo, ConvoDiff, TimelineItem;
