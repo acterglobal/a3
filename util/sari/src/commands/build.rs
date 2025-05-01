@@ -2,7 +2,6 @@ use anyhow::Result;
 
 use clap::Parser;
 
-
 #[derive(Parser, Debug)]
 pub struct BuildOpts {
     #[arg(long, default_value = "native/acter/src/acter.udl")]
@@ -25,17 +24,15 @@ pub struct BuildOpts {
     #[cfg(target_os = "windows")]
     #[arg(long, default_value = "packages/rust_sdk/windows/acter.dll")]
     lib_path: String,
-    
+
     #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
     #[arg(long)]
     lib_path: String,
 }
 
-
 pub fn build(opts: BuildOpts) -> Result<()> {
     uniffi_dart::r#gen::generate_dart_bindings(
         opts.udl_path.as_str().into(),
-        
         Some(opts.uniffi_toml.as_str().into()),
         Some(opts.out_dir.as_str().into()),
         // None,

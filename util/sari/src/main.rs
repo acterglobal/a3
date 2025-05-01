@@ -2,11 +2,10 @@ use anyhow::Result;
 use clap::Parser;
 
 mod commands;
-    
 
 #[derive(Parser, Debug)]
 enum Command {
-     Build(commands::build::BuildOpts),
+    Build(commands::build::BuildOpts),
 }
 
 #[derive(Parser, Debug)]
@@ -16,11 +15,10 @@ struct Args {
     command: Command,
 }
 
-
 fn main() -> Result<()> {
     let args = Args::parse();
     let _ = env_logger::try_init();
     match args.command {
-        Command::Build(opts) => commands::build::build(opts)
+        Command::Build(opts) => commands::build::build(opts),
     }
 }
