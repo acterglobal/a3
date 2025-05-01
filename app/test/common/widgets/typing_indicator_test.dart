@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -117,7 +117,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(SizedBox), findsOneWidget);
-      expect(find.byType(TypingAvatar), findsNothing);
+      expect(find.byType(ActerAvatar), findsNothing);
     });
 
     testWidgets('should handle single user correctly in LTR', (tester) async {
@@ -129,7 +129,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(TypingAvatar), findsOneWidget);
+      expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.byType(Align), findsOneWidget);
 
       final align = tester.widget<Align>(find.byType(Align));
@@ -148,7 +148,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(TypingAvatar), findsOneWidget);
+      expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.byType(Align), findsOneWidget);
 
       final align = tester.widget<Align>(find.byType(Align));
@@ -167,7 +167,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(TypingAvatar), findsNWidgets(2));
+      expect(find.byType(ActerAvatar), findsNWidgets(2));
       expect(find.byType(Stack), findsNWidgets(2));
       expect(find.byType(Positioned), findsOneWidget);
 
@@ -191,7 +191,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(TypingAvatar), findsNWidgets(2));
+      expect(find.byType(ActerAvatar), findsNWidgets(2));
       expect(find.byType(Stack), findsNWidgets(2));
       expect(find.byType(Positioned), findsOneWidget);
 
@@ -215,7 +215,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(TypingAvatar), findsNWidgets(2));
+      expect(find.byType(ActerAvatar), findsNWidgets(2));
       expect(find.byType(CircleAvatar), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
 
@@ -250,7 +250,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(TypingAvatar), findsNWidgets(2));
+      expect(find.byType(ActerAvatar), findsNWidgets(2));
       expect(find.byType(CircleAvatar), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
 

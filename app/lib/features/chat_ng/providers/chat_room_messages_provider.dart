@@ -13,7 +13,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
-import 'package:acter/features/home/providers/client_providers.dart';
 
 final _log = Logger('a3::chat::message_provider');
 const _supportedTypes = [
@@ -219,17 +218,3 @@ final chatEditorStateProvider =
     NotifierProvider.autoDispose<ChatEditorNotifier, ChatEditorState>(
       () => ChatEditorNotifier(),
     );
-
-final chatTypingEventProvider = StreamProvider.autoDispose
-    .family<List<String>, String>((ref, roomId) async* {
-      final client = await ref.watch(alwaysClientProvider.future);
-      final userId = ref.watch(myUserIdStrProvider);
-      await for (final event in client.subscribeToTypingEventStream(roomId)) {
-        yield event
-            .userIds()
-            .toList()
-            .map((i) => i.toString())
-            .where((i) => i != userId)
-            .toList();
-      }
-    });

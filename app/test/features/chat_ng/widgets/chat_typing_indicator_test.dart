@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -61,7 +61,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byKey(TypingWidget.typingRendererKey), findsOneWidget);
+      expect(find.byKey(TypingIndicator.typingRendererKey), findsOneWidget);
 
       expect(find.text('Alice and Bob are typing'), findsOneWidget);
     });
@@ -89,7 +89,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byKey(TypingWidget.typingRendererKey), findsNothing);
+      expect(find.byKey(TypingIndicator.typingRendererKey), findsNothing);
     });
 
     testWidgets('displays single user typing correctly', (tester) async {
@@ -121,7 +121,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byKey(TypingWidget.typingRendererKey), findsOneWidget);
+      expect(find.byKey(TypingIndicator.typingRendererKey), findsOneWidget);
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.text('Alice is typing'), findsOneWidget);
       expect(find.byType(AnimatedCircles), findsOneWidget);
@@ -176,7 +176,7 @@ void main() {
       // add delay to allow the stream to emit and UI to update
       await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byKey(TypingWidget.typingRendererKey), findsOneWidget);
+      expect(find.byKey(TypingIndicator.typingRendererKey), findsOneWidget);
       expect(find.byType(ActerAvatar), findsNWidgets(2));
       expect(find.text('2'), findsOneWidget);
       expect(find.text('Alice and 3 others are typing'), findsOneWidget);

@@ -1,5 +1,4 @@
-import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -7,72 +6,52 @@ import 'package:acter/common/themes/acter_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
+/// Typing Widget.
 class TypingIndicator extends ConsumerWidget {
+  static const typingRendererKey = Key('typing_widget_renderer');
   const TypingIndicator({super.key, required this.roomId});
 
   final String roomId;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context).typingIndicatorTheme;
-
-    return TypingWidget(roomId: roomId, theme: theme);
-  }
-}
-
-/// Typing Widget.
-class TypingWidget extends ConsumerWidget {
-  static const typingRendererKey = Key('typing_widget_renderer');
-  const TypingWidget({super.key, required this.roomId, required this.theme});
-
-  final String roomId;
-  final TypingIndicatorTheme theme;
-
-  List<AvatarInfo> _getTypingUsers(WidgetRef ref) {
-    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    final userIds = users?.map((userId) => userId.toString()).toList() ?? [];
-    return userIds
-        .map(
-          (userId) => ref.watch(
-            memberAvatarInfoProvider((userId: userId, roomId: roomId)),
-          ),
-        )
-        .toList();
-  }
-
-  String _buildTypingText(List<AvatarInfo> users, L10n l10n) {
-    if (users.isEmpty) return '';
-    if (users.length == 1) {
-      final name = users.first.displayName ?? users.first.uniqueId;
+  String _buildTypingText(WidgetRef ref, L10n l10n) {
+    final displayNamesList = ref.watch(
+      chatTypingUsersDisplayNameProvider(roomId),
+    );
+    if (displayNamesList.isEmpty) return '';
+    if (displayNamesList.length == 1) {
+      final name = displayNamesList.first;
       return l10n.typingUser1(name);
-    } else if (users.length == 2) {
-      final name1 = users.first.displayName ?? users.first.uniqueId;
-      final name2 = users.last.displayName ?? users.last.uniqueId;
+    } else if (displayNamesList.length == 2) {
+      final name1 = displayNamesList.first;
+      final name2 = displayNamesList.last;
       return l10n.typingUser2(name1, name2);
     } else {
-      final name = users.first.displayName ?? users.first.uniqueId;
-      return l10n.typingUserN(name, users.length - 1);
+      final name = displayNamesList.first;
+      return l10n.typingUserN(name, displayNamesList.length - 1);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = L10n.of(context);
-    final typingUsers = _getTypingUsers(ref);
-    final text = _buildTypingText(typingUsers, l10n);
-
-    if (typingUsers.isEmpty) return const SizedBox.shrink();
+    final theme = Theme.of(context).typingIndicatorTheme;
+    if (ref.watch(chatTypingEventProvider(roomId)).valueOrNull?.isEmpty ==
+        true) {
+      return const SizedBox.shrink();
+    }
 
     return Row(
-      key: TypingWidget.typingRendererKey,
+      key: TypingIndicator.typingRendererKey,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        AvatarHandler(users: typingUsers),
+        AvatarHandler(
+          users: ref.watch(chatTypingUsersAvatarInfoProvider(roomId)),
+        ),
         const SizedBox(width: 4),
         Flexible(
           child: Text(
-            text,
+            _buildTypingText(ref, l10n),
             style: theme.multipleUserTextStyle,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
@@ -99,18 +78,18 @@ class AvatarHandler extends StatelessWidget {
     } else if (users.length == 1) {
       return Align(
         alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
-        child: TypingAvatar(context: context, userInfo: users.first),
+        child: ActerAvatar(options: AvatarOptions.DM(users.first, size: 12)),
       );
     } else if (users.length == 2) {
       return SizedBox(
         width: 44,
         child: Stack(
           children: <Widget>[
-            TypingAvatar(context: context, userInfo: users.first),
+            ActerAvatar(options: AvatarOptions.DM(users.first, size: 12)),
             Positioned(
               left: isRtl ? null : 16,
               right: isRtl ? 16 : null,
-              child: TypingAvatar(context: context, userInfo: users[1]),
+              child: ActerAvatar(options: AvatarOptions.DM(users[1], size: 12)),
             ),
           ],
         ),
@@ -120,11 +99,11 @@ class AvatarHandler extends StatelessWidget {
         width: 58,
         child: Stack(
           children: <Widget>[
-            TypingAvatar(context: context, userInfo: users.first),
+            ActerAvatar(options: AvatarOptions.DM(users.first, size: 12)),
             Positioned(
               left: isRtl ? null : 16,
               right: isRtl ? 16 : null,
-              child: TypingAvatar(context: context, userInfo: users[1]),
+              child: ActerAvatar(options: AvatarOptions.DM(users[1], size: 12)),
             ),
             Positioned(
               left: isRtl ? null : 32,
@@ -152,23 +131,6 @@ class AvatarHandler extends StatelessWidget {
         ),
       );
     }
-  }
-}
-
-// Typing avatar Widget.
-class TypingAvatar extends StatelessWidget {
-  const TypingAvatar({
-    super.key,
-    required this.context,
-    required this.userInfo,
-  });
-
-  final BuildContext context;
-  final AvatarInfo userInfo;
-
-  @override
-  Widget build(BuildContext context) {
-    return ActerAvatar(options: AvatarOptions.DM(userInfo, size: 12));
   }
 }
 
