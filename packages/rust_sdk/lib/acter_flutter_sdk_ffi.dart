@@ -23370,15 +23370,15 @@ class Api {
           _TimelineEventItemMsgTypeReturn Function(
             int,
           )>();
-  late final _timelineEventItemMessagePtr = _lookup<
+  late final _timelineEventItemMsgContentPtr = _lookup<
       ffi.NativeFunction<
-          _TimelineEventItemMessageReturn Function(
+          _TimelineEventItemMsgContentReturn Function(
             ffi.IntPtr,
-          )>>("__TimelineEventItem_message");
+          )>>("__TimelineEventItem_msg_content");
 
-  late final _timelineEventItemMessage =
-      _timelineEventItemMessagePtr.asFunction<
-          _TimelineEventItemMessageReturn Function(
+  late final _timelineEventItemMsgContent =
+      _timelineEventItemMsgContentPtr.asFunction<
+          _TimelineEventItemMsgContentReturn Function(
             int,
           )>();
   late final _timelineEventItemMembershipContentPtr = _lookup<
@@ -30404,6 +30404,192 @@ class Api {
       _ActivityProfileContentReturn Function(
         int,
       )>();
+  late final _activityPolicyRuleRoomContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityPolicyRuleRoomContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_policy_rule_room_content");
+
+  late final _activityPolicyRuleRoomContent =
+      _activityPolicyRuleRoomContentPtr.asFunction<
+          _ActivityPolicyRuleRoomContentReturn Function(
+            int,
+          )>();
+  late final _activityPolicyRuleServerContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityPolicyRuleServerContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_policy_rule_server_content");
+
+  late final _activityPolicyRuleServerContent =
+      _activityPolicyRuleServerContentPtr.asFunction<
+          _ActivityPolicyRuleServerContentReturn Function(
+            int,
+          )>();
+  late final _activityPolicyRuleUserContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityPolicyRuleUserContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_policy_rule_user_content");
+
+  late final _activityPolicyRuleUserContent =
+      _activityPolicyRuleUserContentPtr.asFunction<
+          _ActivityPolicyRuleUserContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomAvatarContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomAvatarContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_avatar_content");
+
+  late final _activityRoomAvatarContent =
+      _activityRoomAvatarContentPtr.asFunction<
+          _ActivityRoomAvatarContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomCreateContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomCreateContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_create_content");
+
+  late final _activityRoomCreateContent =
+      _activityRoomCreateContentPtr.asFunction<
+          _ActivityRoomCreateContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomEncryptionContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomEncryptionContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_encryption_content");
+
+  late final _activityRoomEncryptionContent =
+      _activityRoomEncryptionContentPtr.asFunction<
+          _ActivityRoomEncryptionContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomGuestAccessContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomGuestAccessContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_guest_access_content");
+
+  late final _activityRoomGuestAccessContent =
+      _activityRoomGuestAccessContentPtr.asFunction<
+          _ActivityRoomGuestAccessContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomHistoryVisibilityContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomHistoryVisibilityContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_history_visibility_content");
+
+  late final _activityRoomHistoryVisibilityContent =
+      _activityRoomHistoryVisibilityContentPtr.asFunction<
+          _ActivityRoomHistoryVisibilityContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomJoinRulesContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomJoinRulesContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_join_rules_content");
+
+  late final _activityRoomJoinRulesContent =
+      _activityRoomJoinRulesContentPtr.asFunction<
+          _ActivityRoomJoinRulesContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomNameContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomNameContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_name_content");
+
+  late final _activityRoomNameContent = _activityRoomNameContentPtr.asFunction<
+      _ActivityRoomNameContentReturn Function(
+        int,
+      )>();
+  late final _activityRoomPinnedEventsContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomPinnedEventsContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_pinned_events_content");
+
+  late final _activityRoomPinnedEventsContent =
+      _activityRoomPinnedEventsContentPtr.asFunction<
+          _ActivityRoomPinnedEventsContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomPowerLevelsContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomPowerLevelsContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_power_levels_content");
+
+  late final _activityRoomPowerLevelsContent =
+      _activityRoomPowerLevelsContentPtr.asFunction<
+          _ActivityRoomPowerLevelsContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomServerAclContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomServerAclContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_server_acl_content");
+
+  late final _activityRoomServerAclContent =
+      _activityRoomServerAclContentPtr.asFunction<
+          _ActivityRoomServerAclContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomTombstoneContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomTombstoneContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_tombstone_content");
+
+  late final _activityRoomTombstoneContent =
+      _activityRoomTombstoneContentPtr.asFunction<
+          _ActivityRoomTombstoneContentReturn Function(
+            int,
+          )>();
+  late final _activityRoomTopicContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivityRoomTopicContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_room_topic_content");
+
+  late final _activityRoomTopicContent =
+      _activityRoomTopicContentPtr.asFunction<
+          _ActivityRoomTopicContentReturn Function(
+            int,
+          )>();
+  late final _activitySpaceChildContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivitySpaceChildContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_space_child_content");
+
+  late final _activitySpaceChildContent =
+      _activitySpaceChildContentPtr.asFunction<
+          _ActivitySpaceChildContentReturn Function(
+            int,
+          )>();
+  late final _activitySpaceParentContentPtr = _lookup<
+      ffi.NativeFunction<
+          _ActivitySpaceParentContentReturn Function(
+            ffi.IntPtr,
+          )>>("__Activity_space_parent_content");
+
+  late final _activitySpaceParentContent =
+      _activitySpaceParentContentPtr.asFunction<
+          _ActivitySpaceParentContentReturn Function(
+            int,
+          )>();
   late final _activityReactionKeyPtr = _lookup<
       ffi.NativeFunction<
           _ActivityReactionKeyReturn Function(
@@ -50677,10 +50863,10 @@ class TimelineEventItem {
   }
 
   /// covers text/image/audio/video/file/location/emote
-  MsgContent? message() {
+  MsgContent? msgContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemMessage(
+    final tmp1 = _api._timelineEventItemMsgContent(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -65192,6 +65378,329 @@ class Activity {
     return tmp2;
   }
 
+  /// covers m.policy.rule.room
+  PolicyRuleRoomContent? policyRuleRoomContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityPolicyRuleRoomContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleRoomContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleRoomContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.policy.rule.server
+  PolicyRuleServerContent? policyRuleServerContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityPolicyRuleServerContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleServerContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleServerContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.policy.rule.user
+  PolicyRuleUserContent? policyRuleUserContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityPolicyRuleUserContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_PolicyRuleUserContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = PolicyRuleUserContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.avatar
+  RoomAvatarContent? roomAvatarContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomAvatarContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomAvatarContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomAvatarContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.create
+  RoomCreateContent? roomCreateContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomCreateContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomCreateContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomCreateContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.encryption
+  RoomEncryptionContent? roomEncryptionContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomEncryptionContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomEncryptionContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomEncryptionContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.guest_access
+  RoomGuestAccessContent? roomGuestAccessContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomGuestAccessContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomGuestAccessContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomGuestAccessContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.history_visibility
+  RoomHistoryVisibilityContent? roomHistoryVisibilityContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomHistoryVisibilityContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomHistoryVisibilityContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomHistoryVisibilityContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.join_rules
+  RoomJoinRulesContent? roomJoinRulesContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomJoinRulesContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomJoinRulesContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomJoinRulesContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.name
+  RoomNameContent? roomNameContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomNameContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomNameContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomNameContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.pinned_events
+  RoomPinnedEventsContent? roomPinnedEventsContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomPinnedEventsContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomPinnedEventsContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomPinnedEventsContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.power_levels
+  RoomPowerLevelsContent? roomPowerLevelsContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomPowerLevelsContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomPowerLevelsContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomPowerLevelsContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.server_acl
+  RoomServerAclContent? roomServerAclContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomServerAclContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomServerAclContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomServerAclContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.tombstone
+  RoomTombstoneContent? roomTombstoneContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomTombstoneContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomTombstoneContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomTombstoneContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.room.topic
+  RoomTopicContent? roomTopicContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activityRoomTopicContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomTopicContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomTopicContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.space.child
+  SpaceChildContent? spaceChildContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activitySpaceChildContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SpaceChildContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = SpaceChildContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// covers m.space.parent
+  SpaceParentContent? spaceParentContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._activitySpaceParentContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_SpaceParentContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = SpaceParentContent._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// reaction specific: the reaction key used
   String? reactionKey() {
     var tmp0 = 0;
@@ -78373,7 +78882,7 @@ class _TimelineEventItemMsgTypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TimelineEventItemMessageReturn extends ffi.Struct {
+class _TimelineEventItemMsgContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -80735,6 +81244,125 @@ class _ActivityMembershipContentReturn extends ffi.Struct {
 }
 
 class _ActivityProfileContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityPolicyRuleRoomContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityPolicyRuleServerContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityPolicyRuleUserContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomAvatarContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomCreateContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomEncryptionContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomGuestAccessContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomHistoryVisibilityContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomJoinRulesContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomNameContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomPinnedEventsContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomPowerLevelsContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomServerAclContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomTombstoneContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivityRoomTopicContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivitySpaceChildContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
+class _ActivitySpaceParentContentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

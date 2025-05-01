@@ -98,7 +98,7 @@ Future<String?> forwardRedirect(
       _log.severe(
         'Received forward without roomId failed: ${state.uri.queryParameters}.',
       );
-      return state.namedLocation(Routes.main.name);
+      return state.namedLocation(Routes.activities.name);
     }
 
     final room = await client.room(roomId);
@@ -115,7 +115,7 @@ Future<String?> forwardRedirect(
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
       return state.namedLocation(
-        Routes.space.name,
+        Routes.activities.name,
         pathParameters: {'spaceId': roomId},
       );
     }
