@@ -1,0 +1,1 @@
+- [Implemented] : Added a multi-select customization UI to the onboarding flow for enhanced user personalization.
