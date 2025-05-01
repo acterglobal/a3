@@ -16,6 +16,7 @@ use crate::{
             RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
             RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
             RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+            SpaceParentContent,
         },
         ActerModel, ActerSupportedRoomStatusEvents, AnyActerModel, EventMeta,
     },
@@ -45,6 +46,7 @@ pub enum ActivityContent {
     RoomTombstone(RoomTombstoneContent),
     RoomTopic(RoomTopicContent),
     SpaceChild(SpaceChildContent),
+    SpaceParent(SpaceParentContent),
     Boost {
         first_slide: Option<NewsContent>,
     },
@@ -169,6 +171,7 @@ impl Activity {
             ActivityContent::RoomTombstone(_) => "roomTombstone",
             ActivityContent::RoomTopic(_) => "roomTopic",
             ActivityContent::SpaceChild(_) => "spaceChild",
+            ActivityContent::SpaceParent(_) => "spaceParent",
             ActivityContent::Comment { .. } => "comment",
             ActivityContent::Reaction { .. } => "reaction",
             ActivityContent::Attachment { .. } => "attachment",
@@ -211,6 +214,142 @@ impl Activity {
 
     pub fn profile_content(&self) -> Option<ProfileContent> {
         if let ActivityContent::ProfileChange(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_room_content(&self) -> Option<PolicyRuleRoomContent> {
+        if let ActivityContent::PolicyRuleRoom(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_server_content(&self) -> Option<PolicyRuleServerContent> {
+        if let ActivityContent::PolicyRuleServer(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn policy_rule_user_content(&self) -> Option<PolicyRuleUserContent> {
+        if let ActivityContent::PolicyRuleUser(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_avatar_content(&self) -> Option<RoomAvatarContent> {
+        if let ActivityContent::RoomAvatar(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_create_content(&self) -> Option<RoomCreateContent> {
+        if let ActivityContent::RoomCreate(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_encryption_content(&self) -> Option<RoomEncryptionContent> {
+        if let ActivityContent::RoomEncryption(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_guest_access_content(&self) -> Option<RoomGuestAccessContent> {
+        if let ActivityContent::RoomGuestAccess(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_history_visibility_content(&self) -> Option<RoomHistoryVisibilityContent> {
+        if let ActivityContent::RoomHistoryVisibility(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_join_rules_content(&self) -> Option<RoomJoinRulesContent> {
+        if let ActivityContent::RoomJoinRules(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_name_content(&self) -> Option<RoomNameContent> {
+        if let ActivityContent::RoomName(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_pinned_events_content(&self) -> Option<RoomPinnedEventsContent> {
+        if let ActivityContent::RoomPinnedEvents(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_power_levels_content(&self) -> Option<RoomPowerLevelsContent> {
+        if let ActivityContent::RoomPowerLevels(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_server_acl_content(&self) -> Option<RoomServerAclContent> {
+        if let ActivityContent::RoomServerAcl(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_tombstone_content(&self) -> Option<RoomTombstoneContent> {
+        if let ActivityContent::RoomTombstone(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn room_topic_content(&self) -> Option<RoomTopicContent> {
+        if let ActivityContent::RoomTopic(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn space_child_content(&self) -> Option<SpaceChildContent> {
+        if let ActivityContent::SpaceChild(c) = &self.inner {
+            Some(c.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn space_parent_content(&self) -> Option<SpaceParentContent> {
+        if let ActivityContent::SpaceParent(c) = &self.inner {
             Some(c.clone())
         } else {
             None
@@ -269,7 +408,8 @@ impl Activity {
             | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_)
-            | ActivityContent::SpaceChild(_) => None,
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => None,
 
             ActivityContent::Boost { .. } => None,
 
@@ -380,7 +520,8 @@ impl Activity {
             | ActivityContent::RoomServerAcl(_)
             | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_)
-            | ActivityContent::SpaceChild(_) => todo!(),
+            | ActivityContent::SpaceChild(_)
+            | ActivityContent::SpaceParent(_) => "/activities".to_string(), // fallback for state events
         }
     }
 
@@ -464,6 +605,9 @@ impl Activity {
                 }
                 ActerSupportedRoomStatusEvents::SpaceChild(c) => {
                     Ok(Self::new(meta, ActivityContent::SpaceChild(c)))
+                }
+                ActerSupportedRoomStatusEvents::SpaceParent(c) => {
+                    Ok(Self::new(meta, ActivityContent::SpaceParent(c)))
                 }
             },
 
@@ -829,7 +973,9 @@ impl Activity {
                 "Converting model into activity not yet supported".to_string(),
             )),
             #[cfg(any(test, feature = "testing"))]
-            AnyActerModel::TestModel(_) => todo!(),
+            AnyActerModel::TestModel(_) => Err(crate::Error::Custom(
+                "Converting test model into activity not supported".to_string(),
+            )),
         }
     }
 }

@@ -151,7 +151,7 @@ fn match_text_msg(msg: &TimelineItem) -> Option<(String, MsgContent)> {
         return None;
     }
     let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.message()?;
+    let content = event_item.msg_content()?;
     if event_item.msg_type() != Some("m.text".to_owned()) {
         return None;
     }

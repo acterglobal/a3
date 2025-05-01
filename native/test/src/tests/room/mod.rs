@@ -14,4 +14,5 @@ mod room_server_acl;
 mod room_tombstone;
 mod room_topic;
 mod space_child;
+mod space_parent;
 mod user_settings;

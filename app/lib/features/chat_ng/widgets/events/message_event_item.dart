@@ -44,6 +44,7 @@ class MessageEventItem extends ConsumerWidget {
     final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
     final sendingState = item.sendState();
     return SwipeTo(
+      key: Key(messageId), // needed or swipe doesn't work reliably in listview
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
       child: Column(
         crossAxisAlignment:
@@ -129,7 +130,7 @@ class MessageEventItem extends ConsumerWidget {
     TimelineEventItem item,
   ) {
     final msgType = item.msgType();
-    final content = item.message();
+    final content = item.msgContent();
     final wasEdited = item.wasEdited();
     final timestamp = item.originServerTs();
     // shouldn't happen but in case return empty
@@ -201,8 +202,7 @@ class MessageEventItem extends ConsumerWidget {
     final msgType = item.msgType();
     final repliedTo = item.inReplyTo();
     final wasEdited = item.wasEdited();
-
-    final content = item.message().expect('cannot be null');
+    final content = item.msgContent().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     String? displayName;
 

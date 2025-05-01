@@ -40,10 +40,15 @@ class ChatItemWidget extends ConsumerWidget {
       selectedTileColor: Theme.of(context).colorScheme.primary,
       key: Key('chat-item-widget-$roomId'),
       dense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       onTap: onTap,
-      leading: RoomAvatar(roomId: roomId, showParents: true),
+      leading: RoomAvatar(roomId: roomId, showParents: true, avatarSize: 44),
       title: _buildChatTitle(),
+      shape: Border(
+        bottom: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
+          width: 0.5,
+        ),
+      ),
       subtitle: _buildChatSubtitle(isChatSelected),
     );
   }

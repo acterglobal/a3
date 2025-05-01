@@ -40,20 +40,29 @@ void main() {
       WidgetTester tester,
     ) async {
       await createWidgetUnderTest(tester: tester, isBookmarked: true);
-      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsOneWidget);
+      expect(
+        find.byIcon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)),
+        findsOneWidget,
+      );
     });
 
     testWidgets('should not show bookmark icon when room is not bookmarked', (
       WidgetTester tester,
     ) async {
       await createWidgetUnderTest(tester: tester, isBookmarked: false);
-      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsNothing);
+      expect(
+        find.byIcon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)),
+        findsNothing,
+      );
       expect(find.byType(SizedBox), findsOneWidget);
     });
 
     testWidgets('should handle error case', (WidgetTester tester) async {
       await createWidgetUnderTest(tester: tester, isError: true);
-      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsNothing);
+      expect(
+        find.byIcon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)),
+        findsNothing,
+      );
       expect(find.byType(SizedBox), findsOneWidget);
     });
 
@@ -67,7 +76,10 @@ void main() {
       expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsOneWidget);
       // Wait for the async provider to load
       await tester.pump(const Duration(milliseconds: 110));
-      expect(find.byIcon(PhosphorIcons.bookmarkSimple()), findsOneWidget);
+      expect(
+        find.byIcon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)),
+        findsOneWidget,
+      );
       expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsNothing);
     });
   });
