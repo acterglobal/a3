@@ -1,1 +1,0 @@
-- [implemented] : Space Membership Changes added to the Activity Screen.
