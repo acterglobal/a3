@@ -1,4 +1,8 @@
-import 'package:acter/features/chat_ui_showcase/mocks/showcase_data/convo_showcase_data.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/membership_usecases.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/profile_change_usecases.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/text_and_media_usecases.dart';
 
 final List<MockChatItem> mockChatList = [
   emilyDmMutedBookmarkedRoom1,
