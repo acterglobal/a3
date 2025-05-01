@@ -1,7 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/onboarding/actions/organization_actions.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -16,7 +16,7 @@ class CustomizationPage extends ConsumerStatefulWidget {
 }
 
 class _CustomizationPageState extends ConsumerState<CustomizationPage> {
-  List<String> selectedItems = [];
+  List<OrganizationType> selectedItems = [];
 
   @override
   void initState() {
@@ -25,28 +25,27 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   }
 
   Future<void> _loadSelectedItems() async {
-    final prefs = await sharedPrefs();
-    final items = prefs.getStringList('selected_organizations') ?? [];
+    final items = await OrganizationActions.loadSelectedOrganizations(L10n.of(context));
     setState(() {
       selectedItems = items;
     });
   }
 
-  Future<void> _updateSelectedItems(String title, bool isSelected) async {
-    final prefs = await sharedPrefs();
-    final currentItems = List<String>.from(selectedItems);
-    
-    if (isSelected) {
-      if (!currentItems.contains(title)) {
-        currentItems.add(title);
-      }
-    } else {
-      currentItems.remove(title);
-    }
-    
-    await prefs.setStringList('selected_organizations', currentItems);
+  Future<void> _updateSelectedItems(OrganizationType type, bool isSelected) async {
+    await OrganizationActions.updateSelectedOrganizations(
+      selectedItems,
+      type,
+      isSelected,
+      L10n.of(context),
+    );
     setState(() {
-      selectedItems = currentItems;
+      if (isSelected) {
+        if (!selectedItems.contains(type)) {
+          selectedItems.add(type);
+        }
+      } else {
+        selectedItems.remove(type);
+      }
     });
   }
 
@@ -131,31 +130,32 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   List<Widget> _buildOrganizeCards(BuildContext context) {
     final lang = L10n.of(context);
     final items = [
-      (lang.activism, PhosphorIcons.handPalm()),
-      (lang.localGroup, Icons.location_on_outlined),
-      (lang.unionizing, Icons.format_underline_rounded),
-      (lang.cooperation, Icons.groups),
-      (lang.networkingLearning, PhosphorIcons.network()),
-      (lang.communityDrivenProjects, Icons.connect_without_contact_sharp),
-      (lang.forAnEvent, PhosphorIcons.calendarCheck()),
-      (lang.justFrdAndFamily, Icons.other_houses_outlined),
-      (lang.lookAround, Icons.person_pin),
+      (OrganizationType.activism, lang.activism, PhosphorIcons.handPalm()),
+      (OrganizationType.localGroup, lang.localGroup, Icons.location_on_outlined),
+      (OrganizationType.unionizing, lang.unionizing, Icons.format_underline_rounded),
+      (OrganizationType.cooperation, lang.cooperation, Icons.groups),
+      (OrganizationType.networkingLearning, lang.networkingLearning, PhosphorIcons.network()),
+      (OrganizationType.communityDrivenProjects, lang.communityDrivenProjects, Icons.connect_without_contact_sharp),
+      (OrganizationType.forAnEvent, lang.forAnEvent, PhosphorIcons.calendarCheck()),
+      (OrganizationType.justFrdAndFamily, lang.justFrdAndFamily, Icons.other_houses_outlined),
+      (OrganizationType.lookAround, lang.lookAround, Icons.person_pin),
     ];
 
     return items
-        .map((item) => _buildOrganizeCardItem(context, item.$1, item.$2))
+        .map((item) => _buildOrganizeCardItem(context, item.$1, item.$2, item.$3))
         .toList();
   }
 
   // Single card widget
   Widget _buildOrganizeCardItem(
     BuildContext context,
+    OrganizationType type,
     String title,
     IconData icon,
   ) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final isSelected = selectedItems.contains(title);
+    final isSelected = selectedItems.contains(type);
 
     return Card(
       margin: const EdgeInsets.only(top: 12),
@@ -168,7 +168,7 @@ class _CustomizationPageState extends ConsumerState<CustomizationPage> {
       ),
       child: InkWell(
         onTap: () async {
-          await _updateSelectedItems(title, !isSelected);
+          await _updateSelectedItems(type, !isSelected);
         },
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 15),
