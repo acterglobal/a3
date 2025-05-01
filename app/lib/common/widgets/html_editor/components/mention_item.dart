@@ -24,14 +24,11 @@ class MentionItem extends StatelessWidget {
       child: ListTile(
         dense: true,
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        contentPadding: const EdgeInsets.all(8.0),
         leading: ActerAvatar(options: avatarOptions),
-        title: Text(
-          displayName ?? mentionId,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        title: Text(displayName ?? mentionId),
         subtitle: displayName.map(
-          (name) => Text(name, style: Theme.of(context).textTheme.labelMedium),
+          (name) => Text(mentionId),
           orElse: () => null,
         ),
       ),

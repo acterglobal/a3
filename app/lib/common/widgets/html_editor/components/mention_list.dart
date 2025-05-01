@@ -154,34 +154,39 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     final displaySuggestions = _filteredSuggestions ?? suggestions;
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildMenuHeader(),
-        const Divider(height: 1, endIndent: 5, indent: 5),
-        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+          child: Text(widget.headerTitle),
+        ),
         _buildMenuList(displaySuggestions),
       ],
     );
   }
 
-  Widget _buildMenuHeader() => Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Text(widget.headerTitle),
-  );
-
   Widget _buildMenuList(Map<String, String?> suggestions) {
+    final theme = Theme.of(context);
     final String notFoundTitle = widget.notFoundTitle;
     final options = widget.avatarBuilder;
     return Flexible(
       child:
           suggestions.isEmpty
               ? Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(notFoundTitle),
               )
-              : ListView.builder(
+              : ListView.separated(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 controller: _scrollController,
                 itemCount: suggestions.length,
+                separatorBuilder:
+                    (context, index) => Divider(
+                      endIndent: 5,
+                      indent: 5,
+                      color: theme.dividerTheme.color,
+                    ),
                 itemBuilder: (context, index) {
                   final mentionId = suggestions.keys.elementAt(index);
                   final displayName = suggestions.values.elementAt(index);

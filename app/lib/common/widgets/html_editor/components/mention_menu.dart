@@ -1,5 +1,6 @@
 import 'package:acter/common/widgets/html_editor/components/mention_list.dart';
 import 'package:acter/common/widgets/html_editor/services/constants.dart';
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class MentionMenu {
 
   OverlayEntry? _menuEntry;
   bool selectionChangedByMenu = false;
+  static const menuHeight = 200.0;
 
   void dismiss() {
     _menuEntry?.remove();
@@ -26,16 +28,20 @@ class MentionMenu {
 
   void show() {
     if (_menuEntry != null) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _show());
+    _show();
   }
 
   void _show() {
-    // Get position of editor
-    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
+    // Get position of editor field
+    final RenderBox? editorBox =
+        chatEditorKey.currentContext?.findRenderObject() as RenderBox?;
+    if (editorBox == null) return;
 
-    final Size size = renderBox.size;
-    final Offset position = renderBox.localToGlobal(Offset.zero);
+    final editorPosition = editorBox.localToGlobal(Offset.zero);
+    final isLargeScreen = MediaQuery.sizeOf(context).width > 600;
+
+    final top = editorPosition.dy - menuHeight - 4;
+
     // render based on mention type
     final Widget listWidget = switch (mentionTrigger) {
       userMentionChar => UserMentionList(
@@ -55,27 +61,38 @@ class MentionMenu {
 
     _menuEntry = OverlayEntry(
       builder:
-          (context) => Positioned(
-            // Position relative to input field
-            left: position.dx + 20, // Align with left edge of input
-            // Position above input with some padding
-            bottom: 70,
-            width: size.width * 0.75,
-            child: Material(
-              elevation: 8, // Add some elevation for better visibility
-              borderRadius: BorderRadius.circular(8),
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: dismiss,
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxHeight: 200, // Limit maximum height
-                    maxWidth: size.width, // Match input width
-                  ),
-                  child: listWidget,
+          (context) => Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: dismiss,
+                  child: Container(color: Colors.transparent),
                 ),
               ),
-            ),
+
+              Positioned(
+                top: top,
+                left: isLargeScreen ? editorPosition.dx : 12,
+                right: isLargeScreen ? editorPosition.dx : 12,
+                child: Material(
+                  elevation: 8,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    height: menuHeight,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: listWidget,
+                  ),
+                ),
+              ),
+            ],
           ),
     );
 
