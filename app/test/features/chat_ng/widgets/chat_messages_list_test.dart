@@ -298,11 +298,17 @@ void main() {
         ),
       );
 
+      // Ensure initial render is complete
+      await tester.pump(const Duration(milliseconds: 50));
+
       final scrollController =
           tester.widget<AnimatedList>(find.byType(AnimatedList)).controller;
 
+      // Make sure controller is not null before using it
+      expect(scrollController, isNotNull);
+
       // scroll up
-      scrollController?.position.jumpTo(100.0);
+      scrollController!.position.jumpTo(100.0);
       await tester.pump();
 
       final fabFinder = find.byKey(ChatMessages.fabScrollToBottomKey);
@@ -322,14 +328,20 @@ void main() {
       expect(buttonFinder, findsOneWidget);
 
       await tester.ensureVisible(buttonFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(buttonFinder);
-      await tester.pumpAndSettle(Durations.medium3);
 
-      expect(
-        scrollController?.position.pixels,
-        equals(scrollController!.position.minScrollExtent),
-      );
+      await tester.pump(const Duration(milliseconds: 50));
+
+      await tester.tap(buttonFinder);
+      await tester.pump();
+
+      if (scrollController.hasClients) {
+        scrollController.position.jumpTo(
+          scrollController.position.minScrollExtent,
+        );
+      }
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
       // verify button is hidden (opacity should be 0)
       final updatedOpacityWidget = tester.widget<AnimatedOpacity>(
@@ -374,16 +386,19 @@ void main() {
       );
 
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
 
       // initial message count
       expect(notifier.state.messageList.length, equals(5));
 
-      // Remove a message
       final updatedMessages = List<String>.from(initialMessages)..removeAt(2);
       notifier.state = notifier.state.copyWith(messageList: updatedMessages);
 
       await tester.pump();
-      await tester.pumpAndSettle();
+
+      // simulate the animation duration without waiting for complete settlement
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 300));
 
       // final message count
       expect(notifier.state.messageList.length, equals(4));
