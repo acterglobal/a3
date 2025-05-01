@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 
 final _log = Logger('a3::router');
 
@@ -97,7 +98,7 @@ Future<String?> forwardRedirect(
       _log.severe(
         'Received forward without roomId failed: ${state.uri.queryParameters}.',
       );
-      return state.namedLocation(Routes.main.name);
+      return state.namedLocation(Routes.activities.name);
     }
 
     final room = await client.room(roomId);
@@ -114,7 +115,7 @@ Future<String?> forwardRedirect(
       // final eventId = state.uri.queryParameters['eventId'];
       // with the event ID or further information we could figure out the specific action
       return state.namedLocation(
-        Routes.space.name,
+        Routes.activities.name,
         pathParameters: {'spaceId': roomId},
       );
     }
@@ -179,6 +180,10 @@ final goRouter = GoRouter(
   navigatorKey: rootNavKey,
   initialLocation: Routes.main.route,
   restorationScopeId: 'acter-routes',
+  observers: [
+    // Log the route changes to matomo
+    MatomoGlobalObserver(),
+  ],
   routes: [
     ...generalRoutes,
     StatefulShellRoute.indexedStack(

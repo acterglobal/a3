@@ -27,6 +27,7 @@ use tracing::{error, trace, warn};
 #[cfg(any(test, feature = "testing"))]
 use super::test::TestModel;
 
+use crate::error::ModelRedactedDetails;
 use crate::store::Store;
 use crate::{
     events::{
@@ -191,24 +192,27 @@ impl AnyActerModel {
                     error!("Failure handling event: {:}", e);
                 }
             }
-            Err(ParseError::ModelRedacted {
-                model_type,
-                meta,
-                reason,
-            }) => {
+            Err(ParseError::ModelRedacted(details)) => {
+                let ModelRedactedDetails {
+                    model_type,
+                    meta,
+                    reason,
+                } = *details;
                 trace!(?meta.room_id, model_type, ?meta.event_id, "redacted event");
                 if let Err(e) = executor.redact(model_type, meta, reason).await {
                     error!("Failure redacting {:}", e);
                 }
             }
-            Err(ParseError::UnsupportedEvent(AnyActerEvent::RegularTimelineEvent(_))) => {
-                // save to hard ignore
-                trace!(?room_id, "ignoring timeline event");
-            }
-            Err(ParseError::UnsupportedEvent(inner)) => {
-                // sae to hard ignore
-                error!(?room_id, ?inner, "seems like the dev failed to add parsing");
-            }
+            Err(ParseError::UnsupportedEvent(a)) => match a.as_ref() {
+                AnyActerEvent::RegularTimelineEvent(_) => {
+                    // save to hard ignore
+                    trace!(?room_id, "ignoring timeline event");
+                }
+                _ => {
+                    // sae to hard ignore
+                    error!(?room_id, ?a, "seems like the dev failed to add parsing");
+                }
+            },
         };
     }
 }

@@ -1,5 +1,6 @@
-use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
+use std::io::Write;
+use tempfile::Builder;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -39,9 +40,9 @@ async fn initial_events() -> Result<()> {
     // .await?;
     // assert_eq!(created.type_str(), "created");
 
-    // let ActivityContent::MembershipChange(r) = activity.content() else {
-    //     bail!("not a membership event");}
-    // ;
+    // let Some(r) = activity.membership_content() else {
+    //     bail!("not a membership event");
+    // };
     // assert!(matches!(r.change, MembershipChangeType::Invited));
     // assert_eq!(r.as_str(), "invited");
     // assert_eq!(r.user_id, to_invite_user_name);
@@ -88,7 +89,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
 
@@ -130,7 +131,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -173,7 +174,7 @@ async fn kicked() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -223,7 +224,7 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -267,7 +268,7 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -311,7 +312,7 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -341,7 +342,7 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -383,7 +384,7 @@ async fn left() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -397,6 +398,80 @@ async fn left() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
     assert_eq!(activity.room_id_str(), room.room_id_str());
     assert_eq!(activity.type_str(), "left");
+    assert_eq!(
+        activity.origin_server_ts(),
+        Into::<u64>::into(meta.origin_server_ts.get())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn display_name() -> Result<()> {
+    let _ = env_logger::try_init();
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("display-name").await?;
+
+    // ensure it was sent
+    let account = observer.account()?;
+    account.set_display_name("Mickey Mouse".to_owned()).await?;
+
+    // wait for the event to come in
+    let activity = get_latest_activity(&admin, room_id.to_string(), "displayName").await?;
+
+    assert_eq!(activity.type_str(), "displayName");
+    let Some(r) = activity.profile_content() else {
+        bail!("not a profile event");
+    };
+    let meta = activity.event_meta();
+
+    assert_eq!(r.display_name_new_val(), Some("Mickey Mouse".to_owned()));
+    assert_eq!(meta.sender, observer.user_id()?);
+
+    // external API check
+    assert_eq!(activity.sender_id_str(), observer.user_id()?);
+    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.room_id_str(), room_id.as_str());
+    assert_eq!(
+        activity.origin_server_ts(),
+        Into::<u64>::into(meta.origin_server_ts.get())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn avatar_url() -> Result<()> {
+    let _ = env_logger::try_init();
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("avatar-url").await?;
+
+    let bytes = include_bytes!("../fixtures/kingfisher.jpg");
+    let mut tmp_jpg = Builder::new().suffix(".jpg").tempfile()?;
+    tmp_jpg.as_file_mut().write_all(bytes)?;
+    let jpg_path = tmp_jpg // it is randomly generated by system and not kingfisher.jpg
+        .path()
+        .to_string_lossy()
+        .to_string();
+
+    // ensure it was sent
+    let account = observer.account()?;
+    let uri = account.upload_avatar(jpg_path).await?;
+
+    // wait for the event to come in
+    let activity = get_latest_activity(&admin, room_id.to_string(), "avatarUrl").await?;
+
+    assert_eq!(activity.type_str(), "avatarUrl");
+    let Some(r) = activity.profile_content() else {
+        bail!("not a profile event");
+    };
+    let meta = activity.event_meta();
+
+    assert_eq!(r.avatar_url_new_val(), Some(uri));
+    assert_eq!(meta.sender, observer.user_id()?);
+
+    // external API check
+    assert_eq!(activity.sender_id_str(), observer.user_id()?);
+    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.room_id_str(), room_id.as_str());
     assert_eq!(
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())

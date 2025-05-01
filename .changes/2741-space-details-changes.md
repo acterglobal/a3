@@ -1,1 +1,0 @@
-- [implemented] : Space Detail Changes related activities added to the Activity Screen.

@@ -1,9 +1,11 @@
+import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/plus_icon_widget.dart';
 import 'package:acter/common/toolkit/widgets/animated_chats_list_widget.dart';
 import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_list.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatListShowcasePage extends StatelessWidget {
   const ChatListShowcasePage({super.key});
@@ -21,6 +23,11 @@ class ChatListShowcasePage extends StatelessWidget {
         itemBuilder:
             ({required Animation<double> animation, required String roomId}) =>
                 ChatItemWidget(
+                  onTap:
+                      () => context.pushNamed(
+                        Routes.chatRoomShowcase.name,
+                        pathParameters: {'roomId': roomId},
+                      ),
                   animation: animation,
                   key: Key('chat-room-card-$roomId'),
                   roomId: roomId,

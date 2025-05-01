@@ -1,9 +1,12 @@
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/categories/organize_categories_page.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/chat/pages/sub_chats_page.dart';
+import 'package:acter/features/chat_ng/pages/chat_room.dart';
+import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
 import 'package:acter/features/events/pages/event_details_page.dart';
 import 'package:acter/features/events/pages/event_list_page.dart';
@@ -101,6 +104,28 @@ final homeShellRoutes = [
       return MaterialPage(key: state.pageKey, child: const ChatSettingsPage());
     },
   ),
+  if (includeChatShowcase) ...[
+    GoRoute(
+      name: Routes.chatListShowcase.name,
+      path: Routes.chatListShowcase.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        return MaterialPage(key: state.pageKey, child: ChatListShowcasePage());
+      },
+    ),
+    GoRoute(
+      name: Routes.chatRoomShowcase.name,
+      path: Routes.chatRoomShowcase.route,
+      redirect: authGuardRedirect,
+      pageBuilder: (context, state) {
+        final roomId = state.pathParameters['roomId'];
+        return MaterialPage(
+          key: state.pageKey,
+          child: ChatRoomNgPage(roomId: roomId ?? ''),
+        );
+      },
+    ),
+  ],
   GoRoute(
     name: Routes.settingsCalendar.name,
     path: Routes.settingsCalendar.route,

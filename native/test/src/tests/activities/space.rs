@@ -25,7 +25,7 @@ async fn change_space_name() -> Result<()> {
         .room_name()
         .expect("space name should be already assigned");
     // for example, it-room-change-space-name-9a2b3db1-d3f9-4f58-a471-81c04bdaa9f4
-    assert!(room_name.find("change-space-name").is_some());
+    assert!(room_name.contains("change-space-name"));
 
     let activity = get_latest_activity(&observer, room_id.to_string(), "roomName").await?;
     info!("initial room name event: {}", activity.event_id_str());
@@ -34,7 +34,8 @@ async fn change_space_name() -> Result<()> {
         .room_name()
         .expect("space name should be already assigned");
     // for example, it-room-change-space-name-9a2b3db1-d3f9-4f58-a471-81c04bdaa9f4
-    assert!(room_name.find("change-space-name").is_some());
+    assert!(room_name.contains("change-space-name"));
+    assert_eq!(activity.target_url(), "/activities");
 
     // let new_name = new_room_name("update-space-name");
     // let room = admin.room(room_id.to_string()).await?;
@@ -74,6 +75,7 @@ async fn change_space_avatar() -> Result<()> {
         .room_avatar()
         .expect("space topic should be already assigned");
     assert_eq!(room_avatar.as_str(), uri.as_str());
+    assert_eq!(activity.target_url(), "/activities");
 
     Ok(())
 }
@@ -95,6 +97,7 @@ async fn change_space_topic() -> Result<()> {
         .room_topic()
         .expect("space topic should be already assigned");
     assert_eq!(room_topic, "Here is playground");
+    assert_eq!(activity.target_url(), "/activities");
 
     Ok(())
 }

@@ -39,7 +39,7 @@ dependencies:
   scroll_to_index: ^3.0.1
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ">=1.0.0"
-  sentry_flutter: ^8.4.0
+  sentry_flutter: ^8.14.2
   flutter_link_previewer: ^3.0.1
   bubble: ^1.2.1
   swipe_to: ^1.0.5
@@ -61,7 +61,7 @@ dependencies:
       ref: main
 
   flutter_easyloading: ^3.0.5
-  appflowy_editor: ^5.1.0
+  appflowy_editor: ^5.2.0
   acter_trigger_auto_complete:
     path: ../packages/acter_trigger_auto_complete
   acter_notifify:
@@ -169,7 +169,8 @@ dependencies:
   collection: ^1.18.0
   preload_page_view: ^0.2.0
   mocktail: ^1.0.4
-  # Matomo Analytics
+  launch_at_startup: ^0.5.1
+  package_info_plus: ^8.3.0
   matomo_tracker: ^6.0.0
 
 dev_dependencies:
@@ -211,7 +212,7 @@ sentry:
   upload_debug_symbols: true
   upload_source_maps: false
   upload_sources: false
-  project: acter-app
+  project: a3-app
   org: acter
 
 icons_launcher:

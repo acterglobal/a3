@@ -170,7 +170,7 @@ class NotificationPermissionWidget extends ConsumerWidget {
         OutlinedButton(
           onPressed: () {
             if (context.mounted) {
-              (callNextPage ?? () => Navigator.pop(context, false))();
+              (callNextPage?.call ?? () => Navigator.pop(context, false))();
             }
           },
           child: Text(lang.askAgain),
@@ -189,7 +189,7 @@ class NotificationPermissionWidget extends ConsumerWidget {
 
     if (status.isGranted) {
       if (context.mounted) {
-        (callNextPage ?? () => Navigator.pop(context, true))();
+        (callNextPage?.call ?? () => Navigator.pop(context, true))();
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar

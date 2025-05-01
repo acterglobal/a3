@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/creation.dart';
@@ -39,24 +40,57 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.reaction => ActivityReactionItemWidget(activity: activity),
       PushStyles.attachment => ActivityAttachmentItemWidget(activity: activity),
       PushStyles.references => ActivityReferencesItemWidget(activity: activity),
-      PushStyles.eventDateChange => ActivityEventDateChangeItemWidget(activity: activity),
+      PushStyles.eventDateChange => ActivityEventDateChangeItemWidget(
+        activity: activity,
+      ),
       PushStyles.rsvpYes => ActivityEventRSVPYesItemWidget(activity: activity),
-      PushStyles.rsvpMaybe => ActivityEventRSVPMayBeItemWidget(activity: activity),
+      PushStyles.rsvpMaybe => ActivityEventRSVPMayBeItemWidget(
+        activity: activity,
+      ),
       PushStyles.rsvpNo => ActivityEventRSVPNoItemWidget(activity: activity),
       PushStyles.taskAdd => ActivityTaskAddItemWidget(activity: activity),
-      PushStyles.taskComplete => ActivityTaskCompleteItemWidget(activity: activity),
+      PushStyles.taskComplete => ActivityTaskCompleteItemWidget(
+        activity: activity,
+      ),
       PushStyles.taskReOpen => ActivityTaskReOpenItemWidget(activity: activity),
-      PushStyles.taskAccept => ActivityTaskAcceptedItemWidget(activity: activity),
-      PushStyles.taskDecline => ActivityTaskDeclineItemWidget(activity: activity),
-      PushStyles.taskDueDateChange => ActivityTaskDueDateChangedItemWidget(activity: activity),
+      PushStyles.taskAccept => ActivityTaskAcceptedItemWidget(
+        activity: activity,
+      ),
+      PushStyles.taskDecline => ActivityTaskDeclineItemWidget(
+        activity: activity,
+      ),
+      PushStyles.taskDueDateChange => ActivityTaskDueDateChangedItemWidget(
+        activity: activity,
+      ),
       PushStyles.roomName => ActivityRoomNameItemWidget(activity: activity),
       PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
       PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
       PushStyles.creation => ActivityCreationItemWidget(activity: activity),
       PushStyles.redaction => ActivityRedactionItemWidget(activity: activity),
-      PushStyles.titleChange => ActivityTitleChangeItemWidget(activity: activity),
-      PushStyles.descriptionChange => ActivityDescriptionChangeItemWidget(activity: activity),
-      PushStyles.otherChanges => ActivityOtherChangesItemWidget(activity: activity),
+      PushStyles.titleChange => ActivityTitleChangeItemWidget(
+        activity: activity,
+      ),
+      PushStyles.descriptionChange => ActivityDescriptionChangeItemWidget(
+        activity: activity,
+      ),
+      PushStyles.otherChanges => ActivityOtherChangesItemWidget(
+        activity: activity,
+      ),
+      PushStyles.invitationRevoked ||
+      PushStyles.invitationAccepted ||
+      PushStyles.invitationRejected ||
+      PushStyles.joined ||
+      PushStyles.invited ||
+      PushStyles.knocked ||
+      PushStyles.knockAccepted ||
+      PushStyles.knockRetracted ||
+      PushStyles.knockDenied ||
+      PushStyles.banned ||
+      PushStyles.unbanned ||
+      PushStyles.left ||
+      PushStyles.kicked ||
+      PushStyles
+          .kickedAndBanned => ActivityMembershipItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
   }

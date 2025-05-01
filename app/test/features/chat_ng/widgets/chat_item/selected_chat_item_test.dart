@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
 import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
@@ -36,7 +36,8 @@ void main() {
           isActiveProvider(LabsFeature.chatNG).overrideWith((ref) => true),
           isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => true),
           selectedChatIdProvider.overrideWith(
-            () => MockSelectedChatIdNotifier(emilyDmMutedBookmarked.roomId),
+            () =>
+                MockSelectedChatIdNotifier(emilyDmMutedBookmarkedRoom1.roomId),
           ),
           utcNowProvider.overrideWith(
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
@@ -45,9 +46,11 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            ChatItemWidget(
-              roomId: emilyDmMutedBookmarked.roomId,
-              showSelectedIndication: true,
+            Material(
+              child: ChatItemWidget(
+                roomId: emilyDmMutedBookmarkedRoom1.roomId,
+                showSelectedIndication: true,
+              ),
             ),
           ],
         ),

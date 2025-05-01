@@ -25,10 +25,12 @@ final eventTypeUpdatesStream = StreamProvider.family<int, String>((
   }
 });
 
+final maybeMyUserIdStrProvider = Provider(
+  (ref) => ref.watch(alwaysClientProvider).valueOrNull?.userId().toString(),
+);
+
 final myUserIdStrProvider = Provider(
-  (ref) =>
-      ref.watch(alwaysClientProvider).valueOrNull?.userId().toString() ??
-      '@acter:acter.global',
+  (ref) => ref.watch(maybeMyUserIdStrProvider) ?? '@acter:acter.global',
 );
 
 final accountProvider = FutureProvider(

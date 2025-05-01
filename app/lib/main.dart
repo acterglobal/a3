@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:acter/common/providers/app_state_provider.dart';
 import 'package:acter/common/themes/acter_theme.dart';
@@ -21,7 +22,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:matomo_tracker/matomo_tracker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
 
@@ -50,10 +53,7 @@ Future<void> startAppForTesting(Widget app) async {
   return await _startAppInner(app, false);
 }
 
-Future<void> _startAppInner(
-  Widget app,
-  bool withAnalytics,
-) async {
+Future<void> _startAppInner(Widget app, bool withAnalytics) async {
   WidgetsFlutterBinding.ensureInitialized();
   VideoPlayerMediaKit.ensureInitialized(
     android: true,
@@ -70,6 +70,12 @@ Future<void> _startAppInner(
   initializeNotifications();
 
   if (isDesktop) {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    launchAtStartup.setup(
+      appName: packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+      packageName: packageInfo.packageName,
+    );
     app = DesktopSupport(child: app);
   }
 
@@ -82,10 +88,15 @@ Future<void> _startAppInner(
     await MatomoTracker.instance.initialize(
       siteId: Env.matomoSiteId,
       url: Env.matomoUrl,
+      cookieless: true,
+      pingInterval: null,
+      dispatchSettings: const DispatchSettings.persistent(
+        dequeueInterval: Duration(seconds: 60),
+      ),
     );
 
     MatomoTracker.instance.setOptOut(optOut: true);
-    
+
     await SentryFlutter.init((options) {
       // we use the dart-define default env for the default stuff.
       options.dsn = Env.sentryDsn;
@@ -94,7 +105,9 @@ Future<void> _startAppInner(
 
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
-      options.beforeSend = (SentryEvent evt, Hint hint) => sentryBeforeSend(mainProviderContainer, evt, hint);
+      options.beforeSend =
+          (SentryEvent evt, Hint hint) =>
+              sentryBeforeSend(mainProviderContainer, evt, hint);
     }, appRunner: () => runApp(wrappedApp));
   } else {
     runApp(wrappedApp);
@@ -130,12 +143,6 @@ class _ActerState extends ConsumerState<Acter> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final language = ref.watch(localeProvider);
-    ref.listen(matomoAnalyticsProvider, (previous, next) {
-      if (next.hasValue) {
-        final isEnabled = next.value ?? false;
-        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
-      }
-    });
     // all toast msgs will appear at bottom
     final builder = EasyLoading.init();
     EasyLoading.instance.toastPosition = EasyLoadingToastPosition.bottom;

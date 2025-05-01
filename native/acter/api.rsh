@@ -1023,7 +1023,7 @@ object TimelineEventItem {
     fn msg_type() -> Option<string>;
 
     /// covers text/image/audio/video/file/location/emote
-    fn message() -> Option<MsgContent>;
+    fn msg_content() -> Option<MsgContent>;
 
     /// covers some of m.room.member
     fn membership_content() -> Option<MembershipContent>;
@@ -1039,6 +1039,48 @@ object TimelineEventItem {
 
     /// covers m.policy.rule.user
     fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers m.room.join_rules
+    fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
+
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
 
     /// original event id, if this msg is reply to another msg
     fn in_reply_to() -> Option<string>;
@@ -1254,6 +1296,148 @@ object PolicyRuleUserContent {
     fn recommendation_old_val() -> Option<string>;
 }
 
+object RoomAvatarContent {
+    fn url_change() -> Option<string>;
+    fn url_new_val() -> Option<string>;
+    fn url_old_val() -> Option<string>;
+}
+
+object RoomCreateContent {}
+
+object RoomEncryptionContent {
+    fn algorithm_change() -> Option<string>;
+    fn algorithm_new_val() -> string;
+    fn algorithm_old_val() -> Option<string>;
+}
+
+object RoomGuestAccessContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomHistoryVisibilityContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomJoinRulesContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomNameContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object RoomPinnedEventsContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Vec<string>;
+    fn old_val() -> Option<Vec<string>>;
+}
+
+object RoomPowerLevelsContent {
+    fn ban_change() -> Option<string>;
+    fn ban_new_val() -> i64;
+    fn ban_old_val() -> Option<i64>;
+
+    fn events_change(event_type: string) -> Option<string>;
+    fn events_new_val(event_type: string) -> Option<i64>;
+    fn events_old_val(event_type: string) -> Option<i64>;
+
+    fn events_default_change() -> Option<string>;
+    fn events_default_new_val() -> i64;
+    fn events_default_old_val() -> Option<i64>;
+
+    fn invite_change() -> Option<string>;
+    fn invite_new_val() -> i64;
+    fn invite_old_val() -> Option<i64>;
+
+    fn kick_change() -> Option<string>;
+    fn kick_new_val() -> i64;
+    fn kick_old_val() -> Option<i64>;
+
+    fn notifications_change() -> Option<string>;
+    fn notifications_new_val() -> i64;
+    fn notifications_old_val() -> Option<i64>;
+
+    fn redact_change() -> Option<string>;
+    fn redact_new_val() -> i64;
+    fn redact_old_val() -> Option<i64>;
+
+    fn state_default_change() -> Option<string>;
+    fn state_default_new_val() -> i64;
+    fn state_default_old_val() -> Option<i64>;
+
+    fn users_change() -> Option<string>;
+
+    fn users_default_change() -> Option<string>;
+    fn users_default_new_val() -> i64;
+    fn users_default_old_val() -> Option<i64>;
+}
+
+object RoomServerAclContent {
+    fn allow_ip_literals_change() -> Option<string>;
+    fn allow_ip_literals_new_val() -> bool;
+    fn allow_ip_literals_old_val() -> Option<bool>;
+
+    fn allow_change() -> Option<string>;
+    fn allow_new_val() -> Vec<string>;
+    fn allow_old_val() -> Option<Vec<string>>;
+
+    fn deny_change() -> Option<string>;
+    fn deny_new_val() -> Vec<string>;
+    fn deny_old_val() -> Option<Vec<string>>;
+}
+
+object RoomTombstoneContent {
+    fn body_change() -> Option<string>;
+    fn body_new_val() -> string;
+    fn body_old_val() -> Option<string>;
+
+    fn replacement_room_change() -> Option<string>;
+    fn replacement_room_new_val() -> string;
+    fn replacement_room_old_val() -> Option<string>;
+}
+
+object RoomTopicContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object SpaceChildContent {
+    fn room_id() -> Result<RoomId>;
+
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn order_change() -> Option<string>;
+    fn order_new_val() -> Option<string>;
+    fn order_old_val() -> Option<string>;
+
+    fn suggested_change() -> Option<string>;
+    fn suggested_new_val() -> bool;
+    fn suggested_old_val() -> Option<bool>;
+}
+
+object SpaceParentContent {
+    fn room_id() -> Result<RoomId>;
+
+    fn via_change() -> Option<string>;
+    fn via_new_val() -> Vec<string>;
+    fn via_old_val() -> Option<Vec<string>>;
+
+    fn canonical_change() -> Option<string>;
+    fn canonical_new_val() -> bool;
+    fn canonical_old_val() -> Option<bool>;
+}
+
 
 //  ########   #######   #######  ##     ##
 //  ##     ## ##     ## ##     ## ###   ###
@@ -1310,6 +1494,13 @@ object Room {
 
     /// remove a parent room
     fn remove_parent_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
+
+    /// add the child room and return event id of that event
+    /// order: Must consist of ASCII characters within the range \x20 (space) and \x7E (~), inclusive.
+    fn add_child_room(room_id: string, order: Option<string>, suggested: bool) -> Future<Result<string>>;
+
+    /// remove the child room
+    fn remove_child_room(room_id: string, reason: Option<string>) -> Future<Result<bool>>;
 
     /// the Membership of myself
     fn get_my_membership() -> Future<Result<Member>>;
@@ -1672,6 +1863,63 @@ object Convo {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
+
+    /// set room join rules
+    /// invite, knock, private, or public
+    fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 
@@ -2426,7 +2674,7 @@ object Activity {
     fn object() -> Option<ActivityObject>;
 
     /// get avatar uri when space avatar changed
-    fn room_avatar() -> Option<MxcUri>;
+    fn room_avatar() -> Option<string>;
 
     /// get name when space name changed
     fn room_name() -> Option<string>;
@@ -2448,6 +2696,57 @@ object Activity {
 
     /// the details of this profile change activity
     fn profile_content() -> Option<ProfileContent>;
+
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
+
+    /// covers m.policy.rule.server
+    fn policy_rule_server_content() -> Option<PolicyRuleServerContent>;
+
+    /// covers m.policy.rule.user
+    fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers m.room.join_rules
+    fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
+
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
 
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
@@ -2738,6 +3037,63 @@ object Space {
     /// entity: @alice*:example.org
     /// reason: undesirable behaviour
     fn set_policy_rule_user(entity: string, reason: string) -> Future<Result<EventId>>;
+
+    /// set room encryption
+    /// m.olm.v1.curve25519-aes-sha2 or m.megolm.v1.aes-sha2
+    fn set_encryption(algorithm: string) -> Future<Result<EventId>>;
+
+    /// set room guest access
+    /// can_join or forbidden
+    fn set_guest_access(guest_access: string) -> Future<Result<EventId>>;
+
+    /// set room history visibility
+    /// invited, joined, shared, or world_readable
+    fn set_history_visibility(history_visibility: string) -> Future<Result<EventId>>;
+
+    /// set room join rules
+    /// invite, knock, private, or public
+    fn set_join_rules(join_rule: string) -> Future<Result<EventId>>;
+
+    /// set room pinned events
+    /// event id array
+    fn set_pinned_events(event_ids: string) -> Future<Result<EventId>>;
+
+    /// set ban of power levels
+    fn set_power_levels_ban(level: i32) -> Future<Result<EventId>>;
+
+    /// set events of power levels
+    /// event type is one of "m.room.avatar", "m.room.canonical_alias", "m.room.encryption", "m.room.history_visibility", "m.room.name", "m.room.power_levels", "m.room.server_acl", "m.room.tombstone"
+    fn set_power_levels_events(event_type: string, level: i32) -> Future<Result<EventId>>;
+
+    /// set events_default of power levels
+    fn set_power_levels_events_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set invite of power levels
+    fn set_power_levels_invite(level: i32) -> Future<Result<EventId>>;
+
+    /// set kick of power levels
+    fn set_power_levels_kick(level: i32) -> Future<Result<EventId>>;
+
+    /// set redact of power levels
+    fn set_power_levels_redact(level: i32) -> Future<Result<EventId>>;
+
+    /// set state_default of power levels
+    fn set_power_levels_state_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set users_default of power levels
+    fn set_power_levels_users_default(level: i32) -> Future<Result<EventId>>;
+
+    /// set notifications of power levels
+    fn set_power_levels_notifications(level: i32) -> Future<Result<EventId>>;
+
+    /// set room server acl
+    /// allow_ip_literals: true
+    /// allow: ["*"]
+    /// deny: ["1.1.1.1"]
+    fn set_server_acl(allow_ip_literals: bool, allow: string, deny: string) -> Future<Result<EventId>>;
+
+    /// set room tombstone
+    fn set_tombstone(body: string, replacement_room_id: string) -> Future<Result<EventId>>;
 }
 
 enum MembershipStatus {

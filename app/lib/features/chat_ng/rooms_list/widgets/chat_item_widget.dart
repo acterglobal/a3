@@ -35,23 +35,25 @@ class ChatItemWidget extends ConsumerWidget {
   Widget _buildChatItem(BuildContext context, WidgetRef ref) {
     final isChatSelected =
         showSelectedIndication && roomId == ref.watch(selectedChatIdProvider);
-    return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      child: ListTile(
-        selected: isChatSelected,
-        selectedTileColor: Theme.of(context).colorScheme.primary,
-        key: Key('chat-item-widget-$roomId'),
-        dense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-        onTap: onTap,
-        leading: RoomAvatar(roomId: roomId, showParents: true),
-        title: _buildChatTitle(context),
-        subtitle: _buildChatSubtitle(context, ref, isChatSelected),
+    return ListTile(
+      selected: isChatSelected,
+      selectedTileColor: Theme.of(context).colorScheme.primary,
+      key: Key('chat-item-widget-$roomId'),
+      dense: true,
+      onTap: onTap,
+      leading: RoomAvatar(roomId: roomId, showParents: true, avatarSize: 44),
+      title: _buildChatTitle(),
+      shape: Border(
+        bottom: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
+          width: 0.5,
+        ),
       ),
+      subtitle: _buildChatSubtitle(isChatSelected),
     );
   }
 
-  Widget _buildChatTitle(BuildContext context) {
+  Widget _buildChatTitle() {
     return Row(
       children: [
         Expanded(child: DisplayNameWidget(roomId: roomId)),
@@ -61,12 +63,11 @@ class ChatItemWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildChatSubtitle(
-    BuildContext context,
-    WidgetRef ref,
-    bool isChatSelected,
-  ) {
+  Widget _buildChatSubtitle(bool isChatSelected) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(child: ChatTypingLastMessageContainerWidget(roomId: roomId)),
         BookmarkIconWidget(roomId: roomId),

@@ -1,7 +1,6 @@
 #![recursion_limit = "1024"]
 #![warn(clippy::all)]
 #![feature(vec_into_raw_parts)]
-#![feature(async_closure)]
 #![feature(box_into_inner)]
 #![allow(
     unused,

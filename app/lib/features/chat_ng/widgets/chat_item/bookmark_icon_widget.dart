@@ -32,7 +32,7 @@ class BookmarkIconWidget extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 4),
       child: Icon(
-        PhosphorIcons.bookmarkSimple(),
+        PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill),
         size: 20,
         color: Theme.of(context).colorScheme.surfaceTint,
       ),
