@@ -2697,6 +2697,57 @@ object Activity {
     /// the details of this profile change activity
     fn profile_content() -> Option<ProfileContent>;
 
+    /// covers m.policy.rule.room
+    fn policy_rule_room_content() -> Option<PolicyRuleRoomContent>;
+
+    /// covers m.policy.rule.server
+    fn policy_rule_server_content() -> Option<PolicyRuleServerContent>;
+
+    /// covers m.policy.rule.user
+    fn policy_rule_user_content() -> Option<PolicyRuleUserContent>;
+
+    /// covers m.room.avatar
+    fn room_avatar_content() -> Option<RoomAvatarContent>;
+
+    /// covers m.room.create
+    fn room_create_content() -> Option<RoomCreateContent>;
+
+    /// covers m.room.encryption
+    fn room_encryption_content() -> Option<RoomEncryptionContent>;
+
+    /// covers m.room.guest_access
+    fn room_guest_access_content() -> Option<RoomGuestAccessContent>;
+
+    /// covers m.room.history_visibility
+    fn room_history_visibility_content() -> Option<RoomHistoryVisibilityContent>;
+
+    /// covers m.room.join_rules
+    fn room_join_rules_content() -> Option<RoomJoinRulesContent>;
+
+    /// covers m.room.name
+    fn room_name_content() -> Option<RoomNameContent>;
+
+    /// covers m.room.pinned_events
+    fn room_pinned_events_content() -> Option<RoomPinnedEventsContent>;
+
+    /// covers m.room.power_levels
+    fn room_power_levels_content() -> Option<RoomPowerLevelsContent>;
+
+    /// covers m.room.server_acl
+    fn room_server_acl_content() -> Option<RoomServerAclContent>;
+
+    /// covers m.room.tombstone
+    fn room_tombstone_content() -> Option<RoomTombstoneContent>;
+
+    /// covers m.room.topic
+    fn room_topic_content() -> Option<RoomTopicContent>;
+
+    /// covers m.space.child
+    fn space_child_content() -> Option<SpaceChildContent>;
+
+    /// covers m.space.parent
+    fn space_parent_content() -> Option<SpaceParentContent>;
+
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
 

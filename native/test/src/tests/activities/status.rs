@@ -409,7 +409,7 @@ async fn left() -> Result<()> {
 #[tokio::test]
 async fn display_name() -> Result<()> {
     let _ = env_logger::try_init();
-    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("left").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("display-name").await?;
 
     // ensure it was sent
     let account = observer.account()?;
@@ -442,7 +442,7 @@ async fn display_name() -> Result<()> {
 #[tokio::test]
 async fn avatar_url() -> Result<()> {
     let _ = env_logger::try_init();
-    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("left").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("avatar-url").await?;
 
     let bytes = include_bytes!("../fixtures/kingfisher.jpg");
     let mut tmp_jpg = Builder::new().suffix(".jpg").tempfile()?;
