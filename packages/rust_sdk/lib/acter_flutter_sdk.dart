@@ -147,15 +147,15 @@ class _FfiSupport {
 
   late final Pointer<Void> Function(
     Pointer<Void>,
-  ) ffigen_to_uniffi_client = dylib.lookupFunction<
+  ) ffigenToUniffiClient = dylib.lookupFunction<
       Pointer<Void> Function(Pointer<Void>),
       Pointer<Void> Function(
           Pointer<Void>)>('acter_support_ffigen_client_to_uniffi_client');
 }
 
 extension UniffiClientExtension on ffi.Client {
-  UniffiClient toUniffiClient() => UniffiClient.lift(_FfiSupport.instance
-      .ffigen_to_uniffi_client(Pointer.fromAddress(address)));
+  UniffiClient toUniffiClient() => UniffiClient.lift(
+      _FfiSupport.instance.ffigenToUniffiClient(Pointer.fromAddress(address)));
 }
 
 class ActerSdk {
