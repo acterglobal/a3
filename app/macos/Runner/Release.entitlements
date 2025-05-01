@@ -7,7 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:app.acter.global</string>
-		<string>webcredentials:example.com</string>
+		<string>applinks:app.m-1.acter.global</string>
 	</array>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
