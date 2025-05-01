@@ -150,7 +150,7 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
           child: Text(lang.joinAndContinue),
         ),
         const SizedBox(height: 10),
-        OutlinedButton(onPressed: widget.callNextPage, child: Text(lang.skip)),
+        OutlinedButton(onPressed: () => widget.callNextPage?.call(), child: Text(lang.skip)),
       ],
     );
   }
