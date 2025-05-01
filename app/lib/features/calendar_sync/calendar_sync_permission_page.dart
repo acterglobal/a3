@@ -6,8 +6,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CalendarSyncPermissionWidget extends ConsumerWidget {
-  final CallNextPage? callNextPage;
-  const CalendarSyncPermissionWidget({super.key, this.callNextPage});
+  final void Function(BuildContext context) _callNextPage;
+  // if this doesn't have any next step passed, adopt the design
+  final bool _isStandalone;
+
+  CalendarSyncPermissionWidget({super.key, CallNextPage? callNextPage})
+    : _isStandalone = callNextPage == null,
+      _callNextPage =
+          callNextPage != null
+              ? ((ctx) => callNextPage())
+              : ((BuildContext context) => Navigator.pop(context, false));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +28,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
         child: Stack(
           children: [
             // Close button at the top right
-            if (callNextPage == null)
+            if (_isStandalone)
               Positioned(
                 top: 20,
                 right: 0,
@@ -108,12 +116,8 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         OutlinedButton(
-          onPressed: () {
-            if (context.mounted) {
-              (callNextPage?.call ?? () => Navigator.pop(context, false))();
-            }
-          },
-          child: Text(lang.askAgain),
+          onPressed: () => _callNextPage(context),
+          child: Text(_isStandalone ? lang.close : lang.skip),
         ),
       ],
     );
@@ -129,7 +133,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
 
     if (status.isGranted) {
       if (context.mounted) {
-        (callNextPage?.call ?? () => Navigator.pop(context, true))();
+        _callNextPage(context);
       }
     } else if (status.isDenied) {
       // Permission denied, show a snack bar
