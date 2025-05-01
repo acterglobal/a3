@@ -2890,7 +2890,7 @@
   "lookAround": "I just want to look around for now",
   "@lookAround": {},
   "youInvited": "Invited to you to join {count} room",
-  "@youInvited": {}
+  "@youInvited": {},
   "@keyCopied": {},
   "recommendedSpaces": "Recommended Spaces",
   "@recommendedSpaces": {},
