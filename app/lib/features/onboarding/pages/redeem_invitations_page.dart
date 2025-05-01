@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -59,6 +60,11 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       }
       _tokenController.clear();
       EasyLoading.dismiss();
+
+      // Set the flag indicating token redemption
+      final preferences = await sharedPrefs();
+      await preferences.setBool('has_redeemed_any_token', true);
+      
     } catch (e) {
       if (mounted) {
         EasyLoading.showError(
