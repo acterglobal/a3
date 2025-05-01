@@ -35,11 +35,11 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allows you to select photos from your photo library to be uploaded into Acter and shared via Chat or in Spaces with others.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Access most functions for calendar viewing and editing.</string>
+	<string>Acter needs access to your calendar to display and manage your events.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Access contacts for event attendee editing.</string>
+	<string>Acter uses your contacts to let you invite people to events and manage attendees easily.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>Access most functions for calendar viewing and editing.</string>
+	<string>Acter requires full calendar access to create, edit, and delete events on your behalf.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
