@@ -2,6 +2,8 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 
+typedef MentionTap = void Function(String mentionId, {String? displayName});
+
 class MentionItem extends StatelessWidget {
   const MentionItem({
     super.key,
@@ -15,7 +17,7 @@ class MentionItem extends StatelessWidget {
   final String? displayName;
   final AvatarOptions avatarOptions;
 
-  final VoidCallback onTap;
+  final MentionTap onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class MentionItem extends StatelessWidget {
       height: 60,
       child: ListTile(
         dense: true,
-        onTap: onTap,
+        onTap: () => onTap(mentionId, displayName: displayName),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12),
         leading: ActerAvatar(options: avatarOptions),
         title: Text(
