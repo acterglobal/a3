@@ -1,1 +1,0 @@
-- Fix: remove invitations that have been accepted or rejected

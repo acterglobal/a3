@@ -1,1 +1,0 @@
-- [improvement] : Adds support to store an encryption key by copying it to the clipboard for specific password manager apps (1Password, Bitwarden, Keeper, Enpass, LastPass, Proton Pass on iOS; 1Password and Proton Pass on Android) if installed.
