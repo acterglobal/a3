@@ -37,7 +37,10 @@ class CommentItemWidget extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   userNameUI(context, avatarInfo),
-                  MessageContentWidget(msgContent: comment.msgContent()),
+                  MessageContentWidget(
+                    msgContent: comment.msgContent(),
+                    roomId: roomID,
+                  ),
                   const SizedBox(height: 4),
                   TimeAgoWidget(originServerTs: comment.originServerTs()),
                 ],
