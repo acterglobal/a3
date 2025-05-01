@@ -35,7 +35,7 @@ class TypingIndicator extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context).typingIndicatorTheme;
-    if (ref.watch(chatTypingEventProvider(roomId)).valueOrNull?.isEmpty ==
+    if (ref.watch(chatTypingEventProvider(roomId)).valueOrNull?.isNotEmpty !=
         true) {
       return const SizedBox.shrink();
     }
