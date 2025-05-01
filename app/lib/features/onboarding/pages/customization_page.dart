@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class CutomizationPage extends ConsumerStatefulWidget {
+class CustomizationPage extends ConsumerStatefulWidget {
   final CallNextPage? callNextPage;
 
-  const CutomizationPage({super.key, required this.callNextPage});
+  const CustomizationPage({super.key, required this.callNextPage});
 
   @override
-  ConsumerState<CutomizationPage> createState() => _CutomizationPageState();
+  ConsumerState<CustomizationPage> createState() => _CustomizationPageState();
 }
 
-class _CutomizationPageState extends ConsumerState<CutomizationPage> {
+class _CustomizationPageState extends ConsumerState<CustomizationPage> {
   List<String> selectedItems = [];
 
   @override

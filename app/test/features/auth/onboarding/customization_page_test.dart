@@ -20,7 +20,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: CutomizationPage(callNextPage: mockCallNextPage),
+      child: CustomizationPage(callNextPage: mockCallNextPage),
     );
 
     // Verify headline text
@@ -37,7 +37,7 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpProviderWidget(
-      child: CutomizationPage(callNextPage: mockCallNextPage),
+      child: CustomizationPage(callNextPage: mockCallNextPage),
     );
 
     // Find and tap the first card
@@ -61,7 +61,7 @@ void main() {
 
   testWidgets('action buttons', (WidgetTester tester) async {
     await tester.pumpProviderWidget(
-      child: CutomizationPage(callNextPage: mockCallNextPage),
+      child: CustomizationPage(callNextPage: mockCallNextPage),
     );
 
     expect(find.text('Continue'), findsOneWidget);
@@ -70,7 +70,7 @@ void main() {
 
   testWidgets('Card visual feedback on selection', (WidgetTester tester) async {
     await tester.pumpProviderWidget(
-      child: CutomizationPage(callNextPage: mockCallNextPage),
+      child: CustomizationPage(callNextPage: mockCallNextPage),
     );
 
     // Get the first card

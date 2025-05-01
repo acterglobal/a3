@@ -56,7 +56,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         EncryptionBackupPage(callNextPage: () => _nextPage()),
         LinkEmailPage(callNextPage: () => _nextPage()),
         UploadAvatarPage(callNextPage: () => _nextPage()),
-        CutomizationPage(callNextPage: () => _nextPage()),
+        CustomizationPage(callNextPage: () => _nextPage()),
       ],
       if (permissions.showNotificationPermission)
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
