@@ -38,7 +38,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   int originServerTs() => mockOriginServerTs ?? 1744018801000;
 
   @override
-  MsgContent? message() => mockMsgContent ?? MockMsgContent();
+  MsgContent? msgContent() => mockMsgContent ?? MockMsgContent();
 
   @override
   String eventType() => mockEventType ?? 'm.room.message';
