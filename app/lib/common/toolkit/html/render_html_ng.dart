@@ -78,13 +78,14 @@ class RenderHtmlNg extends ConsumerWidget {
     }
     try {
       final parsed = parseActerUri(uri);
-      if (parsed.titleMatches(element.text)) {
-        return _buildPill(parsed);
-      } else {
-        // if the link title has been changed
-        // we should show the original link
-        return null;
-      }
+      // FIXME: what to do if the link title is different?
+      // if (parsed.titleMatches(element.text)) {
+      return _buildPill(parsed);
+      // } else {
+      //   // if the link title has been changed
+      //   // we should show the original link
+      //   return null;
+      // }
     } on (
       SchemeNotSupported,
       IncorrectHashError,
