@@ -18,6 +18,7 @@ class ActerInlineErrorButton extends StatelessWidget {
 
   final String? dialogTitle;
   final String? text;
+  final Widget? child;
   final ErrorTextBuilder? textBuilder;
   final bool includeBugReportButton;
 
@@ -30,6 +31,7 @@ class ActerInlineErrorButton extends StatelessWidget {
     this.text,
     this.textBuilder,
     this.onRetryTap,
+    this.child,
     this.includeBugReportButton = true,
   });
 
@@ -53,7 +55,7 @@ class ActerInlineErrorButton extends StatelessWidget {
                 ),
                 includeBugReportButton: includeBugReportButton,
               ),
-          child: Text(L10n.of(context).fatalError),
+          child: child ?? Text(L10n.of(context).fatalError),
         );
   }
 
@@ -67,7 +69,7 @@ class ActerInlineErrorButton extends StatelessWidget {
     this.textBuilder,
     this.onRetryTap,
     this.includeBugReportButton = true,
-  });
+  }) : child = null;
 
   Widget _buildWithIcon(BuildContext context, Icon icn) {
     return IconButton(
