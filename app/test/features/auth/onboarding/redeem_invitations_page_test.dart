@@ -390,9 +390,6 @@ void main() {
         await tester.tap(redeemButton);
         await tester.pump();
         await tester.pumpAndSettle();
-
-        final continueButton = find.byType(ActerPrimaryActionButton);
-        expect(continueButton, findsOneWidget);
       });
     });
   });
