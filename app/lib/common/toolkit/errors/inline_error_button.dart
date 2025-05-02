@@ -50,7 +50,7 @@ class ActerInlineErrorButton extends StatelessWidget {
                 onRetryTap: onRetryTap.map(
                   (cb) => () {
                     cb();
-                    Navigator.pop(context);
+                    Navigator.of(context, rootNavigator: true).pop();
                   },
                 ),
                 includeBugReportButton: includeBugReportButton,
