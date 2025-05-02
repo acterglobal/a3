@@ -227,7 +227,10 @@ fn execute_value_template(
 }
 
 impl ExecutionStream {
-    pub fn new(total: u32, stream: Box<dyn Stream<Item = Result<(), Error>> + Unpin + Send>) -> Self {
+    pub fn new(
+        total: u32,
+        stream: Box<dyn Stream<Item = Result<(), Error>> + Unpin + Send>,
+    ) -> Self {
         ExecutionStream {
             done: 0,
             total,
