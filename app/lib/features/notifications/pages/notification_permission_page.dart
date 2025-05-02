@@ -164,7 +164,7 @@ class NotificationPermissionWidget extends ConsumerWidget {
               textStyle: textTheme.bodyMedium,
             );
           },
-          child: Text(lang.allowPermission),
+          child: Text(lang.continueLabel),
         ),
         const SizedBox(height: 20),
         OutlinedButton(
@@ -173,7 +173,7 @@ class NotificationPermissionWidget extends ConsumerWidget {
               (callNextPage?.call ?? () => Navigator.pop(context, false))();
             }
           },
-          child: Text(lang.askAgain),
+          child: Text(callNextPage == null ? lang.close : lang.skip),
         ),
       ],
     );
