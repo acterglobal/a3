@@ -60,10 +60,6 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       }
       _tokenController.clear();
       EasyLoading.dismiss();
-
-      // Set the flag indicating token redemption
-      final preferences = await sharedPrefs();
-      await preferences.setBool('has_redeemed_any_token', true);
       
     } catch (e) {
       if (mounted) {
@@ -290,7 +286,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                     onPressed:
                         info.hasRedeemed()
                             ? null
-                            : () {
+                            : () async {
                               if (!inCI && !ref.read(hasNetworkProvider)) {
                                 showNoInternetNotification(L10n.of(context));
                                 return;
@@ -356,6 +352,11 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
         return;
       }
       EasyLoading.showSuccess(lang.addedToSpacesAndChats(rooms.length));
+     
+      // Set the flag indicating token redemption
+      final preferences = await sharedPrefs();
+      await preferences.setBool('has_redeemed_any_token', true);
+      
       // Remove redeemed token from list
       setState(() {
         validTokens.remove(token);
