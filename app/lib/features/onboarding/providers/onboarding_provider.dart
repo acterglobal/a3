@@ -1,6 +1,6 @@
 import 'package:acter/features/device_permissions/calendar.dart';
 import 'package:acter/features/device_permissions/notification.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingPermissions {
@@ -25,7 +25,7 @@ final onboardingPermissionsProvider = FutureProvider<OnboardingPermissions>((
   );
 });
 
-final hasRedeemedAnyTokenProvider = FutureProvider<bool>((ref) async {
-  final preferences = await sharedPrefs();
-  return preferences.getBool('has_redeemed_any_token') ?? false;
-});
+final hasRedeemedAnyTokenProvider = createAsyncPrefProvider<bool>(
+  prefKey: 'has_redeemed_any_token',
+  defaultValue: false,
+);
