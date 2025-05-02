@@ -17,21 +17,21 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   timelineEventItems: [
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744182966000, // April 9, 2025
+      mockOriginServerTs: 1744182966000, // April 9, 2025 10:16:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Hey, how\'s the new feature coming along?',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183026000, // 1 minute later
+      mockOriginServerTs: 1744183026000, // April 9, 2025 10:17:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Making good progress! Just finished the core functionality.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183086000, // 2 minutes later
+      mockOriginServerTs: 1744183086000, // April 9, 2025 10:18:06
       mockMsgContent: MockMsgContent(
         mockBody:
             'That\'s great! Did you get a chance to test the performance impact?',
@@ -39,7 +39,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183146000, // 3 minutes later
+      mockOriginServerTs: 1744183146000, // April 9, 2025 10:19:06
       mockMsgContent: MockMsgContent(
         mockBody:
             'Yes, initial tests show about 15% improvement in response times.',
@@ -47,7 +47,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183156000, // 10 seconds later
+      mockOriginServerTs: 1744183156000, // April 9, 2025 10:19:16
       mockMsgContent: MockMsgContent(
         mockBody:
             'I also found a way to optimize the database queries further.',
@@ -55,14 +55,14 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183166000, // 20 seconds later
+      mockOriginServerTs: 1744183166000, // April 9, 2025 10:19:26
       mockMsgContent: MockMsgContent(
         mockBody: 'That should give us another 5-10% boost.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183176000, // 30 seconds later
+      mockOriginServerTs: 1744183176000, // April 9, 2025 10:19:36
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@acter1:m-1.acter.global',
@@ -73,7 +73,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183177000, // 1 second later
+      mockOriginServerTs: 1744183177000, // April 9, 2025 10:19:37
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@acter1:m-1.acter.global',
@@ -82,7 +82,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183178000, // 2 seconds later
+      mockOriginServerTs: 1744183178000, // April 9, 2025 10:19:38
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@emily:acter.global',
@@ -93,7 +93,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183179000, // 3 seconds later
+      mockOriginServerTs: 1744183179000, // April 9, 2025 10:19:39
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@emily:acter.global',
@@ -102,7 +102,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183180000, // 4 seconds later
+      mockOriginServerTs: 1744183180000, // April 9, 2025 10:19:40
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@acter1:m-1.acter.global',
@@ -113,28 +113,28 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183206000, // 4 minutes later
+      mockOriginServerTs: 1744183206000, // April 9, 2025 10:20:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Awesome! Let\'s schedule a demo for the team tomorrow.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183216000, // 10 seconds later
+      mockOriginServerTs: 1744183216000, // April 9, 2025 10:20:16
       mockMsgContent: MockMsgContent(
         mockBody: 'I\'ll send out the calendar invite.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183266000, // 5 minutes later
+      mockOriginServerTs: 1744183266000, // April 9, 2025 10:21:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Sounds good. I\'ll prepare the presentation deck.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183276000, // 10 seconds later
+      mockOriginServerTs: 1744183276000, // April 9, 2025 10:21:16
       mockMsgContent: MockMsgContent(
         mockBody:
             'I\'ll include a detailed breakdown of the performance improvements, including:\n\n• The database query optimizations we implemented\n• The caching strategy we\'re using for frequently accessed data\n• The new indexing approach that reduced query times by 40%\n• The load testing results under different scenarios\n• A comparison with the previous implementation\n\nThis should give the team a good understanding of the technical improvements.',
@@ -142,7 +142,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183286000, // 20 seconds later
+      mockOriginServerTs: 1744183286000, // April 9, 2025 10:21:26
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@acter1:m-1.acter.global',
@@ -151,21 +151,21 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183326000, // 6 minutes later
+      mockOriginServerTs: 1744183326000, // April 9, 2025 10:22:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Perfect! Let me know if you need any help with the demo.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183336000, // 10 seconds later
+      mockOriginServerTs: 1744183336000, // April 9, 2025 10:22:16
       mockMsgContent: MockMsgContent(
         mockBody: 'I can review the slides before the meeting.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183346000, // 20 seconds later
+      mockOriginServerTs: 1744183346000, // April 9, 2025 10:22:26
       mockMsgContent: MockMsgContent(
         mockBody:
             'Also, I was thinking about the next steps after this feature launch. Here\'s what I have in mind:\n\n1. Monitor the performance metrics for at least a week to ensure stability\n2. Gather user feedback through the new analytics dashboard\n3. Plan a follow-up sprint to address any issues that come up\n4. Consider expanding the feature to other parts of the application\n5. Document the implementation details for the team wiki\n\nWhat do you think about this approach?',
@@ -173,7 +173,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183356000, // 30 seconds later
+      mockOriginServerTs: 1744183356000, // April 9, 2025 10:22:36
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@emily:acter.global',
@@ -184,7 +184,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183357000, // 31 seconds later
+      mockOriginServerTs: 1744183357000, // April 9, 2025 10:22:37
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@emily:acter.global',
@@ -193,7 +193,7 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183386000, // 7 minutes later
+      mockOriginServerTs: 1744183386000, // April 9, 2025 10:23:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Will do! Thanks for checking in.',
       ),
@@ -218,35 +218,35 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
   timelineEventItems: [
     MockTimelineEventItem(
       mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096566000, // April 8, 2025
+      mockOriginServerTs: 1744096566000, // April 8, 2025 15:36:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096626000, // 1 minute later
+      mockOriginServerTs: 1744096626000, // April 8, 2025 15:37:06
       mockMsgContent: MockMsgContent(
         mockBody: 'I\'ve reviewed the checklist. Everything looks good.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096636000, // 10 seconds later
+      mockOriginServerTs: 1744096636000, // April 8, 2025 15:37:16
       mockMsgContent: MockMsgContent(
         mockBody: 'Just need to confirm the database backup is scheduled.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096686000, // 2 minutes later
+      mockOriginServerTs: 1744096686000, // April 8, 2025 15:38:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Database backup is scheduled for 1 PM.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096696000, // 10 seconds later
+      mockOriginServerTs: 1744096696000, // April 8, 2025 15:38:16
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@lisa:acter.global',
@@ -257,14 +257,14 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744096746000, // 3 minutes later
+      mockOriginServerTs: 1744096746000, // April 8, 2025 15:39:06
       mockMsgContent: MockMsgContent(
         mockBody: 'I\'ll be handling the frontend deployment.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744096756000, // 10 seconds later
+      mockOriginServerTs: 1744096756000, // April 8, 2025 15:39:16
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@alex:acter.global',
@@ -273,7 +273,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096806000, // 4 minutes later
+      mockOriginServerTs: 1744096806000, // April 8, 2025 15:40:06
       mockMsgContent: MockMsgContent(
         mockBody:
             'Backend deployment is ready. I\'ve tested the staging environment.',
@@ -281,14 +281,14 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096816000, // 10 seconds later
+      mockOriginServerTs: 1744096816000, // April 8, 2025 15:40:16
       mockMsgContent: MockMsgContent(
         mockBody: 'All API endpoints are responding correctly.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096826000, // 20 seconds later
+      mockOriginServerTs: 1744096826000, // April 8, 2025 15:40:26
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@acter1:m-1.acter.global',
@@ -299,7 +299,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096866000, // 5 minutes later
+      mockOriginServerTs: 1744096866000, // April 8, 2025 15:41:06
       mockMsgContent: MockMsgContent(
         mockBody:
             'Great! Let\'s go through the deployment steps:\n\n1. Database backup (1 PM)\n2. Frontend deployment (1:30 PM)\n3. Backend deployment (1:45 PM)\n4. Smoke testing (2 PM)\n5. Monitoring for 30 minutes\n\nEveryone clear on their roles?',
@@ -307,14 +307,14 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096926000, // 6 minutes later
+      mockOriginServerTs: 1744096926000, // April 8, 2025 15:42:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Yes, I\'ll be monitoring the logs during deployment.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096936000, // 10 seconds later
+      mockOriginServerTs: 1744096936000, // April 8, 2025 15:42:16
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@michael:acter.global',
@@ -325,14 +325,14 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096986000, // 7 minutes later
+      mockOriginServerTs: 1744096986000, // April 8, 2025 15:43:06
       mockMsgContent: MockMsgContent(
         mockBody: 'I\'ll handle the smoke testing.',
       ),
     ),
     MockTimelineEventItem(
       mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096996000, // 10 seconds later
+      mockOriginServerTs: 1744096996000, // April 8, 2025 15:43:16
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@lisa:acter.global',
@@ -343,7 +343,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744097046000, // 8 minutes later
+      mockOriginServerTs: 1744097046000, // April 8, 2025 15:44:06
       mockMsgContent: MockMsgContent(
         mockBody:
             'Frontend is ready to go. I\'ve prepared the deployment script.',
@@ -351,7 +351,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744097056000, // 10 seconds later
+      mockOriginServerTs: 1744097056000, // April 8, 2025 15:44:16
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@alex:acter.global',
@@ -360,7 +360,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744097106000, // 9 minutes later
+      mockOriginServerTs: 1744097106000, // April 8, 2025 15:45:06
       mockMsgContent: MockMsgContent(
         mockBody:
             'Perfect! Let\'s meet in the deployment channel 10 minutes before start time.',
@@ -368,7 +368,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744097116000, // 10 seconds later
+      mockOriginServerTs: 1744097116000, // April 8, 2025 15:45:16
       mockEventType: 'ProfileChange',
       mockProfileContent: MockProfileContent(
         mockUserId: '@sarah:acter.global',
@@ -379,7 +379,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744097166000, // 10 minutes later
+      mockOriginServerTs: 1744097166000, // April 8, 2025 15:46:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Will do! See you all tomorrow.',
       ),
