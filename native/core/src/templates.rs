@@ -193,7 +193,7 @@ type Context = BTreeMap<String, Value>;
 pub struct ExecutionStream {
     total: u32,
     done: u32,
-    stream: Pin<Box<dyn Stream<Item = Result<(), Error>> + Unpin>>,
+    stream: Pin<Box<dyn Stream<Item = Result<(), Error>> + Unpin + Send>>,
 }
 
 fn execute_value_template(
@@ -227,7 +227,7 @@ fn execute_value_template(
 }
 
 impl ExecutionStream {
-    pub fn new(total: u32, stream: Box<dyn Stream<Item = Result<(), Error>> + Unpin>) -> Self {
+    pub fn new(total: u32, stream: Box<dyn Stream<Item = Result<(), Error>> + Unpin + Send>) -> Self {
         ExecutionStream {
             done: 0,
             total,
