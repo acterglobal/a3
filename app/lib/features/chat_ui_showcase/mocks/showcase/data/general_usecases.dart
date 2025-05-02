@@ -210,6 +210,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     '@michael:acter.global',
     '@lisa:acter.global',
     '@alex:acter.global',
+    '@acter1:m-1.acter.global',
   ],
   unreadNotificationCount: 2,
   unreadMessages: 2,
@@ -220,6 +221,167 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
       mockOriginServerTs: 1744096566000, // April 8, 2025
       mockMsgContent: MockMsgContent(
         mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@michael:acter.global',
+      mockOriginServerTs: 1744096626000, // 1 minute later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'I\'ve reviewed the checklist. Everything looks good.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@michael:acter.global',
+      mockOriginServerTs: 1744096636000, // 10 seconds later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Just need to confirm the database backup is scheduled.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@lisa:acter.global',
+      mockOriginServerTs: 1744096686000, // 2 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Database backup is scheduled for 1 PM.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@lisa:acter.global',
+      mockOriginServerTs: 1744096696000, // 10 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@lisa:acter.global',
+        mockDisplayNameChange: 'Changed',
+        mockDisplayNameOldVal: 'Lisa Park',
+        mockDisplayNameNewVal: 'Lisa P.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@alex:acter.global',
+      mockOriginServerTs: 1744096746000, // 3 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'I\'ll be handling the frontend deployment.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@alex:acter.global',
+      mockOriginServerTs: 1744096756000, // 10 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@alex:acter.global',
+        mockAvatarUrlChange: 'Changed',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744096806000, // 4 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'Backend deployment is ready. I\'ve tested the staging environment.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744096816000, // 10 seconds later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'All API endpoints are responding correctly.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744096826000, // 20 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@acter1:m-1.acter.global',
+        mockDisplayNameChange: 'Changed',
+        mockDisplayNameOldVal: 'David Miller',
+        mockDisplayNameNewVal: 'David M.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@sarah:acter.global',
+      mockOriginServerTs: 1744096866000, // 5 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'Great! Let\'s go through the deployment steps:\n\n1. Database backup (1 PM)\n2. Frontend deployment (1:30 PM)\n3. Backend deployment (1:45 PM)\n4. Smoke testing (2 PM)\n5. Monitoring for 30 minutes\n\nEveryone clear on their roles?',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@michael:acter.global',
+      mockOriginServerTs: 1744096926000, // 6 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Yes, I\'ll be monitoring the logs during deployment.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@michael:acter.global',
+      mockOriginServerTs: 1744096936000, // 10 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@michael:acter.global',
+        mockDisplayNameChange: 'Changed',
+        mockDisplayNameOldVal: 'Michael Chen',
+        mockDisplayNameNewVal: 'Michael C.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@lisa:acter.global',
+      mockOriginServerTs: 1744096986000, // 7 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'I\'ll handle the smoke testing.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@lisa:acter.global',
+      mockOriginServerTs: 1744096996000, // 10 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@lisa:acter.global',
+        mockDisplayNameChange: 'Changed',
+        mockDisplayNameOldVal: 'Lisa P.',
+        mockDisplayNameNewVal: 'Lisa Park',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@alex:acter.global',
+      mockOriginServerTs: 1744097046000, // 8 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'Frontend is ready to go. I\'ve prepared the deployment script.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@alex:acter.global',
+      mockOriginServerTs: 1744097056000, // 10 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@alex:acter.global',
+        mockAvatarUrlChange: 'Changed',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@sarah:acter.global',
+      mockOriginServerTs: 1744097106000, // 9 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'Perfect! Let\'s meet in the deployment channel 10 minutes before start time.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@sarah:acter.global',
+      mockOriginServerTs: 1744097116000, // 10 seconds later
+      mockEventType: 'ProfileChange',
+      mockProfileContent: MockProfileContent(
+        mockUserId: '@sarah:acter.global',
+        mockDisplayNameChange: 'Changed',
+        mockDisplayNameOldVal: 'Sarah Wilson',
+        mockDisplayNameNewVal: 'Sarah W.',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744097166000, // 10 minutes later
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Will do! See you all tomorrow.',
       ),
     ),
   ],
