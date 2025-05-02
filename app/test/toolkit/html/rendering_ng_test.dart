@@ -140,7 +140,7 @@ void main() {
       expect(find.byType(InlineItemPreview), findsExactly(3));
     });
 
-    testWidgets('ignores renamed objects', (tester) async {
+    testWidgets('accepts renamed objects', (tester) async {
       final html = '''
       dfg
       <a href="matrix:u/peter:example.com">@mr peter</a>, <a href="matrix:u/test:example.com">other username</a>
@@ -153,9 +153,9 @@ void main() {
         child: RenderHtmlNg(text: html, roomId: 'test'),
       );
 
-      expect(find.byType(UserChip), findsNothing);
-      expect(find.byType(RoomChip), findsNothing);
-      expect(find.byType(InlineItemPreview), findsNothing);
+      expect(find.byType(UserChip), findsExactly(2));
+      expect(find.byType(RoomChip), findsExactly(2));
+      expect(find.byType(InlineItemPreview), findsExactly(2));
     });
   });
 }

@@ -6,7 +6,6 @@ import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart' as matrix_html;
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef PillBuilder =
