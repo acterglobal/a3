@@ -3,7 +3,6 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
-import 'package:acter/features/space/providers/topic_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
