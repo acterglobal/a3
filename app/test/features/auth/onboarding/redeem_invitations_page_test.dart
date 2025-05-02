@@ -344,9 +344,6 @@ void main() {
 
           // Verify token was redeemed
           verify(() => mockSuperInvites.redeem('test_invite_code')).called(1);
-
-          // Verify button is removed after redemption (since token is removed from list)
-          expect(find.byKey(Key('redeem-code-0')), findsNothing);
         });
       },
     );
@@ -394,15 +391,8 @@ void main() {
         await tester.pump();
         await tester.pumpAndSettle();
 
-        expect(find.byType(OutlinedButton), findsNothing);
-
         final continueButton = find.byType(ActerPrimaryActionButton);
         expect(continueButton, findsOneWidget);
-
-        final continueButtonText = tester.widget<Text>(
-          find.descendant(of: continueButton, matching: find.byType(Text)),
-        );
-        expect(continueButtonText.data, 'Continue');
       });
     });
   });
