@@ -170,15 +170,13 @@ void main() {
 
       await tester.runAsync(() async {
         await pumpRedeemInvitationsPage(tester);
+
         await tester.enterText(find.byType(TextFormField), 'test_invite_code');
         await tester.pump();
-
         await Future.delayed(const Duration(milliseconds: 600));
         await tester.pump();
-
         final redeemButton = find.byKey(Key('redeem-code-0'));
         expect(redeemButton, findsOneWidget);
-
         await tester.tap(redeemButton);
         await tester.pump();
         await tester.pumpAndSettle();
