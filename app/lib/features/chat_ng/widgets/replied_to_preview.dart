@@ -1,3 +1,5 @@
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/events/replied_to_event.dart';
@@ -19,51 +21,56 @@ class RepliedToPreview extends ConsumerWidget {
     this.isMe = false,
   });
 
+  RoomMsgId get replyInfo => (roomId: roomId, uniqueId: originalId);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final RoomMsgId replyInfo = (roomId: roomId, uniqueId: originalId);
+    final roomMsgState = ref.watch(repliedToMsgProvider(replyInfo));
 
-    final roomMsgState = ref.watch(repliedToMsgProvider(replyInfo)).valueOrNull;
-
-    return switch (roomMsgState) {
-      RepliedToMsgLoading() => replyBuilder(
-        context,
-        Skeletonizer(
-          child: ListTile(
-            leading: ActerAvatar(
-              options: AvatarOptions.DM(AvatarInfo(uniqueId: '#')),
+    return roomMsgState.when(
+      loading:
+          () => replyBuilder(
+            context,
+            Skeletonizer(
+              child: ListTile(
+                leading: ActerAvatar(
+                  options: AvatarOptions.DM(AvatarInfo(uniqueId: '#')),
+                ),
+                isThreeLine: true,
+              ),
             ),
-            isThreeLine: true,
           ),
-        ),
-      ),
-      RepliedToMsgError() => replyBuilder(
-        context,
-        replyErrorUI(context, ref, replyInfo),
-      ),
-      RepliedToMsgData(repliedToItem: final repliedToItem) => replyBuilder(
-        context,
-        RepliedToEvent(
-          roomId: roomId,
-          messageId: originalId,
-          replyEventItem: repliedToItem,
-        ),
-      ),
-      _ => const SizedBox.shrink(),
-    };
+      error:
+          (error, stack) =>
+              replyBuilder(context, replyErrorUI(context, ref, error, stack)),
+      data:
+          (repliedToItem) => replyBuilder(
+            context,
+            RepliedToEvent(
+              roomId: roomId,
+              messageId: originalId,
+              replyEventItem: repliedToItem,
+            ),
+          ),
+    );
   }
 
   Widget replyErrorUI(
     BuildContext context,
     WidgetRef ref,
-    RoomMsgId replyInfo,
+    Object error,
+    StackTrace? stack,
   ) {
-    final originalId = replyInfo.uniqueId;
-    return Text(
-      L10n.of(context).repliedToMsgFailed(originalId),
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Theme.of(context).colorScheme.error,
+    return ActerInlineErrorButton(
+      error: error,
+      stack: stack,
+      child: Text(
+        L10n.of(context).repliedToMsgFailed(error.toString()),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.error,
+        ),
       ),
+      onRetryTap: () => ref.invalidate(repliedToMsgProvider(replyInfo)),
     );
   }
 
