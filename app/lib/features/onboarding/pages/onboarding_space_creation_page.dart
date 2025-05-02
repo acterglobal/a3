@@ -3,7 +3,6 @@ import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/features/onboarding/widgets/create_new_space_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingSpaceCreationPage extends ConsumerWidget {
@@ -90,7 +89,6 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
         const SizedBox(height: 10),
         OutlinedButton(
           onPressed: () {
-            EasyLoading.dismiss();
             callNextPage?.call();
           },
           child: Text(lang.skip),

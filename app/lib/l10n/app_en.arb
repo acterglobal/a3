@@ -2902,6 +2902,12 @@
   "@activateRecommendedFeatures": {},
   "fillWithExampleData": "Fill with example data",
   "@fillWithExampleData": {},
+  "inviteFriends": "Invite Friends",
+  "@inviteFriends": {},
+  "searchExistingUsers": "Search existing users",
+  "@searchExistingUsers": {},
+  "inviteExternally": "Invite externally",
+  "@inviteExternally": {},
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {}
 }

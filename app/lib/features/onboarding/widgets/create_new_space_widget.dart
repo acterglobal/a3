@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/input_text_field_without_border.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
+import 'package:acter/features/onboarding/widgets/invite_friends_widget.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:file_picker/file_picker.dart';
@@ -174,7 +175,9 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
 
   Widget _buildActionButton(BuildContext context, L10n lang) {
     return ActerPrimaryActionButton(
-      onPressed: () {},
+      onPressed: () {
+        showInviteFriendsView(context);
+      },
       child: Text(lang.next, style: const TextStyle(fontSize: 16)),
     );
   }
@@ -191,5 +194,19 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
     } else {
       // user cancelled the picker
     }
+  }
+
+  Future<void> showInviteFriendsView(BuildContext context) async {
+    Navigator.of(context).pop();
+    showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      builder: (context) {
+        return const InviteFriendsWidget();
+      },
+    );
   }
 }
