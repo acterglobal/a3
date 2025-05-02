@@ -286,7 +286,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
                     onPressed:
                         info.hasRedeemed()
                             ? null
-                            : () async {
+                            : () {
                               if (!inCI && !ref.read(hasNetworkProvider)) {
                                 showNoInternetNotification(L10n.of(context));
                                 return;
