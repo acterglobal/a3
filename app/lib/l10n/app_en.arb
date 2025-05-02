@@ -274,6 +274,7 @@
   "@continueAsGuest": {},
   "continueQuestion": "Continue?",
   "@continueQuestion": {},
+  "continueLabel": "Continue",
   "copyUsername": "Copy username",
   "@copyUsername": {},
   "copyMessage": "Copy",

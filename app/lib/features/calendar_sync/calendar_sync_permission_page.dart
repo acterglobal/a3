@@ -112,7 +112,7 @@ class CalendarSyncPermissionWidget extends ConsumerWidget {
               textStyle: textTheme.bodyMedium,
             );
           },
-          child: Text(lang.allowPermission),
+          child: Text(lang.continueLabel),
         ),
         const SizedBox(height: 20),
         OutlinedButton(
