@@ -2896,6 +2896,12 @@
   "@createOnboardingSpaceDes": {},
   "createFirstSpace": "Create my first space",
   "@createFirstSpace": {},
+  "spaceDisplayName": "Space Display Name",
+  "@spaceDisplayName": {},
+  "activateRecommendedFeatures": "Activate recommended features",
+  "@activateRecommendedFeatures": {},
+  "fillWithExampleData": "Fill with example data",
+  "@fillWithExampleData": {},
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {}
 }

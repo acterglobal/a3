@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/onboarding/types.dart';
+import 'package:acter/features/onboarding/widgets/create_new_space_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -79,8 +80,7 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
       children: [
         ActerPrimaryActionButton(
           onPressed: () {
-            EasyLoading.dismiss();
-            callNextPage?.call();
+            showCreateNewSpaceView(context);
           },
           child: Text(
             lang.createFirstSpace,
@@ -96,6 +96,19 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
           child: Text(lang.skip),
         ),
       ],
+    );
+  }
+
+  Future<void> showCreateNewSpaceView(BuildContext context) async {
+    showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      builder: (context) {
+        return const CreateNewSpaceWidget();
+      },
     );
   }
 }
