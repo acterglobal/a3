@@ -1,6 +1,9 @@
 use anyhow::{bail, Context, Result};
 use futures::stream::{Stream, StreamExt};
-use matrix_sdk::room::edit::EditedContent;
+use matrix_sdk::room::{
+    edit::EditedContent,
+    reply::{EnforceThread, Reply},
+};
 use matrix_sdk_base::{
     ruma::{
         api::client::receipt::create_receipt,
@@ -66,9 +69,6 @@ impl TimelineStream {
                     let d = match diff {
                         VectorDiff::Append { values } => {
                             info!("items append");
-                            for value in values.clone() {
-                                fetch_details_for_event(value, timeline.clone()).await;
-                            }
                             let items = values
                                 .into_iter()
                                 .map(|x| TimelineItem::from((x, my_id.clone())))
@@ -91,7 +91,6 @@ impl TimelineStream {
                         }
                         VectorDiff::Insert { index, value } => {
                             info!("items insert");
-                            fetch_details_for_event(value.clone(), timeline.clone()).await;
                             ApiVectorDiff {
                                 action: "Insert".to_string(),
                                 values: None,
@@ -119,7 +118,6 @@ impl TimelineStream {
                         }
                         VectorDiff::PushBack { value } => {
                             info!("items push back");
-                            fetch_details_for_event(value.clone(), timeline.clone()).await;
                             ApiVectorDiff {
                                 action: "PushBack".to_string(),
                                 values: None,
@@ -129,7 +127,6 @@ impl TimelineStream {
                         }
                         VectorDiff::PushFront { value } => {
                             info!("items push front");
-                            fetch_details_for_event(value.clone(), timeline.clone()).await;
                             ApiVectorDiff {
                                 action: "PushFront".to_string(),
                                 values: None,
@@ -148,9 +145,6 @@ impl TimelineStream {
                         }
                         VectorDiff::Reset { values } => {
                             info!("items reset");
-                            for value in values.clone() {
-                                fetch_details_for_event(value, timeline.clone()).await;
-                            }
                             let items = values
                                 .into_iter()
                                 .map(|x| TimelineItem::from((x, my_id.clone())))
@@ -164,7 +158,6 @@ impl TimelineStream {
                         }
                         VectorDiff::Set { index, value } => {
                             info!("items set");
-                            fetch_details_for_event(value.clone(), timeline.clone()).await;
                             ApiVectorDiff {
                                 action: "Set".to_string(),
                                 values: None,
@@ -300,16 +293,14 @@ impl TimelineStream {
                 if !permitted {
                     bail!("No permissions to send message in this room");
                 }
-                let reply_item = timeline
-                    .replied_to_info_from_event_id(&event_id)
-                    .await
-                    .context("Not found which item would be replied to")?;
                 let content = draft.into_room_msg(&room).await?;
                 timeline
                     .send_reply(
                         content.with_relation(None).into(),
-                        reply_item,
-                        ForwardThread::Yes,
+                        Reply {
+                            event_id,
+                            enforce_thread: EnforceThread::MaybeThreaded,
+                        },
                     )
                     .await?;
                 Ok(true)
@@ -435,25 +426,4 @@ impl Client {
             info: None,
         })
     }
-}
-
-async fn fetch_details_for_event(
-    item: Arc<SdkTimelineItem>,
-    timeline: Arc<Timeline>,
-) -> Result<bool> {
-    RUNTIME
-        .spawn(async move {
-            if let Some(event) = item.as_event() {
-                if let Ok(info) = event.replied_to_info() {
-                    let replied_to = info.event_id();
-                    info!("fetching replied_to: {}", replied_to);
-                    if let Err(err) = timeline.fetch_details_for_event(replied_to).await {
-                        error!("error when fetching replied_to_info via timeline: {err}");
-                        return Ok(false);
-                    }
-                }
-            }
-            Ok(true)
-        })
-        .await?
 }

@@ -8,6 +8,7 @@ import 'package:acter/common/utils/device.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/notifications/init.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
+import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/auth/pages/logged_out_screen.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';
 import 'package:acter/features/bug_report/providers/bug_report_providers.dart';
@@ -29,6 +30,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shake_detector/shake_detector.dart';
 
@@ -65,6 +67,7 @@ class AppShellState extends ConsumerState<AppShell> {
       () => bottomNavigationTutorials(context: context),
     );
     _initShake();
+    _initTracking();
     _initDeepLinking();
     // initalize main providers
     _initProviders();
@@ -73,6 +76,20 @@ class AppShellState extends ConsumerState<AppShell> {
     await _initNotifications();
     // calendar sync
     await _initCalendarSync();
+  }
+
+  Future<void> _initTracking() async {
+    // listen to matomo analytics provider for opt in or out
+    ref.listenManual(matomoAnalyticsProvider, (previous, next) {
+      if (next.hasValue) {
+        final isEnabled = next.value ?? false;
+        MatomoTracker.instance.setOptOut(optOut: !isEnabled);
+      }
+    }, fireImmediately: true);
+    // observer for userID changes
+    ref.listenManual(maybeMyUserIdStrProvider, (previous, next) {
+      MatomoTracker.instance.setVisitorUserId(next);
+    }, fireImmediately: true);
   }
 
   Future<void> _initProviders() async {

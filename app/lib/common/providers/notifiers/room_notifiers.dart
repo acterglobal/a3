@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Client, Room;
@@ -41,7 +41,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
     _poller = _listener.listen(
       (data) async {
         _log.info('seen update for room $arg');
-        state = await AsyncValue.guard(() async => await _getRoom(client));
+        state = AsyncValue.data(await _getRoom(client));
       },
       onError: (e, s) {
         _log.severe('room stream errored', e, s);

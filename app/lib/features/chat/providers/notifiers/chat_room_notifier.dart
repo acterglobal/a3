@@ -324,7 +324,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       case 'm.room.message':
         switch (msg.metadata?['repliedToMsgtype']) {
           case 'm.text':
-            MsgContent? msgContent = orgEventItem.message();
+            MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
               String body = msgContent.body();
               repliedToContent = {
@@ -340,7 +340,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.image':
-            MsgContent? msgContent = orgEventItem.message();
+            MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
               final convo = await ref.read(chatProvider(roomId).future);
               if (convo == null) {
@@ -364,7 +364,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.audio':
-            MsgContent? msgContent = orgEventItem.message();
+            MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
               final convo = await ref.read(chatProvider(roomId).future);
               if (convo == null) {
@@ -388,7 +388,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.video':
-            MsgContent? msgContent = orgEventItem.message();
+            MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
               final convo = await ref.read(chatProvider(roomId).future);
               if (convo == null) {
@@ -411,7 +411,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.file':
-            MsgContent? msgContent = orgEventItem.message();
+            MsgContent? msgContent = orgEventItem.msgContent();
             if (msgContent != null) {
               repliedToContent = {'content': msgContent.body()};
               final source = msgContent.source().expect(
@@ -535,7 +535,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'body': eventItem.message()?.body(),
+            'body': eventItem.msgContent()?.body(),
             'eventState': eventItem.sendState(),
             'receipts': receipts,
           },
@@ -609,7 +609,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           metadata: metadata,
         );
       case 'm.room.member':
-        MsgContent? msgContent = eventItem.message();
+        MsgContent? msgContent = eventItem.msgContent();
         if (msgContent != null) {
           String? formattedBody = msgContent.formattedBody();
           String body = msgContent.body(); // always exists
@@ -638,7 +638,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         String? msgType = eventItem.msgType();
         switch (msgType) {
           case 'm.audio':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'base64': '',
@@ -683,7 +683,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.emote':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               String? formattedBody = msgContent.formattedBody();
               String body = msgContent.body(); // always exists
@@ -724,7 +724,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.file':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
@@ -767,7 +767,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.image':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'eventState': eventState,
@@ -811,7 +811,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
             }
             break;
           case 'm.location':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'itemType': 'event',
@@ -875,7 +875,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           case 'm.notice':
           case 'm.server_notice':
           case 'm.text':
-            final body = prepareMsg(eventItem.message());
+            final body = prepareMsg(eventItem.msgContent());
             Map<String, dynamic> metadata = {
               'eventState': eventState,
               'receipts': receipts,
@@ -911,7 +911,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
               text: body,
             );
           case 'm.video':
-            MsgContent? msgContent = eventItem.message();
+            MsgContent? msgContent = eventItem.msgContent();
             if (msgContent != null) {
               Map<String, dynamic> metadata = {
                 'base64': '',
@@ -968,7 +968,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           final records = eventItem.reactionRecords(key);
           if (records != null) reactions[key] = records.toList();
         }
-        MsgContent? msgContent = eventItem.message();
+        MsgContent? msgContent = eventItem.msgContent();
         if (msgContent != null) {
           Map<String, dynamic> metadata = {
             'itemType': 'event',
@@ -1011,7 +1011,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         }
         break;
       case 'm.poll.start':
-        MsgContent? msgContent = eventItem.message();
+        MsgContent? msgContent = eventItem.msgContent();
         if (msgContent != null) {
           String body = msgContent.body();
           return types.CustomMessage(

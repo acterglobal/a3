@@ -21,7 +21,7 @@ class AsyncSpaceActivitiesNotifier
 
     // Get new activities for the space
     _activities = client.activitiesForRoom(arg);
-    final activitiesIds = await _activities?.getIds(0, 100);
+    final activitiesIds = await _activities?.getIds(0, 25);
     if (activitiesIds == null) return [];
     return asDartStringList(activitiesIds);
   }
@@ -33,9 +33,7 @@ class AsyncSpaceActivitiesNotifier
     _poller = _listener.listen(
       (data) async {
         _log.info('space $arg : activities');
-        state = await AsyncValue.guard(
-          () async => await _getSpaceActivities(client),
-        );
+        state = AsyncValue.data(await _getSpaceActivities(client));
       },
       onError: (e, s) {
         _log.severe('space activities stream errored', e, s);

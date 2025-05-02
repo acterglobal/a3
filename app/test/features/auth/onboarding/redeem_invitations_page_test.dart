@@ -61,7 +61,7 @@ void main() {
         ),
         hasNetworkProvider.overrideWith((_) => true),
       ],
-      child: const RedeemInvitationsPage(),
+      child: RedeemInvitationsPage(callNextPage: () {}),
     );
     await tester.pumpAndSettle();
   }

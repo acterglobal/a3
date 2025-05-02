@@ -1,1 +1,0 @@
-- Fixes and issue when browsing spaces failing to load if the server couldn't be reached to show related spaces

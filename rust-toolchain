@@ -1,6 +1,6 @@
 [toolchain]
-channel = "nightly-2024-12-09"
-components = ["rustfmt", "clippy", "rls", "rust-src"]
+channel = "nightly-2025-04-22"
+components = ["rustfmt", "clippy", "rust-src"]
 targets = [
     "wasm32-unknown-unknown",
     "aarch64-linux-android",

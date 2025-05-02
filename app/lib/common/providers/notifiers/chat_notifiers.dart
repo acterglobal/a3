@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/constants.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_list.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Convo, ConvoDiff, TimelineItem;
@@ -37,7 +37,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
     ); // keep it resident in memory
     _poller = _listener.listen(
       (data) async {
-        state = await AsyncValue.guard(() async => await client.convo(roomId));
+        state = AsyncValue.data(await client.convo(roomId));
       },
       onError: (e, s) {
         _log.severe('convo stream errored', e, s);
@@ -84,7 +84,7 @@ class AsyncLatestMsgNotifier
     _poller = _listener.listen(
       (data) async {
         _log.info('received new latest message call for $roomId');
-        state = await AsyncValue.guard(() async => await _refresh(roomId));
+        state = AsyncValue.data(await _refresh(roomId));
       },
       onError: (e, s) {
         _log.severe('latest msg stream errored', e, s);

@@ -94,5 +94,7 @@ Added    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" a
         <package android:name="com.whatsapp"/>
         <package android:name="org.telegram.messenger"/>
         <package android:name="org.thoughtcrime.securesms"/>
+        <package android:name="com.onepassword.android"/>
+        <package android:name="com.x8bit.bitwarden"/>
     </queries>
 </manifest>

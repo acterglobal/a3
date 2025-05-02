@@ -27,6 +27,7 @@
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		90A1B1538B32CA20E4C30F84 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CB2171F409FDA7148BED719 /* Pods_Runner.framework */; };
+		A9B76AC42DB8AF3400963CD4 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = A9B76AC32DB8AF3400963CD4 /* LaunchAtLogin */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9B76AC42DB8AF3400963CD4 /* LaunchAtLogin in Frameworks */,
 				90A1B1538B32CA20E4C30F84 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -229,6 +231,9 @@
 				Base,
 			);
 			mainGroup = 33CC10E42044A3C60003C045;
+			packageReferences = (
+				A9B76AC22DB8AAD100963CD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
+			);
 			productRefGroup = 33CC10EE2044A3C60003C045 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -659,6 +664,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A9B76AC22DB8AAD100963CD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A9B76AC32DB8AF3400963CD4 /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9B76AC22DB8AAD100963CD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin" */;
+			productName = LaunchAtLogin;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 33CC10E52044A3C60003C045 /* Project object */;
 }

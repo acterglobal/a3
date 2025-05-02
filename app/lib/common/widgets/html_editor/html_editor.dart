@@ -456,6 +456,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           ],
           commandShortcutEvents: [...standardCommandShortcutEvents],
           disableAutoScroll: widget.disableAutoScroll,
+          autoScrollEdgeOffset: 20,
         ),
       ),
     );
@@ -482,51 +483,48 @@ class HtmlEditorState extends State<HtmlEditor> {
       ],
       toolbarHeight: 50,
       editorState: editorState,
-      child: Column(
-        children: [
-          Expanded(
-            child: MobileFloatingToolbar(
-              editorScrollController: editorScrollController,
-              editorState: editorState,
-              toolbarBuilder: (context, anchor, closeToolbar) {
-                return AdaptiveTextSelectionToolbar.editable(
-                  clipboardStatus: ClipboardStatus.pasteable,
-                  onCopy: () {
-                    copyCommand.execute(editorState);
-                    closeToolbar();
-                  },
-                  onCut: () => cutCommand.execute(editorState),
-                  onPaste: () => pasteCommand.execute(editorState),
-                  onSelectAll: () => selectAllCommand.execute(editorState),
-                  onLiveTextInput: null,
-                  onLookUp: null,
-                  onSearchWeb: null,
-                  onShare: null,
-                  anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
-                );
-              },
-              child: AppFlowyEditor(
-                // widget pass through
-                editable: widget.editable,
-                shrinkWrap: widget.shrinkWrap,
-                autoFocus: false,
-                header: widget.header,
-                // local states
-                editorState: editorState,
-                editorScrollController:
-                    widget.scrollController ?? editorScrollController,
-                editorStyle: mobileEditorStyle(),
-                footer: generateFooter(),
-                blockComponentBuilders: _buildBlockComponentBuilders(),
-                characterShortcutEvents: [
-                  ...standardCharacterShortcutEvents,
-                  if (roomId != null) ...mentionShortcuts(context, roomId),
-                ],
-                disableAutoScroll: widget.disableAutoScroll,
-              ),
-            ),
-          ),
-        ],
+      child: MobileFloatingToolbar(
+        editorScrollController: editorScrollController,
+        editorState: editorState,
+        floatingToolbarHeight: 50,
+        toolbarBuilder: (context, anchor, closeToolbar) {
+          return AdaptiveTextSelectionToolbar.editable(
+            clipboardStatus: ClipboardStatus.pasteable,
+            onCopy: () {
+              copyCommand.execute(editorState);
+              closeToolbar();
+            },
+            onCut: () => cutCommand.execute(editorState),
+            onPaste: () => pasteCommand.execute(editorState),
+            onSelectAll: () => selectAllCommand.execute(editorState),
+            onLiveTextInput: null,
+            onLookUp: null,
+            onSearchWeb: null,
+            onShare: null,
+            anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
+          );
+        },
+        child: AppFlowyEditor(
+          // widget pass through
+          editable: widget.editable,
+          shrinkWrap: widget.shrinkWrap,
+          autoFocus: false,
+          header: widget.header,
+          // local states
+          editorState: editorState,
+          editorScrollController:
+              widget.scrollController ?? editorScrollController,
+          editorStyle: mobileEditorStyle(),
+          footer: generateFooter(),
+          blockComponentBuilders: _buildBlockComponentBuilders(),
+          characterShortcutEvents: [
+            ...standardCharacterShortcutEvents,
+            if (roomId != null) ...mentionShortcuts(context, roomId),
+          ],
+
+          disableAutoScroll: false,
+          autoScrollEdgeOffset: 20,
+        ),
       ),
     );
   }
@@ -560,7 +558,7 @@ class HtmlEditorState extends State<HtmlEditor> {
               context,
             ).textTheme.bodySmall.expect('bodySmall style not available'),
           ),
-      mobileDragHandleBallSize: const Size(12, 12),
+
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
     );

@@ -559,7 +559,7 @@ impl NotificationItemBuilder {
             ActivityContent::TaskDueDateChange { new_due_date, .. } => {
                 builder.title("removed due date".to_owned())
             }
-            ActivityContent::TaskAdd { task, .. } => builder.title(task.title().clone()),
+            ActivityContent::TaskAdd { task_title, .. } => builder.title(task_title.clone()),
             ActivityContent::DescriptionChange {
                 object,
                 content: Some(content),

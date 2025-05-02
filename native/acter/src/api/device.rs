@@ -71,7 +71,7 @@ impl DeviceController {
             pin_mut!(devices_stream);
 
             while let Some(device_updates) = devices_stream.next().await {
-                if !client.logged_in() {
+                if !client.is_active() {
                     break;
                 }
                 let mut new_devices = vec![];

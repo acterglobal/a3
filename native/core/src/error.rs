@@ -3,13 +3,20 @@ use std::sync::PoisonError;
 
 use crate::models::EventMeta;
 
+#[derive(Debug)]
+pub struct ModelRedactedDetails {
+    pub model_type: String,
+    pub meta: EventMeta,
+    pub reason: UnsignedRoomRedactionEvent,
+}
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Error in the inner MatrixSDK: {0}")]
     MatrixSdk(#[from] matrix_sdk::Error),
 
     #[error("Error in the MatrixSDK HTTP: {0}")]
-    HttpError(#[from] matrix_sdk::HttpError),
+    HttpError(Box<matrix_sdk::HttpError>),
 
     #[error("Not a known Acter Event")]
     UnknownEvent,
@@ -47,12 +54,8 @@ pub enum Error {
     #[error("Id Parse Error: {0}")]
     IdParseError(#[from] matrix_sdk_base::ruma::IdParseError),
 
-    #[error("Model {meta:?} ({model_type}): {reason:?}")]
-    ModelRedacted {
-        model_type: String,
-        meta: EventMeta,
-        reason: UnsignedRoomRedactionEvent,
-    },
+    #[error("Model {0:?}")]
+    ModelRedacted(Box<ModelRedactedDetails>),
 
     #[error("{0:?} field is missing")]
     MissingField(String),
@@ -68,3 +71,9 @@ impl<T> From<PoisonError<T>> for Error {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+
+impl From<matrix_sdk::HttpError> for Error {
+    fn from(err: matrix_sdk::HttpError) -> Self {
+        Self::HttpError(Box::new(err))
+    }
+}

@@ -5,7 +5,14 @@ use acter_core::{
     activities::Activity as CoreActivity,
     events::news::{FallbackNewsContent, NewsContent},
     models::{
-        status::{MembershipContent, ProfileContent},
+        status::{
+            MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
+            PolicyRuleUserContent, ProfileContent, RoomAvatarContent, RoomCreateContent,
+            RoomEncryptionContent, RoomGuestAccessContent, RoomHistoryVisibilityContent,
+            RoomJoinRulesContent, RoomNameContent, RoomPinnedEventsContent, RoomPowerLevelsContent,
+            RoomServerAclContent, RoomTombstoneContent, RoomTopicContent, SpaceChildContent,
+            SpaceParentContent,
+        },
         ActerModel,
     },
     referencing::IndexKey,
@@ -72,6 +79,74 @@ impl Activity {
 
     pub fn profile_content(&self) -> Option<ProfileContent> {
         self.inner.profile_content()
+    }
+
+    pub fn policy_rule_room_content(&self) -> Option<PolicyRuleRoomContent> {
+        self.inner.policy_rule_room_content()
+    }
+
+    pub fn policy_rule_server_content(&self) -> Option<PolicyRuleServerContent> {
+        self.inner.policy_rule_server_content()
+    }
+
+    pub fn policy_rule_user_content(&self) -> Option<PolicyRuleUserContent> {
+        self.inner.policy_rule_user_content()
+    }
+
+    pub fn room_avatar_content(&self) -> Option<RoomAvatarContent> {
+        self.inner.room_avatar_content()
+    }
+
+    pub fn room_create_content(&self) -> Option<RoomCreateContent> {
+        self.inner.room_create_content()
+    }
+
+    pub fn room_encryption_content(&self) -> Option<RoomEncryptionContent> {
+        self.inner.room_encryption_content()
+    }
+
+    pub fn room_guest_access_content(&self) -> Option<RoomGuestAccessContent> {
+        self.inner.room_guest_access_content()
+    }
+
+    pub fn room_history_visibility_content(&self) -> Option<RoomHistoryVisibilityContent> {
+        self.inner.room_history_visibility_content()
+    }
+
+    pub fn room_join_rules_content(&self) -> Option<RoomJoinRulesContent> {
+        self.inner.room_join_rules_content()
+    }
+
+    pub fn room_name_content(&self) -> Option<RoomNameContent> {
+        self.inner.room_name_content()
+    }
+
+    pub fn room_pinned_events_content(&self) -> Option<RoomPinnedEventsContent> {
+        self.inner.room_pinned_events_content()
+    }
+
+    pub fn room_power_levels_content(&self) -> Option<RoomPowerLevelsContent> {
+        self.inner.room_power_levels_content()
+    }
+
+    pub fn room_server_acl_content(&self) -> Option<RoomServerAclContent> {
+        self.inner.room_server_acl_content()
+    }
+
+    pub fn room_tombstone_content(&self) -> Option<RoomTombstoneContent> {
+        self.inner.room_tombstone_content()
+    }
+
+    pub fn room_topic_content(&self) -> Option<RoomTopicContent> {
+        self.inner.room_topic_content()
+    }
+
+    pub fn space_child_content(&self) -> Option<SpaceChildContent> {
+        self.inner.space_child_content()
+    }
+
+    pub fn space_parent_content(&self) -> Option<SpaceParentContent> {
+        self.inner.space_parent_content()
     }
 
     pub fn mentions_you(&self) -> bool {

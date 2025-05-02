@@ -430,7 +430,7 @@ void main() {
         verify(
           () => mockedGoRouter.goNamed(
             any(
-              that: equals(Routes.saveUsername.name),
+              that: equals(Routes.onboarding.name),
             ), // forwarded to the right item
             queryParameters: any(
               named: 'queryParameters',

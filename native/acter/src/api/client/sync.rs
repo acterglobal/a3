@@ -449,7 +449,7 @@ impl Client {
                             if let Ok(mut w) = state.try_write() {
                                 w.has_first_synced = true;
                             };
-                            let sync_keys = response.rooms.join.keys().cloned().collect();
+                            let sync_keys = response.rooms.joined.keys().cloned().collect();
                             // background and keep the handle around.
                             me_cl.refresh_history_on_start(
                                 sync_keys,
@@ -460,7 +460,7 @@ impl Client {
                         } else {
                             // see if we have new spaces to catch up upon
                             let mut new_spaces = Vec::new();
-                            for (room_id, joined_state) in response.rooms.join.iter() {
+                            for (room_id, joined_state) in response.rooms.joined.iter() {
                                 if history_loading.lock_mut().knows_room(room_id) {
                                     continue;
                                 }

@@ -1,0 +1,2 @@
+
+typedef CallNextPage = void Function();

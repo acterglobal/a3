@@ -95,7 +95,7 @@ async fn ref_details_as_url_preview() -> Result<()> {
     let msg = latest_msg
         .event_item()
         .expect("has item")
-        .message()
+        .msg_content()
         .expect("has content");
     assert!(msg.has_url_previews(), "no url previews found");
 
@@ -173,7 +173,7 @@ async fn url_preview_on_message() -> Result<()> {
     let msg = latest_msg
         .event_item()
         .expect("has item")
-        .message()
+        .msg_content()
         .expect("has content");
     assert!(msg.has_url_previews(), "no url previews found");
 

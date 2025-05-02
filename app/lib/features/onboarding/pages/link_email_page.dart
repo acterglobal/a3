@@ -1,23 +1,26 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/utils/validation_utils.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class LinkEmailPage extends ConsumerWidget {
   static const emailField = Key('reg-email-txt');
   static const linkEmailBtn = Key('reg-link-email-btn');
 
+  final CallNextPage? callNextPage;
   final formKey = GlobalKey<FormState>(debugLabel: 'link email page form');
   final ValueNotifier<bool> isLinked = ValueNotifier(false);
   final TextEditingController emailController = TextEditingController();
 
-  LinkEmailPage({super.key});
+  LinkEmailPage({
+    super.key,
+    required this.callNextPage,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,6 +50,7 @@ class LinkEmailPage extends ConsumerWidget {
       ),
     );
   }
+
 
   Widget _buildHeadlineText(BuildContext context) {
     final lang = L10n.of(context);
@@ -102,6 +106,7 @@ class LinkEmailPage extends ConsumerWidget {
       if (!context.mounted) return;
       EasyLoading.showSuccess(lang.pleaseCheckYourInbox);
       isLinked.value = true;
+      callNextPage?.call();
     } catch (e) {
       EasyLoading.showToast(
         lang.failedToSubmitEmail(e),
@@ -109,9 +114,6 @@ class LinkEmailPage extends ConsumerWidget {
       );
     } finally {
       EasyLoading.dismiss();
-      if (context.mounted) {
-        context.goNamed(Routes.uploadAvatar.name);
-      }
     }
   }
 
@@ -156,7 +158,7 @@ class LinkEmailPage extends ConsumerWidget {
 
   Widget _buildSkipActionButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.goNamed(Routes.uploadAvatar.name),
+      onPressed: () => callNextPage?.call(),
       child: Text(
         L10n.of(context).skip,
         style: Theme.of(context).textTheme.bodyMedium,

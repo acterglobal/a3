@@ -142,7 +142,7 @@ class ChatEditorActionsPreview extends ConsumerWidget {
   Widget _buildRepliedToItem(BuildContext context, TimelineEventItem item) {
     final messageId = item.eventId();
     final msgType = item.msgType();
-    final content = item.message();
+    final content = item.msgContent();
     if (msgType == null || content == null || messageId == null) {
       return const SizedBox.shrink();
     }

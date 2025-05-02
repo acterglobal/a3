@@ -24,9 +24,7 @@ class AsyncParticipantsNotifier
       'rsvp',
     ); // keep it resident in memory
     _listener.forEach((e) async {
-      state = await AsyncValue.guard(
-        () async => await _getParticipants(client, calEvtId),
-      );
+      state = AsyncValue.data(await _getParticipants(client, calEvtId));
     });
     return await _getParticipants(client, calEvtId);
   }

@@ -1,39 +1,19 @@
-use acter_core::activities::ActivityContent;
 use anyhow::{bail, Result};
-use matrix_sdk::ruma::OwnedRoomId;
+use std::io::Write;
+use tempfile::Builder;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
 
-use acter::{Client, SyncState};
-
-use super::get_latest_activity;
-use crate::utils::{random_user, random_users_with_random_space};
-
-async fn _setup_accounts(
-    prefix: &str,
-) -> Result<((Client, SyncState), (Client, SyncState), OwnedRoomId)> {
-    let (users, room_id) = random_users_with_random_space(prefix, 2).await?;
-    let mut admin = users[0].clone();
-    let mut observer = users[1].clone();
-
-    observer.install_default_acter_push_rules().await?;
-
-    let sync_state1 = admin.start_sync().await?;
-    sync_state1.await_has_synced_history().await?;
-
-    let sync_state2 = observer.start_sync().await?;
-    sync_state2.await_has_synced_history().await?;
-
-    Ok(((admin, sync_state1), (observer, sync_state2), room_id))
-}
+use super::{get_latest_activity, setup_accounts};
+use crate::utils::random_user;
 
 #[tokio::test]
 async fn initial_events() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("room-create-activity").await?;
+        setup_accounts("initial-events").await?;
 
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
@@ -60,9 +40,9 @@ async fn initial_events() -> Result<()> {
     // .await?;
     // assert_eq!(created.type_str(), "created");
 
-    // let ActivityContent::MembershipChange(r) = activity.content() else {
-    //     bail!("not a membership event");}
-    // ;
+    // let Some(r) = activity.membership_content() else {
+    //     bail!("not a membership event");
+    // };
     // assert!(matches!(r.change, MembershipChangeType::Invited));
     // assert_eq!(r.as_str(), "invited");
     // assert_eq!(r.user_id, to_invite_user_name);
@@ -75,7 +55,7 @@ async fn invite_and_join() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("invite-and-join").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync().await?;
@@ -109,7 +89,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
 
@@ -151,7 +131,7 @@ async fn invite_and_join() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -167,8 +147,7 @@ async fn invite_and_join() -> Result<()> {
 async fn kicked() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("kicked").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -195,7 +174,7 @@ async fn kicked() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -211,7 +190,7 @@ async fn invite_and_rejected() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("invite-and-rejected").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync().await?;
@@ -245,7 +224,7 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -289,7 +268,7 @@ async fn invite_and_rejected() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -306,7 +285,7 @@ async fn kickban_and_unban() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+        setup_accounts("kickban-and-unban").await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let main_room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -333,7 +312,7 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -363,7 +342,7 @@ async fn kickban_and_unban() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -378,8 +357,7 @@ async fn kickban_and_unban() -> Result<()> {
 async fn left() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let ((admin, _handle1), (observer, _handle2), room_id) =
-        _setup_accounts("ij-status-notif").await?;
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("left").await?;
 
     let room = observer.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
@@ -406,7 +384,7 @@ async fn left() -> Result<()> {
     })
     .await?;
 
-    let ActivityContent::MembershipChange(r) = activity.content() else {
+    let Some(r) = activity.membership_content() else {
         bail!("not a membership event");
     };
     let meta = activity.event_meta();
@@ -420,6 +398,80 @@ async fn left() -> Result<()> {
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
     assert_eq!(activity.room_id_str(), room.room_id_str());
     assert_eq!(activity.type_str(), "left");
+    assert_eq!(
+        activity.origin_server_ts(),
+        Into::<u64>::into(meta.origin_server_ts.get())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn display_name() -> Result<()> {
+    let _ = env_logger::try_init();
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("display-name").await?;
+
+    // ensure it was sent
+    let account = observer.account()?;
+    account.set_display_name("Mickey Mouse".to_owned()).await?;
+
+    // wait for the event to come in
+    let activity = get_latest_activity(&admin, room_id.to_string(), "displayName").await?;
+
+    assert_eq!(activity.type_str(), "displayName");
+    let Some(r) = activity.profile_content() else {
+        bail!("not a profile event");
+    };
+    let meta = activity.event_meta();
+
+    assert_eq!(r.display_name_new_val(), Some("Mickey Mouse".to_owned()));
+    assert_eq!(meta.sender, observer.user_id()?);
+
+    // external API check
+    assert_eq!(activity.sender_id_str(), observer.user_id()?);
+    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.room_id_str(), room_id.as_str());
+    assert_eq!(
+        activity.origin_server_ts(),
+        Into::<u64>::into(meta.origin_server_ts.get())
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn avatar_url() -> Result<()> {
+    let _ = env_logger::try_init();
+    let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("avatar-url").await?;
+
+    let bytes = include_bytes!("../fixtures/kingfisher.jpg");
+    let mut tmp_jpg = Builder::new().suffix(".jpg").tempfile()?;
+    tmp_jpg.as_file_mut().write_all(bytes)?;
+    let jpg_path = tmp_jpg // it is randomly generated by system and not kingfisher.jpg
+        .path()
+        .to_string_lossy()
+        .to_string();
+
+    // ensure it was sent
+    let account = observer.account()?;
+    let uri = account.upload_avatar(jpg_path).await?;
+
+    // wait for the event to come in
+    let activity = get_latest_activity(&admin, room_id.to_string(), "avatarUrl").await?;
+
+    assert_eq!(activity.type_str(), "avatarUrl");
+    let Some(r) = activity.profile_content() else {
+        bail!("not a profile event");
+    };
+    let meta = activity.event_meta();
+
+    assert_eq!(r.avatar_url_new_val(), Some(uri));
+    assert_eq!(meta.sender, observer.user_id()?);
+
+    // external API check
+    assert_eq!(activity.sender_id_str(), observer.user_id()?);
+    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.room_id_str(), room_id.as_str());
     assert_eq!(
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())

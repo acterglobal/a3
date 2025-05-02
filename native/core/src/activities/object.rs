@@ -158,7 +158,10 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
                 Err(())
             }
             #[cfg(any(test, feature = "testing"))]
-            AnyActerModel::TestModel(_test_model) => todo!(),
+            AnyActerModel::TestModel(_test_model) => {
+                tracing::warn!("Converting a a test model failed");
+                Err(())
+            }
         }
     }
 }

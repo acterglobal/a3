@@ -57,7 +57,7 @@ class MessageActionsWidget extends ConsumerWidget {
     if (item.msgType() == 'm.text')
       makeMenuItem(
         pressed: () {
-          final messageBody = item.message()?.body();
+          final messageBody = item.msgContent()?.body();
           if (messageBody == null) return;
           copyMessageAction(context, messageBody);
         },

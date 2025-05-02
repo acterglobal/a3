@@ -32,7 +32,7 @@ class TypingIndicator extends ConsumerWidget {
     if (isDM == true) return animatedCircles;
 
     //Show the typing text with the animated circles
-    return Row(
+    return Wrap(
       children: [
         animatedCircles,
         const SizedBox(width: 4),
@@ -41,6 +41,8 @@ class TypingIndicator extends ConsumerWidget {
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.primary,
           ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

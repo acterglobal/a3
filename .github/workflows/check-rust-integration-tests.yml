@@ -40,7 +40,7 @@ jobs:
 
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
-          installer: poetry
+          installer: venv
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true

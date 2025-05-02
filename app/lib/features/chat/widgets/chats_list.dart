@@ -5,7 +5,8 @@ import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/providers/room_list_filter_provider.dart';
-import 'package:acter/features/chat/widgets/animated_chats_list_widget.dart';
+import 'package:acter/common/toolkit/widgets/animated_chats_list_widget.dart';
+import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,6 +89,16 @@ class ChatsList extends ConsumerWidget {
   }
 
   Widget _renderList(BuildContext context, List<String> chats) {
-    return AnimatedChatsListWidget(entries: chats, onSelected: onSelected);
+    return ActerAnimatedListWidget(
+      entries: chats,
+      itemBuilder:
+          ({required Animation<double> animation, required String roomId}) =>
+              ConvoCard(
+                animation: animation,
+                key: Key('convo-card-$roomId'),
+                roomId: roomId,
+                onTap: () => onSelected?.call(roomId),
+              ),
+    );
   }
 }

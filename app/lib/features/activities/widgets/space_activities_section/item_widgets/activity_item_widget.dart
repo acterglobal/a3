@@ -1,8 +1,12 @@
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/activity_membership_container_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/attachment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/comment.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomAvatar.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomName.dart';
+import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomTopic.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpMaybe.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpNo.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/rsvpYes.dart';
@@ -41,6 +45,10 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.taskAccept => ActivityTaskAcceptedItemWidget(activity: activity),
       PushStyles.taskDecline => ActivityTaskDeclineItemWidget(activity: activity),
       PushStyles.taskDueDateChange => ActivityTaskDueDateChangedItemWidget(activity: activity),
+      PushStyles.roomName => ActivityRoomNameItemWidget(activity: activity),
+      PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
+      PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
+      PushStyles.invitationRevoked || PushStyles.invitationAccepted || PushStyles.invitationRejected || PushStyles.joined || PushStyles.invited || PushStyles.knocked || PushStyles.knockAccepted || PushStyles.knockRetracted || PushStyles.knockDenied || PushStyles.banned || PushStyles.unbanned || PushStyles.left || PushStyles.kicked || PushStyles.kickedAndBanned => ActivityMembershipItemWidget(activity: activity),
       _ => const SizedBox.shrink(),
     };
   }
