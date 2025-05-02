@@ -8,7 +8,6 @@ import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.da
 import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
-import 'package:acter/features/chat_ng/providers/notifiers/reply_messages_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -194,9 +193,21 @@ final mentionSuggestionsProvider =
       };
     });
 
-final repliedToMsgProvider = AsyncNotifierProvider.autoDispose
-    .family<RepliedToMessageNotifier, RepliedToMsgState, RoomMsgId>(() {
-      return RepliedToMessageNotifier();
+final repliedToMsgProvider = FutureProvider.autoDispose
+    .family<TimelineEventItem, RoomMsgId>((ref, item) async {
+      TimelineItem? msg = ref.watch(chatRoomMessageProvider(item));
+
+      if (msg == null) {
+        // failed, trying to fetch from remote then
+        final timeline =
+            ref.read(chatMessagesStateProvider(item.roomId).notifier).timeline;
+        msg = await timeline.getMessage(item.uniqueId);
+      }
+      final eventItem = msg.eventItem();
+      if (eventItem == null) {
+        return throw 'Replied to non-event';
+      }
+      return eventItem;
     });
 
 final messageReactionsProvider = StateProvider.autoDispose
