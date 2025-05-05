@@ -12,7 +12,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RecommendedSpacesPage extends ConsumerStatefulWidget {
-  final VoidCallback? callNextPage;
+  final VoidCallback callNextPage;
 
   const RecommendedSpacesPage({super.key, required this.callNextPage});
 
@@ -169,7 +169,7 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
           child: Text(lang.joinAndContinue),
         ),
         const SizedBox(height: 10),
-        OutlinedButton(onPressed: () => widget.callNextPage?.call(), child: Text(lang.skip)),
+        OutlinedButton(onPressed: () => widget.callNextPage.call(), child: Text(lang.skip)),
       ],
     );
   }
@@ -196,7 +196,7 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
           context,
         ).showSnackBar(SnackBar(content: Text('${lang.joined} $spaceName')));
       }
-      widget.callNextPage?.call();
+      widget.callNextPage.call();
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(
