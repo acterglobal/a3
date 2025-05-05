@@ -26,7 +26,7 @@ Future<void> joinRecommendedSpace(
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${lang.joined} $spaceName')));
+        ).showSnackBar(SnackBar(content: Text(lang.successfullyJoined(spaceName))));
       }
       callNextPage.call();
     } catch (_) {

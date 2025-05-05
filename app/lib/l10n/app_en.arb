@@ -2900,5 +2900,7 @@
   "spaceSkeletonDescription": "Space description that might be a bit longer to show how it looks with multiple lines",
   "@spaceSkeletonDescription": {},
   "joinAndContinue": "Join & Continue",
-  "@joinAndContinue": {}
+  "@joinAndContinue": {},
+  "successfullyJoined": "Successfully joined {spaceName}",
+  "@successfullyJoined": {}
 }
