@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class RecommendedSpacesPage extends ConsumerStatefulWidget {
   final VoidCallback? callNextPage;
@@ -82,15 +84,16 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
   }
 
   Widget _buildSpacesSection(BuildContext context) {
+    final lang = L10n.of(context);
     final searchState = ref.watch(publicSearchProvider);
     final spaces = searchState.records ?? [];
 
     if (ref.read(publicSearchProvider.notifier).isLoading()) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildSkeletonSpaceTile(context, lang);
     }
 
     if (spaces.isEmpty) {
-      return Center(child: Text(L10n.of(context).noSpacesFound));
+      return Center(child: Text(lang.noSpacesFound));
     }
 
     // Show the first space for now
@@ -125,6 +128,22 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
                 )
                 : null,
         isThreeLine: true,
+      ),
+    );
+  }
+
+  Widget _buildSkeletonSpaceTile(BuildContext context, L10n lang) {
+    return Skeletonizer(
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: ListTile(
+          leading: CircleAvatar(
+            child: Icon(PhosphorIcons.house()),
+          ),
+          title: Text(lang.spaceSkeletonName),
+          subtitle: Text(lang.spaceSkeletonDescription),
+          isThreeLine: true,
+        ),
       ),
     );
   }

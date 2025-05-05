@@ -2891,11 +2891,14 @@
   "@lookAround": {},
   "youInvited": "Invited to you to join {count} room",
   "@youInvited": {},
-  "@keyCopied": {},
   "recommendedSpaces": "Recommended Spaces",
   "@recommendedSpaces": {},
   "recommendedSpacesDesc": "An actyer-curated list of groups and partner, ideally based on the previously selected activities.",
   "@recommendedSpacesDesc": {},
+  "spaceSkeletonName": "Space Name",
+  "@spaceSkeletonName": {},
+  "spaceSkeletonDescription": "Space description that might be a bit longer to show how it looks with multiple lines",
+  "@spaceSkeletonDescription": {},
   "joinAndContinue": "Join & Continue",
   "@joinAndContinue": {}
 }
