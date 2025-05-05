@@ -308,6 +308,10 @@ class HtmlEditorState extends State<HtmlEditor> {
   void initState() {
     super.initState();
     updateEditorState(widget.editorState ?? EditorState.blank());
+    AppFlowyRichTextKeys.partialSliced.addAll([
+      userMentionChar,
+      roomMentionChar,
+    ]);
   }
 
   void updateEditorState(EditorState newEditorState) {
