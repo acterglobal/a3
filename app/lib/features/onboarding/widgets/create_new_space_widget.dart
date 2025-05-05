@@ -1,8 +1,9 @@
 import 'dart:io';
-
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/input_text_field_without_border.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
+import 'package:acter/features/onboarding/actions/create_new_space_onboarding_actions.dart';
 import 'package:acter/features/onboarding/widgets/invite_friends_widget.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -25,6 +26,9 @@ class CreateNewSpaceWidget extends ConsumerStatefulWidget {
 class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
   final TextEditingController _spaceNameController = TextEditingController();
   File? spaceAvatar;
+
+  bool _fillExampleData = true;
+  bool _activateFeatures = true;
 
   @override
   void initState() {
@@ -162,8 +166,12 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
         Row(
           children: [
             Checkbox(
-              value: true,
-              onChanged: (bool? newValue) {},
+              value: _activateFeatures,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  _activateFeatures = newValue ?? false;
+                });
+              },
               visualDensity: VisualDensity.compact,
             ),
             Text(
@@ -175,8 +183,12 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
         Row(
           children: [
             Checkbox(
-              value: true,
-              onChanged: (bool? newValue) {},
+              value: _fillExampleData,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  _fillExampleData = newValue ?? false;
+                });
+              },
               visualDensity: VisualDensity.compact,
             ),
             Text(
@@ -191,8 +203,17 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
 
   Widget _buildActionButton(BuildContext context, L10n lang) {
     return ActerPrimaryActionButton(
-      onPressed: () {
-        showInviteFriendsView(context);
+      onPressed: () async {
+        final spaceId = await createOnboardingSpace(context, ref, _spaceNameController.text.trim(), spaceAvatar);
+        
+        if (spaceId != null) {
+          if (_fillExampleData) {
+            ref.watch(spaceCreateOnboardingDataFuturePoll(spaceId)).valueOrNull != true;
+             if (context.mounted) {
+              showInviteFriendsView(context);
+            } 
+          }
+        }
       },
       child: Text(lang.next, style: const TextStyle(fontSize: 16)),
     );
