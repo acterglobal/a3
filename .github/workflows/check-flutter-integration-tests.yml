@@ -78,7 +78,7 @@ jobs:
   #       with:
   #         python-version: 3.8
 
-  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #     - uses: acterglobal/setup-matrix-synapse@main
   #       with:
   #         installer: poetry
   #         uploadLogs: true
@@ -191,7 +191,7 @@ jobs:
   #       with:
   #         python-version: 3.8
 
-  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #     - uses: acterglobal/setup-matrix-synapse@main
   #       with:
   #         uploadLogs: true
   #         httpPort: 8118
@@ -361,10 +361,8 @@ jobs:
           channel: 'stable'
 
       - uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
 
-      - uses: michaelkaye/setup-matrix-synapse@main
+      - uses: acterglobal/setup-matrix-synapse@main
         with:
           uploadLogs: true
           httpPort: 8118
@@ -515,7 +513,7 @@ jobs:
   #       with:
   #         python-version: 3.8
 
-  #     - uses: michaelkaye/setup-matrix-synapse@main
+  #     - uses: acterglobal/setup-matrix-synapse@main
   #       with:
   #         uploadLogs: true
   #         httpPort: 8118

@@ -1,4 +1,5 @@
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_loading.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_no_access.dart';
@@ -20,6 +21,7 @@ class ChatEditorView extends ConsumerWidget {
 
     return switch (canSend) {
       true => ChatEditor(
+        key: chatEditorKey,
         // we have permission, show editor field
         roomId: roomId,
         onTyping: onTyping,

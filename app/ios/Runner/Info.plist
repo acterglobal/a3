@@ -22,8 +22,45 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>global.acter.url.matrix</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>matrix</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>global.acter.urls.acter</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>acter</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>whatsapp</string>
+		<string>sgnl</string>
+		<string>tg</string>
+		<string>onepassword</string>
+		<string>bitwarden</string>
+		<string>keeper</string>
+		<string>lastpass</string>
+		<string>enpass</string>
+		<string>protonpass</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
@@ -60,19 +97,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>whatsapp</string>
-        <string>sgnl</string>
-        <string>tg</string>
-		<string>onepassword</string>
-		<string>bitwarden</string>
-		<string>keeper</string>
-		<string>lastpass</string>
-		<string>enpass</string> 
-		<string>protonpass</string>
-    </array>
-	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
 </dict>
 </plist>
