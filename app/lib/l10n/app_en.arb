@@ -2902,6 +2902,8 @@
   "@activateRecommendedFeatures": {},
   "fillWithExampleData": "Fill with example data",
   "@fillWithExampleData": {},
+  "spaceUserName": "{username}'s first Space",
+  "@spaceUserName": {},
   "inviteFriends": "Invite Friends",
   "@inviteFriends": {},
   "searchExistingUsers": "Search existing users",

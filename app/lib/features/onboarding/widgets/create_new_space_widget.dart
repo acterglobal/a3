@@ -10,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/common/providers/common_providers.dart';
 
 final _log = Logger('a3::spaces::create_new_space');
 
@@ -24,6 +25,21 @@ class CreateNewSpaceWidget extends ConsumerStatefulWidget {
 class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
   final TextEditingController _spaceNameController = TextEditingController();
   File? spaceAvatar;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSpaceName();
+  }
+
+  Future<void> _initializeSpaceName() async {
+    final displayName = await ref.read(accountDisplayNameProvider.future);
+    if (mounted) {
+      setState(() {
+        _spaceNameController.text = L10n.of(context).spaceUserName(displayName ?? '');
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -130,7 +146,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
         const SizedBox(height: 5),
         InputTextFieldWithoutBorder(
           key: CreateSpaceKeys.titleField,
-          hintText: lang.typeName,
+          hintText: lang.spaceName,
           textInputType: TextInputType.text,
           controller: _spaceNameController,
         ),
