@@ -5,7 +5,10 @@ import 'package:acter/common/widgets/input_text_field_without_border.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/onboarding/actions/create_new_space_onboarding_actions.dart';
 import 'package:acter/features/onboarding/widgets/invite_friends_widget.dart';
+import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/spaces/model/keys.dart';
+import 'package:acter/features/spaces/model/space_feature_state.dart';
+import 'package:acter/features/spaces/providers/space_creation_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -205,13 +208,42 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
     return ActerPrimaryActionButton(
       onPressed: () async {
         final spaceId = await createOnboardingSpace(context, ref, _spaceNameController.text.trim(), spaceAvatar);
-        
+
         if (spaceId != null) {
           if (_fillExampleData) {
             ref.watch(spaceCreateOnboardingDataFuturePoll(spaceId)).valueOrNull != true;
-             if (context.mounted) {
+            if (context.mounted) {
               showInviteFriendsView(context);
-            } 
+            }
+          }
+          if (!_activateFeatures) {
+            ref.read(featureActivationStateProvider.notifier).update((
+                  state,
+                ) {
+                  final newState =
+                      Map<SpaceFeature, FeatureActivationState>.from(state);
+                  final feature = SpaceFeature.boosts;
+                  final featureState = newState[feature]!;
+                  newState[feature] = featureState.copyWith(isActivated: false);
+
+                  final storyFeature = SpaceFeature.stories;
+                  final storyFeatureState = newState[storyFeature]!;
+                  newState[storyFeature] = storyFeatureState.copyWith(isActivated: false);
+
+                  final pinFeature = SpaceFeature.pins;
+                  final pinFeatureState = newState[pinFeature]!;
+                  newState[pinFeature] = pinFeatureState.copyWith(isActivated: false);
+
+                  final eventFeature = SpaceFeature.events;
+                  final eventFeatureState = newState[eventFeature]!;
+                  newState[eventFeature] = eventFeatureState.copyWith(isActivated: false);
+
+                  final taskFeature = SpaceFeature.tasks;
+                  final taskFeatureState = newState[taskFeature]!;
+                  newState[taskFeature] = taskFeatureState.copyWith(isActivated: false);
+
+                  return newState;
+                });
           }
         }
       },
