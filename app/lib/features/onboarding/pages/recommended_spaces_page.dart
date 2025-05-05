@@ -1,12 +1,12 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/onboarding/actions/recommended_space_actions.dart';
 import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
 import 'package:acter/features/public_room_search/providers/public_space_info_provider.dart';
-import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -165,44 +165,12 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: space != null ? () => _joinSpace(context, space) : null,
+          onPressed: space != null ? () => joinRecommendedSpace(context, space, widget.callNextPage,ref) : null,
           child: Text(lang.joinAndContinue),
         ),
         const SizedBox(height: 10),
         OutlinedButton(onPressed: () => widget.callNextPage.call(), child: Text(lang.skip)),
       ],
     );
-  }
-
-  Future<void> _joinSpace(
-    BuildContext context,
-    PublicSearchResultItem space,
-  ) async {
-    final lang = L10n.of(context);
-    final roomId = space.roomIdStr();
-    final spaceName = space.name() ?? '';
-
-    try {
-      await joinRoom(
-        context: context,
-        ref: ref,
-        roomIdOrAlias: roomId,
-        roomName: spaceName,
-        serverNames: ['acter.global'],
-      );
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${lang.joined} $spaceName')));
-      }
-      widget.callNextPage.call();
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(lang.spacesLoadingError)));
-      }
-    }
   }
 }
