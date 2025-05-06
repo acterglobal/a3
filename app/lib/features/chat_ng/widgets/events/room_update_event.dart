@@ -26,7 +26,16 @@ class RoomUpdateEvent extends ConsumerWidget {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+        ),
+        borderRadius: BorderRadius.circular(25),
+      ),
+      alignment: Alignment.center,
       child: Text(stateText, style: Theme.of(context).textTheme.labelSmall),
     );
   }

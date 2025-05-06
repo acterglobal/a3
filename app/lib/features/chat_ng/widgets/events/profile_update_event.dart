@@ -25,6 +25,7 @@ class ProfileUpdateEvent extends ConsumerWidget {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
