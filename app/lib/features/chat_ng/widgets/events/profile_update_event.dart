@@ -28,14 +28,19 @@ class ProfileUpdateEvent extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         ),
         borderRadius: BorderRadius.circular(25),
       ),
       alignment: Alignment.center,
-      child: Text(stateText, style: Theme.of(context).textTheme.labelSmall),
+      child: Text(
+        stateText,
+        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+        ),
+      ),
     );
   }
 

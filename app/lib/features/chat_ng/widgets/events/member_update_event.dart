@@ -35,7 +35,12 @@ class MemberUpdateEvent extends ConsumerWidget {
         borderRadius: BorderRadius.circular(25),
       ),
       alignment: Alignment.center,
-      child: Text(stateText, style: Theme.of(context).textTheme.labelSmall),
+      child: Text(
+        stateText,
+        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+        ),
+      ),
     );
   }
 
