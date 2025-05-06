@@ -219,7 +219,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     if (text.isEmpty || actualLineCount < 2) {
       newHeight = ChatEditorUtils.baseHeight;
     } else {
-      final offset = 30 * (actualLineCount - 1);
+      final offset = 15 * (actualLineCount - 1);
       newHeight = min(
         ChatEditorUtils.maxHeight,
         ChatEditorUtils.baseHeight + offset,
@@ -327,11 +327,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
-        if (!isDesktop(
-          context,
-        )) // for android as it'll use return key on keyboard for newline
-          const SingleActivator(LogicalKeyboardKey.enter):
-              () => textEditorState.insertNewLine(),
         if (isDesktop(context))
           const SingleActivator(LogicalKeyboardKey.enter):
               () => sendMessageAction(
@@ -351,22 +346,24 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   }
 
   Widget _renderEditor(String? hintText) {
-    return HtmlEditor(
-      footer: null,
-      // if provided, will activate mentions
-      roomId: widget.roomId,
-      hintText: hintText,
-      editable: true,
-      shrinkWrap: false,
-      disableAutoScroll: false,
-      editorState: textEditorState,
-      scrollController: scrollController,
-      editorPadding: const EdgeInsets.only(top: 12),
-      onChanged: (body, html) {
-        final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
-        widget.onTyping?.call(isTyping);
-      },
-      onSave: null,
+    return Padding(
+      padding: const EdgeInsets.only(top: 15),
+      child: HtmlEditor(
+        footer: null,
+        // if provided, will activate mentions
+        roomId: widget.roomId,
+        hintText: hintText,
+        editable: true,
+        shrinkWrap: false,
+        disableAutoScroll: false,
+        editorState: textEditorState,
+        scrollController: scrollController,
+        onChanged: (body, html) {
+          final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
+          widget.onTyping?.call(isTyping);
+        },
+        onSave: null,
+      ),
     );
   }
 

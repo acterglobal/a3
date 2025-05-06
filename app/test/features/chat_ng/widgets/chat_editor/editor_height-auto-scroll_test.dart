@@ -119,7 +119,6 @@ class _TestableEditorState extends ConsumerState<TestableEditor> {
                   disableAutoScroll: false,
                   editorState: editorState,
                   scrollController: scrollController,
-                  editorPadding: const EdgeInsets.only(top: 12),
                 ),
               ),
               const Padding(
