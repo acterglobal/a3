@@ -355,6 +355,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       // Remove redeemed token from list
       setState(() {
         validTokens.remove(token);
+        hasRedeemedAnyToken = true;
       });
       // Update the token redemption state using the provider
       await ref.read(hasRedeemedAnyTokenProvider.notifier).set(true);
