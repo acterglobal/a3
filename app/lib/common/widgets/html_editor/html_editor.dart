@@ -382,6 +382,13 @@ class HtmlEditorState extends State<HtmlEditor> {
     return map;
   }
 
+  List<CharacterShortcutEvent> _buildCharacterShortcutEvents() {
+    return [
+      ...standardCharacterShortcutEvents.where((e) => e != slashCommand),
+      if (widget.roomId != null) ...mentionShortcuts(context, widget.roomId!),
+    ];
+  }
+
   Widget? generateFooter() {
     if (widget.footer != null) {
       return widget.footer;
@@ -430,7 +437,6 @@ class HtmlEditorState extends State<HtmlEditor> {
         bulletedListItem,
         numberedListItem,
         linkItem,
-        buildHighlightColorItem(),
       ],
       textDirection: Directionality.of(context),
       editorState: editorState,
@@ -454,10 +460,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           editorStyle: desktopEditorStyle(),
           footer: generateFooter(),
           blockComponentBuilders: _buildBlockComponentBuilders(),
-          characterShortcutEvents: [
-            ...standardCharacterShortcutEvents,
-            if (roomId != null) ...mentionShortcuts(context, roomId),
-          ],
+          characterShortcutEvents: _buildCharacterShortcutEvents(),
           commandShortcutEvents: [...standardCommandShortcutEvents],
           disableAutoScroll: widget.disableAutoScroll,
           autoScrollEdgeOffset: 20,
@@ -478,12 +481,12 @@ class HtmlEditorState extends State<HtmlEditor> {
       buttonSpacing: 4.0,
       itemOutlineColor: Theme.of(context).colorScheme.surface,
       toolbarItems: [
-        textDecorationMobileToolbarItemV2,
-        buildTextAndBackgroundColorMobileToolbarItem(textColorOptions: []),
+        textDecorationMobileToolbarItem,
         headingMobileToolbarItem,
         listMobileToolbarItem,
         linkMobileToolbarItem,
         quoteMobileToolbarItem,
+        codeMobileToolbarItem,
       ],
       toolbarHeight: 50,
       editorState: editorState,
@@ -521,11 +524,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           editorStyle: mobileEditorStyle(),
           footer: generateFooter(),
           blockComponentBuilders: _buildBlockComponentBuilders(),
-          characterShortcutEvents: [
-            ...standardCharacterShortcutEvents,
-            if (roomId != null) ...mentionShortcuts(context, roomId),
-          ],
-
+          characterShortcutEvents: _buildCharacterShortcutEvents(),
           disableAutoScroll: false,
           autoScrollEdgeOffset: 20,
         ),
