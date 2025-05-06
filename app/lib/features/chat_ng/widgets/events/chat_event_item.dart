@@ -73,16 +73,8 @@ class ChatEventItem extends StatelessWidget {
               isLastMessageBySender: isLastMessageBySender,
               child: EncryptedMessageWidget(),
             ),
-      'MembershipChange' => MemberUpdateEvent(
-        isMe: isMe,
-        roomId: roomId,
-        item: item,
-      ),
-      'ProfileChange' => ProfileUpdateEvent(
-        isMe: isMe,
-        roomId: roomId,
-        item: item,
-      ),
+      'MembershipChange' => MemberUpdateEvent(roomId: roomId, item: item),
+      'ProfileChange' => ProfileUpdateEvent(roomId: roomId, item: item),
       'm.policy.rule.room' ||
       'm.policy.rule.server' ||
       'm.policy.rule.user' ||

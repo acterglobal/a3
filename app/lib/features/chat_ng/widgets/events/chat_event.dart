@@ -74,6 +74,8 @@ class ChatEvent extends ConsumerWidget {
 
     final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
 
+    final isMessageEvent = item.eventType() == 'm.room.message';
+
     final bool shouldShowAvatar = _shouldShowAvatar(
       ref: ref,
       eventType: item.eventType(),
@@ -88,26 +90,28 @@ class ChatEvent extends ConsumerWidget {
       ),
       child: Row(
         mainAxisAlignment:
-            !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,
+            !isMessageEvent
+                ? MainAxisAlignment.center
+                : !isMe
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          shouldShowAvatar
+          shouldShowAvatar && isMessageEvent
               ? _buildAvatar(ctx, ref, item.sender())
               : isFirstMessageBySender && !isDM
               ? const SizedBox(width: 40)
               : const SizedBox.shrink(),
-          Flexible(
-            child: ChatEventItem(
-              roomId: roomId,
-              messageId: messageId,
-              item: item,
-              isMe: isMe,
-              isDM: isDM,
-              canRedact: canRedact,
-              isFirstMessageBySender: isFirstMessageBySender,
-              isLastMessageBySender: isLastMessageBySender,
-              isLastMessage: isLastMessage,
-            ),
+          ChatEventItem(
+            roomId: roomId,
+            messageId: messageId,
+            item: item,
+            isMe: isMe,
+            isDM: isDM,
+            canRedact: canRedact,
+            isFirstMessageBySender: isFirstMessageBySender,
+            isLastMessageBySender: isLastMessageBySender,
+            isLastMessage: isLastMessage,
           ),
         ],
       ),

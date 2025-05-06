@@ -11,13 +11,11 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::chat_ng::widgets::profile_update');
 
 class ProfileUpdateEvent extends ConsumerWidget {
-  final bool isMe;
   final String roomId;
   final TimelineEventItem item;
 
   const ProfileUpdateEvent({
     super.key,
-    required this.isMe,
     required this.roomId,
     required this.item,
   });
@@ -27,13 +25,16 @@ class ProfileUpdateEvent extends ConsumerWidget {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
-      child: RichText(
-        text: TextSpan(
-          text: stateText,
-          style: Theme.of(context).textTheme.labelSmall,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
+        borderRadius: BorderRadius.circular(25),
       ),
+      alignment: Alignment.center,
+      child: Text(stateText, style: Theme.of(context).textTheme.labelSmall),
     );
   }
 

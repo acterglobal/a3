@@ -11,13 +11,11 @@ import 'package:logging/logging.dart';
 final _log = Logger('a3::chat_ng::widgets::member_update');
 
 class MemberUpdateEvent extends ConsumerWidget {
-  final bool isMe;
   final String roomId;
   final TimelineEventItem item;
 
   const MemberUpdateEvent({
     super.key,
-    required this.isMe,
     required this.roomId,
     required this.item,
   });
