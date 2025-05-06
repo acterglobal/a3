@@ -49,45 +49,24 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 30),
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+                  const SizedBox(height: 40),
                   _buildHeadlineText(context),
                   const SizedBox(height: 20),
                   _buildDescriptionText(context),
                   const SizedBox(height: 30),
-                ],
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _buildSpacesSection(context),
-                ),
-              ),
-            ),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+                  _buildSpacesSection(context),
                   const SizedBox(height: 10),
                   _buildActionButtons(context),
                   const SizedBox(height: 50),
                 ],
               ),
-            ),
-          ],
         ),
       ),
     );
@@ -128,8 +107,12 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
       return Center(child: Text(lang.noSpacesFound));
     }
 
-    return Column(
-      children: spaces.map((space) => _buildSpaceTile(context, space)).toList(),
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: spaces.length,
+        itemBuilder: (context, index) => _buildSpaceTile(context, spaces[index]),
+      ),
     );
   }
 
@@ -150,10 +133,8 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
           width: 2,
         ),
       ),
-      child: InkWell(
-        onTap: () => _toggleSpaceSelection(space),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+          onTap: () => _toggleSpaceSelection(space),
           leading: avatarLoader.when(
             data: (avatar) => ActerAvatar(options: AvatarOptions(avatar)),
             error: (_, __) => _defaultAvatar(spaceName, space),
@@ -168,19 +149,15 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
           ),
           title: Text(spaceName, style: textTheme.bodyMedium),
           subtitle: description.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
+              ?  Text(
                     description,
                     style: textTheme.bodySmall,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                  ),
                 )
               : null,
           isThreeLine: true,
         ),
-      ),
     );
   }
 
