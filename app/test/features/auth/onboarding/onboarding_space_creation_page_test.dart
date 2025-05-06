@@ -1,7 +1,4 @@
 import 'package:acter/features/onboarding/pages/onboarding_space_creation_page.dart';
-import 'package:acter/features/onboarding/widgets/create_new_space_widget.dart';
-import 'package:acter/common/widgets/input_text_field_without_border.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../helpers/test_util.dart';
