@@ -7,9 +7,7 @@ import 'package:acter/features/public_room_search/providers/notifiers/public_spa
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../../../helpers/test_util.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Mock class for PublicSearchResultItem to simulate space data
 class MockPublicSearchResultItem extends Mock implements PublicSearchResultItem {}
