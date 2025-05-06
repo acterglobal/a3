@@ -57,9 +57,9 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +84,6 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -213,7 +212,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
           if (_fillExampleData) {
             ref.watch(spaceCreateOnboardingDataFuturePoll(spaceId)).valueOrNull != true;
             if (context.mounted) {
-              showInviteFriendsView(context);
+              showInviteFriendsView(context, spaceId);
             }
           }
           if (!_activateFeatures) {
@@ -265,7 +264,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
     }
   }
 
-  Future<void> showInviteFriendsView(BuildContext context) async {
+  Future<void> showInviteFriendsView(BuildContext context, String spaceId) async {
     Navigator.of(context).pop();
     showModalBottomSheet(
       showDragHandle: true,
@@ -274,7 +273,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) {
-        return const InviteFriendsWidget();
+        return InviteFriendsWidget(roomId: spaceId);
       },
     );
   }

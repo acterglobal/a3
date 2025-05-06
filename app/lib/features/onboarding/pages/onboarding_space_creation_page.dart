@@ -12,11 +12,11 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Scaffold(  
+        body: Center(
+          child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -38,7 +38,6 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
             ),
           ),
         ),
-      ),
     );
   }
 
