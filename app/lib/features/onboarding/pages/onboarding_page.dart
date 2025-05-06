@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
@@ -58,7 +59,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         LinkEmailPage(callNextPage: () => _nextPage()),
         UploadAvatarPage(callNextPage: () => _nextPage()),
         CustomizationPage(callNextPage: () => _nextPage()),
-        if (ref.watch(hasRedeemedAnyTokenProvider).value == false)
+        if (ref.watch(hasSpacesProvider) == false)
           RecommendedSpacesPage(callNextPage: () => _nextPage()),
       ],
       if (permissions.showNotificationPermission)

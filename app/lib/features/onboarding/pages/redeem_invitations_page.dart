@@ -4,7 +4,6 @@ import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/types.dart';
-import 'package:acter/features/onboarding/providers/onboarding_provider.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -357,8 +356,6 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
         validTokens.remove(token);
         hasRedeemedAnyToken = true;
       });
-      // Update the token redemption state using the provider
-      await ref.read(hasRedeemedAnyTokenProvider.notifier).set(true);
     } catch (e) {
       if (!context.mounted) {
         EasyLoading.dismiss();
