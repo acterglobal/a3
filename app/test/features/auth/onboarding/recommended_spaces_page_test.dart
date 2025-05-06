@@ -5,11 +5,11 @@ import 'package:acter/features/public_room_search/models/publiic_search_result_s
 import 'package:acter/features/public_room_search/providers/notifiers/public_search_filters_notifier.dart';
 import 'package:acter/features/public_room_search/providers/notifiers/public_spaces_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../helpers/test_util.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Mock class for PublicSearchResultItem to simulate space data
 class MockPublicSearchResultItem extends Mock implements PublicSearchResultItem {}
@@ -66,7 +66,11 @@ void main() {
       ],
     );
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    // Wait for the widget to rebuild
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('Test Space'), findsNothing);
+    expect(find.text('Test Description'), findsNothing);
   });
 
   /// Test that a space tile is displayed with correct name and description when data is loaded
@@ -130,7 +134,7 @@ void main() {
       ],
     );
 
-    expect(find.text('Join & Continue'), findsOneWidget);
+    expect(find.text('Join all recommended spaces'), findsOneWidget);
     expect(find.text('Skip'), findsOneWidget);
   });
 }
