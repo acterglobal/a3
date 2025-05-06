@@ -1150,6 +1150,8 @@
   "@spaceNotifications": {},
   "spaces": "Spaces",
   "@spaces": {},
+  "spacesLoadingError": "Failed to load related spaces & chats",
+  "@spacesLoadingError": {},
   "joinError": "Failed to join space",
   "@joinError": {},
   "startDM": "Start DM",
