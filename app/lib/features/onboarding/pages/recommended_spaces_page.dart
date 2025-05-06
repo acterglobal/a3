@@ -37,25 +37,44 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 30),
-                _buildHeadlineText(context),
-                const SizedBox(height: 20),
-                _buildDescriptionText(context),
-                const SizedBox(height: 30),
-                _buildSpacesSection(context),
-                const Spacer(),
-                _buildActionButtons(context),
-                const SizedBox(height: 50),
-              ],
+        child: Column(
+          children: [
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 30),
+                  _buildHeadlineText(context),
+                  const SizedBox(height: 20),
+                  _buildDescriptionText(context),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
-          ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _buildSpacesSection(context),
+                ),
+              ),
+            ),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 10),
+                  _buildActionButtons(context),
+                  const SizedBox(height: 50),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -96,8 +115,9 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
       return Center(child: Text(lang.noSpacesFound));
     }
 
-    // Show the first space for now
-    return _buildSpaceTile(context, spaces.first);
+    return Column(
+      children: spaces.map((space) => _buildSpaceTile(context, space)).toList(),
+    );
   }
 
   Widget _buildSpaceTile(BuildContext context, PublicSearchResultItem space) {
@@ -159,17 +179,21 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
   Widget _buildActionButtons(BuildContext context) {
     final lang = L10n.of(context);
     final spaces = ref.watch(publicSearchProvider).records ?? [];
-    final space = spaces.isNotEmpty ? spaces.first : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: space != null ? () => joinRecommendedSpace(context, space, widget.callNextPage,ref) : null,
+          onPressed: spaces.isNotEmpty 
+            ? () => joinRecommendedSpace(context, spaces.first, widget.callNextPage, ref) 
+            : null,
           child: Text(lang.joinAndContinue),
         ),
         const SizedBox(height: 10),
-        OutlinedButton(onPressed: () => widget.callNextPage.call(), child: Text(lang.skip)),
+        OutlinedButton(
+          onPressed: () => widget.callNextPage.call(), 
+          child: Text(lang.skip)
+        ),
       ],
     );
   }
