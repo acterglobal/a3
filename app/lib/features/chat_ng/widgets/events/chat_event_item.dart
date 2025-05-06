@@ -15,6 +15,7 @@ class ChatEventItem extends StatelessWidget {
   final String messageId;
   final TimelineEventItem item;
   final bool isMe;
+  final bool isDM;
   final bool canRedact;
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
@@ -25,6 +26,7 @@ class ChatEventItem extends StatelessWidget {
     required this.messageId,
     required this.item,
     required this.isMe,
+    required this.isDM,
     required this.canRedact,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
@@ -41,6 +43,7 @@ class ChatEventItem extends StatelessWidget {
         messageId: messageId,
         item: item,
         isMe: isMe,
+        isDM: isDM,
         canRedact: canRedact,
         isFirstMessageBySender: isFirstMessageBySender,
         isLastMessageBySender: isLastMessageBySender,

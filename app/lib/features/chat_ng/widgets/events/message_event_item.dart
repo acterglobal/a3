@@ -22,6 +22,7 @@ class MessageEventItem extends ConsumerWidget {
   final String messageId;
   final TimelineEventItem item;
   final bool isMe;
+  final bool isDM;
   final bool canRedact;
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
@@ -33,6 +34,7 @@ class MessageEventItem extends ConsumerWidget {
     required this.messageId,
     required this.item,
     required this.isMe,
+    required this.isDM,
     required this.canRedact,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
@@ -206,7 +208,7 @@ class MessageEventItem extends ConsumerWidget {
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     String? displayName;
 
-    if (isFirstMessageBySender && !isMe) {
+    if (isFirstMessageBySender && !isMe && !isDM) {
       // FIXME: also ignore in 1-on-1 dm rooms
       final senderId = item.sender();
       final letRoomId = roomId;

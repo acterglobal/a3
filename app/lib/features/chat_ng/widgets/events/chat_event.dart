@@ -72,8 +72,12 @@ class ChatEvent extends ConsumerWidget {
 
     final isMe = myId == item.sender();
 
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+
     final bool shouldShowAvatar = _shouldShowAvatar(
+      ref: ref,
       eventType: item.eventType(),
+      isDM: isDM,
       isLastMessageBySender: isLastMessageBySender,
       isMe: isMe,
     );
@@ -89,13 +93,16 @@ class ChatEvent extends ConsumerWidget {
         children: [
           shouldShowAvatar
               ? _buildAvatar(ctx, ref, item.sender())
-              : const SizedBox(width: 40),
+              : isFirstMessageBySender && !isDM
+              ? const SizedBox(width: 40)
+              : const SizedBox.shrink(),
           Flexible(
             child: ChatEventItem(
               roomId: roomId,
               messageId: messageId,
               item: item,
               isMe: isMe,
+              isDM: isDM,
               canRedact: canRedact,
               isFirstMessageBySender: isFirstMessageBySender,
               isLastMessageBySender: isLastMessageBySender,
@@ -130,14 +137,16 @@ class ChatEvent extends ConsumerWidget {
   }
 
   bool _shouldShowAvatar({
+    required WidgetRef ref,
     required String eventType,
+    required bool isDM,
     required bool isLastMessageBySender,
     required bool isMe,
   }) {
     if (isStateEvent(eventType) || isMemberEvent(eventType)) {
-      return !isMe; // Show avatar only for state messages
+      return !isMe && !isDM; // Show avatar only for state messages
     }
     // For regular messages, follow the grouping
-    return isLastMessageBySender && !isMe;
+    return isLastMessageBySender && !isMe && !isDM;
   }
 }
