@@ -2899,8 +2899,10 @@
   "@spaceSkeletonName": {},
   "spaceSkeletonDescription": "Space description that might be a bit longer to show how it looks with multiple lines",
   "@spaceSkeletonDescription": {},
-  "joinAndContinue": "Join & Continue",
+  "joinAndContinue": "Join all recommended spaces",
   "@joinAndContinue": {},
+  "joinSelectedSpace": "Join selected {count} spaces",
+  "@joinSelectedSpace": {},
   "successfullyJoined": "Successfully joined {spaceName}",
   "@successfullyJoined": {}
 }

@@ -22,6 +22,8 @@ class RecommendedSpacesPage extends ConsumerStatefulWidget {
 }
 
 class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
+  List<String> selectedSpaces = [];
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +32,17 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
         ..updateSearchTerm('acter.global')
         ..updateSearchServer('acter.global')
         ..updateFilters(FilterBy.spaces);
+    });
+  }
+
+  void _toggleSpaceSelection(PublicSearchResultItem space) {
+    setState(() {
+      final spaceId = space.roomIdStr();
+      if (selectedSpaces.contains(spaceId)) {
+        selectedSpaces.remove(spaceId);
+      } else {
+        selectedSpaces.add(spaceId);
+      }
     });
   }
 
@@ -122,32 +135,51 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
 
   Widget _buildSpaceTile(BuildContext context, PublicSearchResultItem space) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final spaceName = space.name() ?? '';
     final description = space.topic() ?? '';
     final avatarLoader = ref.watch(searchItemProfileData(space));
+    final isSelected = selectedSpaces.contains(space.roomIdStr());
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: avatarLoader.when(
-          data: (avatar) => ActerAvatar(options: AvatarOptions(avatar)),
-          error: (_, __) => _defaultAvatar(spaceName, space),
-          loading: () => _defaultAvatar(spaceName, space),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(
+          color: isSelected ? colorScheme.primary : Colors.transparent,
+          width: 2,
         ),
-        title: Text(spaceName, style: textTheme.bodyMedium),
-        subtitle:
-            description.isNotEmpty
-                ? Padding(
+      ),
+      child: InkWell(
+        onTap: () => _toggleSpaceSelection(space),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+          leading: avatarLoader.when(
+            data: (avatar) => ActerAvatar(options: AvatarOptions(avatar)),
+            error: (_, __) => _defaultAvatar(spaceName, space),
+            loading: () => _defaultAvatar(spaceName, space),
+          ),
+          trailing: Padding(
+            padding: const EdgeInsets.only(left: 0),
+            child: ActerPrimaryActionButton(
+              onPressed: () => joinRecommendedSpace(context, space, widget.callNextPage, ref),
+              child: Text(L10n.of(context).join),
+            ),
+          ),
+          title: Text(spaceName, style: textTheme.bodyMedium),
+          subtitle: description.isNotEmpty
+              ? Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     description,
                     style: textTheme.bodySmall,
-                    maxLines: 3,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 )
-                : null,
-        isThreeLine: true,
+              : null,
+          isThreeLine: true,
+        ),
       ),
     );
   }
@@ -184,15 +216,25 @@ class _RecommendedSpacesPageState extends ConsumerState<RecommendedSpacesPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: spaces.isNotEmpty 
-            ? () => joinRecommendedSpace(context, spaces.first, widget.callNextPage, ref) 
-            : null,
-          child: Text(lang.joinAndContinue),
+          onPressed: () {
+            if (selectedSpaces.isNotEmpty) {
+              // Join all selected spaces
+              for (final spaceId in selectedSpaces) {
+                final space = spaces.firstWhere((s) => s.roomIdStr() == spaceId);
+                joinRecommendedSpace(context, space, widget.callNextPage, ref);
+              }
+            } else {
+              widget.callNextPage.call();
+            }
+          },
+          child: Text(selectedSpaces.isNotEmpty 
+            ? lang.joinSelectedSpace(selectedSpaces.length)
+            : lang.joinAndContinue),
         ),
         const SizedBox(height: 10),
         OutlinedButton(
-          onPressed: () => widget.callNextPage.call(), 
-          child: Text(lang.skip)
+          onPressed: () => widget.callNextPage.call(),
+          child: Text(lang.skip),
         ),
       ],
     );
