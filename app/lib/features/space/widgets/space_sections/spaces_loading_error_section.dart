@@ -29,7 +29,7 @@ class SpacesLoadingSection extends ConsumerWidget {
         ActerErrorDialog(
           error: error,
           includeBugReportButton: true,
-          title: L10n.of(context).spacesLoadingError,
+          title: L10n.of(context).joinError,
           onRetryTap: () {
             ref.invalidate(spaceRelationsProvider(spaceId));
           },
