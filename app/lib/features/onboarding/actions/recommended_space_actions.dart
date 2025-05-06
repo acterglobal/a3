@@ -33,7 +33,7 @@ Future<void> joinRecommendedSpace(
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(lang.spacesLoadingError)));
+        ).showSnackBar(SnackBar(content: Text(lang.joinError)));
       }
     }
   }
