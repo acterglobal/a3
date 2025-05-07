@@ -1,3 +1,4 @@
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
@@ -24,11 +25,8 @@ class MessageEventItem extends ConsumerWidget {
   final String messageId;
   final TimelineEventItem item;
   final bool isMe;
-  final bool isDM;
-  final bool canRedact;
   final bool isFirstMessageBySender;
   final bool isLastMessageBySender;
-  final bool isLastMessage;
 
   const MessageEventItem({
     super.key,
@@ -36,17 +34,17 @@ class MessageEventItem extends ConsumerWidget {
     required this.messageId,
     required this.item,
     required this.isMe,
-    required this.isDM,
-    required this.canRedact,
     required this.isFirstMessageBySender,
     required this.isLastMessageBySender,
-    required this.isLastMessage,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
     final sendingState = item.sendState();
+    final isLastMessage = ref.watch(
+      isLastMessageProvider((roomId: roomId, uniqueId: messageId)),
+    );
     return SwipeTo(
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
@@ -88,6 +86,13 @@ class MessageEventItem extends ConsumerWidget {
     TimelineEventItem item,
     bool isMe,
   ) {
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+
+    final myId = ref.watch(myUserIdStrProvider);
+    final isMe = myId == item.sender();
+
+    // FIXME: this is not correct, we should check if the user has the power to redact
+    final canRedact = item.sender() == myId;
     final messageWidget = buildMsgEventItem(
       context,
       ref,
@@ -223,6 +228,8 @@ class MessageEventItem extends ConsumerWidget {
     final wasEdited = item.wasEdited();
     final content = item.msgContent().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
+
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
     String? displayName;
 
     if (isFirstMessageBySender && !isMe && !isDM) {

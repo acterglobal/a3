@@ -6,6 +6,7 @@ import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
+import 'package:acter/features/chat_ng/models/supported_chat_events.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/reply_messages_notifier.dart';
@@ -15,32 +16,6 @@ import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
 
 final _log = Logger('a3::chat::message_provider');
-const _supportedTypes = [
-  'MembershipChange',
-  'ProfileChange',
-
-  'm.policy.rule.room',
-  'm.policy.rule.server',
-  'm.policy.rule.user',
-  'm.room.avatar',
-  'm.room.create',
-  'm.room.encryption',
-  'm.room.guest_access',
-  'm.room.history_visibility',
-  'm.room.join_rules',
-  'm.room.name',
-  'm.room.pinned_events',
-  'm.room.power_levels',
-  'm.room.server_acl',
-  'm.room.tombstone',
-  'm.room.topic',
-  'm.space.child',
-  'm.space.parent',
-
-  'm.room.message',
-  'm.room.redaction',
-  'm.room.encrypted',
-];
 
 typedef RoomMsgId = ({String roomId, String uniqueId});
 typedef MentionQuery = (String, MentionType);
@@ -87,7 +62,7 @@ final renderableChatMessagesProvider = StateProvider.autoDispose
           _log.severe('Room Msg $roomId $id not found');
           return false;
         }
-        return _supportedTypes.contains(msg.eventItem()?.eventType());
+        return supportedEventTypes.contains(msg.eventItem()?.eventType());
       }).toList();
     });
 

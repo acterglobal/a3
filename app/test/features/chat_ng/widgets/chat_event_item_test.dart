@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
-import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
@@ -146,21 +145,6 @@ void main() {
 
       expect(find.byType(MessageEventItem), findsOneWidget);
       expect(find.text('Test message'), findsOneWidget);
-    });
-
-    testWidgets('passes correct properties to ChatEventItem', (tester) async {
-      await tester.pumpProviderWidget(
-        overrides: testOverrides,
-        child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
-      );
-
-      final chatEventItem = tester.widget<ChatEventItem>(
-        find.byType(ChatEventItem),
-      );
-
-      expect(chatEventItem.roomId, equals('test-room'));
-      expect(chatEventItem.messageId, equals('test-message'));
-      expect(chatEventItem.item, equals(mockEventItem));
     });
     testWidgets('renders unsupported message for unknown event type', (
       tester,
