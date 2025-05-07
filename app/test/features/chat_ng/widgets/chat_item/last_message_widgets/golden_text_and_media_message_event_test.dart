@@ -1,5 +1,5 @@
 import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
-import 'package:acter/features/chat_ui_showcase/models/convo_showcase_data.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/text_and_media_usecases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../../../helpers/font_loader.dart';

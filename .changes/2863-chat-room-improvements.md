@@ -1,2 +1,0 @@
-- [Improvement] : Chat NG - Chat room app bar design is now improved with better placements of it content.
-- [Enhacement] : Chat NG - Chat is now getting even better with dynamic height management based on the its message content.

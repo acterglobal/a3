@@ -22,8 +22,45 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>global.acter.url.matrix</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>matrix</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>global.acter.urls.acter</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>acter</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>whatsapp</string>
+		<string>sgnl</string>
+		<string>tg</string>
+		<string>onepassword</string>
+		<string>bitwarden</string>
+		<string>keeper</string>
+		<string>lastpass</string>
+		<string>enpass</string>
+		<string>protonpass</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
@@ -35,11 +72,11 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Allows you to select photos from your photo library to be uploaded into Acter and shared via Chat or in Spaces with others.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Access most functions for calendar viewing and editing.</string>
+	<string>Acter needs access to your calendar to display and manage your events.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Access contacts for event attendee editing.</string>
+	<string>Acter uses your contacts to let you invite people to events and manage attendees easily.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>Access most functions for calendar viewing and editing.</string>
+	<string>Acter requires full calendar access to create, edit, and delete events on your behalf.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
@@ -60,19 +97,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>whatsapp</string>
-        <string>sgnl</string>
-        <string>tg</string>
-		<string>onepassword</string>
-		<string>bitwarden</string>
-		<string>keeper</string>
-		<string>lastpass</string>
-		<string>enpass</string> 
-		<string>protonpass</string>
-    </array>
-	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
 </dict>
 </plist>

@@ -212,7 +212,7 @@ sentry:
   upload_debug_symbols: true
   upload_source_maps: false
   upload_sources: false
-  project: acter-app
+  project: a3-app
   org: acter
 
 icons_launcher:
