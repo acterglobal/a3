@@ -21,7 +21,7 @@ Future<void> handleCalendarSyncToggle({
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return Dialog.fullscreen(child: const CalendarSyncPermissionWidget());
+          return Dialog.fullscreen(child: CalendarSyncPermissionWidget());
         },
       );
 

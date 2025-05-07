@@ -27,7 +27,7 @@ class CalendarSettingsPage extends ConsumerWidget {
             SettingsSection(
               tiles: [
                 SettingsTile.switchTile(
-                  enabled: isSupportedPlatform,
+                  // enabled: isSupportedPlatform,
                   title: Text(lang.calendarSyncFeatureTitle),
                   description: Text(lang.calendarSyncFeatureDesc),
                   initialValue:

@@ -4,6 +4,11 @@
 <dict>
 	<key>com.apple.developer.aps-environment</key>
 	<string>production</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:app.acter.global</string>
+		<string>applinks:app.m-1.acter.global</string>
+	</array>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
 	<key>com.apple.security.files.user-selected.read-only</key>

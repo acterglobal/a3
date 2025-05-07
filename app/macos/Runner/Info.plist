@@ -18,10 +18,44 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleURLName</key>
+	<string></string>
+	<key>CFBundleURLSchemes</key>
+	<array>
+		<string>matrix</string>
+		<string>acter</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>global.acter.matrix</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>matrix</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>global.acter.url.acter</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>acter</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>whatsapp</string>
+	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
@@ -30,16 +64,5 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>whatsapp</string>
-    </array>
-	<key>CFBundleURLName</key>
-	<string></string>
-	<key>CFBundleURLSchemes</key>
-	<array>
-		<string>matrix</string>
-		<string>acter</string>
-	</array>
 </dict>
 </plist>
