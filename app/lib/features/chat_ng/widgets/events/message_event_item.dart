@@ -115,16 +115,14 @@ class MessageEventItem extends ConsumerWidget {
       child: Hero(
         tag: messageId,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            (isFirstMessageBySender && !isMe && !isDM)
+            (isLastMessageBySender && !isMe && !isDM)
                 ? _buildAvatar(context, ref, roomId, item.sender(), isMe)
                 : (!isMe && !isDM)
                 ? const SizedBox(width: 40)
                 : const SizedBox.shrink(),
             messageWidget,
-            if (isMe && !isDM)
-              _buildAvatar(context, ref, roomId, item.sender(), isMe),
           ],
         ),
       ),
