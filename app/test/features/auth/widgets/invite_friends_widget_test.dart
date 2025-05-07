@@ -20,7 +20,7 @@ void main() {
 
     testWidgets('renders all UI elements correctly', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
 
       // Verify headline text is present
@@ -43,7 +43,7 @@ void main() {
 
     testWidgets('updates search value when text is entered', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
 
       // Find the search field and enter text
@@ -58,7 +58,7 @@ void main() {
 
     testWidgets('shows search results when search value is entered', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
 
       // Enter search text
@@ -72,7 +72,7 @@ void main() {
 
     testWidgets('shows search results list when text is entered', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
       await tester.pumpAndSettle();
 
@@ -90,7 +90,7 @@ void main() {
 
     testWidgets('hides search results list when search is cleared', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
       await tester.pumpAndSettle();
 
@@ -112,7 +112,7 @@ void main() {
 
     testWidgets('updates search results list when search text changes', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
       await tester.pumpAndSettle();
 
@@ -137,7 +137,7 @@ void main() {
 
     testWidgets('shows invite externally section when no search text', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteFriendsWidget(roomId: testRoomId),
+        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
       await tester.pumpAndSettle();
 

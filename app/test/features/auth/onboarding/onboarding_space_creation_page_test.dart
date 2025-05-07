@@ -7,7 +7,7 @@ void main() {
   group('OnboardingSpaceCreationPage', () {
     testWidgets('renders all UI elements correctly', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const OnboardingSpaceCreationPage(callNextPage: null),
+        child: OnboardingSpaceCreationPage(callNextPage: () {}),
       );
 
       // Verify icon is present
@@ -24,7 +24,7 @@ void main() {
     testWidgets('does not throw when callNextPage is null',
         (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const OnboardingSpaceCreationPage(callNextPage: null),
+        child: OnboardingSpaceCreationPage(callNextPage: () {}),
       );
 
       // Tap the skip button

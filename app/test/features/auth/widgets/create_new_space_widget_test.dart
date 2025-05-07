@@ -18,7 +18,7 @@ void main() {
   group('CreateNewSpaceWidget', () {
     testWidgets('renders all UI elements correctly', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const CreateNewSpaceWidget(),
+        child: CreateNewSpaceWidget(callNextPage: () {}),
         overrides: [
           accountDisplayNameProvider.overrideWith((ref) => Future.value('Test User')),
           featureActivationStateProvider.overrideWith((ref) => {}),
@@ -45,7 +45,7 @@ void main() {
 
     testWidgets('updates space name when text is entered', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const CreateNewSpaceWidget(),
+        child: CreateNewSpaceWidget(callNextPage: () {}),
         overrides: [
           accountDisplayNameProvider.overrideWith((ref) => Future.value('Test User')),
           featureActivationStateProvider.overrideWith((ref) => {}),
@@ -63,7 +63,7 @@ void main() {
 
     testWidgets('toggles checkboxes when tapped', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const CreateNewSpaceWidget(),
+        child: CreateNewSpaceWidget(callNextPage: () {}),
         overrides: [
           accountDisplayNameProvider.overrideWith((ref) => Future.value('Test User')),
           featureActivationStateProvider.overrideWith((ref) => {}),

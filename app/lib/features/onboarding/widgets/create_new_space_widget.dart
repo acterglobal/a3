@@ -4,6 +4,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/input_text_field_without_border.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/onboarding/actions/create_new_space_onboarding_actions.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/features/onboarding/widgets/invite_friends_widget.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/spaces/model/keys.dart';
@@ -19,7 +20,8 @@ import 'package:acter/common/providers/common_providers.dart';
 final _log = Logger('a3::spaces::create_new_space');
 
 class CreateNewSpaceWidget extends ConsumerStatefulWidget {
-  const CreateNewSpaceWidget({super.key});
+  final CallNextPage callNextPage;
+  const CreateNewSpaceWidget({super.key, required this.callNextPage});
 
   @override
   ConsumerState<CreateNewSpaceWidget> createState() =>
@@ -273,7 +275,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) {
-        return InviteFriendsWidget(roomId: spaceId);
+        return InviteFriendsWidget(roomId: spaceId, callNextPage: widget.callNextPage);
       },
     );
   }

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingSpaceCreationPage extends ConsumerWidget {
-  final CallNextPage? callNextPage;
+  final CallNextPage callNextPage;
 
   const OnboardingSpaceCreationPage({super.key, required this.callNextPage});
 
@@ -88,7 +88,7 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
         const SizedBox(height: 10),
         OutlinedButton(
           onPressed: () {
-            callNextPage?.call();
+            callNextPage.call();
           },
           child: Text(lang.skip),
         ),
@@ -104,7 +104,7 @@ class OnboardingSpaceCreationPage extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) {
-        return const CreateNewSpaceWidget();
+        return CreateNewSpaceWidget(callNextPage: callNextPage);
       },
     );
   }
