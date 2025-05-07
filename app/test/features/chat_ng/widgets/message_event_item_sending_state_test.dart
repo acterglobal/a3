@@ -86,8 +86,10 @@ void main() {
           messageId: 'msg-1',
           item: mockItem,
           isMe: true,
+          canRedact: true,
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
+          isLastMessage: true,
         ),
       );
 
@@ -108,8 +110,10 @@ void main() {
           messageId: 'msg-1',
           item: mockItem,
           isMe: true,
+          canRedact: true,
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
+          isLastMessage: true,
         ),
       );
 
@@ -129,8 +133,10 @@ void main() {
           messageId: 'msg-1',
           item: mockItem,
           isMe: true,
+          canRedact: true,
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
+          isLastMessage: false, // Not the last message
         ),
       );
 
@@ -152,8 +158,10 @@ void main() {
           messageId: 'msg-1',
           item: mockItem,
           isMe: true,
+          canRedact: true,
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
+          isLastMessage: true,
         ),
       );
 
@@ -176,9 +184,11 @@ void main() {
           roomId: 'room-1',
           messageId: 'msg-1',
           item: mockItem,
-          isMe: false, // Messa
+          isMe: false, // Message from another user
+          canRedact: false,
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
+          isLastMessage: true,
         ),
       );
 
@@ -202,8 +212,10 @@ void main() {
           messageId: 'msg-1',
           item: mockItem,
           isMe: true,
+          canRedact: true,
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
+          isLastMessage: true,
         ),
       );
 
