@@ -20,7 +20,12 @@ class StateEventContainerWidget extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(25),
       ),
-      child: child,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 100,
+        ),
+        child: child,
+      ),
     );
   }
 }

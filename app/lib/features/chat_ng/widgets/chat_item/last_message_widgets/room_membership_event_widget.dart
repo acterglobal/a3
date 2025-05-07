@@ -10,12 +10,14 @@ class RoomMembershipEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
   final TextStyle? textStyle;
+  final TextAlign? textAlign;
 
   const RoomMembershipEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
     this.textStyle,
+    this.textAlign,
   });
 
   @override
@@ -55,6 +57,7 @@ class RoomMembershipEventWidget extends ConsumerWidget {
     return Text(
       membershipEventText,
       maxLines: 2,
+      textAlign: textAlign,
       style: messageTextStyle,
       overflow: TextOverflow.ellipsis,
     );

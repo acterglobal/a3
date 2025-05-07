@@ -46,7 +46,7 @@ class ChatEvent extends ConsumerWidget {
       return renderVirtual(msg, virtual);
     }
 
-    return renderExvent(context: context, msg: msg, item: inner, ref: ref);
+    return renderEvent(context: context, msg: msg, item: inner, ref: ref);
   }
 
   Widget renderVirtual(TimelineItem msg, TimelineVirtualItem virtual) {
@@ -54,7 +54,7 @@ class ChatEvent extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  Widget renderExvent({
+  Widget renderEvent({
     required BuildContext context,
     required TimelineItem msg,
     required TimelineEventItem item,
@@ -73,12 +73,55 @@ class ChatEvent extends ConsumerWidget {
     final isLastMessage = ref.watch(
       isLastMessageProvider((roomId: roomId, uniqueId: eventId)),
     );
-    // FIXME: should check canRedact permission from the room
     final canRedact = item.sender() == myId;
     final eventType = item.eventType();
 
-    final eventWidget = switch (eventType) {
-      // handle message inner types separately
+    final eventWidget = _buildEventWidget(
+      context: context,
+      eventType: eventType,
+      roomId: roomId,
+      messageId: messageId,
+      item: item,
+      isMe: isMe,
+      isDM: isDM,
+      canRedact: canRedact,
+      isFirstMessageBySender: isFirstMessageBySender,
+      isLastMessageBySender: isLastMessageBySender,
+      isLastMessage: isLastMessage,
+    );
+
+    final isMessageEvent = eventType == 'm.room.message';
+    final mainAxisAlignment =
+        !isMessageEvent
+            ? MainAxisAlignment.center
+            : isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: isFirstMessageBySender ? 12 : 2),
+      child: Row(
+        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [eventWidget],
+      ),
+    );
+  }
+
+  Widget _buildEventWidget({
+    required BuildContext context,
+    required String eventType,
+    required String roomId,
+    required String messageId,
+    required TimelineEventItem item,
+    required bool isMe,
+    required bool isDM,
+    required bool canRedact,
+    required bool isFirstMessageBySender,
+    required bool isLastMessageBySender,
+    required bool isLastMessage,
+  }) {
+    return switch (eventType) {
       'm.room.message' => MessageEventItem(
         roomId: roomId,
         messageId: messageId,
@@ -95,6 +138,7 @@ class ChatEvent extends ConsumerWidget {
           roomId: roomId,
           eventItem: item,
           textStyle: stateEventTextStyle(context),
+          textAlign: TextAlign.center,
         ),
       ),
       'ProfileChange' => StateEventContainerWidget(
@@ -102,59 +146,31 @@ class ChatEvent extends ConsumerWidget {
           roomId: roomId,
           eventItem: item,
           textStyle: stateEventTextStyle(context),
+          textAlign: TextAlign.center,
         ),
       ),
-      'm.room.redaction' =>
-        isMe
-            ? ChatBubble.me(
-              context: context,
-              isLastMessageBySender: isLastMessageBySender,
-              child: RedactedMessageWidget(),
-            )
-            : ChatBubble(
-              context: context,
-              isLastMessageBySender: isLastMessageBySender,
-              child: RedactedMessageWidget(),
-            ),
-      'm.room.encrypted' =>
-        isMe
-            ? ChatBubble.me(
-              context: context,
-              isLastMessageBySender: isLastMessageBySender,
-              child: EncryptedMessageWidget(),
-            )
-            : ChatBubble(
-              context: context,
-              isLastMessageBySender: isLastMessageBySender,
-              child: EncryptedMessageWidget(),
-            ),
-      'm.policy.rule.room' ||
-      'm.policy.rule.server' ||
-      'm.policy.rule.user' ||
-      'm.room.aliases' ||
-      'm.room.avatar' ||
-      'm.room.canonical_alias' ||
-      'm.room.create' ||
-      'm.room.encryption' ||
-      'm.room.guest_access' ||
-      'm.room.history_visibility' ||
-      'm.room.join_rules' ||
-      'm.room.name' ||
-      'm.room.pinned_events' ||
-      'm.room.power_levels' ||
-      'm.room.server_acl' ||
-      'm.room.third_party_invite' ||
-      'm.room.tombstone' ||
-      'm.room.topic' ||
-      'm.space.child' ||
-      'm.space.parent' => StateEventContainerWidget(
-        child: RoomUpdateEvent(
-          isMe: isMe,
-          item: item,
-          roomId: roomId,
-          textStyle: stateEventTextStyle(context),
-        ),
+      'm.room.redaction' => buildChatBubble(
+        context,
+        const RedactedMessageWidget(),
+        isMe,
+        isLastMessageBySender,
       ),
+      'm.room.encrypted' => buildChatBubble(
+        context,
+        const EncryptedMessageWidget(),
+        isMe,
+        isLastMessageBySender,
+      ),
+      String type when _isSupportedRoomUpdateEvent(type) =>
+        StateEventContainerWidget(
+          child: RoomUpdateEvent(
+            isMe: isMe,
+            item: item,
+            roomId: roomId,
+            textStyle: stateEventTextStyle(context),
+            textAlign: TextAlign.center,
+          ),
+        ),
       _ => StateEventContainerWidget(
         child: Text(
           'Unsupported chat event type: $eventType',
@@ -162,19 +178,50 @@ class ChatEvent extends ConsumerWidget {
         ),
       ),
     };
-    final isMessageEvent = item.eventType() == 'm.room.message';
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: isFirstMessageBySender ? 12 : 2),
-      child: Row(
-        mainAxisAlignment:
-            !isMessageEvent
-                ? MainAxisAlignment.center
-                : !isMe
-                ? MainAxisAlignment.start
-                : MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [eventWidget],
-      ),
-    );
+  }
+
+  Widget buildChatBubble(
+    BuildContext context,
+    Widget child,
+    bool isMe,
+    bool isLastMessageBySender,
+  ) {
+    return isMe
+        ? ChatBubble.me(
+          context: context,
+          isLastMessageBySender: isLastMessageBySender,
+          child: child,
+        )
+        : ChatBubble(
+          context: context,
+          isLastMessageBySender: isLastMessageBySender,
+          child: child,
+        );
+  }
+
+  bool _isSupportedRoomUpdateEvent(String type) {
+    const supportedRoomUpdateEvents = {
+      'm.policy.rule.room',
+      'm.policy.rule.server',
+      'm.policy.rule.user',
+      'm.room.aliases',
+      'm.room.avatar',
+      'm.room.canonical_alias',
+      'm.room.create',
+      'm.room.encryption',
+      'm.room.guest_access',
+      'm.room.history_visibility',
+      'm.room.join_rules',
+      'm.room.name',
+      'm.room.pinned_events',
+      'm.room.power_levels',
+      'm.room.server_acl',
+      'm.room.third_party_invite',
+      'm.room.tombstone',
+      'm.room.topic',
+      'm.space.child',
+      'm.space.parent',
+    };
+    return supportedRoomUpdateEvents.contains(type);
   }
 }

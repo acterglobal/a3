@@ -10,12 +10,14 @@ class ProfileChangesEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
   final TextStyle? textStyle;
+  final TextAlign? textAlign;
 
   const ProfileChangesEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
     this.textStyle,
+    this.textAlign,
   });
 
   @override
@@ -56,6 +58,7 @@ class ProfileChangesEventWidget extends ConsumerWidget {
       membershipEventText,
       maxLines: 2,
       style: messageTextStyle,
+      textAlign: textAlign,
       overflow: TextOverflow.ellipsis,
     );
   }

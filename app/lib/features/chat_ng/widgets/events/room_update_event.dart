@@ -15,6 +15,7 @@ class RoomUpdateEvent extends ConsumerWidget {
   final TimelineEventItem item;
   final String roomId;
   final TextStyle? textStyle;
+  final TextAlign? textAlign;
 
   const RoomUpdateEvent({
     super.key,
@@ -22,13 +23,18 @@ class RoomUpdateEvent extends ConsumerWidget {
     required this.item,
     required this.roomId,
     this.textStyle,
+    this.textAlign,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
-    return Text(stateText, style: textStyle ?? stateEventTextStyle(context));
+    return Text(
+      stateText,
+      style: textStyle ?? stateEventTextStyle(context),
+      textAlign: textAlign,
+    );
   }
 
   String? getStateEventStr(
