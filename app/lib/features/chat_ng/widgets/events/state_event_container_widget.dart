@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+
+class StateEventContainerWidget extends StatelessWidget {
+  final Widget? child;
+  const StateEventContainerWidget({super.key, this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    if (child == null || child == const SizedBox.shrink()) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        ),
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: child,
+    );
+  }
+}
+
+TextStyle stateEventTextStyle(BuildContext context) {
+  return Theme.of(context).textTheme.labelSmall!.copyWith(
+    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+  );
+}

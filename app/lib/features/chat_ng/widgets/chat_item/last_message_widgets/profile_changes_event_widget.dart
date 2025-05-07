@@ -9,11 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ProfileChangesEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
+  final TextStyle? textStyle;
 
   const ProfileChangesEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
+    this.textStyle,
   });
 
   @override
@@ -46,13 +48,14 @@ class ProfileChangesEventWidget extends ConsumerWidget {
     //Return empty if text is null
     if (membershipEventText == null) return const SizedBox.shrink();
 
-    final textStyle = lastMessageTextStyle(context, ref, roomId);
+    final messageTextStyle =
+        textStyle ?? lastMessageTextStyle(context, ref, roomId);
 
     //Render membership event text
     return Text(
       membershipEventText,
       maxLines: 2,
-      style: textStyle,
+      style: messageTextStyle,
       overflow: TextOverflow.ellipsis,
     );
   }

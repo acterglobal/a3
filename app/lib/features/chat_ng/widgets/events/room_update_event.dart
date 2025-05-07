@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:flutter/material.dart';
@@ -13,36 +14,21 @@ class RoomUpdateEvent extends ConsumerWidget {
   final bool isMe;
   final TimelineEventItem item;
   final String roomId;
+  final TextStyle? textStyle;
 
   const RoomUpdateEvent({
     super.key,
     required this.isMe,
     required this.item,
     required this.roomId,
+    this.textStyle,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-        ),
-        borderRadius: BorderRadius.circular(25),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        stateText,
-        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-        ),
-      ),
-    );
+    return Text(stateText, style: textStyle ?? stateEventTextStyle(context));
   }
 
   String? getStateEventStr(

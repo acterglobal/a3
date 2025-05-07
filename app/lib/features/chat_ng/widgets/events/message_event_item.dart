@@ -11,6 +11,8 @@ import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:flutter/widgets.dart';
@@ -105,7 +107,19 @@ class MessageEventItem extends ConsumerWidget {
             messageId: messageId,
             roomId: roomId,
           ),
-      child: Hero(tag: messageId, child: messageWidget),
+      child: Hero(
+        tag: messageId,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!isMe && !isDM)
+              _buildAvatar(context, ref, roomId, item.sender(), isMe),
+            messageWidget,
+            if (isMe && !isDM)
+              _buildAvatar(context, ref, roomId, item.sender(), isMe),
+          ],
+        ),
+      ),
     );
   }
 
@@ -273,6 +287,34 @@ class MessageEventItem extends ConsumerWidget {
       isEdited: wasEdited,
       timestamp: timestamp,
       child: child,
+    );
+  }
+
+  Widget _buildAvatar(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+    String userId,
+    bool isMe,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(right: isMe ? 8 : 0, left: isMe ? 0 : 8),
+      child: GestureDetector(
+        onTap:
+            () => showMemberInfoDrawer(
+              context: context,
+              roomId: roomId,
+              memberId: userId,
+            ),
+        child: ActerAvatar(
+          options: AvatarOptions.DM(
+            ref.watch(
+              memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+            ),
+            size: 14,
+          ),
+        ),
+      ),
     );
   }
 

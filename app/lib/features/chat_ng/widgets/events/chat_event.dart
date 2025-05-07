@@ -1,10 +1,14 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
+import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
-import 'package:acter/features/chat_ng/utils.dart';
-import 'package:acter/features/chat_ng/widgets/events/chat_event_item.dart';
-import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/profile_changes_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
+import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem, TimelineItem, TimelineVirtualItem;
@@ -42,7 +46,7 @@ class ChatEvent extends ConsumerWidget {
       return renderVirtual(msg, virtual);
     }
 
-    return renderEvent(ctx: context, msg: msg, item: inner, ref: ref);
+    return renderExvent(context: context, msg: msg, item: inner, ref: ref);
   }
 
   Widget renderVirtual(TimelineItem msg, TimelineVirtualItem virtual) {
@@ -50,44 +54,117 @@ class ChatEvent extends ConsumerWidget {
     return const SizedBox.shrink();
   }
 
-  Widget renderEvent({
-    required BuildContext ctx,
+  Widget renderExvent({
+    required BuildContext context,
     required TimelineItem msg,
     required TimelineEventItem item,
     required WidgetRef ref,
   }) {
-    final isLastMessageBySender = ref.watch(
-      isLastMessageBySenderProvider((roomId: roomId, uniqueId: eventId)),
-    );
+    final messageId = msg.uniqueId();
+    final myId = ref.watch(myUserIdStrProvider);
+    final isMe = myId == item.sender();
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
     final isFirstMessageBySender = ref.watch(
       isFirstMessageBySenderProvider((roomId: roomId, uniqueId: eventId)),
+    );
+    final isLastMessageBySender = ref.watch(
+      isLastMessageBySenderProvider((roomId: roomId, uniqueId: eventId)),
     );
     final isLastMessage = ref.watch(
       isLastMessageProvider((roomId: roomId, uniqueId: eventId)),
     );
-    final myId = ref.watch(myUserIdStrProvider);
-    final messageId = msg.uniqueId();
     // FIXME: should check canRedact permission from the room
     final canRedact = item.sender() == myId;
+    final eventType = item.eventType();
 
-    final isMe = myId == item.sender();
-
-    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
-
+    final eventWidget = switch (eventType) {
+      // handle message inner types separately
+      'm.room.message' => MessageEventItem(
+        roomId: roomId,
+        messageId: messageId,
+        item: item,
+        isMe: isMe,
+        isDM: isDM,
+        canRedact: canRedact,
+        isFirstMessageBySender: isFirstMessageBySender,
+        isLastMessageBySender: isLastMessageBySender,
+        isLastMessage: isLastMessage,
+      ),
+      'MembershipChange' => StateEventContainerWidget(
+        child: RoomMembershipEventWidget(
+          roomId: roomId,
+          eventItem: item,
+          textStyle: stateEventTextStyle(context),
+        ),
+      ),
+      'ProfileChange' => StateEventContainerWidget(
+        child: ProfileChangesEventWidget(
+          roomId: roomId,
+          eventItem: item,
+          textStyle: stateEventTextStyle(context),
+        ),
+      ),
+      'm.room.redaction' =>
+        isMe
+            ? ChatBubble.me(
+              context: context,
+              isLastMessageBySender: isLastMessageBySender,
+              child: RedactedMessageWidget(),
+            )
+            : ChatBubble(
+              context: context,
+              isLastMessageBySender: isLastMessageBySender,
+              child: RedactedMessageWidget(),
+            ),
+      'm.room.encrypted' =>
+        isMe
+            ? ChatBubble.me(
+              context: context,
+              isLastMessageBySender: isLastMessageBySender,
+              child: EncryptedMessageWidget(),
+            )
+            : ChatBubble(
+              context: context,
+              isLastMessageBySender: isLastMessageBySender,
+              child: EncryptedMessageWidget(),
+            ),
+      'm.policy.rule.room' ||
+      'm.policy.rule.server' ||
+      'm.policy.rule.user' ||
+      'm.room.aliases' ||
+      'm.room.avatar' ||
+      'm.room.canonical_alias' ||
+      'm.room.create' ||
+      'm.room.encryption' ||
+      'm.room.guest_access' ||
+      'm.room.history_visibility' ||
+      'm.room.join_rules' ||
+      'm.room.name' ||
+      'm.room.pinned_events' ||
+      'm.room.power_levels' ||
+      'm.room.server_acl' ||
+      'm.room.third_party_invite' ||
+      'm.room.tombstone' ||
+      'm.room.topic' ||
+      'm.space.child' ||
+      'm.space.parent' => StateEventContainerWidget(
+        child: RoomUpdateEvent(
+          isMe: isMe,
+          item: item,
+          roomId: roomId,
+          textStyle: stateEventTextStyle(context),
+        ),
+      ),
+      _ => StateEventContainerWidget(
+        child: Text(
+          'Unsupported chat event type: $eventType',
+          style: stateEventTextStyle(context),
+        ),
+      ),
+    };
     final isMessageEvent = item.eventType() == 'm.room.message';
-
-    final bool shouldShowAvatar = _shouldShowAvatar(
-      ref: ref,
-      eventType: item.eventType(),
-      isDM: isDM,
-      isLastMessageBySender: isLastMessageBySender,
-      isMe: isMe,
-    );
-    return Padding(
-      padding:
-          !isMessageEvent
-              ? EdgeInsets.symmetric(vertical: 6)
-              : EdgeInsets.symmetric(vertical: isFirstMessageBySender ? 12 : 2),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: isFirstMessageBySender ? 12 : 2),
       child: Row(
         mainAxisAlignment:
             !isMessageEvent
@@ -96,61 +173,8 @@ class ChatEvent extends ConsumerWidget {
                 ? MainAxisAlignment.start
                 : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          shouldShowAvatar && isMessageEvent
-              ? _buildAvatar(ctx, ref, item.sender())
-              : isFirstMessageBySender && !isDM
-              ? const SizedBox(width: 40)
-              : const SizedBox.shrink(),
-          ChatEventItem(
-            roomId: roomId,
-            messageId: messageId,
-            item: item,
-            isMe: isMe,
-            isDM: isDM,
-            canRedact: canRedact,
-            isFirstMessageBySender: isFirstMessageBySender,
-            isLastMessageBySender: isLastMessageBySender,
-            isLastMessage: isLastMessage,
-          ),
-        ],
+        children: [eventWidget],
       ),
     );
-  }
-
-  Widget _buildAvatar(BuildContext context, WidgetRef ref, String userId) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: GestureDetector(
-        onTap:
-            () => showMemberInfoDrawer(
-              context: context,
-              roomId: roomId,
-              memberId: userId,
-            ),
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            ref.watch(
-              memberAvatarInfoProvider((roomId: roomId, userId: userId)),
-            ),
-            size: 14,
-          ),
-        ),
-      ),
-    );
-  }
-
-  bool _shouldShowAvatar({
-    required WidgetRef ref,
-    required String eventType,
-    required bool isDM,
-    required bool isLastMessageBySender,
-    required bool isMe,
-  }) {
-    if (isStateEvent(eventType) || isMemberEvent(eventType)) {
-      return !isMe && !isDM; // Show avatar only for state messages
-    }
-    // For regular messages, follow the grouping
-    return isLastMessageBySender && !isMe && !isDM;
   }
 }
