@@ -268,7 +268,6 @@ class HtmlEditor extends StatefulWidget {
   final bool shrinkWrap;
   final bool disableAutoScroll;
   final EditorState? editorState;
-  final EdgeInsets? editorPadding;
   final EditorScrollController? scrollController;
   final TextStyleConfiguration? textStyleConfiguration;
   final ExportCallback? onSave;
@@ -287,7 +286,6 @@ class HtmlEditor extends StatefulWidget {
     this.editable = false,
     this.shrinkWrap = false,
     this.disableAutoScroll = false,
-    this.editorPadding = const EdgeInsets.all(10),
     this.scrollController,
     this.header,
     this.footer,
@@ -375,7 +373,8 @@ class HtmlEditorState extends State<HtmlEditor> {
     map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
       showPlaceholder: (editorState, node) => editorState.document.isEmpty,
       configuration: BlockComponentConfiguration(
-        placeholderText: (node) => widget.hintText ?? ' ',
+        placeholderText: (node) => widget.hintText ?? '',
+        padding: (node) => EdgeInsets.zero,
       ),
     );
 
@@ -461,7 +460,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           footer: generateFooter(),
           blockComponentBuilders: _buildBlockComponentBuilders(),
           characterShortcutEvents: _buildCharacterShortcutEvents(),
-          commandShortcutEvents: [...standardCommandShortcutEvents],
+          commandShortcutEvents: standardCommandShortcutEvents,
           disableAutoScroll: widget.disableAutoScroll,
           autoScrollEdgeOffset: 20,
         ),
@@ -479,6 +478,7 @@ class HtmlEditorState extends State<HtmlEditor> {
       buttonBorderWidth: 0.0,
       buttonSelectedBorderWidth: 0.0,
       buttonSpacing: 4.0,
+      buttonHeight: 20.0,
       itemOutlineColor: Theme.of(context).colorScheme.surface,
       toolbarItems: [
         textDecorationMobileToolbarItem,
@@ -525,6 +525,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           footer: generateFooter(),
           blockComponentBuilders: _buildBlockComponentBuilders(),
           characterShortcutEvents: _buildCharacterShortcutEvents(),
+          commandShortcutEvents: standardCommandShortcutEvents,
           disableAutoScroll: false,
           autoScrollEdgeOffset: 20,
         ),
@@ -534,7 +535,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   EditorStyle desktopEditorStyle() {
     return EditorStyle.desktop(
-      padding: widget.editorPadding,
+      padding: EdgeInsets.zero,
       cursorColor: Theme.of(context).colorScheme.primary,
       selectionColor: Theme.of(context).colorScheme.secondary,
       textStyleConfiguration:
@@ -543,6 +544,7 @@ class HtmlEditorState extends State<HtmlEditor> {
             text: Theme.of(
               context,
             ).textTheme.bodySmall.expect('bodySmall style not available'),
+            lineHeight: 1.0,
           ),
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
@@ -551,7 +553,7 @@ class HtmlEditorState extends State<HtmlEditor> {
 
   EditorStyle mobileEditorStyle() {
     return EditorStyle.mobile(
-      padding: widget.editorPadding,
+      padding: EdgeInsets.zero,
       cursorColor: Theme.of(context).colorScheme.primary,
       selectionColor: Theme.of(context).colorScheme.secondary,
       textStyleConfiguration:
@@ -560,8 +562,8 @@ class HtmlEditorState extends State<HtmlEditor> {
             text: Theme.of(
               context,
             ).textTheme.bodySmall.expect('bodySmall style not available'),
+            lineHeight: 1.0,
           ),
-
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
     );
