@@ -116,7 +116,10 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
               ),
               child:
                   spaceAvatar != null
-                      ? Image.file(File(spaceAvatar!.path), fit: BoxFit.cover)
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(File(spaceAvatar!.path), fit: BoxFit.cover),
+                        )
                       : Icon(Icons.people_outline, size: 50),
             ),
             Positioned(
