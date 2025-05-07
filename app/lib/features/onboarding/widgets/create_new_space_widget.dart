@@ -218,33 +218,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
             }
           }
           if (!_activateFeatures) {
-            ref.read(featureActivationStateProvider.notifier).update((
-                  state,
-                ) {
-                  final newState =
-                      Map<SpaceFeature, FeatureActivationState>.from(state);
-                  final feature = SpaceFeature.boosts;
-                  final featureState = newState[feature]!;
-                  newState[feature] = featureState.copyWith(isActivated: false);
-
-                  final storyFeature = SpaceFeature.stories;
-                  final storyFeatureState = newState[storyFeature]!;
-                  newState[storyFeature] = storyFeatureState.copyWith(isActivated: false);
-
-                  final pinFeature = SpaceFeature.pins;
-                  final pinFeatureState = newState[pinFeature]!;
-                  newState[pinFeature] = pinFeatureState.copyWith(isActivated: false);
-
-                  final eventFeature = SpaceFeature.events;
-                  final eventFeatureState = newState[eventFeature]!;
-                  newState[eventFeature] = eventFeatureState.copyWith(isActivated: false);
-
-                  final taskFeature = SpaceFeature.tasks;
-                  final taskFeatureState = newState[taskFeature]!;
-                  newState[taskFeature] = taskFeatureState.copyWith(isActivated: false);
-
-                  return newState;
-                });
+            _deactivateFeatures();
           }
         }
       },
@@ -278,5 +252,21 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
         return InviteFriendsWidget(roomId: spaceId, callNextPage: widget.callNextPage);
       },
     );
+  }
+
+   void _deactivateFeatures() {
+    ref.read(featureActivationStateProvider.notifier).update((state) {
+      final newState = Map<SpaceFeature, FeatureActivationState>.from(state);
+      for (final feature in [
+        SpaceFeature.boosts,
+        SpaceFeature.stories,
+        SpaceFeature.pins,
+        SpaceFeature.events,
+        SpaceFeature.tasks,
+      ]) {
+        newState[feature] = newState[feature]!.copyWith(isActivated: false);
+      }
+      return newState;
+    });
   }
 }
