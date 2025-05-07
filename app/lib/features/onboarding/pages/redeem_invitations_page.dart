@@ -59,6 +59,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       }
       _tokenController.clear();
       EasyLoading.dismiss();
+      
     } catch (e) {
       if (mounted) {
         EasyLoading.showError(

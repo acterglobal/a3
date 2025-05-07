@@ -6,6 +6,7 @@ import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:acter/features/onboarding/pages/customization_page.dart';
 import 'package:acter/features/onboarding/pages/onboarding_space_creation_page.dart';
+import 'package:acter/features/onboarding/pages/recommended_spaces_page.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_notification_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,6 +60,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         LinkEmailPage(callNextPage: () => _nextPage()),
         UploadAvatarPage(callNextPage: () => _nextPage()),
         CustomizationPage(callNextPage: () => _nextPage()),
+        if (ref.watch(hasSpacesProvider) == false)
+          RecommendedSpacesPage(callNextPage: () => _nextPage()),
         if (ref.watch(hasSpacesProvider) == false)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
