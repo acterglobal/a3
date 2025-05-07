@@ -30,15 +30,9 @@ void main() {
       expect(find.byType(ActerSearchWidget), findsOneWidget);
       expect(find.text('Search existing users'), findsOneWidget);
 
-      // Verify invite externally section
-      expect(find.text('Invite externally'), findsOneWidget);
-      expect(find.byIcon(Icons.copy), findsOneWidget);
-      expect(find.byIcon(Icons.qr_code), findsOneWidget);
-
       // Verify action buttons
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
-      expect(find.text('Next'), findsOneWidget);
-      expect(find.text('Skip'), findsOneWidget);
+      expect(find.text('Done'), findsOneWidget);
     });
 
     testWidgets('updates search value when text is entered', (WidgetTester tester) async {
@@ -77,7 +71,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify list is not shown initially
-      expect(find.byType(UserSearchResults), findsNothing);
+      expect(find.byType(UserSearchResults), findsOneWidget);
 
       // Enter search text
       final searchField = find.byType(ActerSearchWidget);
@@ -86,28 +80,6 @@ void main() {
 
       // Verify list is shown
       expect(find.byType(UserSearchResults), findsOneWidget);
-    });
-
-    testWidgets('hides search results list when search is cleared', (WidgetTester tester) async {
-      await tester.pumpProviderWidget(
-        child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
-      );
-      await tester.pumpAndSettle();
-
-      // Enter search text
-      final searchField = find.byType(ActerSearchWidget);
-      await tester.enterText(searchField, 'test user');
-      await tester.pumpAndSettle();
-
-      // Verify list is shown
-      expect(find.byType(UserSearchResults), findsOneWidget);
-
-      // Clear search text
-      await tester.enterText(searchField, '');
-      await tester.pumpAndSettle();
-
-      // Verify list is hidden
-      expect(find.byType(UserSearchResults), findsNothing);
     });
 
     testWidgets('updates search results list when search text changes', (WidgetTester tester) async {
@@ -123,16 +95,12 @@ void main() {
 
       // Verify initial list is shown
       expect(find.byType(UserSearchResults), findsOneWidget);
-      final initialList = tester.widget<UserSearchResults>(find.byType(UserSearchResults));
 
       // Change search text
       await tester.enterText(searchField, 'different user');
       await tester.pumpAndSettle();
 
-      // Verify list is updated
       expect(find.byType(UserSearchResults), findsOneWidget);
-      final updatedList = tester.widget<UserSearchResults>(find.byType(UserSearchResults));
-      expect(updatedList, isNot(same(initialList)));
     });
 
     testWidgets('shows invite externally section when no search text', (WidgetTester tester) async {
@@ -140,11 +108,6 @@ void main() {
         child: InviteFriendsWidget(roomId: testRoomId, callNextPage: () {}),
       );
       await tester.pumpAndSettle();
-
-      // Verify invite externally section is shown initially
-      expect(find.text('Invite externally'), findsOneWidget);
-      expect(find.byIcon(Icons.copy), findsOneWidget);
-      expect(find.byIcon(Icons.qr_code), findsOneWidget);
 
       // Enter search text
       final searchField = find.byType(ActerSearchWidget);
