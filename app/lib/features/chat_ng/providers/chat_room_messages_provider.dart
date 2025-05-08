@@ -119,7 +119,7 @@ final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
       }).toList();
     });
 
-final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
+final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -134,7 +134,7 @@ final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   );
 });
 
-final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
+final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
@@ -153,7 +153,7 @@ final isLastMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
-  final nextMsg = ref.watch(_getPreviousMessageProvider(roomMsgId));
+  final nextMsg = ref.watch(_getNextMessageProvider(roomMsgId));
   if (nextMsg == null) return true;
   final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
   return currentMsg?.eventItem()?.sender() != nextMsg.eventItem()?.sender();
@@ -163,7 +163,7 @@ final isFirstMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
-  final prevMsg = ref.watch(_getNextMessageProvider(roomMsgId));
+  final prevMsg = ref.watch(_getPreviousMessageProvider(roomMsgId));
   if (prevMsg == null) return true;
   final currentMsg = ref.watch(chatRoomMessageProvider(roomMsgId));
   return currentMsg?.eventItem()?.sender() != prevMsg.eventItem()?.sender();
