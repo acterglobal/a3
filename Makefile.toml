@@ -55,9 +55,32 @@ dependencies = [
 dependencies = [ 'ffi' ]
 
 [tasks.uniffi]
+dependencies = [
+    'uniffi-regular',
+    'uniffi-mac-debug',
+    'uniffi-mac-release',
+]
+
+[tasks.uniffi-regular]
+condition = { platforms = ["linux", "windows"] }
+private = true
 cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
 command = "cargo"
 args = ["run", "-p", "sari", "build"]
+
+[tasks.uniffi-mac-release]
+private = true
+condition = { platforms = ["mac"], env_true = ["RELEASE"] }
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
+command = "cargo"
+args = ["run", "-p", "sari", "build", "--lib-path", "target/aarch64-apple-darwin/release/libacter.a"]
+
+[tasks.uniffi-mac-debug]
+private = true
+condition = { platforms = ["mac"], env_false = ["RELEASE"] }
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
+command = "cargo"
+args = ["run", "-p", "sari", "build", "--lib-path", "target/debug/libacter.a"]
 
 [tasks.copy-ffigen]
 script_runner = "@duckscript"
