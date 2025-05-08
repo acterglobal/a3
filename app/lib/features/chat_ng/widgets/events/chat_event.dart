@@ -76,49 +76,7 @@ class ChatEvent extends ConsumerWidget {
     final canRedact = item.sender() == myId;
     final eventType = item.eventType();
 
-    final eventWidget = _buildEventWidget(
-      context: context,
-      eventType: eventType,
-      roomId: roomId,
-      messageId: messageId,
-      item: item,
-      isMe: isMe,
-      isDM: isDM,
-      canRedact: canRedact,
-      isFirstMessageBySender: isFirstMessageBySender,
-      isLastMessageBySender: isLastMessageBySender,
-      isLastMessage: isLastMessage,
-    );
-
-    final isMessageEvent = eventType == 'm.room.message';
-    final mainAxisAlignment =
-        !isMessageEvent
-            ? MainAxisAlignment.center
-            : isMe
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start;
-
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [eventWidget],
-    );
-  }
-
-  Widget _buildEventWidget({
-    required BuildContext context,
-    required String eventType,
-    required String roomId,
-    required String messageId,
-    required TimelineEventItem item,
-    required bool isMe,
-    required bool isDM,
-    required bool canRedact,
-    required bool isFirstMessageBySender,
-    required bool isLastMessageBySender,
-    required bool isLastMessage,
-  }) {
-    return switch (eventType) {
+    final eventWidget = switch (eventType) {
       'm.room.message' => MessageEventItem(
         roomId: roomId,
         messageId: messageId,
@@ -177,6 +135,20 @@ class ChatEvent extends ConsumerWidget {
         ),
       ),
     };
+
+    final isMessageEvent = eventType == 'm.room.message';
+    final mainAxisAlignment =
+        !isMessageEvent
+            ? MainAxisAlignment.center
+            : isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start;
+
+    return Row(
+      mainAxisAlignment: mainAxisAlignment,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [eventWidget],
+    );
   }
 
   Widget buildChatBubble(
