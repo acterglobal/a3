@@ -111,7 +111,7 @@ class ChatBubble extends StatelessWidget {
     return IntrinsicWidth(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.all(10),
         constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
         decoration: decoration,
         child: Column(

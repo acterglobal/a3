@@ -154,7 +154,7 @@ class TextMessageEvent extends ConsumerWidget {
             color:
                 _type == TextMessageType.notice
                     ? colorScheme.onSurface.withValues(alpha: 0.5)
-                    : null,
+                    : colorScheme.onSurface.withValues(alpha: 0.9),
             overflow:
                 _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
           ),
