@@ -5,6 +5,7 @@ import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dar
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
+import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
@@ -201,7 +202,7 @@ class MessageEventItem extends ConsumerWidget {
               ),
             ),
       ),
-      _ => _buildUnsupportedMessage(msgType),
+      _ => StateEventContainerWidget(child: _buildUnsupportedMessage(msgType)),
     };
   }
 
