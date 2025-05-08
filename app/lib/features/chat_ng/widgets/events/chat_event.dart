@@ -108,15 +108,21 @@ class ChatEvent extends ConsumerWidget {
       ),
       'm.room.redaction' => buildChatBubble(
         context,
+        ref,
         const RedactedMessageWidget(),
+        item.sender(),
         isMe,
+        isDM,
         isFirstMessageBySender,
         isLastMessageBySender,
       ),
       'm.room.encrypted' => buildChatBubble(
         context,
+        ref,
         const EncryptedMessageWidget(),
+        item.sender(),
         isMe,
+        isDM,
         isFirstMessageBySender,
         isLastMessageBySender,
       ),
@@ -177,22 +183,42 @@ class ChatEvent extends ConsumerWidget {
 
   Widget buildChatBubble(
     BuildContext context,
+    WidgetRef ref,
     Widget child,
+    String senderId,
     bool isMe,
+    bool isDM,
     bool isFirstMessageBySender,
     bool isLastMessageBySender,
   ) {
+    String? displayName;
+    if (isFirstMessageBySender && !isMe && !isDM) {
+      final letRoomId = roomId;
+      displayName =
+          ref
+              .watch(
+                memberDisplayNameProvider((
+                  userId: senderId,
+                  roomId: letRoomId,
+                )),
+              )
+              .valueOrNull ??
+          senderId;
+    }
+
     return isMe
         ? ChatBubble.me(
           context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
+          displayName: displayName,
           bubbleContentWidget: child,
         )
         : ChatBubble(
           context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
+          displayName: displayName,
           bubbleContentWidget: child,
         );
   }
