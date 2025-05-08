@@ -115,7 +115,7 @@ class MessageEventItem extends ConsumerWidget {
             (isLastMessageBySender && !isMe && !isDM)
                 ? _buildAvatar(context, ref, roomId, item.sender(), isMe)
                 : (!isMe && !isDM)
-                ? const SizedBox(width: 40)
+                ? const SizedBox(width: 36)
                 : const SizedBox.shrink(),
             messageWidget,
           ],
