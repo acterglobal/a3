@@ -12,8 +12,6 @@ import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
-import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
-import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:flutter/widgets.dart';
@@ -51,32 +49,28 @@ class MessageEventItem extends ConsumerWidget {
     return SwipeTo(
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
-      child: Padding(
-        padding: EdgeInsets.only(top: isFirstMessageBySender ? 20 : 4),
-        child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-            if (hasReactions)
-              _buildReactionsList(roomId, messageId, item, isMe),
-            if (sendingState != null || (isMe && isLastMessage))
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child:
-                      sendingState != null
-                          ? SendingStateWidget(
-                            state: sendingState,
-                            showSentIconOnUnknown: isMe && isLastMessage,
-                          )
-                          : SendingStateWidget.sent(),
-                ),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildMessageUI(context, ref, roomId, messageId, item, isMe),
+          if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
+          if (sendingState != null || (isMe && isLastMessage))
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child:
+                    sendingState != null
+                        ? SendingStateWidget(
+                          state: sendingState,
+                          showSentIconOnUnknown: isMe && isLastMessage,
+                        )
+                        : SendingStateWidget.sent(),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -112,20 +106,7 @@ class MessageEventItem extends ConsumerWidget {
             messageId: messageId,
             roomId: roomId,
           ),
-      child: Hero(
-        tag: messageId,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            (isLastMessageBySender && !isMe && !isDM)
-                ? _buildAvatar(context, ref, roomId, item.sender(), isMe)
-                : (!isMe && !isDM)
-                ? const SizedBox(width: 36)
-                : const SizedBox.shrink(),
-            messageWidget,
-          ],
-        ),
-      ),
+      child: Hero(tag: messageId, child: messageWidget),
     );
   }
 
@@ -297,34 +278,6 @@ class MessageEventItem extends ConsumerWidget {
       isEdited: wasEdited,
       timestamp: timestamp,
       bubbleContentWidget: child,
-    );
-  }
-
-  Widget _buildAvatar(
-    BuildContext context,
-    WidgetRef ref,
-    String roomId,
-    String userId,
-    bool isMe,
-  ) {
-    return Padding(
-      padding: EdgeInsets.only(right: isMe ? 8 : 0, left: isMe ? 0 : 8),
-      child: GestureDetector(
-        onTap:
-            () => showMemberInfoDrawer(
-              context: context,
-              roomId: roomId,
-              memberId: userId,
-            ),
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            ref.watch(
-              memberAvatarInfoProvider((roomId: roomId, userId: userId)),
-            ),
-            size: 14,
-          ),
-        ),
-      ),
     );
   }
 

@@ -9,6 +9,8 @@ import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/ro
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
+import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
+import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem, TimelineItem, TimelineVirtualItem;
@@ -136,18 +138,35 @@ class ChatEvent extends ConsumerWidget {
       ),
     };
 
-    final isMessageEvent = eventType == 'm.room.message';
+    final isBubbleEvent =
+        eventType == 'm.room.message' ||
+        eventType == 'm.room.redaction' ||
+        eventType == 'm.room.encrypted';
+
     final mainAxisAlignment =
-        !isMessageEvent
+        !isBubbleEvent
             ? MainAxisAlignment.center
             : isMe
             ? MainAxisAlignment.end
             : MainAxisAlignment.start;
 
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [eventWidget],
+    return Padding(
+      padding:
+          isBubbleEvent
+              ? EdgeInsets.only(top: isFirstMessageBySender ? 20 : 4)
+              : const EdgeInsets.only(top: 16),
+      child: Row(
+        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          (isLastMessageBySender && !isMe && !isDM)
+              ? _buildAvatar(context, ref, roomId, item.sender(), isMe)
+              : (!isMe && !isDM)
+              ? const SizedBox(width: 36)
+              : const SizedBox.shrink(),
+          eventWidget,
+        ],
+      ),
     );
   }
 
@@ -197,5 +216,33 @@ class ChatEvent extends ConsumerWidget {
       'm.space.parent',
     };
     return supportedRoomUpdateEvents.contains(type);
+  }
+
+  Widget _buildAvatar(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+    String userId,
+    bool isMe,
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(right: isMe ? 8 : 0, left: isMe ? 0 : 8),
+      child: GestureDetector(
+        onTap:
+            () => showMemberInfoDrawer(
+              context: context,
+              roomId: roomId,
+              memberId: userId,
+            ),
+        child: ActerAvatar(
+          options: AvatarOptions.DM(
+            ref.watch(
+              memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+            ),
+            size: 14,
+          ),
+        ),
+      ),
+    );
   }
 }

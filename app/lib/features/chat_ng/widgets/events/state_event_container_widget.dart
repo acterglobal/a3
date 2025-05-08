@@ -11,7 +11,6 @@ class StateEventContainerWidget extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(top: 16),
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(

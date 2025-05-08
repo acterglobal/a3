@@ -110,10 +110,11 @@ final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
           _log.severe('Room Msg $roomId $id not found');
           return false;
         }
+
         return [
           'm.room.message',
           'm.room.encrypted',
-          'm.room.encrypted',
+          'm.room.redaction',
         ].contains(msg.eventItem()?.eventType());
       }).toList();
     });

@@ -1,4 +1,5 @@
 import 'package:acter/features/chat/dialogs/encryption_info_drawer.dart';
+import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -12,7 +13,7 @@ class EncryptedMessageWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => showEncryptionInfoBottomSheet(context: context),
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Text.rich(
           TextSpan(
             children: [
@@ -28,9 +29,7 @@ class EncryptedMessageWidget extends StatelessWidget {
               ),
               TextSpan(
                 text: L10n.of(context).encryptedChatMessage,
-                style: textTheme.labelSmall?.copyWith(
-                  fontStyle: FontStyle.italic,
-                ),
+                style: stateEventTextStyle(context),
               ),
             ],
           ),
