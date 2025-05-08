@@ -6,8 +6,8 @@ Color secondaryColor = const Color(0xFF74A64D);
 
 // Background Colors
 Color greyColor = Colors.grey.shade800;
-Color surfaceColor = const Color(0xff181c1f);
-Color backgroundColor = const Color(0xff0d0f11);
+Color surfaceColor = const Color.fromARGB(255, 24, 28, 37);
+Color backgroundColor = const Color.fromARGB(255, 16, 19, 25);
 Color surfaceTintColor = Colors.white54;
 //On colors
 Color whiteColor = Colors.white;
