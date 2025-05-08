@@ -68,29 +68,6 @@ final animatedListChatMessagesProvider =
           ref.watch(chatMessagesStateProvider(roomId).notifier).animatedList,
     );
 
-final renderableChatMessagesProvider = StateProvider.autoDispose
-    .family<List<String>, String>((ref, roomId) {
-      final msgList = ref.watch(
-        chatMessagesStateProvider(roomId).select((value) => value.messageList),
-      );
-      if (ref.watch(showHiddenMessages)) {
-        // do not apply filters
-        return msgList;
-      }
-      // do apply some filters
-
-      return msgList.where((id) {
-        final msg = ref.watch(
-          chatRoomMessageProvider((roomId: roomId, uniqueId: id)),
-        );
-        if (msg == null) {
-          _log.severe('Room Msg $roomId $id not found');
-          return false;
-        }
-        return _supportedTypes.contains(msg.eventItem()?.eventType());
-      }).toList();
-    });
-
 final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
     .family<List<String>, String>((ref, roomId) {
       final msgList = ref.watch(
@@ -116,6 +93,29 @@ final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
           'm.room.encrypted',
           'm.room.redaction',
         ].contains(msg.eventItem()?.eventType());
+      }).toList();
+    });
+
+final renderableChatMessagesProvider = StateProvider.autoDispose
+    .family<List<String>, String>((ref, roomId) {
+      final msgList = ref.watch(
+        chatMessagesStateProvider(roomId).select((value) => value.messageList),
+      );
+      if (ref.watch(showHiddenMessages)) {
+        // do not apply filters
+        return msgList;
+      }
+      // do apply some filters
+
+      return msgList.where((id) {
+        final msg = ref.watch(
+          chatRoomMessageProvider((roomId: roomId, uniqueId: id)),
+        );
+        if (msg == null) {
+          _log.severe('Room Msg $roomId $id not found');
+          return false;
+        }
+        return _supportedTypes.contains(msg.eventItem()?.eventType());
       }).toList();
     });
 
