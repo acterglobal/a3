@@ -60,10 +60,14 @@ class RepliedToEvent extends StatelessWidget {
       children: [
         ActerAvatar(options: AvatarOptions.DM(replyProfile, size: 12)),
         const SizedBox(width: 5),
-        Text(
-          replyProfile.displayName ?? '',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.tertiary,
+        Expanded(
+          child: Text(
+            replyProfile.displayName ?? '',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
