@@ -97,9 +97,9 @@ impl DateContent {
         match (&self.prev_content, &self.content) {
             (Some(prev_content), Some(content)) => {
                 if prev_content == content {
-                    return None;
+                    None
                 } else {
-                    return Some("Changed".to_owned());
+                    Some("Changed".to_owned())
                 }
             }
             (None, Some(_)) => Some("Set".to_owned()),
@@ -148,9 +148,9 @@ impl DateTimeRangeContent {
         match (&self.prev_start, &self.start) {
             (Some(prev_start), Some(start)) => {
                 if prev_start == start {
-                    return None;
+                    None
                 } else {
-                    return Some("Changed".to_owned());
+                    Some("Changed".to_owned())
                 }
             }
             (None, Some(_)) => Some("Set".to_owned()),
@@ -160,20 +160,20 @@ impl DateTimeRangeContent {
     }
 
     pub fn start_new_val(&self) -> Option<UtcDateTime> {
-        self.start.clone()
+        self.start
     }
 
     pub fn start_old_val(&self) -> Option<UtcDateTime> {
-        self.prev_start.clone()
+        self.prev_start
     }
 
     pub fn end_change(&self) -> Option<String> {
         match (&self.prev_end, &self.end) {
             (Some(prev_end), Some(end)) => {
                 if prev_end == end {
-                    return None;
+                    None
                 } else {
-                    return Some("Changed".to_owned());
+                    Some("Changed".to_owned())
                 }
             }
             (None, Some(_)) => Some("Set".to_owned()),
@@ -183,10 +183,10 @@ impl DateTimeRangeContent {
     }
 
     pub fn end_new_val(&self) -> Option<UtcDateTime> {
-        self.end.clone()
+        self.end
     }
 
     pub fn end_old_val(&self) -> Option<UtcDateTime> {
-        self.prev_end.clone()
+        self.prev_end
     }
 }

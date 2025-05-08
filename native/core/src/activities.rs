@@ -761,8 +761,8 @@ impl Activity {
                 let object = ActivityObject::CalendarEvent {
                     object_id: e.event_id().to_owned(),
                     title: e.inner.title,
-                    utc_start: e.inner.utc_start.clone(),
-                    utc_end: e.inner.utc_end.clone(),
+                    utc_start: e.inner.utc_start,
+                    utc_end: e.inner.utc_end,
                 };
                 Ok(Self::new(meta, ActivityContent::Creation { object }))
             }
