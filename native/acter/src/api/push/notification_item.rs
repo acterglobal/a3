@@ -234,11 +234,34 @@ impl NotificationItemInner {
         a.reaction_key()
     }
 
-    pub fn new_date(&self) -> Option<UtcDateTime> {
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
         let NotificationItemInner::Activity(a) = &self else {
             return None;
         };
-        a.new_date()
+        let content = a
+            .date_time_range_content()
+            .expect("utc start is available on date time range content");
+        content.start_new_val()
+    }
+
+    pub fn utc_end(&self) -> Option<UtcDateTime> {
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        let content = a
+            .date_time_range_content()
+            .expect("utc end is available on date time range content");
+        content.end_new_val()
+    }
+
+    pub fn due_date(&self) -> Option<String> {
+        let NotificationItemInner::Activity(a) = &self else {
+            return None;
+        };
+        let content = a
+            .date_content()
+            .expect("due date is available on date content");
+        content.new_val()
     }
 
     pub fn body(&self) -> Option<MsgContent> {
@@ -260,7 +283,7 @@ impl NotificationItemInner {
             },
             NotificationItemInner::Activity(activity) => match activity.content() {
                 ActivityContent::DescriptionChange { content, .. } => {
-                    content.clone().map(MsgContent::from)
+                    Some(MsgContent::from(content.content()))
                 }
                 ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
                 ActivityContent::Boost {
@@ -548,22 +571,32 @@ impl NotificationItemBuilder {
                     builder.title("Reference".to_owned())
                 }
             }
-            ActivityContent::TitleChange { new_title, .. } => builder.title(new_title.clone()),
-            ActivityContent::EventDateChange { new_date, .. } => {
-                builder.title(new_date.to_rfc3339())
+            ActivityContent::TitleChange { content, .. } => builder.title(content.new_val()),
+            ActivityContent::EventDateChange { content, .. } => {
+                if content.start_change().is_some() {
+                    let utc_start = content
+                        .start_new_val()
+                        .expect("utc start should be available");
+                    builder.title(utc_start.to_rfc3339())
+                } else if content.end_change().is_some() {
+                    let utc_end = content.end_new_val().expect("utc end should be available");
+                    builder.title(utc_end.to_rfc3339())
+                } else {
+                    &mut builder
+                }
             }
-            ActivityContent::TaskDueDateChange {
-                new_due_date: Some(new_due_date),
-                ..
-            } => builder.title(new_due_date.format("%Y-%m-%d").to_string()),
-            ActivityContent::TaskDueDateChange { new_due_date, .. } => {
-                builder.title("removed due date".to_owned())
+            ActivityContent::TaskDueDateChange { content, .. } => {
+                if content.change().is_some() {
+                    let new_due_date = content.new_val().expect("due date should be available");
+                    builder.title(new_due_date)
+                } else {
+                    builder.title("removed due date".to_owned())
+                }
             }
             ActivityContent::TaskAdd { task_title, .. } => builder.title(task_title.clone()),
-            ActivityContent::DescriptionChange {
-                object,
-                content: Some(content),
-            } => builder.msg_content(MsgContent::from(content)),
+            ActivityContent::DescriptionChange { object, content } => {
+                builder.msg_content(MsgContent::from(content.content()))
+            }
             ActivityContent::ObjectInvitation { object, invitees } => builder
                 .title(object.title().unwrap_or("Object".to_owned()))
                 .mentions_you(invitees.contains(&user_id)),

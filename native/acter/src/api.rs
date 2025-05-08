@@ -60,6 +60,7 @@ pub use uniffi_api::*;
 
 pub use account::{Account, ExternalId, ThreePidEmailTokenResponse};
 pub use acter_core::{
+    activities::status::{DateContent, DateTimeRangeContent, DescriptionContent, TitleContent},
     events::{
         calendar::EventLocationInfo, news::NewsContent, stories::StoryContent, Category,
         CategoryBuilder, Colorize, ColorizeBuilder, Display, DisplayBuilder, ObjRefBuilder,

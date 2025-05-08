@@ -2751,8 +2751,17 @@ object Activity {
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
 
-    /// the date on eventDateChange (started or ended) or taskDueDateChane
-    fn new_date() -> Option<UtcDateTime>;
+    /// titleChange
+    fn title_content() -> Option<TitleContent>;
+
+    /// descriptionChange
+    fn description_content() -> Option<DescriptionContent>;
+
+    /// taskDueDateChange
+    fn date_content() -> Option<DateContent>;
+
+    /// eventDateChangethe
+    fn date_time_range_content() -> Option<DateTimeRangeContent>;
 
     /// whom, if this involved additional users, e.g. when someone is invited
     /// to an object
@@ -2769,6 +2778,33 @@ object Activities {
 
     /// Receive an update when a the activities stream has changed
     fn subscribe_stream() -> Stream<bool>;
+}
+
+object TitleContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object DescriptionContent {
+    fn change() -> Option<string>;
+    fn new_val() -> string;
+    fn old_val() -> Option<string>;
+}
+
+object DateContent {
+    fn change() -> Option<string>;
+    fn new_val() -> Option<string>;
+    fn old_val() -> Option<string>;
+}
+
+object DateTimeRangeContent {
+    fn start_change() -> Option<string>;
+    fn start_new_val() -> Option<UtcDateTime>;
+    fn start_old_val() -> Option<UtcDateTime>;
+    fn end_change() -> Option<string>;
+    fn end_new_val() -> Option<UtcDateTime>;
+    fn end_old_val() -> Option<UtcDateTime>;
 }
 
 
@@ -3507,8 +3543,14 @@ object NotificationItem {
     /// reaction specific: the reaction key used
     fn reaction_key() -> Option<string>;
 
-    /// the date on eventDateChange (started or ended) or taskDueDateChane
-    fn new_date() -> Option<UtcDateTime>;
+    /// the start datetime on eventDateChange
+    fn utc_start() -> Option<UtcDateTime>;
+
+    /// the end datetime on eventDateChange
+    fn utc_end() -> Option<UtcDateTime>;
+
+    /// the date on taskDueDateChange
+    fn due_date() -> Option<string>;
 
     /// does this mention the user
     fn mentions_you() -> bool;

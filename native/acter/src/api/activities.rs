@@ -62,7 +62,7 @@ impl Activity {
     pub fn msg_content(&self) -> Option<MsgContent> {
         match self.inner.content() {
             ActivityContent::DescriptionChange { content, .. } => {
-                content.as_ref().map(MsgContent::from)
+                Some(MsgContent::from(content.content()))
             }
             ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
             ActivityContent::Boost {
