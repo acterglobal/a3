@@ -24,7 +24,7 @@ class MessageTimestampWidget extends StatelessWidget {
     }
     return Text(
       formattedTime,
-      style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(fontSize: 12),
+      style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(fontSize: 10),
     );
   }
 }
