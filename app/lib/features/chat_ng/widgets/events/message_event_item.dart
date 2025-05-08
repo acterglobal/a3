@@ -51,28 +51,32 @@ class MessageEventItem extends ConsumerWidget {
     return SwipeTo(
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
-      child: Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-          if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
-          if (sendingState != null || (isMe && isLastMessage))
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child:
-                    sendingState != null
-                        ? SendingStateWidget(
-                          state: sendingState,
-                          showSentIconOnUnknown: isMe && isLastMessage,
-                        )
-                        : SendingStateWidget.sent(),
+      child: Padding(
+        padding: EdgeInsets.only(top: isFirstMessageBySender ? 20 : 4),
+        child: Column(
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildMessageUI(context, ref, roomId, messageId, item, isMe),
+            if (hasReactions)
+              _buildReactionsList(roomId, messageId, item, isMe),
+            if (sendingState != null || (isMe && isLastMessage))
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child:
+                      sendingState != null
+                          ? SendingStateWidget(
+                            state: sendingState,
+                            showSentIconOnUnknown: isMe && isLastMessage,
+                          )
+                          : SendingStateWidget.sent(),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

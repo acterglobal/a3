@@ -98,19 +98,10 @@ class ChatEvent extends ConsumerWidget {
             ? MainAxisAlignment.end
             : MainAxisAlignment.start;
 
-    final messagePadding = EdgeInsets.only(
-      top: isFirstMessageBySender ? 20 : 4,
-    );
-
-    final stateEventPadding = const EdgeInsets.only(top: 20);
-
-    return Padding(
-      padding: isMessageEvent ? messagePadding : stateEventPadding,
-      child: Row(
-        mainAxisAlignment: mainAxisAlignment,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [eventWidget],
-      ),
+    return Row(
+      mainAxisAlignment: mainAxisAlignment,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [eventWidget],
     );
   }
 
