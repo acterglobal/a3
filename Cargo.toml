@@ -56,12 +56,12 @@ rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ffi]
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ffi-macros]
-git = "https://github.com/gnunicorn/matrix-rust-sdk"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
 
