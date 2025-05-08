@@ -14,6 +14,7 @@ import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:swipe_to/swipe_to.dart';
@@ -139,78 +140,7 @@ class MessageEventItem extends ConsumerWidget {
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
 
-    return switch (msgType) {
-      'm.emote' ||
-      'm.notice' ||
-      'm.server_notice' ||
-      'm.text' => buildTextMsgEvent(context, ref, item, timestamp),
-      'm.image' => alignedWidget(
-        ImageMessageEvent(
-          messageId: messageId,
-          roomId: roomId,
-          content: content,
-          timestamp: timestamp,
-        ),
-      ),
-      'm.video' => alignedWidget(
-        VideoMessageEvent(
-          roomId: roomId,
-          messageId: messageId,
-          content: content,
-          timestamp: timestamp,
-        ),
-      ),
-      'm.file' => alignedWidget(
-        isMe
-            ? ChatBubble.me(
-              context: context,
-              isFirstMessageBySender: isFirstMessageBySender,
-              isLastMessageBySender: isLastMessageBySender,
-              isEdited: wasEdited,
-              bubbleContentWidget: FileMessageEvent(
-                roomId: roomId,
-                messageId: messageId,
-                content: content,
-                timestamp: timestamp,
-              ),
-            )
-            : ChatBubble(
-              context: context,
-              isFirstMessageBySender: isFirstMessageBySender,
-              isLastMessageBySender: isLastMessageBySender,
-              isEdited: wasEdited,
-              bubbleContentWidget: FileMessageEvent(
-                roomId: roomId,
-                messageId: messageId,
-                content: content,
-                timestamp: timestamp,
-              ),
-            ),
-      ),
-      _ => StateEventContainerWidget(child: _buildUnsupportedMessage(msgType)),
-    };
-  }
-
-  // for image/video/file messages
-  Widget alignedWidget(Widget child) => Container(
-    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-    width: double.infinity,
-    child: child,
-  );
-
-  Widget buildTextMsgEvent(
-    BuildContext context,
-    WidgetRef ref,
-    TimelineEventItem item,
-    int timestamp,
-  ) {
-    final msgType = item.msgType();
-    final repliedTo = item.inReplyTo();
-    final wasEdited = item.wasEdited();
-    final content = item.msgContent().expect('cannot be null');
-    final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     String? displayName;
-
     if (isFirstMessageBySender && !isMe && !isDM) {
       // FIXME: also ignore in 1-on-1 dm rooms
       final senderId = item.sender();
@@ -226,6 +156,70 @@ class MessageEventItem extends ConsumerWidget {
               .valueOrNull ??
           senderId;
     }
+
+    return switch (msgType) {
+      'm.emote' ||
+      'm.notice' ||
+      'm.server_notice' ||
+      'm.text' => buildTextMsgEvent(context, ref, item, timestamp, displayName),
+      'm.image' => _buildMediaMsgEventContainer(
+        context,
+        ImageMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+          timestamp: timestamp,
+        ),
+        isMe,
+        isFirstMessageBySender,
+        isLastMessageBySender,
+        wasEdited,
+        displayName,
+      ),
+      'm.video' => _buildMediaMsgEventContainer(
+        context,
+        VideoMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+          timestamp: timestamp,
+        ),
+        isMe,
+        isFirstMessageBySender,
+        isLastMessageBySender,
+        wasEdited,
+        displayName,
+      ),
+      'm.file' => _buildMediaMsgEventContainer(
+        context,
+        FileMessageEvent(
+          messageId: messageId,
+          roomId: roomId,
+          content: content,
+          timestamp: timestamp,
+        ),
+        isMe,
+        isFirstMessageBySender,
+        isLastMessageBySender,
+        wasEdited,
+        displayName,
+      ),
+      _ => StateEventContainerWidget(child: _buildUnsupportedMessage(msgType)),
+    };
+  }
+
+  Widget buildTextMsgEvent(
+    BuildContext context,
+    WidgetRef ref,
+    TimelineEventItem item,
+    int timestamp,
+    String? displayName,
+  ) {
+    final msgType = item.msgType();
+    final repliedTo = item.inReplyTo();
+    final wasEdited = item.wasEdited();
+    final content = item.msgContent().expect('cannot be null');
+    final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
     Widget? repliedToBuilder;
 
     // whether it contains `replied to` event.
@@ -251,13 +245,11 @@ class MessageEventItem extends ConsumerWidget {
         ? child = TextMessageEvent.notice(
           content: content,
           roomId: roomId,
-          displayName: displayName,
           repliedTo: repliedToBuilder,
         )
         : child = TextMessageEvent(
           content: content,
           roomId: roomId,
-          displayName: displayName,
           repliedTo: repliedToBuilder,
         );
 
@@ -268,6 +260,7 @@ class MessageEventItem extends ConsumerWidget {
         isLastMessageBySender: isLastMessageBySender,
         isEdited: wasEdited,
         timestamp: timestamp,
+        displayName: displayName,
         bubbleContentWidget: child,
       );
     }
@@ -277,8 +270,37 @@ class MessageEventItem extends ConsumerWidget {
       isLastMessageBySender: isLastMessageBySender,
       isEdited: wasEdited,
       timestamp: timestamp,
+      displayName: displayName,
       bubbleContentWidget: child,
     );
+  }
+
+  Widget _buildMediaMsgEventContainer(
+    BuildContext context,
+    Widget mediaMessageWidget,
+    bool isMe,
+    bool isFirstMessageBySender,
+    bool isLastMessageBySender,
+    bool wasEdited,
+    String? displayName,
+  ) {
+    return isMe
+        ? ChatBubble.me(
+          context: context,
+          isFirstMessageBySender: isFirstMessageBySender,
+          isLastMessageBySender: isLastMessageBySender,
+          isEdited: wasEdited,
+          displayName: displayName,
+          bubbleContentWidget: mediaMessageWidget,
+        )
+        : ChatBubble(
+          context: context,
+          isFirstMessageBySender: isFirstMessageBySender,
+          isLastMessageBySender: isLastMessageBySender,
+          isEdited: wasEdited,
+          displayName: displayName,
+          bubbleContentWidget: mediaMessageWidget,
+        );
   }
 
   Widget _buildUnsupportedMessage(String? msgtype) {

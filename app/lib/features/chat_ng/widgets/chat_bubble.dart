@@ -12,6 +12,7 @@ class ChatBubble extends StatelessWidget {
   final MainAxisAlignment bubbleAlignment;
   final int? timestamp;
   final bool isEdited;
+  final String? displayName;
 
   // default private constructor
   const ChatBubble._inner({
@@ -22,6 +23,7 @@ class ChatBubble extends StatelessWidget {
     this.isEdited = false,
     this.messageWidth,
     this.timestamp,
+    this.displayName,
   });
 
   // factory bubble constructor
@@ -30,6 +32,7 @@ class ChatBubble extends StatelessWidget {
     required BuildContext context,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
+    String? displayName,
     bool isEdited = false,
     int? messageWidth,
     int? timestamp,
@@ -43,6 +46,7 @@ class ChatBubble extends StatelessWidget {
 
     return ChatBubble._inner(
       messageWidth: messageWidth,
+      displayName: displayName,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
@@ -66,6 +70,7 @@ class ChatBubble extends StatelessWidget {
     required Widget bubbleContentWidget,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
+    String? displayName,
     bool isEdited = false,
     int? messageWidth,
     int? timestamp,
@@ -80,6 +85,7 @@ class ChatBubble extends StatelessWidget {
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
+      displayName: displayName,
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withValues(alpha: 0.7),
         borderRadius: BorderRadius.only(
@@ -118,6 +124,15 @@ class ChatBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (displayName != null) ...[
+              Text(
+                displayName!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
             bubbleContentWidget,
             _buildTimestampAndEditedLabel(context),
           ],
