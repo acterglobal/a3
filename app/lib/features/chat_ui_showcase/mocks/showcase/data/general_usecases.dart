@@ -264,7 +264,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     ),
     MockTimelineEventItem(
       mockEventId: 'mock-event-id-2-4',
-      mockSenderId: '@lisa:acter.global',
+      mockSenderId: '@michael:acter.global',
       mockOriginServerTs: 1744096686000, // April 8, 2025 15:38:06
       mockMsgContent: MockMsgContent(
         mockBody: 'Database backup is scheduled for 1 PM.',

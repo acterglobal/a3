@@ -28,21 +28,31 @@ class ChatBubble extends StatelessWidget {
   factory ChatBubble({
     required Widget child,
     required BuildContext context,
-    bool isLastMessageBySender = false,
+    required bool isFirstMessageBySender,
+    required bool isLastMessageBySender,
     bool isEdited = false,
     int? messageWidth,
     int? timestamp,
   }) {
     final theme = Theme.of(context);
+
+    final cornersRadius = Radius.circular(16);
+    final flatRadius = Radius.circular(0);
+
+    final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
+    final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
+    final bottomLeft = flatRadius;
+    final bottomRight = isLastMessageBySender ? cornersRadius : flatRadius;
+
     return ChatBubble._inner(
       messageWidth: messageWidth,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(isLastMessageBySender ? 4 : 16),
-          bottomRight: Radius.circular(16),
+          topLeft: topLeft,
+          topRight: topRight,
+          bottomLeft: bottomLeft,
+          bottomRight: bottomRight,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.start,
@@ -57,22 +67,32 @@ class ChatBubble extends StatelessWidget {
     Key? key,
     required BuildContext context,
     required Widget child,
-    bool isLastMessageBySender = false,
+    required bool isFirstMessageBySender,
+    required bool isLastMessageBySender,
     bool isEdited = false,
     int? messageWidth,
     int? timestamp,
   }) {
     final theme = Theme.of(context);
+
+    final cornersRadius = Radius.circular(16);
+    final flatRadius = Radius.circular(0);
+
+    final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
+    final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
+    final bottomLeft = isLastMessageBySender ? cornersRadius : flatRadius;
+    final bottomRight = flatRadius;
+
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
       decoration: BoxDecoration(
         color: theme.colorScheme.primary,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(isLastMessageBySender ? 16 : 4),
+          topLeft: topLeft,
+          topRight: topRight,
+          bottomLeft: bottomLeft,
+          bottomRight: bottomRight,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.end,

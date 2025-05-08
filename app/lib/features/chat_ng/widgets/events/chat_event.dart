@@ -100,7 +100,6 @@ class ChatEvent extends ConsumerWidget {
 
     final messagePadding = EdgeInsets.only(
       top: isFirstMessageBySender ? 16 : 4,
-      bottom: 4,
     );
 
     final stateEventPadding = const EdgeInsets.symmetric(vertical: 8);
@@ -160,12 +159,14 @@ class ChatEvent extends ConsumerWidget {
         context,
         const RedactedMessageWidget(),
         isMe,
+        isFirstMessageBySender,
         isLastMessageBySender,
       ),
       'm.room.encrypted' => buildChatBubble(
         context,
         const EncryptedMessageWidget(),
         isMe,
+        isFirstMessageBySender,
         isLastMessageBySender,
       ),
       String type when _isSupportedRoomUpdateEvent(type) =>
@@ -191,16 +192,19 @@ class ChatEvent extends ConsumerWidget {
     BuildContext context,
     Widget child,
     bool isMe,
+    bool isFirstMessageBySender,
     bool isLastMessageBySender,
   ) {
     return isMe
         ? ChatBubble.me(
           context: context,
+          isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
           child: child,
         )
         : ChatBubble(
           context: context,
+          isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
           child: child,
         );
