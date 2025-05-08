@@ -40,9 +40,6 @@ class ChatBubble extends StatelessWidget {
     final flatRadius = Radius.circular(0);
 
     final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
-    final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
-    final bottomLeft = flatRadius;
-    final bottomRight = isLastMessageBySender ? cornersRadius : flatRadius;
 
     return ChatBubble._inner(
       messageWidth: messageWidth,
@@ -50,9 +47,9 @@ class ChatBubble extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
           topLeft: topLeft,
-          topRight: topRight,
-          bottomLeft: bottomLeft,
-          bottomRight: bottomRight,
+          topRight: cornersRadius,
+          bottomLeft: flatRadius,
+          bottomRight: cornersRadius,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.start,
@@ -78,10 +75,7 @@ class ChatBubble extends StatelessWidget {
     final cornersRadius = Radius.circular(16);
     final flatRadius = Radius.circular(0);
 
-    final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
     final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
-    final bottomLeft = isLastMessageBySender ? cornersRadius : flatRadius;
-    final bottomRight = flatRadius;
 
     return ChatBubble._inner(
       key: key,
@@ -89,10 +83,10 @@ class ChatBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.primary.withValues(alpha: 0.7),
         borderRadius: BorderRadius.only(
-          topLeft: topLeft,
+          topLeft: cornersRadius,
           topRight: topRight,
-          bottomLeft: bottomLeft,
-          bottomRight: bottomRight,
+          bottomLeft: cornersRadius,
+          bottomRight: flatRadius,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.end,
