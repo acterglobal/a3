@@ -49,6 +49,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   List<Widget> _buildOnboardingScreens(OnboardingPermissions permissions) {
+    final hasSpaceRedeemedInvites = ref.watch(hasSpaceRedeemedInInviteCodeProvider);
+
     return [
       if (!widget.isLoginOnboarding!) ...[
         SaveUsernamePage(
@@ -60,7 +62,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         LinkEmailPage(callNextPage: () => _nextPage()),
         UploadAvatarPage(callNextPage: () => _nextPage()),
         CustomizationPage(callNextPage: () => _nextPage()),
-        if (ref.watch(hasSpacesProvider) == false)
+        if (!hasSpaceRedeemedInvites)
           RecommendedSpacesPage(callNextPage: () => _nextPage()),
         if (ref.watch(hasSpacesProvider) == false)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
