@@ -13,6 +13,7 @@ class ChatBubble extends StatelessWidget {
   final int? timestamp;
   final bool isEdited;
   final String? displayName;
+  final bool isMe;
 
   // default private constructor
   const ChatBubble._inner({
@@ -24,6 +25,7 @@ class ChatBubble extends StatelessWidget {
     this.messageWidth,
     this.timestamp,
     this.displayName,
+    this.isMe = false,
   });
 
   // factory bubble constructor
@@ -60,6 +62,7 @@ class ChatBubble extends StatelessWidget {
       isEdited: isEdited,
       timestamp: timestamp,
       bubbleContentWidget: bubbleContentWidget,
+      isMe: false,
     );
   }
 
@@ -111,6 +114,7 @@ class ChatBubble extends StatelessWidget {
         ),
         child: bubbleContentWidget,
       ),
+      isMe: true,
     );
   }
 
@@ -168,6 +172,12 @@ class ChatBubble extends StatelessWidget {
         if (timestamp != null)
           MessageTimestampWidget(
             timestamp: timestamp.expect('should not be null'),
+            textColor:
+                isMe
+                    ? Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7)
+                    : Theme.of(context).colorScheme.surfaceTint,
           ),
       ],
     );

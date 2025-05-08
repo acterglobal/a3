@@ -4,8 +4,13 @@ import 'package:jiffy/jiffy.dart';
 
 class MessageTimestampWidget extends StatelessWidget {
   final int timestamp;
+  final Color? textColor;
 
-  const MessageTimestampWidget({super.key, required this.timestamp});
+  const MessageTimestampWidget({
+    super.key,
+    required this.timestamp,
+    this.textColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +29,10 @@ class MessageTimestampWidget extends StatelessWidget {
     }
     return Text(
       formattedTime,
-      style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(fontSize: 10),
+      style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(
+        fontSize: 10,
+        color: textColor,
+      ),
     );
   }
 }
