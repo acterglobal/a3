@@ -159,11 +159,16 @@ class ChatEvent extends ConsumerWidget {
         mainAxisAlignment: mainAxisAlignment,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          (isLastMessageBySender && !isMe && !isDM)
-              ? _buildAvatar(context, ref, roomId, item.sender(), isMe)
-              : (!isMe && !isDM)
-              ? const SizedBox(width: 36)
-              : const SizedBox.shrink(),
+          _buildAvatar(
+            context,
+            ref,
+            roomId,
+            item.sender(),
+            isMe,
+            isLastMessageBySender,
+            isBubbleEvent,
+            isDM,
+          ),
           eventWidget,
         ],
       ),
@@ -224,25 +229,34 @@ class ChatEvent extends ConsumerWidget {
     String roomId,
     String userId,
     bool isMe,
+    bool isLastMessageBySender,
+    bool isBubbleEvent,
+    bool isDM,
   ) {
-    return Padding(
-      padding: EdgeInsets.only(right: isMe ? 8 : 0, left: isMe ? 0 : 8),
-      child: GestureDetector(
-        onTap:
-            () => showMemberInfoDrawer(
-              context: context,
-              roomId: roomId,
-              memberId: userId,
+    if (isLastMessageBySender && isBubbleEvent && !isMe && !isDM) {
+      return Padding(
+        padding: EdgeInsets.only(right: isMe ? 8 : 0, left: isMe ? 0 : 8),
+        child: GestureDetector(
+          onTap:
+              () => showMemberInfoDrawer(
+                context: context,
+                roomId: roomId,
+                memberId: userId,
+              ),
+          child: ActerAvatar(
+            options: AvatarOptions.DM(
+              ref.watch(
+                memberAvatarInfoProvider((roomId: roomId, userId: userId)),
+              ),
+              size: 14,
             ),
-        child: ActerAvatar(
-          options: AvatarOptions.DM(
-            ref.watch(
-              memberAvatarInfoProvider((roomId: roomId, userId: userId)),
-            ),
-            size: 14,
           ),
         ),
-      ),
-    );
+      );
+    } else if (!isMe && !isDM) {
+      return const SizedBox(width: 36);
+    }
+
+    return const SizedBox.shrink();
   }
 }
