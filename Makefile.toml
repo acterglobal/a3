@@ -95,8 +95,9 @@ args = ["fmt", "--", "--emit=files"]
 
 [tasks.format-ffi]
 script_runner = "@shell"
+cwd = "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}"
 script = [
-    "dart format ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/rust_sdk/lib"
+    "dart format ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/packages/rust_sdk/lib/acter.dart",
     ]
 
 [tasks.test-flow]
