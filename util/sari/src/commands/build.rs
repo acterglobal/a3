@@ -14,15 +14,15 @@ pub struct BuildOpts {
     out_dir: String,
 
     #[cfg(target_os = "linux")]
-    #[arg(long, default_value = "packages/rust_sdk/linux/libacter.so")]
+    #[arg(long, default_value = "target/debug/libacter.so")]
     lib_path: String,
 
     #[cfg(target_os = "macos")]
-    #[arg(long, default_value = "packages/rust_sdk/macos/libacter.dylib")]
+    #[arg(long, default_value = "target/debug/libacter.dylib")]
     lib_path: String,
 
     #[cfg(target_os = "windows")]
-    #[arg(long, default_value = "packages/rust_sdk/windows/acter.dll")]
+    #[arg(long, default_value = "target/debug/acter.dll")]
     lib_path: String,
 
     #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
@@ -36,7 +36,8 @@ pub fn build(opts: BuildOpts) -> Result<()> {
         Some(opts.uniffi_toml.as_str().into()),
         Some(opts.out_dir.as_str().into()),
         // None,
-        Some(opts.lib_path.as_str().into()),
+        opts.lib_path.as_str().into(),
+        true,
     )?;
     Ok(())
 }
