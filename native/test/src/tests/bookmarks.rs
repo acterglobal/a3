@@ -11,7 +11,7 @@ async fn bookmarks_e2e() -> Result<()> {
     let _ = env_logger::try_init();
     let mut user = random_user("categories-e2e").await?;
 
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     let account = user.account()?;

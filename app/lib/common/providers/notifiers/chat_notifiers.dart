@@ -59,7 +59,9 @@ class AsyncLatestMsgNotifier
 
   FutureOr<TimelineItem?> _refresh(String roomId) async {
     final convo = await ref.read(chatProvider(roomId).future);
-    return convo?.latestMessage();
+    if (convo == null) return null;
+    final msg = await convo.latestMessage();
+    return msg.data();
   }
 
   @override
@@ -69,10 +71,11 @@ class AsyncLatestMsgNotifier
     // if we are in chat showcase mode, return a mock timeline item
     if (includeChatShowcase &&
         mockChatList.any((mockChatItem) => mockChatItem.roomId == arg)) {
-      return mockChatList
-          .firstWhere((mockChatItem) => mockChatItem.roomId == arg)
-          .mockConvo
-          .latestMessage();
+      final convo =
+          mockChatList
+              .firstWhere((mockChatItem) => mockChatItem.roomId == arg)
+              .mockConvo;
+      return (await convo.latestMessage()).data();
     }
 
     // otherwise, get the latest message from the client

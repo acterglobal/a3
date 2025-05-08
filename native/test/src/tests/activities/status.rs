@@ -58,7 +58,7 @@ async fn invite_and_join() -> Result<()> {
         setup_accounts("invite-and-join").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
-    let _third_state = third.start_sync();
+    let _third_state = third.start_sync().await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -193,7 +193,7 @@ async fn invite_and_rejected() -> Result<()> {
         setup_accounts("invite-and-rejected").await?;
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
-    let _third_state = third.start_sync();
+    let _third_state = third.start_sync().await?;
 
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;

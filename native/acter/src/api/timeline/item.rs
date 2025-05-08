@@ -29,8 +29,9 @@ use matrix_sdk_base::ruma::{
 };
 use matrix_sdk_ui::timeline::{
     AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MsgLikeContent, MsgLikeKind, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
-    TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
+    MembershipChange, MsgLikeKind, OtherState, TimelineDetails, TimelineEventItemId,
+    TimelineItem as SdkTimelineItem, TimelineItemContent as SdkTimelineItemContent,
+    TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -117,6 +118,14 @@ pub struct TimelineEventItem {
     content: Option<TimelineEventContent>,
     #[builder(default)]
     in_reply_to: Option<OwnedEventId>,
+    #[builder(default)]
+    replied_to_sender: Option<OwnedUserId>,
+    #[builder(default)]
+    replied_to_body: Option<String>,
+    #[builder(default)]
+    replied_to_msgtype: Option<String>,
+    #[builder(default)]
+    replied_to_content: Option<MsgContent>,
     #[builder(default)]
     read_receipts: IndexMap<String, Receipt>,
     #[builder(default)]
@@ -433,6 +442,22 @@ impl TimelineEventItem {
 
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(ToString::to_string)
+    }
+
+    pub fn replied_to_sender(&self) -> Option<String> {
+        self.replied_to_sender.as_ref().map(ToString::to_string)
+    }
+
+    pub fn replied_to_body(&self) -> Option<String> {
+        self.replied_to_body.clone()
+    }
+
+    pub fn replied_to_msgtype(&self) -> Option<String> {
+        self.replied_to_msgtype.clone()
+    }
+
+    pub fn replied_to_content(&self) -> Option<MsgContent> {
+        self.replied_to_content.clone()
     }
 
     pub fn read_users(&self) -> Vec<String> {

@@ -20,10 +20,10 @@ async fn chat_invitation_shows_up() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_convo("cI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("cI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
@@ -83,10 +83,10 @@ async fn space_invitation_shows_up() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_space("spI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
@@ -124,10 +124,10 @@ async fn space_invitation_disappears_when_joined() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut sisko, room_id) = random_user_with_random_space("spI").await?;
-    let _sisko_syncer = sisko.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
@@ -187,12 +187,12 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     let (mut sisko, sisko_room_id) = random_user_with_random_space("spI").await?;
     let (mut worf, worf_room_id) = random_user_with_random_space("sp2").await?;
     let (mut gundom, gundom_room_id) = random_user_with_random_space("sp3").await?;
-    let _sisko_syncer = sisko.start_sync();
-    let _worf_syncer = worf.start_sync();
-    let _gundom_syncer = gundom.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
+    let _worf_syncer = worf.start_sync().await?;
+    let _gundom_syncer = gundom.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let invites = kyra.invitations();
@@ -261,12 +261,12 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     let (mut sisko, sisko_room_id) = random_user_with_random_space("spI").await?;
     let (mut worf, worf_room_id) = random_user_with_random_space("sp2").await?;
     let (mut gundom, gundom_room_id) = random_user_with_random_space("sp3").await?;
-    let _sisko_syncer = sisko.start_sync();
-    let _worf_syncer = worf.start_sync();
-    let _gundom_syncer = gundom.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
+    let _worf_syncer = worf.start_sync().await?;
+    let _gundom_syncer = gundom.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let invites = kyra.invitations();
@@ -367,12 +367,12 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
     let (mut sisko, sisko_room_id) = random_user_with_random_space("spI").await?;
     let (mut worf, worf_room_id) = random_user_with_random_space("sp2").await?;
     let (mut gundom, gundom_room_id) = random_user_with_random_space("sp3").await?;
-    let _sisko_syncer = sisko.start_sync();
-    let _worf_syncer = worf.start_sync();
-    let _gundom_syncer = gundom.start_sync();
+    let _sisko_syncer = sisko.start_sync().await?;
+    let _worf_syncer = worf.start_sync().await?;
+    let _gundom_syncer = gundom.start_sync().await?;
 
     let mut kyra = random_user("spI").await?;
-    let _kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let invites = kyra.invitations();

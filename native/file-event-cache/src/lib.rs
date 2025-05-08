@@ -249,11 +249,17 @@ where
     }
 
     async fn clear_all_rooms_chunks(&self) -> Result<(), Self::Error> {
-        Ok(())
+        self.inner
+            .clear_all_rooms_chunks()
+            .await
+            .map_err(|e| e.into())
     }
 
     async fn clean_up_media_cache(&self) -> Result<(), Self::Error> {
-        Ok(())
+        self.inner
+            .clean_up_media_cache()
+            .await
+            .map_err(|e| e.into())
     }
 
     async fn filter_duplicated_events(

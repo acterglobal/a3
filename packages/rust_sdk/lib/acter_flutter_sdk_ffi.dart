@@ -6416,6 +6416,134 @@ class Api {
     return tmp7;
   }
 
+  TimelineStream? __convoTimelineStreamFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoTimelineStreamFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TimelineStream");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = TimelineStream._(this, tmp13_1);
+    return tmp7;
+  }
+
+  OptionTimelineItem? __convoLatestMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoLatestMessageFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_OptionTimelineItem");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = OptionTimelineItem._(this, tmp13_1);
+    return tmp7;
+  }
+
+  int? __convoLatestMessageTsFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _convoLatestMessageTsFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13;
+    return tmp7;
+  }
+
   Member? __convoGetMyMembershipFuturePoll(
     int boxed,
     int postCobject,
@@ -13578,6 +13706,47 @@ class Api {
     return tmp7;
   }
 
+  SyncState? __clientStartSyncFuturePoll(int boxed, int postCobject, int port) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientStartSyncFuturePoll(tmp1, tmp3, tmp5);
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_SyncState");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = SyncState._(this, tmp13_1);
+    return tmp7;
+  }
+
   String? __clientRestoreTokenFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -19299,6 +19468,13 @@ class Api {
   late final _optionComposeDraftDraft =
       _optionComposeDraftDraftPtr
           .asFunction<_OptionComposeDraftDraftReturn Function(int)>();
+  late final _optionTimelineItemDataPtr = _lookup<
+    ffi.NativeFunction<_OptionTimelineItemDataReturn Function(ffi.IntPtr)>
+  >("__OptionTimelineItem_data");
+
+  late final _optionTimelineItemData =
+      _optionTimelineItemDataPtr
+          .asFunction<_OptionTimelineItemDataReturn Function(int)>();
   late final _userProfileUserIdPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__UserProfile_user_id",
@@ -21490,6 +21666,42 @@ class Api {
   late final _timelineEventItemInReplyTo =
       _timelineEventItemInReplyToPtr
           .asFunction<_TimelineEventItemInReplyToReturn Function(int)>();
+  late final _timelineEventItemRepliedToSenderPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRepliedToSenderReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_replied_to_sender");
+
+  late final _timelineEventItemRepliedToSender =
+      _timelineEventItemRepliedToSenderPtr
+          .asFunction<_TimelineEventItemRepliedToSenderReturn Function(int)>();
+  late final _timelineEventItemRepliedToBodyPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRepliedToBodyReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_replied_to_body");
+
+  late final _timelineEventItemRepliedToBody =
+      _timelineEventItemRepliedToBodyPtr
+          .asFunction<_TimelineEventItemRepliedToBodyReturn Function(int)>();
+  late final _timelineEventItemRepliedToMsgtypePtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRepliedToMsgtypeReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_replied_to_msgtype");
+
+  late final _timelineEventItemRepliedToMsgtype =
+      _timelineEventItemRepliedToMsgtypePtr
+          .asFunction<_TimelineEventItemRepliedToMsgtypeReturn Function(int)>();
+  late final _timelineEventItemRepliedToContentPtr = _lookup<
+    ffi.NativeFunction<
+      _TimelineEventItemRepliedToContentReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_replied_to_content");
+
+  late final _timelineEventItemRepliedToContent =
+      _timelineEventItemRepliedToContentPtr
+          .asFunction<_TimelineEventItemRepliedToContentReturn Function(int)>();
   late final _timelineEventItemReadUsersPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TimelineEventItem_read_users",
@@ -23596,15 +23808,15 @@ class Api {
 
   late final _convoNumUnreadMentions =
       _convoNumUnreadMentionsPtr.asFunction<int Function(int)>();
-  late final _convoLatestMessagePtr = _lookup<
-    ffi.NativeFunction<_ConvoLatestMessageReturn Function(ffi.IntPtr)>
-  >("__Convo_latest_message");
+  late final _convoLatestMessagePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__Convo_latest_message",
+      );
 
   late final _convoLatestMessage =
-      _convoLatestMessagePtr
-          .asFunction<_ConvoLatestMessageReturn Function(int)>();
+      _convoLatestMessagePtr.asFunction<int Function(int)>();
   late final _convoLatestMessageTsPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Convo_latest_message_ts",
       );
 
@@ -31862,6 +32074,51 @@ class Api {
           .asFunction<
             _ConvoGetMemberFuturePollReturn Function(int, int, int)
           >();
+  late final _convoTimelineStreamFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoTimelineStreamFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_timeline_stream_future_poll");
+
+  late final _convoTimelineStreamFuturePoll =
+      _convoTimelineStreamFuturePollPtr
+          .asFunction<
+            _ConvoTimelineStreamFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoLatestMessageFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoLatestMessageFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_latest_message_future_poll");
+
+  late final _convoLatestMessageFuturePoll =
+      _convoLatestMessageFuturePollPtr
+          .asFunction<
+            _ConvoLatestMessageFuturePollReturn Function(int, int, int)
+          >();
+  late final _convoLatestMessageTsFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ConvoLatestMessageTsFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Convo_latest_message_ts_future_poll");
+
+  late final _convoLatestMessageTsFuturePoll =
+      _convoLatestMessageTsFuturePollPtr
+          .asFunction<
+            _ConvoLatestMessageTsFuturePollReturn Function(int, int, int)
+          >();
   late final _convoGetMyMembershipFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _ConvoGetMyMembershipFuturePollReturn Function(
@@ -34310,6 +34567,21 @@ class Api {
               int,
               int,
             )
+          >();
+  late final _clientStartSyncFuturePollPtr = _lookup<
+    ffi.NativeFunction<
+      _ClientStartSyncFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Client_start_sync_future_poll");
+
+  late final _clientStartSyncFuturePoll =
+      _clientStartSyncFuturePollPtr
+          .asFunction<
+            _ClientStartSyncFuturePollReturn Function(int, int, int)
           >();
   late final _clientRestoreTokenFuturePollPtr = _lookup<
     ffi.NativeFunction<
@@ -39413,6 +39685,35 @@ class OptionComposeDraft {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ComposeDraft");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = ComposeDraft._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class OptionTimelineItem {
+  final Api _api;
+  final _Box _box;
+
+  OptionTimelineItem._(this._api, this._box);
+
+  /// get data
+  TimelineItem? data() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._optionTimelineItemData(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineItem");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TimelineItem._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -45024,6 +45325,119 @@ class TimelineEventItem {
       tmp4_0 = ffi.Pointer.fromAddress(tmp4);
       _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
+    return tmp2;
+  }
+
+  /// original sender id, if this msg is reply to another msg
+  String? repliedToSender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRepliedToSender(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// original msg body, if this msg is reply to another msg
+  String? repliedToBody() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRepliedToBody(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// original msg type, if this msg is reply to another msg
+  String? repliedToMsgtype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRepliedToMsgtype(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// original msg content, if this msg is reply to another msg
+  MsgContent? repliedToContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineEventItemRepliedToContent(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MsgContent");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MsgContent._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -50996,15 +51410,15 @@ class Convo {
   }
 
   /// Get the timeline for the room
-  TimelineStream timelineStream() {
+  Future<TimelineStream> timelineStream() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._convoTimelineStream(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TimelineStream");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_timeline_stream_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = TimelineStream._(_api, tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoTimelineStreamFuturePoll);
     return tmp2;
   }
 
@@ -51039,29 +51453,28 @@ class Convo {
   }
 
   /// The last message sent to the room
-  TimelineItem? latestMessage() {
+  Future<OptionTimelineItem> latestMessage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._convoLatestMessage(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TimelineItem");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = TimelineItem._(_api, tmp4_1);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_latest_message_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoLatestMessageFuturePoll);
     return tmp2;
   }
 
   /// Latest message timestamp or 0
-  int latestMessageTs() {
+  Future<int> latestMessageTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._convoLatestMessageTs(tmp0);
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Convo_latest_message_ts_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__convoLatestMessageTsFuturePoll);
     return tmp2;
   }
 
@@ -63929,15 +64342,15 @@ class Client {
   Client._(this._api, this._box);
 
   /// start the sync
-  SyncState startSync() {
+  Future<SyncState> startSync() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientStartSync(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SyncState");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_start_sync_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = SyncState._(_api, tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientStartSyncFuturePoll);
     return tmp2;
   }
 
@@ -69513,6 +69926,13 @@ class _OptionComposeDraftDraftReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _OptionTimelineItemDataReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+}
+
 class _UserProfileDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -70376,6 +70796,46 @@ class _TimelineEventItemInReplyToReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _TimelineEventItemRepliedToSenderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _TimelineEventItemRepliedToBodyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _TimelineEventItemRepliedToMsgtypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _TimelineEventItemRepliedToContentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
 }
 
 class _TimelineEventItemReceiptTsReturn extends ffi.Struct {
@@ -71738,13 +72198,6 @@ class _ConvoTopicReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-}
-
-class _ConvoLatestMessageReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
 }
 
 class _ConvoGetRoomIdStrReturn extends ffi.Struct {
@@ -75344,6 +75797,51 @@ class _ConvoGetMemberFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConvoTimelineStreamFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoLatestMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ConvoLatestMessageTsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.Uint64()
+  external int arg5;
+}
+
 class _ConvoGetMyMembershipFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -77818,6 +78316,21 @@ class _InvitationsManagerRoomInvitationsFuturePollReturn extends ffi.Struct {
 }
 
 class _InvitationsManagerObjectInvitationsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+}
+
+class _ClientStartSyncFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

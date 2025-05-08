@@ -16,7 +16,7 @@ async fn test_room_pinned_events() -> Result<()> {
     let _ = env_logger::try_init();
 
     let (mut user, room_id) = random_user_with_random_convo("room_pinned_events").await?;
-    let state_sync = user.start_sync();
+    let state_sync = user.start_sync().await?;
     state_sync.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -31,7 +31,7 @@ async fn test_room_pinned_events() -> Result<()> {
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
-    let timeline = convo.timeline_stream();
+    let timeline = convo.timeline_stream().await?;
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
