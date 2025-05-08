@@ -545,3 +545,7 @@ final acterAppSettingsProvider = FutureProvider.autoDispose
 final hasSpaceRedeemedInInviteCodeProvider = StateProvider.autoDispose<bool>(
   (ref) => false,
 );
+
+final hasRecommendedSpaceJoinedProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);

@@ -50,6 +50,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   List<Widget> _buildOnboardingScreens(OnboardingPermissions permissions) {
     final hasSpaceRedeemedInvites = ref.watch(hasSpaceRedeemedInInviteCodeProvider);
+    final hasRecommendedSpaceJoined = ref.watch(hasRecommendedSpaceJoinedProvider);
 
     return [
       if (!widget.isLoginOnboarding!) ...[
@@ -64,9 +65,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         CustomizationPage(callNextPage: () => _nextPage()),
         if (!hasSpaceRedeemedInvites)
           RecommendedSpacesPage(callNextPage: () => _nextPage()),
-        if (ref.watch(hasSpacesProvider) == false)
+        if (!hasRecommendedSpaceJoined)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
+      
       if (permissions.showNotificationPermission)
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
       if (permissions.showCalendarPermission)
