@@ -16,7 +16,7 @@ git = "https://github.com/acterglobal/ffi-gen"
 
 
 [workspace.dependencies.uniffi-dart]
-#path = "../uniffi-dart/"
+# path = "../uniffi-dart/"
 git = "https://github.com/acterglobal/uniffi-dart"
 branch = "ben-ffi-next"
 
