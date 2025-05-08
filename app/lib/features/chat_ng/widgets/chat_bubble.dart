@@ -130,9 +130,8 @@ class ChatBubble extends StatelessWidget {
                 displayName!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color:
-                      Colors.primaries[Random().nextInt(
-                        Colors.primaries.length,
-                      )],
+                      Colors.primaries[displayName!.hashCode.abs() %
+                          Colors.primaries.length],
                 ),
               ),
               const SizedBox(height: 8),
