@@ -130,7 +130,7 @@ class TextMessageEvent extends ConsumerWidget {
               color: Theme.of(context).colorScheme.tertiary,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
         ],
         if (replied != null) ...[replied, const SizedBox(height: 10)],
         Html(
