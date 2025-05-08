@@ -532,3 +532,8 @@ final acterAppSettingsProvider = FutureProvider.autoDispose
       if (!await space.isActerSpace()) return null;
       return await space.appSettings();
     });
+
+/// Whether there were any rooms in the accepted invites
+final hasSpaceRedeemedInInviteCodeProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
