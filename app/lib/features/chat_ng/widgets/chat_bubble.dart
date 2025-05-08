@@ -4,6 +4,7 @@ import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'dart:math';
 
 class ChatBubble extends StatelessWidget {
   final Widget bubbleContentWidget;
@@ -128,7 +129,10 @@ class ChatBubble extends StatelessWidget {
               Text(
                 displayName!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.tertiary,
+                  color:
+                      Colors.primaries[Random().nextInt(
+                        Colors.primaries.length,
+                      )],
                 ),
               ),
               const SizedBox(height: 8),
