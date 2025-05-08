@@ -10,7 +10,7 @@ class RedactedMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.all(12),
       child: Text.rich(
         TextSpan(
           children: [

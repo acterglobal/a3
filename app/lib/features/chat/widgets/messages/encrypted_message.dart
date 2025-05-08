@@ -13,7 +13,7 @@ class EncryptedMessageWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => showEncryptionInfoBottomSheet(context: context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.all(12),
         child: Text.rich(
           TextSpan(
             children: [
