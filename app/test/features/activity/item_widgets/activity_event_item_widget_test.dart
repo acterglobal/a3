@@ -29,11 +29,31 @@ class MockUtcDateTime extends Mock implements UtcDateTime {
   String toRfc2822() => 'Sun, 9 Mar 2025 12:00:00 +0000'; // Mocked date-time format
 }
 
+class MockDateTimeRangeContent extends Mock implements DateTimeRangeContent {
+  @override
+  String startChange() => 'Changed'; // Mocked change type
+
+  @override
+  UtcDateTime? startNewVal() => MockUtcDateTime(); // Mocked new value
+
+  @override
+  UtcDateTime? startOldVal() => MockUtcDateTime(); // Mocked old value
+
+  @override
+  String endChange() => 'Changed'; // Mocked change type
+
+  @override
+  UtcDateTime? endNewVal() => MockUtcDateTime(); // Mocked new value
+
+  @override
+  UtcDateTime? endOldVal() => MockUtcDateTime(); // Mocked old value
+}
+
 void main() {
   testWidgets('Date changed on Event Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.eventDateChange.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateTimeRangeContent: MockDateTimeRangeContent(),
       mockObject: MockActivityObject(
         mockType: 'event',
         mockEmoji: '🗓️',

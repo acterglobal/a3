@@ -30,13 +30,24 @@ class MockUtcDateTime extends Mock implements UtcDateTime {
   String toRfc2822() => 'Sun, 9 Mar 2025 12:00:00 +0000'; // Mocked date-time format
 }
 
+class MockDateContent extends Mock implements DateContent {
+  @override
+  String? change() => 'Changed'; // Mocked change type
+
+  @override
+  String? newVal() => '2025-03-17'; // Mocked new value
+
+  @override
+  String? oldVal() => '2024-03-17'; // Mocked old value
+}
+
 void main() {
   testWidgets('task added on task list', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockName: 'task 1',
       mockSubType: 'Task',
       mockType: PushStyles.taskAdd.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task-list',
         mockEmoji: '📋',
@@ -47,7 +58,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
@@ -78,7 +89,7 @@ void main() {
   testWidgets('Date changed on Task Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskDueDateChange.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -89,7 +100,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
@@ -125,7 +136,7 @@ void main() {
   testWidgets('task complete', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskComplete.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -136,7 +147,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
@@ -166,7 +177,7 @@ void main() {
   testWidgets('task accepted', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskAccept.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -177,7 +188,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
@@ -207,7 +218,7 @@ void main() {
   testWidgets('task Decline', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskDecline.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -218,7 +229,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
@@ -248,7 +259,7 @@ void main() {
   testWidgets('task re-opened', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskReOpen.name,
-      newDateTime: MockUtcDateTime(),
+      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -259,7 +270,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
