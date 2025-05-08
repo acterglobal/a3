@@ -51,7 +51,7 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
   String? getMessage(L10n lang, bool isMe, String senderName) {
     final content = activity.dateContent();
     if (content == null) {
-      _log.severe('failed to get content of date time range change');
+      _log.severe('failed to get content of date change');
       return null;
     }
     switch (content.change()) {
