@@ -2,7 +2,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/providers/chat_editor_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgDraft;
 import 'package:appflowy_editor/appflowy_editor.dart';

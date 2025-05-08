@@ -1,6 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
+import 'package:acter/features/chat_ng/providers/chat_editor_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor.dart';

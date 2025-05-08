@@ -1,6 +1,7 @@
+import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/providers/chat_editor_providers.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -88,10 +89,17 @@ class ChatEditorActionsPreview extends ConsumerWidget {
         GestureDetector(
           key: closePreviewKey,
           onTap: () async {
-            final isEditing = ref.read(chatEditorStateProvider).isEditing;
+            final isEdit = ref.read(chatEditorStateProvider).isEditing;
             final notifier = ref.read(chatEditorStateProvider.notifier);
-            notifier.unsetActions();
-            if (isEditing) textEditorState.clear();
+            final chat = await ref.read(chatProvider(roomId).future);
+
+            if (chat != null) {
+              final body = !isEdit ? textEditorState.intoMarkdown() : '';
+              final bodyHtml = !isEdit ? textEditorState.intoHtml() : '';
+              if (isEdit) textEditorState.clear();
+              await chat.saveMsgDraft(body, bodyHtml, 'new', null);
+              notifier.unsetActions();
+            }
           },
           child: const Icon(Atlas.xmark_circle),
         ),

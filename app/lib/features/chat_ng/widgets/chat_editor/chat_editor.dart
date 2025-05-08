@@ -10,6 +10,7 @@ import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/actions/attachment_upload_action.dart';
 import 'package:acter/features/chat_ng/actions/send_message_action.dart';
+import 'package:acter/features/chat_ng/providers/chat_editor_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_actions_preview.dart';
@@ -41,24 +42,24 @@ class ChatEditor extends ConsumerStatefulWidget {
 class _ChatEditorState extends ConsumerState<ChatEditor> {
   EditorState textEditorState = EditorState.blank();
   late EditorScrollController scrollController;
-  StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(
     ChatEditorUtils.baseHeight,
   );
   Timer? _debounceTimer;
+  bool isDraftLoad = true;
 
   @override
   void initState() {
     super.initState();
     scrollController = EditorScrollController(editorState: textEditorState);
-    _updateListener?.cancel();
-    // listener for editor input state
-    _updateListener = textEditorState.transactionStream.listen((data) {
-      _updateContentHeight();
-    });
 
-    _loadDraft();
+    // load draft first
+    _loadDraft().then((_) {
+      setState(() {
+        isDraftLoad = false;
+      });
+    });
 
     // apply toolbar offset when keyboard is visible
     ref.listenManual(keyboardVisibleProvider, (prev, next) {
@@ -74,18 +75,20 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final html = textEditorState.intoHtml();
       if (next.isEditing &&
           (next.actionType != prev?.actionType ||
-              next.selectedMsgItem != prev?.selectedMsgItem)) {
+              next.selectedMsgItem != prev?.selectedMsgItem) &&
+          !isDraftLoad) {
         _handleEditing(next.selectedMsgItem);
         // also save the draft editing state
         saveMsgDraft(plainText, html, widget.roomId, ref);
       }
       if (next.isReplying &&
           (next.actionType != prev?.actionType ||
-              next.selectedMsgItem != prev?.selectedMsgItem)) {
+              next.selectedMsgItem != prev?.selectedMsgItem) &&
+          !isDraftLoad) {
         textEditorState.updateSelectionWithReason(
           Selection.single(
             path: [0],
-            startOffset: textEditorState.intoMarkdown().length,
+            startOffset: textEditorState.intoMarkdown().length - 1,
           ),
           reason: SelectionUpdateReason.uiEvent,
         );
@@ -97,7 +100,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
 
   @override
   void dispose() {
-    _updateListener?.cancel();
     _debounceTimer?.cancel();
     _contentHeightNotifier.dispose();
     super.dispose();
@@ -107,7 +109,11 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   void didUpdateWidget(covariant ChatEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.roomId != widget.roomId) {
-      _loadDraft();
+      _loadDraft().then((_) {
+        setState(() {
+          isDraftLoad = false;
+        });
+      });
     }
   }
 
@@ -197,6 +203,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final pos = Position(path: [0], offset: body.length - 1);
       transaction.afterSelection = Selection.collapsed(pos);
       textEditorState.apply(transaction);
+      _updateContentHeight();
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }
   }
@@ -363,7 +370,9 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         editorState: textEditorState,
         scrollController: scrollController,
         onChanged: (body, html) {
+          if (isDraftLoad) return;
           _editorUpdate(body, html ?? '');
+          _updateContentHeight();
           final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
           widget.onTyping?.call(isTyping);
         },

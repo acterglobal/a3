@@ -1,8 +1,9 @@
 import 'package:acter/common/widgets/html_editor/components/mention_list.dart';
 import 'package:acter/common/widgets/html_editor/services/constants.dart';
-import 'package:acter/features/chat_ng/globals.dart';
+import 'package:acter/features/chat_ng/providers/chat_editor_providers.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:acter/common/extensions/acter_build_context.dart';
 
 class MentionMenu {
   MentionMenu({
@@ -21,20 +22,24 @@ class MentionMenu {
   bool selectionChangedByMenu = false;
   static const menuHeight = 200.0;
 
-  void dismiss() {
-    _menuEntry?.remove();
-    _menuEntry = null;
-  }
-
   void show() {
     if (_menuEntry != null) return;
     _show();
   }
 
+  void dismiss() {
+    _menuEntry?.remove();
+    _menuEntry = null;
+  }
+
   void _show() {
     // Get position of editor field
     final RenderBox? editorBox =
-        chatEditorKey.currentContext?.findRenderObject() as RenderBox?;
+        context
+                .read(chatEditorKeyProvider(roomId))
+                .currentContext
+                ?.findRenderObject()
+            as RenderBox?;
     if (editorBox == null) return;
 
     final editorPosition = editorBox.localToGlobal(Offset.zero);
@@ -70,7 +75,6 @@ class MentionMenu {
                   child: Container(color: Colors.transparent),
                 ),
               ),
-
               Positioned(
                 top: top,
                 left: isLargeScreen ? editorPosition.dx : 12,

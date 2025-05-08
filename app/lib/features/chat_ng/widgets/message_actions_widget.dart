@@ -1,7 +1,7 @@
 import 'package:acter/features/chat_ng/actions/copy_message_action.dart';
 import 'package:acter/features/chat_ng/actions/redact_message_action.dart';
 import 'package:acter/features/chat_ng/actions/report_message_action.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/providers/chat_editor_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:atlas_icons/atlas_icons.dart';
