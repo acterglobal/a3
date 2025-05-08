@@ -163,13 +163,13 @@ class ChatEvent extends ConsumerWidget {
           context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
-          child: child,
+          bubbleContentWidget: child,
         )
         : ChatBubble(
           context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
-          child: child,
+          bubbleContentWidget: child,
         );
   }
 

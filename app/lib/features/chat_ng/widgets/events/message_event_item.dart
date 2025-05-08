@@ -186,7 +186,7 @@ class MessageEventItem extends ConsumerWidget {
               isFirstMessageBySender: isFirstMessageBySender,
               isLastMessageBySender: isLastMessageBySender,
               isEdited: wasEdited,
-              child: FileMessageEvent(
+              bubbleContentWidget: FileMessageEvent(
                 roomId: roomId,
                 messageId: messageId,
                 content: content,
@@ -198,7 +198,7 @@ class MessageEventItem extends ConsumerWidget {
               isFirstMessageBySender: isFirstMessageBySender,
               isLastMessageBySender: isLastMessageBySender,
               isEdited: wasEdited,
-              child: FileMessageEvent(
+              bubbleContentWidget: FileMessageEvent(
                 roomId: roomId,
                 messageId: messageId,
                 content: content,
@@ -287,7 +287,7 @@ class MessageEventItem extends ConsumerWidget {
         isLastMessageBySender: isLastMessageBySender,
         isEdited: wasEdited,
         timestamp: timestamp,
-        child: child,
+        bubbleContentWidget: child,
       );
     }
     return ChatBubble(
@@ -296,7 +296,7 @@ class MessageEventItem extends ConsumerWidget {
       isLastMessageBySender: isLastMessageBySender,
       isEdited: wasEdited,
       timestamp: timestamp,
-      child: child,
+      bubbleContentWidget: child,
     );
   }
 

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
 
 class ChatBubble extends StatelessWidget {
-  final Widget child;
+  final Widget bubbleContentWidget;
   final int? messageWidth;
   final BoxDecoration decoration;
   final MainAxisAlignment bubbleAlignment;
@@ -16,7 +16,7 @@ class ChatBubble extends StatelessWidget {
   // default private constructor
   const ChatBubble._inner({
     super.key,
-    required this.child,
+    required this.bubbleContentWidget,
     required this.bubbleAlignment,
     required this.decoration,
     this.isEdited = false,
@@ -26,7 +26,7 @@ class ChatBubble extends StatelessWidget {
 
   // factory bubble constructor
   factory ChatBubble({
-    required Widget child,
+    required Widget bubbleContentWidget,
     required BuildContext context,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
@@ -58,7 +58,7 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
       timestamp: timestamp,
-      child: child,
+      bubbleContentWidget: bubbleContentWidget,
     );
   }
 
@@ -66,7 +66,7 @@ class ChatBubble extends StatelessWidget {
   factory ChatBubble.me({
     Key? key,
     required BuildContext context,
-    required Widget child,
+    required Widget bubbleContentWidget,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
     bool isEdited = false,
@@ -98,76 +98,60 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
       timestamp: timestamp,
-      child: DefaultTextStyle.merge(
+      bubbleContentWidget: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onPrimary,
         ),
-        child: child,
+        child: bubbleContentWidget,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final chatTheme = Theme.of(context).chatTheme;
     final size = MediaQuery.sizeOf(context);
     final msgWidth = messageWidth?.toDouble();
     final defaultWidth =
         context.isLargeScreen ? size.width * 0.5 : size.width * 0.75;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        mainAxisAlignment: bubbleAlignment,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const SizedBox(width: 5),
-          IntrinsicWidth(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
-              decoration: decoration,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    child,
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (isEdited)
-                          Text(
-                            L10n.of(context).edited,
-                            style: chatTheme.emptyChatPlaceholderTextStyle
-                                .copyWith(fontSize: 12),
-                          ),
-                        if (isEdited && timestamp != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            child: Text(
-                              '.',
-                              style: chatTheme.emptyChatPlaceholderTextStyle
-                                  .copyWith(fontSize: 12),
-                            ),
-                          ),
-                        if (timestamp != null)
-                          MessageTimestampWidget(
-                            timestamp: timestamp.expect('should not be null'),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
+    return IntrinsicWidth(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
+        decoration: decoration,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            bubbleContentWidget,
+            _buildTimestampAndEditedLabel(context),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildTimestampAndEditedLabel(BuildContext context) {
+    final chatTheme = Theme.of(context).chatTheme;
+    final textStyle = chatTheme.emptyChatPlaceholderTextStyle.copyWith(
+      fontSize: 12,
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (isEdited) ...[
+          Text(L10n.of(context).edited, style: textStyle),
+          const SizedBox(width: 6),
+          Text('-', style: textStyle),
+          const SizedBox(width: 6),
+        ],
+        if (timestamp != null)
+          MessageTimestampWidget(
+            timestamp: timestamp.expect('should not be null'),
+          ),
+      ],
     );
   }
 }
