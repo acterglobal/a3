@@ -87,7 +87,14 @@ class ChatBubble extends StatelessWidget {
       messageWidth: messageWidth,
       displayName: displayName,
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withValues(alpha: 0.7),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.primary.withValues(alpha: 0.8),
+          ],
+        ),
         borderRadius: BorderRadius.only(
           topLeft: cornersRadius,
           topRight: topRight,
