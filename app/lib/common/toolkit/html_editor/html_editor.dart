@@ -606,7 +606,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         final parsed = parseActerUri(uri);
         final inner = switch (parsed.type) {
           (LinkType.userId) => UserChip(
-            roomId: roomId ?? '',
+            roomId: roomId,
             memberId: parsed.target,
             onTap: (
               context, {
@@ -618,7 +618,7 @@ class HtmlEditorState extends State<HtmlEditor> {
           ),
           (LinkType.roomId) => RoomChip(roomId: parsed.target),
           (LinkType.spaceObject) => InlineItemPreview(
-            roomId: roomId ?? '',
+            roomId: roomId,
             uriResult: parsed,
           ),
           _ => null,
