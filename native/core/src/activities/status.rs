@@ -102,6 +102,6 @@ impl DateTimeRangeContent {
     }
 
     pub fn end_new_val(&self) -> Option<UtcDateTime> {
-        self.end_new_val.clone()
+        self.end_new_val
     }
 }
