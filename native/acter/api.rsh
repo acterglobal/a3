@@ -1083,7 +1083,10 @@ object TimelineEventItem {
     fn space_parent_content() -> Option<SpaceParentContent>;
 
     /// original event id, if this msg is reply to another msg
-    fn in_reply_to() -> Option<string>;
+    fn in_reply_to_id() -> Option<string>;
+
+    /// original event, if this msg is reply to another msg and the event was loaded
+    fn in_reply_to_event() -> Option<TimelineEventItem>;
 
     /// the list of users that read this message
     fn read_users() -> Vec<string>;

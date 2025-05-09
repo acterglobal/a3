@@ -28,12 +28,10 @@ use matrix_sdk_base::ruma::{
     OwnedEventId, OwnedRoomAliasId, OwnedTransactionId, OwnedUserId,
 };
 use matrix_sdk_ui::timeline::{
-    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
-    MsgLikeContent, MsgLikeKind, OtherState, TimelineEventItemId, TimelineItem as SdkTimelineItem,
-    TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem,
+    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem, MsgLikeContent, MsgLikeKind, OtherState, RepliedToEvent, TimelineDetails, TimelineEventItemId, TimelineItem as SdkTimelineItem, TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem
 };
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use std::{ops::Deref, sync::Arc};
 use tracing::info;
 
 use super::{MsgContent, TimelineEventContent};
@@ -98,6 +96,7 @@ impl EventSendState {
     }
 }
 
+
 #[derive(Clone, Debug, Serialize, Deserialize, Builder)]
 #[builder(derive(Debug))]
 pub struct TimelineEventItem {
@@ -116,7 +115,9 @@ pub struct TimelineEventItem {
     #[builder(default)]
     content: Option<TimelineEventContent>,
     #[builder(default)]
-    in_reply_to: Option<OwnedEventId>,
+    in_reply_to_id: Option<OwnedEventId>,
+    #[builder(default)]
+    in_reply_to_event: Option<Box<TimelineEventItem>>,
     #[builder(default)]
     read_receipts: IndexMap<String, Receipt>,
     #[builder(default)]
@@ -127,7 +128,100 @@ pub struct TimelineEventItem {
     edited: bool,
 }
 
+impl TimelineEventItemBuilder {
+
+    fn parse_content(self: &mut TimelineEventItemBuilder, content: &SdkTimelineItemContent, when: u64, my_id: OwnedUserId) {
+        self.origin_server_ts(when);
+        match content {
+            SdkTimelineItemContent::MsgLike(msg_like) => match &msg_like.kind {
+                MsgLikeKind::Message(msg) => {
+                    self.event_type("m.room.message".to_owned());
+                    let msg_type = msg.msgtype();
+                    self.msg_type(Some(msg_type.msgtype().to_string()));
+                    self.content(TimelineEventContent::try_from(msg_type).ok());
+                    if let Some(in_reply_to) = &msg_like.in_reply_to {
+                        self.in_reply_to_id(Some(in_reply_to.event_id.clone()));
+                        if let TimelineDetails::Ready(event) = &in_reply_to.event {
+                            self.in_reply_to_event(Some(Box::new(TimelineEventItem::new_replied_to(&event, in_reply_to.event_id.clone(), when, my_id))));
+                        }
+                    }
+                    self.edited(msg.is_edited());
+                }
+                MsgLikeKind::Redacted => {
+                    info!("Edit event applies to a redacted message");
+                    self.event_type("m.room.redaction".to_string());
+                }
+                MsgLikeKind::Sticker(s) => {
+                    self.event_type("m.sticker".to_string());
+                    // FIXME: proper sticker support needed
+                    // self.msg_content(Some(MsgContent::from(s.content())));
+                }
+                MsgLikeKind::UnableToDecrypt(encrypted_msg) => {
+                    info!("Edit event applies to event that couldn’t be decrypted");
+                    self.event_type("m.room.encrypted".to_string());
+                }
+
+                MsgLikeKind::Poll(s) => {
+                    info!("Edit event applies to a poll state");
+                    self.event_type("m.poll.start".to_string());
+                    if let Some(fallback) = s.fallback_text() {
+                        let msg_content = MsgContent::from_text(fallback);
+                        self.content(Some(TimelineEventContent::Message(msg_content)));
+                    }
+                }
+            },
+            SdkTimelineItemContent::MembershipChange(m) => {
+                info!("Edit event applies to membership change event");
+                self.event_type("MembershipChange".to_string());
+                if let Ok(content) = MembershipContent::try_from(m) {
+                    self.content(Some(TimelineEventContent::MembershipChange(content)));
+                }
+            }
+            SdkTimelineItemContent::ProfileChange(p) => {
+                info!("Edit event applies to profile change event");
+                self.event_type("ProfileChange".to_string());
+                let content = ProfileContent::from(p);
+                self.content(Some(TimelineEventContent::ProfileChange(content)));
+            }
+
+            SdkTimelineItemContent::OtherState(s) => {
+                info!("Edit event applies to a state event");
+                self.handle_other_state(s);
+            }
+
+            SdkTimelineItemContent::FailedToParseMessageLike { event_type, error } => {
+                info!("Edit event applies to message that couldn’t be parsed");
+                self.event_type(event_type.to_string());
+            }
+            SdkTimelineItemContent::FailedToParseState {
+                event_type,
+                state_key,
+                error,
+            } => {
+                info!("Edit event applies to state that couldn’t be parsed");
+                self.event_type(event_type.to_string());
+            }
+            SdkTimelineItemContent::CallInvite => {
+                self.event_type("m.call_invite".to_owned());
+            }
+            SdkTimelineItemContent::CallNotify => {
+                self.event_type("m.call_notify".to_owned());
+            }
+        };
+    }
+}
+
 impl TimelineEventItem {
+
+    pub (crate) fn new_replied_to(event: &Box<RepliedToEvent>, event_id: OwnedEventId, when: u64, my_id: OwnedUserId) -> Self {
+        let mut me: TimelineEventItemBuilder = TimelineEventItemBuilder::default();
+        me.event_id(Some(event_id))
+            .sender(event.sender().to_owned());
+
+        me.parse_content(event.content(),when, my_id);
+        me.build().expect("Building Room Event doesn’t fail")
+    }
+
     pub(crate) fn new(event: &EventTimelineItem, my_id: OwnedUserId) -> Self {
         let mut me = TimelineEventItemBuilder::default();
 
@@ -139,7 +233,6 @@ impl TimelineEventItem {
                     .send_state()
                     .map(|s| EventSendState::new(s, event.local_echo_send_handle())),
             )
-            .origin_server_ts(event.timestamp().get().into())
             .read_receipts(
                 event
                     .read_receipts()
@@ -171,81 +264,10 @@ impl TimelineEventItem {
             )
             .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
 
-        match event.content() {
-            SdkTimelineItemContent::MsgLike(msg_like) => match &msg_like.kind {
-                MsgLikeKind::Message(msg) => {
-                    me.event_type("m.room.message".to_owned());
-                    let msg_type = msg.msgtype();
-                    me.msg_type(Some(msg_type.msgtype().to_string()));
-                    me.content(TimelineEventContent::try_from(msg_type).ok());
-                    if let Some(in_reply_to) = &msg_like.in_reply_to {
-                        me.in_reply_to(Some(in_reply_to.event_id.clone()));
-                    }
-                    me.edited(msg.is_edited());
-                }
-                MsgLikeKind::Redacted => {
-                    info!("Edit event applies to a redacted message");
-                    me.event_type("m.room.redaction".to_string());
-                }
-                MsgLikeKind::Sticker(s) => {
-                    me.event_type("m.sticker".to_string());
-                    // FIXME: proper sticker support needed
-                    // me.msg_content(Some(MsgContent::from(s.content())));
-                }
-                MsgLikeKind::UnableToDecrypt(encrypted_msg) => {
-                    info!("Edit event applies to event that couldn’t be decrypted");
-                    me.event_type("m.room.encrypted".to_string());
-                }
-
-                MsgLikeKind::Poll(s) => {
-                    info!("Edit event applies to a poll state");
-                    me.event_type("m.poll.start".to_string());
-                    if let Some(fallback) = s.fallback_text() {
-                        let msg_content = MsgContent::from_text(fallback);
-                        me.content(Some(TimelineEventContent::Message(msg_content)));
-                    }
-                }
-            },
-            SdkTimelineItemContent::MembershipChange(m) => {
-                info!("Edit event applies to membership change event");
-                me.event_type("MembershipChange".to_string());
-                if let Ok(content) = MembershipContent::try_from(m) {
-                    me.content(Some(TimelineEventContent::MembershipChange(content)));
-                }
-            }
-            SdkTimelineItemContent::ProfileChange(p) => {
-                info!("Edit event applies to profile change event");
-                me.event_type("ProfileChange".to_string());
-                let content = ProfileContent::from(p);
-                me.content(Some(TimelineEventContent::ProfileChange(content)));
-            }
-
-            SdkTimelineItemContent::OtherState(s) => {
-                info!("Edit event applies to a state event");
-                me.handle_other_state(s);
-            }
-
-            SdkTimelineItemContent::FailedToParseMessageLike { event_type, error } => {
-                info!("Edit event applies to message that couldn’t be parsed");
-                me.event_type(event_type.to_string());
-            }
-            SdkTimelineItemContent::FailedToParseState {
-                event_type,
-                state_key,
-                error,
-            } => {
-                info!("Edit event applies to state that couldn’t be parsed");
-                me.event_type(event_type.to_string());
-            }
-            SdkTimelineItemContent::CallInvite => {
-                me.event_type("m.call_invite".to_owned());
-            }
-            SdkTimelineItemContent::CallNotify => {
-                me.event_type("m.call_notify".to_owned());
-            }
-        };
+        me.parse_content(event.content(), event.timestamp().get().into(), my_id);
         me.build().expect("Building Room Event doesn’t fail")
     }
+
 
     pub fn event_id(&self) -> Option<String> {
         self.event_id.as_ref().map(ToString::to_string)
@@ -431,8 +453,12 @@ impl TimelineEventItem {
         }
     }
 
-    pub fn in_reply_to(&self) -> Option<String> {
-        self.in_reply_to.as_ref().map(ToString::to_string)
+    pub fn in_reply_to_id(&self) -> Option<String> {
+        self.in_reply_to_id.as_ref().map(ToString::to_string)
+    }
+
+    pub fn in_reply_to_event(&self) -> Option<TimelineEventItem> {
+        self.in_reply_to_event.as_ref().map(|e| e.deref().clone())
     }
 
     pub fn read_users(&self) -> Vec<String> {

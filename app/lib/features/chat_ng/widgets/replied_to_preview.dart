@@ -10,16 +10,16 @@ import 'package:acter/l10n/generated/l10n.dart';
 // Reply State UI widget
 class RepliedToPreview extends ConsumerWidget {
   final String roomId;
-  final String originalId;
+  final String messageId; // original message id of the
   final bool isMe;
   const RepliedToPreview({
     super.key,
     required this.roomId,
-    required this.originalId,
+    required this.messageId,
     this.isMe = false,
   });
 
-  RoomMsgId get replyInfo => (roomId: roomId, uniqueId: originalId);
+  RoomMsgId get replyInfo => (roomId: roomId, uniqueId: messageId);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,11 +30,16 @@ class RepliedToPreview extends ConsumerWidget {
           () => replyBuilder(
             context,
             Skeletonizer(
-              child: ListTile(
-                leading: ActerAvatar(
-                  options: AvatarOptions.DM(AvatarInfo(uniqueId: '#')),
-                ),
-                isThreeLine: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Loading...'),
+                  // const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    child: Text('Loading...'),
+                  ),
+                ],
               ),
             ),
           ),
@@ -46,7 +51,7 @@ class RepliedToPreview extends ConsumerWidget {
             context,
             RepliedToEvent(
               roomId: roomId,
-              messageId: originalId,
+              messageId: messageId,
               replyEventItem: repliedToItem,
             ),
           ),

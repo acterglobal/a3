@@ -192,21 +192,29 @@ final mentionSuggestionsProvider =
       };
     });
 
+/// Give the room and the message id that contains a reply, this returns
+/// the event item that is being replied to.
 final repliedToMsgProvider = FutureProvider.autoDispose
     .family<TimelineEventItem, RoomMsgId>((ref, item) async {
       TimelineItem? msg = ref.watch(chatRoomMessageProvider(item));
 
       if (msg == null) {
+        throw 'Event ${item.uniqueId} not found';
+      }
+
+      TimelineEventItem? repliedToItem = msg.eventItem()?.inReplyToEvent();
+      if (repliedToItem == null) {
         // failed, trying to fetch from remote then
         final timeline =
             ref.read(chatMessagesStateProvider(item.roomId).notifier).timeline;
-        msg = await timeline.getMessage(item.uniqueId);
+        repliedToItem = (await timeline.getMessage(item.uniqueId)).eventItem();
       }
-      final eventItem = msg.eventItem();
-      if (eventItem == null) {
-        return throw 'Replied to non-event';
+
+      if (repliedToItem == null) {
+        throw 'Replied message not found';
       }
-      return eventItem;
+
+      return repliedToItem;
     });
 
 final messageReactionsProvider = StateProvider.autoDispose
