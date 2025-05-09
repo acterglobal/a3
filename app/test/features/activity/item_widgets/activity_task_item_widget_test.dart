@@ -32,13 +32,10 @@ class MockUtcDateTime extends Mock implements UtcDateTime {
 
 class MockDateContent extends Mock implements DateContent {
   @override
-  String? change() => 'Changed'; // Mocked change type
+  String change() => 'Changed'; // Mocked change type
 
   @override
   String? newVal() => '2025-03-17'; // Mocked new value
-
-  @override
-  String? oldVal() => '2024-03-17'; // Mocked old value
 }
 
 void main() {

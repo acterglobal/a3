@@ -37,16 +37,10 @@ class MockDateTimeRangeContent extends Mock implements DateTimeRangeContent {
   UtcDateTime? startNewVal() => MockUtcDateTime(); // Mocked new value
 
   @override
-  UtcDateTime? startOldVal() => MockUtcDateTime(); // Mocked old value
-
-  @override
   String endChange() => 'Changed'; // Mocked change type
 
   @override
   UtcDateTime? endNewVal() => MockUtcDateTime(); // Mocked new value
-
-  @override
-  UtcDateTime? endOldVal() => MockUtcDateTime(); // Mocked old value
 }
 
 void main() {
