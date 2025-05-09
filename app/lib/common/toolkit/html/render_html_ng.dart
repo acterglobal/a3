@@ -40,18 +40,22 @@ class RenderHtmlNg extends ConsumerWidget {
       customWidgetBuilder:
           (dom.Element element) => customWidgetBuilder(context, ref, element),
     );
-    if (maxLines != null) {
-      final height =
-          maxLines! *
-          (defaultTextStyle?.fontSize ??
-              Theme.of(context).textTheme.bodyMedium?.fontSize ??
-              12);
-      return SizedBox(
-        height: height.toDouble(),
-        child: ClipRect(child: htmlWidget),
-      );
+    final mxLines = maxLines;
+    if (mxLines == null) {
+      return htmlWidget;
     }
-    return htmlWidget;
+    final fontSize =
+        (defaultTextStyle?.fontSize ??
+            Theme.of(context).textTheme.bodyMedium?.fontSize ??
+            12);
+    final lineHeight =
+        (defaultTextStyle?.height ??
+            Theme.of(context).textTheme.bodyMedium?.height ??
+            1);
+    return SizedBox(
+      height: (mxLines * fontSize * lineHeight).toDouble(),
+      child: ClipRect(child: htmlWidget),
+    );
   }
 
   Widget? customWidgetBuilder(
