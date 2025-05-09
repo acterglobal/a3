@@ -26522,13 +26522,6 @@ class Api {
   late final _titleContentNewVal =
       _titleContentNewValPtr
           .asFunction<_TitleContentNewValReturn Function(int)>();
-  late final _titleContentOldValPtr = _lookup<
-    ffi.NativeFunction<_TitleContentOldValReturn Function(ffi.IntPtr)>
-  >("__TitleContent_old_val");
-
-  late final _titleContentOldVal =
-      _titleContentOldValPtr
-          .asFunction<_TitleContentOldValReturn Function(int)>();
   late final _descriptionContentChangePtr = _lookup<
     ffi.NativeFunction<_DescriptionContentChangeReturn Function(ffi.IntPtr)>
   >("__DescriptionContent_change");
@@ -26543,13 +26536,6 @@ class Api {
   late final _descriptionContentNewVal =
       _descriptionContentNewValPtr
           .asFunction<_DescriptionContentNewValReturn Function(int)>();
-  late final _descriptionContentOldValPtr = _lookup<
-    ffi.NativeFunction<_DescriptionContentOldValReturn Function(ffi.IntPtr)>
-  >("__DescriptionContent_old_val");
-
-  late final _descriptionContentOldVal =
-      _descriptionContentOldValPtr
-          .asFunction<_DescriptionContentOldValReturn Function(int)>();
   late final _dateContentChangePtr = _lookup<
     ffi.NativeFunction<_DateContentChangeReturn Function(ffi.IntPtr)>
   >("__DateContent_change");
@@ -26564,13 +26550,6 @@ class Api {
   late final _dateContentNewVal =
       _dateContentNewValPtr
           .asFunction<_DateContentNewValReturn Function(int)>();
-  late final _dateContentOldValPtr = _lookup<
-    ffi.NativeFunction<_DateContentOldValReturn Function(ffi.IntPtr)>
-  >("__DateContent_old_val");
-
-  late final _dateContentOldVal =
-      _dateContentOldValPtr
-          .asFunction<_DateContentOldValReturn Function(int)>();
   late final _dateTimeRangeContentStartChangePtr = _lookup<
     ffi.NativeFunction<
       _DateTimeRangeContentStartChangeReturn Function(ffi.IntPtr)
@@ -26589,15 +26568,6 @@ class Api {
   late final _dateTimeRangeContentStartNewVal =
       _dateTimeRangeContentStartNewValPtr
           .asFunction<_DateTimeRangeContentStartNewValReturn Function(int)>();
-  late final _dateTimeRangeContentStartOldValPtr = _lookup<
-    ffi.NativeFunction<
-      _DateTimeRangeContentStartOldValReturn Function(ffi.IntPtr)
-    >
-  >("__DateTimeRangeContent_start_old_val");
-
-  late final _dateTimeRangeContentStartOldVal =
-      _dateTimeRangeContentStartOldValPtr
-          .asFunction<_DateTimeRangeContentStartOldValReturn Function(int)>();
   late final _dateTimeRangeContentEndChangePtr = _lookup<
     ffi.NativeFunction<
       _DateTimeRangeContentEndChangeReturn Function(ffi.IntPtr)
@@ -26616,15 +26586,6 @@ class Api {
   late final _dateTimeRangeContentEndNewVal =
       _dateTimeRangeContentEndNewValPtr
           .asFunction<_DateTimeRangeContentEndNewValReturn Function(int)>();
-  late final _dateTimeRangeContentEndOldValPtr = _lookup<
-    ffi.NativeFunction<
-      _DateTimeRangeContentEndOldValReturn Function(ffi.IntPtr)
-    >
-  >("__DateTimeRangeContent_end_old_val");
-
-  late final _dateTimeRangeContentEndOldVal =
-      _dateTimeRangeContentEndOldValPtr
-          .asFunction<_DateTimeRangeContentEndOldValReturn Function(int)>();
   late final _roomPreviewRoomIdStrPtr = _lookup<
     ffi.NativeFunction<_RoomPreviewRoomIdStrReturn Function(ffi.IntPtr)>
   >("__RoomPreview_room_id_str");
@@ -58408,33 +58369,29 @@ class TitleContent {
 
   TitleContent._(this._api, this._box);
 
-  String? change() {
+  String change() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._titleContentChange(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
+    if (tmp4 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
     }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
     return tmp2;
   }
@@ -58466,37 +58423,6 @@ class TitleContent {
     return tmp2;
   }
 
-  String? oldVal() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._titleContentOldVal(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -58509,41 +58435,10 @@ class DescriptionContent {
 
   DescriptionContent._(this._api, this._box);
 
-  String? change() {
+  String change() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._descriptionContentChange(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String newVal() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._descriptionContentNewVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -58567,10 +58462,10 @@ class DescriptionContent {
     return tmp2;
   }
 
-  String? oldVal() {
+  String? newVal() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._descriptionContentOldVal(tmp0);
+    final tmp1 = _api._descriptionContentNewVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -58610,33 +58505,29 @@ class DateContent {
 
   DateContent._(this._api, this._box);
 
-  String? change() {
+  String change() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._dateContentChange(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
+    if (tmp4 == 0) {
       print("returning empty string");
       return "";
     }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
+    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
+    List<int> tmp3_buf = [];
+    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp4; i++) {
+      int char = tmp3_precast.elementAt(i).value;
+      tmp3_buf.add(char);
     }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
     return tmp2;
   }
@@ -58645,37 +58536,6 @@ class DateContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._dateContentNewVal(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String? oldVal() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._dateContentOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -58762,22 +58622,6 @@ class DateTimeRangeContent {
     return tmp2;
   }
 
-  UtcDateTime? startOldVal() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._dateTimeRangeContentStartOldVal(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = UtcDateTime._(_api, tmp4_1);
-    return tmp2;
-  }
-
   String? endChange() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -58813,22 +58657,6 @@ class DateTimeRangeContent {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._dateTimeRangeContentEndNewVal(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = UtcDateTime._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  UtcDateTime? endOldVal() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._dateTimeRangeContentEndOldVal(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -73451,14 +73279,12 @@ class _ActivityDateTimeRangeContentReturn extends ffi.Struct {
 }
 
 class _TitleContentChangeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
   @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
 }
 
 class _TitleContentNewValReturn extends ffi.Struct {
@@ -73470,38 +73296,16 @@ class _TitleContentNewValReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _TitleContentOldValReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
 class _DescriptionContentChangeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
   @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
 }
 
 class _DescriptionContentNewValReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _DescriptionContentOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -73513,28 +73317,15 @@ class _DescriptionContentOldValReturn extends ffi.Struct {
 }
 
 class _DateContentChangeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
   @ffi.IntPtr()
+  external int arg0;
+  @ffi.UintPtr()
   external int arg1;
   @ffi.UintPtr()
   external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
 }
 
 class _DateContentNewValReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _DateContentOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -73563,13 +73354,6 @@ class _DateTimeRangeContentStartNewValReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _DateTimeRangeContentStartOldValReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-}
-
 class _DateTimeRangeContentEndChangeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73582,13 +73366,6 @@ class _DateTimeRangeContentEndChangeReturn extends ffi.Struct {
 }
 
 class _DateTimeRangeContentEndNewValReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-}
-
-class _DateTimeRangeContentEndOldValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

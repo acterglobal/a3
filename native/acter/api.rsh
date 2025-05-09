@@ -2781,30 +2781,25 @@ object Activities {
 }
 
 object TitleContent {
-    fn change() -> Option<string>;
+    fn change() -> string;
     fn new_val() -> string;
-    fn old_val() -> Option<string>;
 }
 
 object DescriptionContent {
-    fn change() -> Option<string>;
-    fn new_val() -> string;
-    fn old_val() -> Option<string>;
+    fn change() -> string;
+    fn new_val() -> Option<string>;
 }
 
 object DateContent {
-    fn change() -> Option<string>;
+    fn change() -> string;
     fn new_val() -> Option<string>;
-    fn old_val() -> Option<string>;
 }
 
 object DateTimeRangeContent {
     fn start_change() -> Option<string>;
     fn start_new_val() -> Option<UtcDateTime>;
-    fn start_old_val() -> Option<UtcDateTime>;
     fn end_change() -> Option<string>;
     fn end_new_val() -> Option<UtcDateTime>;
-    fn end_old_val() -> Option<UtcDateTime>;
 }
 
 

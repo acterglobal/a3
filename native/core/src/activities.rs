@@ -739,13 +739,17 @@ impl Activity {
                     });
 
                 if let Some(title) = e.inner.title {
-                    let content = status::TitleContent::new(title, object.title());
+                    let content = status::TitleContent::new("Changed".to_owned(), title);
                     Ok(Self::new(
                         meta,
                         ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(content)) = e.inner.content {
-                    let content = status::DescriptionContent::new(content, object.description());
+                } else if let Some(content) = e.inner.content {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange { object, content },
@@ -781,27 +785,29 @@ impl Activity {
                     });
 
                 if let Some(title) = e.inner.title {
-                    let content = status::TitleContent::new(title, object.title());
+                    let content = status::TitleContent::new("Changed".to_owned(), title);
                     Ok(Self::new(
                         meta,
                         ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(content)) = e.inner.description {
-                    let content = status::DescriptionContent::new(content, object.description());
+                } else if let Some(content) = e.inner.description {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange { object, content },
                     ))
                 } else {
-                    let prev_utc_start = object.utc_start();
-                    let prev_utc_end = object.utc_end();
                     match (e.inner.utc_start, e.inner.utc_end) {
                         (Some(utc_start), Some(utc_end)) => {
                             let content = status::DateTimeRangeContent::new(
+                                Some("Changed".to_owned()),
                                 Some(utc_start),
+                                Some("Changed".to_owned()),
                                 Some(utc_end),
-                                prev_utc_start,
-                                prev_utc_end,
                             );
                             return Ok(Self::new(
                                 meta,
@@ -810,10 +816,10 @@ impl Activity {
                         }
                         (Some(utc_start), None) => {
                             let content = status::DateTimeRangeContent::new(
+                                Some("Changed".to_owned()),
                                 Some(utc_start),
+                                Some("Unset".to_owned()),
                                 None,
-                                prev_utc_start,
-                                prev_utc_end,
                             );
                             return Ok(Self::new(
                                 meta,
@@ -822,10 +828,10 @@ impl Activity {
                         }
                         (None, Some(utc_end)) => {
                             let content = status::DateTimeRangeContent::new(
+                                Some("Unset".to_owned()),
                                 None,
+                                Some("Changed".to_owned()),
                                 Some(utc_end),
-                                prev_utc_start,
-                                prev_utc_end,
                             );
                             return Ok(Self::new(
                                 meta,
@@ -885,13 +891,17 @@ impl Activity {
                     });
 
                 if let Some(name) = e.inner.name {
-                    let content = status::TitleContent::new(name, object.title());
+                    let content = status::TitleContent::new("Changed".to_owned(), name);
                     Ok(Self::new(
                         meta,
                         ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(content)) = e.inner.description {
-                    let content = status::DescriptionContent::new(content, object.description());
+                } else if let Some(content) = e.inner.description {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange { object, content },
@@ -947,19 +957,27 @@ impl Activity {
                         },
                     ))
                 } else if let Some(due_date) = e.inner.due_date {
-                    let content = status::DateContent::new(due_date, object.due_date());
+                    let change = match due_date {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DateContent::new(change, due_date);
                     Ok(Self::new(
                         meta,
                         ActivityContent::TaskDueDateChange { object, content },
                     ))
                 } else if let Some(title) = e.inner.title {
-                    let content = status::TitleContent::new(title, object.title());
+                    let content = status::TitleContent::new("Changed".to_owned(), title);
                     Ok(Self::new(
                         meta,
                         ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(content)) = e.inner.description {
-                    let content = status::DescriptionContent::new(content, object.description());
+                } else if let Some(content) = e.inner.description {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     return Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange { object, content },

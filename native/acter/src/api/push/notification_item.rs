@@ -50,7 +50,7 @@ use matrix_sdk_ui::notification_client::{
 };
 use std::{ops::Deref, sync::Arc};
 use tokio_stream::{wrappers::BroadcastStream, Stream};
-use tracing::warn;
+use tracing::error;
 use urlencoding::encode;
 
 use crate::{Client, Rsvp};
@@ -283,7 +283,7 @@ impl NotificationItemInner {
             },
             NotificationItemInner::Activity(activity) => match activity.content() {
                 ActivityContent::DescriptionChange { content, .. } => {
-                    Some(MsgContent::from(content.content()))
+                    content.new_val.as_ref().map(MsgContent::from)
                 }
                 ActivityContent::Comment { content, .. } => Some(MsgContent::from(content)),
                 ActivityContent::Boost {
@@ -483,8 +483,8 @@ impl NotificationItemBuilder {
     ) -> Result<NotificationItem> {
         let user_id = client.user_id()?;
         let activity = match convert_acter_model(client, event).await {
-            Err(error) => {
-                warn!(?error, "Could not convert acter activity");
+            Err(e) => {
+                error!(?e, "Could not convert acter activity");
                 return Ok(self.build()?);
             }
             Ok(a) => a,
@@ -586,16 +586,37 @@ impl NotificationItemBuilder {
                 }
             }
             ActivityContent::TaskDueDateChange { content, .. } => {
-                if content.change().is_some() {
-                    let new_due_date = content.new_val().expect("due date should be available");
-                    builder.title(new_due_date)
-                } else {
-                    builder.title("removed due date".to_owned())
+                match content.change().as_str() {
+                    "Changed" | "Set" => {
+                        if let Some(new_val) = content.new_val() {
+                            builder.title(new_val)
+                        } else {
+                            error!("Could not get the new value for the due date change");
+                            &mut builder
+                        }
+                    }
+                    "Unset" => {
+                        builder.title("removed due date".to_owned())
+                    }
+                    _ => &mut builder
                 }
             }
             ActivityContent::TaskAdd { task_title, .. } => builder.title(task_title.clone()),
             ActivityContent::DescriptionChange { object, content } => {
-                builder.msg_content(MsgContent::from(content.content()))
+                match content.change().as_str() {
+                    "Changed" | "Set" => {
+                        if let Some(new_val) = content.new_val.as_ref() {
+                            builder.msg_content(MsgContent::from(new_val.clone()))
+                        } else {
+                            error!("Could not get the new value for the description change");
+                            &mut builder
+                        }
+                    }
+                    "Unset" => {
+                        builder.msg_content(MsgContent::from_text("removed description".to_owned()))
+                    }
+                    _ => &mut builder
+                }
             }
             ActivityContent::ObjectInvitation { object, invitees } => builder
                 .title(object.title().unwrap_or("Object".to_owned()))
