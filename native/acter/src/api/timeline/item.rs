@@ -150,7 +150,7 @@ impl TimelineEventItemBuilder {
                         if let TimelineDetails::Ready(event) = &in_reply_to.event {
                             self.in_reply_to_event(Some(Box::new(
                                 TimelineEventItem::new_replied_to(
-                                    &event,
+                                    event,
                                     in_reply_to.event_id.clone(),
                                     when,
                                     my_id,
@@ -226,7 +226,7 @@ impl TimelineEventItemBuilder {
 
 impl TimelineEventItem {
     pub(crate) fn new_replied_to(
-        event: &Box<RepliedToEvent>,
+        event: &RepliedToEvent,
         event_id: OwnedEventId,
         when: u64,
         my_id: OwnedUserId,
