@@ -65,6 +65,14 @@ final isActerSpace = FutureProvider.autoDispose.family<bool, String>((
   return await space.isActerSpace();
 });
 
+final createSpaceOnboardingDataProvider = FutureProvider.autoDispose.family<bool, String>((
+  ref,
+  spaceId,
+) async {
+  final space = await ref.watch(spaceProvider(spaceId).future);
+  return await space.createOnboardingData();
+});
+
 final spaceIsBookmarkedProvider = FutureProvider.family<bool, String>((
   ref,
   spaceId,
@@ -535,5 +543,9 @@ final acterAppSettingsProvider = FutureProvider.autoDispose
 
 /// Whether there were any rooms in the accepted invites
 final hasSpaceRedeemedInInviteCodeProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);
+
+final hasRecommendedSpaceJoinedProvider = StateProvider.autoDispose<bool>(
   (ref) => false,
 );

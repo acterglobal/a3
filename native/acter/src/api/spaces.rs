@@ -190,23 +190,22 @@ impl Space {
         TimelineStream::new(room, timeline)
     }
 
-    pub async fn create_onboarding_data(&self) -> Result<()> {
+    pub async fn create_onboarding_data(&self) -> Result<bool> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
-        engine
-            .add_user("main".to_owned(), self.client.core.clone())
-            .await?;
-        engine.add_ref(
-            "space".to_owned(),
-            "space".to_owned(),
-            self.room.room_id().to_string(),
-        )?;
+        let core = self.client.core.clone();
+        let room_id = self.room.room_id().to_string();
+        RUNTIME
+            .spawn(async move {
+                engine.add_user("main".to_owned(), core).await?;
+                engine.add_ref("space".to_owned(), "space".to_owned(), room_id)?;
 
-        let mut executer = engine.execute()?;
-        while let Some(i) = executer.next().await {
-            i?
-        }
-
-        Ok(())
+                let mut executer = engine.execute()?;
+                while let Some(i) = executer.next().await {
+                    i?
+                }
+                Ok(true)
+            })
+            .await?
     }
 
     pub fn subscribe_stream(&self) -> impl Stream<Item = bool> {
