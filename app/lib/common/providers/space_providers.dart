@@ -65,7 +65,7 @@ final isActerSpace = FutureProvider.autoDispose.family<bool, String>((
   return await space.isActerSpace();
 });
 
-final spaceCreateOnboardingDataFuturePoll = FutureProvider.autoDispose.family<bool, String>((
+final createSpaceOnboardingDataProvider = FutureProvider.autoDispose.family<bool, String>((
   ref,
   spaceId,
 ) async {

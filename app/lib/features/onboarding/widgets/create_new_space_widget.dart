@@ -219,7 +219,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
 
         if (spaceId != null) {
           if (_fillExampleData) {
-            ref.watch(spaceCreateOnboardingDataFuturePoll(spaceId)).valueOrNull != true;
+            ref.watch(createSpaceOnboardingDataProvider(spaceId)).valueOrNull != true;
             if (context.mounted) {
               showInviteFriendsView(context, spaceId);
             }
