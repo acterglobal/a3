@@ -65,7 +65,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         CustomizationPage(callNextPage: () => _nextPage()),
         if (!hasSpaceRedeemedInvites)
           RecommendedSpacesPage(callNextPage: () => _nextPage()),
-        if (!hasRecommendedSpaceJoined)
+        if (!hasSpaceRedeemedInvites && !hasRecommendedSpaceJoined)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
       
