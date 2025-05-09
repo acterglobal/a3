@@ -28,7 +28,10 @@ use matrix_sdk_base::ruma::{
     OwnedEventId, OwnedRoomAliasId, OwnedTransactionId, OwnedUserId,
 };
 use matrix_sdk_ui::timeline::{
-    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem, MsgLikeContent, MsgLikeKind, OtherState, RepliedToEvent, TimelineDetails, TimelineEventItemId, TimelineItem as SdkTimelineItem, TimelineItemContent as SdkTimelineItemContent, TimelineItemKind, VirtualTimelineItem
+    AnyOtherFullStateEventContent, EventSendState as SdkEventSendState, EventTimelineItem,
+    MsgLikeContent, MsgLikeKind, OtherState, RepliedToEvent, TimelineDetails, TimelineEventItemId,
+    TimelineItem as SdkTimelineItem, TimelineItemContent as SdkTimelineItemContent,
+    TimelineItemKind, VirtualTimelineItem,
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
@@ -96,7 +99,6 @@ impl EventSendState {
     }
 }
 
-
 #[derive(Clone, Debug, Serialize, Deserialize, Builder)]
 #[builder(derive(Debug))]
 pub struct TimelineEventItem {
@@ -129,8 +131,12 @@ pub struct TimelineEventItem {
 }
 
 impl TimelineEventItemBuilder {
-
-    fn parse_content(self: &mut TimelineEventItemBuilder, content: &SdkTimelineItemContent, when: u64, my_id: OwnedUserId) {
+    fn parse_content(
+        self: &mut TimelineEventItemBuilder,
+        content: &SdkTimelineItemContent,
+        when: u64,
+        my_id: OwnedUserId,
+    ) {
         self.origin_server_ts(when);
         match content {
             SdkTimelineItemContent::MsgLike(msg_like) => match &msg_like.kind {
@@ -142,7 +148,14 @@ impl TimelineEventItemBuilder {
                     if let Some(in_reply_to) = &msg_like.in_reply_to {
                         self.in_reply_to_id(Some(in_reply_to.event_id.clone()));
                         if let TimelineDetails::Ready(event) = &in_reply_to.event {
-                            self.in_reply_to_event(Some(Box::new(TimelineEventItem::new_replied_to(&event, in_reply_to.event_id.clone(), when, my_id))));
+                            self.in_reply_to_event(Some(Box::new(
+                                TimelineEventItem::new_replied_to(
+                                    &event,
+                                    in_reply_to.event_id.clone(),
+                                    when,
+                                    my_id,
+                                ),
+                            )));
                         }
                     }
                     self.edited(msg.is_edited());
@@ -212,13 +225,17 @@ impl TimelineEventItemBuilder {
 }
 
 impl TimelineEventItem {
-
-    pub (crate) fn new_replied_to(event: &Box<RepliedToEvent>, event_id: OwnedEventId, when: u64, my_id: OwnedUserId) -> Self {
+    pub(crate) fn new_replied_to(
+        event: &Box<RepliedToEvent>,
+        event_id: OwnedEventId,
+        when: u64,
+        my_id: OwnedUserId,
+    ) -> Self {
         let mut me: TimelineEventItemBuilder = TimelineEventItemBuilder::default();
         me.event_id(Some(event_id))
             .sender(event.sender().to_owned());
 
-        me.parse_content(event.content(),when, my_id);
+        me.parse_content(event.content(), when, my_id);
         me.build().expect("Building Room Event doesn’t fail")
     }
 
@@ -267,7 +284,6 @@ impl TimelineEventItem {
         me.parse_content(event.content(), event.timestamp().get().into(), my_id);
         me.build().expect("Building Room Event doesn’t fail")
     }
-
 
     pub fn event_id(&self) -> Option<String> {
         self.event_id.as_ref().map(ToString::to_string)
