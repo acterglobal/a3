@@ -180,7 +180,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // After loading, should show actual count
-      expect(find.text('4 Members'), findsOneWidget);
+      expect(
+        find.text(
+          '${productTeamMutedWithSingleTypingUserRoom2.mockRoom.mockActiveMembersIds?.length} Members',
+        ),
+        findsOneWidget,
+      );
       expect(find.byWidgetPredicate((w) => w is Skeletonizer), findsNothing);
     });
 

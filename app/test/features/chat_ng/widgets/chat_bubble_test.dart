@@ -16,7 +16,9 @@ void main() {
           child: ChatBubble(
             context: tester.element(find.byType(Center)),
             timestamp: timestamp,
-            child: const Text('Hello'),
+            bubbleContentWidget: const Text('Hello'),
+            isFirstMessageBySender: true,
+            isLastMessageBySender: true,
           ),
         ),
       );
@@ -38,7 +40,9 @@ void main() {
               return ChatBubble(
                 context: context,
                 isEdited: true,
-                child: const Text('Edited message'),
+                bubbleContentWidget: const Text('Edited message'),
+                isFirstMessageBySender: true,
+                isLastMessageBySender: true,
               );
             },
           ),
@@ -62,7 +66,11 @@ void main() {
                   context: context,
                   isEdited: true,
                   timestamp: timestamp,
-                  child: const Text('Edited message with timestamp'),
+                  bubbleContentWidget: const Text(
+                    'Edited message with timestamp',
+                  ),
+                  isFirstMessageBySender: true,
+                  isLastMessageBySender: true,
                 );
               },
             ),
@@ -71,7 +79,7 @@ void main() {
 
         expect(find.text(L10n.of(testContext).edited), findsOneWidget);
 
-        expect(find.text('.'), findsOneWidget);
+        expect(find.text('-'), findsOneWidget);
 
         expect(find.byType(MessageTimestampWidget), findsOneWidget);
       },
@@ -89,7 +97,9 @@ void main() {
               return ChatBubble(
                 context: context,
                 isEdited: false,
-                child: const Text('Unedited message'),
+                bubbleContentWidget: const Text('Unedited message'),
+                isFirstMessageBySender: true,
+                isLastMessageBySender: true,
               );
             },
           ),
@@ -113,7 +123,9 @@ void main() {
               context: context,
               isEdited: true,
               timestamp: timestamp,
-              child: const Text('My message'),
+              bubbleContentWidget: const Text('My message'),
+              isFirstMessageBySender: true,
+              isLastMessageBySender: true,
             );
           },
         ),
@@ -124,7 +136,7 @@ void main() {
       final editedText = L10n.of(testContext).edited;
       expect(find.text(editedText), findsOneWidget);
 
-      expect(find.text('.'), findsOneWidget);
+      expect(find.text('-'), findsOneWidget);
       expect(find.byType(MessageTimestampWidget), findsOneWidget);
 
       final row = tester.widget<Row>(find.byType(Row).first);

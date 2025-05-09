@@ -85,7 +85,7 @@ void main() {
       test('hides avatar when next message is from same user', () {
         final RoomMsgId query = (roomId: 'test-room', uniqueId: 'A1');
         final result = container.read(isLastMessageBySenderProvider(query));
-        expect(result, false);
+        expect(result, true);
       });
     });
 

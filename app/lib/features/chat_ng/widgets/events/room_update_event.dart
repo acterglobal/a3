@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:flutter/material.dart';
@@ -13,21 +14,26 @@ class RoomUpdateEvent extends ConsumerWidget {
   final bool isMe;
   final TimelineEventItem item;
   final String roomId;
+  final TextStyle? textStyle;
+  final TextAlign? textAlign;
 
   const RoomUpdateEvent({
     super.key,
     required this.isMe,
     required this.item,
     required this.roomId,
+    this.textStyle,
+    this.textAlign,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
-    return Container(
-      padding: const EdgeInsets.only(left: 10, bottom: 5, right: 10),
-      child: Text(stateText, style: Theme.of(context).textTheme.labelSmall),
+    return Text(
+      stateText,
+      style: textStyle ?? stateEventTextStyle(context),
+      textAlign: textAlign,
     );
   }
 

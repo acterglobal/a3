@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_list_ffi_string.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -29,7 +31,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   });
 
   @override
-  String eventId() => mockEventId ?? 'eventId';
+  String eventId() => mockEventId ?? Random().nextInt(1000000).toString();
 
   @override
   String sender() => mockSenderId ?? 'senderId';

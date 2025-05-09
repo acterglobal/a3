@@ -6,49 +6,63 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
 
 class ChatBubble extends StatelessWidget {
-  final Widget child;
+  final Widget bubbleContentWidget;
   final int? messageWidth;
   final BoxDecoration decoration;
   final MainAxisAlignment bubbleAlignment;
   final int? timestamp;
   final bool isEdited;
+  final String? displayName;
+  final bool isMe;
 
   // default private constructor
   const ChatBubble._inner({
     super.key,
-    required this.child,
+    required this.bubbleContentWidget,
     required this.bubbleAlignment,
     required this.decoration,
     this.isEdited = false,
     this.messageWidth,
     this.timestamp,
+    this.displayName,
+    this.isMe = false,
   });
 
   // factory bubble constructor
   factory ChatBubble({
-    required Widget child,
+    required Widget bubbleContentWidget,
     required BuildContext context,
-    bool isLastMessageBySender = false,
+    required bool isFirstMessageBySender,
+    required bool isLastMessageBySender,
+    String? displayName,
     bool isEdited = false,
     int? messageWidth,
     int? timestamp,
   }) {
     final theme = Theme.of(context);
+
+    final cornersRadius = Radius.circular(16);
+    final flatRadius = Radius.circular(0);
+
+    final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
+
     return ChatBubble._inner(
       messageWidth: messageWidth,
+      displayName: displayName,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(isLastMessageBySender ? 4 : 16),
-          bottomRight: Radius.circular(16),
+          topLeft: topLeft,
+          topRight: cornersRadius,
+          bottomLeft: flatRadius,
+          bottomRight: cornersRadius,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
       timestamp: timestamp,
-      child: child,
+      bubbleContentWidget: bubbleContentWidget,
+      isMe: false,
     );
   }
 
@@ -56,98 +70,116 @@ class ChatBubble extends StatelessWidget {
   factory ChatBubble.me({
     Key? key,
     required BuildContext context,
-    required Widget child,
-    bool isLastMessageBySender = false,
+    required Widget bubbleContentWidget,
+    required bool isFirstMessageBySender,
+    required bool isLastMessageBySender,
+    String? displayName,
     bool isEdited = false,
     int? messageWidth,
     int? timestamp,
   }) {
     final theme = Theme.of(context);
+
+    final cornersRadius = Radius.circular(16);
+    final flatRadius = Radius.circular(0);
+
+    final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
+
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
+      displayName: displayName,
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.primary.withValues(alpha: 0.8),
+          ],
+        ),
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(isLastMessageBySender ? 16 : 4),
+          topLeft: cornersRadius,
+          topRight: topRight,
+          bottomLeft: cornersRadius,
+          bottomRight: flatRadius,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
       timestamp: timestamp,
-      child: DefaultTextStyle.merge(
+      bubbleContentWidget: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onPrimary,
         ),
-        child: child,
+        child: bubbleContentWidget,
       ),
+      isMe: true,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final chatTheme = Theme.of(context).chatTheme;
     final size = MediaQuery.sizeOf(context);
     final msgWidth = messageWidth?.toDouble();
     final defaultWidth =
         context.isLargeScreen ? size.width * 0.5 : size.width * 0.75;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        mainAxisAlignment: bubbleAlignment,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          const SizedBox(width: 5),
-          IntrinsicWidth(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
-              decoration: decoration,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    child,
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (isEdited)
-                          Text(
-                            L10n.of(context).edited,
-                            style: chatTheme.emptyChatPlaceholderTextStyle
-                                .copyWith(fontSize: 12),
-                          ),
-                        if (isEdited && timestamp != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            child: Text(
-                              '.',
-                              style: chatTheme.emptyChatPlaceholderTextStyle
-                                  .copyWith(fontSize: 12),
-                            ),
-                          ),
-                        if (timestamp != null)
-                          MessageTimestampWidget(
-                            timestamp: timestamp.expect('should not be null'),
-                          ),
-                      ],
-                    ),
-                  ],
+    return IntrinsicWidth(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.all(10),
+        constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
+        decoration: decoration,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (displayName != null) ...[
+              Text(
+                displayName!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color:
+                      Colors.primaries[displayName!.hashCode.abs() %
+                          Colors.primaries.length],
                 ),
               ),
-            ),
-          ),
-        ],
+              const SizedBox(height: 8),
+            ],
+            bubbleContentWidget,
+            _buildTimestampAndEditedLabel(context),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildTimestampAndEditedLabel(BuildContext context) {
+    final chatTheme = Theme.of(context).chatTheme;
+    final textStyle = chatTheme.emptyChatPlaceholderTextStyle.copyWith(
+      fontSize: 12,
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (isEdited) ...[
+          Text(L10n.of(context).edited, style: textStyle),
+          const SizedBox(width: 6),
+          Text('-', style: textStyle),
+          const SizedBox(width: 6),
+        ],
+        if (timestamp != null)
+          MessageTimestampWidget(
+            timestamp: timestamp.expect('should not be null'),
+            textColor:
+                isMe
+                    ? Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7)
+                    : Theme.of(context).colorScheme.surfaceTint,
+          ),
+      ],
     );
   }
 }

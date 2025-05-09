@@ -68,6 +68,34 @@ final animatedListChatMessagesProvider =
           ref.watch(chatMessagesStateProvider(roomId).notifier).animatedList,
     );
 
+final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
+    .family<List<String>, String>((ref, roomId) {
+      final msgList = ref.watch(
+        chatMessagesStateProvider(roomId).select((value) => value.messageList),
+      );
+      if (ref.watch(showHiddenMessages)) {
+        // do not apply filters
+        return msgList;
+      }
+      // do apply some filters
+
+      return msgList.where((id) {
+        final msg = ref.watch(
+          chatRoomMessageProvider((roomId: roomId, uniqueId: id)),
+        );
+        if (msg == null) {
+          _log.severe('Room Msg $roomId $id not found');
+          return false;
+        }
+
+        return [
+          'm.room.message',
+          'm.room.encrypted',
+          'm.room.redaction',
+        ].contains(msg.eventItem()?.eventType());
+      }).toList();
+    });
+
 final renderableChatMessagesProvider = StateProvider.autoDispose
     .family<List<String>, String>((ref, roomId) {
       final msgList = ref.watch(
@@ -91,13 +119,13 @@ final renderableChatMessagesProvider = StateProvider.autoDispose
       }).toList();
     });
 
-final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
+final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
   final roomId = roomMsgId.roomId;
   final eventId = roomMsgId.uniqueId;
-  final messages = ref.watch(renderableChatMessagesProvider(roomId));
+  final messages = ref.watch(renderableBubbleChatMessagesProvider(roomId));
   final index = messages.indexOf(eventId);
   if (index == -1) return null;
   if (index == messages.length - 1) return null;
@@ -106,13 +134,13 @@ final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   );
 });
 
-final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
+final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
   final roomId = roomMsgId.roomId;
   final eventId = roomMsgId.uniqueId;
-  final messages = ref.watch(renderableChatMessagesProvider(roomId));
+  final messages = ref.watch(renderableBubbleChatMessagesProvider(roomId));
   final index = messages.indexOf(eventId);
   if (index == -1) return null;
   if (index == 0) return null;
