@@ -51,7 +51,7 @@ class RepliedToPreview extends ConsumerWidget {
             context,
             RepliedToEvent(
               roomId: roomId,
-              messageId: messageId,
+              originalMessageId: messageId,
               replyEventItem: repliedToItem,
             ),
           ),
