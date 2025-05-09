@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/input_text_field_without_border.dart';
+import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/onboarding/actions/create_new_space_onboarding_actions.dart';
 import 'package:acter/features/onboarding/types.dart';
@@ -155,7 +155,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
       children: <Widget>[
         Text(lang.spaceDisplayName),
         const SizedBox(height: 5),
-        InputTextFieldWithoutBorder(
+        InputTextField(
           key: CreateSpaceKeys.titleField,
           hintText: lang.spaceName,
           textInputType: TextInputType.text,
