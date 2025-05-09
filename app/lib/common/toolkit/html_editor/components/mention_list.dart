@@ -7,8 +7,6 @@ import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
 import 'package:flutter/material.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -195,7 +193,9 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
                     mentionId: mentionId,
                     displayName: displayName,
                     avatarOptions: options(mentionId, ref),
-                    onTap: () => _selectItem(mentionId, displayName),
+                    onTap:
+                        (String id, {String? displayName}) =>
+                            _selectItem(id, displayName),
                   );
                 },
               ),
@@ -291,6 +291,12 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     setState(() => _filteredSuggestions = filtered);
   }
 
+  String _makeUri(String id) => switch (id[0]) {
+    '@' => 'matrix:u/${id.substring(1)}',
+    '!' => 'matrix:roomid/${id.substring(1)}',
+    _ => 'acter:',
+  };
+
   void _selectItem(String id, String? displayName) {
     final selection = widget.editorState.selection;
     if (selection == null) return;
@@ -305,35 +311,30 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     // Find the trigger symbol position by searching backwards from cursor
     int atSymbolPosition = -1;
     final mentionTriggers = [userMentionChar, roomMentionChar];
-    String mentionTypeStr = '';
     for (int i = cursorPosition - 1; i >= 0; i--) {
       if (mentionTriggers.contains(text[i])) {
-        mentionTypeStr = text[i];
         atSymbolPosition = i;
         break;
       }
     }
 
     if (atSymbolPosition == -1) return; // No trigger found
-
-    // Calculate length from trigger to cursor
     final lengthToReplace = cursorPosition - atSymbolPosition;
-    final mentionType = MentionType.fromStr(mentionTypeStr);
-    final uniqueMarker = '‖';
+    final replacementText = displayName ?? id;
 
     transaction.replaceText(
+      // remove the trigger and content
       node,
-      atSymbolPosition, // Start exactly from trigger
-      lengthToReplace, // Replace everything including trigger
-      uniqueMarker,
-      attributes: {
-        mentionTypeStr: MentionAttributes(
-          type: mentionType,
-          mentionId: id,
-          displayName: displayName,
-        ),
-        'inline': true,
-      },
+      atSymbolPosition,
+      lengthToReplace,
+      replacementText,
+      attributes: {'href': _makeUri(id), 'inline': true},
+    );
+    // insert space after so we can go on
+    transaction.insertText(
+      node,
+      atSymbolPosition + replacementText.length,
+      ' ',
     );
 
     widget.editorState.apply(transaction);
