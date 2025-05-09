@@ -1,1 +1,0 @@
-- [Labs] Chat NG : [fix] succeeding text after mentions in chat editor should be visible.

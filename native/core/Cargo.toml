@@ -51,10 +51,6 @@ minijinja = { version = "2.2.0", optional = true, features = ["builtins"] }
 tokio-retry = { version = "0.3.0", optional = true }
 toml = { version = "0.8.8", optional = true, features = ["preserve_order"] }
 
-[dependencies.matrix-sdk]
-workspace = true
-default-features = false
-features = ["rustls-tls", "markdown"]
 
 [dependencies.matrix-sdk-base]
 workspace = true
@@ -67,16 +63,25 @@ default-features = false
 [dependencies.matrix-sdk-ui]
 workspace = true
 
+
+[target.'cfg(target_os = "android")'.dependencies.matrix-sdk]
+workspace = true
+default-features = false
+features = ["rustls-tls", "markdown"]
+
+
+[target.'cfg(not(target_os = "android"))'.dependencies.matrix-sdk]
+workspace = true
+default-features = false
+features = ["native-tls"]
+
+
 [dev-dependencies]
 anyhow = "1.0.79"
 env_logger = { workspace = true }
 tracing = { version = "0.1.40", default-features = false, features = ["log"] }
 uuid = { version = "1.6.1", features = ["v4"] }
 
-[dev-dependencies.matrix-sdk]
-workspace = true
-features = ["rustls-tls"]
-default-features = false
 
 [dev-dependencies.matrix-sdk-base]
 workspace = true

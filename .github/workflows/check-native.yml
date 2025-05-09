@@ -110,6 +110,6 @@ jobs:
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
-        run: cargo make ffigen
+        run: cargo make ffi
       - name: "Check file is no different"
-        run: git diff -w --exit-code packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
+        run: git diff -w --exit-code packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart packages/rust_sdk/lib/acter.dart
