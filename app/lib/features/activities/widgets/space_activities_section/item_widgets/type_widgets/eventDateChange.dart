@@ -52,12 +52,13 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     }
     switch (content.startChange()) {
       case 'Changed':
+        // for now, we can't support the old value
+        // because the internal state machine of acter custom message, like pin or task
         final newVal = content.startNewVal()?.toRfc3339() ?? '';
-        final oldVal = content.startOldVal()?.toRfc3339() ?? '';
         if (isMe) {
-          return lang.activityStartTimeYouChanged(oldVal, newVal);
+          return lang.activityStartTimeYouChanged(newVal);
         } else {
-          return lang.activityStartTimeOtherChanged(senderName, oldVal, newVal);
+          return lang.activityStartTimeOtherChanged(senderName, newVal);
         }
       case 'Set':
         final newVal = content.startNewVal()?.toRfc3339() ?? '';
@@ -75,12 +76,13 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     }
     switch (content.endChange()) {
       case 'Changed':
+        // for now, we can't support the old value
+        // because the internal state machine of acter custom message, like pin or task
         final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        final oldVal = content.endOldVal()?.toRfc3339() ?? '';
         if (isMe) {
-          return lang.activityEndTimeYouChanged(oldVal, newVal);
+          return lang.activityEndTimeYouChanged(newVal);
         } else {
-          return lang.activityEndTimeOtherChanged(senderName, oldVal, newVal);
+          return lang.activityEndTimeOtherChanged(senderName, newVal);
         }
       case 'Set':
         final newVal = content.endNewVal()?.toRfc3339() ?? '';

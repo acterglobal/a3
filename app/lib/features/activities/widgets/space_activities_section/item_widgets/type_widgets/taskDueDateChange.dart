@@ -56,12 +56,13 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
     }
     switch (content.change()) {
       case 'Changed':
+        // for now, we can't support the old value
+        // because the internal state machine of acter custom message, like pin or task
         final newVal = content.newVal() ?? '';
-        final oldVal = content.oldVal() ?? '';
         if (isMe) {
-          return lang.activityDueDateYouChanged(oldVal, newVal);
+          return lang.activityDueDateYouChanged(newVal);
         } else {
-          return lang.activityDueDateOtherChanged(senderName, oldVal, newVal);
+          return lang.activityDueDateOtherChanged(senderName, newVal);
         }
       case 'Set':
         final newVal = content.newVal() ?? '';
