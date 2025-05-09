@@ -1,1 +1,0 @@
-- [Labs] Chat NG: [fix] mention overlay position fix, ensuring it always opens above editor when writing mentions and doesn't block the input view.

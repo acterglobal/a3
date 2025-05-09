@@ -2,7 +2,8 @@
 resolver = "2"
 members = [
   "native/*",
-  "util/mr_minutes"
+  "util/mr_minutes",
+  "util/sari"
 ]
 
 default-members = ["native/acter"]
@@ -10,12 +11,24 @@ default-members = ["native/acter"]
 [workspace.package]
 rust-version = "1.85"
 
+[workspace.dependencies.ffi-gen]
+git = "https://github.com/acterglobal/ffi-gen"
+
+
+[workspace.dependencies.uniffi-dart]
+# path = "../uniffi-dart/"
+git = "https://github.com/acterglobal/uniffi-dart"
+branch = "ben-ffi-next"
+
+
+[workspace.dependencies.uniffi]
+version = "0.28.0"
+
 [workspace.dependencies.matrix-sdk]
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
-features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
@@ -38,6 +51,16 @@ default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+default-features = false
+
+[workspace.dependencies.matrix-sdk-ffi]
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+default-features = false
+
+[workspace.dependencies.matrix-sdk-ffi-macros]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
 default-features = false
@@ -86,5 +109,6 @@ codegen-units = 1
 strip = true  # Automatically strip symbols from the binary.
 
 [patch.crates-io]
+async-compat = { git = "https://github.com/element-hq/async-compat", rev = "5a27c8b290f1f1dcfc0c4ec22c464e38528aa591" }
 const_panic = { git = "https://github.com/jplatte/const_panic", rev = "9024a4cb3eac45c1d2d980f17aaee287b17be498" }
 # async-compat = { git = "https://github.com/element-hq/async-compat", rev = "5a27c8b290f1f1dcfc0c4ec22c464e38528aa591" }
