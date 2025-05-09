@@ -211,6 +211,9 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
   Widget _buildActionButton(BuildContext context, L10n lang) {
     return ActerPrimaryActionButton(
       onPressed: () async {
+        if (!_activateFeatures) {
+          _deactivateFeatures();
+        }
         final spaceId = await createOnboardingSpace(context, ref, _spaceNameController.text.trim(), spaceAvatar);
 
         if (spaceId != null) {
@@ -220,9 +223,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
               showInviteFriendsView(context, spaceId);
             }
           }
-          if (!_activateFeatures) {
-            _deactivateFeatures();
-          }
+        
         }
       },
       child: Text(lang.next, style: const TextStyle(fontSize: 16)),
