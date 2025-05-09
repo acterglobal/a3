@@ -27,7 +27,6 @@ final supportedActivityTypes = [
   PushStyles.roomTopic,
   PushStyles.roomAvatar,
   PushStyles.creation,
-  PushStyles.redaction,
   PushStyles.titleChange,
   PushStyles.descriptionChange,
   PushStyles.otherChanges,

@@ -35,7 +35,7 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
 
     return ActivityUserCentricItemContainerWidget(
       actionIcon: PhosphorIconsRegular.pencilLine,
-      actionTitle: L10n.of(context).updated,
+      actionTitle: lang.updatedTitle,
       activityObject: activity.object(),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),

@@ -2973,5 +2973,13 @@
   "activityDueDateOtherUnset": "{senderId} unset the due date.",
   "@activityDueDateOtherUnset": {},
   "activityDueDateYouUnset": "You unset the due date.",
-  "@activityDueDateYouUnset": {}
+  "@activityDueDateYouUnset": {},
+  "newTitle": "New Title",
+  "@newTitle": {},
+  "newDescription": "New Description",
+  "@newDescription": {},
+  "updatedTitle": "Updated title of",
+  "@updatedTitle": {},
+  "updatedDescription": "Updated description of",
+  "@updatedDescription": {}
 }
