@@ -21,6 +21,7 @@ import 'package:acter/features/main/providers/main_providers.dart';
 import 'package:acter/features/main/widgets/bottom_navigation_widget.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/notifications/providers/notification_settings_providers.dart';
+import 'package:acter/features/settings/providers/settings_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,28 @@ import 'package:shake_detector/shake_detector.dart';
 final _log = Logger('a3::config::home_shell');
 
 final ScreenshotController screenshotController = ScreenshotController();
+
+class _TopLevelShell extends ConsumerWidget {
+  const _TopLevelShell({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // these we want to preload for faster rendering
+    ref.watch(spacesProvider);
+    ref.watch(chatsProvider);
+    ref.watch(updateListProvider(null));
+    ref.watch(hasActivitiesProvider);
+    ref.watch(openSystemLinkSettingsProvider);
+    ref.watch(activitiesPreloader);
+
+    if (ref.watch(hasFirstSyncedProvider)) {
+      return const SizedBox.shrink();
+    }
+    return LinearProgressIndicator(
+      semanticsLabel: L10n.of(context).loadingFirstSync,
+    );
+  }
+}
 
 class AppShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
@@ -94,11 +117,8 @@ class AppShellState extends ConsumerState<AppShell> {
 
   Future<void> _initProviders() async {
     // we read a few providers immediately at start up to ensure
-    // the content is being fetched and cached
-    ref.read(spacesProvider);
-    ref.read(chatsProvider);
-    ref.read(updateListProvider(null));
-    ref.read(hasActivitiesProvider);
+    // the content is being fetched and available when entering
+    // the specific pages
   }
 
   Future<void> _initShake() async {
@@ -199,21 +219,12 @@ class AppShellState extends ConsumerState<AppShell> {
     );
   }
 
-  Widget topNavigationWidget(BuildContext context) {
-    if (ref.watch(hasFirstSyncedProvider)) {
-      return const SizedBox.shrink();
-    }
-    return LinearProgressIndicator(
-      semanticsLabel: L10n.of(context).loadingFirstSync,
-    );
-  }
-
   SlotLayout topNavigationLayout() {
     return SlotLayout(
       config: <Breakpoint, SlotLayoutConfig?>{
         Breakpoints.smallAndUp: SlotLayout.from(
           key: const Key('LoadingIndicator'),
-          builder: topNavigationWidget,
+          builder: (BuildContext context) => const _TopLevelShell(),
         ),
       },
     );
