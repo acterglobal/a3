@@ -632,15 +632,9 @@ class HtmlEditorState extends State<HtmlEditor> {
           // style: after.style,
           child: inner,
         );
-      } on SchemeNotSupported {
-        return fallback();
-      } on (
-        IncorrectHashError,
-        MissingUserError,
-        ObjectNotSupported,
-        ParsingFailed,
-      ) catch (error) {
+      } catch (error) {
         _log.warning('failed to parse acter uri', error);
+        return fallback();
       }
     }
 

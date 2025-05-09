@@ -10,6 +10,9 @@ import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart
     as html;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::toolkit::html::render_html_ng');
 
 class RenderHtmlNg extends ConsumerWidget {
   final String text;
@@ -90,13 +93,8 @@ class RenderHtmlNg extends ConsumerWidget {
       //   // we should show the original link
       //   return null;
       // }
-    } on (
-      SchemeNotSupported,
-      IncorrectHashError,
-      MissingUserError,
-      ObjectNotSupported,
-      ParsingFailed,
-    ) {
+    } on UriParseError catch (error) {
+      _log.warning('failed to parse acter uri', error);
       return null;
     }
   }
