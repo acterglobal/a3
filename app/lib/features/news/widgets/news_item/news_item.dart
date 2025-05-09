@@ -76,6 +76,7 @@ class _NewsItemState extends ConsumerState<NewsItem> {
           (context, index) => UpdateSlideItem(
             slide: slides[index],
             errorState: NewsMediaErrorState.showErrorWithTryAgain,
+            roomId: widget.updateEntry.roomId().toString(),
           ),
     );
   }

@@ -6,11 +6,25 @@ enum ObjectType {
   taskList,
   task,
   boost,
+  story,
   space,
   chat,
   // reference types
   comment,
-  attachment,
+  attachment;
+
+  String emoji() => switch (this) {
+    ObjectType.pin => '📌', // pin
+    ObjectType.calendarEvent => '🗓️', // calendar
+    ObjectType.taskList => '📋', // clipboard
+    ObjectType.task => '☑️', // checkoff
+    ObjectType.boost => '🚀', // boost rocket
+    ObjectType.space => '🌐', // globe
+    ObjectType.chat => '💬', // chat
+    ObjectType.comment => '💬', // speech bubble
+    ObjectType.attachment => '📎', // paperclip icon
+    ObjectType.story => '📰', // newspaper icon
+  };
 }
 
 class ObjectPreview {
@@ -84,5 +98,44 @@ class UriParseResult {
       cur = cur?.child; // find the deepest object
     }
     return cur?.objectType;
+  }
+
+  String previewTitle() {
+    final emoji = finalType()?.emoji();
+    if (preview.title == null || emoji == null) {
+      return target;
+    }
+    return '$emoji ${preview.title}';
+  }
+
+  bool titleMatches(String text) {
+    if (text.trim().isEmpty) {
+      return true; // we match on all empty links
+    }
+    // formats are a bit more complicated for other
+    final cases = [];
+    if (type == LinkType.userId) {
+      if (preview.userDisplayName != null) {
+        cases.addAll([preview.userDisplayName, '@${preview.userDisplayName}']);
+      }
+      final username = target.split(':').first;
+      cases.addAll([target, '@$target', username, '@$username']);
+    } else if (type == LinkType.roomId) {
+      if (preview.roomDisplayName != null) {
+        cases.addAll([preview.roomDisplayName, '#${preview.roomDisplayName}']);
+      }
+      if (preview.title != null) {
+        cases.addAll([preview.title, '#${preview.title}']);
+      }
+      cases.addAll([target, '!$target', '#$target']);
+    } else if (type == LinkType.spaceObject) {
+      if (preview.title != null) {
+        cases.addAll([preview.title, '#${preview.title}']);
+      }
+      cases.add(previewTitle());
+    }
+
+    final loweredText = text.toLowerCase();
+    return cases.any((e) => e == text || e.toLowerCase() == loweredText);
   }
 }

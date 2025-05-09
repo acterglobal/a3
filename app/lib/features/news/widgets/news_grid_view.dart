@@ -58,6 +58,7 @@ class NewsGridView extends StatelessWidget {
             slide: slide,
             showRichContent: false,
             errorState: NewsMediaErrorState.showErrorImageWithText,
+            roomId: updateEntry.roomId().toString(),
           ),
           if (slideCount > 1) slideStackCountView(slideCount),
           newsPostTime(updateEntry.originServerTs()),

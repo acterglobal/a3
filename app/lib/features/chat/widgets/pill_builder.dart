@@ -6,14 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ActerPillBuilder extends ConsumerWidget {
   final String identifier;
-  final String roomId;
+  final String? roomId;
   final String uri;
 
   const ActerPillBuilder({
     super.key,
     required this.identifier,
     required this.uri,
-    required this.roomId,
+    this.roomId,
   });
 
   @override

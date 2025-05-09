@@ -172,6 +172,7 @@ dependencies:
   launch_at_startup: ^0.5.1
   package_info_plus: ^8.3.0
   matomo_tracker: ^6.0.0
+  flutter_widget_from_html_core: ^0.16.0
 
 dev_dependencies:
   flutter_test:

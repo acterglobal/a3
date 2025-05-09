@@ -100,6 +100,7 @@ class NewsSection extends ConsumerWidget {
           slide: slide,
           showRichContent: false,
           errorState: NewsMediaErrorState.showErrorImageOnly,
+          roomId: updateEntry.roomId().toString(),
         ),
       ),
     );
