@@ -80,7 +80,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
                     ],
                   ),
                 ),
-                _buildActionButton(context, L10n.of(context)),
+                _buildActionButton(context),
                 const SizedBox(height: 50),
               ],
             ),
@@ -208,7 +208,8 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
     );
   }
 
-  Widget _buildActionButton(BuildContext context, L10n lang) {
+  Widget _buildActionButton(BuildContext context) {
+    final lang = L10n.of(context);
     return ActerPrimaryActionButton(
       onPressed: () async {
         if (!_activateFeatures) {
