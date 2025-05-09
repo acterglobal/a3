@@ -31,10 +31,7 @@ pub struct DescriptionContent {
 }
 
 impl DescriptionContent {
-    pub fn new(
-        change: String,
-        new_val: Option<TextMessageEventContent>,
-    ) -> Self {
+    pub fn new(change: String, new_val: Option<TextMessageEventContent>) -> Self {
         Self { change, new_val }
     }
 

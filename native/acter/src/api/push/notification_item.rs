@@ -585,22 +585,18 @@ impl NotificationItemBuilder {
                     &mut builder
                 }
             }
-            ActivityContent::TaskDueDateChange { content, .. } => {
-                match content.change().as_str() {
-                    "Changed" | "Set" => {
-                        if let Some(new_val) = content.new_val() {
-                            builder.title(new_val)
-                        } else {
-                            error!("Could not get the new value for the due date change");
-                            &mut builder
-                        }
+            ActivityContent::TaskDueDateChange { content, .. } => match content.change().as_str() {
+                "Changed" | "Set" => {
+                    if let Some(new_val) = content.new_val() {
+                        builder.title(new_val)
+                    } else {
+                        error!("Could not get the new value for the due date change");
+                        &mut builder
                     }
-                    "Unset" => {
-                        builder.title("removed due date".to_owned())
-                    }
-                    _ => &mut builder
                 }
-            }
+                "Unset" => builder.title("removed due date".to_owned()),
+                _ => &mut builder,
+            },
             ActivityContent::TaskAdd { task_title, .. } => builder.title(task_title.clone()),
             ActivityContent::DescriptionChange { object, content } => {
                 match content.change().as_str() {
@@ -615,7 +611,7 @@ impl NotificationItemBuilder {
                     "Unset" => {
                         builder.msg_content(MsgContent::from_text("removed description".to_owned()))
                     }
-                    _ => &mut builder
+                    _ => &mut builder,
                 }
             }
             ActivityContent::ObjectInvitation { object, invitees } => builder
