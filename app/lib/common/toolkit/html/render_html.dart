@@ -60,7 +60,7 @@ class RenderHtml extends ConsumerWidget {
   final bool shrinkToFit;
   final int? maxLines;
   final bool renderNewlines;
-  final String roomId;
+  final String? roomId;
   const RenderHtml({
     super.key,
     required this.text,
@@ -69,7 +69,7 @@ class RenderHtml extends ConsumerWidget {
     this.shrinkToFit = false,
     this.maxLines,
     this.renderNewlines = false,
-    required this.roomId,
+    this.roomId,
   });
 
   @override

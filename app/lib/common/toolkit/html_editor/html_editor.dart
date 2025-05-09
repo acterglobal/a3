@@ -613,7 +613,7 @@ class HtmlEditorState extends State<HtmlEditor> {
               required bool isMe,
               required VoidCallback defaultOnTap,
             }) {
-              print("will remove");
+              print('will remove');
             },
           ),
           (LinkType.roomId) => RoomChip(roomId: parsed.target),

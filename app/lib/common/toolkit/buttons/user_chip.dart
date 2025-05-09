@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserChip extends ConsumerWidget {
-  final String roomId;
+  final String? roomId;
   final String memberId;
   final TextStyle? style;
   final Widget? Function(
@@ -25,7 +25,7 @@ class UserChip extends ConsumerWidget {
 
   const UserChip({
     super.key,
-    required this.roomId,
+    this.roomId,
     required this.memberId,
     this.style,
     this.trailingBuilder,
@@ -33,18 +33,30 @@ class UserChip extends ConsumerWidget {
   });
 
   Future<void> onTapFallback(BuildContext context) async {
+    final rId = roomId;
+    if (rId == null) {
+      // add support for non-member users
+      return;
+    }
     await showMemberInfoDrawer(
       context: context,
-      roomId: roomId,
+      roomId: rId,
       memberId: memberId,
     );
   }
 
+  AvatarInfo getMemberInfo(WidgetRef ref) {
+    final rId = roomId;
+    if (rId == null) {
+      // add support for non-member users
+      return AvatarInfo(uniqueId: memberId, displayName: null, avatar: null);
+    }
+    return ref.watch(memberAvatarInfoProvider((roomId: rId, userId: memberId)));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberInfo = ref.watch(
-      memberAvatarInfoProvider((roomId: roomId, userId: memberId)),
-    );
+    final memberInfo = getMemberInfo(ref);
     final isMe = memberId == ref.watch(myUserIdStrProvider);
     final style = this.style ?? Theme.of(context).textTheme.bodySmall;
     final fontSize = style?.fontSize ?? 12.0;

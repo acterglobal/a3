@@ -294,7 +294,6 @@ class _CreatePinConsumerState extends ConsumerState<CreatePinPage> {
                     ? RenderHtml(
                       text: params.htmlBodyDescription,
                       defaultTextStyle: textTheme.labelLarge,
-                      roomId: '',
                     )
                     : Text(
                       params.plainDescription,

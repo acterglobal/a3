@@ -7,18 +7,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class InlineItemPreview extends ConsumerWidget {
   final UriParseResult uriResult;
-  final String roomId;
+  final String? roomId;
   final void Function()? onTap;
 
   const InlineItemPreview({
     super.key,
     required this.uriResult,
-    required this.roomId,
+    this.roomId,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final roomId = uriResult.roomId ?? this.roomId;
+
     final refType = uriResult.finalType();
     final refTitle = uriResult.preview.title ?? L10n.of(context).unknown;
 
@@ -27,12 +29,14 @@ class InlineItemPreview extends ConsumerWidget {
       message: subtitleForType(context, refType),
       child: InkWell(
         onTap:
-            () => showItemPreview(
-              context: context,
-              ref: ref,
-              uriResult: uriResult,
-              roomId: uriResult.roomId ?? roomId,
-            ),
+            roomId == null
+                ? null
+                : () => showItemPreview(
+                  context: context,
+                  ref: ref,
+                  uriResult: uriResult,
+                  roomId: roomId,
+                ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
