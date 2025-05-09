@@ -1027,7 +1027,7 @@
   "@roomLinkedButNotUpgraded": {},
   "rsvp": "RSVP",
   "@rsvp": {},
-  "repliedToMsgFailed": "Failed to load original message id: {id}",
+  "repliedToMsgFailed": "Failed to load original message: {error}",
   "@repliedToMsgFailed": {},
   "sasGotIt": "Got it",
   "@sasGotIt": {},

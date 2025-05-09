@@ -200,7 +200,7 @@ class MessageEventItem extends ConsumerWidget {
     int timestamp,
   ) {
     final msgType = item.msgType();
-    final repliedTo = item.inReplyTo();
+    final repliedToId = item.inReplyToId();
     final wasEdited = item.wasEdited();
     final content = item.msgContent().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
@@ -224,10 +224,10 @@ class MessageEventItem extends ConsumerWidget {
     Widget? repliedToBuilder;
 
     // whether it contains `replied to` event.
-    if (repliedTo != null) {
+    if (repliedToId != null) {
       repliedToBuilder = RepliedToPreview(
         roomId: roomId,
-        originalId: repliedTo,
+        messageId: messageId,
         isMe: isMe,
       );
     }

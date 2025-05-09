@@ -1265,7 +1265,7 @@
   "@reportThisContent": {},
   "resetPassword": "Nulstil adgangskode",
   "@resetPassword": {},
-  "repliedToMsgFailed": "Kunne ikke indlæse oprindelig besked id: {id}",
+  "repliedToMsgFailed": "Kunne ikke indlæse oprindelig besked: {error}",
   "@repliedToMsgFailed": {},
   "sasVerified": "Verificeret!",
   "@sasVerified": {},
