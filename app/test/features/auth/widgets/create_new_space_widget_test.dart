@@ -1,5 +1,5 @@
+import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/onboarding/widgets/create_new_space_widget.dart';
-import 'package:acter/common/widgets/input_text_field_without_border.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/spaces/providers/space_creation_providers.dart';
@@ -33,7 +33,7 @@ void main() {
       expect(find.byIcon(Icons.camera_alt_outlined), findsOneWidget);
 
       // Verify space name input field is present
-      expect(find.byType(InputTextFieldWithoutBorder), findsOneWidget);
+      expect(find.byType(InputTextField), findsOneWidget);
 
       // Verify checkboxes are present
       expect(find.byType(Checkbox), findsNWidgets(2));
@@ -53,7 +53,7 @@ void main() {
       );
 
       // Find the text field and enter text
-      final textField = find.byType(InputTextFieldWithoutBorder);
+      final textField = find.byType(InputTextField);
       await tester.enterText(textField, 'Test Space Name');
       await tester.pump();
 
