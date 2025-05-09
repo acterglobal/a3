@@ -10,10 +10,17 @@ class ActivityTitleChangeItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = L10n.of(context);
     return ActivityUserCentricItemContainerWidget(
       actionIcon: PhosphorIconsRegular.pencilLine,
-      actionTitle: L10n.of(context).updated,
+      actionTitle: lang.updatedTitle,
       activityObject: activity.object(),
+      subtitle: Text(
+        '${lang.newTitle}: ${activity.titleContent()?.newVal().toString()}',
+        style: Theme.of(context).textTheme.labelMedium,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       originServerTs: activity.originServerTs(),

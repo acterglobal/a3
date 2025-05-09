@@ -6,7 +6,6 @@ import 'package:acter/features/activities/widgets/space_activities_section/item_
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/eventDateChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/otherChanges.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/reaction.dart';
-import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/redaction.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/references.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomAvatar.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/roomName.dart';
@@ -66,7 +65,6 @@ class ActivityItemWidget extends ConsumerWidget {
       PushStyles.roomTopic => ActivityRoomTopicItemWidget(activity: activity),
       PushStyles.roomAvatar => ActivityRoomAvatarItemWidget(activity: activity),
       PushStyles.creation => ActivityCreationItemWidget(activity: activity),
-      PushStyles.redaction => ActivityRedactionItemWidget(activity: activity),
       PushStyles.titleChange => ActivityTitleChangeItemWidget(
         activity: activity,
       ),
