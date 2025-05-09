@@ -197,20 +197,40 @@ final mentionSuggestionsProvider =
 final repliedToMsgProvider = FutureProvider.autoDispose
     .family<TimelineEventItem, RoomMsgId>((ref, item) async {
       TimelineItem? msg = ref.watch(chatRoomMessageProvider(item));
+      TimelineEventItem? repliedToItem;
 
       if (msg == null) {
         throw 'Event ${item.uniqueId} not found';
       }
+      final inReplyToId = msg.eventItem()?.inReplyToId();
+      if (inReplyToId != null) {
+        repliedToItem =
+            ref
+                .watch(
+                  chatRoomMessageProvider((
+                    roomId: item.roomId,
+                    uniqueId: inReplyToId,
+                  )),
+                )
+                ?.eventItem();
+        if (repliedToItem != null) {
+          return repliedToItem;
+        }
+      }
 
-      TimelineEventItem? repliedToItem = msg.eventItem()?.inReplyToEvent();
+      // not found in the history, let's try to read directly
+
+      repliedToItem = msg.eventItem()?.inReplyToEvent();
       if (repliedToItem == null) {
-        // failed, trying to fetch from remote then
+        // failed direclty, trying to fetch from remote then
         final timeline =
             ref.read(chatMessagesStateProvider(item.roomId).notifier).timeline;
+        await timeline.fetchDetailsForEvent(item.uniqueId);
         repliedToItem = (await timeline.getMessage(item.uniqueId)).eventItem();
       }
 
       if (repliedToItem == null) {
+        // still nothing...
         throw 'Replied message not found';
       }
 

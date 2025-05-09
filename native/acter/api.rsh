@@ -1671,6 +1671,9 @@ object TimelineStream {
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<TimelineItem>>;
 
+    /// given a message, load its reply details if any
+    fn fetch_details_for_event(event_id: string) -> Future<Result<bool>>;
+
     /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 
