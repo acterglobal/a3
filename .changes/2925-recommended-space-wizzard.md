@@ -1,0 +1,1 @@
+- [Implemented] : Now you can join recommended spaces from onboarding wizard if you haven't joined any spaces from invite code redemption. 

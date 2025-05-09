@@ -15,6 +15,7 @@ import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter/common/providers/space_providers.dart';
 import 'dart:async';
 
 class RedeemInvitationsPage extends ConsumerStatefulWidget {
@@ -59,6 +60,7 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       }
       _tokenController.clear();
       EasyLoading.dismiss();
+      
     } catch (e) {
       if (mounted) {
         EasyLoading.showError(
@@ -350,6 +352,11 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
         return;
       }
       EasyLoading.showSuccess(lang.addedToSpacesAndChats(rooms.length));
+      
+      if (rooms.isNotEmpty) {
+        ref.read(hasSpaceRedeemedInInviteCodeProvider.notifier).state = true;
+      }
+      
       // Remove redeemed token from list
       setState(() {
         validTokens.remove(token);

@@ -34,10 +34,6 @@ class ChatEditorLoading extends StatelessWidget {
                     footer: null,
                     editable: true,
                     shrinkWrap: true,
-                    editorPadding: EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
                   ),
                 ),
               ),
