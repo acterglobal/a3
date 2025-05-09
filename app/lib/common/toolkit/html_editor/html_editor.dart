@@ -608,13 +608,6 @@ class HtmlEditorState extends State<HtmlEditor> {
           (LinkType.userId) => UserChip(
             roomId: roomId,
             memberId: parsed.target,
-            onTap: (
-              context, {
-              required bool isMe,
-              required VoidCallback defaultOnTap,
-            }) {
-              print('will remove');
-            },
           ),
           (LinkType.roomId) => RoomChip(roomId: parsed.target),
           (LinkType.spaceObject) => InlineItemPreview(
