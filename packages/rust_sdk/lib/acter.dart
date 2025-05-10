@@ -36,49 +36,58 @@ class FfiConverterUniffiNotificationItem {
   static LiftRetVal<UniffiNotificationItem> read(Uint8List buf) {
     int new_offset = 0;
 
-    final title_lifted =
-        FfiConverterString.read(Uint8List.view(buf.buffer, new_offset));
+    final title_lifted = FfiConverterString.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final title = title_lifted.value;
     new_offset += title_lifted.bytesRead;
-    final pushStyle_lifted =
-        FfiConverterString.read(Uint8List.view(buf.buffer, new_offset));
+    final pushStyle_lifted = FfiConverterString.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final pushStyle = pushStyle_lifted.value;
     new_offset += pushStyle_lifted.bytesRead;
-    final targetUrl_lifted =
-        FfiConverterString.read(Uint8List.view(buf.buffer, new_offset));
+    final targetUrl_lifted = FfiConverterString.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final targetUrl = targetUrl_lifted.value;
     new_offset += targetUrl_lifted.bytesRead;
-    final body_lifted =
-        FfiConverterOptionalString.read(Uint8List.view(buf.buffer, new_offset));
+    final body_lifted = FfiConverterOptionalString.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final body = body_lifted.value;
     new_offset += body_lifted.bytesRead;
-    final threadId_lifted =
-        FfiConverterOptionalString.read(Uint8List.view(buf.buffer, new_offset));
+    final threadId_lifted = FfiConverterOptionalString.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final threadId = threadId_lifted.value;
     new_offset += threadId_lifted.bytesRead;
-    final imagePath_lifted =
-        FfiConverterOptionalString.read(Uint8List.view(buf.buffer, new_offset));
+    final imagePath_lifted = FfiConverterOptionalString.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final imagePath = imagePath_lifted.value;
     new_offset += imagePath_lifted.bytesRead;
-    final isNoisy_lifted =
-        FfiConverterOptionalBool.read(Uint8List.view(buf.buffer, new_offset));
+    final isNoisy_lifted = FfiConverterOptionalBool.read(
+      Uint8List.view(buf.buffer, new_offset),
+    );
     final isNoisy = isNoisy_lifted.value;
     new_offset += isNoisy_lifted.bytesRead;
     return LiftRetVal(
-        UniffiNotificationItem._(
-          title,
-          pushStyle,
-          targetUrl,
-          body,
-          threadId,
-          imagePath,
-          isNoisy,
-        ),
-        new_offset);
+      UniffiNotificationItem._(
+        title,
+        pushStyle,
+        targetUrl,
+        body,
+        threadId,
+        imagePath,
+        isNoisy,
+      ),
+      new_offset,
+    );
   }
 
   static RustBuffer lower(UniffiNotificationItem value) {
-    final total_length = FfiConverterString.allocationSize(value.title) +
+    final total_length =
+        FfiConverterString.allocationSize(value.title) +
         FfiConverterString.allocationSize(value.pushStyle) +
         FfiConverterString.allocationSize(value.targetUrl) +
         FfiConverterOptionalString.allocationSize(value.body) +
@@ -95,19 +104,33 @@ class FfiConverterUniffiNotificationItem {
     int new_offset = buf.offsetInBytes;
 
     new_offset += FfiConverterString.write(
-        value.title, Uint8List.view(buf.buffer, new_offset));
+      value.title,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     new_offset += FfiConverterString.write(
-        value.pushStyle, Uint8List.view(buf.buffer, new_offset));
+      value.pushStyle,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     new_offset += FfiConverterString.write(
-        value.targetUrl, Uint8List.view(buf.buffer, new_offset));
+      value.targetUrl,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     new_offset += FfiConverterOptionalString.write(
-        value.body, Uint8List.view(buf.buffer, new_offset));
+      value.body,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     new_offset += FfiConverterOptionalString.write(
-        value.threadId, Uint8List.view(buf.buffer, new_offset));
+      value.threadId,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     new_offset += FfiConverterOptionalString.write(
-        value.imagePath, Uint8List.view(buf.buffer, new_offset));
+      value.imagePath,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     new_offset += FfiConverterOptionalBool.write(
-        value.isNoisy, Uint8List.view(buf.buffer, new_offset));
+      value.isNoisy,
+      Uint8List.view(buf.buffer, new_offset),
+    );
     return new_offset;
   }
 
@@ -123,12 +146,7 @@ class FfiConverterUniffiNotificationItem {
   }
 }
 
-enum ActerError {
-  disconnect,
-  unknown,
-  anyhow,
-  ;
-}
+enum ActerError { disconnect, unknown, anyhow }
 
 class FfiConverterActerError {
   static ActerError lift(RustBuffer buffer) {
@@ -141,8 +159,10 @@ class FfiConverterActerError {
       case 3:
         return ActerError.anyhow;
       default:
-        throw UniffiInternalError(UniffiInternalError.unexpectedEnumCase,
-            "Unable to determine enum variant");
+        throw UniffiInternalError(
+          UniffiInternalError.unexpectedEnumCase,
+          "Unable to determine enum variant",
+        );
     }
   }
 
@@ -152,8 +172,10 @@ class FfiConverterActerError {
 }
 
 final _UniffiClientFinalizer = Finalizer<Pointer<Void>>((ptr) {
-  rustCall((status) =>
-      _UniffiLib.instance.uniffi_acter_fn_free_unifficlient(ptr, status));
+  rustCall(
+    (status) =>
+        _UniffiLib.instance.uniffi_acter_fn_free_unifficlient(ptr, status),
+  );
 });
 
 class UniffiClient {
@@ -168,26 +190,40 @@ class UniffiClient {
   }
 
   Pointer<Void> uniffiClonePointer() {
-    return rustCall((status) =>
-        _UniffiLib.instance.uniffi_acter_fn_clone_unifficlient(_ptr, status));
+    return rustCall(
+      (status) =>
+          _UniffiLib.instance.uniffi_acter_fn_clone_unifficlient(_ptr, status),
+    );
   }
 
   void dispose() {
     _UniffiClientFinalizer.detach(this);
-    rustCall((status) =>
-        _UniffiLib.instance.uniffi_acter_fn_free_unifficlient(_ptr, status));
+    rustCall(
+      (status) =>
+          _UniffiLib.instance.uniffi_acter_fn_free_unifficlient(_ptr, status),
+    );
   }
 
   UniffiClient cloned() {
-    return rustCall((status) => UniffiClient.lift(_UniffiLib.instance
-        .uniffi_acter_fn_method_unifficlient_cloned(
-            uniffiClonePointer(), status)));
+    return rustCall(
+      (status) => UniffiClient.lift(
+        _UniffiLib.instance.uniffi_acter_fn_method_unifficlient_cloned(
+          uniffiClonePointer(),
+          status,
+        ),
+      ),
+    );
   }
 
   String userId() {
-    return rustCall((status) => FfiConverterString.lift(_UniffiLib.instance
-        .uniffi_acter_fn_method_unifficlient_user_id(
-            uniffiClonePointer(), status)));
+    return rustCall(
+      (status) => FfiConverterString.lift(
+        _UniffiLib.instance.uniffi_acter_fn_method_unifficlient_user_id(
+          uniffiClonePointer(),
+          status,
+        ),
+      ),
+    );
   }
 }
 
@@ -250,7 +286,9 @@ class RustCallStatus extends Struct {
 }
 
 void checkCallStatus(
-    UniffiRustCallStatusErrorHandler errorHandler, RustCallStatus status) {
+  UniffiRustCallStatusErrorHandler errorHandler,
+  RustCallStatus status,
+) {
   if (status.code == CALL_SUCCESS) {
     return;
   } else if (status.code == CALL_ERROR) {
@@ -258,13 +296,15 @@ void checkCallStatus(
   } else if (status.code == CALL_UNEXPECTED_ERROR) {
     if (status.errorBuf.len > 0) {
       throw UniffiInternalError.panicked(
-          FfiConverterString.lift(status.errorBuf));
+        FfiConverterString.lift(status.errorBuf),
+      );
     } else {
       throw UniffiInternalError.panicked("Rust panic");
     }
   } else {
     throw UniffiInternalError.panicked(
-        "Unexpected RustCallStatus code: \${status.code}");
+      "Unexpected RustCallStatus code: \${status.code}",
+    );
   }
 }
 
@@ -299,23 +339,32 @@ class RustBuffer extends Struct {
   external Pointer<Uint8> data;
 
   static RustBuffer alloc(int size) {
-    return rustCall((status) =>
-        _UniffiLib.instance.ffi_acter_rustbuffer_alloc(size, status));
+    return rustCall(
+      (status) => _UniffiLib.instance.ffi_acter_rustbuffer_alloc(size, status),
+    );
   }
 
   static RustBuffer fromBytes(ForeignBytes bytes) {
-    return rustCall((status) =>
-        _UniffiLib.instance.ffi_acter_rustbuffer_from_bytes(bytes, status));
+    return rustCall(
+      (status) =>
+          _UniffiLib.instance.ffi_acter_rustbuffer_from_bytes(bytes, status),
+    );
   }
 
   void free() {
-    rustCall((status) =>
-        _UniffiLib.instance.ffi_acter_rustbuffer_free(this, status));
+    rustCall(
+      (status) => _UniffiLib.instance.ffi_acter_rustbuffer_free(this, status),
+    );
   }
 
   RustBuffer reserve(int additionalCapacity) {
-    return rustCall((status) => _UniffiLib.instance
-        .ffi_acter_rustbuffer_reserve(this, additionalCapacity, status));
+    return rustCall(
+      (status) => _UniffiLib.instance.ffi_acter_rustbuffer_reserve(
+        this,
+        additionalCapacity,
+        status,
+      ),
+    );
   }
 
   Uint8List asUint8List() {
@@ -398,59 +447,6 @@ Uint8List createUint8ListFromInt(int value) {
   return uint8List;
 }
 
-class FfiConverterOptionalBool {
-  static bool? lift(RustBuffer buf) {
-    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
-  }
-
-  static LiftRetVal<bool?> read(Uint8List buf) {
-    if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0) {
-      return LiftRetVal(null, 1);
-    }
-    return FfiConverterBool.read(
-            Uint8List.view(buf.buffer, buf.offsetInBytes + 1))
-        .copyWithOffset(1);
-  }
-
-  static int allocationSize([bool? value]) {
-    if (value == null) {
-      return 1;
-    }
-    return FfiConverterBool.allocationSize(value) + 1;
-  }
-
-  static RustBuffer lower(bool? value) {
-    if (value == null) {
-      return toRustBuffer(Uint8List.fromList([0]));
-    }
-
-    final length = FfiConverterOptionalBool.allocationSize(value);
-
-    final Pointer<Uint8> frameData = calloc<Uint8>(length);
-    final buf = frameData.asTypedList(length);
-
-    FfiConverterOptionalBool.write(value, buf);
-
-    final bytes = calloc<ForeignBytes>();
-    bytes.ref.len = length;
-    bytes.ref.data = frameData;
-    return RustBuffer.fromBytes(bytes.ref);
-  }
-
-  static int write(bool? value, Uint8List buf) {
-    if (value == null) {
-      buf[0] = 0;
-      return 1;
-    }
-
-    buf[0] = 1;
-
-    return FfiConverterBool.write(
-            value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
-        1;
-  }
-}
-
 class FfiConverterString {
   static String lift(RustBuffer buf) {
     return utf8.decoder.convert(buf.asUint8List());
@@ -487,8 +483,8 @@ class FfiConverterOptionalString {
       return LiftRetVal(null, 1);
     }
     return FfiConverterString.read(
-            Uint8List.view(buf.buffer, buf.offsetInBytes + 1))
-        .copyWithOffset(1);
+      Uint8List.view(buf.buffer, buf.offsetInBytes + 1),
+    ).copyWithOffset(1);
   }
 
   static int allocationSize([String? value]) {
@@ -525,7 +521,9 @@ class FfiConverterOptionalString {
     buf[0] = 1;
 
     return FfiConverterString.write(
-            value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
+          value,
+          Uint8List.view(buf.buffer, buf.offsetInBytes + 1),
+        ) +
         1;
   }
 }
@@ -557,6 +555,61 @@ class FfiConverterBool {
   }
 }
 
+class FfiConverterOptionalBool {
+  static bool? lift(RustBuffer buf) {
+    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
+  }
+
+  static LiftRetVal<bool?> read(Uint8List buf) {
+    if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0) {
+      return LiftRetVal(null, 1);
+    }
+    return FfiConverterBool.read(
+      Uint8List.view(buf.buffer, buf.offsetInBytes + 1),
+    ).copyWithOffset(1);
+  }
+
+  static int allocationSize([bool? value]) {
+    if (value == null) {
+      return 1;
+    }
+    return FfiConverterBool.allocationSize(value) + 1;
+  }
+
+  static RustBuffer lower(bool? value) {
+    if (value == null) {
+      return toRustBuffer(Uint8List.fromList([0]));
+    }
+
+    final length = FfiConverterOptionalBool.allocationSize(value);
+
+    final Pointer<Uint8> frameData = calloc<Uint8>(length);
+    final buf = frameData.asTypedList(length);
+
+    FfiConverterOptionalBool.write(value, buf);
+
+    final bytes = calloc<ForeignBytes>();
+    bytes.ref.len = length;
+    bytes.ref.data = frameData;
+    return RustBuffer.fromBytes(bytes.ref);
+  }
+
+  static int write(bool? value, Uint8List buf) {
+    if (value == null) {
+      buf[0] = 0;
+      return 1;
+    }
+
+    buf[0] = 1;
+
+    return FfiConverterBool.write(
+          value,
+          Uint8List.view(buf.buffer, buf.offsetInBytes + 1),
+        ) +
+        1;
+  }
+}
+
 const int UNIFFI_RUST_FUTURE_POLL_READY = 0;
 const int UNIFFI_RUST_FUTURE_POLL_MAYBE_READY = 1;
 
@@ -564,9 +617,12 @@ typedef UniffiRustFutureContinuationCallback = Void Function(Uint64, Int8);
 
 Future<T> uniffiRustCallAsync<T, F>(
   int Function() rustFutureFunc,
-  void Function(int,
-          Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>, int)
-      pollFunc,
+  void Function(
+    int,
+    Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+    int,
+  )
+  pollFunc,
   F Function(int, Pointer<RustCallStatus>) completeFunc,
   void Function(int) freeFunc,
   T Function(F) liftFunc, [
@@ -578,11 +634,7 @@ Future<T> uniffiRustCallAsync<T, F>(
   late final NativeCallable<UniffiRustFutureContinuationCallback> callback;
 
   void poll() {
-    pollFunc(
-      rustFuture,
-      callback.nativeFunction,
-      0,
-    );
+    pollFunc(rustFuture, callback.nativeFunction, 0);
   }
 
   void onResponse(int _idx, int pollResult) {
@@ -593,8 +645,9 @@ Future<T> uniffiRustCallAsync<T, F>(
     }
   }
 
-  callback =
-      NativeCallable<UniffiRustFutureContinuationCallback>.listener(onResponse);
+  callback = NativeCallable<UniffiRustFutureContinuationCallback>.listener(
+    onResponse,
+  );
 
   try {
     poll();
@@ -650,31 +703,32 @@ class _UniffiLib {
     if (Platform.isMacOS) return DynamicLibrary.open("libacter.dylib");
     if (Platform.isWindows) return DynamicLibrary.open("acter.dll");
     throw UnsupportedError(
-        "Unsupported platform: \${Platform.operatingSystem}");
+      "Unsupported platform: \${Platform.operatingSystem}",
+    );
   }
 
   static final _UniffiLib instance = _UniffiLib._();
 
   late final Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>)
-      uniffi_acter_fn_clone_unifficlient = _dylib.lookupFunction<
-          Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>),
-          Pointer<Void> Function(Pointer<Void>,
-              Pointer<RustCallStatus>)>("uniffi_acter_fn_clone_unifficlient");
+  uniffi_acter_fn_clone_unifficlient = _dylib.lookupFunction<
+    Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>),
+    Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_clone_unifficlient");
   late final void Function(Pointer<Void>, Pointer<RustCallStatus>)
-      uniffi_acter_fn_free_unifficlient = _dylib.lookupFunction<
-          Void Function(Pointer<Void>, Pointer<RustCallStatus>),
-          void Function(Pointer<Void>,
-              Pointer<RustCallStatus>)>("uniffi_acter_fn_free_unifficlient");
+  uniffi_acter_fn_free_unifficlient = _dylib.lookupFunction<
+    Void Function(Pointer<Void>, Pointer<RustCallStatus>),
+    void Function(Pointer<Void>, Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_free_unifficlient");
   late final Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>)
-      uniffi_acter_fn_method_unifficlient_cloned = _dylib.lookupFunction<
-              Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>),
-              Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>)>(
-          "uniffi_acter_fn_method_unifficlient_cloned");
+  uniffi_acter_fn_method_unifficlient_cloned = _dylib.lookupFunction<
+    Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>),
+    Pointer<Void> Function(Pointer<Void>, Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_method_unifficlient_cloned");
   late final RustBuffer Function(Pointer<Void>, Pointer<RustCallStatus>)
-      uniffi_acter_fn_method_unifficlient_user_id = _dylib.lookupFunction<
-              RustBuffer Function(Pointer<Void>, Pointer<RustCallStatus>),
-              RustBuffer Function(Pointer<Void>, Pointer<RustCallStatus>)>(
-          "uniffi_acter_fn_method_unifficlient_user_id");
+  uniffi_acter_fn_method_unifficlient_user_id = _dylib.lookupFunction<
+    RustBuffer Function(Pointer<Void>, Pointer<RustCallStatus>),
+    RustBuffer Function(Pointer<Void>, Pointer<RustCallStatus>)
+  >("uniffi_acter_fn_method_unifficlient_user_id");
   late final int Function(
     RustBuffer,
     RustBuffer,
@@ -682,549 +736,451 @@ class _UniffiLib {
     RustBuffer,
     RustBuffer,
     RustBuffer,
-  ) uniffi_acter_fn_func_get_notification_item = _dylib.lookupFunction<
-      Uint64 Function(
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-      ),
-      int Function(
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-        RustBuffer,
-      )>("uniffi_acter_fn_func_get_notification_item");
+  )
+  uniffi_acter_fn_func_get_notification_item = _dylib.lookupFunction<
+    Uint64 Function(
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+    ),
+    int Function(
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+      RustBuffer,
+    )
+  >("uniffi_acter_fn_func_get_notification_item");
   late final RustBuffer Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rustbuffer_alloc = _dylib.lookupFunction<
-          RustBuffer Function(Uint64, Pointer<RustCallStatus>),
-          RustBuffer Function(
-              int, Pointer<RustCallStatus>)>("ffi_acter_rustbuffer_alloc");
+  ffi_acter_rustbuffer_alloc = _dylib.lookupFunction<
+    RustBuffer Function(Uint64, Pointer<RustCallStatus>),
+    RustBuffer Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rustbuffer_alloc");
   late final RustBuffer Function(ForeignBytes, Pointer<RustCallStatus>)
-      ffi_acter_rustbuffer_from_bytes = _dylib.lookupFunction<
-          RustBuffer Function(ForeignBytes, Pointer<RustCallStatus>),
-          RustBuffer Function(ForeignBytes,
-              Pointer<RustCallStatus>)>("ffi_acter_rustbuffer_from_bytes");
+  ffi_acter_rustbuffer_from_bytes = _dylib.lookupFunction<
+    RustBuffer Function(ForeignBytes, Pointer<RustCallStatus>),
+    RustBuffer Function(ForeignBytes, Pointer<RustCallStatus>)
+  >("ffi_acter_rustbuffer_from_bytes");
   late final void Function(RustBuffer, Pointer<RustCallStatus>)
-      ffi_acter_rustbuffer_free = _dylib.lookupFunction<
-          Void Function(RustBuffer, Pointer<RustCallStatus>),
-          void Function(RustBuffer,
-              Pointer<RustCallStatus>)>("ffi_acter_rustbuffer_free");
+  ffi_acter_rustbuffer_free = _dylib.lookupFunction<
+    Void Function(RustBuffer, Pointer<RustCallStatus>),
+    void Function(RustBuffer, Pointer<RustCallStatus>)
+  >("ffi_acter_rustbuffer_free");
   late final RustBuffer Function(RustBuffer, int, Pointer<RustCallStatus>)
-      ffi_acter_rustbuffer_reserve = _dylib.lookupFunction<
-          RustBuffer Function(RustBuffer, Uint64, Pointer<RustCallStatus>),
-          RustBuffer Function(RustBuffer, int,
-              Pointer<RustCallStatus>)>("ffi_acter_rustbuffer_reserve");
+  ffi_acter_rustbuffer_reserve = _dylib.lookupFunction<
+    RustBuffer Function(RustBuffer, Uint64, Pointer<RustCallStatus>),
+    RustBuffer Function(RustBuffer, int, Pointer<RustCallStatus>)
+  >("ffi_acter_rustbuffer_reserve");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_u8 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_u8");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_u8 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_u8");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_u8 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_u8");
+  )
+  ffi_acter_rust_future_poll_u8 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_u8");
+  late final void Function(int) ffi_acter_rust_future_cancel_u8 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_u8",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_u8 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_u8",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_u8 = _dylib.lookupFunction<
-          Uint8 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_u8");
+  ffi_acter_rust_future_complete_u8 = _dylib.lookupFunction<
+    Uint8 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_u8");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_i8 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_i8");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_i8 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_i8");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_i8 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_i8");
+  )
+  ffi_acter_rust_future_poll_i8 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_i8");
+  late final void Function(int) ffi_acter_rust_future_cancel_i8 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_i8",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_i8 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_i8",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_i8 = _dylib.lookupFunction<
-          Int8 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_i8");
+  ffi_acter_rust_future_complete_i8 = _dylib.lookupFunction<
+    Int8 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_i8");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_u16 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_u16");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_u16 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_u16");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_u16 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_u16");
+  )
+  ffi_acter_rust_future_poll_u16 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_u16");
+  late final void Function(int) ffi_acter_rust_future_cancel_u16 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_u16",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_u16 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_u16",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_u16 = _dylib.lookupFunction<
-          Uint16 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_u16");
+  ffi_acter_rust_future_complete_u16 = _dylib.lookupFunction<
+    Uint16 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_u16");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_i16 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_i16");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_i16 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_i16");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_i16 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_i16");
+  )
+  ffi_acter_rust_future_poll_i16 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_i16");
+  late final void Function(int) ffi_acter_rust_future_cancel_i16 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_i16",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_i16 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_i16",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_i16 = _dylib.lookupFunction<
-          Int16 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_i16");
+  ffi_acter_rust_future_complete_i16 = _dylib.lookupFunction<
+    Int16 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_i16");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_u32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_u32");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_u32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_u32");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_u32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_u32");
+  )
+  ffi_acter_rust_future_poll_u32 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_u32");
+  late final void Function(int) ffi_acter_rust_future_cancel_u32 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_u32",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_u32 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_u32",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_u32 = _dylib.lookupFunction<
-          Uint32 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_u32");
+  ffi_acter_rust_future_complete_u32 = _dylib.lookupFunction<
+    Uint32 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_u32");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_i32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_i32");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_i32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_i32");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_i32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_i32");
+  )
+  ffi_acter_rust_future_poll_i32 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_i32");
+  late final void Function(int) ffi_acter_rust_future_cancel_i32 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_i32",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_i32 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_i32",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_i32 = _dylib.lookupFunction<
-          Int32 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_i32");
+  ffi_acter_rust_future_complete_i32 = _dylib.lookupFunction<
+    Int32 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_i32");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_u64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_u64");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_u64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_u64");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_u64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_u64");
+  )
+  ffi_acter_rust_future_poll_u64 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_u64");
+  late final void Function(int) ffi_acter_rust_future_cancel_u64 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_u64",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_u64 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_u64",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_u64 = _dylib.lookupFunction<
-          Uint64 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_u64");
+  ffi_acter_rust_future_complete_u64 = _dylib.lookupFunction<
+    Uint64 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_u64");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_i64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_i64");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_i64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_i64");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_i64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_i64");
+  )
+  ffi_acter_rust_future_poll_i64 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_i64");
+  late final void Function(int) ffi_acter_rust_future_cancel_i64 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_i64",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_i64 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_i64",
+      );
   late final int Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_i64 = _dylib.lookupFunction<
-          Int64 Function(Uint64, Pointer<RustCallStatus>),
-          int Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_i64");
+  ffi_acter_rust_future_complete_i64 = _dylib.lookupFunction<
+    Int64 Function(Uint64, Pointer<RustCallStatus>),
+    int Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_i64");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_f32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_f32");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_f32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_f32");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_f32 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_f32");
+  )
+  ffi_acter_rust_future_poll_f32 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_f32");
+  late final void Function(int) ffi_acter_rust_future_cancel_f32 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_f32",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_f32 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_f32",
+      );
   late final double Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_f32 = _dylib.lookupFunction<
-          Float Function(Uint64, Pointer<RustCallStatus>),
-          double Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_f32");
+  ffi_acter_rust_future_complete_f32 = _dylib.lookupFunction<
+    Float Function(Uint64, Pointer<RustCallStatus>),
+    double Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_f32");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_f64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_f64");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_f64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_f64");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_f64 = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_f64");
+  )
+  ffi_acter_rust_future_poll_f64 = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_f64");
+  late final void Function(int) ffi_acter_rust_future_cancel_f64 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_f64",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_f64 = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_f64",
+      );
   late final double Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_f64 = _dylib.lookupFunction<
-          Double Function(Uint64, Pointer<RustCallStatus>),
-          double Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_f64");
+  ffi_acter_rust_future_complete_f64 = _dylib.lookupFunction<
+    Double Function(Uint64, Pointer<RustCallStatus>),
+    double Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_f64");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_pointer = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_pointer");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_pointer = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_pointer");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_pointer = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_pointer");
+  )
+  ffi_acter_rust_future_poll_pointer = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_pointer");
+  late final void Function(int) ffi_acter_rust_future_cancel_pointer = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_pointer",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_pointer = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_pointer",
+      );
   late final Pointer<Void> Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_pointer = _dylib.lookupFunction<
-              Pointer<Void> Function(Uint64, Pointer<RustCallStatus>),
-              Pointer<Void> Function(int, Pointer<RustCallStatus>)>(
-          "ffi_acter_rust_future_complete_pointer");
+  ffi_acter_rust_future_complete_pointer = _dylib.lookupFunction<
+    Pointer<Void> Function(Uint64, Pointer<RustCallStatus>),
+    Pointer<Void> Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_pointer");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_rust_buffer = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_rust_buffer");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_rust_buffer = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_rust_buffer");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_rust_buffer = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_rust_buffer");
+  )
+  ffi_acter_rust_future_poll_rust_buffer = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_rust_buffer");
+  late final void Function(int) ffi_acter_rust_future_cancel_rust_buffer =
+      _dylib.lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_rust_buffer",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_rust_buffer = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_rust_buffer",
+      );
   late final RustBuffer Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_rust_buffer = _dylib.lookupFunction<
-              RustBuffer Function(Uint64, Pointer<RustCallStatus>),
-              RustBuffer Function(int, Pointer<RustCallStatus>)>(
-          "ffi_acter_rust_future_complete_rust_buffer");
+  ffi_acter_rust_future_complete_rust_buffer = _dylib.lookupFunction<
+    RustBuffer Function(Uint64, Pointer<RustCallStatus>),
+    RustBuffer Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_rust_buffer");
   late final void Function(
     int,
     Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
     int,
-  ) ffi_acter_rust_future_poll_void = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        Uint64,
-      ),
-      void Function(
-        int,
-        Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
-        int,
-      )>("ffi_acter_rust_future_poll_void");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_cancel_void = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_cancel_void");
-  late final void Function(
-    int,
-  ) ffi_acter_rust_future_free_void = _dylib.lookupFunction<
-      Void Function(
-        Uint64,
-      ),
-      void Function(
-        int,
-      )>("ffi_acter_rust_future_free_void");
+  )
+  ffi_acter_rust_future_poll_void = _dylib.lookupFunction<
+    Void Function(
+      Uint64,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      Uint64,
+    ),
+    void Function(
+      int,
+      Pointer<NativeFunction<UniffiRustFutureContinuationCallback>>,
+      int,
+    )
+  >("ffi_acter_rust_future_poll_void");
+  late final void Function(int) ffi_acter_rust_future_cancel_void = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_cancel_void",
+      );
+  late final void Function(int) ffi_acter_rust_future_free_void = _dylib
+      .lookupFunction<Void Function(Uint64), void Function(int)>(
+        "ffi_acter_rust_future_free_void",
+      );
   late final void Function(int, Pointer<RustCallStatus>)
-      ffi_acter_rust_future_complete_void = _dylib.lookupFunction<
-          Void Function(Uint64, Pointer<RustCallStatus>),
-          void Function(int,
-              Pointer<RustCallStatus>)>("ffi_acter_rust_future_complete_void");
+  ffi_acter_rust_future_complete_void = _dylib.lookupFunction<
+    Void Function(Uint64, Pointer<RustCallStatus>),
+    void Function(int, Pointer<RustCallStatus>)
+  >("ffi_acter_rust_future_complete_void");
   late final int Function() uniffi_acter_checksum_func_get_notification_item =
       _dylib.lookupFunction<Uint16 Function(), int Function()>(
-          "uniffi_acter_checksum_func_get_notification_item");
+        "uniffi_acter_checksum_func_get_notification_item",
+      );
   late final int Function() uniffi_acter_checksum_method_unifficlient_cloned =
       _dylib.lookupFunction<Uint16 Function(), int Function()>(
-          "uniffi_acter_checksum_method_unifficlient_cloned");
+        "uniffi_acter_checksum_method_unifficlient_cloned",
+      );
   late final int Function() uniffi_acter_checksum_method_unifficlient_user_id =
       _dylib.lookupFunction<Uint16 Function(), int Function()>(
-          "uniffi_acter_checksum_method_unifficlient_user_id");
-  late final int Function() ffi_acter_uniffi_contract_version =
-      _dylib.lookupFunction<Uint32 Function(), int Function()>(
-          "ffi_acter_uniffi_contract_version");
+        "uniffi_acter_checksum_method_unifficlient_user_id",
+      );
+  late final int Function() ffi_acter_uniffi_contract_version = _dylib
+      .lookupFunction<Uint32 Function(), int Function()>(
+        "ffi_acter_uniffi_contract_version",
+      );
 
   static void _checkApiVersion() {
     final bindingsVersion = 26;
@@ -1232,7 +1188,8 @@ class _UniffiLib {
         _UniffiLib.instance.ffi_acter_uniffi_contract_version();
     if (bindingsVersion != scaffoldingVersion) {
       throw UniffiInternalError.panicked(
-          "UniFFI contract version mismatch: bindings version \$bindingsVersion, scaffolding version \$scaffoldingVersion");
+        "UniFFI contract version mismatch: bindings version \$bindingsVersion, scaffolding version \$scaffoldingVersion",
+      );
     }
   }
 
