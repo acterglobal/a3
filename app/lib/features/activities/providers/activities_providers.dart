@@ -26,6 +26,10 @@ final supportedActivityTypes = [
   PushStyles.roomName,
   PushStyles.roomTopic,
   PushStyles.roomAvatar,
+  PushStyles.creation,
+  PushStyles.titleChange,
+  PushStyles.descriptionChange,
+  PushStyles.otherChanges,
   PushStyles.invitationAccepted,
   PushStyles.invitationRejected,
   PushStyles.invited,
@@ -39,7 +43,7 @@ final supportedActivityTypes = [
   PushStyles.kickedAndBanned,
   PushStyles.knocked,
   PushStyles.banned,
-  PushStyles.unbanned
+  PushStyles.unbanned,
 ];
 
 final hasActivitiesProvider = StateProvider((ref) {

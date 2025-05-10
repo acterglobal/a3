@@ -6,7 +6,10 @@ class MockActivity extends Mock implements Activity {
   final String? mockName;
   final String? mockSubType;
   final String? mockSenderId;
-  final UtcDateTime? newDateTime;
+  final TitleContent? mockTitleContent;
+  final DescriptionContent? mockDescriptionContent;
+  final DateContent? mockDateContent;
+  final DateTimeRangeContent? mockDateTimeRangeContent;
   final String? mockRoomId;
   final ActivityObject? mockObject;
   final MsgContent? mockMsgContent;
@@ -19,7 +22,10 @@ class MockActivity extends Mock implements Activity {
     this.mockName,
     this.mockSubType,
     this.mockSenderId,
-    this.newDateTime,
+    this.mockTitleContent,
+    this.mockDescriptionContent,
+    this.mockDateContent,
+    this.mockDateTimeRangeContent,
     this.mockRoomId,
     this.mockObject,
     this.mockMsgContent,
@@ -44,7 +50,16 @@ class MockActivity extends Mock implements Activity {
   String roomIdStr() => mockRoomId ?? 'room-id';
 
   @override
-  UtcDateTime? newDate() => newDateTime;
+  TitleContent? titleContent() => mockTitleContent;
+
+  @override
+  DescriptionContent? descriptionContent() => mockDescriptionContent;
+
+  @override
+  DateContent? dateContent() => mockDateContent;
+
+  @override
+  DateTimeRangeContent? dateTimeRangeContent() => mockDateTimeRangeContent;
 
   @override
   ActivityObject? object() => mockObject;

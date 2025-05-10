@@ -238,21 +238,17 @@ async fn event_rescheduled() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let new_date = UtcDateTime::from(SystemTime::now())
+    let utc_start = UtcDateTime::from(SystemTime::now())
         .checked_add_days(Days::new(1))
         .expect("there is a tomorrow");
+    let utc_end = utc_start
+        .checked_add_days(Days::new(1))
+        .expect("there is a day after tomorrow");
     let mut update = obj_entry.update_builder()?;
     update
-        .utc_start_from_rfc3339(new_date.to_rfc3339())
+        .utc_start_from_rfc3339(utc_start.to_rfc3339())
         .unwrap();
-    update
-        .utc_end_from_rfc3339(
-            new_date
-                .checked_add_days(Days::new(1))
-                .unwrap()
-                .to_rfc3339(),
-        )
-        .unwrap();
+    update.utc_end_from_rfc3339(utc_end.to_rfc3339()).unwrap();
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -267,8 +263,9 @@ async fn event_rescheduled() -> Result<()> {
     );
 
     let obj_id = obj_entry.event_id().to_string();
-    assert_eq!(notification_item.new_date(), Some(new_date));
-    assert_eq!(notification_item.title(), new_date.to_rfc3339());
+    assert_eq!(notification_item.utc_start(), Some(utc_start));
+    assert_eq!(notification_item.utc_end(), Some(utc_end));
+    assert_eq!(notification_item.title(), utc_start.to_rfc3339());
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),

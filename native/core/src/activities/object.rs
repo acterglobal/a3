@@ -1,7 +1,10 @@
-use matrix_sdk::ruma::OwnedEventId;
+use matrix_sdk_base::ruma::{events::room::message::TextMessageEventContent, OwnedEventId};
 use urlencoding::encode;
 
-use crate::models::{ActerModel, AnyActerModel};
+use crate::{
+    events::{Date, UtcDateTime},
+    models::{ActerModel, AnyActerModel},
+};
 
 #[derive(Clone, Debug)]
 pub enum ActivityObject {
@@ -14,10 +17,13 @@ pub enum ActivityObject {
     Pin {
         object_id: OwnedEventId,
         title: String,
+        description: Option<TextMessageEventContent>,
     },
     CalendarEvent {
         object_id: OwnedEventId,
         title: String,
+        utc_start: UtcDateTime,
+        utc_end: UtcDateTime,
     },
     TaskList {
         object_id: OwnedEventId,
@@ -27,6 +33,7 @@ pub enum ActivityObject {
         tl_id: OwnedEventId,
         object_id: OwnedEventId,
         title: String,
+        due_date: Option<Date>,
     },
     Unknown {
         object_id: OwnedEventId,
@@ -106,6 +113,34 @@ impl ActivityObject {
         }
         .to_owned()
     }
+
+    pub fn description(&self) -> Option<TextMessageEventContent> {
+        match self {
+            ActivityObject::Pin { description, .. } => description.clone(),
+            _ => None,
+        }
+    }
+
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
+        match self {
+            ActivityObject::CalendarEvent { utc_start, .. } => Some(*utc_start),
+            _ => None,
+        }
+    }
+
+    pub fn utc_end(&self) -> Option<UtcDateTime> {
+        match self {
+            ActivityObject::CalendarEvent { utc_end, .. } => Some(*utc_end),
+            _ => None,
+        }
+    }
+
+    pub fn due_date(&self) -> Option<Date> {
+        match self {
+            ActivityObject::Task { due_date, .. } => *due_date,
+            _ => None,
+        }
+    }
 }
 
 impl TryFrom<&AnyActerModel> for ActivityObject {
@@ -122,10 +157,13 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
             AnyActerModel::CalendarEvent(e) => Ok(ActivityObject::CalendarEvent {
                 object_id: e.event_id().to_owned(),
                 title: e.title(),
+                utc_start: e.utc_start(),
+                utc_end: e.utc_end(),
             }),
             AnyActerModel::Pin(e) => Ok(ActivityObject::Pin {
                 object_id: e.event_id().to_owned(),
                 title: e.title(),
+                description: e.description(),
             }),
             AnyActerModel::TaskList(e) => Ok(ActivityObject::TaskList {
                 object_id: e.event_id().to_owned(),
@@ -135,6 +173,7 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
                 object_id: e.event_id().to_owned(),
                 tl_id: e.task_list_id.event_id.clone(),
                 title: e.title(),
+                due_date: e.due_date,
             }),
             AnyActerModel::RedactedActerModel(_)
             | AnyActerModel::ExplicitInvite(_)

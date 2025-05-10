@@ -1,6 +1,5 @@
-use acter::{ActerModel, UtcDateTime};
+use acter::ActerModel;
 use anyhow::{bail, Result};
-use chrono::{NaiveTime, Utc};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -510,15 +509,7 @@ async fn task_due_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(
-        notification_item.new_date(),
-        chrono::NaiveDate::from_ymd_opt(2026, 1, 1).map(|d| {
-            UtcDateTime::from_naive_utc_and_offset(
-                d.and_time(NaiveTime::from_hms_opt(0, 0, 0).unwrap()),
-                Utc,
-            )
-        })
-    );
+    assert_eq!(notification_item.due_date(), Some("2026-01-01".to_owned()));
     assert_eq!(notification_item.title(), "2026-01-01");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
