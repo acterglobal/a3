@@ -40,7 +40,7 @@ final _log = Logger('a3::config::home_shell');
 final ScreenshotController screenshotController = ScreenshotController();
 
 class _TopLevelShell extends ConsumerWidget {
-  const _TopLevelShell({super.key});
+  const _TopLevelShell();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
