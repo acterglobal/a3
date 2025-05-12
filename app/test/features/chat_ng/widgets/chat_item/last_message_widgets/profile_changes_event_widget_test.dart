@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/profile_changes_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/profile_changes_event_widget.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/profile_change_usecases.dart';
 import 'package:acter/l10n/generated/l10n.dart';
