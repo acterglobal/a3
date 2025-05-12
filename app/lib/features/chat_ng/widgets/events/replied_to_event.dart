@@ -64,7 +64,9 @@ class RepliedToEvent extends StatelessWidget {
           child: Text(
             replyProfile.displayName ?? '',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.tertiary,
+              color:
+                  Colors.accents[replyProfile.displayName!.hashCode.abs() %
+                      Colors.accents.length],
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
