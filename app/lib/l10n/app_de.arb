@@ -2462,8 +2462,6 @@
   "@spacesLoadingError": {},
   "spaceDescriptionUpdate": "{username} aktualisierte Raumbeschreibung",
   "@spaceDescriptionUpdate": {},
-  "spaceNameUpdate": "{username} hat den Spacenamen geändert",
-  "@spaceNameUpdate": {},
   "chatMembershipOtherBannedOther": "{senderId} hat {userId} verbannt.",
   "@chatMembershipOtherBannedOther": {},
   "chatMembershipOtherBannedYou": "{senderId} hat dich verbannt.",
