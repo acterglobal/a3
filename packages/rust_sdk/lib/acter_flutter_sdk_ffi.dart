@@ -5807,8 +5807,10 @@ class Api {
     if (tmp9 == 0) {
       debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
       if (tmp11 > 0) {
         final ffi.Pointer<ffi.Void> tmp10_0;
         tmp10_0 = ffi.Pointer.fromAddress(tmp10);
@@ -9837,11 +9839,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _spaceCreateOnboardingDataFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
+    final tmp6 = _spaceCreateOnboardingDataFuturePoll(tmp1, tmp3, tmp5);
     final tmp8 = tmp6.arg0;
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
@@ -9854,8 +9852,10 @@ class Api {
     if (tmp9 == 0) {
       debugAllocation("handle error", tmp10, tmp11);
       final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 =
-          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      final tmp9_0 = utf8.decode(
+        tmp10_0.asTypedList(tmp11),
+        allowMalformed: true,
+      );
       if (tmp11 > 0) {
         final ffi.Pointer<ffi.Void> tmp10_0;
         tmp10_0 = ffi.Pointer.fromAddress(tmp10);
@@ -21567,37 +21567,30 @@ class Api {
   >("__TimelineEventItem_space_parent_content");
 
   late final _timelineEventItemSpaceParentContent =
-      _timelineEventItemSpaceParentContentPtr.asFunction<
-          _TimelineEventItemSpaceParentContentReturn Function(
-            int,
-          )>();
+      _timelineEventItemSpaceParentContentPtr
+          .asFunction<
+            _TimelineEventItemSpaceParentContentReturn Function(int)
+          >();
   late final _timelineEventItemInReplyToIdPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineEventItemInReplyToIdReturn Function(
-            ffi.IntPtr,
-          )>>("__TimelineEventItem_in_reply_to_id");
+    ffi.NativeFunction<_TimelineEventItemInReplyToIdReturn Function(ffi.IntPtr)>
+  >("__TimelineEventItem_in_reply_to_id");
 
   late final _timelineEventItemInReplyToId =
-      _timelineEventItemInReplyToIdPtr.asFunction<
-          _TimelineEventItemInReplyToIdReturn Function(
-            int,
-          )>();
+      _timelineEventItemInReplyToIdPtr
+          .asFunction<_TimelineEventItemInReplyToIdReturn Function(int)>();
   late final _timelineEventItemInReplyToEventPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineEventItemInReplyToEventReturn Function(
-            ffi.IntPtr,
-          )>>("__TimelineEventItem_in_reply_to_event");
+    ffi.NativeFunction<
+      _TimelineEventItemInReplyToEventReturn Function(ffi.IntPtr)
+    >
+  >("__TimelineEventItem_in_reply_to_event");
 
   late final _timelineEventItemInReplyToEvent =
-      _timelineEventItemInReplyToEventPtr.asFunction<
-          _TimelineEventItemInReplyToEventReturn Function(
-            int,
-          )>();
-  late final _timelineEventItemReadUsersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__TimelineEventItem_read_users");
+      _timelineEventItemInReplyToEventPtr
+          .asFunction<_TimelineEventItemInReplyToEventReturn Function(int)>();
+  late final _timelineEventItemReadUsersPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__TimelineEventItem_read_users",
+      );
 
   late final _timelineEventItemReadUsers =
       _timelineEventItemReadUsersPtr.asFunction<int Function(int)>();
@@ -23528,36 +23521,21 @@ class Api {
   >("__TimelineStream_get_message");
 
   late final _timelineStreamGetMessage =
-      _timelineStreamGetMessagePtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamGetMessagePtr
+          .asFunction<int Function(int, int, int, int)>();
   late final _timelineStreamFetchDetailsForEventPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.UintPtr,
-            ffi.UintPtr,
-          )>>("__TimelineStream_fetch_details_for_event");
+    ffi.NativeFunction<
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+    >
+  >("__TimelineStream_fetch_details_for_event");
 
   late final _timelineStreamFetchDetailsForEvent =
-      _timelineStreamFetchDetailsForEventPtr.asFunction<
-          int Function(
-            int,
-            int,
-            int,
-            int,
-          )>();
-  late final _timelineStreamPaginateBackwardsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-            ffi.Uint16,
-          )>>("__TimelineStream_paginate_backwards");
+      _timelineStreamFetchDetailsForEventPtr
+          .asFunction<int Function(int, int, int, int)>();
+  late final _timelineStreamPaginateBackwardsPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint16)>>(
+        "__TimelineStream_paginate_backwards",
+      );
 
   late final _timelineStreamPaginateBackwards =
       _timelineStreamPaginateBackwardsPtr.asFunction<int Function(int, int)>();
@@ -26975,26 +26953,20 @@ class Api {
     ffi.NativeFunction<_DisplayBuilderBuildReturn Function(ffi.IntPtr)>
   >("__DisplayBuilder_build");
 
-  late final _displayBuilderBuild = _displayBuilderBuildPtr.asFunction<
-      _DisplayBuilderBuildReturn Function(
-        int,
-      )>();
-  late final _spaceCreateOnboardingDataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__Space_create_onboarding_data");
+  late final _displayBuilderBuild =
+      _displayBuilderBuildPtr
+          .asFunction<_DisplayBuilderBuildReturn Function(int)>();
+  late final _spaceCreateOnboardingDataPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__Space_create_onboarding_data",
+      );
 
   late final _spaceCreateOnboardingData =
-      _spaceCreateOnboardingDataPtr.asFunction<
-          int Function(
-            int,
-          )>();
-  late final _spaceSpaceRelationsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.IntPtr Function(
-            ffi.IntPtr,
-          )>>("__Space_space_relations");
+      _spaceCreateOnboardingDataPtr.asFunction<int Function(int)>();
+  late final _spaceSpaceRelationsPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+        "__Space_space_relations",
+      );
 
   late final _spaceSpaceRelations =
       _spaceSpaceRelationsPtr.asFunction<int Function(int)>();
@@ -31891,27 +31863,29 @@ class Api {
   >("__TimelineStream_get_message_future_poll");
 
   late final _timelineStreamGetMessageFuturePoll =
-      _timelineStreamGetMessageFuturePollPtr.asFunction<
-          _TimelineStreamGetMessageFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamGetMessageFuturePollPtr
+          .asFunction<
+            _TimelineStreamGetMessageFuturePollReturn Function(int, int, int)
+          >();
   late final _timelineStreamFetchDetailsForEventFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineStreamFetchDetailsForEventFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__TimelineStream_fetch_details_for_event_future_poll");
+    ffi.NativeFunction<
+      _TimelineStreamFetchDetailsForEventFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__TimelineStream_fetch_details_for_event_future_poll");
 
   late final _timelineStreamFetchDetailsForEventFuturePoll =
-      _timelineStreamFetchDetailsForEventFuturePollPtr.asFunction<
-          _TimelineStreamFetchDetailsForEventFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _timelineStreamFetchDetailsForEventFuturePollPtr
+          .asFunction<
+            _TimelineStreamFetchDetailsForEventFuturePollReturn Function(
+              int,
+              int,
+              int,
+            )
+          >();
   late final _timelineStreamPaginateBackwardsFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _TimelineStreamPaginateBackwardsFuturePollReturn Function(
@@ -33274,27 +33248,25 @@ class Api {
   >("__RoomPreview_avatar_future_poll");
 
   late final _roomPreviewAvatarFuturePoll =
-      _roomPreviewAvatarFuturePollPtr.asFunction<
-          _RoomPreviewAvatarFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _roomPreviewAvatarFuturePollPtr
+          .asFunction<
+            _RoomPreviewAvatarFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceCreateOnboardingDataFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _SpaceCreateOnboardingDataFuturePollReturn Function(
-            ffi.IntPtr,
-            ffi.IntPtr,
-            ffi.Int64,
-          )>>("__Space_create_onboarding_data_future_poll");
+    ffi.NativeFunction<
+      _SpaceCreateOnboardingDataFuturePollReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.Int64,
+      )
+    >
+  >("__Space_create_onboarding_data_future_poll");
 
   late final _spaceCreateOnboardingDataFuturePoll =
-      _spaceCreateOnboardingDataFuturePollPtr.asFunction<
-          _SpaceCreateOnboardingDataFuturePollReturn Function(
-            int,
-            int,
-            int,
-          )>();
+      _spaceCreateOnboardingDataFuturePollPtr
+          .asFunction<
+            _SpaceCreateOnboardingDataFuturePollReturn Function(int, int, int)
+          >();
   late final _spaceSpaceRelationsFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _SpaceSpaceRelationsFuturePollReturn Function(
@@ -45287,9 +45259,7 @@ class TimelineEventItem {
   String? inReplyToId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemInReplyToId(
-      tmp0,
-    );
+    final tmp1 = _api._timelineEventItemInReplyToId(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -45321,9 +45291,7 @@ class TimelineEventItem {
   TimelineEventItem? inReplyToEvent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._timelineEventItemInReplyToEvent(
-      tmp0,
-    );
+    final tmp1 = _api._timelineEventItemInReplyToEvent(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     if (tmp3 == 0) {
@@ -50903,9 +50871,7 @@ class TimelineStream {
   }
 
   /// given a message, load its reply details if any
-  Future<bool> fetchDetailsForEvent(
-    String eventId,
-  ) {
+  Future<bool> fetchDetailsForEvent(String eventId) {
     final tmp1 = eventId;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -50929,10 +50895,15 @@ class TimelineStream {
     final tmp7 = tmp5;
     final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
     final tmp7_1 = _Box(
-        _api, tmp7_0, "__TimelineStream_fetch_details_for_event_future_drop");
+      _api,
+      tmp7_0,
+      "__TimelineStream_fetch_details_for_event_future_drop",
+    );
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(
-        tmp7_1, _api.__timelineStreamFetchDetailsForEventFuturePoll);
+      tmp7_1,
+      _api.__timelineStreamFetchDetailsForEventFuturePoll,
+    );
     return tmp6;
   }
 
@@ -59673,16 +59644,19 @@ class Space {
   Future<bool> createOnboardingData() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._spaceCreateOnboardingData(
-      tmp0,
-    );
+    final tmp1 = _api._spaceCreateOnboardingData(tmp0);
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Space_create_onboarding_data_future_drop");
+    final tmp3_1 = _Box(
+      _api,
+      tmp3_0,
+      "__Space_create_onboarding_data_future_drop",
+    );
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__spaceCreateOnboardingDataFuturePoll);
+    final tmp2 = _nativeFuture(
+      tmp3_1,
+      _api.__spaceCreateOnboardingDataFuturePoll,
+    );
     return tmp2;
   }
 
