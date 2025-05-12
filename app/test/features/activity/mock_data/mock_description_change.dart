@@ -11,5 +11,5 @@ class MockDescriptionContent extends Mock implements DescriptionContent {
   String change() => mockChange;
 
   @override
-  String? newVal() => mockNewVal ?? 'mock-new-val';
+  String? newVal() => mockNewVal;
 }
