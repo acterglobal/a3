@@ -6,13 +6,10 @@ class MockMembershipContent extends Mock implements MembershipContent {
   final String? mockUserId;
   final String? mockChange;
 
-  MockMembershipContent({
-    this.mockUserId,
-    this.mockChange,
-  });
+  MockMembershipContent({this.mockUserId, this.mockChange});
 
   @override
-  String change() => mockChange ?? 'mock-change';
+  String change() => mockChange ?? 'joined';
 
   @override
   UserId userId() => MockUserId(mockUserId ?? 'mock-user-id');

@@ -9,6 +9,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../helpers/test_util.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
+import '../mock_data/mock_room_avatar_change.dart';
+import '../mock_data/mock_room_name_change.dart';
+import '../mock_data/mock_room_topic_change.dart';
 
 void main() {
   testWidgets('Room name update', (tester) async {
@@ -17,6 +20,7 @@ void main() {
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomName'),
+      mockRoomNameContent: MockRoomNameContent(mockNewVal: 'mock-new-val'),
     );
 
     await tester.pumpProviderWidget(
@@ -28,7 +32,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.textContaining('updated space name'), findsOneWidget);
+    expect(find.textContaining('changed the room name'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -36,10 +40,11 @@ void main() {
 
   testWidgets('Room topic update', (tester) async {
     MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.roomName.name,
+      mockType: PushStyles.roomTopic.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomTopic'),
+      mockRoomTopicContent: MockRoomTopicContent(mockNewVal: 'mock-new-val'),
     );
 
     await tester.pumpProviderWidget(
@@ -51,7 +56,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.textContaining('updated space description'), findsOneWidget);
+    expect(find.textContaining('changed the room topic'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -59,10 +64,11 @@ void main() {
 
   testWidgets('Room avatar update', (tester) async {
     MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.roomName.name,
+      mockType: PushStyles.roomAvatar.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomAvatar'),
+      mockRoomAvatarContent: MockRoomAvatarContent(),
     );
 
     await tester.pumpProviderWidget(
@@ -75,6 +81,6 @@ void main() {
     // Verify the avatar is displayed
     expect(find.byType(ActerAvatar), findsOneWidget);
     // Verify the change text is displayed
-    expect(find.textContaining('updated space avatar'), findsOneWidget);
+    expect(find.textContaining('changed the room avatar url'), findsOneWidget);
   });
 }
