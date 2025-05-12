@@ -32,10 +32,11 @@ enum LabsFeature {
 
   static List<LabsFeature> get releaseDefaults => [
     LabsFeature.encryptionBackup,
+    LabsFeature.chatNG,
   ];
 
   static List<LabsFeature> get nightlyDefaults => [
     LabsFeature.encryptionBackup,
-    // LabsFeature.chatNG,
+    LabsFeature.chatNG,
   ];
 }
