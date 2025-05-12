@@ -43,9 +43,9 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
   }
 
   String? getMessage(L10n lang, bool isMe, String senderName) {
-    final content = activity.roomNameContent();
+    final content = activity.roomTopicContent();
     if (content == null) {
-      _log.severe('failed to get content of room avatar change');
+      _log.severe('failed to get content of room topic change');
       return null;
     }
     switch (content.change()) {
