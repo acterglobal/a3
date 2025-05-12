@@ -10,6 +10,7 @@ import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -138,7 +139,7 @@ class ChatEvent extends ConsumerWidget {
         ),
       _ => StateEventContainerWidget(
         child: Text(
-          'Unsupported chat event type: $eventType',
+          L10n.of(context).unsupportedChatEventType(eventType),
           style: stateEventTextStyle(context),
         ),
       ),
