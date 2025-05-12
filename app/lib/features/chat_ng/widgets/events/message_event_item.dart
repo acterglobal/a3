@@ -12,6 +12,7 @@ import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:flutter/material.dart';
@@ -204,7 +205,9 @@ class MessageEventItem extends ConsumerWidget {
         wasEdited,
         displayName,
       ),
-      _ => StateEventContainerWidget(child: _buildUnsupportedMessage(msgType)),
+      _ => StateEventContainerWidget(
+        child: _buildUnsupportedMessage(context, msgType),
+      ),
     };
   }
 
@@ -303,7 +306,7 @@ class MessageEventItem extends ConsumerWidget {
         );
   }
 
-  Widget _buildUnsupportedMessage(String? msgtype) {
-    return Text('Unsupported event type: $msgtype');
+  Widget _buildUnsupportedMessage(BuildContext context, String msgtype) {
+    return Text(L10n.of(context).unsupportedChatMessageType(msgtype));
   }
 }
