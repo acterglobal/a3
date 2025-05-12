@@ -68,6 +68,25 @@ final animatedListChatMessagesProvider =
           ref.watch(chatMessagesStateProvider(roomId).notifier).animatedList,
     );
 
+/// A provider that maintains the list of messages that should be rendered as chat bubbles,
+/// separate from state event messages.
+///
+/// This provider specifically handles the chat bubble rendering logic by filtering messages
+/// that should appear in the chat UI. It's distinct from state events (like room settings,
+/// membership changes, etc.) which are handled separately.
+///
+/// The provider filters the message list based on the following criteria:
+/// - If [showHiddenMessages] is true, returns all messages without filtering
+/// - Otherwise, only returns messages of type:
+///   - 'm.room.message' (regular chat messages)
+///   - 'm.room.encrypted' (encrypted messages)
+///   - 'm.room.redaction' (message redactions)
+///
+/// Parameters:
+/// - [roomId]: The ID of the room to get messages for
+///
+/// Returns:
+/// - A list of message IDs that should be rendered as chat bubbles
 final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
     .family<List<String>, String>((ref, roomId) {
       final msgList = ref.watch(
