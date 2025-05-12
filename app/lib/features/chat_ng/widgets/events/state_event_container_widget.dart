@@ -6,7 +6,7 @@ class StateEventContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (child == const SizedBox.shrink()) return const SizedBox.shrink();
+    if (child == const SizedBox.shrink()) return child;
 
     return Container(
       alignment: Alignment.center,
