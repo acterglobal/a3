@@ -265,7 +265,12 @@ class ChatEvent extends ConsumerWidget {
     bool isBubbleEvent,
     bool isDM,
   ) {
-    if (isLastMessageBySender && isBubbleEvent && !isMe && !isDM) {
+    if (_shouldShowAvatar(
+      isLastMessageBySender: isLastMessageBySender,
+      isBubbleEvent: isBubbleEvent,
+      isMe: isMe,
+      isDM: isDM,
+    )) {
       return Padding(
         padding: EdgeInsets.only(right: isMe ? 8 : 0, left: isMe ? 0 : 8),
         child: GestureDetector(
@@ -285,10 +290,45 @@ class ChatEvent extends ConsumerWidget {
           ),
         ),
       );
-    } else if (!isMe && !isDM) {
+    } else if (_shouldShowSpacer(isMe: isMe, isDM: isDM)) {
       return const SizedBox(width: 36);
     }
 
     return const SizedBox.shrink();
+  }
+
+  /// Determines whether to show the avatar in the chat message.
+  ///
+  /// Returns true if all the following conditions are met:
+  /// * It's the last message by the sender
+  /// * It's a bubble event (like a text message)
+  /// * Message is not from the logged-in user (not mine)
+  /// * The chat is not a direct message
+  ///
+  /// Parameters:
+  /// * [isLastMessageBySender] - Whether this is the last message from this sender
+  /// * [isBubbleEvent] - Whether this is a bubble-type message event
+  /// * [isMe] - Whether the message is from the logged-in user
+  /// * [isDM] - Whether this is a direct message chat
+  bool _shouldShowAvatar({
+    required bool isLastMessageBySender,
+    required bool isBubbleEvent,
+    required bool isMe,
+    required bool isDM,
+  }) {
+    return isLastMessageBySender && isBubbleEvent && !isMe && !isDM;
+  }
+
+  /// Determines whether to show a spacer in place of an avatar.
+  ///
+  /// Returns true if the message is:
+  /// * Message is not from the logged-in user (not mine)
+  /// * Not in a direct message chat
+  ///
+  /// Parameters:
+  /// * [isMe] - Whether the message is from the logged-in user
+  /// * [isDM] - Whether this is a direct message chat
+  bool _shouldShowSpacer({required bool isMe, required bool isDM}) {
+    return !isMe && !isDM;
   }
 }
