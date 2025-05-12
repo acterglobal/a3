@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -13,6 +14,7 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
 import 'package:flutter/material.dart';
@@ -205,9 +207,12 @@ class MessageEventItem extends ConsumerWidget {
         wasEdited,
         displayName,
       ),
-      _ => StateEventContainerWidget(
-        child: _buildUnsupportedMessage(context, msgType),
-      ),
+      _ =>
+        isNightly || isDevBuild
+            ? StateEventContainerWidget(
+              child: _buildUnsupportedMessage(context, msgType),
+            )
+            : const SizedBox.shrink(),
     };
   }
 

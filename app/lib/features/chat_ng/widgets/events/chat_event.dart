@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -12,6 +13,7 @@ import 'package:acter/features/chat_ng/widgets/events/state_event_container_widg
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem, TimelineItem, TimelineVirtualItem;
@@ -137,12 +139,15 @@ class ChatEvent extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
         ),
-      _ => StateEventContainerWidget(
-        child: Text(
-          L10n.of(context).unsupportedChatEventType(eventType),
-          style: stateEventTextStyle(context),
-        ),
-      ),
+      _ =>
+        isNightly || isDevBuild
+            ? StateEventContainerWidget(
+              child: Text(
+                L10n.of(context).unsupportedChatEventType(eventType),
+                style: stateEventTextStyle(context),
+              ),
+            )
+            : const SizedBox.shrink(),
     };
 
     final isBubbleEvent =
