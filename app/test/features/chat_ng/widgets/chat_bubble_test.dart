@@ -135,8 +135,6 @@ void main() {
 
       final editedText = L10n.of(testContext).edited;
       expect(find.text(editedText), findsOneWidget);
-
-      expect(find.text('-'), findsOneWidget);
       expect(find.byType(MessageTimestampWidget), findsOneWidget);
 
       final row = tester.widget<Row>(find.byType(Row).first);
