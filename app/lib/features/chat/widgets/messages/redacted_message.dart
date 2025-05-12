@@ -8,28 +8,19 @@ class RedactedMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Text.rich(
-        TextSpan(
-          children: [
-            WidgetSpan(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: Icon(
-                  Atlas.trash_can_thin,
-                  size: textTheme.labelSmall?.fontSize,
-                  color: textTheme.labelSmall?.color,
-                ),
-              ),
-            ),
-            TextSpan(
-              text: L10n.of(context).chatMessageDeleted,
-              style: stateEventTextStyle(context),
-            ),
-          ],
-        ),
+    final textTheme = stateEventTextStyle(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(
+            Atlas.trash_can_thin,
+            size: textTheme.fontSize,
+            color: textTheme.color,
+          ),
+          const SizedBox(width: 6),
+          Text(L10n.of(context).chatMessageDeleted, style: textTheme),
+        ],
       ),
     );
   }
