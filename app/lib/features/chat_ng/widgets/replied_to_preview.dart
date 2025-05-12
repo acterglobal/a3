@@ -80,10 +80,7 @@ class RepliedToPreview extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color:
-            isMe
-                ? colorScheme.surface.withValues(alpha: 0.3)
-                : colorScheme.onSurface.withValues(alpha: 0.2),
+        color: colorScheme.onSurface.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(22),
       ),
       child: child,

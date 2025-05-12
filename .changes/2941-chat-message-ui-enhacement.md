@@ -1,0 +1,1 @@
+- [Enhcement] : Numerous minor but precise corrections to the Chat Message UI, significantly enhancing its overall quality and contributing to a more refined user experience.

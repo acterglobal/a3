@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ProfileChangesEventWidget extends ConsumerWidget {
   final String roomId;
   final TimelineEventItem eventItem;
+  final TextStyle? textStyle;
+  final TextAlign? textAlign;
 
   const ProfileChangesEventWidget({
     super.key,
     required this.roomId,
     required this.eventItem,
+    this.textStyle,
+    this.textAlign,
   });
 
   @override
@@ -46,13 +50,15 @@ class ProfileChangesEventWidget extends ConsumerWidget {
     //Return empty if text is null
     if (membershipEventText == null) return const SizedBox.shrink();
 
-    final textStyle = lastMessageTextStyle(context, ref, roomId);
+    final messageTextStyle =
+        textStyle ?? lastMessageTextStyle(context, ref, roomId);
 
     //Render membership event text
     return Text(
       membershipEventText,
       maxLines: 2,
-      style: textStyle,
+      style: messageTextStyle,
+      textAlign: textAlign,
       overflow: TextOverflow.ellipsis,
     );
   }

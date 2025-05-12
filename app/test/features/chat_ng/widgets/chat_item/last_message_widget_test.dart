@@ -1,10 +1,10 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_message_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/profile_changes_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/room_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/room_membership_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/profile_changes_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/general_message_event_widget.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';

@@ -56,15 +56,23 @@ class RepliedToEvent extends StatelessWidget {
     final replyProfile = ref.watch(
       memberAvatarInfoProvider((userId: item.sender(), roomId: roomId)),
     );
+    final String displayName =
+        replyProfile.displayName ?? replyProfile.uniqueName ?? '';
 
     return Row(
       children: [
         ActerAvatar(options: AvatarOptions.DM(replyProfile, size: 12)),
         const SizedBox(width: 5),
-        Text(
-          replyProfile.displayName ?? '',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.tertiary,
+        Expanded(
+          child: Text(
+            displayName,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color:
+                  Colors.accents[displayName.hashCode.abs() %
+                      Colors.accents.length],
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
