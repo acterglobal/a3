@@ -9,6 +9,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../helpers/test_util.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
+import '../mock_data/mock_room_avatar_change.dart';
+import '../mock_data/mock_room_name_change.dart';
+import '../mock_data/mock_room_topic_change.dart';
 
 void main() {
   testWidgets('Room name update', (tester) async {
@@ -17,6 +20,7 @@ void main() {
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomName'),
+      mockRoomNameContent: MockRoomNameContent(mockNewVal: 'mock-new-val'),
     );
 
     await tester.pumpProviderWidget(
@@ -40,6 +44,7 @@ void main() {
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomTopic'),
+      mockRoomTopicContent: MockRoomTopicContent(mockNewVal: 'mock-new-val'),
     );
 
     await tester.pumpProviderWidget(
@@ -63,6 +68,7 @@ void main() {
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomAvatar'),
+      mockRoomAvatarContent: MockRoomAvatarContent(),
     );
 
     await tester.pumpProviderWidget(
