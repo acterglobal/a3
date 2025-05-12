@@ -2872,6 +2872,7 @@ object DisplayBuilder {
 
 
 object Space {
+    fn create_onboarding_data() -> Future<Result<bool>>;
 
     /// get the room profile that contains avatar and display name
     fn space_relations() -> Future<Result<SpaceRelations>>;
