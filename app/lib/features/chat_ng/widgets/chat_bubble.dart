@@ -124,6 +124,7 @@ class ChatBubble extends StatelessWidget {
     final msgWidth = messageWidth?.toDouble();
     final defaultWidth =
         context.isLargeScreen ? size.width * 0.5 : size.width * 0.75;
+    final String? name = displayName;
 
     return IntrinsicWidth(
       child: Container(
@@ -135,9 +136,9 @@ class ChatBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (displayName != null) ...[
+            if (name != null) ...[
               Text(
-                displayName!,
+                name,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color:
                       Colors.primaries[displayName!.hashCode.abs() %
