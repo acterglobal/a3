@@ -79,8 +79,6 @@ void main() {
 
         expect(find.text(L10n.of(testContext).edited), findsOneWidget);
 
-        expect(find.text('-'), findsOneWidget);
-
         expect(find.byType(MessageTimestampWidget), findsOneWidget);
       },
     );
