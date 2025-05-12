@@ -68,6 +68,53 @@ final animatedListChatMessagesProvider =
           ref.watch(chatMessagesStateProvider(roomId).notifier).animatedList,
     );
 
+/// A provider that maintains the list of messages that should be rendered as chat bubbles,
+/// separate from state event messages.
+///
+/// This provider specifically handles the chat bubble rendering logic by filtering messages
+/// that should appear in the chat UI. It's distinct from state events (like room settings,
+/// membership changes, etc.) which are handled separately.
+///
+/// The provider filters the message list based on the following criteria:
+/// - If [showHiddenMessages] is true, returns all messages without filtering
+/// - Otherwise, only returns messages of type:
+///   - 'm.room.message' (regular chat messages)
+///   - 'm.room.encrypted' (encrypted messages)
+///   - 'm.room.redaction' (message redactions)
+///
+/// Parameters:
+/// - [roomId]: The ID of the room to get messages for
+///
+/// Returns:
+/// - A list of message IDs that should be rendered as chat bubbles
+final renderableBubbleChatMessagesProvider = StateProvider.autoDispose
+    .family<List<String>, String>((ref, roomId) {
+      final msgList = ref.watch(
+        chatMessagesStateProvider(roomId).select((value) => value.messageList),
+      );
+      if (ref.watch(showHiddenMessages)) {
+        // do not apply filters
+        return msgList;
+      }
+      // do apply some filters
+
+      return msgList.where((id) {
+        final msg = ref.watch(
+          chatRoomMessageProvider((roomId: roomId, uniqueId: id)),
+        );
+        if (msg == null) {
+          _log.severe('Room Msg $roomId $id not found');
+          return false;
+        }
+
+        return [
+          'm.room.message',
+          'm.room.encrypted',
+          'm.room.redaction',
+        ].contains(msg.eventItem()?.eventType());
+      }).toList();
+    });
+
 final renderableChatMessagesProvider = StateProvider.autoDispose
     .family<List<String>, String>((ref, roomId) {
       final msgList = ref.watch(
@@ -91,13 +138,24 @@ final renderableChatMessagesProvider = StateProvider.autoDispose
       }).toList();
     });
 
-final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
+/// Provider to get the previous message in the chat bubble sequence.
+///
+/// This provider only works with messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for determining message grouping and UI layout in the chat interface.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - The previous message in the chat bubble sequence, or null if none exists
+final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
   final roomId = roomMsgId.roomId;
   final eventId = roomMsgId.uniqueId;
-  final messages = ref.watch(renderableChatMessagesProvider(roomId));
+  final messages = ref.watch(renderableBubbleChatMessagesProvider(roomId));
   final index = messages.indexOf(eventId);
   if (index == -1) return null;
   if (index == messages.length - 1) return null;
@@ -106,13 +164,24 @@ final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   );
 });
 
-final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
+/// Provider to get the next message in the chat bubble sequence.
+///
+/// This provider only works with messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for determining message grouping and UI layout in the chat interface.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - The next message in the chat bubble sequence, or null if none exists
+final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
 ) {
   final roomId = roomMsgId.roomId;
   final eventId = roomMsgId.uniqueId;
-  final messages = ref.watch(renderableChatMessagesProvider(roomId));
+  final messages = ref.watch(renderableBubbleChatMessagesProvider(roomId));
   final index = messages.indexOf(eventId);
   if (index == -1) return null;
   if (index == 0) return null;
@@ -121,6 +190,18 @@ final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   );
 });
 
+/// Provider to determine if the current message is the last one from its sender
+/// in the chat bubble sequence.
+///
+/// This provider only considers messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for UI styling to group consecutive messages from the same sender.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - true if this is the last message from the sender in the sequence
 final isLastMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   ref,
   roomMsgId,
@@ -131,6 +212,18 @@ final isLastMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   return currentMsg?.eventItem()?.sender() != nextMsg.eventItem()?.sender();
 });
 
+/// Provider to determine if the current message is the first one from its sender
+/// in the chat bubble sequence.
+///
+/// This provider only considers messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for UI styling to group consecutive messages from the same sender.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - true if this is the first message from the sender in the sequence
 final isFirstMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   ref,
   roomMsgId,

@@ -1294,6 +1294,8 @@
   "unset": "unset",
   "@unset": {},
   "unsupportedPleaseUpgrade": "Unsupported - Please upgrade!",
+  "unsupportedChatEventType": "Unsupported chat event type: {eventType}",
+  "unsupportedChatMessageType": "Unsupported chat message type: {messageType}",
   "@unsupportedPleaseUpgrade": {},
   "unverified": "Unverified",
   "@unverified": {},
