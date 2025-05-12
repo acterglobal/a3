@@ -18,7 +18,6 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final activityObject = activity.object();
 
     final roomId = activity.roomIdStr();
     final senderId = activity.senderIdStr();
@@ -36,7 +35,7 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     return ActivityUserCentricItemContainerWidget(
       actionIcon: Icons.access_time,
       actionTitle: L10n.of(context).rescheduled,
-      activityObject: activityObject,
+      activityObject: activity.object(),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       subtitle: getSubtitle(context, stateMsg),

@@ -21,7 +21,6 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final activityObject = activity.object();
 
     final roomId = activity.roomIdStr();
     final senderId = activity.senderIdStr();
@@ -40,7 +39,7 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
       actionIcon: Icons.access_time,
       actionTitle: L10n.of(context).rescheduled,
       actionIconColor: Colors.grey.shade400,
-      activityObject: activityObject,
+      activityObject: activity.object(),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
       originServerTs: activity.originServerTs(),
