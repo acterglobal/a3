@@ -145,7 +145,6 @@ class MessageEventItem extends ConsumerWidget {
 
     String? displayName;
     if (isFirstMessageBySender && !isMe && !isDM) {
-      // FIXME: also ignore in 1-on-1 dm rooms
       final senderId = item.sender();
       final letRoomId = roomId;
       displayName =
