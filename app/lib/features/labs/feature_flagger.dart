@@ -9,17 +9,6 @@ extension on Enum {
   String keyName() => name;
 }
 
-Features<T> featuresFromJson<T extends Enum>(
-  List<dynamic> json,
-  List<T> defaultOn,
-  T Function(String) fromString,
-) {
-  return Features<T>(
-    flags: featureFlagsFromJson(json, fromString),
-    defaultOn: defaultOn,
-  );
-}
-
 List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
   List<dynamic> json,
   T? Function(String) fromString, {
