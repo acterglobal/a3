@@ -2464,8 +2464,6 @@
   "@spaceDescriptionUpdate": {},
   "spaceNameUpdate": "{username} hat den Spacenamen geändert",
   "@spaceNameUpdate": {},
-  "spaceAvatarUpdate": "{username} aktualisierter Raum-Avatar",
-  "@spaceAvatarUpdate": {},
   "chatMembershipOtherBannedOther": "{senderId} hat {userId} verbannt.",
   "@chatMembershipOtherBannedOther": {},
   "chatMembershipOtherBannedYou": "{senderId} hat dich verbannt.",
