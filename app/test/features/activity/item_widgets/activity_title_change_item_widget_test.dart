@@ -9,6 +9,7 @@ import '../../../common/mock_data/mock_avatar_info.dart';
 import '../../../helpers/test_util.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
+import '../mock_data/mock_title_change.dart';
 
 void main() {
   Future<void> createWidgetUnderTest({
@@ -18,7 +19,7 @@ void main() {
     await tester.pumpProviderWidget(
       overrides: [
         memberAvatarInfoProvider.overrideWith(
-              (ref, param) =>
+          (ref, param) =>
               MockAvatarInfo(uniqueId: param.userId, mockDisplayName: 'User-1'),
         ),
       ],
@@ -38,6 +39,10 @@ void main() {
         mockEmoji: '📌',
         mockTitle: 'Pin Name',
       ),
+      mockTitleContent: MockTitleContent(
+        mockChange: 'Changed',
+        mockNewVal: 'mock-new-val',
+      ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
@@ -47,8 +52,8 @@ void main() {
     // Verify action icon
     expect(find.byIcon(PhosphorIconsRegular.pencilLine), findsOneWidget);
 
-    // Verify action title
-    expect(find.text('Updated'), findsOneWidget);
+    // Verify the change text is displayed
+    expect(find.textContaining('changed the title'), findsOneWidget);
 
     // Verify object icon
     expect(find.byIcon(PhosphorIconsRegular.pushPin), findsAtLeast(1));
@@ -63,13 +68,17 @@ void main() {
     expect(find.text('User-1'), findsOneWidget);
   });
 
-  testWidgets('Title changes of  event Object', (tester) async {
+  testWidgets('Title changes of calendar event Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.titleChange.name,
       mockObject: MockActivityObject(
         mockType: 'event',
         mockEmoji: '🗓️',
         mockTitle: 'Team Meeting',
+      ),
+      mockTitleContent: MockTitleContent(
+        mockChange: 'Changed',
+        mockNewVal: 'mock-new-val',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
@@ -80,8 +89,8 @@ void main() {
     // Verify action icon
     expect(find.byIcon(PhosphorIconsRegular.pencilLine), findsOneWidget);
 
-    // Verify action title
-    expect(find.text('Updated'), findsOneWidget);
+    // Verify the change text is displayed
+    expect(find.textContaining('changed the title'), findsOneWidget);
 
     // Verify object icon
     expect(find.byIcon(PhosphorIconsRegular.calendar), findsAtLeast(1));
@@ -93,13 +102,17 @@ void main() {
     expect(find.text('User-1'), findsOneWidget);
   });
 
-  testWidgets('Title changes of  Task-list Object', (tester) async {
+  testWidgets('Title changes of Task-list Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.titleChange.name,
       mockObject: MockActivityObject(
         mockType: 'task-list',
         mockEmoji: '📋',
         mockTitle: 'Project Tasks',
+      ),
+      mockTitleContent: MockTitleContent(
+        mockChange: 'Changed',
+        mockNewVal: 'mock-new-val',
       ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
@@ -110,8 +123,8 @@ void main() {
     // Verify action icon
     expect(find.byIcon(PhosphorIconsRegular.pencilLine), findsOneWidget);
 
-    // Verify action title
-    expect(find.text('Updated'), findsOneWidget);
+    // Verify the change text is displayed
+    expect(find.textContaining('changed the title'), findsOneWidget);
 
     // Verify object icon
     expect(find.byIcon(PhosphorIconsRegular.listChecks), findsAtLeast(1));
@@ -134,6 +147,10 @@ void main() {
         mockEmoji: '☑️',
         mockTitle: 'Complete Documentation',
       ),
+      mockTitleContent: MockTitleContent(
+        mockChange: 'Changed',
+        mockNewVal: 'mock-new-val',
+      ),
     );
     await createWidgetUnderTest(tester: tester, mockActivity: mockActivity);
 
@@ -143,8 +160,8 @@ void main() {
     // Verify action icon
     expect(find.byIcon(PhosphorIconsRegular.pencilLine), findsOneWidget);
 
-    // Verify action title
-    expect(find.text('Updated'), findsOneWidget);
+    // Verify the change text is displayed
+    expect(find.textContaining('changed the title'), findsOneWidget);
 
     // Verify object icon
     expect(find.byIcon(PhosphorIconsRegular.checkCircle), findsAtLeast(1));
