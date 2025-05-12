@@ -13,13 +13,13 @@ enum LabsFeature {
   chatNG,
 
   // system features
-  encryptionBackup,
 
   // candidates for always on
   deviceCalendarSync,
   mobilePushNotifications,
 
   // -- not a lab anymore but needs to stay for backwards compat
+  encryptionBackup,
   tasks,
   events,
   pins,
@@ -30,13 +30,7 @@ enum LabsFeature {
   static List<LabsFeature> get defaults =>
       isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
-  static List<LabsFeature> get releaseDefaults => [
-    LabsFeature.encryptionBackup,
-    LabsFeature.chatNG,
-  ];
+  static List<LabsFeature> get releaseDefaults => [LabsFeature.chatNG];
 
-  static List<LabsFeature> get nightlyDefaults => [
-    LabsFeature.encryptionBackup,
-    LabsFeature.chatNG,
-  ];
+  static List<LabsFeature> get nightlyDefaults => [LabsFeature.chatNG];
 }
