@@ -188,3 +188,20 @@ final spaceActivitiesProviderByDate =
         return activityDateOnly.isAtSameMomentAs(params.date);
       }).toList();
     });
+
+final activitiesPreloader = FutureProvider<void>((ref) async {
+  final dates = await ref.watch(activityDatesProvider.future);
+  if (dates.isNotEmpty) {
+    final firstDate = dates.first;
+    // nothing to preload
+    final roomIds = await ref.watch(roomIdsByDateProvider(firstDate).future);
+    if (roomIds.isNotEmpty) {
+      await ref.watch(
+        spaceActivitiesProviderByDate((
+          roomId: roomIds.first,
+          date: firstDate,
+        )).future,
+      );
+    }
+  }
+});

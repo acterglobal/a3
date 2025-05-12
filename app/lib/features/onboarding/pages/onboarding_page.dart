@@ -5,6 +5,7 @@ import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart'
 import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:acter/features/onboarding/pages/customization_page.dart';
+import 'package:acter/features/onboarding/pages/onboarding_space_creation_page.dart';
 import 'package:acter/features/onboarding/pages/recommended_spaces_page.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_notification_skeleton.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   List<Widget> _buildOnboardingScreens(OnboardingPermissions permissions) {
     final hasSpaceRedeemedInvites = ref.watch(hasSpaceRedeemedInInviteCodeProvider);
+    final hasRecommendedSpaceJoined = ref.watch(hasRecommendedSpaceJoinedProvider);
 
     return [
       if (!widget.isLoginOnboarding!) ...[
@@ -63,7 +65,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         CustomizationPage(callNextPage: () => _nextPage()),
         if (!hasSpaceRedeemedInvites)
           RecommendedSpacesPage(callNextPage: () => _nextPage()),
+        if (!hasSpaceRedeemedInvites && !hasRecommendedSpaceJoined)
+          OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
+      
       if (permissions.showNotificationPermission)
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
       if (permissions.showCalendarPermission)

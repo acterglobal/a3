@@ -61,6 +61,7 @@ Future<String?> joinRoom({
     }
     final newRoom = await client.joinRoom(roomIdOrAlias, servers);
     final roomId = newRoom.roomIdStr();
+    ref.read(hasRecommendedSpaceJoinedProvider.notifier).state = true;
     final isSpace = await _ensureLoadedWithinTime(() async {
       final room = await ref.refresh(maybeRoomProvider(roomId).future);
       return room?.isJoined() == true ? room!.isSpace() : null;

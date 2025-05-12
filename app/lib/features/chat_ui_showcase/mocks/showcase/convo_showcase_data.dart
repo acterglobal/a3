@@ -51,7 +51,7 @@ MockChatItem createMockChatItem({
       mockNumUnreadMentions: unreadMentions ?? 0,
       mockNumUnreadMessages: unreadMessages ?? 0,
       mockTimelineItem: MockTimelineItem(
-        mockTimelineEventItem: timelineEventItems?.first,
+        mockTimelineEventItem: timelineEventItems?.last,
       ),
       mockTimelineStream: MockTimelineStream(
         mockTimelineItemDiffs: [
@@ -66,7 +66,7 @@ MockChatItem createMockChatItem({
             ),
             mockIndex: 0,
             mockTimelineItem: MockTimelineItem(
-              mockTimelineEventItem: timelineEventItems?.first,
+              mockTimelineEventItem: timelineEventItems?.last,
             ),
           ),
         ],
