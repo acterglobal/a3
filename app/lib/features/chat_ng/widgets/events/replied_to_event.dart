@@ -55,6 +55,8 @@ class RepliedToEvent extends StatelessWidget {
     final replyProfile = ref.watch(
       memberAvatarInfoProvider((userId: item.sender(), roomId: roomId)),
     );
+    final String displayName =
+        replyProfile.displayName ?? replyProfile.uniqueName ?? '';
 
     return Row(
       children: [
@@ -62,10 +64,10 @@ class RepliedToEvent extends StatelessWidget {
         const SizedBox(width: 5),
         Expanded(
           child: Text(
-            replyProfile.displayName ?? '',
+            displayName,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color:
-                  Colors.accents[replyProfile.displayName!.hashCode.abs() %
+                  Colors.accents[displayName.hashCode.abs() %
                       Colors.accents.length],
             ),
             maxLines: 1,
