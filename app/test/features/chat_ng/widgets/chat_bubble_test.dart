@@ -16,9 +16,9 @@ void main() {
           child: ChatBubble(
             context: tester.element(find.byType(Center)),
             timestamp: timestamp,
-            bubbleContentWidget: const Text('Hello'),
             isFirstMessageBySender: true,
             isLastMessageBySender: true,
+            child: const Text('Hello'),
           ),
         ),
       );
@@ -40,9 +40,9 @@ void main() {
               return ChatBubble(
                 context: context,
                 isEdited: true,
-                bubbleContentWidget: const Text('Edited message'),
                 isFirstMessageBySender: true,
                 isLastMessageBySender: true,
+                child: const Text('Edited message'),
               );
             },
           ),
@@ -66,11 +66,9 @@ void main() {
                   context: context,
                   isEdited: true,
                   timestamp: timestamp,
-                  bubbleContentWidget: const Text(
-                    'Edited message with timestamp',
-                  ),
                   isFirstMessageBySender: true,
                   isLastMessageBySender: true,
+                  child: const Text('Edited message with timestamp'),
                 );
               },
             ),
@@ -95,9 +93,9 @@ void main() {
               return ChatBubble(
                 context: context,
                 isEdited: false,
-                bubbleContentWidget: const Text('Unedited message'),
                 isFirstMessageBySender: true,
                 isLastMessageBySender: true,
+                child: const Text('Unedited message'),
               );
             },
           ),
@@ -121,9 +119,9 @@ void main() {
               context: context,
               isEdited: true,
               timestamp: timestamp,
-              bubbleContentWidget: const Text('My message'),
               isFirstMessageBySender: true,
               isLastMessageBySender: true,
+              child: const Text('My message'),
             );
           },
         ),

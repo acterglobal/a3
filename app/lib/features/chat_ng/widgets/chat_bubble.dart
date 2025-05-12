@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
 
 class ChatBubble extends StatelessWidget {
-  final Widget bubbleContentWidget;
+  final Widget child;
   final int? messageWidth;
   final BoxDecoration decoration;
   final MainAxisAlignment bubbleAlignment;
@@ -18,7 +18,7 @@ class ChatBubble extends StatelessWidget {
   // default private constructor
   const ChatBubble._inner({
     super.key,
-    required this.bubbleContentWidget,
+    required this.child,
     required this.bubbleAlignment,
     required this.decoration,
     this.isEdited = false,
@@ -30,7 +30,7 @@ class ChatBubble extends StatelessWidget {
 
   // factory bubble constructor
   factory ChatBubble({
-    required Widget bubbleContentWidget,
+    required Widget child,
     required BuildContext context,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
@@ -61,7 +61,7 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
       timestamp: timestamp,
-      bubbleContentWidget: bubbleContentWidget,
+      child: child,
       isMe: false,
     );
   }
@@ -70,7 +70,7 @@ class ChatBubble extends StatelessWidget {
   factory ChatBubble.me({
     Key? key,
     required BuildContext context,
-    required Widget bubbleContentWidget,
+    required Widget child,
     required bool isFirstMessageBySender,
     required bool isLastMessageBySender,
     String? displayName,
@@ -108,11 +108,11 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
       timestamp: timestamp,
-      bubbleContentWidget: DefaultTextStyle.merge(
+      child: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onPrimary,
         ),
-        child: bubbleContentWidget,
+        child: child,
       ),
       isMe: true,
     );
@@ -146,7 +146,7 @@ class ChatBubble extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
-            bubbleContentWidget,
+            child,
             _buildTimestampAndEditedLabel(context),
           ],
         ),

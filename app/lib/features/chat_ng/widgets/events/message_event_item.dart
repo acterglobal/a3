@@ -261,7 +261,7 @@ class MessageEventItem extends ConsumerWidget {
         isEdited: wasEdited,
         timestamp: timestamp,
         displayName: displayName,
-        bubbleContentWidget: child,
+        child: child,
       );
     }
     return ChatBubble(
@@ -271,7 +271,7 @@ class MessageEventItem extends ConsumerWidget {
       isEdited: wasEdited,
       timestamp: timestamp,
       displayName: displayName,
-      bubbleContentWidget: child,
+      child: child,
     );
   }
 
@@ -291,7 +291,7 @@ class MessageEventItem extends ConsumerWidget {
           isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,
           displayName: displayName,
-          bubbleContentWidget: mediaMessageWidget,
+          child: mediaMessageWidget,
         )
         : ChatBubble(
           context: context,
@@ -299,7 +299,7 @@ class MessageEventItem extends ConsumerWidget {
           isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,
           displayName: displayName,
-          bubbleContentWidget: mediaMessageWidget,
+          child: mediaMessageWidget,
         );
   }
 
