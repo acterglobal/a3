@@ -6,6 +6,7 @@ import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
@@ -14,12 +15,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RepliedToEvent extends StatelessWidget {
   final String roomId;
-  final String messageId;
+  final String originalMessageId;
   final TimelineEventItem replyEventItem;
   const RepliedToEvent({
     super.key,
     required this.roomId,
-    required this.messageId,
+    required this.originalMessageId,
     required this.replyEventItem,
   });
 
@@ -36,9 +37,9 @@ class RepliedToEvent extends StatelessWidget {
         // const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-          child: OriginalEventItem(
+          child: _OriginalEventItem(
             roomId: roomId,
-            messageId: messageId,
+            originalMessageId: originalMessageId,
             item: replyEventItem,
           ),
         ),
@@ -79,14 +80,13 @@ class RepliedToEvent extends StatelessWidget {
   }
 }
 
-class OriginalEventItem extends ConsumerWidget {
+class _OriginalEventItem extends ConsumerWidget {
   final String roomId;
-  final String messageId;
+  final String originalMessageId;
   final TimelineEventItem item;
-  const OriginalEventItem({
-    super.key,
+  const _OriginalEventItem({
     required this.roomId,
-    required this.messageId,
+    required this.originalMessageId,
     required this.item,
   });
 
@@ -97,12 +97,7 @@ class OriginalEventItem extends ConsumerWidget {
     final eventType = item.eventType();
     return switch (eventType) {
       // handle message inner types separately
-      'm.room.message' => buildReplyMsgEventItem(
-        roomId,
-        messageId,
-        item,
-        isUser,
-      ),
+      'm.room.message' => buildReplyMsgEventItem(context, roomId, item, isUser),
       'm.room.redaction' => RedactedMessageWidget(),
       'm.room.encrypted' => EncryptedMessageWidget(),
       _ => _buildUnsupportedMessage(eventType),
@@ -110,16 +105,21 @@ class OriginalEventItem extends ConsumerWidget {
   }
 
   Widget buildReplyMsgEventItem(
+    BuildContext context,
     String roomId,
-    String messageId,
     TimelineEventItem item,
     bool isUser,
   ) {
     final msgType = item.msgType();
     final content = item.msgContent();
+    final messageId = item.eventId();
 
     // shouldn't happen but in case return empty
     if (msgType == null || content == null) return const SizedBox.shrink();
+
+    if (messageId == null) {
+      return Text(L10n.of(context).repliedToMsgFailed('missing event id'));
+    }
 
     return switch (msgType) {
       'm.emote' ||

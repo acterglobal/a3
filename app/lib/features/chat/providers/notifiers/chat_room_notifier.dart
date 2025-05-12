@@ -504,7 +504,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String uniqueId = message.uniqueId();
     String? eventId = eventItem.eventId();
 
-    String? inReplyTo = eventItem.inReplyTo();
+    String? inReplyTo = eventItem.inReplyToId();
 
     // user read receipts for timeline event item
     Map<String, int> receipts = {};

@@ -5,10 +5,8 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
-import 'package:acter/features/chat_ng/models/replied_to_msg_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
-import 'package:acter/features/chat_ng/providers/notifiers/reply_messages_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -287,9 +285,49 @@ final mentionSuggestionsProvider =
       };
     });
 
-final repliedToMsgProvider = AsyncNotifierProvider.autoDispose
-    .family<RepliedToMessageNotifier, RepliedToMsgState, RoomMsgId>(() {
-      return RepliedToMessageNotifier();
+/// Give the room and the message id that contains a reply, this returns
+/// the event item that is being replied to.
+final repliedToMsgProvider = FutureProvider.autoDispose
+    .family<TimelineEventItem, RoomMsgId>((ref, item) async {
+      TimelineItem? msg = ref.watch(chatRoomMessageProvider(item));
+      TimelineEventItem? repliedToItem;
+
+      if (msg == null) {
+        throw 'Event ${item.uniqueId} not found';
+      }
+      final inReplyToId = msg.eventItem()?.inReplyToId();
+      if (inReplyToId != null) {
+        repliedToItem =
+            ref
+                .watch(
+                  chatRoomMessageProvider((
+                    roomId: item.roomId,
+                    uniqueId: inReplyToId,
+                  )),
+                )
+                ?.eventItem();
+        if (repliedToItem != null) {
+          return repliedToItem;
+        }
+      }
+
+      // not found in the history, let's try to read directly
+
+      repliedToItem = msg.eventItem()?.inReplyToEvent();
+      if (repliedToItem == null) {
+        // failed direclty, trying to fetch from remote then
+        final timeline =
+            ref.read(chatMessagesStateProvider(item.roomId).notifier).timeline;
+        await timeline.fetchDetailsForEvent(item.uniqueId);
+        repliedToItem = (await timeline.getMessage(item.uniqueId)).eventItem();
+      }
+
+      if (repliedToItem == null) {
+        // still nothing...
+        throw 'Replied message not found';
+      }
+
+      return repliedToItem;
     });
 
 final messageReactionsProvider = StateProvider.autoDispose

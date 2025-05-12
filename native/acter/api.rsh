@@ -1083,7 +1083,10 @@ object TimelineEventItem {
     fn space_parent_content() -> Option<SpaceParentContent>;
 
     /// original event id, if this msg is reply to another msg
-    fn in_reply_to() -> Option<string>;
+    fn in_reply_to_id() -> Option<string>;
+
+    /// original event, if this msg is reply to another msg and the event was loaded
+    fn in_reply_to_event() -> Option<TimelineEventItem>;
 
     /// the list of users that read this message
     fn read_users() -> Vec<string>;
@@ -1667,6 +1670,9 @@ object TimelineStream {
 
     /// get the specific message identified by the event_id
     fn get_message(event_id: string) -> Future<Result<TimelineItem>>;
+
+    /// given a message, load its reply details if any
+    fn fetch_details_for_event(event_id: string) -> Future<Result<bool>>;
 
     /// Get the next count messages backwards, and return whether it reached the end
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
