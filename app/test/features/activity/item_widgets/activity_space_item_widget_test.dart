@@ -28,7 +28,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.textContaining('updated space name'), findsOneWidget);
+    expect(find.textContaining('changed the room name'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
 
   testWidgets('Room topic update', (tester) async {
     MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.roomName.name,
+      mockType: PushStyles.roomTopic.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomTopic'),
@@ -51,7 +51,7 @@ void main() {
     await tester.pump();
 
     // Verify the change text is displayed
-    expect(find.textContaining('updated space description'), findsOneWidget);
+    expect(find.textContaining('changed the room topic'), findsOneWidget);
 
     // Verify icon is present
     expect(find.byIcon(PhosphorIconsRegular.pencilSimpleLine), findsOneWidget);
@@ -59,7 +59,7 @@ void main() {
 
   testWidgets('Room avatar update', (tester) async {
     MockActivity mockActivity = MockActivity(
-      mockType: PushStyles.roomName.name,
+      mockType: PushStyles.roomAvatar.name,
       mockRoomId: 'room-id',
       mockSenderId: 'sender-id',
       mockObject: MockActivityObject(mockType: 'roomAvatar'),
@@ -75,6 +75,6 @@ void main() {
     // Verify the avatar is displayed
     expect(find.byType(ActerAvatar), findsOneWidget);
     // Verify the change text is displayed
-    expect(find.textContaining('updated space avatar'), findsOneWidget);
+    expect(find.textContaining('changed the room avatar url'), findsOneWidget);
   });
 }
