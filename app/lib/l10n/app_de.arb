@@ -2460,8 +2460,6 @@
   "@analyticsMoreDetails": {},
   "spacesLoadingError": "Laden der verbundenen Spaces & Chats fehlgeschlagen",
   "@spacesLoadingError": {},
-  "spaceDescriptionUpdate": "{username} aktualisierte Raumbeschreibung",
-  "@spaceDescriptionUpdate": {},
   "chatMembershipOtherBannedOther": "{senderId} hat {userId} verbannt.",
   "@chatMembershipOtherBannedOther": {},
   "chatMembershipOtherBannedYou": "{senderId} hat dich verbannt.",

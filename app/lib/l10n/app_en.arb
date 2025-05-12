@@ -2862,8 +2862,6 @@
   "@userHasNotAllowed": {},
   "calendarSyncDesc": "Acter can sync Events you are invited to or agreed to go to directly to your device Calendar for your convenience. Events you declined will not show there.",
   "@calendarSyncDesc": {},
-  "spaceDescriptionUpdate": "{username}  updated space description",
-  "@spaceDescriptionUpdate": {},
   "desktopSetup": "Desktop Setup",
   "@desktopSetup": {},
   "desktopSetupInfo": "When you close the Acter Window, Acter won't directly exit the program but minimize to the system tray to keep listening for notifications for you. If you want to exit Acter you need to do that from the system tray.",
