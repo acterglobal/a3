@@ -61,8 +61,8 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.start,
       isEdited: isEdited,
       timestamp: timestamp,
-      child: child,
       isMe: false,
+      child: child,
     );
   }
 
@@ -108,13 +108,13 @@ class ChatBubble extends StatelessWidget {
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
       timestamp: timestamp,
+      isMe: true,
       child: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onPrimary,
         ),
         child: child,
       ),
-      isMe: true,
     );
   }
 
