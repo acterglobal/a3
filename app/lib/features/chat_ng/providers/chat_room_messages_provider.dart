@@ -138,6 +138,17 @@ final renderableChatMessagesProvider = StateProvider.autoDispose
       }).toList();
     });
 
+/// Provider to get the previous message in the chat bubble sequence.
+///
+/// This provider only works with messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for determining message grouping and UI layout in the chat interface.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - The previous message in the chat bubble sequence, or null if none exists
 final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
@@ -153,6 +164,17 @@ final _getPreviousMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   );
 });
 
+/// Provider to get the next message in the chat bubble sequence.
+///
+/// This provider only works with messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for determining message grouping and UI layout in the chat interface.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - The next message in the chat bubble sequence, or null if none exists
 final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   ref,
   roomMsgId,
@@ -168,6 +190,18 @@ final _getNextMessageProvider = Provider.family<TimelineItem?, RoomMsgId>((
   );
 });
 
+/// Provider to determine if the current message is the last one from its sender
+/// in the chat bubble sequence.
+///
+/// This provider only considers messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for UI styling to group consecutive messages from the same sender.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - true if this is the last message from the sender in the sequence
 final isLastMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   ref,
   roomMsgId,
@@ -178,6 +212,18 @@ final isLastMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   return currentMsg?.eventItem()?.sender() != nextMsg.eventItem()?.sender();
 });
 
+/// Provider to determine if the current message is the first one from its sender
+/// in the chat bubble sequence.
+///
+/// This provider only considers messages that are rendered as chat bubbles
+/// (filtered by [renderableBubbleChatMessagesProvider]) and ignores state events.
+/// It's used for UI styling to group consecutive messages from the same sender.
+///
+/// Parameters:
+/// - [roomMsgId]: The current message's room and unique ID
+///
+/// Returns:
+/// - true if this is the first message from the sender in the sequence
 final isFirstMessageBySenderProvider = Provider.family<bool, RoomMsgId>((
   ref,
   roomMsgId,
