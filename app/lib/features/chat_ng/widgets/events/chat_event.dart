@@ -22,6 +22,30 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::chat_ng::widgets::room_message');
 
+/// Set of supported room update event types
+const _supportedRoomUpdateEvents = {
+  'm.policy.rule.room',
+  'm.policy.rule.server',
+  'm.policy.rule.user',
+  'm.room.aliases',
+  'm.room.avatar',
+  'm.room.canonical_alias',
+  'm.room.create',
+  'm.room.encryption',
+  'm.room.guest_access',
+  'm.room.history_visibility',
+  'm.room.join_rules',
+  'm.room.name',
+  'm.room.pinned_events',
+  'm.room.power_levels',
+  'm.room.server_acl',
+  'm.room.third_party_invite',
+  'm.room.tombstone',
+  'm.room.topic',
+  'm.space.child',
+  'm.space.parent',
+};
+
 class ChatEvent extends ConsumerWidget {
   final String roomId;
   final String eventId;
@@ -230,29 +254,7 @@ class ChatEvent extends ConsumerWidget {
   }
 
   bool _isSupportedRoomUpdateEvent(String type) {
-    const supportedRoomUpdateEvents = {
-      'm.policy.rule.room',
-      'm.policy.rule.server',
-      'm.policy.rule.user',
-      'm.room.aliases',
-      'm.room.avatar',
-      'm.room.canonical_alias',
-      'm.room.create',
-      'm.room.encryption',
-      'm.room.guest_access',
-      'm.room.history_visibility',
-      'm.room.join_rules',
-      'm.room.name',
-      'm.room.pinned_events',
-      'm.room.power_levels',
-      'm.room.server_acl',
-      'm.room.third_party_invite',
-      'm.room.tombstone',
-      'm.room.topic',
-      'm.space.child',
-      'm.space.parent',
-    };
-    return supportedRoomUpdateEvents.contains(type);
+    return _supportedRoomUpdateEvents.contains(type);
   }
 
   Widget _buildAvatar(
