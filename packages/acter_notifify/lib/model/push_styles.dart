@@ -27,6 +27,7 @@ enum PushStyles {
   titleChange('✏️'),
   descriptionChange('✏️'),
   creation('➕'),
+  redaction('🗑️'),
   otherChanges('✏️'),
 
   //Space Name
