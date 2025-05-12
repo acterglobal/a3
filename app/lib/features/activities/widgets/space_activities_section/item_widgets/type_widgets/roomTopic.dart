@@ -53,16 +53,20 @@ class ActivityRoomTopicItemWidget extends ConsumerWidget {
         final newVal = content.newVal();
         final oldVal = content.oldVal() ?? '';
         if (isMe) {
-          return lang.roomStateRoomNameYouChanged(newVal, oldVal);
+          return lang.roomStateRoomTopicYouChanged(newVal, oldVal);
         } else {
-          return lang.roomStateRoomNameOtherChanged(senderName, newVal, oldVal);
+          return lang.roomStateRoomTopicOtherChanged(
+            senderName,
+            newVal,
+            oldVal,
+          );
         }
       case 'Set':
         final newVal = content.newVal();
         if (isMe) {
-          return lang.roomStateRoomNameYouSet(newVal);
+          return lang.roomStateRoomTopicYouSet(newVal);
         } else {
-          return lang.roomStateRoomNameOtherSet(senderName, newVal);
+          return lang.roomStateRoomTopicOtherSet(senderName, newVal);
         }
     }
     return null;
