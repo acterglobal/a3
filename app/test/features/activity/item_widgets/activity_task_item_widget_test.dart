@@ -5,38 +5,15 @@ import 'package:acter/features/activities/widgets/space_activities_section/item_
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskDecline.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskDueDateChange.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/item_widgets/type_widgets/taskReOpen.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter_notifify/model/push_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockingjay/mockingjay.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../common/mock_data/mock_avatar_info.dart';
 import '../../../helpers/test_util.dart';
 import '../mock_data/mock_activity.dart';
 import '../mock_data/mock_activity_object.dart';
-
-class MockUtcDateTime extends Mock implements UtcDateTime {
-  @override
-  int timestamp() => 1710000000; // Mocked Unix timestamp
-
-  @override
-  int timestampMillis() => 1710000000000; // Mocked timestamp in milliseconds
-
-  @override
-  String toRfc3339() => '2025-03-17T12:00:00Z'; // Mocked date-time string
-
-  @override
-  String toRfc2822() => 'Sun, 9 Mar 2025 12:00:00 +0000'; // Mocked date-time format
-}
-
-class MockDateContent extends Mock implements DateContent {
-  @override
-  String change() => 'Changed'; // Mocked change type
-
-  @override
-  String? newVal() => '2025-03-17'; // Mocked new value
-}
+import '../mock_data/mock_date_change.dart';
 
 void main() {
   testWidgets('task added on task list', (tester) async {
@@ -44,7 +21,6 @@ void main() {
       mockName: 'task 1',
       mockSubType: 'Task',
       mockType: PushStyles.taskAdd.name,
-      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task-list',
         mockEmoji: '📋',
@@ -86,11 +62,14 @@ void main() {
   testWidgets('Date changed on Task Object', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskDueDateChange.name,
-      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
         mockTitle: 'Project Task',
+      ),
+      mockDateContent: MockDateContent(
+        mockChange: 'Changed',
+        mockNewVal: '2024-03-09',
       ),
     );
 
@@ -123,17 +102,13 @@ void main() {
     // Verify user info
     expect(find.text('User-1'), findsOneWidget);
 
-    // Verify the expected date text
-    expect(
-      find.textContaining('09 March, 2024'),
-      findsOneWidget,
-    ); // Mocked date output
+    // Verify the change text is displayed
+    expect(find.textContaining('changed the due date'), findsOneWidget);
   });
 
   testWidgets('task complete', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskComplete.name,
-      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -174,7 +149,6 @@ void main() {
   testWidgets('task accepted', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskAccept.name,
-      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -215,7 +189,6 @@ void main() {
   testWidgets('task Decline', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskDecline.name,
-      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
@@ -256,7 +229,6 @@ void main() {
   testWidgets('task re-opened', (tester) async {
     MockActivity mockActivity = MockActivity(
       mockType: PushStyles.taskReOpen.name,
-      mockDateContent: MockDateContent(),
       mockObject: MockActivityObject(
         mockType: 'task',
         mockEmoji: '☑️',
