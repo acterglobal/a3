@@ -238,30 +238,39 @@ impl NotificationItemInner {
         let NotificationItemInner::Activity(a) = &self else {
             return None;
         };
-        let content = a
-            .date_time_range_content()
-            .expect("utc start is available on date time range content");
-        content.start_new_val()
+        match a.date_time_range_content() {
+            Some(content) => content.start_new_val(),
+            None => {
+                error!("utc start is available on date time range content");
+                None
+            }
+        }
     }
 
     pub fn utc_end(&self) -> Option<UtcDateTime> {
         let NotificationItemInner::Activity(a) = &self else {
             return None;
         };
-        let content = a
-            .date_time_range_content()
-            .expect("utc end is available on date time range content");
-        content.end_new_val()
+        match a.date_time_range_content() {
+            Some(content) => content.end_new_val(),
+            None => {
+                error!("utc end is available on date time range content");
+                None
+            }
+        }
     }
 
     pub fn due_date(&self) -> Option<String> {
         let NotificationItemInner::Activity(a) = &self else {
             return None;
         };
-        let content = a
-            .date_content()
-            .expect("due date is available on date content");
-        content.new_val()
+        match a.date_content() {
+            Some(content) => content.new_val(),
+            None => {
+                error!("due date is available on date content");
+                None
+            }
+        }
     }
 
     pub fn body(&self) -> Option<MsgContent> {
@@ -574,13 +583,21 @@ impl NotificationItemBuilder {
             ActivityContent::TitleChange { content, .. } => builder.title(content.new_val()),
             ActivityContent::EventDateChange { content, .. } => {
                 if content.start_change().is_some() {
-                    let utc_start = content
-                        .start_new_val()
-                        .expect("utc start should be available");
-                    builder.title(utc_start.to_rfc3339())
+                    match content.start_new_val() {
+                        Some(utc_start) => builder.title(utc_start.to_rfc3339()),
+                        None => {
+                            error!("utc start should be available");
+                            &mut builder
+                        }
+                    }
                 } else if content.end_change().is_some() {
-                    let utc_end = content.end_new_val().expect("utc end should be available");
-                    builder.title(utc_end.to_rfc3339())
+                    match content.end_new_val() {
+                        Some(utc_end) => builder.title(utc_end.to_rfc3339()),
+                        None => {
+                            error!("utc end should be available");
+                            &mut builder
+                        }
+                    }
                 } else {
                     &mut builder
                 }
