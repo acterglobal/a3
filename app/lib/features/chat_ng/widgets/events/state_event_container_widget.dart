@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
 class StateEventContainerWidget extends StatelessWidget {
-  final Widget? child;
-  const StateEventContainerWidget({super.key, this.child});
+  final Widget child;
+  const StateEventContainerWidget({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    if (child == null || child == const SizedBox.shrink()) {
-      return const SizedBox.shrink();
-    }
-
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
