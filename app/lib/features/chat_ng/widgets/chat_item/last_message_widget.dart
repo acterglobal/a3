@@ -1,9 +1,9 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_membership_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/room_message_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/profile_changes_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/room_membership_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/room_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/profile_changes_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/general_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';

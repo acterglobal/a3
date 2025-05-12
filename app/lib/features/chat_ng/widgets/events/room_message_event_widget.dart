@@ -1,5 +1,5 @@
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/media_meessage_event_widget.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/general_message_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/media_meessage_event_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/general_message_event_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';

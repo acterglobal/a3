@@ -1,0 +1,1 @@
+- Fix replies in Chat-ng: load them from remote if not yet found locally
