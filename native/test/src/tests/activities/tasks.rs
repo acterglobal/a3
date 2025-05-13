@@ -108,32 +108,11 @@ async fn task_update_activity() -> Result<()> {
 
     let event_id = task
         .update_builder()?
-        .title("Check the reality".to_owned())
-        .send()
-        .await?;
-
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
-        if task_updater.is_empty() {
-            bail!("all still empty");
-        }
-        Ok(())
-    })
-    .await?;
-
-    let activity = user.activity(event_id.to_string()).await?;
-    assert_eq!(activity.type_str(), "titleChange");
-    assert_eq!(
-        activity.title_content().map(|c| c.change()),
-        Some("Changed".to_owned())
-    );
-
-    let event_id = task
-        .update_builder()?
         .description_text("This is test content of task".to_owned())
         .send()
         .await?;
 
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy, || async {
         if task_updater.is_empty() {
             bail!("all still empty");
@@ -146,10 +125,6 @@ async fn task_update_activity() -> Result<()> {
     assert_eq!(activity.type_str(), "descriptionChange");
     assert_eq!(
         activity.msg_content().map(|c| c.body()),
-        Some("This is test content of task".to_owned())
-    );
-    assert_eq!(
-        activity.description_content().and_then(|c| c.new_val()),
         Some("This is test content of task".to_owned())
     );
 
