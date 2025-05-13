@@ -7,6 +7,7 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+use tracing::info;
 
 use crate::utils::random_user_with_random_space;
 
@@ -83,6 +84,7 @@ async fn task_smoketests() -> Result<()> {
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
     assert_eq!(tasks[0].event_id(), task_1_id);
+    info!("task 1 sort order: {:?}", tasks[0].sort_order());
 
     let task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), "Testing 1");
@@ -113,6 +115,7 @@ async fn task_smoketests() -> Result<()> {
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 2);
     assert_eq!(tasks[1].event_id(), task_2_id);
+    info!("task 2 sort order: {:?}", tasks[1].sort_order());
 
     let task_2 = tasks[1].clone();
     assert_eq!(task_2.title(), "Testing 2");
