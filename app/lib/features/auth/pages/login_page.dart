@@ -69,9 +69,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 LogoWidget(width: imageSize, height: imageSize),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
-              _buildUsernameInputField(context),
-              const SizedBox(height: 12),
-              _buildPasswordInputField(context),
+              AutofillGroup(
+                child: Column(
+                  children: [
+                    _buildUsernameInputField(context),
+                    const SizedBox(height: 12),
+                    _buildPasswordInputField(context),
+                  ],
+                ),
+              ),
               const SizedBox(height: 12),
               _buildForgotPassword(context),
               const SizedBox(height: 20),
@@ -114,6 +120,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Text(lang.username),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.username],
           key: LoginPageKeys.usernameField,
           controller: username,
           decoration: InputDecoration(hintText: lang.hintMessageUsername),
@@ -135,6 +142,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Text(lang.password),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.password],
           key: LoginPageKeys.passwordField,
           controller: password,
           obscureText: !_passwordVisible,
@@ -164,7 +172,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: LoginPageKeys.submitBtn,
-          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
+          onPressed: () {
+            TextInput.finishAutofillContext();
+            handleSubmit(L10n.of(context), GoRouter.of(context));
+          },
           child: Text(
             L10n.of(context).logIn,
             style: Theme.of(context).textTheme.bodyMedium,
