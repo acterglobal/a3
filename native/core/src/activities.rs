@@ -978,13 +978,13 @@ impl Activity {
                         None => "Unset".to_owned(),
                     };
                     let content = status::DescriptionContent::new(change, content);
-                    return Ok(Self::new(
+                    Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange { object, content },
-                    ));
+                    ))
                 } else {
                     // fallback: other changes
-                    return Ok(Self::new(meta, ActivityContent::OtherChanges { object }));
+                    Ok(Self::new(meta, ActivityContent::OtherChanges { object }))
                 }
             }
             AnyActerModel::TaskSelfAssign(e) => {
