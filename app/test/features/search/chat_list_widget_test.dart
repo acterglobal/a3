@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/search/widgets/chat_list_widget.dart';
 import 'package:acter/features/chat/widgets/convo_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -53,6 +55,7 @@ void main() {
           roomMembershipProvider.overrideWith((a, b) => null),
           isBookmarkedProvider.overrideWith((a, b) => false),
           roomDisplayNameProvider.overrideWith((a, b) => 'test'),
+          isActiveProvider(LabsFeature.chatNG).overrideWith((b) => false),
         ],
         child: ChatListWidget(
           chatListProvider: provider,
