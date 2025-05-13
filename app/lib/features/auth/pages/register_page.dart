@@ -106,9 +106,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               const SizedBox(height: 50),
               _buildNameInputField(context),
               const SizedBox(height: 12),
-              _buildUsernameInputField(context),
-              const SizedBox(height: 12),
-              _buildPasswordInputField(context),
+              _buildAutofillGroup(context),
               const SizedBox(height: 24),
               _buildTokenInputField(context),
               const SizedBox(height: 40),
@@ -142,6 +140,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
+  Widget _buildAutofillGroup(BuildContext context) {
+    return AutofillGroup(
+      child: Column(
+        children: [
+          _buildUsernameInputField(context),
+          const SizedBox(height: 12),
+          _buildPasswordInputField(context),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNameInputField(BuildContext context) {
     final lang = L10n.of(context);
     return Column(
@@ -171,6 +181,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(lang.username),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.username],
           key: RegisterPage.usernameField,
           controller: username,
           decoration: InputDecoration(hintText: lang.hintMessageUsername),
@@ -199,6 +210,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(lang.password),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.password],
           key: RegisterPage.passwordField,
           controller: password,
           decoration: InputDecoration(
@@ -358,7 +370,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: RegisterPage.submitBtn,
-          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
+          onPressed: () {
+            TextInput.finishAutofillContext();
+            handleSubmit(L10n.of(context), GoRouter.of(context));
+          },
           child: Text(
             L10n.of(context).createProfile,
             style: Theme.of(context).textTheme.bodyMedium,
