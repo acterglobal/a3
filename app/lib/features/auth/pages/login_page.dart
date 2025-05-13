@@ -69,15 +69,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 LogoWidget(width: imageSize, height: imageSize),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
-              AutofillGroup(
-                child: Column(
-                  children: [
-                    _buildUsernameInputField(context),
-                    const SizedBox(height: 12),
-                    _buildPasswordInputField(context),
-                  ],
-                ),
-              ),
+              _buildAutofillGroup(context),
               const SizedBox(height: 12),
               _buildForgotPassword(context),
               const SizedBox(height: 20),
@@ -163,6 +155,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               (val) => val == null || val.isEmpty ? lang.emptyPassword : null,
         ),
       ],
+    );
+  }
+
+  Widget _buildAutofillGroup(BuildContext context) {
+    return AutofillGroup(
+      child: Column(
+        children: [
+          _buildUsernameInputField(context),
+          const SizedBox(height: 12),
+          _buildPasswordInputField(context),
+        ],
+      ),
     );
   }
 
