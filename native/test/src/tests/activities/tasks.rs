@@ -106,9 +106,10 @@ async fn task_update_activity() -> Result<()> {
 
     let task_updater = task.subscribe();
 
+    let desc_text = "This is test content of task".to_owned();
     let event_id = task
         .update_builder()?
-        .description_text("This is test content of task".to_owned())
+        .description_text(desc_text.clone())
         .send()
         .await?;
 
@@ -125,7 +126,11 @@ async fn task_update_activity() -> Result<()> {
     assert_eq!(activity.type_str(), "descriptionChange");
     assert_eq!(
         activity.msg_content().map(|c| c.body()),
-        Some("This is test content of task".to_owned())
+        Some(desc_text.clone())
+    );
+    assert_eq!(
+        activity.description_content().and_then(|c| c.new_val()),
+        Some(desc_text)
     );
 
     Ok(())
