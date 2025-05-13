@@ -30,7 +30,7 @@ title = "Check the weather"
 #[tokio::test]
 async fn task_creation_activity() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("tasks_activities", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("tasks_creation", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -70,5 +70,62 @@ async fn task_creation_activity() -> Result<()> {
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");
     assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn task_update_activity() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("tasks_update", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = user.clone();
+    let task_lists = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            let task_lists = client.task_lists().await?;
+            if task_lists.len() != 1 {
+                bail!("not all task_lists found");
+            }
+            Ok(task_lists)
+        }
+    })
+    .await?;
+
+    assert_eq!(task_lists.len(), 1);
+
+    let task_list = task_lists.first().unwrap();
+
+    let tasks = task_list.tasks().await?;
+    assert_eq!(tasks.len(), 1);
+
+    let task = tasks.first().unwrap();
+
+    let task_updater = task.subscribe();
+
+    let event_id = task
+        .update_builder()?
+        .description_text("This is test content of task".to_owned())
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy, || async {
+        if task_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "descriptionChange");
+    assert_eq!(
+        activity.msg_content().map(|c| c.body()),
+        Some("This is test content of task".to_owned())
+    );
+
     Ok(())
 }
