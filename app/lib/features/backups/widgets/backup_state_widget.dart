@@ -6,8 +6,6 @@ import 'package:acter/features/backups/dialogs/show_recovery_key.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,12 +23,6 @@ class BackupStateWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isBackupFeatureEnabled = ref.watch(
-      isActiveProvider(LabsFeature.encryptionBackup),
-    );
-
-    if (!isBackupFeatureEnabled) return SizedBox.shrink();
-
     return switch (ref.watch(backupStateProvider)) {
       RecoveryState.enabled =>
         allowDisabling

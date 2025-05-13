@@ -9,21 +9,11 @@ extension on Enum {
   String keyName() => name;
 }
 
-Features<T> featuresFromJson<T extends Enum>(
-  List<dynamic> json,
-  List<T> defaultOn,
-  T Function(String) fromString,
-) {
-  return Features<T>(
-    flags: featureFlagsFromJson(json, fromString),
-    defaultOn: defaultOn,
-  );
-}
-
 List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
   List<dynamic> json,
-  T? Function(String) fromString,
-) {
+  T? Function(String) fromString, {
+  bool throwOnMissing = true,
+}) {
   List<FeatureFlag<T>> flags = List.from(
     json
         .map((json) {
@@ -34,7 +24,10 @@ List<FeatureFlag<T>> featureFlagsFromJson<T extends Enum>(
             }
             final feature = fromString(key);
             if (feature == null) {
-              throw 'enum parsing from $key failed';
+              if (throwOnMissing) {
+                throw 'enum parsing from $key failed';
+              }
+              return null;
             }
             final active = json['active'] as bool;
             return FeatureFlag<T>(feature: feature, active: active);

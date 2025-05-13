@@ -80,6 +80,11 @@ Future<String> appCacheDirInner() async {
   return appCacheDir.path;
 }
 
+@visibleForTesting
+Future<void> resetSharedPrefs() async {
+  _sharedPrefCompl = null;
+}
+
 Future<SharedPreferences> sharedPrefs() async {
   if (_sharedPrefCompl == null) {
     if (isDevBuild) {
