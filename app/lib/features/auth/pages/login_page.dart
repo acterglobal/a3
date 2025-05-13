@@ -160,7 +160,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Widget _buildAutofillGroup(BuildContext context) {
     return AutofillGroup(
-      onDisposeAction: AutofillContextAction.commit,
       child: Column(
         children: [
           _buildUsernameInputField(context),
