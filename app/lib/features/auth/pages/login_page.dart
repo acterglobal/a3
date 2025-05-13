@@ -227,7 +227,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (loginSuccess == null) {
       if (!mounted) return;
       // Handle all post-login steps
-      TextInput.finishAutofillContext(shouldSave: true);
+
       context.goNamed(Routes.onboarding.name,queryParameters: {'isLoginOnboarding': 'true'});
     } else {
       _log.severe('Failed to login', loginSuccess);
