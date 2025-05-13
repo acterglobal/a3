@@ -177,7 +177,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         : ActerPrimaryActionButton(
           key: LoginPageKeys.submitBtn,
           onPressed: () {
-            TextInput.finishAutofillContext();
+            TextInput.finishAutofillContext(shouldSave: true);
             handleSubmit(L10n.of(context), GoRouter.of(context));
           },
           child: Text(

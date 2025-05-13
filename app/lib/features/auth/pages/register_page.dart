@@ -371,7 +371,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         : ActerPrimaryActionButton(
           key: RegisterPage.submitBtn,
           onPressed: () {
-            TextInput.finishAutofillContext();
+            TextInput.finishAutofillContext(shouldSave: true);
             handleSubmit(L10n.of(context), GoRouter.of(context));
           },
           child: Text(
