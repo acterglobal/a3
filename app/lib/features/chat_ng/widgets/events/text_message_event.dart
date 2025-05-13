@@ -13,7 +13,6 @@ class TextMessageEvent extends ConsumerWidget {
   final MsgContent content;
   final TextMessageType _type;
   final bool _isMe; // Only needed for emoji messages to determine style
-  final String? displayName;
   final Widget? repliedTo;
 
   const TextMessageEvent.inner({
@@ -22,7 +21,6 @@ class TextMessageEvent extends ConsumerWidget {
     required this.roomId,
     required TextMessageType type,
     bool isMe = false,
-    this.displayName,
     this.repliedTo,
   }) : _type = type,
        _isMe = isMe;
@@ -61,7 +59,6 @@ class TextMessageEvent extends ConsumerWidget {
     Key? key,
     required MsgContent content,
     required String roomId,
-    String? displayName,
     Widget? repliedTo,
   }) {
     return TextMessageEvent.inner(
@@ -69,7 +66,6 @@ class TextMessageEvent extends ConsumerWidget {
       content: content,
       roomId: roomId,
       type: TextMessageType.notice,
-      displayName: displayName,
       repliedTo: repliedTo,
     );
   }
@@ -79,7 +75,6 @@ class TextMessageEvent extends ConsumerWidget {
     Key? key,
     required MsgContent content,
     required String roomId,
-    String? displayName,
     Widget? repliedTo,
   }) {
     return TextMessageEvent.inner(
@@ -87,7 +82,6 @@ class TextMessageEvent extends ConsumerWidget {
       content: content,
       roomId: roomId,
       type: TextMessageType.regular,
-      displayName: displayName,
       repliedTo: repliedTo,
     );
   }
@@ -114,21 +108,11 @@ class TextMessageEvent extends ConsumerWidget {
         ),
       );
     }
-    final dp = displayName;
     final replied = repliedTo;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (dp != null) ...[
-          Text(
-            dp,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
-          ),
-          const SizedBox(height: 4),
-        ],
         if (replied != null) ...[replied, const SizedBox(height: 10)],
         RenderHtml(
           text: body,
@@ -140,7 +124,7 @@ class TextMessageEvent extends ConsumerWidget {
             color:
                 _type == TextMessageType.notice
                     ? colorScheme.onSurface.withValues(alpha: 0.5)
-                    : null,
+                    : colorScheme.onSurface.withValues(alpha: 0.9),
             overflow:
                 _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
           ),

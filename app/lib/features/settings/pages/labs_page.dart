@@ -28,24 +28,6 @@ class SettingsLabsPage extends ConsumerWidget {
         body: SettingsList(
           sections: [
             SettingsSection(
-              title: Text(lang.labsAppFeatures),
-              tiles: [
-                SettingsTile.switchTile(
-                  title: Text(lang.encryptionBackupKeyBackup),
-                  description: Text(lang.sharedCalendarAndEvents),
-                  initialValue: ref.watch(
-                    isActiveProvider(LabsFeature.encryptionBackup),
-                  ),
-                  onToggle:
-                      (newVal) async => await updateFeatureState(
-                        ref,
-                        LabsFeature.encryptionBackup,
-                        newVal,
-                      ),
-                ),
-              ],
-            ),
-            SettingsSection(
               title: Text(lang.spaces),
               tiles: [
                 SettingsTile.switchTile(

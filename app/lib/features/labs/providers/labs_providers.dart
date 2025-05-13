@@ -16,6 +16,7 @@ final asyncFeaturesProvider = FutureProvider<Features<LabsFeature>>((
   final features = featureFlagsFromJson<LabsFeature>(
     json.decode(currentData),
     (name) => LabsFeature.values.byName(name),
+    throwOnMissing: false, // we want to ignore missing features
   );
   return Features<LabsFeature>(
     flags: features,

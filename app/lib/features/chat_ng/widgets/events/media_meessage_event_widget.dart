@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
-import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widgets/text_message_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

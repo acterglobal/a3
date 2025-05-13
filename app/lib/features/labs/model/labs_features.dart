@@ -14,29 +14,17 @@ enum LabsFeature {
   htmlNext,
 
   // system features
-  encryptionBackup,
 
   // candidates for always on
   deviceCalendarSync,
-  mobilePushNotifications,
-
-  // -- not a lab anymore but needs to stay for backwards compat
-  tasks,
-  events,
-  pins,
-  autoSubscribe,
-  comments,
-  showNotifications; // old name for desktop notifications
+  mobilePushNotifications;
 
   static List<LabsFeature> get defaults =>
       isDevBuild || isNightly ? nightlyDefaults : releaseDefaults;
 
-  static List<LabsFeature> get releaseDefaults => [
-    LabsFeature.encryptionBackup,
-  ];
+  static List<LabsFeature> get releaseDefaults => [LabsFeature.chatNG];
 
   static List<LabsFeature> get nightlyDefaults => [
-    LabsFeature.encryptionBackup,
     LabsFeature.chatNG,
     LabsFeature.htmlNext,
   ];
