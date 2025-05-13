@@ -15,6 +15,7 @@ async fn task_smoketests() -> Result<()> {
     let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
 
+    let user_id = user.user_id()?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
 
@@ -65,6 +66,7 @@ async fn task_smoketests() -> Result<()> {
     let task_1_id = task_list
         .task_builder()?
         .title("Testing 1".into())
+        .description_text("This is testing task".into())
         .send()
         .await?;
 
@@ -84,6 +86,10 @@ async fn task_smoketests() -> Result<()> {
 
     let task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), "Testing 1");
+    assert_eq!(
+        task_1.description().map(|msg| msg.body()),
+        Some("This is testing task".to_owned())
+    );
     assert!(!task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
@@ -121,6 +127,8 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
+    let _assigned_event_id = task_1.assign_self().await?;
+
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if task_1_updater.is_empty() {
@@ -133,6 +141,8 @@ async fn task_smoketests() -> Result<()> {
     let task_1 = task_1.refresh().await?;
     // Update has been applied properly
     assert_eq!(task_1.title(), "Replacement Name");
+    let assignees = task_1.assignees();
+    assert_eq!(assignees, vec![user_id]);
     assert!(task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
