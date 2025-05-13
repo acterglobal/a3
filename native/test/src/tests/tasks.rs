@@ -83,7 +83,6 @@ async fn task_smoketests() -> Result<()> {
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
     assert_eq!(tasks[0].event_id(), task_1_id);
-    info!("task 1 sort order: {:?}", tasks[0].sort_order());
 
     let task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), "Testing 1");
