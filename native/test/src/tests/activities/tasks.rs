@@ -83,7 +83,7 @@ async fn task_update_activity() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy.clone(), move || {
+    let task_lists = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let task_lists = client.task_lists().await?;
@@ -112,6 +112,7 @@ async fn task_update_activity() -> Result<()> {
         .send()
         .await?;
 
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy, || async {
         if task_updater.is_empty() {
             bail!("all still empty");
