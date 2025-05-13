@@ -7,6 +7,8 @@ import 'package:open_filex/open_filex.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
+final supportSaveToFile = Platform.isLinux || Platform.isMacOS || Platform.isWindows;
+
 Future<void> openFileShareDialog({
   required BuildContext context,
   required File file,
@@ -89,7 +91,7 @@ class _FileOptionsDialog extends StatelessWidget {
             label: Text(lang.shareFile),
             icon: PhosphorIcon(PhosphorIcons.shareNetwork()),
           ),
-          if (!Platform.isAndroid) // crashes on Android for some reason ...
+          if (supportSaveToFile) // not supported on iOS and Android
             TextButton.icon(
               onPressed: () async {
                 if (await downloadFile(context, file)) {
