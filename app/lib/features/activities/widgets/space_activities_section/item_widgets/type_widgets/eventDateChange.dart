@@ -52,7 +52,7 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     switch (content.startChange()) {
       case 'Changed':
         // for now, we can't support the old value
-        // because the internal state machine of acter custom message, like pin or task
+        // because the internal state machine is not ready about acter custom message, like pin or task
         final newVal = content.startNewVal()?.toRfc3339() ?? '';
         if (isMe) {
           return lang.activityStartTimeYouChanged(newVal);
@@ -76,7 +76,7 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     switch (content.endChange()) {
       case 'Changed':
         // for now, we can't support the old value
-        // because the internal state machine of acter custom message, like pin or task
+        // because the internal state machine is not ready about acter custom message, like pin or task
         final newVal = content.endNewVal()?.toRfc3339() ?? '';
         if (isMe) {
           return lang.activityEndTimeYouChanged(newVal);

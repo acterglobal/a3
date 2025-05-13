@@ -53,7 +53,7 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
     switch (content.change()) {
       case 'Changed':
         // for now, we can't support the old value
-        // because the internal state machine of acter custom message, like pin or task
+        // because the internal state machine is not ready about acter custom message, like pin or task
         final newVal = content.newVal();
         if (isMe) {
           return lang.activityTitleYouChanged(newVal);
