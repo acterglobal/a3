@@ -557,10 +557,7 @@ impl MsgDraft {
                 let path = PathBuf::from(source);
                 let mut image_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
@@ -596,10 +593,7 @@ impl MsgDraft {
                 let path = PathBuf::from(source);
                 let mut audio_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
@@ -635,10 +629,7 @@ impl MsgDraft {
                 let info = info.expect("video info needed");
                 let mut video_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
@@ -676,10 +667,7 @@ impl MsgDraft {
                 let path = PathBuf::from(source);
                 let mut file_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
