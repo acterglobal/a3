@@ -50,6 +50,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       return;
     }
     try {
+      TextInput.finishAutofillContext(shouldSave: true);
       if (await register(
         username: username.text,
         password: password.text,
@@ -370,10 +371,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: RegisterPage.submitBtn,
-          onPressed: () {
-            TextInput.finishAutofillContext(shouldSave: true);
-            handleSubmit(L10n.of(context), GoRouter.of(context));
-          },
+          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
           child: Text(
             L10n.of(context).createProfile,
             style: Theme.of(context).textTheme.bodyMedium,

@@ -176,10 +176,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ? const Center(child: CircularProgressIndicator())
         : ActerPrimaryActionButton(
           key: LoginPageKeys.submitBtn,
-          onPressed: () {
-            TextInput.finishAutofillContext(shouldSave: true);
-            handleSubmit(L10n.of(context), GoRouter.of(context));
-          },
+          onPressed: () => handleSubmit(L10n.of(context), GoRouter.of(context)),
           child: Text(
             L10n.of(context).logIn,
             style: Theme.of(context).textTheme.bodyMedium,
@@ -226,7 +223,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (loginSuccess == null) {
       if (!mounted) return;
       // Handle all post-login steps
-
+      TextInput.finishAutofillContext(shouldSave: true);
       context.goNamed(Routes.onboarding.name,queryParameters: {'isLoginOnboarding': 'true'});
     } else {
       _log.severe('Failed to login', loginSuccess);
