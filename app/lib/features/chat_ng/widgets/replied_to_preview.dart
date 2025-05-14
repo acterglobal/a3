@@ -1,5 +1,7 @@
+import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/inline_error_button.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/replied_to_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,13 +24,14 @@ class RepliedToPreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
     final roomMsgState = ref.watch(repliedToMsgProvider(replyInfo));
 
     return roomMsgState.when(
       loading:
-          () => replyBuilder(
-            context,
-            Skeletonizer(
+          () => replyBuilderContainerUI(
+            context: context,
+            child: Skeletonizer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -40,19 +43,31 @@ class RepliedToPreview extends ConsumerWidget {
                 ],
               ),
             ),
+            displayNameColor: theme.colorScheme.onPrimary,
           ),
-      error:
-          (error, stack) =>
-              replyBuilder(context, replyErrorUI(context, ref, error, stack)),
-      data:
-          (repliedToItem) => replyBuilder(
-            context,
-            RepliedToEvent(
-              roomId: roomId,
-              originalMessageId: messageId,
-              replyEventItem: repliedToItem,
-            ),
+      error: (error, stack) => replyErrorUI(context, ref, error, stack),
+      data: (repliedToItem) {
+        final replyProfile = ref.watch(
+          memberAvatarInfoProvider((
+            userId: repliedToItem.sender(),
+            roomId: roomId,
+          )),
+        );
+        final String displayName =
+            replyProfile.displayName ?? repliedToItem.sender();
+
+        return replyBuilderContainerUI(
+          context: context,
+          child: RepliedToEvent(
+            roomId: roomId,
+            originalMessageId: messageId,
+            replyEventItem: repliedToItem,
           ),
+          displayNameColor:
+              chatBubbleDisplayNameColors[displayName.hashCode.abs() %
+                  chatBubbleDisplayNameColors.length],
+        );
+      },
     );
   }
 
@@ -75,15 +90,39 @@ class RepliedToPreview extends ConsumerWidget {
     );
   }
 
-  Widget replyBuilder(BuildContext context, Widget child) {
-    final colorScheme = Theme.of(context).colorScheme;
+  Widget replyBuilderContainerUI({
+    required BuildContext context,
+    required Widget child,
+    required Color displayNameColor,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.onSurface.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(22),
+        color: isMe ? Colors.black26 : Colors.white10,
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
       ),
-      child: child,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Container(
+              width: 3,
+              decoration: BoxDecoration(
+                color: displayNameColor,
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                child: child,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
