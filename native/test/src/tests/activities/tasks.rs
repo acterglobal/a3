@@ -75,9 +75,10 @@ async fn task_creation_activity() -> Result<()> {
 }
 
 #[tokio::test]
-async fn task_update_activity() -> Result<()> {
+async fn task_update_description() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("tasks_update", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("tasks_update_description", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
