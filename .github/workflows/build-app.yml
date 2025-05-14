@@ -474,4 +474,5 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_URL: ${{ secrets.SENTRY_URL }}
           SENTRY_RELEASE: ${{ inputs.version }}
+          SENTRY_ENVIRONMENT: ${{ inputs.release_env }}
         run: flutter packages pub run sentry_dart_plugin
