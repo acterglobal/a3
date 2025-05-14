@@ -1,11 +1,6 @@
-import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
-import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter/features/chat_ng/models/chat_room_state/chat_room_state.dart';
-import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_room_messages_notifier.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
@@ -240,51 +235,6 @@ final isLastMessageProvider = Provider.family<bool, RoomMsgId>((
   return messages.last == roomMsgId.uniqueId;
 });
 
-/// Provider to fetch user mentions
-final userMentionSuggestionsProvider =
-    StateProvider.family<Map<String, String>?, String>((ref, roomId) {
-      final userId = ref.watch(myUserIdStrProvider);
-      final members = ref.watch(membersIdsProvider(roomId)).valueOrNull;
-      if (members == null) {
-        return {};
-      }
-      return members.fold<Map<String, String>>({}, (map, uId) {
-        if (uId != userId) {
-          final displayName = ref.watch(
-            memberDisplayNameProvider((roomId: roomId, userId: uId)),
-          );
-          map[uId] = displayName.valueOrNull ?? '';
-        }
-        return map;
-      });
-    });
-
-/// Provider to fetch room mentions
-final roomMentionsSuggestionsProvider =
-    StateProvider.family<Map<String, String>?, String>((ref, roomId) {
-      final rooms = ref.watch(chatIdsProvider);
-      return rooms.fold<Map<String, String>>({}, (map, roomId) {
-        if (roomId == roomId) return map;
-
-        final displayName = ref.watch(roomDisplayNameProvider(roomId));
-        map[roomId] = displayName.valueOrNull ?? '';
-        return map;
-      });
-    });
-
-/// High Level Provider to fetch user/room mentions
-final mentionSuggestionsProvider =
-    StateProvider.family<Map<String, String>?, (String, MentionType)>((
-      ref,
-      params,
-    ) {
-      final (roomId, mentionType) = params;
-      return switch (mentionType) {
-        MentionType.user => ref.watch(userMentionSuggestionsProvider(roomId)),
-        MentionType.room => ref.watch(roomMentionsSuggestionsProvider(roomId)),
-      };
-    });
-
 /// Give the room and the message id that contains a reply, this returns
 /// the event item that is being replied to.
 final repliedToMsgProvider = FutureProvider.autoDispose
@@ -344,8 +294,3 @@ final messageReactionsProvider = StateProvider.autoDispose
 
       return reactions;
     });
-
-final chatEditorStateProvider =
-    NotifierProvider.autoDispose<ChatEditorNotifier, ChatEditorState>(
-      () => ChatEditorNotifier(),
-    );
