@@ -2,6 +2,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/file_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
@@ -36,7 +37,7 @@ class RepliedToEvent extends StatelessWidget {
         ),
         // const SizedBox(height: 10),
         Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          padding: const EdgeInsets.only(top: 6, right: 4),
           child: _OriginalEventItem(
             roomId: roomId,
             originalMessageId: originalMessageId,
@@ -68,8 +69,8 @@ class RepliedToEvent extends StatelessWidget {
             displayName,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color:
-                  Colors.accents[displayName.hashCode.abs() %
-                      Colors.accents.length],
+                  chatBubbleDisplayNameColors[displayName.hashCode.abs() %
+                      chatBubbleDisplayNameColors.length],
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -141,8 +142,8 @@ class ChatBubble extends StatelessWidget {
                 name,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color:
-                      Colors.accents[displayName!.hashCode.abs() %
-                          Colors.accents.length],
+                      chatBubbleDisplayNameColors[name.hashCode.abs() %
+                          chatBubbleDisplayNameColors.length],
                 ),
               ),
               const SizedBox(height: 8),

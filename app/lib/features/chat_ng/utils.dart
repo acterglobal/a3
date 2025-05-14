@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> saveMsgDraft(
@@ -63,3 +64,21 @@ class ChatEditorUtils {
   /// max height for the editor
   static const double maxHeight = 200.0;
 }
+
+/// The Material Design accent color swatches.
+const List<MaterialAccentColor> chatBubbleDisplayNameColors =
+    <MaterialAccentColor>[
+      Colors.redAccent,
+      Colors.pinkAccent,
+      Colors.purpleAccent,
+      Colors.lightBlueAccent,
+      Colors.cyanAccent,
+      Colors.tealAccent,
+      Colors.greenAccent,
+      Colors.lightGreenAccent,
+      Colors.limeAccent,
+      Colors.yellowAccent,
+      Colors.amberAccent,
+      Colors.orangeAccent,
+      Colors.deepOrangeAccent,
+    ];
