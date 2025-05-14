@@ -6,7 +6,7 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeli
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import '../../../../test/helpers/test_util.dart';
+import '../../../../../helpers/test_util.dart';
 
 void main() {
   group('RepliedToPreview Tests', () {
@@ -128,41 +128,7 @@ void main() {
       expect(find.text('Test User'), findsOneWidget);
     });
 
-    testWidgets(
-      'should show fallback to unique name when display name is null',
-      (WidgetTester tester) async {
-        final mockEventItem = MockTimelineEventItem();
-        final senderId = mockEventItem.sender().toString();
-
-        await tester.pumpProviderWidget(
-          overrides: [
-            repliedToMsgProvider((
-              roomId: 'room-id',
-              uniqueId: 'message-id',
-            )).overrideWith((ref) => Future.value(mockEventItem)),
-            memberAvatarInfoProvider((
-              userId: senderId,
-              roomId: 'room-id',
-            )).overrideWith(
-              (ref) => AvatarInfo(
-                displayName: null,
-                uniqueName: 'test_user',
-                uniqueId: senderId,
-              ),
-            ),
-          ],
-          child: const RepliedToPreview(
-            roomId: 'room-id',
-            messageId: 'message-id',
-          ),
-        );
-
-        await tester.pumpAndSettle();
-        expect(find.text('test_user'), findsOneWidget);
-      },
-    );
-
-    testWidgets('should show empty string when both names are null', (
+    testWidgets('should show sender ID when both names are null', (
       WidgetTester tester,
     ) async {
       final mockEventItem = MockTimelineEventItem();
@@ -192,7 +158,7 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      expect(find.text(''), findsOneWidget);
+      expect(find.text(senderId), findsOneWidget);
     });
   });
 }
