@@ -236,7 +236,9 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
   ],
   unreadNotificationCount: 2,
   unreadMessages: 2,
-  typingUsers: [MockUser(mockDisplayName: 'Emily')],
+  typingUsers: [
+    MockUser(mockDisplayName: 'Emily', mockUserId: '@emily:acter.global'),
+  ],
   timelineEventItems: [
     MockTimelineEventItem(
       mockEventId: 'mock-event-id-23',
@@ -462,6 +464,36 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
         mockBody: 'Will do! See you all tomorrow.',
       ),
     ),
+
+    // --- Reply-to-message example ---
+    MockTimelineEventItem(
+      mockEventId: 'mock-reply-base',
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'I would like to see some UI example of how media messages are renders in ...',
+      ),
+    ),
+    MockTimelineEventItem(
+      mockEventId: 'mock-reply-1',
+      mockSenderId: '@sarah:acter.global',
+      mockOriginServerTs: 1744098060000, // April 8, 2025 16:01:00
+      mockMsgContent: MockMsgContent(
+        mockBody:
+            'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+      ),
+      mockInReplyToId: 'mock-reply-base',
+      mockIsReplyToEvent: MockTimelineEventItem(
+        mockEventId: 'mock-reply-base',
+        mockSenderId: '@acter1:m-1.acter.global',
+        mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
+        mockMsgContent: MockMsgContent(
+          mockBody:
+              'I would like to see some UI example of how media messages are renders in ...',
+        ),
+      ),
+    ),
   ],
 );
 
@@ -536,7 +568,9 @@ final sarahDmWithTypingRoom6 = createMockChatItem(
   displayName: 'Sarah Wilson',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  typingUsers: [MockUser(mockDisplayName: 'Sarah')],
+  typingUsers: [
+    MockUser(mockDisplayName: 'Sarah', mockUserId: '@sarah:acter.global'),
+  ],
   timelineEventItems: [
     MockTimelineEventItem(
       mockEventId: 'mock-event-id-34',
@@ -554,9 +588,9 @@ final projectAlphaWithMultipleTypingRoom7 = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
   typingUsers: [
-    MockUser(mockDisplayName: 'Jennifer'),
-    MockUser(mockDisplayName: 'James'),
-    MockUser(mockDisplayName: 'David'),
+    MockUser(mockDisplayName: 'Jennifer', mockUserId: '@jennifer:acter.global'),
+    MockUser(mockDisplayName: 'James', mockUserId: '@james:acter.global'),
+    MockUser(mockDisplayName: 'David', mockUserId: '@david:acter.global'),
   ],
   activeMembersIds: [
     '@jennifer:acter.global',

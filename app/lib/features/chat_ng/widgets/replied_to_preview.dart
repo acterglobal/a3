@@ -54,7 +54,7 @@ class RepliedToPreview extends ConsumerWidget {
           )),
         );
         final String displayName =
-            replyProfile.displayName ?? replyProfile.uniqueName ?? '';
+            replyProfile.displayName ?? repliedToItem.sender();
 
         return replyBuilderContainerUI(
           context: context,
