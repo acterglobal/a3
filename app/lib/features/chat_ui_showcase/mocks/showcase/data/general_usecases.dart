@@ -494,6 +494,62 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
         ),
       ),
     ),
+    MockTimelineEventItem(
+      mockEventId: 'mock-reply-2',
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744098120000, // April 8, 2025 16:02:00
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Thanks Sarah! I will check the file and get back to you.',
+      ),
+      mockInReplyToId: 'mock-reply-1',
+      mockIsReplyToEvent: MockTimelineEventItem(
+        mockEventId: 'mock-reply-1',
+        mockSenderId: '@sarah:acter.global',
+        mockOriginServerTs: 1744098060000,
+        mockMsgContent: MockMsgContent(
+          mockBody:
+              'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+        ),
+        mockInReplyToId: 'mock-reply-base',
+        mockIsReplyToEvent: MockTimelineEventItem(
+          mockEventId: 'mock-reply-base',
+          mockSenderId: '@acter1:m-1.acter.global',
+          mockOriginServerTs: 1744098000000,
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'I would like to see some UI example of how media messages are renders in ...',
+          ),
+        ),
+      ),
+    ),
+    MockTimelineEventItem(
+      mockEventId: 'mock-reply-3',
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744098180000, // April 8, 2025 16:03:00
+      mockMsgContent: MockMsgContent(
+        mockBody: 'Let me know if you need any more examples or help!',
+      ),
+      mockInReplyToId: 'mock-reply-1',
+      mockIsReplyToEvent: MockTimelineEventItem(
+        mockEventId: 'mock-reply-1',
+        mockSenderId: '@sarah:acter.global',
+        mockOriginServerTs: 1744098060000,
+        mockMsgContent: MockMsgContent(
+          mockBody:
+              'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+        ),
+        mockInReplyToId: 'mock-reply-base',
+        mockIsReplyToEvent: MockTimelineEventItem(
+          mockEventId: 'mock-reply-base',
+          mockSenderId: '@acter1:m-1.acter.global',
+          mockOriginServerTs: 1744098000000,
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'I would like to see some UI example of how media messages are renders in ...',
+          ),
+        ),
+      ),
+    ),
   ],
 );
 
