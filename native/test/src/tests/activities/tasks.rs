@@ -136,3 +136,58 @@ async fn task_update_description() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn task_update_title() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("tasks_update_title", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = user.clone();
+    let task_lists = Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        async move {
+            let task_lists = client.task_lists().await?;
+            if task_lists.len() != 1 {
+                bail!("not all task_lists found");
+            }
+            Ok(task_lists)
+        }
+    })
+    .await?;
+
+    assert_eq!(task_lists.len(), 1);
+
+    let task_list = task_lists.first().unwrap();
+
+    let tasks = task_list.tasks().await?;
+    assert_eq!(tasks.len(), 1);
+
+    let task = tasks.first().unwrap();
+
+    let task_updater = task.subscribe();
+
+    let title = "Check the reality".to_owned();
+    let event_id = task.update_builder()?.title(title.clone()).send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy, || async {
+        if task_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "titleChange");
+    assert_eq!(
+        activity.title_content().map(|c| c.change()),
+        Some("Changed".to_owned())
+    );
+    assert_eq!(activity.title_content().map(|c| c.new_val()), Some(title));
+
+    Ok(())
+}
