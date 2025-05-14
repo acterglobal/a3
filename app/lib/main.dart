@@ -27,6 +27,7 @@ import 'package:matomo_tracker/matomo_tracker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:video_player_media_kit/video_player_media_kit.dart';
+import 'package:sentry_logging/sentry_logging.dart';
 
 void main(List<String> args) async {
   configSetup();
@@ -102,6 +103,7 @@ Future<void> _startAppInner(Widget app, bool withAnalytics) async {
       options.dsn = Env.sentryDsn;
       options.environment = Env.sentryEnvironment;
       options.release = Env.sentryRelease;
+      options.addIntegration(LoggingIntegration());
 
       // allows us to check whether the user has activated tracing
       // and prevent reporting otherwise.
