@@ -28,8 +28,7 @@ utc_end = "{{ future(add_mins=60).as_rfc3339 }}"
 #[tokio::test]
 async fn calendar_creation_activity() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) =
-        random_user_with_template("cal_event_creation", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("cal_event_creation", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -66,8 +65,7 @@ async fn calendar_creation_activity() -> Result<()> {
 #[tokio::test]
 async fn calendar_update_activity() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) =
-        random_user_with_template("cal_event_update", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("cal_event_update", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -108,11 +106,15 @@ async fn calendar_update_activity() -> Result<()> {
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "eventDateChange");
     assert_eq!(
-        activity.date_time_range_content().and_then(|c| c.end_change()),
+        activity
+            .date_time_range_content()
+            .and_then(|c| c.end_change()),
         Some("Changed".to_owned())
     );
     assert_eq!(
-        activity.date_time_range_content().and_then(|c| c.end_new_val()),
+        activity
+            .date_time_range_content()
+            .and_then(|c| c.end_new_val()),
         Some(end_time)
     );
 
