@@ -76,14 +76,34 @@ class RepliedToPreview extends ConsumerWidget {
   }
 
   Widget replyBuilder(BuildContext context, Widget child) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
-        color: colorScheme.onSurface.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(22),
+        color: isMe ? Colors.black26 : Colors.white10,
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
       ),
-      child: child,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Container(
+              width: 3,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                child: child,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
