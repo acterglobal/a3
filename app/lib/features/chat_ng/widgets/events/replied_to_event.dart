@@ -36,7 +36,7 @@ class RepliedToEvent extends StatelessWidget {
         ),
         // const SizedBox(height: 10),
         Padding(
-          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          padding: const EdgeInsets.only(top: 6, right: 4),
           child: _OriginalEventItem(
             roomId: roomId,
             originalMessageId: originalMessageId,
