@@ -184,6 +184,7 @@ async fn task_update_title() -> Result<()> {
 
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "titleChange");
+    assert_eq!(activity.title(), Some(title.clone()));
     assert_eq!(
         activity.title_content().map(|c| c.change()),
         Some("Changed".to_owned())
