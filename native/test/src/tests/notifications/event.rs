@@ -260,7 +260,11 @@ async fn event_rescheduled() -> Result<()> {
     let obj_id = obj_entry.event_id().to_string();
     assert_eq!(notification_item.utc_start(), Some(utc_start.clone()));
     assert_eq!(notification_item.utc_end(), Some(utc_end.clone()));
-    let title = format!("From: {}, To: {}", utc_start.to_rfc3339(), utc_end.to_rfc3339());
+    let title = format!(
+        "From: {}, To: {}",
+        utc_start.to_rfc3339(),
+        utc_end.to_rfc3339()
+    );
     assert_eq!(notification_item.title(), title);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
