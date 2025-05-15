@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../helpers/test_util.dart';
+import 'package:acter/common/providers/room_providers.dart';
 
 class MockMsgContent extends Mock implements MsgContent {
   @override
@@ -69,6 +70,7 @@ void main() {
     setUp(() {
       testOverrides = [
         messageReactionsProvider.overrideWith((ref, item) => []),
+        isDirectChatProvider.overrideWith((ref, roomId) => false),
       ];
     });
 
@@ -90,6 +92,7 @@ void main() {
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
           isLastMessage: true,
+          isDM: false,
         ),
       );
 
@@ -114,6 +117,7 @@ void main() {
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
           isLastMessage: true,
+          isDM: false,
         ),
       );
 
@@ -137,6 +141,7 @@ void main() {
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
           isLastMessage: false, // Not the last message
+          isDM: false,
         ),
       );
 
@@ -162,6 +167,7 @@ void main() {
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
           isLastMessage: true,
+          isDM: false,
         ),
       );
 
@@ -189,6 +195,7 @@ void main() {
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
           isLastMessage: true,
+          isDM: false,
         ),
       );
 
@@ -216,6 +223,7 @@ void main() {
           isFirstMessageBySender: true,
           isLastMessageBySender: true,
           isLastMessage: true,
+          isDM: false,
         ),
       );
 

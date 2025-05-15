@@ -4,8 +4,6 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/config/env.g.dart';
-import 'package:acter/features/labs/model/labs_features.dart';
-import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -46,9 +44,6 @@ class SettingsMenu extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final isBackupEnabled = ref.watch(
-      isActiveProvider(LabsFeature.encryptionBackup),
-    );
     final helpCenterUrl = helpUrl;
 
     return Column(
@@ -225,23 +220,22 @@ class SettingsMenu extends ConsumerWidget {
                 }
               },
             ),
-            if (isBackupEnabled)
-              MenuItemWidget(
-                iconData: Atlas.key_website_thin,
-                iconColor: routedColor(context, ref, Routes.settingBackup),
-                title: lang.settingsKeyBackUpTitle,
-                subTitle: lang.settingsKeyBackUpDesc,
-                titleStyles: TextStyle(
-                  color: routedColor(context, ref, Routes.settingBackup),
-                ),
-                onTap: () {
-                  if (!isFullPage && context.isLargeScreen) {
-                    context.pushReplacementNamed(Routes.settingBackup.name);
-                  } else {
-                    context.pushNamed(Routes.settingBackup.name);
-                  }
-                },
+            MenuItemWidget(
+              iconData: Atlas.key_website_thin,
+              iconColor: routedColor(context, ref, Routes.settingBackup),
+              title: lang.settingsKeyBackUpTitle,
+              subTitle: lang.settingsKeyBackUpDesc,
+              titleStyles: TextStyle(
+                color: routedColor(context, ref, Routes.settingBackup),
               ),
+              onTap: () {
+                if (!isFullPage && context.isLargeScreen) {
+                  context.pushReplacementNamed(Routes.settingBackup.name);
+                } else {
+                  context.pushNamed(Routes.settingBackup.name);
+                }
+              },
+            ),
             MenuItemWidget(
               iconData: Atlas.users_thin,
               iconColor: routedColor(context, ref, Routes.blockedUsers),

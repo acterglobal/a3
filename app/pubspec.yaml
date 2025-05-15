@@ -172,6 +172,7 @@ dependencies:
   launch_at_startup: ^0.5.1
   package_info_plus: ^8.3.0
   matomo_tracker: ^6.0.0
+  sentry_logging: ^8.14.2
 
 dev_dependencies:
   flutter_test:

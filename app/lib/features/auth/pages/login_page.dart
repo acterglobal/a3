@@ -69,9 +69,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 LogoWidget(width: imageSize, height: imageSize),
               _buildHeadlineText(context),
               const SizedBox(height: 24),
-              _buildUsernameInputField(context),
-              const SizedBox(height: 12),
-              _buildPasswordInputField(context),
+              _buildAutofillGroup(context),
               const SizedBox(height: 12),
               _buildForgotPassword(context),
               const SizedBox(height: 20),
@@ -114,6 +112,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Text(lang.username),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.username],
           key: LoginPageKeys.usernameField,
           controller: username,
           decoration: InputDecoration(hintText: lang.hintMessageUsername),
@@ -135,6 +134,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         Text(lang.password),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.password],
           key: LoginPageKeys.passwordField,
           controller: password,
           obscureText: !_passwordVisible,
@@ -155,6 +155,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               (val) => val == null || val.isEmpty ? lang.emptyPassword : null,
         ),
       ],
+    );
+  }
+
+  Widget _buildAutofillGroup(BuildContext context) {
+    return AutofillGroup(
+      child: Column(
+        children: [
+          _buildUsernameInputField(context),
+          const SizedBox(height: 12),
+          _buildPasswordInputField(context),
+        ],
+      ),
     );
   }
 
@@ -211,6 +223,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (loginSuccess == null) {
       if (!mounted) return;
       // Handle all post-login steps
+      TextInput.finishAutofillContext(shouldSave: true);
       context.goNamed(Routes.onboarding.name,queryParameters: {'isLoginOnboarding': 'true'});
     } else {
       _log.severe('Failed to login', loginSuccess);

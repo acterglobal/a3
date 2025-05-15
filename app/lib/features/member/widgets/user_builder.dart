@@ -255,22 +255,48 @@ class UserStateButton extends ConsumerWidget {
       return InkWell(
         onTap: () => _cancelInvite(context, ref),
         child: Chip(
-          label: Text(lang.revoke),
-          backgroundColor: colorScheme.error,
+          label: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Text(
+              lang.revoke,
+              style: TextStyle(color: colorScheme.errorContainer),
+            ),
+          ),
+          side: BorderSide(color: colorScheme.errorContainer),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     }
     if (isJoined(userId, joined)) {
       return Chip(
-        label: Text(lang.joined),
+        label: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: Text(lang.joined),
+        ),
         backgroundColor: colorScheme.success,
+        side: BorderSide(color: colorScheme.success),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       );
     }
     return InkWell(
       onTap: () => _handleInvite(context),
       child: Chip(
-        avatar: const Icon(Atlas.paper_airplane_thin),
-        label: Text(lang.invite),
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(lang.invite, style: TextStyle(color: colorScheme.primary)),
+            const SizedBox(width: 5),
+            Icon(
+              Atlas.paper_airplane_thin,
+              color: colorScheme.primary,
+              size: 16,
+            ),
+          ],
+        ),
+        side: BorderSide(color: Theme.of(context).colorScheme.primary),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

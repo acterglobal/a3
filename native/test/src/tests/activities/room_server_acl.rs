@@ -67,9 +67,8 @@ async fn test_room_server_acl() -> Result<()> {
         Some("Set".to_owned()),
         "allow ip literals in room server acl should be set"
     );
-    assert_eq!(
+    assert!(
         content.allow_ip_literals_new_val(),
-        true,
         "new val of allow ip literals in room server acl is invalid"
     );
 

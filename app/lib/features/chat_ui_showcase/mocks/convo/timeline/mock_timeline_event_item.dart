@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_list_ffi_string.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -14,6 +16,8 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final ProfileContent? mockProfileContent;
   final MockFfiListFfiString? mockReactionKeys;
   final bool? mockWasEdited;
+  final String? mockInReplyToId;
+  final TimelineEventItem? mockIsReplyToEvent;
 
   MockTimelineEventItem({
     this.mockEventId,
@@ -26,10 +30,12 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
     this.mockProfileContent,
     this.mockReactionKeys,
     this.mockWasEdited,
+    this.mockInReplyToId,
+    this.mockIsReplyToEvent,
   });
 
   @override
-  String eventId() => mockEventId ?? 'eventId';
+  String eventId() => mockEventId ?? Random().nextInt(1000000).toString();
 
   @override
   String sender() => mockSenderId ?? 'senderId';
@@ -58,4 +64,10 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   bool wasEdited() => mockWasEdited ?? false;
+
+  @override
+  String? inReplyToId() => mockInReplyToId;
+
+  @override
+  TimelineEventItem? inReplyToEvent() => mockIsReplyToEvent;
 }

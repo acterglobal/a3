@@ -1,1 +1,0 @@
-- We are now storing the chat events in local storage, leading to a lot faster loading of chat rooms after starting the app.

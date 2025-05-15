@@ -127,9 +127,6 @@ pub async fn guest_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(e) = client.event_cache().enable_storage() {
-                warn!("Failed to enable event cache storage: {e}");
-            }
             let request = assign!(register::v3::Request::new(), {
                 kind: register::RegistrationKind::Guest,
                 initial_device_display_name: device_name,
@@ -187,9 +184,6 @@ pub async fn login_with_token_under_config(
                 },
             };
             client.restore_session(auth_session).await?;
-            if let Err(e) = client.event_cache().enable_storage() {
-                warn!("Failed to enable event cache storage: {e}");
-            }
             let state = ClientStateBuilder::default()
                 .is_guest(is_guest)
                 .db_passphrase(db_passphrase)
@@ -245,10 +239,6 @@ async fn login_client(
         "Successfully logged in user {user_id}, device {:?}",
         client.device_id(),
     );
-
-    if let Err(e) = client.event_cache().enable_storage() {
-        warn!("Failed to enable event cache storage: {e}");
-    }
     Client::new(client.clone(), state).await
 }
 

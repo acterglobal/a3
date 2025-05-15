@@ -96,6 +96,20 @@ impl TimelineStream {
             .await?
     }
 
+    pub async fn fetch_details_for_event(&self, event_id: String) -> Result<bool> {
+        let event_id = OwnedEventId::try_from(event_id)?;
+
+        let timeline = self.timeline.clone();
+        let user_id = self.room.user_id()?;
+
+        RUNTIME
+            .spawn(async move {
+                timeline.fetch_details_for_event(&event_id).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }

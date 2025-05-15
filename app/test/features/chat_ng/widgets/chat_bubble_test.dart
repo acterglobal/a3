@@ -16,6 +16,8 @@ void main() {
           child: ChatBubble(
             context: tester.element(find.byType(Center)),
             timestamp: timestamp,
+            isFirstMessageBySender: true,
+            isLastMessageBySender: true,
             child: const Text('Hello'),
           ),
         ),
@@ -38,6 +40,8 @@ void main() {
               return ChatBubble(
                 context: context,
                 isEdited: true,
+                isFirstMessageBySender: true,
+                isLastMessageBySender: true,
                 child: const Text('Edited message'),
               );
             },
@@ -62,6 +66,8 @@ void main() {
                   context: context,
                   isEdited: true,
                   timestamp: timestamp,
+                  isFirstMessageBySender: true,
+                  isLastMessageBySender: true,
                   child: const Text('Edited message with timestamp'),
                 );
               },
@@ -70,8 +76,6 @@ void main() {
         );
 
         expect(find.text(L10n.of(testContext).edited), findsOneWidget);
-
-        expect(find.text('.'), findsOneWidget);
 
         expect(find.byType(MessageTimestampWidget), findsOneWidget);
       },
@@ -89,6 +93,8 @@ void main() {
               return ChatBubble(
                 context: context,
                 isEdited: false,
+                isFirstMessageBySender: true,
+                isLastMessageBySender: true,
                 child: const Text('Unedited message'),
               );
             },
@@ -113,6 +119,8 @@ void main() {
               context: context,
               isEdited: true,
               timestamp: timestamp,
+              isFirstMessageBySender: true,
+              isLastMessageBySender: true,
               child: const Text('My message'),
             );
           },
@@ -123,8 +131,6 @@ void main() {
 
       final editedText = L10n.of(testContext).edited;
       expect(find.text(editedText), findsOneWidget);
-
-      expect(find.text('.'), findsOneWidget);
       expect(find.byType(MessageTimestampWidget), findsOneWidget);
 
       final row = tester.widget<Row>(find.byType(Row).first);
