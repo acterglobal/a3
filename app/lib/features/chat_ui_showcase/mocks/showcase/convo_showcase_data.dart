@@ -21,7 +21,7 @@ class MockChatItem {
   });
 }
 
-MockChatItem createMockChatItem({
+MockChatItem Function(String userId) createMockChatItem({
   required String roomId,
   required String displayName,
   String? notificationMode,
@@ -33,44 +33,51 @@ MockChatItem createMockChatItem({
   int? unreadMessages,
   List<MockUser>? typingUsers,
   List<MockTimelineEventItem>? timelineEventItems,
+  List<MockTimelineEventItem> Function(String userId)?
+  timelineEventItemsBuilder,
 }) {
-  return MockChatItem(
-    roomId: roomId,
-    typingUsers: typingUsers,
-    mockRoom: MockRoom(
-      mockRoomId: roomId,
-      mockDisplayName: displayName,
-      mockNotificationMode: notificationMode ?? 'all',
-      mockActiveMembersIds: activeMembersIds ?? [],
-    ),
-    mockConvo: MockConvo(
-      mockConvoId: roomId,
-      mockIsDm: isDm ?? false,
-      mockIsBookmarked: isBookmarked ?? false,
-      mockNumUnreadNotificationCount: unreadNotificationCount ?? 0,
-      mockNumUnreadMentions: unreadMentions ?? 0,
-      mockNumUnreadMessages: unreadMessages ?? 0,
-      mockTimelineItem: MockTimelineItem(
-        mockTimelineEventItem: timelineEventItems?.last,
+  return (String userId) {
+    final members = activeMembersIds ?? [];
+    final eventItems =
+        timelineEventItems ?? timelineEventItemsBuilder?.call(userId) ?? [];
+    members.add(userId);
+    return MockChatItem(
+      roomId: roomId,
+      typingUsers: typingUsers,
+      mockRoom: MockRoom(
+        mockRoomId: roomId,
+        mockDisplayName: displayName,
+        mockNotificationMode: notificationMode ?? 'all',
+        mockActiveMembersIds: members,
       ),
-      mockTimelineStream: MockTimelineStream(
-        mockTimelineItemDiffs: [
-          MockTimelineItemDiff(
-            mockAction: 'Append',
-            mockTimelineItemList: MockFfiListTimelineItem(
-              timelineItems:
-                  timelineEventItems
-                      ?.map((e) => MockTimelineItem(mockTimelineEventItem: e))
-                      .toList() ??
-                  [],
+      mockConvo: MockConvo(
+        mockConvoId: roomId,
+        mockIsDm: isDm ?? false,
+        mockIsBookmarked: isBookmarked ?? false,
+        mockNumUnreadNotificationCount: unreadNotificationCount ?? 0,
+        mockNumUnreadMentions: unreadMentions ?? 0,
+        mockNumUnreadMessages: unreadMessages ?? 0,
+        mockTimelineItem: MockTimelineItem(
+          mockTimelineEventItem: eventItems.lastOrNull,
+        ),
+        mockTimelineStream: MockTimelineStream(
+          mockTimelineItemDiffs: [
+            MockTimelineItemDiff(
+              mockAction: 'Append',
+              mockTimelineItemList: MockFfiListTimelineItem(
+                timelineItems:
+                    eventItems
+                        .map((e) => MockTimelineItem(mockTimelineEventItem: e))
+                        .toList(),
+              ),
+              mockIndex: 0,
+              mockTimelineItem: MockTimelineItem(
+                mockTimelineEventItem: eventItems.lastOrNull,
+              ),
             ),
-            mockIndex: 0,
-            mockTimelineItem: MockTimelineItem(
-              mockTimelineEventItem: timelineEventItems?.last,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  };
 }

@@ -20,19 +20,28 @@ void main() {
           children: [
             Material(
               child: ChatEvent(
-                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
                 eventId: 'mock-reply-1',
               ),
             ),
             Material(
               child: ChatEvent(
-                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
                 eventId: 'mock-reply-2',
               ),
             ),
             Material(
               child: ChatEvent(
-                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
                 eventId: 'mock-reply-3',
               ),
             ),

@@ -36,8 +36,9 @@ void main() {
           isActiveProvider(LabsFeature.chatNG).overrideWith((ref) => true),
           isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => true),
           selectedChatIdProvider.overrideWith(
-            () =>
-                MockSelectedChatIdNotifier(emilyDmMutedBookmarkedRoom1.roomId),
+            () => MockSelectedChatIdNotifier(
+              emilyDmMutedBookmarkedRoom1('@emily:acter.global').roomId,
+            ),
           ),
           utcNowProvider.overrideWith(
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
@@ -48,7 +49,8 @@ void main() {
           children: [
             Material(
               child: ChatItemWidget(
-                roomId: emilyDmMutedBookmarkedRoom1.roomId,
+                roomId:
+                    emilyDmMutedBookmarkedRoom1('@emily:acter.global').roomId,
                 showSelectedIndication: true,
               ),
             ),

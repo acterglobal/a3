@@ -1,5 +1,7 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/providers/mock_chats_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +10,14 @@ final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<String>, String>((ref, roomId) async* {
       final client = await ref.watch(alwaysClientProvider.future);
       final userId = ref.watch(myUserIdStrProvider);
+
+      // if we are in chat showcase mode, return mock typing users
+      if (includeChatShowcase) {
+        final mockTyping = ref.watch(mockTypingUserIdsProvider(roomId));
+        if (mockTyping != null) {
+          yield mockTyping;
+        }
+      }
       await for (final event in client.subscribeToTypingEventStream(roomId)) {
         yield event
             .userIds()
