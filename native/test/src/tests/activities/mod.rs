@@ -14,6 +14,7 @@ mod attachments;
 mod calendar;
 mod comments;
 mod likes;
+mod pin;
 mod policy_rule_room;
 mod policy_rule_server;
 mod policy_rule_user;
