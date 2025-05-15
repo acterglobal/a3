@@ -118,5 +118,10 @@ async fn calendar_update_activity() -> Result<()> {
         Some(end_time)
     );
 
+    let object = activity.object().expect("we have an object");
+    assert_eq!(object.type_str(), "event");
+    assert_eq!(object.utc_start(), None);
+    assert_eq!(object.utc_end(), Some(end_time));
+
     Ok(())
 }
