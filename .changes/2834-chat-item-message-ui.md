@@ -1,1 +1,0 @@
-- [Enable] Chat NG Chat list item message now supports profile changes, membership changes, text and media messages, and location messages.
