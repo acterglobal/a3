@@ -1,5 +1,7 @@
 import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_profile_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item_diff.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
 
@@ -794,13 +796,35 @@ final productFeedbackGroupRoom14 = createMockChatItem(
       mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
     ),
   ],
+  mockMessagesStream: Stream.periodic(
+    const Duration(seconds: 1),
+    (count) => MockTimelineItemDiff(
+      mockAction: 'PushBack',
+      mockTimelineItem: MockTimelineItem(
+        mockTimelineEventItem: MockTimelineEventItem(
+          mockEventId: 'mock-event-id-456-$count',
+          mockSenderId: // fizzBuzz :D
+              count % 15 == 0
+                  ? '@daniel:acter.global'
+                  : count % 5 == 0
+                  ? '@james:acter.global'
+                  : count % 3 == 0
+                  ? '@patricia:acter.global'
+                  : '@david:acter.global',
+          mockOriginServerTs:
+              (1743059766000 + count * 36000).toInt(), // March 27, 2025
+          mockMsgContent: MockMsgContent(mockBody: 'Sending ping $count'),
+        ),
+      ),
+    ),
+  ),
 );
 
 final superLongUserTypingRoom15 = createMockChatItem(
   roomId: 'mock-large-typing',
   displayName: 'Super Long Username typing',
   activeMembersIds: [
-    '@daniel:acter.global',
+    '@berry:acter.global',
     '@james:acter.global',
     '@patricia:acter.global',
     '@david:acter.global',
@@ -814,7 +838,7 @@ final superLongUserTypingRoom15 = createMockChatItem(
       mockEventId: 'mock-event-id-456',
       mockSenderId: '@berry:acter.global',
       mockOriginServerTs: 1743059766000, // March 27, 2025
-      mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
+      mockMsgContent: MockMsgContent(mockBody: 'start message'),
     ),
   ],
 );

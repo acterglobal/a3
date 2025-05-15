@@ -5,6 +5,7 @@ import 'package:acter/features/chat_ui_showcase/mocks/room/mock_room.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_stream.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class MockChatItem {
   final String roomId;
@@ -34,6 +35,7 @@ MockChatItem Function(String userId) createMockChatItem({
   List<MockTimelineEventItem>? timelineEventItems,
   List<MockTimelineEventItem> Function(String userId)?
   timelineEventItemsBuilder,
+  Stream<TimelineItemDiff>? mockMessagesStream,
 }) {
   return (String userId) {
     final members = activeMembersIds ?? [];
@@ -60,6 +62,7 @@ MockChatItem Function(String userId) createMockChatItem({
           mockTimelineEventItem: eventItems.lastOrNull,
         ),
         mockTimelineStream: MockTimelineStream(
+          mockMessagesStream: mockMessagesStream,
           mockTimelineItemDiffs: [
             MockTimelineItemDiff(
               mockAction: 'Append',
