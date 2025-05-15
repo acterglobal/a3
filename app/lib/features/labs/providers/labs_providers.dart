@@ -15,7 +15,7 @@ final asyncFeaturesProvider = FutureProvider<Features<LabsFeature>>((
   final currentData = prefInstance.getString(labsKey) ?? '[]';
   final features = featureFlagsFromJson<LabsFeature>(
     json.decode(currentData),
-    (name) => LabsFeature.values.byName(name),
+    (name) => LabsFeature.values.asNameMap()[name],
     throwOnMissing: false, // we want to ignore missing features
   );
   return Features<LabsFeature>(

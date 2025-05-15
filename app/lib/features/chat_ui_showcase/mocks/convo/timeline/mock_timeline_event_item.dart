@@ -16,6 +16,8 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final ProfileContent? mockProfileContent;
   final MockFfiListFfiString? mockReactionKeys;
   final bool? mockWasEdited;
+  final String? mockInReplyToId;
+  final TimelineEventItem? mockIsReplyToEvent;
 
   MockTimelineEventItem({
     this.mockEventId,
@@ -28,6 +30,8 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
     this.mockProfileContent,
     this.mockReactionKeys,
     this.mockWasEdited,
+    this.mockInReplyToId,
+    this.mockIsReplyToEvent,
   });
 
   @override
@@ -60,4 +64,10 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   bool wasEdited() => mockWasEdited ?? false;
+
+  @override
+  String? inReplyToId() => mockInReplyToId;
+
+  @override
+  TimelineEventItem? inReplyToEvent() => mockIsReplyToEvent;
 }

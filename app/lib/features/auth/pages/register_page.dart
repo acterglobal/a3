@@ -50,6 +50,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       return;
     }
     try {
+      TextInput.finishAutofillContext(shouldSave: true);
       if (await register(
         username: username.text,
         password: password.text,
@@ -106,9 +107,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               const SizedBox(height: 50),
               _buildNameInputField(context),
               const SizedBox(height: 12),
-              _buildUsernameInputField(context),
-              const SizedBox(height: 12),
-              _buildPasswordInputField(context),
+              _buildAutofillGroup(context),
               const SizedBox(height: 24),
               _buildTokenInputField(context),
               const SizedBox(height: 40),
@@ -142,6 +141,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     );
   }
 
+  Widget _buildAutofillGroup(BuildContext context) {
+    return AutofillGroup(
+      child: Column(
+        children: [
+          _buildUsernameInputField(context),
+          const SizedBox(height: 12),
+          _buildPasswordInputField(context),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNameInputField(BuildContext context) {
     final lang = L10n.of(context);
     return Column(
@@ -171,6 +182,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(lang.username),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.username],
           key: RegisterPage.usernameField,
           controller: username,
           decoration: InputDecoration(hintText: lang.hintMessageUsername),
@@ -199,6 +211,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         Text(lang.password),
         const SizedBox(height: 10),
         TextFormField(
+          autofillHints: const [AutofillHints.password],
           key: RegisterPage.passwordField,
           controller: password,
           decoration: InputDecoration(

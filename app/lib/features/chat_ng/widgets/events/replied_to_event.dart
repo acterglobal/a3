@@ -57,8 +57,7 @@ class RepliedToEvent extends StatelessWidget {
     final replyProfile = ref.watch(
       memberAvatarInfoProvider((userId: item.sender(), roomId: roomId)),
     );
-    final String displayName =
-        replyProfile.displayName ?? replyProfile.uniqueName ?? '';
+    final String displayName = replyProfile.displayName ?? item.sender();
 
     return Row(
       children: [
