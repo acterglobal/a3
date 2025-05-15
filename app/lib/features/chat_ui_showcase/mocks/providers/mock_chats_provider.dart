@@ -51,6 +51,7 @@ final List<MockChatItem Function(String userId)> _mockChatListGenerator = [
   profileEventAvatarChangedRoom39,
   profileEventAvatarSetRoom40,
   profileEventAvatarUnsetRoom41,
+  superLongUserTypingRoom15,
 ];
 
 final mockChatsProvider = Provider<List<MockChatItem>>((ref) {

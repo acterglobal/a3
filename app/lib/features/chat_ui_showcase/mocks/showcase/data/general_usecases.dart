@@ -795,3 +795,26 @@ final productFeedbackGroupRoom14 = createMockChatItem(
     ),
   ],
 );
+
+final superLongUserTypingRoom15 = createMockChatItem(
+  roomId: 'mock-room-15',
+  displayName: 'Super Long Username typing',
+  activeMembersIds: [
+    '@daniel:acter.global',
+    '@james:acter.global',
+    '@patricia:acter.global',
+    '@david:acter.global',
+  ],
+  typingUserNames: [
+    'Mohamad Kumarpalsinh van Amruth Amoreias de Cabra e Silva em Balagem',
+    'Michael de Camu van der Bellen de Berrisville the twenty third of wales',
+  ],
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockEventId: 'mock-event-id-456',
+      mockSenderId: '@berry:acter.global',
+      mockOriginServerTs: 1743059766000, // March 27, 2025
+      mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
+    ),
+  ],
+);

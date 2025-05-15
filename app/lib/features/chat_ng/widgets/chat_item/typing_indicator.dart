@@ -29,27 +29,31 @@ class TypingIndicator extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return Wrap(
+    return Row(
       children: [
-        _buildAnimatedCircles(context),
-        const SizedBox(width: 4),
-        Text(
-          switch (typingUsersDisplayNames.length) {
-            1 => lang.typingUser1(typingUsersDisplayNames.first),
-            2 => lang.typingUser2(
-              typingUsersDisplayNames.first,
-              typingUsersDisplayNames.last,
+        Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: _buildAnimatedCircles(context),
+        ),
+        Expanded(
+          child: Text(
+            switch (typingUsersDisplayNames.length) {
+              1 => lang.typingUser1(typingUsersDisplayNames.first),
+              2 => lang.typingUser2(
+                typingUsersDisplayNames.first,
+                typingUsersDisplayNames.last,
+              ),
+              _ => lang.typingUserN(
+                typingUsersDisplayNames.first,
+                typingUsersDisplayNames.length - 1,
+              ),
+            },
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.primary,
             ),
-            _ => lang.typingUserN(
-              typingUsersDisplayNames.first,
-              typingUsersDisplayNames.length - 1,
-            ),
-          },
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.primary,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

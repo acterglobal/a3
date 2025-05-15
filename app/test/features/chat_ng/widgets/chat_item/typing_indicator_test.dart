@@ -5,6 +5,7 @@ import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dar
 import 'package:acter/features/chat_ng/widgets/chat_item/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../../../helpers/font_loader.dart';
 import '../../../../helpers/test_util.dart';
 
 void main() {
@@ -113,6 +114,31 @@ void main() {
 
       final padding = tester.widget<Padding>(paddingFinder);
       expect(padding.padding, equals(const EdgeInsets.only(top: 10)));
+    });
+
+    testWidgets('should show nothing when no users are typing', (
+      WidgetTester tester,
+    ) async {
+      await createWidgetUnderTest(tester: tester);
+      expect(find.byType(SizedBox), findsOneWidget);
+    });
+
+    testWidgets("doesn't overwrap if the display name is very long", (
+      WidgetTester tester,
+    ) async {
+      await loadTestFonts();
+      await tester.configureTesterForSize(Size(600, 200));
+      await createWidgetUnderTest(
+        tester: tester,
+        typingUsers: ['Mohammad Kumarpalsinh Amoereias de Cabra e Santini'],
+      );
+
+      await expectLater(
+        find.byType(TypingIndicator),
+        matchesGoldenFile(
+          'goldens/typing_indicator_test_long_display_name.png',
+        ),
+      );
     });
   });
 }
