@@ -89,7 +89,7 @@ final mockLatestMessageProvider = Provider.family<TimelineItem?, String>(
       ref.watch(mockChatProvider(roomId))?.mockConvo.latestMessage(),
 );
 
-final mockTypingUserIdsProvider = Provider.family<List<String>?, String>((
+final mockTypingUserNamesProvider = Provider.family<List<String>?, String>((
   ref,
   roomId,
 ) {
@@ -97,5 +97,5 @@ final mockTypingUserIdsProvider = Provider.family<List<String>?, String>((
   if (mockChat == null) {
     return null;
   }
-  return mockChat.typingUsers?.map((e) => e.mockUserId).toList();
+  return mockChat.typingUserNames;
 });

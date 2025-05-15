@@ -2,7 +2,6 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_profile_content
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
-import 'package:acter/features/chat_ui_showcase/mocks/user/mock_user.dart';
 
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   roomId: 'mock-room-1',
@@ -238,9 +237,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
   ],
   unreadNotificationCount: 2,
   unreadMessages: 2,
-  typingUsers: [
-    MockUser(mockDisplayName: 'Emily', mockUserId: '@sarah:acter.global'),
-  ],
+  typingUserNames: ['Emily'],
   timelineEventItemsBuilder:
       (userId) => [
         MockTimelineEventItem(
@@ -628,9 +625,7 @@ final sarahDmWithTypingRoom6 = createMockChatItem(
   displayName: 'Sarah Wilson',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  typingUsers: [
-    MockUser(mockDisplayName: 'Sarah', mockUserId: '@sarah:acter.global'),
-  ],
+  typingUserNames: ['Sarah'],
   timelineEventItems: [
     MockTimelineEventItem(
       mockEventId: 'mock-event-id-34',
@@ -647,11 +642,7 @@ final sarahDmWithTypingRoom6 = createMockChatItem(
 final projectAlphaWithMultipleTypingRoom7 = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
-  typingUsers: [
-    MockUser(mockDisplayName: 'Jennifer', mockUserId: '@jennifer:acter.global'),
-    MockUser(mockDisplayName: 'James', mockUserId: '@james:acter.global'),
-    MockUser(mockDisplayName: 'David', mockUserId: '@david:acter.global'),
-  ],
+  typingUserNames: ['Jennifer', 'James', 'David'],
   activeMembersIds: [
     '@jennifer:acter.global',
     '@james:acter.global',

@@ -5,19 +5,18 @@ import 'package:acter/features/chat_ui_showcase/mocks/room/mock_room.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_stream.dart';
-import 'package:acter/features/chat_ui_showcase/mocks/user/mock_user.dart';
 
 class MockChatItem {
   final String roomId;
   final MockRoom mockRoom;
   final MockConvo mockConvo;
-  final List<MockUser>? typingUsers;
+  final List<String>? typingUserNames;
 
   MockChatItem({
     required this.roomId,
     required this.mockRoom,
     required this.mockConvo,
-    required this.typingUsers,
+    required this.typingUserNames,
   });
 }
 
@@ -31,7 +30,7 @@ MockChatItem Function(String userId) createMockChatItem({
   int? unreadNotificationCount,
   int? unreadMentions,
   int? unreadMessages,
-  List<MockUser>? typingUsers,
+  List<String>? typingUserNames,
   List<MockTimelineEventItem>? timelineEventItems,
   List<MockTimelineEventItem> Function(String userId)?
   timelineEventItemsBuilder,
@@ -43,7 +42,7 @@ MockChatItem Function(String userId) createMockChatItem({
     members.add(userId);
     return MockChatItem(
       roomId: roomId,
-      typingUsers: typingUsers,
+      typingUserNames: typingUserNames,
       mockRoom: MockRoom(
         mockRoomId: roomId,
         mockDisplayName: displayName,

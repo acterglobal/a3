@@ -10,14 +10,6 @@ final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<String>, String>((ref, roomId) async* {
       final client = await ref.watch(alwaysClientProvider.future);
       final userId = ref.watch(myUserIdStrProvider);
-
-      // if we are in chat showcase mode, return mock typing users
-      if (includeChatShowcase) {
-        final mockTyping = ref.watch(mockTypingUserIdsProvider(roomId));
-        if (mockTyping != null) {
-          yield mockTyping;
-        }
-      }
       await for (final event in client.subscribeToTypingEventStream(roomId)) {
         yield event
             .userIds()
@@ -42,10 +34,27 @@ final chatTypingUsersAvatarInfoProvider =
           .toList();
     });
 
+final isSomeoneTypingProvider = Provider.family<bool, String>((ref, roomId) {
+  if (includeChatShowcase) {
+    final mockTyping = ref.watch(mockTypingUserNamesProvider(roomId));
+    if (mockTyping != null) {
+      return mockTyping.isNotEmpty;
+    }
+  }
+  final typingUsers = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
+  return typingUsers != null && typingUsers.isNotEmpty;
+});
+
 final chatTypingUsersDisplayNameProvider = Provider.family<
   List<String>,
   String
 >((ref, roomId) {
+  if (includeChatShowcase) {
+    final mockTyping = ref.watch(mockTypingUserNamesProvider(roomId));
+    if (mockTyping != null) {
+      return mockTyping;
+    }
+  }
   final typingUsers = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
   if (typingUsers == null || typingUsers.isEmpty) return [];
   return typingUsers
