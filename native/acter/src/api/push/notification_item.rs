@@ -591,7 +591,7 @@ impl NotificationItemBuilder {
                         None => {
                             error!("utc start should be available");
                         }
-                    }
+                    },
                     Some("Unset") => {
                         fields.push("From: None".to_owned());
                     }
@@ -605,7 +605,7 @@ impl NotificationItemBuilder {
                         None => {
                             error!("utc end should be available");
                         }
-                    }
+                    },
                     Some("Unset") => {
                         fields.push("To: None".to_owned());
                     }
