@@ -388,7 +388,7 @@ mod tests {
         let cache_dir = tempfile::tempdir()?;
         let cipher = StoreCipher::new()?;
         let cache = SqliteEventCacheStore::open(cache_dir.path(), None).await?;
-        let fmc = FileEventCacheStore::with_store_cipher(cache_dir.into_path(), cipher, cache);
+        let fmc = FileEventCacheStore::with_store_cipher(cache_dir.keep(), cipher, cache);
         let some_content = "this is some content";
         fmc.add_media_content(
             &fake_mr("my_id"),

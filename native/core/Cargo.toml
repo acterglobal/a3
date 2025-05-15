@@ -56,10 +56,6 @@ toml = { version = "0.8.8", optional = true, features = ["preserve_order"] }
 workspace = true
 default-features = false
 
-[dependencies.matrix-sdk-sqlite]
-workspace = true
-default-features = false
-
 [dependencies.matrix-sdk-ui]
 workspace = true
 
@@ -86,9 +82,6 @@ uuid = { version = "1.6.1", features = ["v4"] }
 [dev-dependencies.matrix-sdk-base]
 workspace = true
 default-features = false
-
-[dev-dependencies.matrix-sdk-test]
-workspace = true
 
 
 [lints.rust]
