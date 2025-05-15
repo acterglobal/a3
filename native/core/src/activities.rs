@@ -803,6 +803,7 @@ impl Activity {
                 } else {
                     match (e.inner.utc_start, e.inner.utc_end) {
                         (Some(utc_start), Some(utc_end)) => {
+                            // changed both start and end
                             let content = status::DateTimeRangeContent::new(
                                 Some("Changed".to_owned()),
                                 Some(utc_start),
@@ -815,10 +816,11 @@ impl Activity {
                             ));
                         }
                         (Some(utc_start), None) => {
+                            // changed only start
                             let content = status::DateTimeRangeContent::new(
                                 Some("Changed".to_owned()),
                                 Some(utc_start),
-                                Some("Unset".to_owned()),
+                                None,
                                 None,
                             );
                             return Ok(Self::new(
@@ -827,8 +829,9 @@ impl Activity {
                             ));
                         }
                         (None, Some(utc_end)) => {
+                            // changed only end
                             let content = status::DateTimeRangeContent::new(
-                                Some("Unset".to_owned()),
+                                None,
                                 None,
                                 Some("Changed".to_owned()),
                                 Some(utc_end),
