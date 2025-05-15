@@ -18,6 +18,7 @@ mod redact;
 mod ref_details;
 mod reply;
 mod room;
+mod room_updates;
 mod rsvp;
 mod spaces;
 mod stories;
