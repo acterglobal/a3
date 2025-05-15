@@ -1,6 +1,6 @@
-use acter::{ActerModel, UtcDateTime};
+use acter::ActerModel;
 use anyhow::{bail, Result};
-use chrono::{NaiveTime, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -493,9 +493,11 @@ async fn task_due_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.due_date(2026, 1, 1);
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry
+        .update_builder()?
+        .due_date(2026, 1, 1)
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -510,15 +512,11 @@ async fn task_due_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(
-        notification_item.new_date(),
-        chrono::NaiveDate::from_ymd_opt(2026, 1, 1).map(|d| {
-            UtcDateTime::from_naive_utc_and_offset(
-                d.and_time(NaiveTime::from_hms_opt(0, 0, 0).unwrap()),
-                Utc,
-            )
-        })
-    );
+    let naive_date = NaiveDate::from_ymd_opt(2026, 1, 1)
+        .and_then(|d| d.and_hms_opt(0, 0, 0))
+        .expect("naive date should be available");
+    let utc_date = DateTime::<Utc>::from_naive_utc_and_offset(naive_date, Utc);
+    assert_eq!(notification_item.new_date(), Some(utc_date));
     assert_eq!(notification_item.title(), "2026-01-01");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
