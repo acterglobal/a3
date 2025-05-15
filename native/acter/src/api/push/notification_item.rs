@@ -582,27 +582,40 @@ impl NotificationItemBuilder {
             }
             ActivityContent::TitleChange { content, .. } => builder.title(content.new_val()),
             ActivityContent::EventDateChange { content, .. } => {
-                if content.start_change().is_some() {
-                    match content.start_new_val() {
+                let mut fields = vec![];
+                match content.start_change().as_deref() {
+                    Some("Changed" | "Set") => match content.start_new_val() {
                         Some(utc_start) => {
-                            builder.title(utc_start.to_rfc3339());
+                            fields.push(format!("From: {}", utc_start.to_rfc3339()));
                         }
                         None => {
                             error!("utc start should be available");
                         }
-                    };
+                    }
+                    Some("Unset") => {
+                        fields.push("From: None".to_owned());
+                    }
+                    _ => {}
                 }
-                if content.end_change().is_some() {
-                    match content.end_new_val() {
+                match content.end_change().as_deref() {
+                    Some("Changed" | "Set") => match content.end_new_val() {
                         Some(utc_end) => {
-                            builder.title(utc_end.to_rfc3339());
+                            fields.push(format!("To: {}", utc_end.to_rfc3339()));
                         }
                         None => {
                             error!("utc end should be available");
                         }
-                    };
+                    }
+                    Some("Unset") => {
+                        fields.push("To: None".to_owned());
+                    }
+                    _ => {}
                 }
-                &mut builder
+                if fields.is_empty() {
+                    &mut builder
+                } else {
+                    builder.title(fields.join(", "))
+                }
             }
             ActivityContent::TaskDueDateChange { content, .. } => {
                 match content.change().as_str() {
