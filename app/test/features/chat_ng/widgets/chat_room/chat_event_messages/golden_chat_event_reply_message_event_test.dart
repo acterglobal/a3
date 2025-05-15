@@ -1,0 +1,53 @@
+import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/features/chat_ng/widgets/events/chat_event.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import '../../../../../helpers/font_loader.dart';
+import '../../../../../helpers/test_util.dart';
+
+void main() {
+  group('Chat NG - ChatEvent reply message golden', () {
+    testWidgets('ChatEvent reply-to message event widget', (tester) async {
+      await loadTestFonts();
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          myUserIdStrProvider.overrideWith((ref) => '@acter1:m-1.acter.global'),
+        ],
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Material(
+              child: ChatEvent(
+                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                eventId: 'mock-reply-1',
+              ),
+            ),
+            Material(
+              child: ChatEvent(
+                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                eventId: 'mock-reply-2',
+              ),
+            ),
+            Material(
+              child: ChatEvent(
+                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                eventId: 'mock-reply-3',
+              ),
+            ),
+          ],
+        ),
+      );
+
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(ListView),
+        matchesGoldenFile('goldens_images/chat_event_reply_message_event.png'),
+      );
+    });
+  });
+}
