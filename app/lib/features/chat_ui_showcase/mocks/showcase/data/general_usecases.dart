@@ -778,7 +778,7 @@ final lisaDmRoom13 = createMockChatItem(
 );
 
 final productFeedbackGroupRoom14 = createMockChatItem(
-  roomId: 'mock-room-14',
+  roomId: 'mock-product-feedbackroom-14',
   displayName: 'Product Feedback',
   activeMembersIds: [
     '@daniel:acter.global',
@@ -797,7 +797,7 @@ final productFeedbackGroupRoom14 = createMockChatItem(
 );
 
 final superLongUserTypingRoom15 = createMockChatItem(
-  roomId: 'mock-room-15',
+  roomId: 'mock-large-typing',
   displayName: 'Super Long Username typing',
   activeMembersIds: [
     '@daniel:acter.global',

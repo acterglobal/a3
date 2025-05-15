@@ -64,7 +64,7 @@ void main() {
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
+          myUserId: '@david:acter.global',
           mockEventItem: mockEventItemData,
         );
 
@@ -323,7 +323,7 @@ void main() {
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
-          myUserId: '@emily:acter.global',
+          myUserId: '@david:acter.global',
           mockEventItem: mockEventItemData!,
         );
 
