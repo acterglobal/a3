@@ -584,23 +584,25 @@ impl NotificationItemBuilder {
             ActivityContent::EventDateChange { content, .. } => {
                 if content.start_change().is_some() {
                     match content.start_new_val() {
-                        Some(utc_start) => builder.title(utc_start.to_rfc3339()),
+                        Some(utc_start) => {
+                            builder = builder.title(utc_start.to_rfc3339()).clone();
+                        }
                         None => {
                             error!("utc start should be available");
-                            &mut builder
                         }
-                    }
-                } else if content.end_change().is_some() {
+                    };
+                }
+                if content.end_change().is_some() {
                     match content.end_new_val() {
-                        Some(utc_end) => builder.title(utc_end.to_rfc3339()),
+                        Some(utc_end) => {
+                            builder = builder.title(utc_end.to_rfc3339()).clone();
+                        }
                         None => {
                             error!("utc end should be available");
-                            &mut builder
                         }
-                    }
-                } else {
-                    &mut builder
+                    };
                 }
+                &mut builder
             }
             ActivityContent::TaskDueDateChange { content, .. } => match content.change().as_str() {
                 "Changed" | "Set" => {
