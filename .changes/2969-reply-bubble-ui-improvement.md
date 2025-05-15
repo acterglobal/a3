@@ -1,1 +1,0 @@
-- [Chat-NG] : The reply message UI has been improved with better contrast for display names in sender bubbles and refined padding for a cleaner layout. A vertical colored stripe was also added to clearly indicate the original message being replied to, enhancing readability and context.
