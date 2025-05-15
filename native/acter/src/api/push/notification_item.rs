@@ -585,7 +585,7 @@ impl NotificationItemBuilder {
                 if content.start_change().is_some() {
                     match content.start_new_val() {
                         Some(utc_start) => {
-                            builder = builder.title(utc_start.to_rfc3339()).clone();
+                            builder.title(utc_start.to_rfc3339());
                         }
                         None => {
                             error!("utc start should be available");
@@ -595,7 +595,7 @@ impl NotificationItemBuilder {
                 if content.end_change().is_some() {
                     match content.end_new_val() {
                         Some(utc_end) => {
-                            builder = builder.title(utc_end.to_rfc3339()).clone();
+                            builder.title(utc_end.to_rfc3339());
                         }
                         None => {
                             error!("utc end should be available");
@@ -604,34 +604,39 @@ impl NotificationItemBuilder {
                 }
                 &mut builder
             }
-            ActivityContent::TaskDueDateChange { content, .. } => match content.change().as_str() {
-                "Changed" | "Set" => {
-                    if let Some(new_val) = content.new_val() {
-                        builder.title(new_val)
-                    } else {
-                        error!("Could not get the new value for the due date change");
-                        &mut builder
+            ActivityContent::TaskDueDateChange { content, .. } => {
+                match content.change().as_str() {
+                    "Changed" | "Set" => {
+                        if let Some(new_val) = content.new_val() {
+                            builder.title(new_val);
+                        } else {
+                            error!("Could not get the new value for the due date change");
+                        }
                     }
-                }
-                "Unset" => builder.title("removed due date".to_owned()),
-                _ => &mut builder,
-            },
+                    "Unset" => {
+                        builder.title("removed due date".to_owned());
+                    }
+                    _ => {}
+                };
+                &mut builder
+            }
             ActivityContent::TaskAdd { task_title, .. } => builder.title(task_title.clone()),
             ActivityContent::DescriptionChange { object, content } => {
                 match content.change().as_str() {
                     "Changed" | "Set" => {
                         if let Some(new_val) = content.new_val.as_ref() {
-                            builder.msg_content(MsgContent::from(new_val.clone()))
+                            builder.msg_content(MsgContent::from(new_val.clone()));
                         } else {
                             error!("Could not get the new value for the description change");
-                            &mut builder
                         }
                     }
                     "Unset" => {
-                        builder.msg_content(MsgContent::from_text("removed description".to_owned()))
+                        let body = "removed description".to_owned();
+                        builder.msg_content(MsgContent::from_text(body));
                     }
-                    _ => &mut builder,
-                }
+                    _ => {}
+                };
+                &mut builder
             }
             ActivityContent::ObjectInvitation { object, invitees } => builder
                 .title(object.title().unwrap_or("Object".to_owned()))
