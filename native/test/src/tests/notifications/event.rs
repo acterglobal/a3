@@ -1,8 +1,5 @@
-use std::time::SystemTime;
-
-use acter::UtcDateTime;
 use anyhow::{bail, Result};
-use chrono::Days;
+use chrono::{Duration, Utc};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -65,8 +62,11 @@ async fn event_creation_notification() -> Result<()> {
 
     let mut draft = main_space.calendar_event_draft()?;
     draft.title("First meeting".to_owned());
-    draft.utc_start_from_rfc3339(UtcDateTime::from(SystemTime::now()).to_rfc3339())?;
-    draft.utc_end_from_rfc3339(UtcDateTime::from(SystemTime::now()).to_rfc3339())?;
+    let now = Utc::now();
+    let utc_start = now + Duration::days(1);
+    let utc_end = now + Duration::days(2);
+    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
     let event_id = draft.send().await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
@@ -238,17 +238,12 @@ async fn event_rescheduled() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let utc_start = UtcDateTime::from(SystemTime::now())
-        .checked_add_days(Days::new(1))
-        .expect("there is a tomorrow");
-    let utc_end = utc_start
-        .checked_add_days(Days::new(1))
-        .expect("there is a day after tomorrow");
+    let now = Utc::now();
+    let utc_start = now + Duration::days(1);
+    let utc_end = now + Duration::days(2);
     let mut update = obj_entry.update_builder()?;
-    update
-        .utc_start_from_rfc3339(utc_start.to_rfc3339())
-        .unwrap();
-    update.utc_end_from_rfc3339(utc_end.to_rfc3339()).unwrap();
+    update.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+    update.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -263,9 +258,9 @@ async fn event_rescheduled() -> Result<()> {
     );
 
     let obj_id = obj_entry.event_id().to_string();
-    assert_eq!(notification_item.utc_start(), Some(utc_start));
-    assert_eq!(notification_item.utc_end(), Some(utc_end));
-    assert_eq!(notification_item.title(), utc_start.to_rfc3339());
+    assert_eq!(notification_item.utc_start(), Some(utc_start.clone()));
+    assert_eq!(notification_item.utc_end(), Some(utc_end.clone()));
+    assert_eq!(notification_item.title(), utc_end.to_rfc3339());
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),

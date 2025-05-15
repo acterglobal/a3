@@ -89,13 +89,11 @@ async fn calendar_update_activity() -> Result<()> {
     let cal_updater = cal_event.subscribe();
 
     let now = Utc::now();
-    let start_time = now + Duration::days(1);
-    let end_time = now + Duration::days(2);
-    let utc_start = start_time.to_rfc3339();
-    let utc_end = end_time.to_rfc3339();
+    let utc_start = now + Duration::days(1);
+    let utc_end = now + Duration::days(2);
     let mut builder = cal_event.update_builder()?;
-    builder.utc_start_from_rfc3339(utc_start.clone())?;
-    builder.utc_end_from_rfc3339(utc_end.clone())?;
+    builder.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+    builder.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
     let event_id = builder.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -125,19 +123,19 @@ async fn calendar_update_activity() -> Result<()> {
         activity
             .date_time_range_content()
             .and_then(|c| c.start_new_val()),
-        Some(start_time)
+        Some(utc_start.clone())
     );
     assert_eq!(
         activity
             .date_time_range_content()
             .and_then(|c| c.end_new_val()),
-        Some(end_time)
+        Some(utc_end.clone())
     );
 
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "event");
-    assert_eq!(object.utc_start(), Some(start_time));
-    assert_eq!(object.utc_end(), Some(end_time));
+    assert_eq!(object.utc_start(), Some(utc_start));
+    assert_eq!(object.utc_end(), Some(utc_end));
 
     Ok(())
 }
