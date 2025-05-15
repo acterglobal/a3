@@ -132,8 +132,12 @@ async fn task_update_description() -> Result<()> {
     );
     assert_eq!(
         activity.description_content().and_then(|c| c.new_val()),
-        Some(desc_text)
+        Some(desc_text.clone())
     );
+
+    let object = activity.object().expect("we have an object");
+    assert_eq!(object.type_str(), "task");
+    assert_eq!(object.description().map(|c| c.body), Some(desc_text));
 
     Ok(())
 }
