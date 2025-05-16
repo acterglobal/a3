@@ -1,9 +1,14 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/onboarding/widgets/expect_decryption_failures_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger('a3::backups::encryption_key_backup');
 
 class OnboardingEncryptionKeyBackupPage extends ConsumerStatefulWidget {
   final VoidCallback callNextPage;
@@ -106,26 +111,27 @@ class _OnboardingEncryptionKeyBackupPageState
       controller: encryptionKeyController,
       decoration: InputDecoration(
         hintText: lang.encryptionKeyBackup,
-        suffixIcon:
-            _hasText
-                ? IconButton(
-                  icon: const Icon(Icons.copy),
-                  tooltip: 'Copy',
-                  onPressed: () {
-                    final text = encryptionKeyController.text;
-                    Clipboard.setData(ClipboardData(text: text));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Copied to clipboard')),
-                    );
-                  },
-                )
-                : null,
+        suffixIcon: _hasText ? _buildCopyButton(context) : null,
       ),
       validator:
           (val) =>
               val == null || val.trim().isEmpty
                   ? lang.encryptionBackupRecoverProvideKey
                   : null,
+    );
+  }
+
+  Widget _buildCopyButton(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.copy),
+      tooltip: 'Copy',
+      onPressed: () {
+        final text = encryptionKeyController.text;
+        Clipboard.setData(ClipboardData(text: text));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(L10n.of(context).keyCopied)),
+        );
+      },
     );
   }
 
@@ -136,9 +142,7 @@ class _OnboardingEncryptionKeyBackupPageState
       children: [
         ActerPrimaryActionButton(
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-      
-            }
+            submit(context);
           },
           child: Text(lang.next),
         ),
@@ -146,22 +150,65 @@ class _OnboardingEncryptionKeyBackupPageState
         OutlinedButton(
           onPressed: () {
             showModalBottomSheet(
-                showDragHandle: true,
-                context: context,
-                useSafeArea: true,
-                isScrollControlled: true,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                builder: (context) {
-                  return ExpectDecryptionFailures(callNextPage: () {
+              showDragHandle: true,
+              context: context,
+              useSafeArea: true,
+              isScrollControlled: true,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              builder: (context) {
+                return ExpectDecryptionFailures(
+                  callNextPage: () {
                     widget.callNextPage();
-                  });
-                },
-              );
+                  },
+                );
+              },
+            );
           },
           child: Text(lang.continueWithoutKey),
         ),
         const SizedBox(height: 20),
       ],
     );
+  }
+
+  void submit(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    final lang = L10n.of(context);
+    EasyLoading.show(status: lang.encryptionBackupRecoverRecovering);
+    try {
+      final key = encryptionKeyController.text;
+      final manager = await ref.read(backupManagerProvider.future);
+      final recoveryWorked = await manager.recover(key);
+      if (recoveryWorked) {
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showToast(lang.encryptionBackupRecoverRecoveringSuccess);
+        widget.callNextPage();
+      } else {
+        _log.severe('Recovery failed');
+        if (!context.mounted) {
+          EasyLoading.dismiss();
+          return;
+        }
+        EasyLoading.showError(
+          lang.encryptionBackupRecoverRecoveringImportFailed,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (e, s) {
+      _log.severe('Recovery failed', e, s);
+      if (!context.mounted) {
+        EasyLoading.dismiss();
+        return;
+      }
+      EasyLoading.showError(
+        lang.encryptionBackupRecoverRecoveringFailed(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 }
