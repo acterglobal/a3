@@ -430,7 +430,7 @@ async fn display_name() -> Result<()> {
     // external API check
     assert_eq!(activity.sender_id_str(), observer.user_id()?);
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.as_str());
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())
@@ -471,7 +471,7 @@ async fn avatar_url() -> Result<()> {
     // external API check
     assert_eq!(activity.sender_id_str(), observer.user_id()?);
     assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.as_str());
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())

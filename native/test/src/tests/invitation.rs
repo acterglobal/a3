@@ -28,7 +28,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let convo = Retry::spawn(retry_strategy.clone(), || async {
-        sisko.convo(room_id.as_str().into()).await
+        sisko.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -71,7 +71,7 @@ async fn invite_user(
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let room = Retry::spawn(retry_strategy.clone(), || async {
-        client.room(room_id.as_str().into()).await
+        client.room(room_id.to_string()).await
     })
     .await?;
 
@@ -336,7 +336,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     assert_eq!(stream.next().now_or_never(), None);
 
     // now let there be something happening in the room
-    let room = kyra.room(sisko_room_id.as_str().into()).await?;
+    let room = kyra.room(sisko_room_id.to_string()).await?;
     let timeline = room.timeline().await?;
 
     sisko_room

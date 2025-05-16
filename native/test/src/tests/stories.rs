@@ -157,7 +157,7 @@ async fn story_plain_text_test() -> Result<()> {
     //     .await?;
 
     // assert_eq!(Some(notif.title()), space.name());
-    // assert_eq!(notif.push_style().as_str(), "story");
+    // assert_eq!(notif.push_style(), "story");
     // assert_eq!(
     //     notif.body().map(|e| e.body()).as_deref(),
     //     Some("This is a simple text")
@@ -286,7 +286,7 @@ async fn story_markdown_text_test() -> Result<()> {
     //     .await?;
 
     // assert_eq!(Some(notif.title()), space.name());
-    // assert_eq!(notif.push_style().as_str(), "story");
+    // assert_eq!(notif.push_style(), "story");
     // assert_eq!(
     //     notif.body().and_then(|e| e.formatted_body()).as_deref(),
     //     Some("<h2>This is a simple text</h2>\n")
@@ -354,7 +354,7 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
 
     // assert_eq!(Some(notif.title()), space.name());
     // assert!(notif.body().is_none());
-    // assert_eq!(notif.push_style().as_str(), "story");
+    // assert_eq!(notif.push_style(), "story");
     // assert!(notif.has_image());
     // let _image_data = notif.image().await?;
 

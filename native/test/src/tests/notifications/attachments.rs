@@ -234,7 +234,7 @@ async fn file_attachment_on_event() -> Result<()> {
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "event");
+    assert_eq!(parent.type_str(), "event");
     assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
@@ -334,7 +334,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "task-list");
+    assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list
     assert_eq!(parent.object_id_str(), obj_id);
@@ -418,7 +418,7 @@ async fn link_attachment_on_task() -> Result<()> {
 
     let obj_id = obj_entry.event_id().to_string();
 
-    assert_eq!(notification_item.title().as_str(), "🔗 \"Acter Website\"");
+    assert_eq!(notification_item.title(), "🔗 \"Acter Website\"");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -429,7 +429,7 @@ async fn link_attachment_on_task() -> Result<()> {
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "task");
+    assert_eq!(parent.type_str(), "task");
     assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.emoji(), "☑️"); // task
 

@@ -207,7 +207,7 @@ async fn user_changes_password() -> Result<()> {
     let account = client.account()?;
     let user_id = client.user_id().expect("we just logged in");
     let password = default_user_password(user_id.localpart());
-    let new_password = format!("new_{:?}", password.as_str());
+    let new_password = format!("new_{:?}", password);
 
     let result = account
         .change_password(password.clone(), new_password.clone())
