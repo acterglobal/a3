@@ -734,16 +734,16 @@ impl Activity {
                         ActivityContent::TitleChange { object, new_title },
                     ))
                 } else if let Some(Some(new_content)) = e.inner.content {
-                    return Ok(Self::new(
+                    Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange {
                             object,
                             content: Some(new_content),
                         },
-                    ));
+                    ))
                 } else {
                     // fallback: other changes
-                    return Ok(Self::new(meta, ActivityContent::OtherChanges { object }));
+                    Ok(Self::new(meta, ActivityContent::OtherChanges { object }))
                 }
             }
 
@@ -794,7 +794,7 @@ impl Activity {
                     ))
                 } else {
                     // fallback: other changes
-                    return Ok(Self::new(meta, ActivityContent::OtherChanges { object }));
+                    Ok(Self::new(meta, ActivityContent::OtherChanges { object }))
                 }
             }
 
@@ -920,16 +920,16 @@ impl Activity {
                         ActivityContent::TitleChange { object, new_title },
                     ))
                 } else if let Some(Some(new_content)) = e.inner.description {
-                    return Ok(Self::new(
+                    Ok(Self::new(
                         meta,
                         ActivityContent::DescriptionChange {
                             object,
                             content: Some(new_content),
                         },
-                    ));
+                    ))
                 } else {
                     // fallback: other changes
-                    return Ok(Self::new(meta, ActivityContent::OtherChanges { object }));
+                    Ok(Self::new(meta, ActivityContent::OtherChanges { object }))
                 }
             }
             AnyActerModel::TaskSelfAssign(e) => {

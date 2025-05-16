@@ -428,7 +428,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s attachment test space" }
 
 [objects.acter-website-pin]
 type = "pin"
