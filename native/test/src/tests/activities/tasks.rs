@@ -50,25 +50,27 @@ async fn task_creation_activity() -> Result<()> {
 
     assert_eq!(task_lists.len(), 1);
 
-    let task_list = task_lists.first().unwrap();
+    let task_list = task_lists
+        .first()
+        .expect("first tasklist should be available");
 
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
 
-    let task = tasks.first().unwrap();
+    let task = tasks.first().expect("first task should be available");
 
     let activity = user.activity(task_list.event_id_str()).await?;
     assert_eq!(activity.type_str(), "creation");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");
-    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+    assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
 
     let activity = user.activity(task.event_id_str()).await?;
     assert_eq!(activity.type_str(), "taskAdd");
-    assert_eq!(activity.title().unwrap(), "Check the weather");
+    assert_eq!(activity.title().as_deref(), Some("Check the weather"));
     // on task add the "object" is our list this happened on
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");
-    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+    assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
     Ok(())
 }

@@ -51,8 +51,8 @@ async fn test_room_join_rules() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomJoinRules");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -63,8 +63,8 @@ async fn test_room_join_rules() -> Result<()> {
         .expect("not a room join rules event");
 
     assert_eq!(
-        content.change(),
-        Some("Changed".to_owned()),
+        content.change().as_deref(),
+        Some("Changed"),
         "room join rules should be changed"
     );
     assert_eq!(

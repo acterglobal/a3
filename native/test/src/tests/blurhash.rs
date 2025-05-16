@@ -49,7 +49,7 @@ async fn image_blurhash_support() -> Result<()> {
     let draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .blurhash("KingFisher".to_owned());
     timeline.send_message(Box::new(draft)).await?;
@@ -91,8 +91,8 @@ async fn image_blurhash_support() -> Result<()> {
     }
     let blurhash = blurhash.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        blurhash,
-        Some("KingFisher".to_owned()),
+        blurhash.as_deref(),
+        Some("KingFisher"),
         "image blurhash not available",
     );
 
@@ -136,7 +136,7 @@ async fn video_blurhash_support() -> Result<()> {
     let draft = user
         .image_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .blurhash("Big Buck Bunny".to_owned());
     timeline.send_message(Box::new(draft)).await?;
@@ -178,8 +178,8 @@ async fn video_blurhash_support() -> Result<()> {
     }
     let blurhash = blurhash.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        blurhash,
-        Some("Big Buck Bunny".to_owned()),
+        blurhash.as_deref(),
+        Some("Big Buck Bunny"),
         "video blurhash not available",
     );
 

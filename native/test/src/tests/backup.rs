@@ -30,7 +30,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         let convo = user.convo(room_id.to_string()).await?;
         let timeline = convo.timeline_stream();
 
-        let draft = user.text_plain_draft("Hi, everyone".to_string());
+        let draft = user.text_plain_draft("Hi, everyone".to_owned());
         timeline.send_message(Box::new(draft)).await?;
 
         let convo_loader = convo.clone();
@@ -72,7 +72,7 @@ async fn can_recover_and_read_message() -> Result<()> {
 
     // now try to login and recover.
 
-    let mut user = login_test_user(user_id.localpart().to_string()).await?;
+    let mut user = login_test_user(user_id.localpart().to_owned()).await?;
 
     let _state_sync = user.start_sync();
 
@@ -168,13 +168,8 @@ async fn key_is_kept_and_reset() -> Result<()> {
     let backup_pass = backup_manager.enable().await?;
     assert_eq!(backup_manager.state_str(), "enabled");
     assert_eq!(
-        backup_manager
-            .stored_enc_key()
-            .await
-            .unwrap()
-            .text()
-            .unwrap(),
-        backup_pass
+        backup_manager.stored_enc_key().await?.text(),
+        Some(backup_pass)
     );
     assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
 

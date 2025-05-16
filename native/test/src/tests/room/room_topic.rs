@@ -78,8 +78,8 @@ async fn test_room_topic() -> Result<()> {
     assert_eq!(found_event_id, topic_event_id, "event id should match");
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room topic should be set"
     );
     assert_eq!(content.new_val(), topic, "new val of room topic is invalid");

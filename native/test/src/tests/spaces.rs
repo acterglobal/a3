@@ -115,9 +115,9 @@ async fn leaving_spaces() -> Result<()> {
     })
     .await?;
 
-    let first = spaces.pop().unwrap();
-    let second = spaces.pop().unwrap();
-    let last = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
+    let second = spaces.pop().expect("second space should be available");
+    let last = spaces.pop().expect("third space should be available");
 
     let mut first_listener = user.subscribe(first.room_id());
     let mut news_listener = user.subscribe(IndexKey::Section(SectionIndex::Boosts));
@@ -243,7 +243,7 @@ async fn create_subspace() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
@@ -317,7 +317,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let settings = Retry::spawn(retry_strategy.clone(), || {
         let first = first.clone();
@@ -418,7 +418,7 @@ async fn create_with_custom_space_settings() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let settings = Retry::spawn(retry_strategy.clone(), || {
         let first = first.clone();
@@ -488,12 +488,12 @@ async fn create_private_subspace() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("invite".to_string());
+    cfg.join_rule("invite".to_owned());
 
     let settings = cfg.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -563,12 +563,12 @@ async fn create_public_subspace() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("PUBLIC".to_string());
+    cfg.join_rule("PUBLIC".to_owned());
 
     let settings = cfg.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -638,7 +638,7 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
@@ -674,7 +674,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
     let mut update = new_join_rule_builder();
-    update.join_rule("invite".to_string());
+    update.join_rule("invite".to_owned());
 
     space.set_join_rule(Box::new(update)).await?;
 
@@ -696,7 +696,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert!(matches!(join_rule, JoinRule::Invite));
 
     let mut update = new_join_rule_builder();
-    update.join_rule("restricted".to_string());
+    update.join_rule("restricted".to_owned());
     update.add_room(space_parent.room_id().to_string());
 
     space.set_join_rule(Box::new(update)).await?;
@@ -753,7 +753,7 @@ async fn update_name() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let space = spaces.pop().unwrap();
+    let space = spaces.pop().expect("first space should be available");
     let listener = space.subscribe();
     let space_id = space.room_id().to_string();
 
@@ -788,7 +788,7 @@ async fn update_name() -> Result<()> {
         let space_id = space_id_clone.clone();
         async move {
             let space = client.space(space_id).await?;
-            if space.name() != Some("New Name".to_owned()) {
+            if space.name().as_deref() != Some("New Name") {
                 bail!("Name not set");
             }
             Ok(())
@@ -876,7 +876,7 @@ async fn update_topic() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let space = spaces.pop().unwrap();
+    let space = spaces.pop().expect("first space should be available");
     let listener = space.subscribe();
     let space_id = space.room_id().to_string();
 
@@ -892,7 +892,7 @@ async fn update_topic() -> Result<()> {
         let space_id = space_id_clone.clone();
         async move {
             let space = client.space(space_id).await?;
-            if space.topic() != Some("New topic".to_owned()) {
+            if space.topic().as_deref() != Some("New topic") {
                 bail!("Topic not set");
             }
             Ok(())

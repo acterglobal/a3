@@ -85,8 +85,8 @@ async fn test_room_server_acl() -> Result<()> {
     assert_eq!(found_event_id, acl_event_id, "event id should match");
 
     assert_eq!(
-        content.allow_ip_literals_change(),
-        Some("Set".to_owned()),
+        content.allow_ip_literals_change().as_deref(),
+        Some("Set"),
         "allow ip literals in room server acl should be set"
     );
     assert!(
@@ -95,8 +95,8 @@ async fn test_room_server_acl() -> Result<()> {
     );
 
     assert_eq!(
-        content.allow_change(),
-        Some("Set".to_owned()),
+        content.allow_change().as_deref(),
+        Some("Set"),
         "allow in room server acl should be set"
     );
     assert!(
@@ -105,8 +105,8 @@ async fn test_room_server_acl() -> Result<()> {
     );
 
     assert_eq!(
-        content.deny_change(),
-        Some("Set".to_owned()),
+        content.deny_change().as_deref(),
+        Some("Set"),
         "deny in room server acl should be set"
     );
     assert!(

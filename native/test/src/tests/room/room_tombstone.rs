@@ -83,8 +83,8 @@ async fn test_room_tombstone() -> Result<()> {
     assert_eq!(found_event_id, tombstone_event_id, "event id should match");
 
     assert_eq!(
-        content.body_change(),
-        Some("Set".to_owned()),
+        content.body_change().as_deref(),
+        Some("Set"),
         "body in room tombstone should be set"
     );
     assert_eq!(
@@ -94,8 +94,8 @@ async fn test_room_tombstone() -> Result<()> {
     );
 
     assert_eq!(
-        content.replacement_room_change(),
-        Some("Set".to_owned()),
+        content.replacement_room_change().as_deref(),
+        Some("Set"),
         "replacement in room tombstone should be set"
     );
     assert_eq!(

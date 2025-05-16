@@ -74,7 +74,7 @@ async fn change_space_avatar() -> Result<()> {
     let room_avatar = activity
         .room_avatar()
         .expect("space topic should be already assigned");
-    assert_eq!(room_avatar.as_str(), uri.as_str());
+    assert_eq!(room_avatar, uri.as_str());
     assert_eq!(activity.target_url(), "/activities");
 
     Ok(())
