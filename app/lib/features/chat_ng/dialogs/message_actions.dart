@@ -24,7 +24,6 @@ void messageActions({
   final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
   if (messageBox == null) return;
 
-  final messageSize = messageBox.size;
   final messagePosition = messageBox.localToGlobal(Offset.zero);
 
   showGeneralDialog(
