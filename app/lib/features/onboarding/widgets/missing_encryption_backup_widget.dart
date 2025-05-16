@@ -26,6 +26,7 @@ class MissingEncryptionBackupWidget extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
+                    const SizedBox(height: 40),
                     _buildHeadlineText(context),
                     const SizedBox(height: 40),
                     _buildImage(context),
@@ -118,7 +119,7 @@ class MissingEncryptionBackupWidget extends ConsumerWidget {
                 builder: (context) {
                   return ExpectDecryptionFailures(callNextPage: () {
                     callNextPage();
-                  });
+                  }, isRecoveryStateDisabled: true);
                 },
               );
           },

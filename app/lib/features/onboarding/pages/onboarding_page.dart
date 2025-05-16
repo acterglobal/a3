@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
+import 'package:acter/features/backups/providers/backup_state_providers.dart';
+import 'package:acter/features/backups/types.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
@@ -52,6 +54,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   List<Widget> _buildOnboardingScreens(OnboardingPermissions permissions) {
     final hasSpaceRedeemedInvites = ref.watch(hasSpaceRedeemedInInviteCodeProvider);
     final hasRecommendedSpaceJoined = ref.watch(hasRecommendedSpaceJoinedProvider);
+    final stateEnabled = ref.watch(backupStateProvider) == RecoveryState.enabled;
 
     return [
       if (!widget.isLoginOnboarding!) ...[
@@ -69,7 +72,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         if (!hasSpaceRedeemedInvites && !hasRecommendedSpaceJoined)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
-      OnboardingEncryptionKeyBackupPage(callNextPage: () => _nextPage()),
+      if (!stateEnabled) 
+        OnboardingEncryptionKeyBackupPage(callNextPage: () => _nextPage()),
       if (permissions.showNotificationPermission)
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
       if (permissions.showCalendarPermission)

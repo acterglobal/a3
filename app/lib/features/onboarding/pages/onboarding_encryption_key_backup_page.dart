@@ -1,6 +1,9 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/backups/providers/backup_state_providers.dart';
+import 'package:acter/features/backups/types.dart';
 import 'package:acter/features/onboarding/widgets/expect_decryption_failures_widget.dart';
+import 'package:acter/features/onboarding/widgets/missing_encryption_backup_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +31,7 @@ class _OnboardingEncryptionKeyBackupPageState
   final TextEditingController encryptionKeyController = TextEditingController();
   bool _hasText = false;
   final _formKey = GlobalKey<FormState>();
+  bool _hasShownDialog = false;
 
   @override
   void initState() {
@@ -48,8 +52,35 @@ class _OnboardingEncryptionKeyBackupPageState
     super.dispose();
   }
 
+  bool _isRecoveryStateDisabled() {
+    final state = ref.watch(backupStateProvider);
+    return state == RecoveryState.disabled;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Check if recovery state is unknown and show dialog automatically
+    if (_isRecoveryStateDisabled() && !_hasShownDialog) {
+      _hasShownDialog = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showModalBottomSheet(
+          showDragHandle: false,
+          enableDrag: false,
+          context: context,
+          useSafeArea: true,
+          isScrollControlled: true,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          builder: (context) {
+            return MissingEncryptionBackupWidget(
+              callNextPage: () {
+                widget.callNextPage();
+              },
+            );
+          },
+        );
+      });
+    }
+
     return Scaffold(
       body: Center(
         child: Container(
