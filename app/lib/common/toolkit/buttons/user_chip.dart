@@ -98,23 +98,36 @@ class UserChip extends ConsumerWidget {
             horizontal: (fontSize / 2).toDouble(),
             vertical: 0,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ActerAvatar(
-                options: AvatarOptions.DM(memberInfo, size: fontSize / 2),
-              ),
-              SizedBox(width: 4),
-              if (isMe)
-                Text(
-                  L10n.of(context).you,
-                  style: style?.copyWith(fontWeight: FontWeight.bold),
-                )
-              else
-                Text(memberInfo.displayName ?? memberId, style: style),
-              if (trailing != null)
-                Padding(padding: EdgeInsets.only(left: 4), child: trailing),
-            ],
+          child: RichText(
+            text: TextSpan(
+              children: [
+                WidgetSpan(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: ActerAvatar(
+                      options: AvatarOptions.DM(memberInfo, size: fontSize / 2),
+                    ),
+                  ),
+                ),
+                if (isMe)
+                  TextSpan(
+                    text: L10n.of(context).you,
+                    style: style?.copyWith(fontWeight: FontWeight.bold),
+                  )
+                else
+                  TextSpan(
+                    text: memberInfo.displayName ?? memberId,
+                    style: style,
+                  ),
+                if (trailing != null)
+                  WidgetSpan(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 4),
+                      child: trailing,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
