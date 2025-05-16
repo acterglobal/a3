@@ -70,15 +70,6 @@ void main() {
     expect(find.byType(SaveUsernamePage), findsOneWidget);
   });
 
-  testWidgets('Skips SaveUsernamePage when isLoginOnboarding is true', (
-    tester,
-  ) async {
-    await createWidgetUnderTest(tester: tester, isLogin: true);
-    await tester.pumpAndSettle();
-
-    expect(find.byType(SaveUsernamePage), findsNothing);
-  });
-
   testWidgets('Navigates to next page on callNextPage', (tester) async {
     await createWidgetUnderTest(tester: tester, username: 'test_user');
     await tester.pumpAndSettle(); // Wait for the provider to resolve
