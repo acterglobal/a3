@@ -173,7 +173,7 @@ async fn joining_room_triggers_room_update() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited.first().expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
