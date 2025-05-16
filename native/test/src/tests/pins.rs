@@ -55,7 +55,12 @@ async fn pins_smoketest() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(user.pins().await?.len(), 3);
+    let pins = user.pins().await?;
+    assert_eq!(pins.len(), 3);
+
+    let first_pin = pins.first().unwrap();
+    let user_id = user.user_id()?;
+    assert_eq!(first_pin.sender(), user_id);
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
@@ -218,7 +223,7 @@ async fn pin_attachments() -> Result<()> {
         .iter()
         .find(|a| a.event_id() == attachment_2_id)
         .expect("File not found");
-    // FIXME: for some reason this comes back as 'image'` rather than `file`
+    // FIXME: for some reason this comes back as `image` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
     //     attachment.file_desc().expect("file description should be available").name(),

@@ -7,13 +7,17 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final _log = Logger('a3::activities::widgets::event_date_change');
+final _log = Logger('a3::activities::widgets::description_change');
 
-class ActivityEventDateChangeItemWidget extends ConsumerWidget {
+class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
   final Activity activity;
 
-  const ActivityEventDateChangeItemWidget({super.key, required this.activity});
+  const ActivityDescriptionChangeItemWidget({
+    super.key,
+    required this.activity,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,8 +37,8 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     final stateMsg = getMessage(lang, myId == senderId, senderName);
 
     return ActivityUserCentricItemContainerWidget(
-      actionIcon: Icons.access_time,
-      actionTitle: L10n.of(context).rescheduled,
+      actionIcon: PhosphorIconsRegular.pencilLine,
+      actionTitle: lang.updatedDescription,
       activityObject: activity.object(),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
@@ -44,57 +48,33 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
   }
 
   String? getMessage(L10n lang, bool isMe, String senderName) {
-    final content = activity.dateTimeRangeContent();
+    final content = activity.descriptionContent();
     if (content == null) {
-      _log.severe('failed to get content of date time range change');
+      _log.severe('failed to get content of description change');
       return null;
     }
-    switch (content.startChange()) {
+    switch (content.change()) {
       case 'Changed':
         // for now, we can't support the old value
         // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.startNewVal()?.toRfc3339() ?? '';
+        final newVal = content.newVal() ?? '';
         if (isMe) {
-          return lang.activityStartTimeYouChanged(newVal);
+          return lang.activityDescriptionYouChanged(newVal);
         } else {
-          return lang.activityStartTimeOtherChanged(senderName, newVal);
+          return lang.activityDescriptionOtherChanged(senderName, newVal);
         }
       case 'Set':
-        final newVal = content.startNewVal()?.toRfc3339() ?? '';
+        final newVal = content.newVal() ?? '';
         if (isMe) {
-          return lang.activityStartTimeYouSet(newVal);
+          return lang.activityDescriptionYouSet(newVal);
         } else {
-          return lang.activityStartTimeOtherSet(senderName, newVal);
+          return lang.activityDescriptionOtherSet(senderName, newVal);
         }
       case 'Unset':
         if (isMe) {
-          return lang.activityStartTimeYouUnset;
+          return lang.activityDescriptionYouUnset;
         } else {
-          return lang.activityStartTimeOtherUnset(senderName);
-        }
-    }
-    switch (content.endChange()) {
-      case 'Changed':
-        // for now, we can't support the old value
-        // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityEndTimeYouChanged(newVal);
-        } else {
-          return lang.activityEndTimeOtherChanged(senderName, newVal);
-        }
-      case 'Set':
-        final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityEndTimeYouSet(newVal);
-        } else {
-          return lang.activityEndTimeOtherSet(senderName, newVal);
-        }
-      case 'Unset':
-        if (isMe) {
-          return lang.activityEndTimeYouUnset;
-        } else {
-          return lang.activityEndTimeOtherUnset(senderName);
+          return lang.activityDescriptionOtherUnset(senderName);
         }
     }
     return null;

@@ -1,6 +1,5 @@
 use acter::ActerModel;
 use anyhow::{bail, Result};
-use chrono::{DateTime, NaiveDate, Utc};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -114,7 +113,8 @@ async fn tasklist_title_update() -> Result<()> {
         .await?;
 
     let mut update = obj_entry.update_builder()?;
-    update.name("Renamed Tasklist".to_owned());
+    let title = "Renamed Tasklist";
+    update.name(title.to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -125,21 +125,19 @@ async fn tasklist_title_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id(),
     );
 
-    let obj_id = obj_entry.event_id_str();
-
-    assert_eq!(notification_item.title(), "Renamed Tasklist"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{}", obj_id,)
+        format!("/tasks/{}", obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task-list");
-    // assert_eq!(parent.title().as_deref(), Some("Renamed Tasklist"));
+    // assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "📋"); // task list icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -175,7 +173,8 @@ async fn tasklist_desc_update() -> Result<()> {
         .await?;
 
     let mut update = obj_entry.update_builder()?;
-    update.description_text("Added description".to_owned());
+    let desc = "Added description";
+    update.description_text(desc.to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -186,22 +185,20 @@ async fn tasklist_desc_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in event"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id(),
     );
 
-    let obj_id = obj_entry.event_id_str();
-
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added description"); // new description
+    assert_eq!(content.body(), desc); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{}", obj_id,)
+        format!("/tasks/{}", obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -237,7 +234,6 @@ async fn tasklist_redaction() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let obj_id = event.event_id_str();
     let space = first.space(event.room_id().to_string()).await?;
     let notification_ev = space.redact(event.event_id(), None, None).await?.event_id;
 
@@ -249,15 +245,15 @@ async fn tasklist_redaction() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in redaction"),
-        obj_id,
+        *event.event_id()
     );
 
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/tasks/"));
+    assert_eq!(notification_item.target_url(), "/tasks/");
     assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *event.event_id());
 
     Ok(())
 }
@@ -294,7 +290,8 @@ async fn task_created() -> Result<()> {
 
     let mut task = obj_entry.task_builder()?;
     task.due_date(2025, 11, 13);
-    task.title("Baby's first task".to_owned());
+    let title = "Baby’s first task";
+    task.title(title.to_owned());
 
     let notification_ev = task.send().await?;
 
@@ -309,18 +306,16 @@ async fn task_created() -> Result<()> {
         obj_entry.event_id_str(),
     );
 
-    let obj_id = obj_entry.event_id_str();
-
-    assert_eq!(notification_item.title(), "Baby's first task"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{}/{}", obj_id, notification_ev)
+        format!("/tasks/{}/{}", obj_entry.event_id(), notification_ev)
     );
     assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -360,7 +355,8 @@ async fn task_title_update() -> Result<()> {
         .await?;
 
     let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Task".to_owned());
+    let title = "Renamed Task";
+    update.title(title.to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -371,21 +367,19 @@ async fn task_title_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id(),
     );
 
-    let obj_id = obj_entry.event_id_str();
-
-    assert_eq!(notification_item.title(), "Renamed Task"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     // assert_eq!(parent.title().as_deref(), Some("Onboarding List"));
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -425,7 +419,8 @@ async fn task_desc_update() -> Result<()> {
         .await?;
 
     let mut update = obj_entry.update_builder()?;
-    update.description_text("Task is complicated".to_owned());
+    let desc = "Task is complicated";
+    update.description_text(desc.to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -436,17 +431,15 @@ async fn task_desc_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id()
     );
 
-    let obj_id = obj_entry.event_id_str();
-
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Task is complicated"); // new description
+    assert_eq!(content.body(), desc); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     assert_eq!(
@@ -454,7 +447,7 @@ async fn task_desc_update() -> Result<()> {
         Some("Scroll through the updates")
     );
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -507,21 +500,15 @@ async fn task_due_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id()
     );
 
-    let obj_id = obj_entry.event_id_str();
-
-    let naive_date = NaiveDate::from_ymd_opt(2026, 1, 1)
-        .and_then(|d| d.and_hms_opt(0, 0, 0))
-        .expect("naive date should be available");
-    let utc_date = DateTime::<Utc>::from_naive_utc_and_offset(naive_date, Utc);
-    assert_eq!(notification_item.new_date(), Some(utc_date));
+    assert_eq!(notification_item.due_date().as_deref(), Some("2026-01-01"));
     assert_eq!(notification_item.title(), "2026-01-01");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     assert_eq!(
@@ -529,7 +516,7 @@ async fn task_due_update() -> Result<()> {
         Some("Scroll through the updates")
     );
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -580,15 +567,13 @@ async fn task_done_and_undone() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id(),
     );
-
-    let obj_id = obj_entry.event_id_str();
 
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     assert_eq!(
@@ -596,7 +581,7 @@ async fn task_done_and_undone() -> Result<()> {
         Some("Scroll through the updates")
     );
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     // and undone
 
@@ -612,15 +597,13 @@ async fn task_done_and_undone() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id_str();
 
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     assert_eq!(
@@ -628,7 +611,7 @@ async fn task_done_and_undone() -> Result<()> {
         Some("Scroll through the updates")
     );
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -677,15 +660,13 @@ async fn task_self_assign_and_unassign() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id_str();
 
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     assert_eq!(
@@ -693,7 +674,7 @@ async fn task_self_assign_and_unassign() -> Result<()> {
         Some("Scroll through the updates")
     );
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     // and unassign
     let notification_ev = obj_entry.unassign_self().await?;
@@ -706,15 +687,13 @@ async fn task_self_assign_and_unassign() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id_str();
 
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
-        format!("/tasks/{tl_id}/{obj_id}")
+        format!("/tasks/{}/{}", tl_id, obj_entry.event_id())
     );
     assert_eq!(parent.type_str(), "task");
     assert_eq!(
@@ -722,7 +701,7 @@ async fn task_self_assign_and_unassign() -> Result<()> {
         Some("Scroll through the updates")
     );
     assert_eq!(parent.emoji(), "☑️"); // task icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }

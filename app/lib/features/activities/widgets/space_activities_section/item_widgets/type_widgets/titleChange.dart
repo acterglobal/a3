@@ -7,13 +7,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final _log = Logger('a3::activities::widgets::event_date_change');
+final _log = Logger('a3::activities::widgets::title_change');
 
-class ActivityEventDateChangeItemWidget extends ConsumerWidget {
+class ActivityTitleChangeItemWidget extends ConsumerWidget {
   final Activity activity;
 
-  const ActivityEventDateChangeItemWidget({super.key, required this.activity});
+  const ActivityTitleChangeItemWidget({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,8 +34,8 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
     final stateMsg = getMessage(lang, myId == senderId, senderName);
 
     return ActivityUserCentricItemContainerWidget(
-      actionIcon: Icons.access_time,
-      actionTitle: L10n.of(context).rescheduled,
+      actionIcon: PhosphorIconsRegular.pencilLine,
+      actionTitle: lang.updatedTitle,
       activityObject: activity.object(),
       userId: activity.senderIdStr(),
       roomId: activity.roomIdStr(),
@@ -44,57 +45,27 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
   }
 
   String? getMessage(L10n lang, bool isMe, String senderName) {
-    final content = activity.dateTimeRangeContent();
+    final content = activity.titleContent();
     if (content == null) {
-      _log.severe('failed to get content of date time range change');
+      _log.severe('failed to get content of title change');
       return null;
     }
-    switch (content.startChange()) {
+    switch (content.change()) {
       case 'Changed':
         // for now, we can't support the old value
         // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.startNewVal()?.toRfc3339() ?? '';
+        final newVal = content.newVal();
         if (isMe) {
-          return lang.activityStartTimeYouChanged(newVal);
+          return lang.activityTitleYouChanged(newVal);
         } else {
-          return lang.activityStartTimeOtherChanged(senderName, newVal);
+          return lang.activityTitleOtherChanged(senderName, newVal);
         }
       case 'Set':
-        final newVal = content.startNewVal()?.toRfc3339() ?? '';
+        final newVal = content.newVal();
         if (isMe) {
-          return lang.activityStartTimeYouSet(newVal);
+          return lang.activityTitleYouSet(newVal);
         } else {
-          return lang.activityStartTimeOtherSet(senderName, newVal);
-        }
-      case 'Unset':
-        if (isMe) {
-          return lang.activityStartTimeYouUnset;
-        } else {
-          return lang.activityStartTimeOtherUnset(senderName);
-        }
-    }
-    switch (content.endChange()) {
-      case 'Changed':
-        // for now, we can't support the old value
-        // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityEndTimeYouChanged(newVal);
-        } else {
-          return lang.activityEndTimeOtherChanged(senderName, newVal);
-        }
-      case 'Set':
-        final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityEndTimeYouSet(newVal);
-        } else {
-          return lang.activityEndTimeOtherSet(senderName, newVal);
-        }
-      case 'Unset':
-        if (isMe) {
-          return lang.activityEndTimeYouUnset;
-        } else {
-          return lang.activityEndTimeOtherUnset(senderName);
+          return lang.activityTitleOtherSet(senderName, newVal);
         }
     }
     return null;
