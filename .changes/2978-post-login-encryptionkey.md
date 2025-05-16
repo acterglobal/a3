@@ -1,0 +1,1 @@
+- [Implemented] : Added Encryption Backup Key Wizard in the post-login flow. It dynamically guides users based on their recovery state to securely manage or skip encryption key setup.
