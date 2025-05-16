@@ -43,16 +43,21 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
     );
 
 // contains final input string with mentions processed and mentions
-typedef MentionParsedText = (String, List<MentionAttributes>);
+// structure: (plainText, htmlText, List<MentionAttributes>)
+typedef MentionParsedText =
+    ({String plainText, String? htmlText, List<MentionAttributes> mentions});
 
 extension ActerEditorStateHelpers on EditorState {
   // helper to parse mentions to markdown/html format
-  MentionParsedText toMentionText(String plainText, String? htmlText) {
+  MentionParsedText applyMentionText(String plainText, String? htmlText) {
     List<MentionAttributes> mentionAttributes = [];
+    String? htmlProcessedText;
 
     // Get the base text
-    var processedText = htmlText ?? plainText;
-
+    var bodyProcessedText = plainText;
+    if (htmlText != null && htmlText.isNotEmpty) {
+      htmlProcessedText = htmlText;
+    }
     // Process mentions
     int index = 0;
     while (true) {
@@ -66,15 +71,21 @@ extension ActerEditorStateHelpers on EditorState {
             final mention = op.attributes!['@'] as MentionAttributes;
             final displayText =
                 mention.displayName ?? mention.mentionId.substring(1);
-            final replacement =
-                htmlText != null
-                    ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
-                    : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
-            processedText = processedText.replaceFirst(
+            final bodyReplacement =
+                '[@$displayText](https://matrix.to/#/${mention.mentionId})';
+            bodyProcessedText = bodyProcessedText.replaceFirst(
               userMentionMarker,
-              replacement,
+              bodyReplacement,
             );
             mentionAttributes.add(mention);
+            if (htmlProcessedText != null) {
+              final htmlReplacement =
+                  '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>';
+              htmlProcessedText = htmlProcessedText.replaceFirst(
+                userMentionMarker,
+                htmlReplacement,
+              );
+            }
           }
         }
       }
@@ -82,17 +93,27 @@ extension ActerEditorStateHelpers on EditorState {
     }
 
     // Remove only trailing <br> tag if it exists
-    if (processedText.endsWith('<br>')) {
-      processedText = processedText.substring(
+    if (bodyProcessedText.endsWith(' ')) {
+      bodyProcessedText = bodyProcessedText.substring(
         0,
-        processedText.length - '<br>'.length,
+        bodyProcessedText.length - ' '.length,
+      );
+    }
+    if (htmlProcessedText != null && htmlProcessedText.endsWith('<br>')) {
+      htmlProcessedText = htmlProcessedText.substring(
+        0,
+        htmlProcessedText.length - '<br>'.length,
       );
     }
 
-    return (processedText.trimRight(), mentionAttributes);
+    return (
+      plainText: bodyProcessedText.trimRight(),
+      htmlText: htmlProcessedText?.trimRight(),
+      mentions: mentionAttributes,
+    );
   }
 
-  void toMentionPills(String text, Node targetNode) {
+  void applyMentionPills(String text, Node targetNode) {
     final userMatches = userMentionRegExp.allMatches(text);
     List<(int, int, String, String, MentionType)> allMentions = [];
 
@@ -488,7 +509,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         quoteMobileToolbarItem,
         codeMobileToolbarItem,
       ],
-      toolbarHeight: 50,
+      toolbarHeight: 40,
       editorState: editorState,
       child: MobileFloatingToolbar(
         editorScrollController: editorScrollController,

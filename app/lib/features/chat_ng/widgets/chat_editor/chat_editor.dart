@@ -132,7 +132,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     if (docNode == null) return;
 
     // process text and apply mention attributes , if any
-    textEditorState.toMentionPills(body, docNode);
+    textEditorState.applyMentionPills(body, docNode);
 
     final text = docNode.delta?.toPlainText() ?? '';
     final pos = Position(path: [0], offset: text.length);
@@ -158,7 +158,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       // save composing draft
       final text = textEditorState.intoMarkdown();
       final htmlText = textEditorState.intoHtml();
-
       await saveMsgDraft(text, htmlText, widget.roomId, ref);
       _log.info('compose draft saved for room: ${widget.roomId}');
     });
@@ -175,6 +174,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       chatEditorState.unsetActions();
       textEditorState.clear();
       final body = draft.plainText();
+
       draft.eventId().map((eventId) {
         final draftType = draft.draftType();
         final msgsList =
@@ -199,10 +199,15 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
       final transaction = textEditorState.transaction;
       final docNode = textEditorState.getNodeAtPath([0]);
       if (docNode == null) return;
-      textEditorState.toMentionPills(body, docNode);
-      final pos = Position(path: [0], offset: body.length - 1);
-      transaction.afterSelection = Selection.collapsed(pos);
+      textEditorState.applyMentionPills(body, docNode);
       textEditorState.apply(transaction);
+      textEditorState.updateSelectionWithReason(
+        Selection.single(
+          path: [0],
+          startOffset: textEditorState.intoMarkdown().length - 1,
+        ),
+        reason: SelectionUpdateReason.uiEvent,
+      );
       _updateContentHeight();
       _log.info('compose draft loaded for room: ${widget.roomId}');
     }

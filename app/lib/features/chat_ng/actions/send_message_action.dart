@@ -30,7 +30,10 @@ Future<void> sendMessageAction({
     return;
   }
 
-  final bodyProcessedText = textEditorState.toMentionText(body, null);
+  final processedText = textEditorState.applyMentionText(body, html);
+  final bodyProcessedText = processedText.plainText;
+  final htmlProcessedText = processedText.htmlText;
+  final mentionAttributes = processedText.mentions;
   ref.read(chatInputProvider.notifier).startSending();
   try {
     // end the typing notification
@@ -40,18 +43,17 @@ Future<void> sendMessageAction({
     final chatEditorState = ref.read(chatEditorStateProvider);
     final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
-    if (html.isNotEmpty) {
-      final htmlProcessedText = textEditorState.toMentionText(body, html);
-      draft = client.textHtmlDraft(htmlProcessedText.$1, bodyProcessedText.$1);
-      if (htmlProcessedText.$2.isNotEmpty) {
-        for (MentionAttributes m in htmlProcessedText.$2) {
+    if (htmlProcessedText?.isNotEmpty == true) {
+      draft = client.textHtmlDraft(htmlProcessedText ?? '', bodyProcessedText);
+      if (mentionAttributes.isNotEmpty) {
+        for (MentionAttributes m in mentionAttributes) {
           draft.addMention(m.mentionId);
         }
       }
     } else {
-      draft = client.textMarkdownDraft(bodyProcessedText.$1);
-      if (bodyProcessedText.$2.isNotEmpty) {
-        for (MentionAttributes m in bodyProcessedText.$2) {
+      draft = client.textMarkdownDraft(bodyProcessedText);
+      if (bodyProcessedText.isNotEmpty) {
+        for (MentionAttributes m in mentionAttributes) {
           draft.addMention(m.mentionId);
         }
       }

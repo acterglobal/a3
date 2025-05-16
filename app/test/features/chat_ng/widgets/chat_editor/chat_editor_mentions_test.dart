@@ -35,13 +35,13 @@ void main() {
         final markdown = editorState.intoMarkdown();
         // verify markdown
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           'Hello [@User](https://matrix.to/#/@user123)',
         );
         final html = editorState.intoHtml();
         // verify HTML
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).plainText,
           '<p>Hello <span><a href="https://matrix.to/#/@user123">@User</a></span></p>',
         );
       });
@@ -80,14 +80,14 @@ void main() {
         // verify markdown
         final markdown = editorState.intoMarkdown();
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           'Hello [@User1](https://matrix.to/#/@user1) and [@User2](https://matrix.to/#/@user2)',
         );
 
         // verify html
         final html = editorState.intoHtml();
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).htmlText,
           '<p>Hello <span><a href="https://matrix.to/#/@user1">@User1</a></span> and <span><a href="https://matrix.to/#/@user2">@User2</a></span></p>',
         );
       });
@@ -130,14 +130,14 @@ void main() {
         // verify markdown
         final markdown = editorState.intoMarkdown();
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           'Line 1 [@User1](https://matrix.to/#/@user1)\n'
           'Line 2 [@User2](https://matrix.to/#/@user2)',
         );
         // verify html
         final html = editorState.intoHtml();
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).htmlText,
           '<p>Line 1 <span><a href="https://matrix.to/#/@user1">@User1</a></span></p><p>Line 2 <span><a href="https://matrix.to/#/@user2">@User2</a></span></p>',
         );
       });
@@ -148,11 +148,14 @@ void main() {
         editorState.document.insert([0], [node]);
         // verify markdown
         final markdown = editorState.intoMarkdown();
-        expect(editorState.toMentionText(markdown, null).$1, 'Hello world');
+        expect(
+          editorState.applyMentionText(markdown, null).plainText,
+          'Hello world',
+        );
         // verify html
         final html = editorState.intoHtml();
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).htmlText,
           '<p>Hello world</p>',
         );
       });
@@ -187,13 +190,13 @@ void main() {
         // verify markdown
         final markdown = editorState.intoMarkdown();
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           '[@User1](https://matrix.to/#/@user1)[@User2](https://matrix.to/#/@user2)',
         );
         // verify html
         final html = editorState.intoHtml();
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).htmlText,
           '<p><span><a href="https://matrix.to/#/@user1">@User1</a></span><span><a href="https://matrix.to/#/@user2">@User2</a></span></p>',
         );
       });
@@ -219,13 +222,13 @@ void main() {
         // verify markdown
         final markdown = editorState.intoMarkdown();
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           'Hello * _ ` # ||[@User1](https://matrix.to/#/@user1)',
         );
         // verify html
         final html = editorState.intoHtml();
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).htmlText,
           '<p>Hello * _ ` # ||<span><a href="https://matrix.to/#/@user1">@User1</a></span></p>',
         );
       });
@@ -253,11 +256,12 @@ void main() {
         // verify markdown and html
         final markdown = editorState.intoMarkdown();
         final html = editorState.intoHtml();
-        final processedHtml = editorState.toMentionText(markdown, html);
-        expect(processedHtml.$1.contains('<strong>'), true);
-        expect(processedHtml.$1.contains('<i>'), true);
+        final processedHtml =
+            editorState.applyMentionText(markdown, html).htmlText;
+        expect(processedHtml?.contains('<strong>'), true);
+        expect(processedHtml?.contains('<i>'), true);
         expect(
-          processedHtml.$1.contains(
+          processedHtml?.contains(
             '<span><a href="https://matrix.to/#/@user1">@User1</a></span>',
           ),
           true,
@@ -283,7 +287,7 @@ void main() {
         // verify markdown
         final markdown = editorState.intoMarkdown();
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           'Hello [@user123](https://matrix.to/#/@user123)',
         );
       });
@@ -346,7 +350,7 @@ void main() {
         // verify markdown
         final markdown = editorState.intoMarkdown();
         expect(
-          editorState.toMentionText(markdown, null).$1,
+          editorState.applyMentionText(markdown, null).plainText,
           'First [@User1](https://matrix.to/#/@user1)\n'
           'Middle text\n'
           'Last [@User2](https://matrix.to/#/@user2) and [@User3](https://matrix.to/#/@user3)',
@@ -355,7 +359,7 @@ void main() {
         // verify html
         final html = editorState.intoHtml();
         expect(
-          editorState.toMentionText(markdown, html).$1,
+          editorState.applyMentionText(markdown, html).htmlText,
           '<p>First <span><a href="https://matrix.to/#/@user1">@User1</a></span></p><p>Middle text</p><p>Last <span><a href="https://matrix.to/#/@user2">@User2</a></span> and <span><a href="https://matrix.to/#/@user3">@User3</a></span></p>',
         );
       });
@@ -367,7 +371,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(originalText, node);
+        editorState.applyMentionPills(originalText, node);
         final resultText = node.delta?.toPlainText() ?? '';
         expect(resultText, contains(userMentionMarker));
         expect(resultText, isNot(contains('[@User1]')));
@@ -400,7 +404,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(plainText, node);
+        editorState.applyMentionPills(plainText, node);
 
         final resultText = node.delta?.toPlainText() ?? '';
         expect(resultText, plainText);
@@ -427,7 +431,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(originalText, node);
+        editorState.applyMentionPills(originalText, node);
 
         final resultText = node.delta?.toPlainText() ?? '';
         expect(resultText.split(userMentionMarker).length, 3);
@@ -463,7 +467,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(originalText, node);
+        editorState.applyMentionPills(originalText, node);
 
         final delta = node.delta;
         List<MentionAttributes> mentions = [];
@@ -495,7 +499,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(originalText, node);
+        editorState.applyMentionPills(originalText, node);
 
         final delta = node.delta;
         MentionAttributes? specialMention;
@@ -525,7 +529,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(originalText, node);
+        editorState.applyMentionPills(originalText, node);
 
         final resultText = node.delta?.toPlainText() ?? '';
         expect(resultText, contains('$userMentionMarker$userMentionMarker'));
@@ -567,7 +571,7 @@ void main() {
         final node = paragraphNode();
         editorState.document.insert([0], [node]);
 
-        editorState.toMentionPills(originalText, node);
+        editorState.applyMentionPills(originalText, node);
 
         final resultText = node.delta?.toPlainText() ?? '';
         expect(
