@@ -57,7 +57,6 @@ async fn task_invitation() -> Result<()> {
     })
     .await?;
 
-    let _obj_id = obj_entry.event_id().to_string();
     // this is a mention, so we need to subscribe to the room
 
     let manager = obj_entry.invitations().await?;
@@ -153,7 +152,6 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     let s_invites_stream = s_invites_manager.subscribe_stream();
     let mut s_invites_stream = s_invites_stream.fuse();
 
-    let _obj_id = obj_entry.event_id().to_string();
     // this is a mention, so we need to subscribe to the room
 
     let manager = obj_entry.invitations().await?;
@@ -162,7 +160,7 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     let second_user_str = second_user.user_id()?.to_string();
     assert!(manager.can_invite(second_user_str.clone())?);
 
-    let _event_id = manager.invite(second_user_str).await?;
+    manager.invite(second_user_str).await?;
     let _ = stream.next().await; // await the invite being sent
 
     // see what the recipient sees
@@ -309,7 +307,6 @@ async fn can_invite_after_unassign_task() -> Result<()> {
     })
     .await?;
 
-    let _obj_id = obj_entry.event_id().to_string();
     let second_user_str = second_user.user_id()?.to_string();
 
     // see what the recipient sees
