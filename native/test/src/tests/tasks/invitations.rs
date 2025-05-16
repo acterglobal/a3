@@ -71,9 +71,9 @@ async fn task_invitation() -> Result<()> {
 
     assert_eq!(activity.type_str(), "objectInvitation");
     let object = activity.object().expect("object should be available");
-    assert_eq!(object.object_id_str(), obj_entry.event_id().to_string());
+    assert_eq!(object.object_id_str(), *obj_entry.event_id());
     assert_eq!(activity.whom().len(), 1);
-    assert_eq!(activity.whom()[0], second_user.user_id()?.to_string());
+    assert_eq!(activity.whom()[0], second_user.user_id()?);
     assert!(!activity.mentions_you());
 
     // see what the recipient sees
@@ -115,10 +115,7 @@ async fn task_invitation() -> Result<()> {
     assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.type_str(), "task");
     assert_eq!(notification.sender().user_id(), first.user_id()?);
-    assert_eq!(
-        notification.whom(),
-        vec![second_user.user_id()?.to_string()]
-    );
+    assert_eq!(notification.whom(), vec![second_user.user_id()?]);
     assert!(notification.mentions_you());
 
     Ok(())
@@ -213,7 +210,7 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     assert_eq!(s_invites_stream.next().await, Some(true)); //invite was seen by the manager
     let object_invitations = s_invites_manager.object_invitations().await?;
     assert_eq!(object_invitations.len(), 1);
-    assert_eq!(object_invitations[0], task.event_id().to_string());
+    assert_eq!(object_invitations[0], *task.event_id());
 
     task.assign_self().await?; // this is the way we accept the task
 

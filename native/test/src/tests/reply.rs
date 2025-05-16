@@ -110,13 +110,13 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let received = target_id.clone();
-        async move { timeline.get_message(received.to_string()).await }
+        async move { timeline.get_message(received).await }
     })
     .await?;
 
     let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_string());
     kyra_timeline
-        .reply_message(received.to_string(), Box::new(draft))
+        .reply_message(received, Box::new(draft))
         .await?;
 
     // msg reply may reach via pushback action

@@ -84,7 +84,7 @@ async fn message_redaction() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let received = target_id.clone();
-        async move { timeline.get_message(received.to_string()).await }
+        async move { timeline.get_message(received).await }
     })
     .await?;
 

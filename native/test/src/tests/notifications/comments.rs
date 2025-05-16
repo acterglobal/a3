@@ -115,7 +115,7 @@ async fn comment_on_news() -> Result<()> {
     assert_eq!(parent.type_str(), "news");
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
-    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(parent.object_id_str(), news_entry.event_id());
 
     Ok(())
 }

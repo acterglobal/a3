@@ -79,11 +79,7 @@ async fn test_policy_rule_user() -> Result<()> {
     }
     let (found_event_id, content) =
         found_result.expect("Even after 30 seconds, policy rule user not received");
-    assert_eq!(
-        found_event_id,
-        policy_event_id.to_string(),
-        "Incorrect event id",
-    );
+    assert_eq!(found_event_id, policy_event_id, "Incorrect event id");
 
     assert_eq!(
         content.entity_change().as_deref(),

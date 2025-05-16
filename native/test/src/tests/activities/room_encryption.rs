@@ -48,7 +48,7 @@ async fn test_room_encryption() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room.room_id_str());
     assert_eq!(activity.type_str(), "roomEncryption");
     let ts: u64 = meta.origin_server_ts.get().into();

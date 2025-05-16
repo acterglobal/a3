@@ -67,7 +67,7 @@ async fn like_activity_on_news() -> Result<()> {
     assert_eq!(activity.type_str(), "reaction");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "news");
-    assert_eq!(object.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(object.object_id_str(), news_entry.event_id());
 
     Ok(())
 }
@@ -107,7 +107,7 @@ async fn like_activity_on_story() -> Result<()> {
     assert_eq!(activity.type_str(), "reaction");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "story");
-    assert_eq!(object.object_id_str(), story.event_id().to_string());
+    assert_eq!(object.object_id_str(), story.event_id());
 
     Ok(())
 }

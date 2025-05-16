@@ -122,11 +122,7 @@ async fn test_room_pinned_events() -> Result<()> {
     }
     let (found_event_id, content) =
         found_result.expect("Even after 30 seconds, room pinned events not received");
-    assert_eq!(
-        found_event_id,
-        pinned_event_id.to_string(),
-        "event id should match"
-    );
+    assert_eq!(found_event_id, pinned_event_id, "event id should match");
 
     assert_eq!(
         content.change().as_deref(),

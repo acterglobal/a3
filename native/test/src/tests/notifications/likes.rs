@@ -89,7 +89,7 @@ async fn like_on_news() -> Result<()> {
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
-    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(parent.object_id_str(), news_entry.event_id());
 
     Ok(())
 }
