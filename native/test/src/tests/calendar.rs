@@ -60,7 +60,7 @@ async fn calendar_smoketest() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.calendar_events().await?.len(), 3);
     Ok(())
 }
@@ -88,7 +88,7 @@ async fn edit_calendar_event() -> Result<()> {
     let cal_events = user.calendar_events().await?;
     assert_eq!(cal_events.len(), 3);
 
-    let main_event = cal_events.first().unwrap();
+    let main_event = cal_events.first().expect("main event should be available");
 
     let subscriber = main_event.subscribe();
 
@@ -144,7 +144,7 @@ async fn calendar_event_external_link() -> Result<()> {
     let cal_events = user.calendar_events().await?;
     assert_eq!(cal_events.len(), 3);
 
-    let event = cal_events.first().unwrap();
+    let event = cal_events.first().expect("first event should be available");
 
     // generate the external and internal links
 

@@ -168,13 +168,8 @@ async fn key_is_kept_and_reset() -> Result<()> {
     let backup_pass = backup_manager.enable().await?;
     assert_eq!(backup_manager.state_str(), "enabled");
     assert_eq!(
-        backup_manager
-            .stored_enc_key()
-            .await
-            .unwrap()
-            .text()
-            .unwrap(),
-        backup_pass
+        backup_manager.stored_enc_key().await?.text(),
+        Some(backup_pass)
     );
     assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
 

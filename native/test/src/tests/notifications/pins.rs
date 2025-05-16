@@ -69,7 +69,7 @@ async fn pins_creation_notification() -> Result<()> {
 
     assert_eq!(notifications.push_style(), "creation");
     assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
-    let parent = notifications.parent().unwrap();
+    let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
@@ -129,7 +129,7 @@ async fn pin_title_update() -> Result<()> {
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
     assert_eq!(parent.type_str(), "pin");
-    // assert_eq!(parent.title().unwrap(), "Acter Website");
+    // assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -186,7 +186,7 @@ async fn pin_desc_update() -> Result<()> {
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
     assert_eq!(parent.type_str(), "pin");
-    assert_eq!(parent.title().unwrap(), "Acter Website");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -242,7 +242,7 @@ async fn pin_redaction() -> Result<()> {
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/"));
     assert_eq!(parent.type_str(), "pin");
-    assert_eq!(parent.title().unwrap(), "Acter Website");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), obj_id);
 

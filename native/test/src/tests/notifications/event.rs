@@ -76,7 +76,7 @@ async fn event_creation_notification() -> Result<()> {
 
     assert_eq!(notifications.push_style(), "creation");
     assert_eq!(notifications.target_url(), format!("/events/{event_id}"));
-    let parent = notifications.parent().unwrap();
+    let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "event");
     assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
@@ -139,7 +139,7 @@ async fn event_title_update() -> Result<()> {
         format!("/events/{}", obj_id,)
     );
     assert_eq!(parent.type_str(), "event");
-    // assert_eq!(parent.title().unwrap(), "First Meeting"); // old name
+    // assert_eq!(parent.title().as_deref(), Some("First Meeting")); // old name
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -201,7 +201,7 @@ async fn event_desc_update() -> Result<()> {
         format!("/events/{}", obj_id,)
     );
     assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().unwrap(), "First meeting");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -266,7 +266,7 @@ async fn event_rescheduled() -> Result<()> {
         format!("/events/{}", obj_id,)
     );
     assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().unwrap(), "First meeting");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -329,7 +329,7 @@ async fn event_rsvp() -> Result<()> {
             format!("/events/{}", obj_id,)
         );
         assert_eq!(parent.type_str(), "event");
-        assert_eq!(parent.title().unwrap(), "First meeting");
+        assert_eq!(parent.title().as_deref(), Some("First meeting"));
         assert_eq!(parent.emoji(), "🗓️"); // calendar icon
         assert_eq!(parent.object_id_str(), obj_id);
     }
@@ -359,7 +359,7 @@ async fn event_rsvp() -> Result<()> {
             format!("/events/{}", obj_id,)
         );
         assert_eq!(parent.type_str(), "event");
-        assert_eq!(parent.title().unwrap(), "First meeting");
+        assert_eq!(parent.title().as_deref(), Some("First meeting"));
         assert_eq!(parent.emoji(), "🗓️"); // calendar icon
         assert_eq!(parent.object_id_str(), obj_id);
     }
@@ -389,7 +389,7 @@ async fn event_rsvp() -> Result<()> {
             format!("/events/{}", obj_id,)
         );
         assert_eq!(parent.type_str(), "event");
-        assert_eq!(parent.title().unwrap(), "First meeting");
+        assert_eq!(parent.title().as_deref(), Some("First meeting"));
         assert_eq!(parent.emoji(), "🗓️"); // calendar icon
         assert_eq!(parent.object_id_str(), obj_id);
     }
@@ -446,7 +446,7 @@ async fn event_redaction() -> Result<()> {
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/events/"));
     assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().unwrap(), "First Meeting");
+    assert_eq!(parent.title().as_deref(), Some("First Meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 

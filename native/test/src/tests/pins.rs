@@ -60,7 +60,7 @@ async fn pins_smoketest() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.pins().await?.len(), 3);
     Ok(())
 }
@@ -181,7 +181,9 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
 
@@ -219,11 +221,11 @@ async fn pin_attachments() -> Result<()> {
     // FIXME: for some reason this comes back as 'image'` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
-    //     attachment.file_desc().unwrap().name(),
+    //     attachment.file_desc().expect("file description should be available").name(),
     //     "effektio whitepaper"
     // );
     // assert_eq!(
-    //     attachment.file_desc().unwrap().source().url(),
+    //     attachment.file_desc().expect("file description should be available").source().url(),
     //     "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
     // );
 
@@ -327,7 +329,9 @@ async fn pin_self_ref_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "ref");
 

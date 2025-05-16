@@ -534,9 +534,18 @@ async fn get_email_tokens(email_addr: String, dir: &str) -> Result<(String, Stri
         );
         let re = Regex::new(&pattern)?;
         if let Some(caps) = re.captures(&plain_body) {
-            let token = caps.get(1).map(|m| m.as_str()).unwrap();
-            let client_secret = caps.get(2).map(|m| m.as_str()).unwrap();
-            let sid = caps.get(3).map(|m| m.as_str()).unwrap();
+            let token = caps
+                .get(1)
+                .map(|m| m.as_str())
+                .expect("token should be available");
+            let client_secret = caps
+                .get(2)
+                .map(|m| m.as_str())
+                .expect("client secret should be available");
+            let sid = caps
+                .get(3)
+                .map(|m| m.as_str())
+                .expect("sid should be available");
 
             info!("token: {}", token);
             info!("client secret: {}", client_secret);

@@ -88,8 +88,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
-    assert_eq!(activity.sub_type_str().unwrap(), "image");
-    assert_eq!(activity.name().unwrap(), "Fishy.png");
+    assert_eq!(activity.sub_type_str().as_deref(), Some("image"));
+    assert_eq!(activity.name().as_deref(), Some("Fishy.png"));
     let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
@@ -163,8 +163,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
-    assert_eq!(activity.sub_type_str().unwrap(), "file");
-    assert_eq!(activity.name().unwrap(), "Fishy.png");
+    assert_eq!(activity.sub_type_str().as_deref(), Some("file"));
+    assert_eq!(activity.name().as_deref(), Some("Fishy.png"));
     let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
@@ -241,10 +241,10 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     assert_eq!(activity.type_str(), "references");
     // check the ref details
     let ref_details = activity.ref_details().expect("ref details were found");
-    assert_eq!(ref_details.title().unwrap(), "Acter Website");
+    assert_eq!(ref_details.title().as_deref(), Some("Acter Website"));
     assert_eq!(
-        ref_details.target_id_str().unwrap(),
-        pin.event_id().to_string()
+        ref_details.target_id_str(),
+        Some(pin.event_id().to_string())
     );
 
     // check the parent

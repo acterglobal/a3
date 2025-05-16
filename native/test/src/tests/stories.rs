@@ -92,7 +92,7 @@ async fn story_smoketest() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.latest_stories(10).await?.len(), 3);
 
     let mut draft = main_space.story_draft()?;
@@ -156,7 +156,7 @@ async fn story_plain_text_test() -> Result<()> {
     //     .get_notification_item(space.room_id().to_string(), event_id.to_string())
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
+    // assert_eq!(Some(notif.title()), space.name());
     // assert_eq!(notif.push_style().as_str(), "story");
     // assert_eq!(
     //     notif.body().map(|e| e.body()).as_deref(),
@@ -285,7 +285,7 @@ async fn story_markdown_text_test() -> Result<()> {
     //     )
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
+    // assert_eq!(Some(notif.title()), space.name());
     // assert_eq!(notif.push_style().as_str(), "story");
     // assert_eq!(
     //     notif.body().and_then(|e| e.formatted_body()).as_deref(),
@@ -352,7 +352,7 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     //     )
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
+    // assert_eq!(Some(notif.title()), space.name());
     // assert!(notif.body().is_none());
     // assert_eq!(notif.push_style().as_str(), "story");
     // assert!(notif.has_image());
@@ -646,7 +646,7 @@ async fn story_read_receipt_test() -> Result<()> {
     .await?;
 
     let slides = space.latest_stories(1).await?;
-    let final_entry = slides.first().unwrap();
+    let final_entry = slides.first().expect("first slide should be available");
     let main_receipts_manager = final_entry.read_receipts().await?;
     assert_eq!(main_receipts_manager.read_count(), 0);
 
@@ -680,7 +680,7 @@ async fn story_read_receipt_test() -> Result<()> {
         .await?;
 
         let slides = space.latest_stories(1).await?;
-        let story_entry = slides.first().unwrap();
+        let story_entry = slides.first().expect("first slide should be available");
 
         let local_receipts_manager = story_entry.read_receipts().await?;
         assert_eq!(local_receipts_manager.read_count(), uidx);
@@ -761,9 +761,11 @@ async fn multi_story_read_receipt_test() -> Result<()> {
     })
     .await?;
     let mut slides_iter = slides.into_iter();
-    let newest_slide = slides_iter.next().unwrap();
+    let newest_slide = slides_iter
+        .next()
+        .expect("newest slide should be available");
     assert_eq!(newest_slide.event_id(), second_story_id);
-    let older_slide = slides_iter.next().unwrap();
+    let older_slide = slides_iter.next().expect("older slide should be available");
     assert_eq!(older_slide.event_id(), first_story_id);
 
     let newest_slide_rr_manager = newest_slide.read_receipts().await?;
@@ -803,7 +805,7 @@ async fn multi_story_read_receipt_test() -> Result<()> {
         .await?
         .into_iter();
 
-        let newest_entry = slides.next().unwrap();
+        let newest_entry = slides.next().expect("newest slide should be available");
         assert_eq!(newest_entry.event_id(), second_story_id);
 
         let local_receipts_manager = newest_entry.read_receipts().await?;
@@ -836,7 +838,7 @@ async fn multi_story_read_receipt_test() -> Result<()> {
 
         // now the user is looking at the older slide
 
-        let older_entry = slides.next().unwrap();
+        let older_entry = slides.next().expect("older slide should be available");
         assert_eq!(older_entry.event_id(), first_story_id);
 
         let local_receipts_manager = older_entry.read_receipts().await?;

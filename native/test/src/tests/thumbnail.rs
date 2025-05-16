@@ -514,11 +514,15 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_id);
     assert_eq!(attachment.type_str(), "image");
 
-    let msg_content = attachment.msg_content().unwrap();
+    let msg_content = attachment
+        .msg_content()
+        .expect("msg content should be available");
     assert!(
         msg_content.thumbnail_source().is_some(),
         "we sent thumbnail, but thumbnail source not available",
@@ -608,11 +612,15 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_id);
     assert_eq!(attachment.type_str(), "video");
 
-    let msg_content = attachment.msg_content().unwrap();
+    let msg_content = attachment
+        .msg_content()
+        .expect("msg content should be available");
     assert!(
         msg_content.thumbnail_source().is_some(),
         "we sent thumbnail, but thumbnail source not available",

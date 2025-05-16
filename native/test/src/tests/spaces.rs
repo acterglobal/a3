@@ -115,9 +115,9 @@ async fn leaving_spaces() -> Result<()> {
     })
     .await?;
 
-    let first = spaces.pop().unwrap();
-    let second = spaces.pop().unwrap();
-    let last = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
+    let second = spaces.pop().expect("second space should be available");
+    let last = spaces.pop().expect("third space should be available");
 
     let mut first_listener = user.subscribe(first.room_id());
     let mut news_listener = user.subscribe(IndexKey::Section(SectionIndex::Boosts));
@@ -243,7 +243,7 @@ async fn create_subspace() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
@@ -317,7 +317,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let settings = Retry::spawn(retry_strategy.clone(), || {
         let first = first.clone();
@@ -418,7 +418,7 @@ async fn create_with_custom_space_settings() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let settings = Retry::spawn(retry_strategy.clone(), || {
         let first = first.clone();
@@ -488,7 +488,7 @@ async fn create_private_subspace() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
@@ -563,7 +563,7 @@ async fn create_public_subspace() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
@@ -638,7 +638,7 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let first = spaces.pop().unwrap();
+    let first = spaces.pop().expect("first space should be available");
 
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
@@ -753,7 +753,7 @@ async fn update_name() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let space = spaces.pop().unwrap();
+    let space = spaces.pop().expect("first space should be available");
     let listener = space.subscribe();
     let space_id = space.room_id().to_string();
 
@@ -876,7 +876,7 @@ async fn update_topic() -> Result<()> {
 
     assert_eq!(spaces.len(), 1);
 
-    let space = spaces.pop().unwrap();
+    let space = spaces.pop().expect("first space should be available");
     let listener = space.subscribe();
     let space_id = space.room_id().to_string();
 

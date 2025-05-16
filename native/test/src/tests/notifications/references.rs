@@ -232,7 +232,7 @@ async fn reference_pin_on_event() -> Result<()> {
         )
     );
     assert_eq!(parent.type_str().as_str(), "event");
-    assert_eq!(parent.title().unwrap().as_str(), "First meeting");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️");
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -331,7 +331,7 @@ async fn reference_pin_on_tasklist() -> Result<()> {
         )
     );
     assert_eq!(parent.type_str().as_str(), "task-list");
-    assert_eq!(parent.title().unwrap().as_str(), "Onboarding list");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -361,7 +361,8 @@ async fn link_attachment_on_task() -> Result<()> {
             if tasks.is_empty() {
                 bail!("task not found");
             }
-            Ok(tasks.first().unwrap().clone())
+            let task = tasks.first().expect("first task should be available");
+            Ok(task.clone())
         }
     })
     .await?;
@@ -436,7 +437,7 @@ async fn link_attachment_on_task() -> Result<()> {
         )
     );
     assert_eq!(parent.type_str().as_str(), "task");
-    assert_eq!(parent.title().unwrap().as_str(), "Scroll news");
+    assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.emoji(), "☑️"); // task
 
     Ok(())

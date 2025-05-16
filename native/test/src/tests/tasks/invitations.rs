@@ -70,7 +70,7 @@ async fn task_invitation() -> Result<()> {
     let activity = first.activity(event_id.to_string()).await?;
 
     assert_eq!(activity.type_str(), "objectInvitation");
-    let object = activity.object().unwrap();
+    let object = activity.object().expect("object should be available");
     assert_eq!(object.object_id_str(), obj_entry.event_id().to_string());
     assert_eq!(activity.whom().len(), 1);
     assert_eq!(activity.whom()[0], second_user.user_id()?.to_string());
@@ -111,8 +111,8 @@ async fn task_invitation() -> Result<()> {
         .get_notification_item(space_id.to_string(), event_id.to_string())
         .await?;
     assert_eq!(notification.push_style(), "objectInvitation");
-    let parent = notification.parent().unwrap();
-    assert_eq!(parent.title().unwrap(), "Scroll news");
+    let parent = notification.parent().expect("parent should be available");
+    assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.type_str(), "task");
     assert_eq!(notification.sender().user_id(), first.user_id()?);
     assert_eq!(
@@ -379,7 +379,7 @@ async fn can_invite_after_unassign_task() -> Result<()> {
         })
         .await?;
 
-        assert!(!invites.can_invite(second_user_str.clone()).unwrap());
+        assert!(!invites.can_invite(second_user_str)?);
     }
 
     Ok(())

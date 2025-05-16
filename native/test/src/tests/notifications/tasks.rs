@@ -74,7 +74,7 @@ async fn tasklist_creation_notification() -> Result<()> {
 
     assert_eq!(notifications.push_style(), "creation");
     assert_eq!(notifications.target_url(), format!("/tasks/{event_id}"));
-    let parent = notifications.parent().unwrap();
+    let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Babies first task list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
@@ -199,7 +199,7 @@ async fn tasklist_desc_update() -> Result<()> {
         format!("/tasks/{}", obj_id,)
     );
     assert_eq!(parent.type_str(), "task-list");
-    assert_eq!(parent.title().unwrap(), "Onboarding list");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -255,7 +255,7 @@ async fn tasklist_redaction() -> Result<()> {
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/tasks/"));
     assert_eq!(parent.type_str(), "task-list");
-    assert_eq!(parent.title().unwrap(), "Onboarding list");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -292,7 +292,7 @@ async fn task_created() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut task = obj_entry.task_builder().unwrap();
+    let mut task = obj_entry.task_builder()?;
     task.due_date(2025, 11, 13);
     task.title("Baby's first task".to_owned());
 
@@ -383,7 +383,7 @@ async fn task_title_update() -> Result<()> {
         format!("/tasks/{tl_id}/{obj_id}")
     );
     assert_eq!(parent.type_str(), "task");
-    // assert_eq!(parent.title().unwrap(), "Onboarding List");
+    // assert_eq!(parent.title().as_deref(), Some("Onboarding List"));
     assert_eq!(parent.emoji(), "☑️"); // task icon
     assert_eq!(parent.object_id_str(), obj_id);
 

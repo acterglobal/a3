@@ -52,7 +52,9 @@ async fn chat_invitation_shows_up() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(!room.is_space());
@@ -110,7 +112,9 @@ async fn space_invitation_shows_up() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -153,7 +157,9 @@ async fn space_invitation_disappears_when_joined() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -219,7 +225,9 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), sisko_room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -293,7 +301,9 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), sisko_room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -399,7 +409,9 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), sisko_room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
