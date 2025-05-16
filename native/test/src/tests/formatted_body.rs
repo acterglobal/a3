@@ -52,7 +52,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
 
     // sisko sends the formatted text message to kyra
-    let draft = sisko.text_markdown_draft("**Hello**".to_string());
+    let draft = sisko.text_markdown_draft("**Hello**".to_owned());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // wait for sync to catch up

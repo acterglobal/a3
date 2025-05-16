@@ -37,7 +37,7 @@ async fn edit_text_msg() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -95,7 +95,7 @@ async fn edit_text_msg() -> Result<()> {
     })
     .await?;
 
-    let draft = user.text_plain_draft("This is message edition".to_string());
+    let draft = user.text_plain_draft("This is message edition".to_owned());
     timeline
         .edit_message(sent_event_id.to_string(), Box::new(draft))
         .await?;
@@ -185,7 +185,7 @@ async fn edit_image_msg() -> Result<()> {
 
     let draft = user.image_draft(
         tmp_jpg.path().to_string_lossy().to_string(),
-        "image/jpeg".to_string(),
+        "image/jpeg".to_owned(),
     );
     timeline.send_message(Box::new(draft)).await?;
 
@@ -252,7 +252,7 @@ async fn edit_image_msg() -> Result<()> {
 
     let draft = user.image_draft(
         tmp_png.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     timeline
         .edit_message(sent_event_id.to_string(), Box::new(draft))

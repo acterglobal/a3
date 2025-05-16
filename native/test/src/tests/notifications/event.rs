@@ -307,7 +307,7 @@ async fn event_rsvp() -> Result<()> {
     // test yes
     {
         let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("yes".to_string());
+        rsvp.status("yes".to_owned());
 
         let notification_ev = rsvp.send().await?;
 
@@ -337,7 +337,7 @@ async fn event_rsvp() -> Result<()> {
     // test no
     {
         let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("no".to_string());
+        rsvp.status("no".to_owned());
 
         let notification_ev = rsvp.send().await?;
 
@@ -367,7 +367,7 @@ async fn event_rsvp() -> Result<()> {
     // test no
     {
         let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("maybe".to_string());
+        rsvp.status("maybe".to_owned());
 
         let notification_ev = rsvp.send().await?;
 

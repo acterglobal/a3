@@ -96,7 +96,7 @@ async fn story_smoketest() -> Result<()> {
     assert_eq!(main_space.latest_stories(10).await?.len(), 3);
 
     let mut draft = main_space.story_draft()?;
-    let text_draft = user.text_plain_draft("This is text slide".to_string());
+    let text_draft = user.text_plain_draft("This is text slide".to_owned());
     draft.add_slide(Box::new(text_draft.into())).await?;
     let event_id = draft.send().await?;
     print!("draft sent event id: {}", event_id);
@@ -320,7 +320,7 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/jpg".to_string(),
+        "image/jpg".to_owned(),
     );
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
@@ -387,7 +387,7 @@ async fn story_png_image_with_text_test() -> Result<()> {
     let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
@@ -440,7 +440,7 @@ async fn story_multiple_slide_test() -> Result<()> {
     let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     let markdown_draft =
         user.text_markdown_draft("This update is ***reallly important***".to_owned());
@@ -454,7 +454,7 @@ async fn story_multiple_slide_test() -> Result<()> {
 
     let video_draft = user.video_draft(
         vid_file.path().to_string_lossy().to_string(),
-        "video/mp4".to_string(),
+        "video/mp4".to_owned(),
     );
 
     // we add three slides
@@ -530,7 +530,7 @@ async fn story_like_reaction_test() -> Result<()> {
     let mut draft = space.story_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;

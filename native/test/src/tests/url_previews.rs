@@ -127,7 +127,7 @@ async fn url_preview_on_message() -> Result<()> {
     let first = users.first().expect("exists");
     let target_uri = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
-        .to_string();
+        .to_owned();
 
     let preview = user.url_preview(target_uri.clone()).await?;
 

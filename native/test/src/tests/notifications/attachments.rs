@@ -102,7 +102,7 @@ async fn image_attachment_on_pin() -> Result<()> {
     let base_draft = first
         .image_draft(
             png_file.path().to_string_lossy().to_string(),
-            "image/png".to_string(),
+            "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned());
     let notification_id = manager
@@ -201,7 +201,7 @@ async fn file_attachment_on_event() -> Result<()> {
     let base_draft = first
         .file_draft(
             png_file.path().to_string_lossy().to_string(),
-            "document/x-src".to_string(),
+            "document/x-src".to_owned(),
         )
         .filename("Fishy.doc".to_owned());
     let notification_id = manager
@@ -301,7 +301,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
     let base_draft = first
         .video_draft(
             png_file.path().to_string_lossy().to_string(),
-            "video/mpeg4".to_string(),
+            "video/mpeg4".to_owned(),
         )
         .filename("Fishy.mp4".to_owned());
     let notification_id = manager

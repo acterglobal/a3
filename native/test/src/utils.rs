@@ -46,10 +46,10 @@ async fn random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
     let user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         format!("it-{prefix}-{uuid}"),
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
@@ -117,10 +117,10 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
     ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         format!("it-{prefix}-{uuid}"),
         Some(registration_token.to_owned()),
         "acter-integration-tests".to_owned(),
@@ -149,7 +149,7 @@ pub async fn random_users_with_random_convo(
 pub fn default_user_password(username: &str) -> String {
     match option_env!("REGISTRATION_TOKEN") {
         Some(t) => format!("{t}:{username}"),
-        _ => username.to_string(),
+        _ => username.to_owned(),
     }
 }
 
@@ -157,10 +157,10 @@ pub async fn login_test_user(username: String) -> Result<Client> {
     ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         username,
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
@@ -177,10 +177,10 @@ pub async fn random_user_with_template(
     let mut user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         format!("it-{prefix}-{uuid}"),
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),

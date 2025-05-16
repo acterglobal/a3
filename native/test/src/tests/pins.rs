@@ -162,7 +162,7 @@ async fn pin_attachments() -> Result<()> {
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.image_draft(
         jpg_file.path().to_string_lossy().to_string(),
-        "image/jpeg".to_string(),
+        "image/jpeg".to_owned(),
     );
     let attachment_1_id = attachments_manager
         .content_draft(Box::new(base_draft))
@@ -196,7 +196,7 @@ async fn pin_attachments() -> Result<()> {
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.file_draft(
         png_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     let attachment_2_id = attachments_manager
         .content_draft(Box::new(base_draft))

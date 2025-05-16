@@ -70,7 +70,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     let base_draft = first
         .image_draft(
             png_file.path().to_string_lossy().to_string(),
-            "image/png".to_string(),
+            "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned());
     let activity_id = manager
@@ -145,7 +145,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     let base_draft = first
         .file_draft(
             png_file.path().to_string_lossy().to_string(),
-            "image/png".to_string(),
+            "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned());
     let activity_id = manager

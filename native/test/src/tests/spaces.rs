@@ -493,7 +493,7 @@ async fn create_private_subspace() -> Result<()> {
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("invite".to_string());
+    cfg.join_rule("invite".to_owned());
 
     let settings = cfg.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -568,7 +568,7 @@ async fn create_public_subspace() -> Result<()> {
     let mut cfg = new_space_settings_builder();
     cfg.set_name("subspace".to_owned());
     cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("PUBLIC".to_string());
+    cfg.join_rule("PUBLIC".to_owned());
 
     let settings = cfg.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -674,7 +674,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
     let mut update = new_join_rule_builder();
-    update.join_rule("invite".to_string());
+    update.join_rule("invite".to_owned());
 
     space.set_join_rule(Box::new(update)).await?;
 
@@ -696,7 +696,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert!(matches!(join_rule, JoinRule::Invite));
 
     let mut update = new_join_rule_builder();
-    update.join_rule("restricted".to_string());
+    update.join_rule("restricted".to_owned());
     update.add_room(space_parent.room_id().to_string());
 
     space.set_join_rule(Box::new(update)).await?;

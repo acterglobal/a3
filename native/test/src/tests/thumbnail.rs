@@ -56,7 +56,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     let draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -168,7 +168,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     let draft = user
         .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -294,7 +294,7 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
     let image_draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -373,7 +373,7 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
     let video_draft = user
         .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -493,7 +493,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     let base_draft = user
         .image_draft(
             jpg_file.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -591,7 +591,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let base_draft = user
         .video_draft(
             mp4_file.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));

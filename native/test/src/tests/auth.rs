@@ -25,10 +25,10 @@ async fn guest_can_login() -> Result<()> {
     if should_test == "1" || should_test == "true" {
         let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string();
+            .to_owned();
         let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string();
+            .to_owned();
 
         let tmp_dir = TempDir::new()?;
         let _client = guest_client(
@@ -36,7 +36,7 @@ async fn guest_can_login() -> Result<()> {
             tmp_dir.path().to_string_lossy().to_string(),
             homeserver_name,
             homeserver_url,
-            Some("GUEST_DEV".to_string()),
+            Some("GUEST_DEV".to_owned()),
         )
         .await?;
     } else {
@@ -60,11 +60,11 @@ async fn user_can_login() -> Result<()> {
         default_user_password(username),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
-        Some("SISKO_DEV".to_string()),
+            .to_owned(),
+        Some("SISKO_DEV".to_owned()),
     )
     .await?;
     Ok(())
@@ -80,10 +80,10 @@ async fn user_can_restore() -> Result<()> {
 
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
-        .to_string();
+        .to_owned();
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
-        .to_string();
+        .to_owned();
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
     let (config, user_id) = make_client_config(
@@ -103,7 +103,7 @@ async fn user_can_restore() -> Result<()> {
             user_id.to_owned(),
             default_user_password(username),
             None,
-            Some("KYRA_DEV".to_string()),
+            Some("KYRA_DEV".to_owned()),
         )
         .await?;
         let token = client.restore_token().await?;
@@ -131,10 +131,10 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
 
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
-        .to_string();
+        .to_owned();
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
-        .to_string();
+        .to_owned();
     let base_dir = TempDir::new()?;
     let media_dir = TempDir::new()?;
     let db_passphrase = Uuid::new_v4().to_string();
@@ -155,7 +155,7 @@ async fn kyra_can_restore_with_db_passphrase() -> Result<()> {
             user_id,
             default_user_password(username),
             Some(db_passphrase),
-            Some("KYRA_DEV".to_string()),
+            Some("KYRA_DEV".to_owned()),
         )
         .await?;
         let token = client.restore_token().await?;
@@ -325,10 +325,10 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     let res = login_new_client(
         base_dir.path().to_string_lossy().to_string(),
         media_dir.path().to_string_lossy().to_string(),
-        username.to_string(),
+        username.to_owned(),
         old_pswd,
-        homeserver_name.to_string(),
-        homeserver_url.to_string(),
+        homeserver_name.to_owned(),
+        homeserver_url.to_owned(),
         None,
     )
     .await;
@@ -340,10 +340,10 @@ async fn can_reset_password_via_email_with_login() -> Result<()> {
     let res = login_new_client(
         base_dir.path().to_string_lossy().to_string(),
         media_dir.path().to_string_lossy().to_string(),
-        username.to_string(),
+        username.to_owned(),
         new_pswd,
-        homeserver_name.to_string(),
-        homeserver_url.to_string(),
+        homeserver_name.to_owned(),
+        homeserver_url.to_owned(),
         None,
     )
     .await;
@@ -406,7 +406,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     let res = login_new_client(
         base_dir.path().to_string_lossy().to_string(),
         media_dir.path().to_string_lossy().to_string(),
-        username.to_string(),
+        username.to_owned(),
         old_pswd,
         homeserver_name.to_owned(),
         homeserver_url.to_owned(),
@@ -421,7 +421,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
     let res = login_new_client(
         base_dir.path().to_string_lossy().to_string(),
         media_dir.path().to_string_lossy().to_string(),
-        username.to_string(),
+        username.to_owned(),
         new_pswd,
         homeserver_name.to_owned(),
         homeserver_url.to_owned(),
@@ -437,7 +437,7 @@ async fn can_reset_password_via_email_without_login() -> Result<()> {
 async fn get_emails_of(email_addr: String) -> Result<MessageList> {
     let mailhog_url = option_env!("MAILHOG_URL")
         .unwrap_or("http://localhost:8025")
-        .to_string();
+        .to_owned();
     let mailhog = MailHog::new(mailhog_url);
     let params = SearchParams {
         start: None,

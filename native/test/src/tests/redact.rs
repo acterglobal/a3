@@ -36,7 +36,7 @@ async fn message_redaction() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -92,7 +92,7 @@ async fn message_redaction() -> Result<()> {
         .redact_message(
             received.clone(),
             user.user_id()?.to_string(),
-            Some("redact-test".to_string()),
+            Some("redact-test".to_owned()),
             None,
         )
         .await?;
