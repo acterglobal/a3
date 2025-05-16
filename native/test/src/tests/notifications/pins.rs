@@ -224,7 +224,6 @@ async fn pin_redaction() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let obj_id = pin.event_id().to_string();
     let space = first.space(pin.room_id().to_string()).await?;
     let notification_ev = space.redact(pin.event_id(), None, None).await?.event_id;
 
@@ -236,15 +235,15 @@ async fn pin_redaction() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in redaction"),
-        obj_id,
+        *pin.event_id()
     );
 
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/"));
+    assert_eq!(notification_item.target_url(), "/pins/");
     assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *pin.event_id());
 
     Ok(())
 }

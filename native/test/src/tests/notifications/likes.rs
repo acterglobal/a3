@@ -82,7 +82,7 @@ async fn like_on_news() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in like"),
-        news_entry.event_id().to_string()
+        news_entry.event_id()
     );
     assert!(notification_item.body().is_none());
     assert_eq!(notification_item.reaction_key().as_deref(), Some("❤️"));

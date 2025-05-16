@@ -91,13 +91,13 @@ async fn edit_text_msg() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let event_id = target_id.clone();
-        async move { timeline.get_message(event_id.to_string()).await }
+        async move { timeline.get_message(event_id).await }
     })
     .await?;
 
     let draft = user.text_plain_draft("This is message edition".to_owned());
     timeline
-        .edit_message(sent_event_id.to_string(), Box::new(draft))
+        .edit_message(sent_event_id.clone(), Box::new(draft))
         .await?;
 
     // msg edition may reach via set action
@@ -239,7 +239,7 @@ async fn edit_image_msg() -> Result<()> {
         "image/png".to_owned(),
     );
     timeline
-        .edit_message(sent_event_id.to_string(), Box::new(draft))
+        .edit_message(sent_event_id.clone(), Box::new(draft))
         .await?;
 
     // msg edition may reach via set action

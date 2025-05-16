@@ -41,7 +41,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(token.accepted_count(), 0);
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 1);
-    assert_eq!(rooms[0], room_id.to_string());
+    assert_eq!(rooms[0], room_id);
 
     let token_str = token.token();
 
@@ -53,7 +53,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     let new_super_invites = new_user.super_invites();
     let new_rooms = new_super_invites.redeem(token_str).await?;
     assert_eq!(new_rooms.len(), 1);
-    assert_eq!(new_rooms[0], room_id.to_string());
+    assert_eq!(new_rooms[0], room_id);
 
     let state_sync = new_user.start_sync();
     state_sync.await_has_synced_history().await?;
@@ -101,7 +101,7 @@ async fn super_invites_manage() -> Result<()> {
         .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 1);
-    assert_eq!(rooms[0], room_id.to_string());
+    assert_eq!(rooms[0], room_id);
     assert!(!token.create_dm());
 
     let tokens = super_invites.tokens().await?;

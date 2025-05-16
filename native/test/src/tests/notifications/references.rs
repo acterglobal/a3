@@ -117,10 +117,8 @@ async fn ref_event_on_pin() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "🗓️ First meeting");
     let parent = notification_item.parent().expect("parent was found");
@@ -128,14 +126,14 @@ async fn ref_event_on_pin() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/pins/{}?section=references&referenceId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
     assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -179,17 +177,17 @@ async fn reference_pin_on_event() -> Result<()> {
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = obj_entry.event_id().to_string();
+    let obj_id = obj_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
     Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
+        let obj_id = obj_id.to_string();
         async move {
             if client.object_push_subscription_status(obj_id, None).await?
                 != SubscriptionStatus::Subscribed
@@ -216,10 +214,8 @@ async fn reference_pin_on_event() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
@@ -227,14 +223,14 @@ async fn reference_pin_on_event() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/events/{}?section=references&referenceId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
     assert_eq!(parent.type_str(), "event");
     assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️");
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -278,17 +274,17 @@ async fn reference_pin_on_tasklist() -> Result<()> {
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = obj_entry.event_id().to_string();
+    let obj_id = obj_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
     Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
+        let obj_id = obj_id.to_string();
         async move {
             if client.object_push_subscription_status(obj_id, None).await?
                 != SubscriptionStatus::Subscribed
@@ -315,10 +311,8 @@ async fn reference_pin_on_tasklist() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
@@ -326,14 +320,14 @@ async fn reference_pin_on_tasklist() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/tasks/{}?section=references&referenceId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
     assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -383,17 +377,17 @@ async fn link_attachment_on_task() -> Result<()> {
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = obj_entry.event_id().to_string();
+    let obj_id = obj_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
     Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
+        let obj_id = obj_id.to_string();
         async move {
             if client.object_push_subscription_status(obj_id, None).await?
                 != SubscriptionStatus::Subscribed
@@ -420,10 +414,8 @@ async fn link_attachment_on_task() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in references"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "📌 Acter Website");
     let parent = notification_item.parent().expect("parent was found");
@@ -432,7 +424,7 @@ async fn link_attachment_on_task() -> Result<()> {
         format!(
             "/tasks/{}/{}?section=references&referenceId={}",
             obj_entry.task_list_id_str(),
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );

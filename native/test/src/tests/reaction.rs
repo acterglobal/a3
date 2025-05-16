@@ -134,11 +134,11 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     info!("toggling kyra");
     kyra_timeline
-        .toggle_reaction(kyra_unique_id.to_string(), "👏".to_owned())
+        .toggle_reaction(kyra_unique_id, "👏".to_owned())
         .await?;
     info!("toggling worf");
     worf_timeline
-        .toggle_reaction(worf_unique_id.to_string(), "😎".to_owned())
+        .toggle_reaction(worf_unique_id, "😎".to_owned())
         .await?;
     info!("after toggle");
 

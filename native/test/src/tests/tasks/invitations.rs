@@ -67,7 +67,7 @@ async fn task_invitation() -> Result<()> {
     let _ = stream.next().await; // await the invite being sent
 
     // check activity
-    let activity = first.activity(event_id.to_string()).await?;
+    let activity = first.activity(event_id.clone()).await?;
 
     assert_eq!(activity.type_str(), "objectInvitation");
     let object = activity.object().expect("object should be available");
@@ -108,7 +108,7 @@ async fn task_invitation() -> Result<()> {
     // as it is a mention, we get it without having to actually
     // been subscribing to anything special
     let notification = second_user
-        .get_notification_item(space_id.to_string(), event_id.to_string())
+        .get_notification_item(space_id.to_string(), event_id)
         .await?;
     assert_eq!(notification.push_style(), "objectInvitation");
     let parent = notification.parent().expect("parent should be available");
