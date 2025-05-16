@@ -4,8 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:acter/features/onboarding/pages/onboarding_page.dart';
 import 'package:acter/features/onboarding/providers/onboarding_provider.dart';
+import 'package:acter/features/backups/providers/backup_state_providers.dart';
+import 'package:acter/features/backups/providers/notifiers/backup_state_notifier.dart';
+import 'package:acter/features/backups/types.dart';
+import 'package:acter/l10n/generated/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../../../helpers/test_util.dart';
+
+class MockRecoveryStateNotifier extends RecoveryStateNotifier {
+  final RecoveryState _state;
+
+  MockRecoveryStateNotifier(this._state);
+
+  @override
+  RecoveryState build() => _state;
+}
 
 void main() {
   Future<void> createWidgetUnderTest({
@@ -14,7 +28,23 @@ void main() {
     required WidgetTester tester,
   }) {
     return tester.pumpProviderWidget(
-      child: OnboardingPage(isLoginOnboarding: isLogin, username: username),
+      child: MaterialApp(
+        localizationsDelegates: [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SizedBox(
+              height: 800, // Provide enough height to prevent overflow
+              child: OnboardingPage(isLoginOnboarding: isLogin, username: username),
+            ),
+          ),
+        ),
+      ),
       overrides: [
         onboardingPermissionsProvider.overrideWith(
           (ref) => Future.value(
@@ -23,6 +53,9 @@ void main() {
               showCalendarPermission: false,
             ),
           ),
+        ),
+        backupStateProvider.overrideWith(
+          () => MockRecoveryStateNotifier(RecoveryState.disabled),
         ),
       ],
     );
@@ -41,6 +74,7 @@ void main() {
     tester,
   ) async {
     await createWidgetUnderTest(tester: tester, isLogin: true);
+    await tester.pumpAndSettle();
 
     expect(find.byType(SaveUsernamePage), findsNothing);
   });
@@ -75,6 +109,6 @@ void main() {
     );
 
     // 5 onboarding + permissions (may vary) + analytics
-    expect(indicatorDots.evaluate().length, greaterThanOrEqualTo(7));
+    expect(indicatorDots.evaluate().length, greaterThanOrEqualTo(8));
   });
 }
