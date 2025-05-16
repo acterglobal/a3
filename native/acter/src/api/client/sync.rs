@@ -10,7 +10,10 @@ use futures::{
     stream::{Stream, StreamExt},
 };
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use matrix_sdk::{config::SyncSettings, event_handler::Ctx, room::Room as SdkRoom, RumaApiError};
+use matrix_sdk::{
+    config::SyncSettings, deserialized_responses::TimelineEventKind, event_handler::Ctx,
+    room::Room as SdkRoom, RumaApiError,
+};
 use matrix_sdk_base::{
     ruma::{
         api::client::{
@@ -341,7 +344,7 @@ impl Client {
         Ok(())
     }
 
-    async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) {
+    async fn refresh_rooms(&self, changed_rooms: Vec<&OwnedRoomId>) -> Vec<OwnedRoomId> {
         let update_keys = {
             let client = self.core.client();
             let mut updated: Vec<OwnedRoomId> = vec![];
@@ -373,17 +376,20 @@ impl Client {
                 }
 
                 let inner = Room::new(self.core.clone(), room.clone());
+                let mut should_notify = false;
 
                 if inner.is_space() {
                     if let Some(space_idx) = spaces.iter().position(|s| s.room_id() == r_id) {
                         let space = spaces.remove(space_idx).update_room(inner);
                         spaces.insert(space_idx, space);
                     } else {
-                        spaces.push_front(Space::new(self.clone(), inner))
+                        spaces.push_front(Space::new(self.clone(), inner));
+                        should_notify = true;
                     }
                     // also clear from convos if it was in there...
-                    remove_from_chat(&mut chats, r_id);
-                    updated.push(r_id.clone());
+                    if remove_from_chat(&mut chats, r_id) {
+                        should_notify = true;
+                    }
                 } else {
                     if let Some(chat_idx) = chats.iter().position(|s| s.room_id() == r_id) {
                         let chat = chats.remove(chat_idx).update_room(inner);
@@ -391,9 +397,15 @@ impl Client {
                         insert_to_chat(&mut chats, chat);
                     } else {
                         insert_to_chat(&mut chats, Convo::new(self.clone(), inner).await);
+                        should_notify = true;
                     }
                     // also clear from convos if it was in there...
-                    remove_from(&mut spaces, r_id);
+                    if remove_from(&mut spaces, r_id) {
+                        should_notify = true;
+                    }
+                }
+                if should_notify {
+                    // if this appears for the first time, we want to notify about it
                     updated.push(r_id.clone());
                 }
             }
@@ -401,25 +413,29 @@ impl Client {
             updated
         };
         info!("refreshed room: {:?}", update_keys);
-        self.executor().notify(
-            update_keys
-                .into_iter()
-                .map(ExecuteReference::Room)
-                .collect(),
-        );
+        update_keys
     }
 }
 
 // helper methods for managing spaces and chats
-fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) {
+fn remove_from(target: &mut RwLockWriteGuard<ObservableVector<Space>>, r_id: &OwnedRoomId) -> bool {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
         target.remove(idx);
+        true
+    } else {
+        false
     }
 }
 
-fn remove_from_chat(target: &mut RwLockWriteGuard<ObservableVector<Convo>>, r_id: &OwnedRoomId) {
+fn remove_from_chat(
+    target: &mut RwLockWriteGuard<ObservableVector<Convo>>,
+    r_id: &OwnedRoomId,
+) -> bool {
     if let Some(idx) = target.iter().position(|s| s.room_id() == r_id) {
         target.remove(idx);
+        true
+    } else {
+        false
     }
 }
 
@@ -564,28 +580,55 @@ impl Client {
                     .collect::<Vec<&OwnedRoomId>>();
 
                 if !changed_rooms.is_empty() {
+                    // changes observed, calculate which keys need to be updated
                     trace!(?changed_rooms, "changed rooms");
-                    me.refresh_rooms(changed_rooms).await;
+                    // by first refreshing rooms where necessary
+                    let mut updated_room_ids = me.refresh_rooms(changed_rooms).await;
 
-                    // we have seen changes, see if we have
-                    // account data to inform about
-                    let keys = response
-                        .rooms
-                        .joined
-                        .iter()
-                        .flat_map(|(room_id, updates)| {
-                            updates.account_data.iter().filter_map(|raw| {
-                                raw.get_field::<String>("type").ok().flatten().map(|s| {
-                                    ExecuteReference::RoomAccountData(
-                                        room_id.clone(),
-                                        Cow::Owned(s),
+                    let mut keys = Vec::new();
+
+                    // and then checking if any updates in the joined rooms warrant us notifying
+                    for (room_id, updates) in response.rooms.joined.iter() {
+                        if let Some(idx) = updated_room_ids.iter().position(|id| id == room_id) {
+                            // we generally notify about this room as it was found above
+                            updated_room_ids.remove(idx); // remove the instance to not inform about them twice
+                            keys.push(ExecuteReference::Room(room_id.clone()));
+                        } else {
+                            // only notifiy if any update warrant us notifying
+                            if !updates.state.is_empty()
+                                || updates.timeline.events.iter().any(|t| {
+                                    let TimelineEventKind::PlainText { event } = &t.kind else {
+                                        return false;
+                                    };
+                                    // check if any event received is a state event
+                                    matches!(
+                                        event.get_field::<String>("state_key"),
+                                        Ok(Some(state_event))
                                     )
                                 })
+                            {
+                                // state or at least one item in  the timeline is a state event, we need to notify
+                                trace!(?room_id, "room state changed");
+                                keys.push(ExecuteReference::Room(room_id.clone()));
+                            }
+                        }
+                        // finally, let's see if there is any room account data to inform about
+                        keys.extend(updates.account_data.iter().filter_map(|raw| {
+                            raw.get_field::<String>("type").ok().flatten().map(|s| {
+                                ExecuteReference::RoomAccountData(room_id.clone(), Cow::Owned(s))
                             })
-                        })
-                        .collect::<Vec<ExecuteReference>>();
+                        }));
+                    }
+
+                    // if there are other room_ids left after clearing the joined, we also want to notify about them
+                    keys.extend(
+                        updated_room_ids
+                            .iter()
+                            .map(|id| ExecuteReference::Room(id.clone())),
+                    );
+
                     if !keys.is_empty() {
-                        info!("room account data keys: {keys:?}");
+                        info!(?keys, "update notify keys");
                         me.executor().notify(keys);
                     }
                 }
@@ -604,7 +647,7 @@ impl Client {
                         })
                         .collect();
                     if !keys.is_empty() {
-                        info!("account data keys: {keys:?}");
+                        info!(?keys, "general account data keys");
                         me.executor().notify(keys);
                     }
                 }

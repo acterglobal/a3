@@ -1,19 +1,15 @@
-use acter::{
-    matrix_sdk_ui::timeline::{MsgLikeContent, MsgLikeKind, RoomExt, TimelineItemContent},
-    Client, Room,
-};
+use acter::matrix_sdk_ui::timeline::{MsgLikeContent, MsgLikeKind, RoomExt, TimelineItemContent};
 use anyhow::{bail, Result};
 use futures::{FutureExt, StreamExt};
-use matrix_sdk::{
-    ruma::{events::room::message::RoomMessageEventContent, OwnedRoomId, UserId},
-    RoomState,
-};
+use matrix_sdk::{ruma::events::room::message::RoomMessageEventContent, RoomState};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
 
-use crate::utils::{random_user, random_user_with_random_convo, random_user_with_random_space};
+use crate::utils::{
+    invite_user, random_user, random_user_with_random_convo, random_user_with_random_space,
+};
 
 #[tokio::test]
 async fn chat_invitation_shows_up() -> Result<()> {
@@ -59,23 +55,6 @@ async fn chat_invitation_shows_up() -> Result<()> {
     assert_eq!(room.sender_id(), sisko.user_id()?);
 
     Ok(())
-}
-
-async fn invite_user(
-    client: &Client,
-    room_id: &OwnedRoomId,
-    other_user_id: &UserId,
-) -> Result<Room> {
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-
-    let room = Retry::spawn(retry_strategy.clone(), || async {
-        client.room(room_id.as_str().into()).await
-    })
-    .await?;
-
-    room.invite_user_by_id(other_user_id).await?;
-
-    Ok(room)
 }
 
 #[tokio::test]
