@@ -186,7 +186,7 @@ async fn invitations_update_count_when_joined() -> Result<()> {
 
     invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
-    // sisko's invite
+    // sisko’s invite
 
     let manager = invites.clone();
 
@@ -262,7 +262,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
 
     let sisko_room = invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
-    // sisko's invite
+    // sisko’s invite
 
     let manager = invites.clone();
 
@@ -370,7 +370,7 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
 
     invite_user(&sisko, &sisko_room_id, &kyra.user_id()?).await?;
 
-    // sisko's invite
+    // sisko’s invite
 
     let manager = invites.clone();
 

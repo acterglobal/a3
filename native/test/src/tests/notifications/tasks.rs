@@ -290,7 +290,7 @@ async fn task_created() -> Result<()> {
 
     let mut task = obj_entry.task_builder()?;
     task.due_date(2025, 11, 13);
-    let title = "Baby's first task";
+    let title = "Baby’s first task";
     task.title(title.to_owned());
 
     let notification_ev = task.send().await?;

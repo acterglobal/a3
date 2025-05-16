@@ -223,7 +223,7 @@ async fn pin_attachments() -> Result<()> {
         .iter()
         .find(|a| a.event_id() == attachment_2_id)
         .expect("File not found");
-    // FIXME: for some reason this comes back as 'image'` rather than `file`
+    // FIXME: for some reason this comes back as `image` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
     //     attachment.file_desc().expect("file description should be available").name(),
