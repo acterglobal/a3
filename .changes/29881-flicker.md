@@ -1,0 +1,1 @@
+- [Fix] to only update Room information if an update-causing event has taken place, removes flicker in chat-ng on message reactions
