@@ -17,30 +17,46 @@ void main() {
           children: [
             Material(
               child: ChatItemWidget(
-                roomId: profileEventDisplayNameChangedRoom36.roomId,
+                roomId:
+                    profileEventDisplayNameChangedRoom36(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: profileEventDisplayNameSetRoom37.roomId,
+                roomId:
+                    profileEventDisplayNameSetRoom37(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: profileEventDisplayNameUnsetRoom38.roomId,
+                roomId:
+                    profileEventDisplayNameUnsetRoom38(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: profileEventAvatarChangedRoom39.roomId,
+                roomId:
+                    profileEventAvatarChangedRoom39(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
-              child: ChatItemWidget(roomId: profileEventAvatarSetRoom40.roomId),
+              child: ChatItemWidget(
+                roomId:
+                    profileEventAvatarSetRoom40('@emily:acter.global').roomId,
+              ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: profileEventAvatarUnsetRoom41.roomId,
+                roomId:
+                    profileEventAvatarUnsetRoom41('@emily:acter.global').roomId,
               ),
             ),
           ],

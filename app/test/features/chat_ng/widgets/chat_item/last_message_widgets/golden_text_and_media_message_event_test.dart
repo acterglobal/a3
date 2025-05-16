@@ -15,19 +15,35 @@ void main() {
         child: ListView(
           shrinkWrap: true,
           children: [
-            Material(child: ChatItemWidget(roomId: davidDmRoom15.roomId)),
             Material(
-              child: ChatItemWidget(roomId: imageMessageDmRoom16.roomId),
+              child: ChatItemWidget(
+                roomId: davidDmRoom15('@emily:acter.global').roomId,
+              ),
             ),
             Material(
-              child: ChatItemWidget(roomId: videoMessageDmRoom17.roomId),
+              child: ChatItemWidget(
+                roomId: imageMessageDmRoom16('@emily:acter.global').roomId,
+              ),
             ),
             Material(
-              child: ChatItemWidget(roomId: audioMessageDmRoom18.roomId),
+              child: ChatItemWidget(
+                roomId: videoMessageDmRoom17('@emily:acter.global').roomId,
+              ),
             ),
-            Material(child: ChatItemWidget(roomId: fileMessageDmRoom19.roomId)),
             Material(
-              child: ChatItemWidget(roomId: locationMessageDmRoom20.roomId),
+              child: ChatItemWidget(
+                roomId: audioMessageDmRoom18('@emily:acter.global').roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId: fileMessageDmRoom19('@emily:acter.global').roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId: locationMessageDmRoom20('@emily:acter.global').roomId,
+              ),
             ),
           ],
         ),

@@ -73,3 +73,18 @@ extension ActerProviderTesting on WidgetTester {
     }
   }
 }
+
+extension SizeSetting on WidgetTester {
+  Future<void> configureTesterForSize(
+    Size canvasSize, [
+    double devicePixelRatio = 2.75,
+  ]) async {
+    final convertedSize = Size(
+      canvasSize.width / devicePixelRatio,
+      canvasSize.height / devicePixelRatio,
+    );
+    await binding.setSurfaceSize(convertedSize);
+    view.physicalSize = convertedSize;
+    view.devicePixelRatio = 1.0;
+  }
+}

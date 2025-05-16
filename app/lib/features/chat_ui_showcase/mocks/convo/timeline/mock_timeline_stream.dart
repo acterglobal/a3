@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 
 class MockTimelineStream extends Mock implements TimelineStream {
   final List<MockTimelineItemDiff> mockTimelineItemDiffs;
+  final Stream<TimelineItemDiff>? mockMessagesStream;
   final bool mockPaginateBackwards;
   final bool mockSendMessage;
   final bool mockEditMessage;
@@ -14,6 +15,7 @@ class MockTimelineStream extends Mock implements TimelineStream {
 
   MockTimelineStream({
     required this.mockTimelineItemDiffs,
+    this.mockMessagesStream,
     this.mockPaginateBackwards = true,
     this.mockSendMessage = true,
     this.mockEditMessage = true,
@@ -25,6 +27,7 @@ class MockTimelineStream extends Mock implements TimelineStream {
 
   @override
   Stream<TimelineItemDiff> messagesStream() =>
+      mockMessagesStream ??
       Stream.fromIterable(mockTimelineItemDiffs.map((diff) => diff));
 
   @override

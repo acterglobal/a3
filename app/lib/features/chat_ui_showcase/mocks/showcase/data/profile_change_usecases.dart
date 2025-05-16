@@ -5,7 +5,7 @@ import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_da
 final profileEventDisplayNameChangedRoom36 = createMockChatItem(
   roomId: 'mock-room-36',
   displayName: 'Profile Changes',
-  activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
+  activeMembersIds: ['@david:acter.global'],
   timelineEventItems: [
     MockTimelineEventItem(
       mockSenderId: '@david:acter.global',
@@ -59,7 +59,7 @@ final profileEventDisplayNameUnsetRoom38 = createMockChatItem(
 final profileEventAvatarChangedRoom39 = createMockChatItem(
   roomId: 'mock-room-39',
   displayName: 'Avatar Updates',
-  activeMembersIds: ['@emily:acter.global', '@david:acter.global'],
+  activeMembersIds: ['@david:acter.global'],
   timelineEventItems: [
     MockTimelineEventItem(
       mockSenderId: '@david:acter.global',

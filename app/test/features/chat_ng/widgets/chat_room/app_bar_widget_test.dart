@@ -60,18 +60,14 @@ void main() {
     testWidgets('renders correctly for direct message', (
       WidgetTester tester,
     ) async {
-      await createWidgetUnderTest(
-        tester: tester,
-        mockChatItem: emilyDmMutedBookmarkedRoom1,
-      );
+      final emilysRoom = emilyDmMutedBookmarkedRoom1('@emily:acter.global');
+      await createWidgetUnderTest(tester: tester, mockChatItem: emilysRoom);
 
       expect(find.byType(AppBar), findsOneWidget);
       expect(find.byType(RoomAvatar), findsOneWidget);
       expect(find.byType(DisplayNameWidget), findsOneWidget);
 
-      final memberCount =
-          emilyDmMutedBookmarkedRoom1.mockRoom.mockActiveMembersIds?.length ??
-          0;
+      final memberCount = emilysRoom.mockRoom.mockActiveMembersIds?.length ?? 0;
 
       expect(
         find.text('$memberCount Members'),
@@ -80,10 +76,10 @@ void main() {
     });
 
     testWidgets('renders correctly for group DM', (WidgetTester tester) async {
-      await createWidgetUnderTest(
-        tester: tester,
-        mockChatItem: groupDmWithMichaelKumarpalsinhBenRoom5,
+      final groupDmRoom = groupDmWithMichaelKumarpalsinhBenRoom5(
+        '@group:acter.global',
       );
+      await createWidgetUnderTest(tester: tester, mockChatItem: groupDmRoom);
 
       // Wait for the widget to build and update
       await tester.pumpAndSettle();
@@ -93,11 +89,7 @@ void main() {
       expect(find.byType(DisplayNameWidget), findsOneWidget);
 
       final memberCount =
-          groupDmWithMichaelKumarpalsinhBenRoom5
-              .mockRoom
-              .mockActiveMembersIds
-              ?.length ??
-          0;
+          groupDmRoom.mockRoom.mockActiveMembersIds?.length ?? 0;
       // For DMs (including group DMs), we should not show the members count
       expect(find.text('$memberCount Members'), findsNothing);
     });
@@ -105,9 +97,12 @@ void main() {
     testWidgets('renders correctly for group chat', (
       WidgetTester tester,
     ) async {
+      final productTeamRoom = productTeamMutedWithSingleTypingUserRoom2(
+        '@emily:acter.global',
+      );
       await createWidgetUnderTest(
         tester: tester,
-        mockChatItem: productTeamMutedWithSingleTypingUserRoom2,
+        mockChatItem: productTeamRoom,
       );
 
       // Wait for the widget to build and update
@@ -118,21 +113,17 @@ void main() {
       expect(find.byType(DisplayNameWidget), findsOneWidget);
 
       final memberCount =
-          productTeamMutedWithSingleTypingUserRoom2
-              .mockRoom
-              .mockActiveMembersIds
-              ?.length ??
-          0;
-
+          productTeamRoom.mockRoom.mockActiveMembersIds?.length ?? 0;
       expect(find.text('$memberCount Members'), findsOneWidget);
     });
 
     testWidgets('shows encryption warning when room is not encrypted', (
       WidgetTester tester,
     ) async {
+      final emilysRoom = emilyDmMutedBookmarkedRoom1('@emily:acter.global');
       await createWidgetUnderTest(
         tester: tester,
-        mockChatItem: emilyDmMutedBookmarkedRoom1,
+        mockChatItem: emilysRoom,
         isRoomEncrypted: false,
       );
 
@@ -146,10 +137,10 @@ void main() {
       WidgetTester tester,
     ) async {
       var profileTapped = false;
-
+      final emilysRoom = emilyDmMutedBookmarkedRoom1('@emily:acter.global');
       await createWidgetUnderTest(
         tester: tester,
-        mockChatItem: emilyDmMutedBookmarkedRoom1,
+        mockChatItem: emilysRoom,
         onProfileTap: () {
           profileTapped = true;
         },
@@ -166,9 +157,12 @@ void main() {
     testWidgets('shows loading state for members count', (
       WidgetTester tester,
     ) async {
+      final productTeamRoom = productTeamMutedWithSingleTypingUserRoom2(
+        '@emily:acter.global',
+      );
       await createWidgetUnderTest(
         tester: tester,
-        mockChatItem: productTeamMutedWithSingleTypingUserRoom2,
+        mockChatItem: productTeamRoom,
         isLoading: true,
       );
 
@@ -182,7 +176,7 @@ void main() {
       // After loading, should show actual count
       expect(
         find.text(
-          '${productTeamMutedWithSingleTypingUserRoom2.mockRoom.mockActiveMembersIds?.length} Members',
+          '${productTeamRoom.mockRoom.mockActiveMembersIds?.length} Members',
         ),
         findsOneWidget,
       );
@@ -192,9 +186,12 @@ void main() {
     testWidgets('shows error state for members count', (
       WidgetTester tester,
     ) async {
+      final productTeamRoom = productTeamMutedWithSingleTypingUserRoom2(
+        '@emily:acter.global',
+      );
       await createWidgetUnderTest(
         tester: tester,
-        mockChatItem: productTeamMutedWithSingleTypingUserRoom2,
+        mockChatItem: productTeamRoom,
         isError: true,
       );
 
