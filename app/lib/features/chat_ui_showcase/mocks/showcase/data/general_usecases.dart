@@ -5,8 +5,10 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeli
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
 
+final emilyDmMutedBookmarkedRoom1RoomId = 'emily-mock-dm-room-1';
+
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
-  roomId: 'mock-room-1',
+  roomId: emilyDmMutedBookmarkedRoom1RoomId,
   displayName: 'Emily Davis',
   notificationMode: 'muted',
   activeMembersIds: ['@emily:acter.global'],

@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
@@ -35,10 +36,9 @@ void main() {
         overrides: [
           isActiveProvider(LabsFeature.chatNG).overrideWith((ref) => true),
           isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => true),
+          myUserIdStrProvider.overrideWith((ref) => '@emily:acter.global'),
           selectedChatIdProvider.overrideWith(
-            () => MockSelectedChatIdNotifier(
-              emilyDmMutedBookmarkedRoom1('@emily:acter.global').roomId,
-            ),
+            () => MockSelectedChatIdNotifier(emilyDmMutedBookmarkedRoom1RoomId),
           ),
           utcNowProvider.overrideWith(
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
@@ -49,8 +49,7 @@ void main() {
           children: [
             Material(
               child: ChatItemWidget(
-                roomId:
-                    emilyDmMutedBookmarkedRoom1('@emily:acter.global').roomId,
+                roomId: emilyDmMutedBookmarkedRoom1RoomId,
                 showSelectedIndication: true,
               ),
             ),
