@@ -191,7 +191,7 @@ async fn can_deactivate_user() -> Result<()> {
     // and registration is blocked because it is in use.
 
     assert!(
-        login_test_user(username.localpart().to_string())
+        login_test_user(username.localpart().to_owned())
             .await
             .is_err(),
         "Was still able to login or register that username"
