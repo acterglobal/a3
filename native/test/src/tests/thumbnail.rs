@@ -113,8 +113,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     );
     let thumbnail_info = thumbnail_info.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -225,8 +225,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     );
     let thumbnail_info = thumbnail_info.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -328,8 +328,8 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -407,8 +407,8 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -527,8 +527,8 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -621,8 +621,8 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(

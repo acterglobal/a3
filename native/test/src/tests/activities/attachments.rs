@@ -99,8 +99,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
             encode(activity_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -174,8 +174,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
             encode(activity_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "First meeting".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -258,8 +258,8 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
         )
     );
 
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "First meeting".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar
     assert_eq!(parent.object_id_str(), obj_id);
 

@@ -64,8 +64,8 @@ async fn test_policy_rule_server() -> Result<()> {
         .expect("not a policy rule server event");
 
     assert_eq!(
-        content.entity_change(),
-        Some("Set".to_owned()),
+        content.entity_change().as_deref(),
+        Some("Set"),
         "entity in policy rule server should be set"
     );
     assert_eq!(
@@ -80,8 +80,8 @@ async fn test_policy_rule_server() -> Result<()> {
     );
 
     assert_eq!(
-        content.recommendation_change(),
-        Some("Set".to_owned()),
+        content.recommendation_change().as_deref(),
+        Some("Set"),
         "recommendation in policy rule server should be set"
     );
     assert_eq!(
@@ -96,8 +96,8 @@ async fn test_policy_rule_server() -> Result<()> {
     );
 
     assert_eq!(
-        content.reason_change(),
-        Some("Set".to_owned()),
+        content.reason_change().as_deref(),
+        Some("Set"),
         "reason in policy rule server should be set"
     );
     assert_eq!(

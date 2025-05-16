@@ -424,7 +424,7 @@ async fn display_name() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert_eq!(r.display_name_new_val(), Some("Mickey Mouse".to_owned()));
+    assert_eq!(r.display_name_new_val().as_deref(), Some("Mickey Mouse"));
     assert_eq!(meta.sender, observer.user_id()?);
 
     // external API check

@@ -112,7 +112,7 @@ async fn comment_on_news() -> Result<()> {
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "news".to_owned());
+    assert_eq!(parent.type_str(), "news");
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
     assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
@@ -196,8 +196,8 @@ async fn comment_on_pin() -> Result<()> {
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -280,8 +280,8 @@ async fn comment_on_calendar_events() -> Result<()> {
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "Onboarding on Acter".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding on Acter"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), obj_id);
 

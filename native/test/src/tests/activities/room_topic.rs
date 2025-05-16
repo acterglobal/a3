@@ -58,8 +58,8 @@ async fn test_room_topic() -> Result<()> {
         .expect("not a room topic event");
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room topic should be set"
     );
     assert_eq!(content.new_val(), topic, "new val of room topic is invalid");

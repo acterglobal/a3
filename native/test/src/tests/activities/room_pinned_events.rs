@@ -66,8 +66,8 @@ async fn test_room_pinned_events() -> Result<()> {
         .expect("not a room pinned events event");
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room pinned events should be set"
     );
     assert!(

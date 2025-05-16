@@ -86,8 +86,8 @@ async fn test_room_avatar() -> Result<()> {
         found_result.expect("Even after 30 seconds, room avatar not received");
 
     assert_eq!(
-        content.url_change(),
-        Some("Set".to_owned()),
+        content.url_change().as_deref(),
+        Some("Set"),
         "url in room avatar should be set"
     );
     assert_eq!(

@@ -117,7 +117,7 @@ async fn pin_comments() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I updated the pin".to_owned());
+    assert_eq!(comments[0].content().body, "I updated the pin");
 
     Ok(())
 }

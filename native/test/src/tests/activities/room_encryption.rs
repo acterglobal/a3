@@ -60,8 +60,8 @@ async fn test_room_encryption() -> Result<()> {
         .expect("not a room encryption event");
 
     assert_eq!(
-        content.algorithm_change(),
-        Some("Set".to_owned()),
+        content.algorithm_change().as_deref(),
+        Some("Set"),
         "algorithm in room encryption should be set"
     );
     assert_eq!(

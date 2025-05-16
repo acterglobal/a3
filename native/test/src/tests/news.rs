@@ -148,7 +148,7 @@ async fn news_plain_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "This is a simple text".to_owned());
+    assert_eq!(msg_content.body(), "This is a simple text");
 
     // FIXME: notifications need to be checked against a secondary client..
     // // also check what the notification will be like
@@ -159,8 +159,8 @@ async fn news_plain_text_test() -> Result<()> {
     // assert_eq!(notif.title(), space.name().unwrap());
     // assert_eq!(notif.push_style().as_str(), "news");
     // assert_eq!(
-    //     notif.body().map(|e| e.body()),
-    //     Some("This is a simple text".to_owned())
+    //     notif.body().map(|e| e.body()).as_deref(),
+    //     Some("This is a simple text")
     // );
 
     Ok(())
@@ -272,8 +272,8 @@ async fn news_markdown_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert_eq!(
-        msg_content.formatted_body(),
-        Some("<h2>This is a simple text</h2>\n".to_owned())
+        msg_content.formatted_body().as_deref(),
+        Some("<h2>This is a simple text</h2>\n")
     );
 
     // FIXME: notifications need to be checked against a secondary client..
@@ -288,8 +288,8 @@ async fn news_markdown_text_test() -> Result<()> {
     // assert_eq!(notif.title(), space.name().unwrap());
     // assert_eq!(notif.push_style().as_str(), "news");
     // assert_eq!(
-    //     notif.body().and_then(|e| e.formatted_body()),
-    //     Some("<h2>This is a simple text</h2>\n".to_owned())
+    //     notif.body().and_then(|e| e.formatted_body()).as_deref(),
+    //     Some("<h2>This is a simple text</h2>\n")
     // );
     Ok(())
 }
@@ -368,8 +368,8 @@ async fn news_markdown_text_with_reference_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert_eq!(
-        msg_content.formatted_body(),
-        Some("<h2>This is a simple text</h2>\n".to_owned())
+        msg_content.formatted_body().as_deref(),
+        Some("<h2>This is a simple text</h2>\n")
     );
 
     // FIXME: notifications need to be checked against a secondary client..
@@ -384,8 +384,8 @@ async fn news_markdown_text_with_reference_test() -> Result<()> {
     // assert_eq!(notif.title(), space.name().unwrap());
     // assert_eq!(notif.push_style().as_str(), "news");
     // assert_eq!(
-    //     notif.body().and_then(|e| e.formatted_body()),
-    //     Some("<h2>This is a simple text</h2>\n".to_owned())
+    //     notif.body().and_then(|e| e.formatted_body()).as_deref(),
+    //     Some("<h2>This is a simple text</h2>\n")
     // );
     Ok(())
 }
@@ -586,14 +586,14 @@ async fn news_multiple_slide_test() -> Result<()> {
     let msg_content = second_slide.msg_content();
     let formatted_body = msg_content.formatted_body();
     assert_eq!(
-        formatted_body,
-        Some("This update is <em><strong>reallly important</strong></em>".to_owned())
+        formatted_body.as_deref(),
+        Some("This update is <em><strong>reallly important</strong></em>")
     );
     let third_slide = final_entry.get_slide(2).expect("We have plain text slide");
     assert_eq!(third_slide.type_str(), "text");
     let msg_content = third_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "Hello Updates!".to_owned());
+    assert_eq!(msg_content.body(), "Hello Updates!");
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");

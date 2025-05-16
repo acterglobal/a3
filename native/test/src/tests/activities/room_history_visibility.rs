@@ -63,8 +63,8 @@ async fn test_room_history_visibility() -> Result<()> {
         .expect("not a room history visibility event");
 
     assert_eq!(
-        content.change(),
-        Some("Changed".to_owned()),
+        content.change().as_deref(),
+        Some("Changed"),
         "room history visibility should be changed"
     );
     assert_eq!(

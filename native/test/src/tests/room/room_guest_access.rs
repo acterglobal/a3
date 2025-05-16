@@ -79,8 +79,8 @@ async fn test_room_guest_access() -> Result<()> {
     assert_eq!(found_event_id, access_event_id, "event id should match");
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room guest access should be set"
     );
     assert_eq!(

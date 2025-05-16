@@ -57,8 +57,8 @@ async fn test_room_name() -> Result<()> {
     let content = activity.room_name_content().expect("not a room name event");
 
     assert_eq!(
-        content.change(),
-        Some("Changed".to_owned()),
+        content.change().as_deref(),
+        Some("Changed"),
         "room name should be changed"
     );
     assert_eq!(

@@ -80,8 +80,8 @@ async fn test_room_power_levels_ban() -> Result<()> {
     assert_eq!(found_event_id, ban_event_id, "event id should match");
 
     assert_eq!(
-        content.ban_change(),
-        Some("Changed".to_owned()),
+        content.ban_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -169,8 +169,8 @@ async fn test_room_power_levels_events() -> Result<()> {
     assert_eq!(found_event_id, level_event_id, "event id should match");
 
     assert_eq!(
-        content.events_change(event_type.to_string()),
-        Some("Changed".to_owned()),
+        content.events_change(event_type.to_string()).as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -258,8 +258,8 @@ async fn test_room_power_levels_events_default() -> Result<()> {
     assert_eq!(found_event_id, default_event_id, "event id should match");
 
     assert_eq!(
-        content.events_default_change(),
-        Some("Changed".to_owned()),
+        content.events_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -344,8 +344,8 @@ async fn test_room_power_levels_invite() -> Result<()> {
     assert_eq!(found_event_id, invite_event_id, "event id should match");
 
     assert_eq!(
-        content.invite_change(),
-        Some("Changed".to_owned()),
+        content.invite_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -430,8 +430,8 @@ async fn test_room_power_levels_kick() -> Result<()> {
     assert_eq!(found_event_id, kick_event_id, "event id should match");
 
     assert_eq!(
-        content.kick_change(),
-        Some("Changed".to_owned()),
+        content.kick_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -516,8 +516,8 @@ async fn test_room_power_levels_redact() -> Result<()> {
     assert_eq!(found_event_id, redact_event_id, "event id should match");
 
     assert_eq!(
-        content.redact_change(),
-        Some("Changed".to_owned()),
+        content.redact_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -605,8 +605,8 @@ async fn test_room_power_levels_state_default() -> Result<()> {
     assert_eq!(found_event_id, default_event_id, "event id should match");
 
     assert_eq!(
-        content.state_default_change(),
-        Some("Changed".to_owned()),
+        content.state_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -694,8 +694,8 @@ async fn test_room_power_levels_users_default() -> Result<()> {
     assert_eq!(found_event_id, default_event_id, "event id should match");
 
     assert_eq!(
-        content.users_default_change(),
-        Some("Changed".to_owned()),
+        content.users_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -786,8 +786,8 @@ async fn test_room_power_levels_notifications() -> Result<()> {
     );
 
     assert_eq!(
-        content.notifications_change(),
-        Some("Changed".to_owned()),
+        content.notifications_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(

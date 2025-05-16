@@ -62,8 +62,8 @@ async fn test_room_avatar() -> Result<()> {
         .expect("not a room avatar event");
 
     assert_eq!(
-        content.url_change(),
-        Some("Set".to_owned()),
+        content.url_change().as_deref(),
+        Some("Set"),
         "url in room avatar should be set"
     );
     assert_eq!(

@@ -129,8 +129,8 @@ async fn test_room_pinned_events() -> Result<()> {
     );
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room pinned events should be set"
     );
     assert!(
@@ -152,7 +152,7 @@ fn match_text_msg(msg: &TimelineItem) -> Option<(String, MsgContent)> {
     }
     let event_item = msg.event_item().expect("room msg should have event item");
     let content = event_item.msg_content()?;
-    if event_item.msg_type() != Some("m.text".to_owned()) {
+    if event_item.msg_type().as_deref() != Some("m.text") {
         return None;
     }
     let event_id = event_item.event_id()?; // None if send_state is NotSentYet

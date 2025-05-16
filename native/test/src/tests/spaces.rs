@@ -788,7 +788,7 @@ async fn update_name() -> Result<()> {
         let space_id = space_id_clone.clone();
         async move {
             let space = client.space(space_id).await?;
-            if space.name() != Some("New Name".to_owned()) {
+            if space.name().as_deref() != Some("New Name") {
                 bail!("Name not set");
             }
             Ok(())
@@ -892,7 +892,7 @@ async fn update_topic() -> Result<()> {
         let space_id = space_id_clone.clone();
         async move {
             let space = client.space(space_id).await?;
-            if space.topic() != Some("New topic".to_owned()) {
+            if space.topic().as_deref() != Some("New topic") {
                 bail!("Topic not set");
             }
             Ok(())

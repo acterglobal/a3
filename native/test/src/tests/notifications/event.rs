@@ -77,8 +77,8 @@ async fn event_creation_notification() -> Result<()> {
     assert_eq!(notifications.push_style(), "creation");
     assert_eq!(notifications.target_url(), format!("/events/{event_id}"));
     let parent = notifications.parent().unwrap();
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "First meeting".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), event_id);
 

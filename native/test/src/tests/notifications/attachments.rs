@@ -134,8 +134,8 @@ async fn image_attachment_on_pin() -> Result<()> {
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
 

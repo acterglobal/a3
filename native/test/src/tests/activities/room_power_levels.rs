@@ -57,8 +57,8 @@ async fn test_room_power_levels_ban() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.ban_change(),
-        Some("Changed".to_owned()),
+        content.ban_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -132,8 +132,8 @@ async fn test_room_power_levels_events() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.events_change(event_type.to_string()),
-        Some("Set".to_owned()),
+        content.events_change(event_type.to_string()).as_deref(),
+        Some("Set"),
         "room power levels should be set"
     );
     assert_eq!(
@@ -206,8 +206,8 @@ async fn test_room_power_levels_events_default() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.events_default_change(),
-        Some("Changed".to_owned()),
+        content.events_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -278,8 +278,8 @@ async fn test_room_power_levels_invite() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.invite_change(),
-        Some("Changed".to_owned()),
+        content.invite_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -350,8 +350,8 @@ async fn test_room_power_levels_kick() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.kick_change(),
-        Some("Changed".to_owned()),
+        content.kick_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -422,8 +422,8 @@ async fn test_room_power_levels_redact() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.redact_change(),
-        Some("Changed".to_owned()),
+        content.redact_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -498,8 +498,8 @@ async fn test_room_power_levels_state_default() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.state_default_change(),
-        Some("Changed".to_owned()),
+        content.state_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -572,8 +572,8 @@ async fn test_room_power_levels_users_default() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.users_default_change(),
-        Some("Changed".to_owned()),
+        content.users_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -646,8 +646,8 @@ async fn test_room_power_levels_notifications() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.notifications_change(),
-        Some("Changed".to_owned()),
+        content.notifications_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(

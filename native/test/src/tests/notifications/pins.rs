@@ -70,8 +70,8 @@ async fn pins_creation_notification() -> Result<()> {
     assert_eq!(notifications.push_style(), "creation");
     assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
     let parent = notifications.parent().unwrap();
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), event_id);
 

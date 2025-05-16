@@ -63,8 +63,8 @@ async fn test_room_join_rules() -> Result<()> {
         .expect("not a room join rules event");
 
     assert_eq!(
-        content.change(),
-        Some("Changed".to_owned()),
+        content.change().as_deref(),
+        Some("Changed"),
         "room join rules should be changed"
     );
     assert_eq!(
