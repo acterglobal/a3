@@ -11,6 +11,7 @@ enum LabsFeature {
   // specific features
   chatUnread,
   chatNG,
+  htmlNext,
 
   // system features
 
@@ -23,5 +24,8 @@ enum LabsFeature {
 
   static List<LabsFeature> get releaseDefaults => [LabsFeature.chatNG];
 
-  static List<LabsFeature> get nightlyDefaults => [LabsFeature.chatNG];
+  static List<LabsFeature> get nightlyDefaults => [
+    LabsFeature.chatNG,
+    LabsFeature.htmlNext,
+  ];
 }

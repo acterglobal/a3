@@ -1,12 +1,8 @@
-import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/features/chat/widgets/pill_builder.dart';
-import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/text_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:markdown/markdown.dart' as md;
 
@@ -105,9 +101,10 @@ class TextMessageEvent extends ConsumerWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Html(
-          data: body,
+        child: RenderHtml(
+          text: body,
           defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
+          roomId: roomId,
         ),
       );
     }
@@ -117,23 +114,12 @@ class TextMessageEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
-        Html(
+        RenderHtml(
+          text: body,
+          roomId: roomId,
           shrinkToFit: true,
-          pillBuilder:
-              ({
-                required String identifier,
-                required String url,
-                OnPillTap? onTap,
-              }) => ActerPillBuilder(
-                identifier: identifier,
-                uri: url,
-                roomId: roomId,
-              ),
           renderNewlines: true,
           maxLines: _type == TextMessageType.reply ? 2 : null,
-          onLinkTap: (Uri uri) {
-            openUri(ref: ref, uri: uri, lang: L10n.of(context));
-          },
           defaultTextStyle: textTheme.bodySmall?.copyWith(
             color:
                 _type == TextMessageType.notice
@@ -142,7 +128,6 @@ class TextMessageEvent extends ConsumerWidget {
             overflow:
                 _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
           ),
-          data: body,
         ),
       ],
     );

@@ -1,7 +1,7 @@
 import 'package:acter/common/extensions/record_helpers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/errors/error_dialog.dart';
+import 'package:acter/common/toolkit/widgets/acter_inline_chip.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
 import 'package:acter/features/room/providers/room_preview_provider.dart';
@@ -9,14 +9,13 @@ import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:acter/common/extensions/options.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 const double defaultAvatarSize = 14.0;
 
 class RoomChip extends ConsumerStatefulWidget {
   final String roomId;
-  final String? uri;
+  final Uri? uri;
 
   const RoomChip({super.key, required this.roomId, this.uri});
 
@@ -25,64 +24,65 @@ class RoomChip extends ConsumerStatefulWidget {
 }
 
 class _RoomChipState extends ConsumerState<RoomChip> {
-  late Uri? uri;
+  late RoomPreviewQuery query;
 
   @override
   void initState() {
     super.initState();
-    uri = widget.uri.map((u) => Uri.tryParse(u));
+    query = updateQuery();
   }
 
-  RoomPreviewQuery get query => (
-    roomIdOrAlias: widget.roomId,
-    serverNames: AllHashed(uri?.queryParametersAll['via'] ?? []),
-  );
+  @override
+  void didUpdateWidget(RoomChip oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.uri != widget.uri || widget.roomId != oldWidget.roomId) {
+      setState(() {
+        query = updateQuery();
+      }); // refresh after
+    }
+  }
+
+  RoomPreviewQuery updateQuery() {
+    return (
+      roomIdOrAlias: widget.roomId,
+      serverNames: AllHashed(widget.uri?.queryParametersAll['via'] ?? []),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final foundRoom = ref.watch(maybeRoomProvider(widget.roomId)).valueOrNull;
     if (foundRoom != null) {
-      return Tooltip(message: widget.roomId, child: buildForRoom(context));
+      return buildForRoom(context);
     }
 
-    return Tooltip(
-      message: widget.roomId,
-      child: ref
-          .watch(roomPreviewProvider(query))
-          .when(
-            data: (p) => buildPreview(context),
-            error: (error, stack) => renderError(context, error, stack),
-            loading: () => loading(context),
-          ),
-    );
+    return ref
+        .watch(roomPreviewProvider(query))
+        .when(
+          data: (p) => buildPreview(context),
+          error: (error, stack) => renderError(context, error, stack),
+          loading: () => loading(context),
+        );
   }
 
-  Widget loading(BuildContext context) => Skeletonizer(
-    child: ActerInlineTextButton.icon(
-      icon: Bone.circle(
-        size:
-            Theme.of(context).textTheme.bodyMedium?.fontSize ??
-            defaultAvatarSize,
-      ),
-      label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
-      onPressed: () async {
-        await showRoomPreview(
-          context: context,
-          roomIdOrAlias: query.roomIdOrAlias,
-          serverNames: query.serverNames.items,
-        );
-      },
+  Widget loading(BuildContext context) => ActerInlineChip(
+    tooltip: widget.roomId,
+    text: widget.roomId,
+    leading: Bone.circle(
+      size:
+          Theme.of(context).textTheme.bodySmall?.fontSize ?? defaultAvatarSize,
     ),
   );
   Widget renderError(BuildContext context, Object error, StackTrace stack) =>
-      ActerInlineTextButton.icon(
-        icon: Bone.circle(
+      ActerInlineChip(
+        leading: Bone.circle(
           size:
-              Theme.of(context).textTheme.bodyMedium?.fontSize ??
+              Theme.of(context).textTheme.bodySmall?.fontSize ??
               defaultAvatarSize,
         ),
-        label: Text(widget.roomId, overflow: TextOverflow.ellipsis),
-        onPressed: () async {
+        text: widget.roomId,
+        tooltip: widget.roomId,
+        onTap: () async {
           ActerErrorDialog.show(
             context: context,
             error: error,
@@ -102,13 +102,16 @@ class _RoomChipState extends ConsumerState<RoomChip> {
         L10n.of(context).unknown;
     final avatarInfo = ref.watch(roomAvatarInfoProvider(widget.roomId));
     final avatarSize =
-        Theme.of(context).textTheme.bodyMedium?.fontSize ?? defaultAvatarSize;
-    return ActerInlineTextButton.icon(
-      icon: ActerAvatar(options: AvatarOptions(avatarInfo, size: avatarSize)),
-      label: Text(displayName, overflow: TextOverflow.ellipsis),
-      onPressed: () async {
+        Theme.of(context).textTheme.bodySmall?.fontSize ?? defaultAvatarSize;
+    return ActerInlineChip(
+      tooltip: displayName,
+      onTap: () async {
         await navigateToRoomOrAskToJoin(context, ref, widget.roomId);
       },
+      text: displayName,
+      leading: ActerAvatar(
+        options: AvatarOptions(avatarInfo, size: avatarSize),
+      ),
     );
   }
 
@@ -118,11 +121,14 @@ class _RoomChipState extends ConsumerState<RoomChip> {
         roomPreview.valueOrNull?.name() ?? L10n.of(context).unknown;
     final avatarInfo = ref.watch(roomPreviewAvatarInfo(query));
     final avatarSize =
-        Theme.of(context).textTheme.bodyMedium?.fontSize ?? defaultAvatarSize;
-    return ActerInlineTextButton.icon(
-      icon: ActerAvatar(options: AvatarOptions(avatarInfo, size: avatarSize)),
-      label: Text(displayName, overflow: TextOverflow.ellipsis),
-      onPressed: () async {
+        Theme.of(context).textTheme.bodySmall?.fontSize ?? defaultAvatarSize;
+    return ActerInlineChip(
+      leading: ActerAvatar(
+        options: AvatarOptions(avatarInfo, size: avatarSize),
+      ),
+      text: displayName,
+      tooltip: displayName,
+      onTap: () async {
         await showRoomPreview(
           context: context,
           roomIdOrAlias: query.roomIdOrAlias,

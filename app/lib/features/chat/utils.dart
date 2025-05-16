@@ -1,7 +1,7 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/html_editor/services/constants.dart';
+import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';

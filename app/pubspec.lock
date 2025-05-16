@@ -1109,6 +1109,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_widget_from_html_core:
+    dependency: "direct main"
+    description:
+      name: flutter_widget_from_html_core
+      sha256: f77ea1aa1ba29a38fcce04483f44f12382f541b9e8c2150df37166c23bbbd30f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.0"
   freezed:
     dependency: "direct main"
     description:

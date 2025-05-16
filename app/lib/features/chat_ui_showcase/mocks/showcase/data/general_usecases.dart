@@ -4,6 +4,14 @@ import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.d
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/user/mock_user.dart';
 
+final complexHtmlMsg = '''
+Check out this <a href="https://www.google.com">link to google</a>,
+this user mention: <a href="matrix:u/emily:acter.global?action=chat">@emily:acter.global</a>,
+this room mention: <a href="matrix:roomid/mock-room-1:acter.global">#mock-room-1:acter.global</a>,
+and external URI to a task list: <a href="https://app.m-1.acter.global/p/f31a795eb64a3c408c2f44cb1e3b70efd914d6b1?roomDisplayName=Kigis+Climate+Action+Group&title=Protest+Organization+2&via=%5B%27m-1.acter.global%27%5D&userId=jackie%3Am-1.acter.global#o/PIcnDNIUnpLcoFXnHf:m-1.acter.global/taskList/grq23hwTAXn3jx3d2btyIPkHtfBiat7QTMCSeH6xOaw">Protest Organization</a>
+and this internal link to an event <a href="">event</a>!
+''';
+
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   roomId: 'mock-room-1',
   displayName: 'Emily Davis',
@@ -64,6 +72,8 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
       mockOriginServerTs: 1744183166000, // April 9, 2025 10:19:26
       mockMsgContent: MockMsgContent(
         mockBody: 'That should give us another 5-10% boost.',
+        mockHtml:
+            '<p>That should give us another <strong>5-10%</strong> boost.</p>',
       ),
     ),
     MockTimelineEventItem(
@@ -153,6 +163,8 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
       mockMsgContent: MockMsgContent(
         mockBody:
             'I\'ll include a detailed breakdown of the performance improvements, including:\n\n• The database query optimizations we implemented\n• The caching strategy we\'re using for frequently accessed data\n• The new indexing approach that reduced query times by 40%\n• The load testing results under different scenarios\n• A comparison with the previous implementation\n\nThis should give the team a good understanding of the technical improvements.',
+        mockHtml:
+            '<p>I\'ll include a detailed breakdown of the performance improvements, including:</p><ul><li>The database query optimizations we implemented</li><li>The caching strategy we\'re using for frequently accessed data</li><li>The new indexing approach that reduced query times by 40%</li><li>The load testing results under different scenarios</li><li>A comparison with the previous implementation</li></ul><p>This should give the team a good understanding of the technical improvements.</p>',
       ),
     ),
     MockTimelineEventItem(
@@ -219,6 +231,12 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
       mockMsgContent: MockMsgContent(
         mockBody: 'Will do! Thanks for checking in.',
       ),
+    ),
+    MockTimelineEventItem(
+      mockEventId: 'mock-event-id-23',
+      mockSenderId: '@acter1:m-1.acter.global',
+      mockOriginServerTs: 1744183396000, // April 9, 2025 10:23:16
+      mockMsgContent: MockMsgContent(mockHtml: complexHtmlMsg),
     ),
   ],
 );
