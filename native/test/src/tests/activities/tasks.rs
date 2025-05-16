@@ -15,7 +15,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s tasks test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s tasks test space" }
 
 [objects.list]
 type = "task-list"
@@ -51,26 +51,28 @@ async fn task_creation_activity() -> Result<()> {
 
     assert_eq!(task_lists.len(), 1);
 
-    let task_list = task_lists.first().unwrap();
+    let task_list = task_lists
+        .first()
+        .expect("first tasklist should be available");
 
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
 
-    let task = tasks.first().unwrap();
+    let task = tasks.first().expect("first task should be available");
 
     let activity = user.activity(task_list.event_id_str()).await?;
     assert_eq!(activity.type_str(), "creation");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");
-    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+    assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
 
     let activity = user.activity(task.event_id_str()).await?;
     assert_eq!(activity.type_str(), "taskAdd");
-    assert_eq!(activity.title().unwrap(), "Check the weather");
+    assert_eq!(activity.title().as_deref(), Some("Check the weather"));
     // on task add the "object" is our list this happened on
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");
-    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+    assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
 
     Ok(())
 }
@@ -108,10 +110,10 @@ async fn task_update_description() -> Result<()> {
 
     let task_updater = task.subscribe();
 
-    let desc_text = "This is test content of task".to_owned();
+    let desc_text = "This is test content of task";
     let event_id = task
         .update_builder()?
-        .description_text(desc_text.clone())
+        .description_text(desc_text.to_owned())
         .send()
         .await?;
 
@@ -127,11 +129,14 @@ async fn task_update_description() -> Result<()> {
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "descriptionChange");
     assert_eq!(
-        activity.msg_content().map(|c| c.body()),
-        Some(desc_text.clone())
+        activity.msg_content().map(|c| c.body()).as_deref(),
+        Some(desc_text)
     );
     assert_eq!(
-        activity.description_content().and_then(|c| c.new_val()),
+        activity
+            .description_content()
+            .and_then(|c| c.new_val())
+            .as_deref(),
         Some(desc_text)
     );
 
@@ -170,8 +175,12 @@ async fn task_update_title() -> Result<()> {
 
     let task_updater = task.subscribe();
 
-    let title = "Check the reality".to_owned();
-    let event_id = task.update_builder()?.title(title.clone()).send().await?;
+    let title = "Check the reality";
+    let event_id = task
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy, || async {
@@ -184,12 +193,15 @@ async fn task_update_title() -> Result<()> {
 
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "titleChange");
-    assert_eq!(activity.title(), Some(title.clone()));
+    assert_eq!(activity.title().as_deref(), Some(title));
     assert_eq!(
-        activity.title_content().map(|c| c.change()),
-        Some("Changed".to_owned())
+        activity.title_content().map(|c| c.change()).as_deref(),
+        Some("Changed")
     );
-    assert_eq!(activity.title_content().map(|c| c.new_val()), Some(title));
+    assert_eq!(
+        activity.title_content().map(|c| c.new_val()).as_deref(),
+        Some(title)
+    );
 
     Ok(())
 }
@@ -247,8 +259,8 @@ async fn task_update_due_date() -> Result<()> {
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "taskDueDateChange");
     assert_eq!(
-        activity.date_content().map(|c| c.change()),
-        Some("Changed".to_owned())
+        activity.date_content().map(|c| c.change()).as_deref(),
+        Some("Changed")
     );
     assert_eq!(
         activity.date_content().and_then(|c| c.new_val()),

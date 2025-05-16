@@ -56,7 +56,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     let draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -113,8 +113,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     );
     let thumbnail_info = thumbnail_info.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -168,7 +168,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     let draft = user
         .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -225,8 +225,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     );
     let thumbnail_info = thumbnail_info.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -294,7 +294,7 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
     let image_draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -328,8 +328,8 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -373,7 +373,7 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
     let video_draft = user
         .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -407,8 +407,8 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -428,7 +428,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s attachment test space" }
 
 [objects.acter-website-pin]
 type = "pin"
@@ -493,7 +493,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     let base_draft = user
         .image_draft(
             jpg_file.path().to_string_lossy().to_string(),
-            "image/jpeg".to_string(),
+            "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -514,11 +514,15 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_id);
     assert_eq!(attachment.type_str(), "image");
 
-    let msg_content = attachment.msg_content().unwrap();
+    let msg_content = attachment
+        .msg_content()
+        .expect("msg content should be available");
     assert!(
         msg_content.thumbnail_source().is_some(),
         "we sent thumbnail, but thumbnail source not available",
@@ -527,8 +531,8 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -587,7 +591,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     let base_draft = user
         .video_draft(
             mp4_file.path().to_string_lossy().to_string(),
-            "video/mp4".to_string(),
+            "video/mp4".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
@@ -608,11 +612,15 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_id);
     assert_eq!(attachment.type_str(), "video");
 
-    let msg_content = attachment.msg_content().unwrap();
+    let msg_content = attachment
+        .msg_content()
+        .expect("msg content should be available");
     assert!(
         msg_content.thumbnail_source().is_some(),
         "we sent thumbnail, but thumbnail source not available",
@@ -621,8 +629,8 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
         .thumbnail_info()
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
-        thumbnail_info.mimetype(),
-        Some("image/png".to_owned()),
+        thumbnail_info.mimetype().as_deref(),
+        Some("image/png"),
         "we sent thumbnail in png format",
     );
     assert_eq!(

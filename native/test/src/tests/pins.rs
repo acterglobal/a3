@@ -17,7 +17,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space" }
 
 [objects.acter-website-pin]
 type = "pin"
@@ -65,7 +65,7 @@ async fn pins_smoketest() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.pins().await?.len(), 3);
     Ok(())
 }
@@ -122,7 +122,7 @@ async fn pin_comments() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I updated the pin".to_owned());
+    assert_eq!(comments[0].content().body, "I updated the pin");
 
     Ok(())
 }
@@ -167,7 +167,7 @@ async fn pin_attachments() -> Result<()> {
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.image_draft(
         jpg_file.path().to_string_lossy().to_string(),
-        "image/jpeg".to_string(),
+        "image/jpeg".to_owned(),
     );
     let attachment_1_id = attachments_manager
         .content_draft(Box::new(base_draft))
@@ -186,7 +186,9 @@ async fn pin_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "image");
 
@@ -199,7 +201,7 @@ async fn pin_attachments() -> Result<()> {
     let attachments_listener = attachments_manager.subscribe();
     let base_draft = user.file_draft(
         png_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     let attachment_2_id = attachments_manager
         .content_draft(Box::new(base_draft))
@@ -224,11 +226,11 @@ async fn pin_attachments() -> Result<()> {
     // FIXME: for some reason this comes back as 'image'` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
     // assert_eq!(
-    //     attachment.file_desc().unwrap().name(),
+    //     attachment.file_desc().expect("file description should be available").name(),
     //     "effektio whitepaper"
     // );
     // assert_eq!(
-    //     attachment.file_desc().unwrap().source().url(),
+    //     attachment.file_desc().expect("file description should be available").source().url(),
     //     "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
     // );
 
@@ -332,7 +334,9 @@ async fn pin_self_ref_attachments() -> Result<()> {
 
     let attachments = attachments_manager.attachments().await?;
     assert_eq!(attachments.len(), 1);
-    let attachment = attachments.first().unwrap();
+    let attachment = attachments
+        .first()
+        .expect("first attachment should be available");
     assert_eq!(attachment.event_id(), attachment_1_id);
     assert_eq!(attachment.type_str(), "ref");
 

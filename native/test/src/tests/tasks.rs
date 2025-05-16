@@ -170,7 +170,7 @@ async fn task_smoketests() -> Result<()> {
 
     assert_eq!(task_list.name(), "Setup");
     let description = task_list.description().expect("description needed");
-    assert_eq!(description.body(), "All done now".to_owned());
+    assert_eq!(description.body(), "All done now");
 
     Ok(())
 }
@@ -246,10 +246,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(
-        comments[0].content().body,
-        "I think this is very important".to_owned()
-    );
+    assert_eq!(comments[0].content().body, "I think this is very important");
 
     Ok(())
 }
@@ -323,7 +320,7 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(tasks.len(), 1);
     assert_eq!(tasks[0].event_id(), task_1_id);
 
-    let task = tasks.pop().unwrap();
+    let task = tasks.pop().expect("first task should be available");
 
     // START actual comment on task
 
@@ -351,7 +348,7 @@ async fn task_comment_smoketests() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I updated the task".to_owned());
+    assert_eq!(comments[0].content().body, "I updated the task");
 
     Ok(())
 }

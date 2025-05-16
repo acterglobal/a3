@@ -11,7 +11,7 @@ use tokio_retry::{
 };
 use tracing::info;
 
-use crate::utils::random_user_with_random_convo;
+use crate::utils::{match_text_msg, random_user_with_random_convo};
 
 #[tokio::test]
 async fn edit_text_msg() -> Result<()> {
@@ -37,7 +37,7 @@ async fn edit_text_msg() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -91,13 +91,13 @@ async fn edit_text_msg() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let event_id = target_id.clone();
-        async move { timeline.get_message(event_id.to_string()).await }
+        async move { timeline.get_message(event_id).await }
     })
     .await?;
 
-    let draft = user.text_plain_draft("This is message edition".to_string());
+    let draft = user.text_plain_draft("This is message edition".to_owned());
     timeline
-        .edit_message(sent_event_id.to_string(), Box::new(draft))
+        .edit_message(sent_event_id.clone(), Box::new(draft))
         .await?;
 
     // msg edition may reach via set action
@@ -131,22 +131,6 @@ async fn edit_text_msg() -> Result<()> {
     );
 
     Ok(())
-}
-
-fn match_text_msg(msg: &TimelineItem, body: &str, modified: bool) -> Option<String> {
-    info!("match room msg - {:?}", msg.clone());
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body && event_item.was_edited() == modified {
-                // exclude the pending msg
-                if let Some(event_id) = event_item.event_id() {
-                    return Some(event_id);
-                }
-            }
-        }
-    }
-    None
 }
 
 #[tokio::test]
@@ -185,7 +169,7 @@ async fn edit_image_msg() -> Result<()> {
 
     let draft = user.image_draft(
         tmp_jpg.path().to_string_lossy().to_string(),
-        "image/jpeg".to_string(),
+        "image/jpeg".to_owned(),
     );
     timeline.send_message(Box::new(draft)).await?;
 
@@ -252,10 +236,10 @@ async fn edit_image_msg() -> Result<()> {
 
     let draft = user.image_draft(
         tmp_png.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     timeline
-        .edit_message(sent_event_id.to_string(), Box::new(draft))
+        .edit_message(sent_event_id.clone(), Box::new(draft))
         .await?;
 
     // msg edition may reach via set action

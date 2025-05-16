@@ -22,7 +22,7 @@ name = "News Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s news test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s news test space" }
 
 [objects.example-news-one-image]
 type = "news-entry"
@@ -92,11 +92,11 @@ async fn news_smoketest() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.latest_news_entries(10).await?.len(), 3);
 
     let mut draft = main_space.news_draft()?;
-    let text_draft = user.text_plain_draft("This is text slide".to_string());
+    let text_draft = user.text_plain_draft("This is text slide".to_owned());
     draft.add_slide(Box::new(text_draft.into())).await?;
     let event_id = draft.send().await?;
     print!("draft sent event id: {}", event_id);
@@ -148,7 +148,7 @@ async fn news_plain_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "This is a simple text".to_owned());
+    assert_eq!(msg_content.body(), "This is a simple text");
 
     // FIXME: notifications need to be checked against a secondary client..
     // // also check what the notification will be like
@@ -156,11 +156,11 @@ async fn news_plain_text_test() -> Result<()> {
     //     .get_notification_item(space.room_id().to_string(), event_id.to_string())
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
-    // assert_eq!(notif.push_style().as_str(), "news");
+    // assert_eq!(Some(notif.title()), space.name());
+    // assert_eq!(notif.push_style(), "news");
     // assert_eq!(
-    //     notif.body().map(|e| e.body()),
-    //     Some("This is a simple text".to_owned())
+    //     notif.body().map(|e| e.body()).as_deref(),
+    //     Some("This is a simple text")
     // );
 
     Ok(())
@@ -272,8 +272,8 @@ async fn news_markdown_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert_eq!(
-        msg_content.formatted_body(),
-        Some("<h2>This is a simple text</h2>\n".to_owned())
+        msg_content.formatted_body().as_deref(),
+        Some("<h2>This is a simple text</h2>\n")
     );
 
     // FIXME: notifications need to be checked against a secondary client..
@@ -285,11 +285,11 @@ async fn news_markdown_text_test() -> Result<()> {
     //     )
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
-    // assert_eq!(notif.push_style().as_str(), "news");
+    // assert_eq!(Some(notif.title()), space.name());
+    // assert_eq!(notif.push_style(), "news");
     // assert_eq!(
-    //     notif.body().and_then(|e| e.formatted_body()),
-    //     Some("<h2>This is a simple text</h2>\n".to_owned())
+    //     notif.body().and_then(|e| e.formatted_body()).as_deref(),
+    //     Some("<h2>This is a simple text</h2>\n")
     // );
     Ok(())
 }
@@ -302,7 +302,7 @@ name = "Pins Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space" }
 
 [objects.acter-website-pin]
 type = "pin"
@@ -368,8 +368,8 @@ async fn news_markdown_text_with_reference_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert_eq!(
-        msg_content.formatted_body(),
-        Some("<h2>This is a simple text</h2>\n".to_owned())
+        msg_content.formatted_body().as_deref(),
+        Some("<h2>This is a simple text</h2>\n")
     );
 
     // FIXME: notifications need to be checked against a secondary client..
@@ -381,11 +381,11 @@ async fn news_markdown_text_with_reference_test() -> Result<()> {
     //     )
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
-    // assert_eq!(notif.push_style().as_str(), "news");
+    // assert_eq!(Some(notif.title()), space.name());
+    // assert_eq!(notif.push_style(), "news");
     // assert_eq!(
-    //     notif.body().and_then(|e| e.formatted_body()),
-    //     Some("<h2>This is a simple text</h2>\n".to_owned())
+    //     notif.body().and_then(|e| e.formatted_body()).as_deref(),
+    //     Some("<h2>This is a simple text</h2>\n")
     // );
     Ok(())
 }
@@ -416,7 +416,7 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/jpg".to_string(),
+        "image/jpg".to_owned(),
     );
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
@@ -448,9 +448,9 @@ async fn news_jpg_image_with_text_test() -> Result<()> {
     //     )
     //     .await?;
 
-    // assert_eq!(notif.title(), space.name().unwrap());
+    // assert_eq!(Some(notif.title()), space.name());
     // assert!(notif.body().is_none());
-    // assert_eq!(notif.push_style().as_str(), "news");
+    // assert_eq!(notif.push_style(), "news");
     // assert!(notif.has_image());
     // let _image_data = notif.image().await?;
 
@@ -483,7 +483,7 @@ async fn news_png_image_with_text_test() -> Result<()> {
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
@@ -536,7 +536,7 @@ async fn news_multiple_slide_test() -> Result<()> {
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     let markdown_draft =
         user.text_markdown_draft("This update is ***reallly important***".to_owned());
@@ -550,7 +550,7 @@ async fn news_multiple_slide_test() -> Result<()> {
 
     let video_draft = user.video_draft(
         vid_file.path().to_string_lossy().to_string(),
-        "video/mp4".to_string(),
+        "video/mp4".to_owned(),
     );
 
     // we add three slides
@@ -586,14 +586,14 @@ async fn news_multiple_slide_test() -> Result<()> {
     let msg_content = second_slide.msg_content();
     let formatted_body = msg_content.formatted_body();
     assert_eq!(
-        formatted_body,
-        Some("This update is <em><strong>reallly important</strong></em>".to_owned())
+        formatted_body.as_deref(),
+        Some("This update is <em><strong>reallly important</strong></em>")
     );
     let third_slide = final_entry.get_slide(2).expect("We have plain text slide");
     assert_eq!(third_slide.type_str(), "text");
     let msg_content = third_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "Hello Updates!".to_owned());
+    assert_eq!(msg_content.body(), "Hello Updates!");
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");
@@ -626,7 +626,7 @@ async fn news_like_reaction_test() -> Result<()> {
     let mut draft = space.news_draft()?;
     let image_draft = user.image_draft(
         tmp_file.path().to_string_lossy().to_string(),
-        "image/png".to_string(),
+        "image/png".to_owned(),
     );
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
@@ -742,7 +742,7 @@ async fn news_read_receipt_test() -> Result<()> {
     .await?;
 
     let slides = space.latest_news_entries(1).await?;
-    let final_entry = slides.first().unwrap();
+    let final_entry = slides.first().expect("first slide should be available");
     let main_receipts_manager = final_entry.read_receipts().await?;
     assert_eq!(main_receipts_manager.read_count(), 0);
 
@@ -776,7 +776,7 @@ async fn news_read_receipt_test() -> Result<()> {
         .await?;
 
         let slides = space.latest_news_entries(1).await?;
-        let news_entry = slides.first().unwrap();
+        let news_entry = slides.first().expect("first slide should be available");
 
         let local_receipts_manager = news_entry.read_receipts().await?;
         assert_eq!(local_receipts_manager.read_count(), uidx);
@@ -857,9 +857,11 @@ async fn multi_news_read_receipt_test() -> Result<()> {
     })
     .await?;
     let mut slides_iter = slides.into_iter();
-    let newest_slide = slides_iter.next().unwrap();
+    let newest_slide = slides_iter
+        .next()
+        .expect("newest slide should be available");
     assert_eq!(newest_slide.event_id(), second_news_id);
-    let older_slide = slides_iter.next().unwrap();
+    let older_slide = slides_iter.next().expect("older slide should be available");
     assert_eq!(older_slide.event_id(), first_news_id);
 
     let newest_slide_rr_manager = newest_slide.read_receipts().await?;
@@ -899,7 +901,7 @@ async fn multi_news_read_receipt_test() -> Result<()> {
         .await?
         .into_iter();
 
-        let newest_entry = slides.next().unwrap();
+        let newest_entry = slides.next().expect("newest slide should be available");
         assert_eq!(newest_entry.event_id(), second_news_id);
 
         let local_receipts_manager = newest_entry.read_receipts().await?;
@@ -932,7 +934,7 @@ async fn multi_news_read_receipt_test() -> Result<()> {
 
         // now the user is looking at the older slide
 
-        let older_entry = slides.next().unwrap();
+        let older_entry = slides.next().expect("older slide should be available");
         assert_eq!(older_entry.event_id(), first_news_id);
 
         let local_receipts_manager = older_entry.read_receipts().await?;

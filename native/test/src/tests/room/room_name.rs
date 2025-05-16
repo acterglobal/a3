@@ -79,8 +79,8 @@ async fn test_room_name() -> Result<()> {
     assert_eq!(found_event_id, name_event_id, "event id should match");
 
     assert_eq!(
-        content.change(),
-        Some("Changed".to_owned()),
+        content.change().as_deref(),
+        Some("Changed"),
         "room name should be changed"
     );
     assert_eq!(

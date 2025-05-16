@@ -16,7 +16,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s calendar event test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s calendar event test space" }
 
 [objects.acter-event-1]
 type = "calendar-event"
@@ -50,14 +50,14 @@ async fn calendar_creation_activity() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.calendar_events().await?.len(), 1);
 
     let activity = get_latest_activity(&user, main_space.room_id().to_string(), "creation").await?;
     assert_eq!(activity.type_str(), "creation");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "event");
-    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+    assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
 
     Ok(())
 }
@@ -109,8 +109,9 @@ async fn calendar_update_start_activity() -> Result<()> {
     assert_eq!(
         activity
             .date_time_range_content()
-            .and_then(|c| c.start_change()),
-        Some("Changed".to_owned())
+            .and_then(|c| c.start_change())
+            .as_deref(),
+        Some("Changed")
     );
     assert_eq!(
         activity
@@ -191,8 +192,9 @@ async fn calendar_update_end_activity() -> Result<()> {
     assert_eq!(
         activity
             .date_time_range_content()
-            .and_then(|c| c.end_change()),
-        Some("Changed".to_owned())
+            .and_then(|c| c.end_change())
+            .as_deref(),
+        Some("Changed")
     );
     assert_eq!(
         activity
@@ -263,14 +265,16 @@ async fn calendar_update_start_end_activity() -> Result<()> {
     assert_eq!(
         activity
             .date_time_range_content()
-            .and_then(|c| c.start_change()),
-        Some("Changed".to_owned())
+            .and_then(|c| c.start_change())
+            .as_deref(),
+        Some("Changed")
     );
     assert_eq!(
         activity
             .date_time_range_content()
-            .and_then(|c| c.end_change()),
-        Some("Changed".to_owned())
+            .and_then(|c| c.end_change())
+            .as_deref(),
+        Some("Changed")
     );
     assert_eq!(
         activity

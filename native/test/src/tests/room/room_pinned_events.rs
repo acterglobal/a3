@@ -1,5 +1,4 @@
-use acter::api::{MsgContent, TimelineItem};
-use acter_core::{models::status::RoomPinnedEventsContent, util::do_vecs_match};
+use acter_core::util::do_vecs_match;
 use anyhow::Result;
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -10,6 +9,7 @@ use tokio_retry::{
 };
 
 use crate::utils::random_user_with_random_convo;
+use crate::utils::{match_pinned_msg, match_text_msg};
 
 #[tokio::test]
 async fn test_room_pinned_events() -> Result<()> {
@@ -50,7 +50,7 @@ async fn test_room_pinned_events() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(result) = match_text_msg(&value) {
+                    if let Some(result) = match_text_msg(&value, text_body, false) {
                         text_result = Some(result);
                     }
                 }
@@ -59,7 +59,7 @@ async fn test_room_pinned_events() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(result) = match_text_msg(value) {
+                        if let Some(result) = match_text_msg(value, text_body, false) {
                             text_result = Some(result);
                             break;
                         }
@@ -75,10 +75,7 @@ async fn test_room_pinned_events() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let (text_event_id, content) =
-        text_result.expect("Even after 30 seconds, text msg not received");
-
-    assert_eq!(content.body(), text_body, "incorrect text body");
+    let text_event_id = text_result.expect("Even after 30 seconds, text msg not received");
 
     let pinned_events = vec![text_event_id];
     let pinned_event_id = convo
@@ -122,15 +119,11 @@ async fn test_room_pinned_events() -> Result<()> {
     }
     let (found_event_id, content) =
         found_result.expect("Even after 30 seconds, room pinned events not received");
-    assert_eq!(
-        found_event_id,
-        pinned_event_id.to_string(),
-        "event id should match"
-    );
+    assert_eq!(found_event_id, pinned_event_id, "event id should match");
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room pinned events should be set"
     );
     assert!(
@@ -144,29 +137,4 @@ async fn test_room_pinned_events() -> Result<()> {
     );
 
     Ok(())
-}
-
-fn match_text_msg(msg: &TimelineItem) -> Option<(String, MsgContent)> {
-    if msg.is_virtual() {
-        return None;
-    }
-    let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.msg_content()?;
-    if event_item.msg_type() != Some("m.text".to_owned()) {
-        return None;
-    }
-    let event_id = event_item.event_id()?; // None if send_state is NotSentYet
-    Some((event_id, content))
-}
-
-fn match_pinned_msg(msg: &TimelineItem) -> Option<(String, RoomPinnedEventsContent)> {
-    if msg.is_virtual() {
-        return None;
-    }
-    let event_item = msg.event_item().expect("room msg should have event item");
-    let content = event_item.room_pinned_events_content()?;
-    let event_id = event_item
-        .event_id()
-        .expect("event item should have event id");
-    Some((event_id, content))
 }
