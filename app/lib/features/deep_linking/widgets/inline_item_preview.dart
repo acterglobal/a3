@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/widgets/acter_inline_chip.dart';
 import 'package:acter/features/deep_linking/actions/show_item_preview.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/util.dart';
@@ -25,28 +26,20 @@ class InlineItemPreview extends ConsumerWidget {
     final refTitle = uriResult.preview.title ?? L10n.of(context).unknown;
 
     final fontSize = Theme.of(context).textTheme.bodySmall?.fontSize ?? 12.0;
-    return Tooltip(
-      message: subtitleForType(context, refType),
-      child: InkWell(
-        onTap:
-            roomId == null
-                ? null
-                : () => showItemPreview(
-                  context: context,
-                  ref: ref,
-                  uriResult: uriResult,
-                  roomId: roomId,
-                ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(getIconByType(refType), size: fontSize),
-            SizedBox(width: 4),
-            Text(refTitle),
-            SizedBox(width: 4),
-          ],
-        ),
-      ),
+    return ActerInlineChip(
+      tooltip: subtitleForType(context, refType),
+      onTap:
+          roomId == null
+              ? null
+              : () => showItemPreview(
+                context: context,
+                ref: ref,
+                uriResult: uriResult,
+                roomId: roomId,
+              ),
+      leading: Icon(getIconByType(refType), size: fontSize),
+      text: refTitle,
+      trailing: SizedBox(width: 4),
     );
   }
 }

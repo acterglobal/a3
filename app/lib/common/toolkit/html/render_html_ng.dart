@@ -87,7 +87,7 @@ class RenderHtmlNg extends ConsumerWidget {
       final parsed = parseActerUri(uri);
       // FIXME: what to do if the link title is different?
       // if (parsed.titleMatches(element.text)) {
-      return _buildPill(parsed);
+      return _buildPill(parsed, uri);
       // } else {
       //   // if the link title has been changed
       //   // we should show the original link
@@ -99,15 +99,12 @@ class RenderHtmlNg extends ConsumerWidget {
     }
   }
 
-  Widget? _buildPill(UriParseResult parsed) => switch (parsed.type) {
+  Widget? _buildPill(UriParseResult parsed, Uri uri) => switch (parsed.type) {
     (LinkType.userId) => html.InlineCustomWidget(
       child: UserChip(roomId: roomId, memberId: parsed.target),
     ),
     (LinkType.roomId) => html.InlineCustomWidget(
-      child: RoomChip(
-        roomId: parsed.target,
-        // uri: parsed.uri,
-      ),
+      child: RoomChip(roomId: parsed.target, uri: uri),
     ),
     (LinkType.spaceObject) => html.InlineCustomWidget(
       child: InlineItemPreview(roomId: roomId, uriResult: parsed),

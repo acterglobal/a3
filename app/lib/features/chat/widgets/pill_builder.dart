@@ -20,7 +20,7 @@ class ActerPillBuilder extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (identifier.characters.first) {
       '@' => UserChip(roomId: roomId, memberId: identifier),
-      '!' => RoomChip(roomId: identifier, uri: uri),
+      '!' => RoomChip(roomId: identifier, uri: Uri.tryParse(uri)),
       _ => InkWell(
         child: Text(identifier),
         onTap: () => onMessageLinkTap(Uri.parse(uri), ref, context),

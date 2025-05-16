@@ -8,7 +8,8 @@ final complexHtmlMsg = '''
 Check out this <a href="https://www.google.com">link to google</a>,
 this user mention: <a href="matrix:u/emily:acter.global?action=chat">@emily:acter.global</a>,
 this room mention: <a href="matrix:roomid/mock-room-1:acter.global">#mock-room-1:acter.global</a>,
-and this event: <a href="acter:e/mock-event-id-1:acter.global">mock-event-id-1:acter.global</a>.
+and external URI to a task list: <a href="https://app.m-1.acter.global/p/f31a795eb64a3c408c2f44cb1e3b70efd914d6b1?roomDisplayName=Kigis+Climate+Action+Group&title=Protest+Organization+2&via=%5B%27m-1.acter.global%27%5D&userId=jackie%3Am-1.acter.global#o/PIcnDNIUnpLcoFXnHf:m-1.acter.global/taskList/grq23hwTAXn3jx3d2btyIPkHtfBiat7QTMCSeH6xOaw">Protest Organization</a>
+and this internal link to an event <a href="">event</a>!
 ''';
 
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
