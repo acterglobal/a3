@@ -1,4 +1,4 @@
-- [Improvement] : Optmisedc design of reaction dialog for smaller text messages.
-- [Fixes] : Fixes rendering issue when there are multiple reactions on the same same.
-- [Enhacement] : Overall reactions design is now enhaced with better visibility you own reaction and other people's reactions.
-- [Improvement] : Optmised design of the Reaction design dialog and improved visibility of the selection reaction tab option.
+- [Improvement] : Optimised design of reaction dialog for smaller text messages.
+- [Fixes] : Fixes rendering issue when there are multiple reactions on the same Messages.
+- [Enhancement] : Overall reactions design is now enhanced with better visibility about your own reaction and other people's reactions.
+- [Improvement] : Optimised design of the Reaction design dialog and improved visibility of the selected reaction tab option.
