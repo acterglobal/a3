@@ -124,7 +124,7 @@ class MessageEventItem extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.only(right: isMe ? 12 : 0, left: isMe ? 0 : 12),
       child: FractionalTranslation(
-        translation: Offset(0, -0.1),
+        translation: Offset(0, -0.18),
         child: ReactionsList(roomId: roomId, messageId: messageId, item: item),
       ),
     );
