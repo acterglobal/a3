@@ -25,8 +25,8 @@ class MissingEncryptionBackupWidget extends ConsumerWidget {
             children: [
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 40),
                     _buildHeadlineText(context),
                     const SizedBox(height: 40),
                     _buildImage(context),

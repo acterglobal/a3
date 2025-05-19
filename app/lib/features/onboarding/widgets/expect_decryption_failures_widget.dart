@@ -26,6 +26,7 @@ class ExpectDecryptionFailures extends ConsumerWidget {
             children: [
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildHeadlineText(context),
                     const SizedBox(height: 40),

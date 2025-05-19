@@ -93,8 +93,8 @@ class _OnboardingEncryptionKeyBackupPageState
               children: [
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 40),
                       _buildHeadlineText(context),
                       const SizedBox(height: 20),
                       _buildDescriptionText(context),
