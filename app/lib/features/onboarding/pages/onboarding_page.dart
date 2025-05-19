@@ -7,9 +7,10 @@ import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart'
 import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
 import 'package:acter/features/notifications/pages/notification_permission_page.dart';
 import 'package:acter/features/onboarding/pages/customization_page.dart';
-import 'package:acter/features/onboarding/pages/onboarding_encryption_key_backup_page.dart';
+import 'package:acter/features/onboarding/pages/onboarding_encryption_recovery_page.dart';
 import 'package:acter/features/onboarding/pages/onboarding_space_creation_page.dart';
 import 'package:acter/features/onboarding/pages/recommended_spaces_page.dart';
+import 'package:acter/features/onboarding/widgets/missing_encryption_backup_widget.dart';
 import 'package:acter/features/onboarding/widgets/onboarding_notification_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,7 +55,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   List<Widget> _buildOnboardingScreens(OnboardingPermissions permissions) {
     final hasSpaceRedeemedInvites = ref.watch(hasSpaceRedeemedInInviteCodeProvider);
     final hasRecommendedSpaceJoined = ref.watch(hasRecommendedSpaceJoinedProvider);
-    final stateEnabled = ref.watch(backupStateProvider) == RecoveryState.enabled;
+    final backupState = ref.watch(backupStateProvider);
 
     return [
       if (!widget.isLoginOnboarding!) ...[
@@ -72,8 +73,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         if (!hasSpaceRedeemedInvites && !hasRecommendedSpaceJoined)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
-      if (!stateEnabled) 
-        OnboardingEncryptionKeyBackupPage(callNextPage: () => _nextPage()),
+      if (backupState == RecoveryState.disabled) 
+        OnboardingEncryptionRecoveryPage(callNextPage: () => _nextPage()),
+      if (backupState == RecoveryState.incomplete)
+        MissingEncryptionBackupPage(callNextPage: () => _nextPage()),
       if (permissions.showNotificationPermission)
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
       if (permissions.showCalendarPermission)

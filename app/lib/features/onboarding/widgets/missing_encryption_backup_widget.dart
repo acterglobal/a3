@@ -1,14 +1,15 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/onboarding/widgets/expect_decryption_failures_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class MissingEncryptionBackupWidget extends ConsumerWidget {
+class MissingEncryptionBackupPage extends ConsumerWidget {
   final VoidCallback callNextPage;
-  const MissingEncryptionBackupWidget({
+  const MissingEncryptionBackupPage({
     super.key,
     required this.callNextPage,
   });
@@ -35,7 +36,7 @@ class MissingEncryptionBackupWidget extends ConsumerWidget {
                   ],
                 ),
               ),
-              _buildActionButton(context),
+              _buildActionButton(context, ref),
               const SizedBox(height: 50),
             ],
           ),
@@ -96,14 +97,14 @@ class MissingEncryptionBackupWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButton(BuildContext context) {
+  Widget _buildActionButton(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
           onPressed: () {
-            Navigator.pop(context);
+            ref.invalidate(backupStateProvider);
           },
           child: Text(lang.tryAgain),
         ),
@@ -117,9 +118,7 @@ class MissingEncryptionBackupWidget extends ConsumerWidget {
                 isScrollControlled: true,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 builder: (context) {
-                  return ExpectDecryptionFailures(callNextPage: () {
-                    callNextPage();
-                  }, isRecoveryStateDisabled: true);
+                  return ExpectDecryptionFailures(callNextPage: callNextPage);
                 },
               );
           },

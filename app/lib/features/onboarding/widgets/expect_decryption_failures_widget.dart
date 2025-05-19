@@ -7,11 +7,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ExpectDecryptionFailures extends ConsumerWidget {
   final VoidCallback callNextPage;
-  final bool isRecoveryStateDisabled;
   const ExpectDecryptionFailures({
     super.key,
     required this.callNextPage,
-    this.isRecoveryStateDisabled = false,
   });
 
   @override
@@ -102,10 +100,7 @@ class ExpectDecryptionFailures extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         OutlinedButton(
-          onPressed: () {
-            if (isRecoveryStateDisabled) {
-              Navigator.pop(context);
-            }  
+          onPressed: () { 
             Navigator.pop(context);
             callNextPage();
           },

@@ -1,9 +1,6 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
-import 'package:acter/features/backups/providers/backup_state_providers.dart';
-import 'package:acter/features/backups/types.dart';
 import 'package:acter/features/onboarding/widgets/expect_decryption_failures_widget.dart';
-import 'package:acter/features/onboarding/widgets/missing_encryption_backup_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,25 +10,24 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::backups::encryption_key_backup');
 
-class OnboardingEncryptionKeyBackupPage extends ConsumerStatefulWidget {
+class OnboardingEncryptionRecoveryPage extends ConsumerStatefulWidget {
   final VoidCallback callNextPage;
 
-  const OnboardingEncryptionKeyBackupPage({
+  const OnboardingEncryptionRecoveryPage({
     super.key,
     required this.callNextPage,
   });
 
   @override
-  ConsumerState<OnboardingEncryptionKeyBackupPage> createState() =>
-      _OnboardingEncryptionKeyBackupPageState();
+  ConsumerState<OnboardingEncryptionRecoveryPage> createState() =>
+      _OnboardingEncryptionRecoveryPageState();
 }
 
-class _OnboardingEncryptionKeyBackupPageState
-    extends ConsumerState<OnboardingEncryptionKeyBackupPage> {
+class _OnboardingEncryptionRecoveryPageState
+    extends ConsumerState<OnboardingEncryptionRecoveryPage> {
   final TextEditingController encryptionKeyController = TextEditingController();
   bool _hasText = false;
   final _formKey = GlobalKey<FormState>();
-  bool _hasShownDialog = false;
 
   @override
   void initState() {
@@ -52,35 +48,8 @@ class _OnboardingEncryptionKeyBackupPageState
     super.dispose();
   }
 
-  bool _isRecoveryStateDisabled() {
-    final state = ref.watch(backupStateProvider);
-    return state == RecoveryState.disabled;
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Check if recovery state is unknown and show dialog automatically
-    if (_isRecoveryStateDisabled() && !_hasShownDialog) {
-      _hasShownDialog = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showModalBottomSheet(
-          showDragHandle: false,
-          enableDrag: false,
-          context: context,
-          useSafeArea: true,
-          isScrollControlled: true,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          builder: (context) {
-            return MissingEncryptionBackupWidget(
-              callNextPage: () {
-                widget.callNextPage();
-              },
-            );
-          },
-        );
-      });
-    }
-
     return Scaffold(
       body: Center(
         child: Container(
@@ -172,9 +141,7 @@ class _OnboardingEncryptionKeyBackupPageState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () {
-            submit(context);
-          },
+          onPressed: () => submit(context),
           child: Text(lang.next),
         ),
         const SizedBox(height: 20),
@@ -188,9 +155,7 @@ class _OnboardingEncryptionKeyBackupPageState
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               builder: (context) {
                 return ExpectDecryptionFailures(
-                  callNextPage: () {
-                    widget.callNextPage();
-                  },
+                  callNextPage: widget.callNextPage,
                 );
               },
             );
