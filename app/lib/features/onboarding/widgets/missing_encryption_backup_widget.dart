@@ -103,9 +103,7 @@ class MissingEncryptionBackupPage extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () {
-            ref.invalidate(backupStateProvider);
-          },
+          onPressed: () => ref.invalidate(backupStateProvider),
           child: Text(lang.tryAgain),
         ),
         const SizedBox(height: 20),
