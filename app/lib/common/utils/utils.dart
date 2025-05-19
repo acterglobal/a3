@@ -33,12 +33,10 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
-
 bool isDesktop(BuildContext context) =>
     desktopPlatforms.contains(Theme.of(context).platform);
 
 String jiffyTime(BuildContext context, int timeInterval, {DateTime? toWhen}) {
-
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.parseFromDateTime(
     toWhen ?? DateTime.now().toUtc(),
@@ -71,6 +69,28 @@ String jiffyDateForActvity(BuildContext context, int timeInterval) {
   }
 
   return activityDate.yMd;
+}
+
+String jiffyDateForReadReceipt(
+  BuildContext context,
+  int timeInterval, {
+  bool use24HourFormat = false,
+  bool showDay = false,
+}) {
+  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final now = Jiffy.parseFromDateTime(DateTime.now().toUtc());
+  final timestamp = use24HourFormat ? jiffyTime.Hm : jiffyTime.jm;
+
+  if (now.isSame(jiffyTime, unit: Unit.day)) {
+    return timestamp;
+  }
+
+  final week = now.subtract(weeks: 1);
+  if (jiffyTime.isBetween(week, now)) {
+    return showDay ? '${jiffyTime.E} $timestamp' : timestamp;
+  } else {
+    return showDay ? '${jiffyTime.MMMEd} $timestamp' : timestamp;
+  }
 }
 
 extension TimeOfDayExtension on TimeOfDay {

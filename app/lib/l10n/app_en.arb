@@ -959,6 +959,8 @@
   "@rageShakeTargetUrl": {},
   "rageShakeTargetUrlDigest": "Rageshake Target Url Digest",
   "@rageShakeTargetUrlDigest": {},
+  "readBy": "Read by",
+  "@readBy": {},
   "reason": "Reason",
   "@reason": {},
   "reasonHint": "optional reason",
