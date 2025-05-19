@@ -73,9 +73,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         if (!hasSpaceRedeemedInvites && !hasRecommendedSpaceJoined)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
-      if (backupState == RecoveryState.disabled) 
+      if (backupState == RecoveryState.incomplete) 
         OnboardingEncryptionRecoveryPage(callNextPage: () => _nextPage()),
-      if (backupState == RecoveryState.incomplete)
+      if (backupState == RecoveryState.disabled)
         MissingEncryptionBackupPage(callNextPage: () => _nextPage()),
       if (permissions.showNotificationPermission)
         NotificationPermissionWidget(callNextPage: () => _nextPage()),
