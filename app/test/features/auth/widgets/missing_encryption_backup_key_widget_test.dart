@@ -28,7 +28,7 @@ void main() {
           body: SingleChildScrollView(
             child: SizedBox(
               height: 800, // Provide enough height to prevent overflow
-              child: MissingEncryptionBackupWidget(callNextPage: mockCallNextPage),
+              child: MissingEncryptionBackupPage(callNextPage: mockCallNextPage),
             ),
           ),
         ),

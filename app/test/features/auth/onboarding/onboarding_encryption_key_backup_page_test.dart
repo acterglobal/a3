@@ -1,6 +1,6 @@
-import 'package:acter/features/onboarding/pages/onboarding_encryption_key_backup_page.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/onboarding/pages/onboarding_encryption_recovery_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,7 +31,7 @@ void main() {
           (ref) => Future.value(mockBackupManager),
         ),
       ],
-      child: OnboardingEncryptionKeyBackupPage(callNextPage: mockCallNextPage),
+      child: OnboardingEncryptionRecoveryPage(callNextPage: mockCallNextPage),
     );
     await tester.pumpAndSettle();
   }
