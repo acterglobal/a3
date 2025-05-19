@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
+import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
@@ -30,7 +31,7 @@ class _InviteFriendsWidgetState extends ConsumerState<InviteFriendsWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+    final searchValue = ref.watch(userSearchValueProvider);
     return Scaffold(
       body: Center(
         child: Container(
@@ -47,6 +48,8 @@ class _InviteFriendsWidgetState extends ConsumerState<InviteFriendsWidget> {
                     const SizedBox(height: 10),
                     _buildSearchBar(context),
                     const SizedBox(height: 10),
+                    if(searchValue == null || searchValue.isEmpty)
+                      _buildInviteExternallyWidget(context),
                     _buildSuggestedUsers(context, widget.roomId),
                   ],
                 ),
@@ -57,6 +60,40 @@ class _InviteFriendsWidgetState extends ConsumerState<InviteFriendsWidget> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInviteExternallyWidget(BuildContext context) {
+    final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.all(20),
+        constraints: const BoxConstraints(maxWidth: 400),
+        margin: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          children: [
+          Text(
+            lang.inviteExternally,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            lang.inviteJoinActerDescription,
+            textAlign: TextAlign.center,
+            style: textTheme.bodySmall,
+          ),
+          const SizedBox(height: 20),
+            InviteCodeUI(roomId: widget.roomId),
+          ],
+        ),
     );
   }
 
