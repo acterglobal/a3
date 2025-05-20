@@ -53,7 +53,7 @@ class MessageEventItem extends ConsumerWidget {
     final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
     final sendingState = item.sendState();
     return SwipeTo(
-      swipeSensitivity: Platform.isIOS ? 30 : 20,
+      swipeSensitivity: Platform.isIOS ? 30 : 5,
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
       child: Column(
