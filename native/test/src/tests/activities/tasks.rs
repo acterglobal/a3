@@ -110,6 +110,7 @@ async fn task_update_description() -> Result<()> {
 
     let task_updater = task.subscribe();
 
+    // set up the description
     let desc_text = "This is test content of task";
     let event_id = task
         .update_builder()?
@@ -118,7 +119,7 @@ async fn task_update_description() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy, || async {
+    Retry::spawn(retry_strategy.clone(), || async {
         if task_updater.is_empty() {
             bail!("all still empty");
         }
@@ -135,9 +136,41 @@ async fn task_update_description() -> Result<()> {
     assert_eq!(
         activity
             .description_content()
+            .map(|c| c.change())
+            .as_deref(),
+        Some("Changed")
+    );
+    assert_eq!(
+        activity
+            .description_content()
             .and_then(|c| c.new_val())
             .as_deref(),
         Some(desc_text)
+    );
+
+    // delete the description
+    let event_id = task.update_builder()?.unset_description().send().await?;
+
+    Retry::spawn(retry_strategy, || async {
+        if task_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "descriptionChange");
+    assert_eq!(
+        activity
+            .description_content()
+            .map(|c| c.change())
+            .as_deref(),
+        Some("Unset")
+    );
+    assert_eq!(
+        activity.description_content().and_then(|c| c.new_val()),
+        None
     );
 
     Ok(())
@@ -239,6 +272,7 @@ async fn task_update_due_date() -> Result<()> {
 
     let task_updater = task.subscribe();
 
+    // set up the due date
     let today = Utc::now().date_naive();
     let tomorrow = today + Duration::days(1);
     let event_id = task
@@ -248,7 +282,7 @@ async fn task_update_due_date() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy, || async {
+    Retry::spawn(retry_strategy.clone(), || async {
         if task_updater.is_empty() {
             bail!("all still empty");
         }
@@ -273,6 +307,25 @@ async fn task_update_due_date() -> Result<()> {
     assert!(object.utc_start().is_none());
     assert!(object.utc_end().is_none());
     assert_eq!(object.due_date(), Some(tomorrow));
+
+    // delete the due date
+    let event_id = task.update_builder()?.unset_due_date().send().await?;
+
+    Retry::spawn(retry_strategy, || async {
+        if task_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "taskDueDateChange");
+    assert_eq!(
+        activity.date_content().map(|c| c.change()).as_deref(),
+        Some("Unset")
+    );
+    assert_eq!(activity.date_content().and_then(|c| c.new_val()), None);
 
     Ok(())
 }

@@ -298,3 +298,96 @@ async fn calendar_update_start_end_activity() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn calendar_update_description() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) =
+        random_user_with_template("cal_event_update_description", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = user.clone();
+    let cal_events = Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        async move {
+            let cal_events = client.calendar_events().await?;
+            if cal_events.len() != 1 {
+                bail!("not all calendar_events found");
+            }
+            Ok(cal_events)
+        }
+    })
+    .await?;
+
+    assert_eq!(cal_events.len(), 1);
+
+    let cal_event = cal_events.first().unwrap();
+    let cal_updater = cal_event.subscribe();
+
+    // set up the description
+    let desc_text = "This is test calendar event";
+    let event_id = cal_event
+        .update_builder()?
+        .description_text(desc_text.to_owned())
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if cal_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "descriptionChange");
+    assert_eq!(
+        activity
+            .description_content()
+            .map(|c| c.change())
+            .as_deref(),
+        Some("Changed")
+    );
+
+    let object = activity.object().expect("we have an object");
+    assert_eq!(object.type_str(), "event");
+    assert_eq!(
+        object.description().map(|c| c.body).as_deref(),
+        Some(desc_text)
+    );
+
+    // delete the description
+    let event_id = cal_event
+        .update_builder()?
+        .unset_description()
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy, || async {
+        if cal_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "descriptionChange");
+    assert_eq!(
+        activity
+            .description_content()
+            .map(|c| c.change())
+            .as_deref(),
+        Some("Unset")
+    );
+
+    let object = activity.object().expect("we have an object");
+    assert_eq!(object.type_str(), "event");
+    assert_eq!(object.description().map(|c| c.body).as_deref(), None);
+
+    Ok(())
+}
