@@ -31,27 +31,30 @@ class ReadReceiptsWidget extends ConsumerWidget {
     final userIds = receipts.keys.toList();
     final timestamps = receipts.values.toList();
 
-    return QudsPopupButton(
-      items: _showDetails(userIds, timestamps, use24HourFormat),
-      child: Wrap(
-        spacing: -8,
-        children: [
-          ...List.generate(
-            userIds.length <= showAvatarsLimit
-                ? userIds.length
-                : showAvatarsLimit,
-            (i) => _buildUserReadAvatars(context, ref, userIds[i]),
-          ),
-          if (userIds.length > showAvatarsLimit)
-            CircleAvatar(
-              radius: 8.5,
-              child: Text(
-                '+${userIds.length - showAvatarsLimit}',
-                textScaler: const TextScaler.linear(0.6),
-                style: theme.textTheme.labelSmall,
-              ),
+    return Theme(
+      data: theme.copyWith(splashFactory: NoSplash.splashFactory),
+      child: QudsPopupButton(
+        items: _showDetails(userIds, timestamps, use24HourFormat),
+        child: Wrap(
+          spacing: -8,
+          children: [
+            ...List.generate(
+              userIds.length <= showAvatarsLimit
+                  ? userIds.length
+                  : showAvatarsLimit,
+              (i) => _buildUserReadAvatars(context, ref, userIds[i]),
             ),
-        ],
+            if (userIds.length > showAvatarsLimit)
+              CircleAvatar(
+                radius: 8.5,
+                child: Text(
+                  '+${userIds.length - showAvatarsLimit}',
+                  textScaler: const TextScaler.linear(0.6),
+                  style: theme.textTheme.labelSmall,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
