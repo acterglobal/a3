@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -54,12 +55,15 @@ class RoomMembershipEventWidget extends ConsumerWidget {
         textStyle ?? lastMessageTextStyle(context, ref, roomId);
 
     //Render membership event text
-    return Text(
-      membershipEventText,
-      maxLines: 2,
-      textAlign: textAlign,
-      style: messageTextStyle,
-      overflow: TextOverflow.ellipsis,
+    return selectableText(
+      context,
+      Text(
+        membershipEventText,
+        maxLines: 2,
+        textAlign: textAlign,
+        style: messageTextStyle,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
