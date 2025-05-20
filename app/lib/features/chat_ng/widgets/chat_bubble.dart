@@ -1,6 +1,5 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
-import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
