@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/calendar_sync/calendar_sync_permission_page.dart';
 import 'package:acter/features/desktop_setup/pages/desktop_setup_page.dart';
@@ -123,6 +124,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final onBoardingPermissionsProvider = ref.watch(onboardingPermissionsProvider);
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);
 
     return onBoardingPermissionsProvider.when(
       loading: () => const OnboardingSkeleton(),
@@ -138,12 +140,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 onPageChanged: (index) => setState(() => _currentPage = index),
                 children: _screens,
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: _buildPageIndicator(_screens.length),
-              ),
+              if (keyboardVisibility.valueOrNull != true)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: _buildPageIndicator(_screens.length),
+                ),
             ],
           ),
         );
