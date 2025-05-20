@@ -24,9 +24,9 @@ url = "https://acter.global"
 "#;
 
 #[tokio::test]
-async fn pin_update_activity() -> Result<()> {
+async fn pin_change_content() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("pin_update", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("pin_change_content", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -79,6 +79,54 @@ async fn pin_update_activity() -> Result<()> {
     assert!(object.utc_start().is_none());
     assert!(object.utc_end().is_none());
     assert!(object.due_date().is_none());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn pin_unset_content() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("pin_unset_content", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let fetcher_client = user.clone();
+    let pins = Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        async move {
+            let pins = client.pins().await?;
+            if pins.len() != 1 {
+                bail!("not all pins found");
+            }
+            Ok(pins)
+        }
+    })
+    .await?;
+
+    assert_eq!(pins.len(), 1);
+
+    let pin = pins.first().unwrap();
+
+    let pin_updater = pin.subscribe();
+
+    let event_id = pin.update_builder()?.unset_content().send().await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy, || async {
+        if pin_updater.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let activity = user.activity(event_id.to_string()).await?;
+    assert_eq!(activity.type_str(), "descriptionChange");
+    assert_eq!(
+        activity.msg_content().map(|c| c.body()).as_deref(),
+        Some("removed description")
+    );
 
     Ok(())
 }
