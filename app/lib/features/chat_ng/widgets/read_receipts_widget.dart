@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 
 class ReadReceiptsWidget extends ConsumerWidget {
+  static const readReceiptsPopupMenuKey = Key('read_receipts_popup_menu');
   final TimelineEventItem item;
   final String roomId;
   final String messageId;
@@ -80,6 +81,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
           final colorScheme = Theme.of(context).colorScheme;
           final textTheme = Theme.of(context).textTheme;
           return Container(
+            key: ReadReceiptsWidget.readReceiptsPopupMenuKey,
             decoration: BoxDecoration(
               color: colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
@@ -108,9 +110,12 @@ class ReadReceiptsWidget extends ConsumerWidget {
                           )),
                         );
                         return ListTile(
-                          minLeadingWidth: 0,
                           minTileHeight: 10,
+                          horizontalTitleGap: 4,
                           dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                          ),
                           leading: ActerAvatar(
                             options: AvatarOptions.DM(member, size: 8),
                           ),
@@ -128,6 +133,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
                             style: textTheme.labelSmall?.copyWith(
                               color: colorScheme.onSurface,
                             ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         );
                       },

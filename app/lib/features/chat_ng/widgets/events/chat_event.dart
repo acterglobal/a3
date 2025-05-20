@@ -217,7 +217,10 @@ class ChatEvent extends ConsumerWidget {
           ),
           if (hasReadReceipts)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 4.0,
+              ),
               child: ReadReceiptsWidget(
                 item: item,
                 roomId: roomId,
