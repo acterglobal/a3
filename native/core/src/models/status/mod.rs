@@ -296,7 +296,7 @@ impl TryFrom<AnyStateEvent> for RoomStatus {
 
 impl ActerModel for RoomStatus {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
-        vec![IndexKey::RoomHistory(self.meta.room_id.to_owned())]
+        vec![IndexKey::RoomHistory(self.meta.room_id.clone())]
     }
 
     fn event_meta(&self) -> &EventMeta {

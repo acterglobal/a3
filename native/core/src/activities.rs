@@ -625,7 +625,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.on.event_id.to_owned(),
+                        object_id: e.inner.on.event_id.clone(),
                     });
                 Ok(Self::new(
                     meta,
@@ -645,7 +645,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.on.event_id.to_owned(),
+                        object_id: e.inner.on.event_id.clone(),
                     });
 
                 if let AttachmentContent::Reference(details) = e.inner.content {
@@ -674,7 +674,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.relates_to.event_id.to_owned(),
+                        object_id: e.inner.relates_to.event_id.clone(),
                     });
                 Ok(Self::new(
                     meta,
@@ -695,7 +695,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.to.event_id.to_owned(),
+                        object_id: e.inner.to.event_id.clone(),
                     });
                 Ok(Self::new(
                     meta,
@@ -725,7 +725,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.pin.event_id.to_owned(),
+                        object_id: e.inner.pin.event_id.clone(),
                     });
 
                 if let Some(new_title) = e.inner.title {
@@ -766,7 +766,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.calendar_event.event_id.to_owned(),
+                        object_id: e.inner.calendar_event.event_id.clone(),
                     });
 
                 if let Some(new_title) = e.inner.title {
@@ -809,7 +809,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.to.event_id.to_owned(),
+                        object_id: e.inner.to.event_id.clone(),
                     });
 
                 Ok(Self::new(
@@ -840,7 +840,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.task_list.event_id.to_owned(),
+                        object_id: e.inner.task_list.event_id.clone(),
                     });
 
                 if let Some(new_title) = e.inner.name {
@@ -872,7 +872,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.task_list_id.event_id.to_owned(),
+                        object_id: e.inner.task_list_id.event_id.clone(),
                     });
 
                 Ok(Self::new(
@@ -893,7 +893,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.task.event_id.to_owned(),
+                        object_id: e.inner.task.event_id.clone(),
                     });
 
                 if let Some(new_percent) = e.inner.progress_percent {
@@ -942,7 +942,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.task.event_id.to_owned(),
+                        object_id: e.inner.task.event_id.clone(),
                     });
 
                 Ok(Self::new(meta, ActivityContent::TaskAccept { object }))
@@ -958,7 +958,7 @@ impl Activity {
                     .ok()
                     .and_then(|o| ActivityObject::try_from(&o).ok())
                     .unwrap_or_else(|| ActivityObject::Unknown {
-                        object_id: e.inner.task.event_id.to_owned(),
+                        object_id: e.inner.task.event_id.clone(),
                     });
 
                 Ok(Self::new(meta, ActivityContent::TaskDecline { object }))

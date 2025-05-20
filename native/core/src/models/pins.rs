@@ -51,7 +51,7 @@ impl ActerModel for Pin {
         vec![
             IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Pins),
             IndexKey::Section(SectionIndex::Pins),
-            IndexKey::ObjectHistory(self.meta.event_id.to_owned()),
+            IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
@@ -113,8 +113,8 @@ pub struct PinUpdate {
 impl ActerModel for PinUpdate {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            IndexKey::ObjectHistory(self.inner.pin.event_id.to_owned()),
-            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.pin.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
@@ -127,7 +127,7 @@ impl ActerModel for PinUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.pin.event_id.to_owned()])
+        Some(vec![self.inner.pin.event_id.clone()])
     }
 }
 
