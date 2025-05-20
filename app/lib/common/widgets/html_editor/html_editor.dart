@@ -9,7 +9,6 @@ import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart'
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
 import 'package:acter/common/widgets/html_editor/services/constants.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:collection/collection.dart';
@@ -324,19 +323,6 @@ class _HtmlEditorState extends State<HtmlEditor> {
 
     updateEditorState(widget.editorState ?? EditorState.blank());
   }
-
-  // int _getActualLineCount(String text) {
-  //   //Considering 50 is the width of the emoji picker and send button
-  //   final editorWidth = MediaQuery.sizeOf(context).width - 50;
-
-  //   final textStyle = Theme.of(context).textTheme.bodyLarge;
-  //   final textPainter = TextPainter(
-  //     text: TextSpan(text: text, style: textStyle),
-  //     textDirection: TextDirection.ltr,
-  //   )..layout(maxWidth: editorWidth);
-  //   // Get the number of lines the text actually occupies
-  //   return textPainter.computeLineMetrics().length;
-  // }
 
   void _updateContentHeight() {
     final scrollService = editorState.scrollableState;
