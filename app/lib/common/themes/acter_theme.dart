@@ -13,7 +13,7 @@ import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
 
 extension ActerChatThemeExtension on ThemeData {
-  ActerChatTheme get chatTheme => const ActerChatTheme();
+  ActerChatTheme get chatTheme => ActerChatTheme();
 
   ElevatedButtonThemeData get dangerButtonTheme => dangerButtonThemeMaker();
 
