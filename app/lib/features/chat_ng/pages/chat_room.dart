@@ -20,7 +20,6 @@ class ChatRoomNgPage extends ConsumerWidget {
     return OrientationBuilder(
       builder:
           (context, orientation) => Scaffold(
-            backgroundColor: Colors.black,
             resizeToAvoidBottomInset: orientation == Orientation.portrait,
             appBar: ChatRoomAppBarWidget(
               roomId: roomId,
