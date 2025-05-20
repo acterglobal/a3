@@ -55,7 +55,7 @@ dependencies:
   flutter_slidable: ^4.0.0
   quds_popup_menu: ^0.0.1+1
   acter_avatar:
-#    path: "../../acter-avatar"
+    # path: "../../acter-avatar"
     git:
       url: https://github.com/acterglobal/acter-avatar
       ref: main
@@ -111,7 +111,7 @@ dependencies:
   args: ^2.4.2
   breadcrumbs: ^0.1.0
   device_info_plus: ^11.3.3
-  app_settings: #^5.1.1
+  app_settings: # ^5.1.1
     git:
       url: https://github.com/spencerccf/app_settings
       ref: bc0d4ae
@@ -134,7 +134,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   diffutil_dart: ^4.0.1
   tray_manager: ^0.3.0
-  window_manager:  #^0.4.0
+  window_manager: # ^0.4.0
     # path: ../../window_manager
     git:
       url: https://github.com/acterglobal/window_manager
@@ -143,13 +143,9 @@ dependencies:
 
   shake_detector:
     path: ../packages/shake_detector
-#  open_filex: ^4.6.0
-  open_filex:
-    git:
-     url: https://github.com/mufassalhussain/open_filex
-     ref: 7ec56421afc37bb2cc3cb751b9775999cd2d9a61
+  open_filex: ^4.7.0
   phosphor_flutter: ^2.1.0
-  device_calendar: #^4.3.3-20240801
+  device_calendar: # ^4.3.3-20240801
     git:
       url: https://github.com/acterglobal/device_calendar
       ref: 2e0c2050d48c9bd2eb3cfc47650fbd63b1490ea5
@@ -201,7 +197,7 @@ dev_dependencies:
 dependency_overrides:
   csslib: ">=0.17.1 <2.0.0"
   html: ">=0.15.4 <0.16.0"
-  # msix: #^3.7.0
+  # msix: # ^3.7.0
   #   # FIXME mainline `msix` comes with outdated VS redistribution libs
   #   # that make our app crash. We already copy over the proper ones in the
   #   # CI job, it we need a msix-version that doesn't copy over its own bad ones
@@ -293,7 +289,7 @@ flutter:
 msix_config:
   display_name: Acter
   publisher_display_name: Acter
-  identity_name: 	47338Acter.Acter3
+  identity_name: 47338Acter.Acter3
   publisher: CN=EBDFB2F4-DCCB-4267-8EBA-6FADD88EAC81
   msix_version: 0.0.0.1
   logo_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
@@ -302,6 +298,6 @@ msix_config:
   tile_icon_path: .\macos\Runner\Assets.xcassets\AppIcon.appiconset\app_icon_512.png
   icons_background_color: transparent
   architecture: x64
-  capabilities: "internetClient,removableStorage"
-  protocol_activation: https, matrix, acter
+  capabilities: internetClient,removableStorage
+  protocol_activation: https,matrix,acter
   app_uri_handler_hosts: app.global.acter,matrix.to
