@@ -269,9 +269,9 @@ async fn task_update_due_date() -> Result<()> {
 
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task");
-    assert_eq!(object.description(), None);
-    assert_eq!(object.utc_start(), None);
-    assert_eq!(object.utc_end(), None);
+    assert!(object.description().is_none());
+    assert!(object.utc_start().is_none());
+    assert!(object.utc_end().is_none());
     assert_eq!(object.due_date(), Some(tomorrow));
 
     Ok(())
