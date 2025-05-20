@@ -44,7 +44,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
           ),
           if (userIds.length > showAvatarsLimit)
             CircleAvatar(
-              radius: 8,
+              radius: 8.5,
               child: Text(
                 '+${userIds.length - showAvatarsLimit}',
                 textScaler: const TextScaler.linear(0.6),
