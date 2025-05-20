@@ -2939,5 +2939,7 @@
   "joinSelectedSpace": "Join selected {count} spaces",
   "@joinSelectedSpace": {},
   "successfullyJoined": "Successfully joined {spaceName}",
-  "@successfullyJoined": {}
+  "@successfullyJoined": {},
+  "userRecoveryKey": "{username}'s Recovery Key",
+  "@userRecoveryKey": {}
 }

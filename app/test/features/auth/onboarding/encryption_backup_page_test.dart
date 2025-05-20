@@ -30,7 +30,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Verify basic structure
@@ -70,7 +70,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       //Encryption key loading indicator
@@ -87,7 +87,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Initial pump to start the async operation
@@ -118,7 +118,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Wait for the async operation to complete
@@ -134,7 +134,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Wait for the async operation to complete

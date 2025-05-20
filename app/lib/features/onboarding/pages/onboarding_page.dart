@@ -59,7 +59,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           callNextPage: () => _nextPage(),
         ),
         RedeemInvitationsPage(callNextPage: () => _nextPage()),
-        EncryptionBackupPage(callNextPage: () => _nextPage()),
+        EncryptionBackupPage(username: widget.username ?? '', callNextPage: () => _nextPage()),
         LinkEmailPage(callNextPage: () => _nextPage()),
         UploadAvatarPage(callNextPage: () => _nextPage()),
         CustomizationPage(callNextPage: () => _nextPage()),

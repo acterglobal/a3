@@ -3,13 +3,14 @@ import 'package:acter/features/encryption_backup_feature/widgets/encryption_back
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
   final CallNextPage? callNextPage;
-
-  const EncryptionBackupPage({super.key, required this.callNextPage});
+  final String username;
+  const EncryptionBackupPage({super.key, required this.callNextPage, required this.username});
 
   @override
   ConsumerState<EncryptionBackupPage> createState() =>
@@ -18,6 +19,8 @@ class EncryptionBackupPage extends ConsumerStatefulWidget {
 
 class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   final isEnableNextButton = ValueNotifier<bool>(false);
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController encKeyController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -86,17 +89,62 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buildEncryptionKeyContent(BuildContext context, String encKey) {
+    final lang = L10n.of(context);
     final style = Theme.of(
       context,
     ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2);
+    
+    // Update controllers with current values
+    usernameController.text = lang.userRecoveryKey(widget.username);
+    encKeyController.text = encKey;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+     return Container(
+       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: SelectableText(encKey, style: style, textAlign: TextAlign.center),
+      child: AutofillGroup(
+        child: Column(
+          children: [
+          TextFormField(
+            autofillHints: const [AutofillHints.username],
+            controller: usernameController,
+            style: style,
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(
+            isCollapsed: true,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            contentPadding: EdgeInsets.zero,
+          ),
+            onChanged: (value) {
+              usernameController.text = lang.userRecoveryKey(widget.username);
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            autofillHints: const [AutofillHints.password],
+            controller: encKeyController,
+            style: style,
+            textAlign: TextAlign.center,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
+            scrollPhysics: const NeverScrollableScrollPhysics(),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onChanged: (value) {
+              encKeyController.text = encKey;
+            },
+          ),
+        ],
+        ),
+        ),
     );
   }
 
@@ -140,7 +188,12 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled ? () => widget.callNextPage?.call() : null,
+          onPressed: isEnabled 
+            ? () {
+                TextInput.finishAutofillContext(shouldSave: true);
+                widget.callNextPage?.call();
+              }
+            : null,
           child: Text(lang.next, style: const TextStyle(fontSize: 16)),
         );
       },
@@ -149,7 +202,11 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buidSkipButton(BuildContext context, L10n lang) {
     return OutlinedButton(
-      onPressed: () => widget.callNextPage?.call(),
+       onPressed: () {
+        TextInput.finishAutofillContext(shouldSave: true);
+        // Continue to next page
+        widget.callNextPage?.call();
+      },
       child: Text(L10n.of(context).skip),
     );
   }
