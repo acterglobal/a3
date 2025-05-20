@@ -81,6 +81,10 @@ async fn task_comment_activity() -> Result<()> {
     })
     .await?;
     let activity = user.activity(comment_1_id.to_string()).await?;
+    assert_eq!(
+        activity.msg_content().map(|c| c.body()).as_deref(),
+        Some("Looking forward to it!")
+    );
     // on task add the "object" is our list this happened on
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task");
