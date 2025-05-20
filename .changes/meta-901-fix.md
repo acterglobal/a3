@@ -1,0 +1,1 @@
+- Fix: chat editor sometimes not appearing on some devices
