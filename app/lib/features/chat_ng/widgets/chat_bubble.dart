@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -95,7 +96,7 @@ class ChatBubble extends StatelessWidget {
     final theme = Theme.of(context);
 
     final cornersRadius = Radius.circular(16);
-    final flatRadius = Radius.circular(0);
+    final flatRadius = Radius.circular(8);
 
     final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
     final bottomRight = isLastMessageBySender ? cornersRadius : flatRadius;
@@ -108,7 +109,11 @@ class ChatBubble extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Colors.deepPurple, theme.colorScheme.primary],
+          colors: [
+            const Color.fromARGB(255, 68, 58, 183),
+            const Color.fromARGB(255, 64, 99, 225),
+            theme.colorScheme.primary,
+          ],
         ),
         borderRadius: BorderRadius.only(
           topLeft: cornersRadius,
