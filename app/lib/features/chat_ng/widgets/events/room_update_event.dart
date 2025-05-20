@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TimelineEventItem;
@@ -30,18 +31,9 @@ class RoomUpdateEvent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
-    return TextSelectionTheme(
-      data: TextSelectionThemeData(
-        selectionColor: Theme.of(
-          context,
-        ).colorScheme.secondary.withValues(alpha: 0.3),
-      ),
-      child: SelectionArea(
-        child: Text(
-          stateText,
-          style: textStyle ?? stateEventTextStyle(context),
-        ),
-      ),
+    return selectableText(
+      context,
+      Text(stateText, style: textStyle ?? stateEventTextStyle(context)),
     );
   }
 

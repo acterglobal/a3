@@ -2,6 +2,7 @@ import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
@@ -73,17 +74,6 @@ class TextMessageEvent extends ConsumerWidget {
       repliedTo: repliedTo,
     );
   }
-
-  Widget selectableHtml(BuildContext context, Widget child) =>
-      TextSelectionTheme(
-        data: TextSelectionThemeData(
-          selectionColor: Theme.of(
-            context,
-          ).colorScheme.secondary.withValues(alpha: 0.3),
-        ),
-        child: SelectionArea(child: child),
-      );
-
   // Default factory constructor
   factory TextMessageEvent({
     Key? key,
@@ -115,7 +105,7 @@ class TextMessageEvent extends ConsumerWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: selectableHtml(
+        child: selectableText(
           context,
           Html(
             data: body,
@@ -130,7 +120,7 @@ class TextMessageEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
-        selectableHtml(
+        selectableText(
           context,
           Html(
             shrinkToFit: true,
