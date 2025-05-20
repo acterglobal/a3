@@ -2961,8 +2961,7 @@
   "missingEncryptionBackupDescription2": "Without backup keys Acter is not able to decrypt messages previously sent to you. Exactly for cases like this it is highly recommended to enabled Encryption Key Backup.",
   "@missingEncryptionBackupDescription2": {},
   "missingEncryptionBackupDescription3": "If you still have a device logged into your account, please _enable_ the backup there and try again.",
-  "@missingEncryptionBackupDescription3": {}
-  "@successfullyJoined": {},
+  "@missingEncryptionBackupDescription3": {},
   "userRecoveryKey": "{username}'s Recovery Key",
   "@userRecoveryKey": {}
 }
