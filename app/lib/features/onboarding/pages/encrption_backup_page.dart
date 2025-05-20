@@ -133,6 +133,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
             autofillHints: const [AutofillHints.password],
             controller: encKeyController,
             style: style,
+            autofocus: true,
             textAlign: TextAlign.center,
             maxLines: null,
             keyboardType: TextInputType.multiline,

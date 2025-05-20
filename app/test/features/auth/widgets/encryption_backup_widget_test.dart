@@ -13,7 +13,7 @@ void main() {
   group('PasswordManagerBackupWidget', () {
     testWidgets('renders correctly with encryption key', (tester) async {
       await tester.pumpProviderWidget(
-        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey),
+        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey, onButtonPressed: () {}),
       );
 
       // Verify the widget renders
@@ -22,7 +22,7 @@ void main() {
 
     testWidgets('share button is present', (tester) async {
       await tester.pumpProviderWidget(
-        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey),
+        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey, onButtonPressed: () {}),
       );
       await tester.pumpAndSettle();
       // Verify share button is present
@@ -31,7 +31,7 @@ void main() {
 
     testWidgets('copy button is present', (tester) async {
       await tester.pumpProviderWidget(
-        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey),
+        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey, onButtonPressed: () {}),
       );
       await tester.pumpAndSettle();
       // Verify share button is present
@@ -40,7 +40,7 @@ void main() {
 
     testWidgets('shows installed password manager buttons', (tester) async {
       await tester.pumpProviderWidget(
-        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey),
+        child: PasswordManagerBackupWidget(encryptionKey: testEncryptionKey, onButtonPressed: () {}),
         overrides: [
           isAppInstalledProvider(
             ExternalApps.onePassword,
