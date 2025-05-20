@@ -39,6 +39,7 @@ void messageActions({
           Positioned(
             left: messagePosition.dx,
             top: 0,
+            width: messageBox.size.width,
             height: MediaQuery.sizeOf(context).height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
