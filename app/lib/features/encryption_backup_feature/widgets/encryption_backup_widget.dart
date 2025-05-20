@@ -11,15 +11,18 @@ import 'package:share_plus/share_plus.dart';
 
 class PasswordManagerBackupWidget extends ConsumerWidget {
   final String encryptionKey;
+  final VoidCallback? onButtonPressed;
 
   const PasswordManagerBackupWidget({
     super.key,
     required this.encryptionKey,
+    this.onButtonPressed,
   });
 
   Future<void> _buildShareContent(L10n lang) async {
     await Clipboard.setData(ClipboardData(text: encryptionKey));
     EasyLoading.showSuccess(lang.keyCopied);
+    onButtonPressed?.call();
   }
 
   @override
@@ -36,7 +39,6 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
     final isLastPassInstalled = isAppInstalled(ref, ExternalApps.lastPass);
     final isEnpassInstalled = isAppInstalled(ref, ExternalApps.enpass);
     final isProtonPassInstalled = isAppInstalled(ref, ExternalApps.protonPass);
-
 
     return Wrap(
       spacing: 16,
@@ -133,13 +135,13 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
         await Clipboard.setData(ClipboardData(text: encryptionKey));
         if (context.mounted) {
           EasyLoading.showSuccess(lang.keyCopied);
+          onButtonPressed?.call();
         }
         
         // Then perform the action
         if (!context.mounted) return;
         await Future.delayed(const Duration(seconds: 2));
         onTap();
-      
       },
       child: Container(
         width: 48,
@@ -165,10 +167,9 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
       lang: lang,
       onTap: () async {
          await _buildShareContent(lang);
-            if (!context.mounted) return;
-            await Future.delayed(const Duration(seconds: 2));
-            onTap();
-       
+         if (!context.mounted) return;
+         await Future.delayed(const Duration(seconds: 2));
+         onTap();
       },
     );
   }

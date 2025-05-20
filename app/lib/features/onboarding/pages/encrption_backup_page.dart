@@ -78,7 +78,12 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            PasswordManagerBackupWidget(encryptionKey: data),
+            PasswordManagerBackupWidget(
+              encryptionKey: data,
+              onButtonPressed: () {
+                isEnableNextButton.value = true;
+              },
+            ),
           ],
         );
       },
