@@ -61,7 +61,11 @@ dependencies:
       ref: main
 
   flutter_easyloading: ^3.0.5
-  appflowy_editor: ^5.2.0
+  appflowy_editor: #^5.2.0
+    # path: ../../appflowy-editor
+    git:
+      url: https://github.com/acterglobal/appflowy-editor
+      ref: ben-mobile-expandable-editor
   acter_trigger_auto_complete:
     path: ../packages/acter_trigger_auto_complete
   acter_notifify:
