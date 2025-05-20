@@ -5,6 +5,7 @@ import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/common/extensions/options.dart';
+import 'package:flutter_svg/svg.dart';
 
 class ChatBubble extends StatelessWidget {
   final Widget child;
@@ -15,6 +16,7 @@ class ChatBubble extends StatelessWidget {
   final bool isEdited;
   final String? displayName;
   final bool isMe;
+  final bool isLastMessageBySender;
 
   // default private constructor
   const ChatBubble._inner({
@@ -27,6 +29,7 @@ class ChatBubble extends StatelessWidget {
     this.timestamp,
     this.displayName,
     this.isMe = false,
+    this.isLastMessageBySender = false,
   });
 
   // factory bubble constructor
@@ -43,19 +46,28 @@ class ChatBubble extends StatelessWidget {
     final theme = Theme.of(context);
 
     final cornersRadius = Radius.circular(16);
-    final flatRadius = Radius.circular(0);
+    final flatRadius = Radius.circular(8);
 
     final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
+    final bottomLeft = isLastMessageBySender ? cornersRadius : flatRadius;
 
     return ChatBubble._inner(
       messageWidth: messageWidth,
       displayName: displayName,
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            theme.colorScheme.surface.withBlue(40),
+            theme.colorScheme.surface.withBlue(20),
+            theme.colorScheme.surface,
+          ],
+        ),
         borderRadius: BorderRadius.only(
           topLeft: topLeft,
           topRight: cornersRadius,
-          bottomLeft: flatRadius,
+          bottomLeft: bottomLeft,
           bottomRight: cornersRadius,
         ),
       ),
@@ -63,7 +75,8 @@ class ChatBubble extends StatelessWidget {
       isEdited: isEdited,
       timestamp: timestamp,
       isMe: false,
-      child: child,
+      isLastMessageBySender: isLastMessageBySender,
+      child: Stack(alignment: Alignment.bottomLeft, children: [child]),
     );
   }
 
@@ -82,34 +95,29 @@ class ChatBubble extends StatelessWidget {
     final theme = Theme.of(context);
 
     final cornersRadius = Radius.circular(16);
-    final flatRadius = Radius.circular(0);
+    final flatRadius = Radius.circular(8);
 
     final topRight = isFirstMessageBySender ? cornersRadius : flatRadius;
+    final bottomRight = isLastMessageBySender ? cornersRadius : flatRadius;
 
     return ChatBubble._inner(
       key: key,
       messageWidth: messageWidth,
       displayName: displayName,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.primary.withValues(alpha: 0.8),
-          ],
-        ),
+        gradient: theme.chatTheme.senderChatBubbleGradient,
         borderRadius: BorderRadius.only(
           topLeft: cornersRadius,
           topRight: topRight,
           bottomLeft: cornersRadius,
-          bottomRight: flatRadius,
+          bottomRight: bottomRight,
         ),
       ),
       bubbleAlignment: MainAxisAlignment.end,
       isEdited: isEdited,
       timestamp: timestamp,
       isMe: true,
+      isLastMessageBySender: isLastMessageBySender,
       child: DefaultTextStyle.merge(
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onPrimary,
@@ -128,30 +136,51 @@ class ChatBubble extends StatelessWidget {
     final String? name = displayName;
 
     return IntrinsicWidth(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 14),
-        padding: const EdgeInsets.all(10),
-        constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
-        decoration: decoration,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (name != null) ...[
-              Text(
-                name,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:
-                      chatBubbleDisplayNameColors[name.hashCode.abs() %
-                          chatBubbleDisplayNameColors.length],
+      child: Stack(
+        alignment: isMe ? Alignment.bottomRight : Alignment.bottomLeft,
+        children: [
+          if (isLastMessageBySender)
+            isMe
+                ? Positioned(
+                  bottom: 0,
+                  right: 4,
+                  child: SvgPicture.asset(
+                    'assets/icon/ic_right_chat_bubble_corner.svg',
+                  ),
+                )
+                : Positioned(
+                  bottom: 0,
+                  left: 4,
+                  child: SvgPicture.asset(
+                    'assets/icon/ic_left_chat_bubble_corner.svg',
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-            ],
-            child,
-            _buildTimestampAndEditedLabel(context),
-          ],
-        ),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 14),
+            padding: const EdgeInsets.all(10),
+            constraints: BoxConstraints(maxWidth: msgWidth ?? defaultWidth),
+            decoration: decoration,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (name != null) ...[
+                  Text(
+                    name,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color:
+                          chatBubbleDisplayNameColors[name.hashCode.abs() %
+                              chatBubbleDisplayNameColors.length],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                child,
+                _buildTimestampAndEditedLabel(context),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
