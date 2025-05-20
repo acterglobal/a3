@@ -11,18 +11,18 @@ import 'package:share_plus/share_plus.dart';
 
 class PasswordManagerBackupWidget extends ConsumerWidget {
   final String encryptionKey;
-  final VoidCallback? onButtonPressed;
+  final VoidCallback onButtonPressed;
 
   const PasswordManagerBackupWidget({
     super.key,
     required this.encryptionKey,
-    this.onButtonPressed,
+    required this.onButtonPressed,
   });
 
   Future<void> _buildShareContent(L10n lang) async {
     await Clipboard.setData(ClipboardData(text: encryptionKey));
     EasyLoading.showSuccess(lang.keyCopied);
-    onButtonPressed?.call();
+    onButtonPressed.call();
   }
 
   @override
@@ -135,7 +135,7 @@ class PasswordManagerBackupWidget extends ConsumerWidget {
         await Clipboard.setData(ClipboardData(text: encryptionKey));
         if (context.mounted) {
           EasyLoading.showSuccess(lang.keyCopied);
-          onButtonPressed?.call();
+          onButtonPressed.call();
         }
         
         // Then perform the action
