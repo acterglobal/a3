@@ -74,6 +74,9 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     final encKey = ref.watch(enableEncrptionBackUpProvider);
     return encKey.when(
       data: (data) {
+        usernameController.text = L10n.of(context).userRecoveryKey(widget.username);
+        encKeyController.text = data;
+
         return Column(
           children: [
             _buildEncryptionKeyContent(context, data),
@@ -94,22 +97,18 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   }
 
   Widget _buildEncryptionKeyContent(BuildContext context, String encKey) {
-    final lang = L10n.of(context);
     final style = Theme.of(
       context,
     ).textTheme.bodyMedium?.copyWith(fontSize: 16, letterSpacing: 1.2);
-    
-    // Update controllers with current values
-    usernameController.text = lang.userRecoveryKey(widget.username);
-    encKeyController.text = encKey;
+
 
      return Container(
-       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: AutofillGroup(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: AutofillGroup(
         child: Column(
           children: [
           TextFormField(
@@ -126,7 +125,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
             contentPadding: EdgeInsets.zero,
           ),
             onChanged: (value) {
-              usernameController.text = lang.userRecoveryKey(widget.username);
+              usernameController.text = L10n.of(context).userRecoveryKey(widget.username);
             },
           ),
           const SizedBox(height: 16),
@@ -193,7 +192,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled 
+          onPressed: isEnabled
             ? () {
                 TextInput.finishAutofillContext(shouldSave: true);
                 widget.callNextPage?.call();
