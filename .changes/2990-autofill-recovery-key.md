@@ -1,0 +1,2 @@
+- [Implemented]: Added autofill support for the recovery key using the system password manager during onboarding.
+- [Improvement]: Improved indicator behavior — it now hides automatically when the keyboard is open for better visibility.
