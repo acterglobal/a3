@@ -130,6 +130,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           ),
           const SizedBox(height: 16),
           TextFormField(
+            key: Key('encryption-key-input-field'),
             autofillHints: const [AutofillHints.password],
             controller: encKeyController,
             style: style,

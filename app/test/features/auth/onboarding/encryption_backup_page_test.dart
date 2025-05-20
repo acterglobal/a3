@@ -96,12 +96,12 @@ void main() {
       // Verify loading indicator is gone
       expect(find.byType(LinearProgressIndicator), findsNothing);
 
-      // Verify the encryption key is displayed in SelectableText
-      expect(find.byType(SelectableText), findsOneWidget);
-      final selectableText = tester.widget<SelectableText>(
-        find.byType(SelectableText),
+      
+      expect(find.byKey(Key('encryption-key-input-field')), findsOneWidget);
+      final textFormField = tester.widget<TextFormField>(
+        find.byKey(Key('encryption-key-input-field')),
       );
-      expect(selectableText.data, equals('test-encryption-key'));
+      expect(textFormField.controller?.text, equals('test-encryption-key'));
     });
 
     testWidgets('shows error message when encryption key fetch fails', (
