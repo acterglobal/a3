@@ -3,6 +3,11 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeli
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/user/mock_user.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_list_ffi_string.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_string.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_ffi_list_reaction_record.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_reaction_record.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/general/mock_userId.dart';
 
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   roomId: 'mock-room-1',
@@ -493,6 +498,117 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
               'I would like to see some UI example of how media messages are renders in ...',
         ),
       ),
+      mockReactionKeys: MockFfiListFfiString(
+        mockStrings: [
+          MockFfiString('👍'),
+          MockFfiString('❤️'),
+          MockFfiString('🎉'),
+          MockFfiString('👏'),
+          MockFfiString('🔥'),
+          MockFfiString('🚀'),
+          MockFfiString('💯'),
+        ],
+      ),
+      mockReactionRecords: {
+        '👍': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@acter1:m-1.acter.global'),
+              mockTimestamp: 1744098070000,
+              mockSentByMe: true,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+              mockTimestamp: 1744098080000,
+              mockSentByMe: false,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+              mockTimestamp: 1744098090000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '❤️': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+              mockTimestamp: 1744098110000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '🎉': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+              mockTimestamp: 1744098120000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '👏': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@acter1:m-1.acter.global'),
+              mockTimestamp: 1744098130000,
+              mockSentByMe: true,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+              mockTimestamp: 1744098140000,
+              mockSentByMe: false,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+              mockTimestamp: 1744098150000,
+              mockSentByMe: false,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+              mockTimestamp: 1744098160000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '🔥': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+              mockTimestamp: 1744098170000,
+              mockSentByMe: false,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+              mockTimestamp: 1744098180000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '🚀': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@acter1:m-1.acter.global'),
+              mockTimestamp: 1744098190000,
+              mockSentByMe: true,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+              mockTimestamp: 1744098200000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '💯': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+              mockTimestamp: 1744098210000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+      },
     ),
     MockTimelineEventItem(
       mockEventId: 'mock-reply-2',
@@ -521,6 +637,47 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           ),
         ),
       ),
+      mockReactionKeys: MockFfiListFfiString(
+        mockStrings: [
+          MockFfiString('👍'),
+          MockFfiString('🙏'),
+          MockFfiString('✨'),
+        ],
+      ),
+      mockReactionRecords: {
+        '👍': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+              mockTimestamp: 1744098220000,
+              mockSentByMe: false,
+            ),
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+              mockTimestamp: 1744098230000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '🙏': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+              mockTimestamp: 1744098240000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+        '✨': MockFfiListReactionRecord(
+          records: [
+            MockReactionRecord(
+              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+              mockTimestamp: 1744098250000,
+              mockSentByMe: false,
+            ),
+          ],
+        ),
+      },
     ),
     MockTimelineEventItem(
       mockEventId: 'mock-reply-3',
