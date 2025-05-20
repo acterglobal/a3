@@ -119,7 +119,7 @@ class ReadReceiptsWidget extends ConsumerWidget {
                             style: textTheme.labelSmall,
                           ),
                           trailing: Text(
-                            jiffyDateForReadReceipt(
+                            jiffyDateTimestamp(
                               context,
                               timestamp,
                               use24HourFormat: show24HourFormat,

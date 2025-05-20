@@ -20,7 +20,7 @@ class MessageTimestampWidget extends StatelessWidget {
 
     final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
 
-    String formattedTime = jiffyDateForReadReceipt(
+    String formattedTime = jiffyDateTimestamp(
       context,
       timestamp,
       use24HourFormat: use24HourFormat,

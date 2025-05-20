@@ -71,7 +71,7 @@ String jiffyDateForActvity(BuildContext context, int timeInterval) {
   return activityDate.yMd;
 }
 
-String jiffyDateForReadReceipt(
+String jiffyDateTimestamp(
   BuildContext context,
   int timeInterval, {
   bool use24HourFormat = false,
@@ -86,10 +86,16 @@ String jiffyDateForReadReceipt(
   }
 
   final week = now.subtract(weeks: 1);
+  final year = now.subtract(years: 1);
   if (jiffyTime.isBetween(week, now)) {
+    // between current week
     return showDay ? '${jiffyTime.E} $timestamp' : timestamp;
-  } else {
+  } else if (jiffyTime.isBefore(week) && jiffyTime.isAfter(year)) {
+    // before week but within same year
     return showDay ? '${jiffyTime.MMMEd} $timestamp' : timestamp;
+  } else {
+    // difference greater than year, show full datetime
+    return showDay ? '${jiffyTime.yMMMEd} $timestamp' : timestamp;
   }
 }
 
