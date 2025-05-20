@@ -103,7 +103,7 @@ impl Attachment {
     }
 
     pub async fn can_redact(&self) -> Result<bool> {
-        let sender = self.inner.meta.sender.to_owned();
+        let sender = self.inner.meta.sender.clone();
         let room = self.room.clone();
 
         RUNTIME

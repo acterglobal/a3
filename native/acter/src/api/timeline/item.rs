@@ -56,12 +56,7 @@ impl EventSendState {
             SdkEventSendState::SendingFailed {
                 error,
                 is_recoverable,
-            } => (
-                "SendingFailed".to_string(),
-                Some(error.to_owned().to_string()),
-                None,
-            ),
-
+            } => ("SendingFailed".to_string(), Some(error.to_string()), None),
             SdkEventSendState::Sent { event_id } => {
                 ("Sent".to_string(), None, Some(event_id.clone()))
             }
@@ -502,7 +497,7 @@ impl TimelineEventItem {
         // apply this way for only function that string vector is calculated indirectly.
         let mut keys = vec![];
         for key in self.reactions.keys() {
-            keys.push(key.to_owned());
+            keys.push(key.clone());
         }
         keys
     }
