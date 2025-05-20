@@ -42,7 +42,7 @@ async fn upgrade_flow() -> Result<()> {
     let mut spaces = user.spaces().await?;
 
     assert_eq!(spaces.len(), 1);
-    let space = spaces.pop().unwrap();
+    let space = spaces.pop().expect("at least a space should exist");
 
     assert!(!space.is_acter_space().await?);
     let member = space.get_my_membership().await?;

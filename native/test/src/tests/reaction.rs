@@ -5,7 +5,10 @@ use futures::{pin_mut, stream::StreamExt, FutureExt, Stream};
 use tokio::time::sleep;
 use tracing::{info, warn};
 
-use crate::utils::{accept_all_invites, random_users_with_random_convo, wait_for_convo_joined};
+use crate::utils::{
+    accept_all_invites, match_msg_reaction, match_text_msg, random_users_with_random_convo,
+    wait_for_convo_joined,
+};
 
 type MessageMatchesTest = dyn Fn(&TimelineItem) -> bool;
 
@@ -100,12 +103,12 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let worf_timeline = worf_convo.timeline_stream();
     let worf_stream = worf_timeline.messages_stream();
 
-    let draft = sisko.text_plain_draft("Hi, everyone".to_string());
+    let draft = sisko.text_plain_draft("Hi, everyone".to_owned());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     let (kyra_received, kyra_unique_id) = wait_for_message(
         kyra_stream,
-        &|m| match_text_msg(m, "Hi, everyone").is_some(),
+        &|m| match_text_msg(m, "Hi, everyone", false).is_some(),
         "even after 30 seconds, kyra didn’t see sisko’s message",
     )
     .await?;
@@ -131,11 +134,11 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     info!("toggling kyra");
     kyra_timeline
-        .toggle_reaction(kyra_unique_id.to_string(), "👏".to_string())
+        .toggle_reaction(kyra_unique_id, "👏".to_owned())
         .await?;
     info!("toggling worf");
     worf_timeline
-        .toggle_reaction(worf_unique_id.to_string(), "😎".to_string())
+        .toggle_reaction(worf_unique_id, "😎".to_owned())
         .await?;
     info!("after toggle");
 
@@ -151,8 +154,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                     .value()
                     .expect("diff set action should have valid value");
                 info!("diff set - {:?}", value);
-                if match_msg_reaction(&value, "Hi, everyone", "👏".to_string())
-                    && match_msg_reaction(&value, "Hi, everyone", "😎".to_string())
+                if match_msg_reaction(&value, "Hi, everyone", "👏".to_owned())
+                    && match_msg_reaction(&value, "Hi, everyone", "😎".to_owned())
                 {
                     found = true;
                 }
@@ -173,33 +176,4 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     );
 
     Ok(())
-}
-
-fn match_text_msg(msg: &TimelineItem, body: &str) -> Option<String> {
-    info!("match room msg - {:?}", msg.clone());
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body {
-                // exclude the pending msg
-                if let Some(event_id) = event_item.event_id() {
-                    return Some(event_id);
-                }
-            }
-        }
-    }
-    None
-}
-
-fn match_msg_reaction(msg: &TimelineItem, body: &str, key: String) -> bool {
-    info!("match room msg - {:?}", msg.clone());
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body && event_item.reaction_keys().contains(&key) {
-                return true;
-            }
-        }
-    }
-    false
 }

@@ -53,6 +53,8 @@ class ExternalShareOptions extends ConsumerWidget {
           child: Row(
             children: [
               if (qrContent != null) qrOptionsUI(context, qrContent!),
+              if (qrContent != null && shareContentBuilder != null)
+                Divider(indent: 12),
               if (shareContentBuilder != null)
                 shareOptionsUI(context, ref, shareContentBuilder!),
             ],
@@ -64,11 +66,33 @@ class ExternalShareOptions extends ConsumerWidget {
 
   Widget qrOptionsUI(BuildContext context, String qrContent) {
     final lang = L10n.of(context);
-    return shareToItemUI(
-      name: lang.qr,
-      iconWidget: Icon(PhosphorIcons.qrCode()),
-      color: Colors.grey.shade600,
-      onTap: () => showQrCode(context, qrContent, title: qrCodeHeader),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          lang.toAnotherActer,
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+        Row(
+          children: [
+            shareToItemUI(
+              name: lang.qr,
+              iconWidget: Icon(PhosphorIcons.qrCode()),
+              color: Colors.grey.shade600,
+              onTap: () => showQrCode(context, qrContent, title: qrCodeHeader),
+            ),
+            shareToItemUI(
+              name: lang.copy,
+              iconWidget: Icon(PhosphorIcons.link()),
+              color: Colors.blueGrey,
+              onTap: () async {
+                await Clipboard.setData(ClipboardData(text: qrContent));
+                EasyLoading.showToast(lang.messageCopiedToClipboard);
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -92,83 +116,89 @@ class ExternalShareOptions extends ConsumerWidget {
     final isSignalInstalled =
         ref.watch(isAppInstalledProvider(ExternalApps.signal)).valueOrNull ==
         true;
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        shareToItemUI(
-          name: lang.copy,
-          iconWidget: Icon(PhosphorIcons.link()),
-          color: Colors.blueGrey,
-          onTap: () async {
-            final shareData = await shareContentBuilder();
-            await Clipboard.setData(ClipboardData(text: shareData));
-            EasyLoading.showToast(lang.messageCopiedToClipboard);
-          },
-        ),
-        shareToItemUI(
-          name: lang.sendEmail,
-          iconWidget: Icon(Atlas.envelope),
-          color: Colors.redAccent,
-          onTap: () async {
-            final shareData = await shareContentBuilder();
-            await mailTo(toAddress: '', subject: 'body=$shareData');
-          },
-        ),
-        if (isSignalInstalled && Platform.isAndroid)
-          shareToItemUI(
-            name: lang.signal,
-            iconWidget: Image.asset(
-              'assets/icon/signal_logo.png',
-              height: 25,
-              width: 25,
+        Text(lang.externallyVia, style: Theme.of(context).textTheme.labelSmall),
+        Row(
+          children: [
+            shareToItemUI(
+              name: lang.copy,
+              iconWidget: Icon(PhosphorIcons.link()),
+              color: Colors.blueGrey,
+              onTap: () async {
+                final shareData = await shareContentBuilder();
+                await Clipboard.setData(ClipboardData(text: shareData));
+                EasyLoading.showToast(lang.messageCopiedToClipboard);
+              },
             ),
-            color: Colors.blue,
-            onTap: () async {
-              final shareData = await shareContentBuilder();
-              if (!context.mounted) return;
-              shareToSignal(context: context, text: shareData);
-            },
-          ),
-        if (isWhatsAppInstalled)
-          shareToItemUI(
-            name: lang.whatsApp,
-            iconWidget: Icon(PhosphorIcons.whatsappLogo()),
-            color: Colors.green,
-            onTap: () async {
-              final shareData = await shareContentBuilder();
-              if (!context.mounted) return;
-              shareToWhatsApp(context: context, text: shareData);
-            },
-          ),
-        if (isWhatsAppBusinessInstalled)
-          shareToItemUI(
-            name: lang.whatsAppBusiness,
-            iconWidget: Icon(PhosphorIcons.whatsappLogo()),
-            color: Colors.green,
-            onTap: () async {
-              final shareData = await shareContentBuilder();
-              if (!context.mounted) return;
-              shareToWhatsApp(context: context, text: shareData);
-            },
-          ),
-        if (isTelegramInstalled)
-          shareToItemUI(
-            name: lang.telegram,
-            iconWidget: Icon(PhosphorIcons.telegramLogo()),
-            color: Colors.blue,
-            onTap: () async {
-              final shareData = await shareContentBuilder();
-              if (!context.mounted) return;
-              shareToTelegram(context: context, text: shareData);
-            },
-          ),
-        shareToItemUI(
-          name: lang.more,
-          iconWidget: Icon(PhosphorIcons.dotsThree()),
-          color: Colors.grey.shade800,
-          onTap: () async {
-            final shareData = await shareContentBuilder();
-            await Share.share(shareData);
-          },
+            shareToItemUI(
+              name: lang.sendEmail,
+              iconWidget: Icon(Atlas.envelope),
+              color: Colors.redAccent,
+              onTap: () async {
+                final shareData = await shareContentBuilder();
+                await mailTo(toAddress: '', subject: 'body=$shareData');
+              },
+            ),
+            if (isSignalInstalled && Platform.isAndroid)
+              shareToItemUI(
+                name: lang.signal,
+                iconWidget: Image.asset(
+                  'assets/icon/signal_logo.png',
+                  height: 25,
+                  width: 25,
+                ),
+                color: Colors.blue,
+                onTap: () async {
+                  final shareData = await shareContentBuilder();
+                  if (!context.mounted) return;
+                  shareToSignal(context: context, text: shareData);
+                },
+              ),
+            if (isWhatsAppInstalled)
+              shareToItemUI(
+                name: lang.whatsApp,
+                iconWidget: Icon(PhosphorIcons.whatsappLogo()),
+                color: Colors.green,
+                onTap: () async {
+                  final shareData = await shareContentBuilder();
+                  if (!context.mounted) return;
+                  shareToWhatsApp(context: context, text: shareData);
+                },
+              ),
+            if (isWhatsAppBusinessInstalled)
+              shareToItemUI(
+                name: lang.whatsAppBusiness,
+                iconWidget: Icon(PhosphorIcons.whatsappLogo()),
+                color: Colors.green,
+                onTap: () async {
+                  final shareData = await shareContentBuilder();
+                  if (!context.mounted) return;
+                  shareToWhatsApp(context: context, text: shareData);
+                },
+              ),
+            if (isTelegramInstalled)
+              shareToItemUI(
+                name: lang.telegram,
+                iconWidget: Icon(PhosphorIcons.telegramLogo()),
+                color: Colors.blue,
+                onTap: () async {
+                  final shareData = await shareContentBuilder();
+                  if (!context.mounted) return;
+                  shareToTelegram(context: context, text: shareData);
+                },
+              ),
+            shareToItemUI(
+              name: lang.more,
+              iconWidget: Icon(PhosphorIcons.dotsThree()),
+              color: Colors.grey.shade800,
+              onTap: () async {
+                final shareData = await shareContentBuilder();
+                await Share.share(shareData);
+              },
+            ),
+          ],
         ),
       ],
     );

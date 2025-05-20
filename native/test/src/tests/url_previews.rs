@@ -101,8 +101,8 @@ async fn ref_details_as_url_preview() -> Result<()> {
     let previews = msg.url_previews();
     assert_eq!(previews.len(), 1);
     let preview = previews.first().expect("has one");
-    assert_eq!(preview.title().unwrap(), "Acter Website");
-    assert_eq!(preview.url().unwrap(), target_uri);
+    assert_eq!(preview.title().as_deref(), Some("Acter Website"));
+    assert_eq!(preview.url(), Some(target_uri));
 
     Ok(())
 }
@@ -127,11 +127,11 @@ async fn url_preview_on_message() -> Result<()> {
     let first = users.first().expect("exists");
     let target_uri = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
-        .to_string();
+        .to_owned();
 
     let preview = user.url_preview(target_uri.clone()).await?;
 
-    assert_eq!(preview.title().unwrap(), "Synapse is running");
+    assert_eq!(preview.title().as_deref(), Some("Synapse is running"));
 
     let mut draft = user.text_plain_draft("look at this pin".to_owned());
     draft = draft.add_url_preview(Box::new(preview))?;
@@ -178,8 +178,8 @@ async fn url_preview_on_message() -> Result<()> {
     let previews = msg.url_previews();
     assert_eq!(previews.len(), 1);
     let preview = previews.first().expect("has one");
-    assert_eq!(preview.title().unwrap(), "Synapse is running");
-    assert_eq!(preview.url().unwrap(), target_uri);
+    assert_eq!(preview.title().as_deref(), Some("Synapse is running"));
+    assert_eq!(preview.url(), Some(target_uri));
 
     Ok(())
 }

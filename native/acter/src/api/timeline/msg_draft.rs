@@ -554,15 +554,10 @@ impl MsgDraft {
                 filename,
             } => {
                 let info = info.expect("image info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
                 let mut image_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&content_type, &mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
@@ -570,6 +565,8 @@ impl MsgDraft {
                         .to_string();
                     ImageMessageEventContent::encrypted(body, encrypted_file)
                 } else {
+                    let mimetype = info.mimetype.clone().expect("mimetype needed");
+                    let content_type = mimetype.parse::<mime::Mime>()?;
                     let mut image_buf = std::fs::read(path.clone())?;
                     let response = room
                         .client()
@@ -593,15 +590,10 @@ impl MsgDraft {
                 filename,
             } => {
                 let info = info.expect("audio info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
                 let mut audio_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&content_type, &mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
@@ -609,6 +601,8 @@ impl MsgDraft {
                         .to_string();
                     AudioMessageEventContent::encrypted(body, encrypted_file)
                 } else {
+                    let mimetype = info.mimetype.clone().expect("mimetype needed");
+                    let content_type = mimetype.parse::<mime::Mime>()?;
                     let mut audio_buf = std::fs::read(path.clone())?;
                     let response = room
                         .client()
@@ -631,16 +625,11 @@ impl MsgDraft {
                 info,
                 filename,
             } => {
-                let info = info.expect("video info needed");
-                let mimetype = info.mimetype.clone().expect("mimetype needed");
-                let content_type = mimetype.parse::<mime::Mime>()?;
                 let path = PathBuf::from(source);
+                let info = info.expect("video info needed");
                 let mut video_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&content_type, &mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")
@@ -648,6 +637,8 @@ impl MsgDraft {
                         .to_string();
                     VideoMessageEventContent::encrypted(body, encrypted_file)
                 } else {
+                    let mimetype = info.mimetype.clone().expect("mimetype needed");
+                    let content_type = mimetype.parse::<mime::Mime>()?;
                     let mut video_buf = std::fs::read(path.clone())?;
                     let response = room
                         .client()
@@ -676,10 +667,7 @@ impl MsgDraft {
                 let path = PathBuf::from(source);
                 let mut file_content = if room.latest_encryption_state().await?.is_encrypted() {
                     let mut reader = std::fs::File::open(path.clone())?;
-                    let encrypted_file = room
-                        .client()
-                        .upload_encrypted_file(&content_type, &mut reader)
-                        .await?;
+                    let encrypted_file = room.client().upload_encrypted_file(&mut reader).await?;
                     let body = path
                         .file_name()
                         .expect("it is not file")

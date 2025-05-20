@@ -70,7 +70,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     let base_draft = first
         .image_draft(
             png_file.path().to_string_lossy().to_string(),
-            "image/png".to_string(),
+            "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned());
     let activity_id = manager
@@ -88,8 +88,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
-    assert_eq!(activity.sub_type_str().unwrap(), "image");
-    assert_eq!(activity.name().unwrap(), "Fishy.png");
+    assert_eq!(activity.sub_type_str().as_deref(), Some("image"));
+    assert_eq!(activity.name().as_deref(), Some("Fishy.png"));
     let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
@@ -99,8 +99,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
             encode(activity_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -145,7 +145,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     let base_draft = first
         .file_draft(
             png_file.path().to_string_lossy().to_string(),
-            "image/png".to_string(),
+            "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned());
     let activity_id = manager
@@ -163,8 +163,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
-    assert_eq!(activity.sub_type_str().unwrap(), "file");
-    assert_eq!(activity.name().unwrap(), "Fishy.png");
+    assert_eq!(activity.sub_type_str().as_deref(), Some("file"));
+    assert_eq!(activity.name().as_deref(), Some("Fishy.png"));
     let parent = activity.object().expect("parent was found");
     assert_eq!(
         activity.target_url(),
@@ -174,8 +174,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
             encode(activity_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "First meeting".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar
     assert_eq!(parent.object_id_str(), obj_id);
 
@@ -241,10 +241,10 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     assert_eq!(activity.type_str(), "references");
     // check the ref details
     let ref_details = activity.ref_details().expect("ref details were found");
-    assert_eq!(ref_details.title().unwrap(), "Acter Website");
+    assert_eq!(ref_details.title().as_deref(), Some("Acter Website"));
     assert_eq!(
-        ref_details.target_id_str().unwrap(),
-        pin.event_id().to_string()
+        ref_details.target_id_str(),
+        Some(pin.event_id().to_string())
     );
 
     // check the parent
@@ -258,8 +258,8 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
         )
     );
 
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "First meeting".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar
     assert_eq!(parent.object_id_str(), obj_id);
 

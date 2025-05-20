@@ -52,7 +52,7 @@ async fn test_policy_rule_server() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room.room_id_str());
     assert_eq!(activity.type_str(), "policyRuleServer");
     let ts: u64 = meta.origin_server_ts.get().into();
@@ -64,8 +64,8 @@ async fn test_policy_rule_server() -> Result<()> {
         .expect("not a policy rule server event");
 
     assert_eq!(
-        content.entity_change(),
-        Some("Set".to_owned()),
+        content.entity_change().as_deref(),
+        Some("Set"),
         "entity in policy rule server should be set"
     );
     assert_eq!(
@@ -80,8 +80,8 @@ async fn test_policy_rule_server() -> Result<()> {
     );
 
     assert_eq!(
-        content.recommendation_change(),
-        Some("Set".to_owned()),
+        content.recommendation_change().as_deref(),
+        Some("Set"),
         "recommendation in policy rule server should be set"
     );
     assert_eq!(
@@ -96,8 +96,8 @@ async fn test_policy_rule_server() -> Result<()> {
     );
 
     assert_eq!(
-        content.reason_change(),
-        Some("Set".to_owned()),
+        content.reason_change().as_deref(),
+        Some("Set"),
         "reason in policy rule server should be set"
     );
     assert_eq!(

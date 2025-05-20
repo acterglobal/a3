@@ -52,8 +52,8 @@ async fn test_room_tombstone() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomTombstone");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -64,8 +64,8 @@ async fn test_room_tombstone() -> Result<()> {
         .expect("not a room tombstone event");
 
     assert_eq!(
-        content.body_change(),
-        Some("Set".to_owned()),
+        content.body_change().as_deref(),
+        Some("Set"),
         "body in room tombstone should be set"
     );
     assert_eq!(
@@ -75,8 +75,8 @@ async fn test_room_tombstone() -> Result<()> {
     );
 
     assert_eq!(
-        content.replacement_room_change(),
-        Some("Set".to_owned()),
+        content.replacement_room_change().as_deref(),
+        Some("Set"),
         "replacement in room tombstone should be set"
     );
     assert_eq!(
@@ -92,5 +92,5 @@ fn gen_id(len: usize) -> String {
     let alphabet: [char; 16] = [
         '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f',
     ];
-    return nanoid!(len, &alphabet);
+    nanoid!(len, &alphabet)
 }

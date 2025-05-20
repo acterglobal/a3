@@ -27,64 +27,64 @@ version = "0.28.0"
 [workspace.dependencies.matrix-sdk]
 # path = "../matrix-rust-sdk/crates/matrix-sdk"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-base]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-base"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-sqlite]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-sqlite"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 features = ["crypto-store", "state-store"]
 
 [workspace.dependencies.matrix-sdk-store-encryption]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-store-encryption"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ui]
 # path = "../matrix-rust-sdk/crates/matrix-sdk-ui"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ffi]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-ffi-macros]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 [workspace.dependencies.matrix-sdk-test]
 # path = "../matrix-rust-sdk/testing/matrix-sdk-test"
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "8c3f55456f668ea3548658c9d9573a87f3a94cf1"
+rev = "4d027ec405a20b54c6f9d2e31a20bf2dd1c3854d"
 default-features = false
 
 
 # not used directly but needed to enable specific features from ruma
 # ATTENTION: _MUST_ stay in sync with the ruma-rev used by matrix-sdk!
 [workspace.dependencies.ruma]
-version = "0.12.2"
-# git = "https://github.com/ruma/ruma"
-# rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
+# version = "0.12.2"
+git = "https://github.com/ruma/ruma"
+rev = "689d9613a985edc089b5b729e6d9362f09b5df4f"
 features = ['unstable-msc4095']
 
 # - see comment above
 [workspace.dependencies.ruma-common]
-version = "0.15.2"
-# git = "https://github.com/ruma/ruma"
-# rev = "7755c7cbc580f8d8aea30d78cc1a6850b1a6fd39"
+# version = "0.15.2"
+git = "https://github.com/ruma/ruma"
+rev = "689d9613a985edc089b5b729e6d9362f09b5df4f"
 
 [workspace.dependencies.url]
 version = "2.5.0"
@@ -99,7 +99,7 @@ icalendar = "0.16.1"
 scc = "2"
 env_logger = "0.11.7"
 urlencoding = "2.1.3"
-eyeball-im = { git = "https://github.com/jplatte/eyeball", branch = "main" }
+eyeball-im = "0.7.0"
 
 [profile.release]
 panic = "unwind"

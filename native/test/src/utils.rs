@@ -2,11 +2,13 @@ use acter::{
     api::{Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState},
     testing::ensure_user,
 };
+use acter::{Room, TimelineItem};
+use acter_core::models::status::RoomPinnedEventsContent;
 use acter_core::templates::Engine;
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;
-use matrix_sdk_base::ruma::OwnedRoomId;
+use matrix_sdk_base::ruma::{OwnedRoomId, UserId};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -46,10 +48,10 @@ async fn random_user_with_uuid(prefix: &str) -> Result<(Client, String)> {
     let user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         format!("it-{prefix}-{uuid}"),
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
@@ -117,10 +119,10 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
     ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         format!("it-{prefix}-{uuid}"),
         Some(registration_token.to_owned()),
         "acter-integration-tests".to_owned(),
@@ -149,7 +151,7 @@ pub async fn random_users_with_random_convo(
 pub fn default_user_password(username: &str) -> String {
     match option_env!("REGISTRATION_TOKEN") {
         Some(t) => format!("{t}:{username}"),
-        _ => username.to_string(),
+        _ => username.to_owned(),
     }
 }
 
@@ -157,10 +159,10 @@ pub async fn login_test_user(username: String) -> Result<Client> {
     ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         username,
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
@@ -177,10 +179,10 @@ pub async fn random_user_with_template(
     let mut user = ensure_user(
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
-            .to_string(),
+            .to_owned(),
         option_env!("DEFAULT_HOMESERVER_NAME")
             .unwrap_or("localhost")
-            .to_string(),
+            .to_owned(),
         format!("it-{prefix}-{uuid}"),
         option_env!("REGISTRATION_TOKEN").map(ToString::to_string),
         "acter-integration-tests".to_owned(),
@@ -262,4 +264,62 @@ pub async fn random_users_with_random_chat_and_space_under_template(
     let room_id = main_user.create_convo(Box::new(settings)).await?;
 
     Ok((clients, sync_states, space_id, room_id, engine))
+}
+
+pub(crate) fn match_text_msg(msg: &TimelineItem, body: &str, modified: bool) -> Option<String> {
+    info!("match room msg - {:?}", msg.clone());
+    if !msg.is_virtual() {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body && event_item.was_edited() == modified {
+                // exclude the pending msg
+                if let Some(event_id) = event_item.event_id() {
+                    return Some(event_id);
+                }
+            }
+        }
+    }
+    None
+}
+
+pub(crate) fn match_pinned_msg(msg: &TimelineItem) -> Option<(String, RoomPinnedEventsContent)> {
+    if msg.is_virtual() {
+        return None;
+    }
+    let event_item = msg.event_item().expect("room msg should have event item");
+    let content = event_item.room_pinned_events_content()?;
+    let event_id = event_item
+        .event_id()
+        .expect("event item should have event id");
+    Some((event_id, content))
+}
+
+pub(crate) fn match_msg_reaction(msg: &TimelineItem, body: &str, key: String) -> bool {
+    info!("match room msg - {:?}", msg.clone());
+    if !msg.is_virtual() {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(msg_content) = event_item.msg_content() {
+            if msg_content.body() == body && event_item.reaction_keys().contains(&key) {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+pub(crate) async fn invite_user(
+    client: &Client,
+    room_id: &OwnedRoomId,
+    other_user_id: &UserId,
+) -> Result<Room> {
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+
+    let room = Retry::spawn(retry_strategy.clone(), || async {
+        client.room(room_id.as_str().into()).await
+    })
+    .await?;
+
+    room.invite_user_by_id(other_user_id).await?;
+
+    Ok(room)
 }

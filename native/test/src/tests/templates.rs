@@ -14,7 +14,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s template test space" }
 start_list = { type = "task-list", name = "{{ main.display_name }}’s Acter onboarding list" }
 
 [objects.task_1]
@@ -63,7 +63,7 @@ async fn template_creates_space() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.pins().await?.len(), 2);
     assert_eq!(main_space.task_lists().await?.len(), 1);
     Ok(())

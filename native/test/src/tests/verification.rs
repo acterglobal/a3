@@ -70,7 +70,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
                 alice
                     .request_verification_with_method(
                         bob_device_id.to_string(),
-                        "m.sas.v1".to_string(),
+                        "m.sas.v1".to_owned(),
                     )
                     .await?;
                 break;
@@ -86,7 +86,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_method("m.sas.v1".to_string())
+        .accept_verification_request_with_method("m.sas.v1".to_owned())
         .await?;
     // And also immediately sends a start request
     let started = event.start_sas_verification().await?;

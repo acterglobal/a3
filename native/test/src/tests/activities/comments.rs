@@ -14,7 +14,7 @@ name = "Smoketest Template"
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
 
 [objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s pins test space"}
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}’s comments test space" }
 
 [objects.list]
 type = "task-list"
@@ -50,12 +50,14 @@ async fn task_comment_activity() -> Result<()> {
 
     assert_eq!(task_lists.len(), 1);
 
-    let task_list = task_lists.first().unwrap();
+    let task_list = task_lists
+        .first()
+        .expect("first tasklist should be available");
 
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
 
-    let task = tasks.first().unwrap();
+    let task = tasks.first().expect("first task should be available");
 
     let comments_manager = task.comments().await?;
     let comment_1_id = comments_manager
@@ -82,7 +84,7 @@ async fn task_comment_activity() -> Result<()> {
     // on task add the "object" is our list this happened on
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task");
-    assert_eq!(object.title().unwrap(), "Check the weather");
-    assert_eq!(object.task_list_id_str().unwrap(), task_list.event_id_str());
+    assert_eq!(object.title().as_deref(), Some("Check the weather"));
+    assert_eq!(object.task_list_id_str(), Some(task_list.event_id_str()));
     Ok(())
 }

@@ -1,1 +1,0 @@
-- We are loading the activities a lot faster now.

@@ -9,18 +9,18 @@ fn test_ref_details_for_link_smoketest() -> Result<()> {
         "Link Title".to_owned(),
         "mxc://acter.global/test".to_owned(),
     )?;
-    assert_eq!(ref_details.type_str().as_str(), "link");
-    assert_eq!(ref_details.title().unwrap().as_str(), "Link Title");
+    assert_eq!(ref_details.type_str(), "link");
+    assert_eq!(ref_details.title().as_deref(), Some("Link Title"));
     assert_eq!(
-        ref_details.uri().unwrap().as_str(),
-        "mxc://acter.global/test"
+        ref_details.uri().as_deref(),
+        Some("mxc://acter.global/test")
     );
 
     // second one for good measure
     let ref_details =
         new_link_ref_details("Smoketest".to_owned(), "https://matrix.org".to_owned())?;
-    assert_eq!(ref_details.type_str().as_str(), "link");
-    assert_eq!(ref_details.title().unwrap().as_str(), "Smoketest");
-    assert_eq!(ref_details.uri().unwrap().as_str(), "https://matrix.org");
+    assert_eq!(ref_details.type_str(), "link");
+    assert_eq!(ref_details.title().as_deref(), Some("Smoketest"));
+    assert_eq!(ref_details.uri().as_deref(), Some("https://matrix.org"));
     Ok(())
 }
