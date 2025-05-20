@@ -109,7 +109,7 @@ class ChatBubble extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color.fromARGB(255, 68, 58, 183),
+            const Color.fromARGB(255, 58, 77, 183),
             const Color.fromARGB(255, 64, 99, 225),
             theme.colorScheme.primary,
           ],
