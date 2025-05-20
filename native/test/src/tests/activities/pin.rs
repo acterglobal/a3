@@ -76,6 +76,9 @@ async fn pin_update_activity() -> Result<()> {
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "pin");
     assert_eq!(object.description().map(|c| c.body), Some(desc_text));
+    assert_eq!(object.utc_start(), None);
+    assert_eq!(object.utc_end(), None);
+    assert_eq!(object.due_date(), None);
 
     Ok(())
 }
