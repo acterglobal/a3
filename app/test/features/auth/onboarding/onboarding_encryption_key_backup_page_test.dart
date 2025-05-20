@@ -46,6 +46,7 @@ void main() {
       // Verify action buttons
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
       expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.byType(Image), findsOneWidget);
     });
 
     testWidgets('shows copy button when text is entered', (tester) async {

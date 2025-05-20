@@ -64,6 +64,8 @@ class _OnboardingEncryptionRecoveryPageState
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      _buildIcon(context),
+                      const SizedBox(height: 20),
                       _buildHeadlineText(context),
                       const SizedBox(height: 20),
                       _buildDescriptionText(context),
@@ -79,6 +81,14 @@ class _OnboardingEncryptionRecoveryPageState
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildIcon(BuildContext context) {
+    return Image.asset(
+      'assets/images/encryptionkey.png',
+      height: 100,
+      width: 100,
     );
   }
 
