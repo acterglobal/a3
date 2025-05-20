@@ -46,7 +46,7 @@ class ChatBubble extends StatelessWidget {
     final theme = Theme.of(context);
 
     final cornersRadius = Radius.circular(16);
-    final flatRadius = Radius.circular(0);
+    final flatRadius = Radius.circular(8);
 
     final topLeft = isFirstMessageBySender ? cornersRadius : flatRadius;
     final bottomLeft = isLastMessageBySender ? cornersRadius : flatRadius;
