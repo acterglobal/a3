@@ -2,6 +2,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/message_timestamp_widget.dart';
 import 'package:acter/features/files/actions/file_share.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
@@ -83,11 +84,14 @@ class FileMessageEvent extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          child: Text(
-            content.body(),
-            style: textTheme.labelLarge,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
+          child: selectableText(
+            context,
+            Text(
+              content.body(),
+              style: textTheme.labelLarge,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
         ),
         const SizedBox(height: 5),
