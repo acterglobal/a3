@@ -50,13 +50,13 @@ async fn calendar_creation_activity() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let main_space = spaces.first().unwrap();
+    let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.calendar_events().await?.len(), 1);
 
     let activity = get_latest_activity(&user, main_space.room_id().to_string(), "creation").await?;
     assert_eq!(activity.type_str(), "creation");
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "event");
-    assert_eq!(object.title().unwrap(), "Onboarding on Acter");
+    assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
     Ok(())
 }

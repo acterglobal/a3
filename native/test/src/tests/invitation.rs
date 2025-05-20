@@ -24,7 +24,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
     let convo = Retry::spawn(retry_strategy.clone(), || async {
-        sisko.convo(room_id.as_str().into()).await
+        sisko.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -48,7 +48,9 @@ async fn chat_invitation_shows_up() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(!room.is_space());
@@ -89,7 +91,9 @@ async fn space_invitation_shows_up() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -132,7 +136,9 @@ async fn space_invitation_disappears_when_joined() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -198,7 +204,9 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), sisko_room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -272,7 +280,9 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), sisko_room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
@@ -305,7 +315,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     assert_eq!(stream.next().now_or_never(), None);
 
     // now let there be something happening in the room
-    let room = kyra.room(sisko_room_id.as_str().into()).await?;
+    let room = kyra.room(sisko_room_id.to_string()).await?;
     let timeline = room.timeline().await?;
 
     sisko_room
@@ -378,7 +388,9 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), sisko_room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());

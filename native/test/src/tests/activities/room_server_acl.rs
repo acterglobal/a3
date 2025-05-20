@@ -51,8 +51,8 @@ async fn test_room_server_acl() -> Result<()> {
     let meta = activity.event_meta();
     assert_eq!(meta.event_id.clone(), acl_event_id, "event id should match");
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomServerAcl");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -63,8 +63,8 @@ async fn test_room_server_acl() -> Result<()> {
         .expect("not a room server acl event");
 
     assert_eq!(
-        content.allow_ip_literals_change(),
-        Some("Set".to_owned()),
+        content.allow_ip_literals_change().as_deref(),
+        Some("Set"),
         "allow ip literals in room server acl should be set"
     );
     assert!(
@@ -73,8 +73,8 @@ async fn test_room_server_acl() -> Result<()> {
     );
 
     assert_eq!(
-        content.allow_change(),
-        Some("Set".to_owned()),
+        content.allow_change().as_deref(),
+        Some("Set"),
         "allow in room server acl should be set"
     );
     assert!(
@@ -83,8 +83,8 @@ async fn test_room_server_acl() -> Result<()> {
     );
 
     assert_eq!(
-        content.deny_change(),
-        Some("Set".to_owned()),
+        content.deny_change().as_deref(),
+        Some("Set"),
         "deny in room server acl should be set"
     );
     assert!(

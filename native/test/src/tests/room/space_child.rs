@@ -86,8 +86,8 @@ async fn test_space_child() -> Result<()> {
     assert_eq!(room_id, Some(child_room_id), "room id should be present");
 
     assert_eq!(
-        content.via_change(),
-        Some("Set".to_owned()),
+        content.via_change().as_deref(),
+        Some("Set"),
         "change of via should be set"
     );
     assert_eq!(
@@ -104,8 +104,8 @@ async fn test_space_child() -> Result<()> {
     assert_eq!(content.order_new_val(), None, "new val of order is invalid");
 
     assert_eq!(
-        content.suggested_change(),
-        Some("Set".to_owned()),
+        content.suggested_change().as_deref(),
+        Some("Set"),
         "change of suggested should be set"
     );
     assert!(

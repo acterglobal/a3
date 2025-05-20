@@ -82,14 +82,14 @@ async fn like_on_news() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in like"),
-        news_entry.event_id().to_string()
+        news_entry.event_id()
     );
     assert!(notification_item.body().is_none());
-    assert_eq!(notification_item.reaction_key(), Some("❤️".to_owned()));
+    assert_eq!(notification_item.reaction_key().as_deref(), Some("❤️"));
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
-    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(parent.object_id_str(), news_entry.event_id());
 
     Ok(())
 }

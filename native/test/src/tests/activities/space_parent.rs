@@ -52,8 +52,8 @@ async fn test_space_parent() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "spaceParent");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -67,8 +67,8 @@ async fn test_space_parent() -> Result<()> {
     assert_eq!(room_id, Some(parent_room_id), "room id should be present");
 
     assert_eq!(
-        content.via_change(),
-        Some("Set".to_owned()),
+        content.via_change().as_deref(),
+        Some("Set"),
         "change of via should be set"
     );
     assert_eq!(
@@ -78,8 +78,8 @@ async fn test_space_parent() -> Result<()> {
     );
 
     assert_eq!(
-        content.canonical_change(),
-        Some("Set".to_owned()),
+        content.canonical_change().as_deref(),
+        Some("Set"),
         "change of canonical should be set"
     );
     assert!(

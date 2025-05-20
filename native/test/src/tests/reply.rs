@@ -57,7 +57,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
     let kyra_timeline = kyra_convo.timeline_stream();
 
-    let draft = sisko.text_plain_draft("Hi, everyone".to_string());
+    let draft = sisko.text_plain_draft("Hi, everyone".to_owned());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -110,13 +110,13 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let received = target_id.clone();
-        async move { timeline.get_message(received.to_string()).await }
+        async move { timeline.get_message(received).await }
     })
     .await?;
 
-    let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_string());
+    let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_owned());
     kyra_timeline
-        .reply_message(received.to_string(), Box::new(draft))
+        .reply_message(received, Box::new(draft))
         .await?;
 
     // msg reply may reach via pushback action

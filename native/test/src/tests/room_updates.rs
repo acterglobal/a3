@@ -40,7 +40,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -94,7 +94,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let _message = Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let event_id = target_id.clone();
-        async move { timeline.get_message(event_id.to_string()).await }
+        async move { timeline.get_message(event_id).await }
     })
     .await?;
 
@@ -103,7 +103,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
 
     // let's make sure that a reaction does trigger an update either
     timeline
-        .toggle_reaction(sent_event_id.to_string(), "+1".to_string())
+        .toggle_reaction(sent_event_id, "+1".to_owned())
         .await?;
     sleep(Duration::from_secs(2)).await; // make sure it came through the sync
     assert_eq!(room_stream.next().now_or_never().flatten(), None);
@@ -134,7 +134,7 @@ async fn state_update_triggers_room_update() -> Result<()> {
     // clear the streem
     while room_stream.next().now_or_never().flatten().is_some() {}
 
-    convo.set_name("a fresh new name".to_string()).await?;
+    convo.set_name("a fresh new name".to_owned()).await?;
     sleep(Duration::from_secs(2)).await; // make sure it came through the sync
     assert_eq!(room_stream.next().now_or_never().flatten(), Some(true));
 
@@ -173,7 +173,9 @@ async fn joining_room_triggers_room_update() -> Result<()> {
     assert_eq!(stream.next().await, Some(true));
 
     assert_eq!(invited.len(), 1);
-    let room = invited.first().unwrap();
+    let room = invited
+        .first()
+        .expect("first invitation should be available");
     assert_eq!(room.room_id(), room_id);
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());

@@ -36,7 +36,7 @@ async fn message_redaction() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_string());
+    let draft = user.text_plain_draft("Hi, everyone".to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -84,15 +84,15 @@ async fn message_redaction() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let timeline = fetcher_timeline.clone();
         let received = target_id.clone();
-        async move { timeline.get_message(received.to_string()).await }
+        async move { timeline.get_message(received).await }
     })
     .await?;
 
     let redact_id = convo
         .redact_message(
-            received.clone().to_string(),
+            received.clone(),
             user.user_id()?.to_string(),
-            Some("redact-test".to_string()),
+            Some("redact-test".to_owned()),
             None,
         )
         .await?;
@@ -107,11 +107,11 @@ async fn message_redaction() -> Result<()> {
     let original = event_content
         .as_original()
         .context("Redaction event should get original event")?;
-    assert_eq!(original.redacts.clone().unwrap().to_string(), received);
     assert_eq!(
-        original.content.reason.clone().unwrap().to_string(),
-        "redact-test".to_string()
+        original.redacts.as_deref().map(ToString::to_string),
+        Some(received)
     );
+    assert_eq!(original.content.reason.as_deref(), Some("redact-test"));
 
     Ok(())
 }

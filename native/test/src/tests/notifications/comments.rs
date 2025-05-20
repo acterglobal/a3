@@ -61,26 +61,26 @@ async fn comment_on_news() -> Result<()> {
 
     // ensure we are expected to see these notifications
     let notif_settings = first.notification_settings().await?;
-    let obj_id = news_entry.event_id().to_string();
+    let obj_id = news_entry.event_id();
 
     notif_settings
-        .subscribe_object_push(obj_id.clone(), None)
+        .subscribe_object_push(obj_id.to_string(), None)
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    let obj_id = Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
-        let obj_id_1 = obj_id.clone();
+        let obj_id = obj_id.to_string();
         async move {
             if client
-                .object_push_subscription_status(obj_id_1.clone(), None)
+                .object_push_subscription_status(obj_id.clone(), None)
                 .await?
                 != SubscriptionStatus::Subscribed
             {
                 bail!("not yet subscribed");
             }
-            Ok(obj_id_1)
+            Ok(())
         }
     })
     .await?;
@@ -98,7 +98,7 @@ async fn comment_on_news() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in comment"),
-        news_entry.event_id().to_string()
+        news_entry.event_id()
     );
 
     let content = notification_item.body().expect("found content");
@@ -108,14 +108,14 @@ async fn comment_on_news() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/updates/{}?section=comments&commentId={}",
-            obj_id,
+            news_entry.event_id(),
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "news".to_owned());
+    assert_eq!(parent.type_str(), "news");
     assert_eq!(parent.title(), None);
     assert_eq!(parent.emoji(), "🚀"); // rocket
-    assert_eq!(parent.object_id_str(), news_entry.event_id().to_string());
+    assert_eq!(parent.object_id_str(), news_entry.event_id());
 
     Ok(())
 }
@@ -180,10 +180,8 @@ async fn comment_on_pin() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in comment"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     let content = notification_item.body().expect("found content");
     assert_eq!(content.body(), "now we just need to find dory");
@@ -192,14 +190,14 @@ async fn comment_on_pin() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/pins/{}?section=comments&commentId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -264,10 +262,8 @@ async fn comment_on_calendar_events() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in comment"),
-        obj_entry.event_id().to_string()
+        obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     let content = notification_item.body().expect("found content");
     assert_eq!(content.body(), "looking forward to it");
@@ -276,14 +272,14 @@ async fn comment_on_calendar_events() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/events/{}?section=comments&commentId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_ev.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "event".to_owned());
-    assert_eq!(parent.title().unwrap(), "Onboarding on Acter".to_owned());
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding on Acter"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), obj_entry.event_id());
 
     Ok(())
 }

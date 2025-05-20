@@ -24,7 +24,6 @@ void messageActions({
   final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
   if (messageBox == null) return;
 
-  final messageSize = messageBox.size;
   final messagePosition = messageBox.localToGlobal(Offset.zero);
 
   showGeneralDialog(
@@ -40,7 +39,6 @@ void messageActions({
           Positioned(
             left: messagePosition.dx,
             top: 0,
-            width: messageSize.width,
             height: MediaQuery.sizeOf(context).height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
