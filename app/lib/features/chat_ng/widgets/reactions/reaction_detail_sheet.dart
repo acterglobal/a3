@@ -84,13 +84,16 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
     );
 
     _tabs = [
-      Tab(child: Chip(label: Text(L10n.of(context).allReactionsCount(total)))),
+      Tab(child: Text(L10n.of(context).allReactionsCount(total))),
       ...widget.reactions.map(
         (reaction) => Tab(
           key: Key('reaction-tab-${reaction.$1}'),
-          child: Chip(
-            avatar: Text(reaction.$1, style: EmojiConfig.emojiTextStyle),
-            label: Text(reaction.$2.length.toString()),
+          child: Row(
+            children: [
+              Text(reaction.$1, style: EmojiConfig.emojiTextStyle),
+              const SizedBox(width: 6),
+              Text(reaction.$2.length.toString()),
+            ],
           ),
         ),
       ),
@@ -108,13 +111,18 @@ class _ReactionDetailsSheetState extends ConsumerState<ReactionDetailsSheet>
   }
 
   Widget _buildTabBar() {
+    final colorScheme = Theme.of(context).colorScheme;
     return TabBar(
       isScrollable: true,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
       controller: _tabController,
-      overlayColor: WidgetStateProperty.all(Colors.transparent),
-      indicator: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+      indicator: BoxDecoration(
+        color: colorScheme.primary.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.7),
+          width: 1,
+        ),
       ),
       indicatorSize: TabBarIndicatorSize.tab,
       dividerColor: Colors.transparent,
@@ -193,9 +201,10 @@ class _ReactionUsersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       itemCount: users.length,
       itemBuilder: (context, index) {
         final userId = users[index];
@@ -205,7 +214,12 @@ class _ReactionUsersList extends StatelessWidget {
           emojis: userReactions[userId] ?? [],
         );
       },
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      separatorBuilder:
+          (context, index) => Divider(
+            color: theme.colorScheme.outline.withValues(alpha: 0.5),
+            indent: 50,
+            endIndent: 0,
+          ),
     );
   }
 }
@@ -229,6 +243,7 @@ class ReactionUserItem extends ConsumerWidget {
       memberAvatarInfoProvider((roomId: roomId, userId: userId)),
     );
     return ListTile(
+      contentPadding: EdgeInsets.zero,
       leading: ActerAvatar(
         options: AvatarOptions.DM(
           AvatarInfo(
@@ -236,12 +251,16 @@ class ReactionUserItem extends ConsumerWidget {
             displayName: memberInfo.displayName,
             avatar: memberInfo.avatar,
           ),
+          size: 18,
         ),
       ),
-      title: Text(memberInfo.displayName ?? userId),
+      title: Text(
+        memberInfo.displayName ?? userId,
+        style: theme.textTheme.labelLarge,
+      ),
       subtitle:
           memberInfo.displayName != null
-              ? Text(userId, style: theme.textTheme.labelLarge)
+              ? Text(userId, style: theme.textTheme.labelMedium)
               : null,
       trailing: Wrap(
         children:

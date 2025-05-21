@@ -63,27 +63,37 @@ class ActivityUserCentricItemContainerWidget extends ConsumerWidget {
     final actionTitleStyle = Theme.of(context).textTheme.labelMedium;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Icon(actionIcon, size: 16, color: actionIconColor),
-        const SizedBox(width: 4),
-        Text(actionTitle, style: actionTitleStyle),
-        if (activityObject != null) ...[
-          const SizedBox(width: 6),
-          Row(
+        Expanded(
+          child: Row(
             children: [
-              Icon(getActivityObjectIcon(), size: 16),
+              Icon(actionIcon, size: 16, color: actionIconColor),
               const SizedBox(width: 4),
-              Text(getActivityObjectTitle(), style: actionTitleStyle),
+              Text(actionTitle, style: actionTitleStyle),
+              if (activityObject != null) ...[
+                const SizedBox(width: 6),
+                Icon(getActivityObjectIcon(), size: 16),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    getActivityObjectTitle(),
+                    style: actionTitleStyle,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ],
           ),
-        ],
-        Spacer(),
-        ActerIconWidgetFromObjectIdAndType(
-          objectId: activityObject?.objectIdStr(),
-          objectType: activityObject?.typeStr(),
-          fallbackWidget: SizedBox.shrink(),
-          iconSize: 24,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: ActerIconWidgetFromObjectIdAndType(
+            objectId: activityObject?.objectIdStr(),
+            objectType: activityObject?.typeStr(),
+            fallbackWidget: SizedBox.shrink(),
+            iconSize: 24,
+          ),
         ),
       ],
     );

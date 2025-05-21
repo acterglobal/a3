@@ -1,10 +1,24 @@
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
+final defaultSenderChatBubbleGradient = LinearGradient(
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+  colors: [
+    const Color.fromARGB(255, 58, 77, 183),
+    const Color.fromARGB(255, 64, 99, 225),
+    brandColor,
+  ],
+);
+
 @immutable
 class ActerChatTheme extends ChatTheme {
-  const ActerChatTheme({
+  final LinearGradient senderChatBubbleGradient;
+
+  ActerChatTheme({
+    LinearGradient? senderChatBubbleGradient,
     super.attachmentButtonIcon,
     super.attachmentButtonMargin,
     super.backgroundColor = const Color.fromRGBO(36, 38, 50, 0),
@@ -156,5 +170,6 @@ class ActerChatTheme extends ChatTheme {
         color: neutral2,
       ),
     ),
-  });
+  }) : senderChatBubbleGradient =
+           senderChatBubbleGradient ?? defaultSenderChatBubbleGradient;
 }

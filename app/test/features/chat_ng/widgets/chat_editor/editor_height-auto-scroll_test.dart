@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
@@ -50,88 +49,39 @@ class TestableEditor extends ConsumerStatefulWidget {
 class _TestableEditorState extends ConsumerState<TestableEditor> {
   final EditorState editorState = EditorState.blank();
   late EditorScrollController scrollController;
-  final ValueNotifier<double> _contentHeightNotifier = ValueNotifier(
-    ChatEditorUtils.baseHeight,
-  );
-
   @override
   void initState() {
     super.initState();
     scrollController = EditorScrollController(editorState: editorState);
-
-    // Set initial height based on keyboard visibility
-    if (widget.initialKeyboardVisible) {
-      _contentHeightNotifier.value += ChatEditorUtils.toolbarOffset;
-    }
-  }
-
-  @override
-  void dispose() {
-    _contentHeightNotifier.dispose();
-    super.dispose();
-  }
-
-  void updateContentHeight(String text) {
-    final lineCount = text.split('\n').length - 1;
-
-    double newHeight =
-        lineCount > 1 ? ChatEditorUtils.maxHeight : ChatEditorUtils.baseHeight;
-
-    final isKeyboardVisible = ref.read(keyboardVisibleProvider).valueOrNull;
-    if (isKeyboardVisible == true) {
-      newHeight += ChatEditorUtils.toolbarOffset;
-    }
-
-    setState(() {
-      _contentHeightNotifier.value = newHeight;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<double>(
-      valueListenable: _contentHeightNotifier,
-      builder: (context, height, _) {
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: MediaQuery.of(context).size.width,
-          height: height,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(15.0),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 4, left: 4),
+          child: IconButton(
+            onPressed: null,
+            icon: Icon(Icons.emoji_emotions, size: 20),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 4, left: 4),
-                child: IconButton(
-                  onPressed: null,
-                  icon: Icon(Icons.emoji_emotions, size: 20),
-                ),
-              ),
-              Expanded(
-                child: HtmlEditor(
-                  footer: null,
-                  hintText: 'Test hint',
-                  editable: true,
-                  shrinkWrap: false,
-                  disableAutoScroll: false,
-                  editorState: editorState,
-                  scrollController: scrollController,
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 4, left: 4, right: 4),
-                child: IconButton(
-                  onPressed: null,
-                  icon: Icon(Icons.send, size: 20),
-                ),
-              ),
-            ],
+        ),
+        Expanded(
+          child: HtmlEditor(
+            footer: null,
+            hintText: 'Test hint',
+            editable: true,
+            shrinkWrap: false,
+            disableAutoScroll: false,
+            editorState: editorState,
           ),
-        );
-      },
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 4, left: 4, right: 4),
+          child: IconButton(onPressed: null, icon: Icon(Icons.send, size: 20)),
+        ),
+      ],
     );
   }
 }
@@ -239,11 +189,6 @@ void main() {
       );
       editorState.apply(transaction);
 
-      final state = tester.state<_TestableEditorState>(
-        find.byType(TestableEditor),
-      );
-      state.updateContentHeight('Line 1\nLine 2\nLine 3\nLine 4');
-
       // update height delay
       await tester.pump(const Duration(milliseconds: 100));
       await tester.pumpAndSettle();
@@ -296,14 +241,6 @@ void main() {
         );
         editorState.apply(transaction);
 
-        final state = tester.state<_TestableEditorState>(
-          find.byType(TestableEditor),
-        );
-
-        // Directly set the height for testing
-        state._contentHeightNotifier.value =
-            ChatEditorUtils.maxHeight + ChatEditorUtils.toolbarOffset;
-
         // update height delay
         await tester.pump(const Duration(milliseconds: 100));
         await tester.pumpAndSettle();
@@ -311,12 +248,6 @@ void main() {
         await expectLater(
           find.byType(TestableEditor),
           matchesGoldenFile('goldens/editor_multiline_with_keyboard.png'),
-        );
-
-        // verify the height is at max + toolbar offset
-        expect(
-          state._contentHeightNotifier.value,
-          equals(ChatEditorUtils.maxHeight + ChatEditorUtils.toolbarOffset),
         );
 
         await tester.binding.setSurfaceSize(null);
@@ -347,39 +278,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Initial height check
-      final initialState = tester.state<_TestableEditorState>(
-        find.byType(TestableEditor),
-      );
-      expect(
-        initialState._contentHeightNotifier.value,
-        equals(ChatEditorUtils.baseHeight),
-      );
-
-      // Make keyboard visible and manually set height
-      initialState._contentHeightNotifier.value =
-          ChatEditorUtils.baseHeight + ChatEditorUtils.toolbarOffset;
-
       await tester.pump();
       await tester.pumpAndSettle();
 
-      // Check height increased
-      expect(
-        initialState._contentHeightNotifier.value,
-        equals(ChatEditorUtils.baseHeight + ChatEditorUtils.toolbarOffset),
-      );
-
-      // Make keyboard invisible again and manually reset height
-      initialState._contentHeightNotifier.value = ChatEditorUtils.baseHeight;
-
       await tester.pump();
       await tester.pumpAndSettle();
-
-      // Check height decreased
-      expect(
-        initialState._contentHeightNotifier.value,
-        equals(ChatEditorUtils.baseHeight),
-      );
 
       await tester.binding.setSurfaceSize(null);
       keyboardStateController.close(); // Don't forget to close the controller
@@ -431,15 +334,6 @@ void main() {
       );
       editorState.apply(transaction);
 
-      final state = tester.state<_TestableEditorState>(
-        find.byType(TestableEditor),
-      );
-
-      state.updateContentHeight(longText);
-
-      state._contentHeightNotifier.value =
-          ChatEditorUtils.maxHeight + ChatEditorUtils.toolbarOffset;
-
       await tester.pump(const Duration(milliseconds: 100));
       await tester.pumpAndSettle();
 
@@ -447,15 +341,6 @@ void main() {
         find.byType(TestableEditor),
         matchesGoldenFile('goldens/editor_long_text_without_breaks.png'),
       );
-
-      final height = state._contentHeightNotifier.value;
-
-      // verify that the height is at max + toolbar offset
-      expect(
-        height,
-        equals(ChatEditorUtils.maxHeight + ChatEditorUtils.toolbarOffset),
-      );
-
       await tester.binding.setSurfaceSize(null);
       keyboardStateController.close();
     });

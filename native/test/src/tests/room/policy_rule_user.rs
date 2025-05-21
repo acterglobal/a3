@@ -79,15 +79,11 @@ async fn test_policy_rule_user() -> Result<()> {
     }
     let (found_event_id, content) =
         found_result.expect("Even after 30 seconds, policy rule user not received");
-    assert_eq!(
-        found_event_id,
-        policy_event_id.to_string(),
-        "Incorrect event id",
-    );
+    assert_eq!(found_event_id, policy_event_id, "Incorrect event id");
 
     assert_eq!(
-        content.entity_change(),
-        Some("Set".to_owned()),
+        content.entity_change().as_deref(),
+        Some("Set"),
         "entity in policy rule user should be set"
     );
     assert_eq!(
@@ -102,8 +98,8 @@ async fn test_policy_rule_user() -> Result<()> {
     );
 
     assert_eq!(
-        content.recommendation_change(),
-        Some("Set".to_owned()),
+        content.recommendation_change().as_deref(),
+        Some("Set"),
         "recommendation in policy rule user should be set"
     );
     assert_eq!(
@@ -118,8 +114,8 @@ async fn test_policy_rule_user() -> Result<()> {
     );
 
     assert_eq!(
-        content.reason_change(),
-        Some("Set".to_owned()),
+        content.reason_change().as_deref(),
+        Some("Set"),
         "reason in policy rule user should be set"
     );
     assert_eq!(

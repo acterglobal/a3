@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/utils.dart';
@@ -51,7 +53,7 @@ class MessageEventItem extends ConsumerWidget {
     final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
     final sendingState = item.sendState();
     return SwipeTo(
-      swipeSensitivity: 30,
+      swipeSensitivity: Platform.isIOS ? 30 : 5,
       key: Key(messageId), // needed or swipe doesn't work reliably in listview
       onRightSwipe: (_) => _handleReplySwipe(ref, item),
       child: Column(
@@ -124,7 +126,7 @@ class MessageEventItem extends ConsumerWidget {
     return Padding(
       padding: EdgeInsets.only(right: isMe ? 12 : 0, left: isMe ? 0 : 12),
       child: FractionalTranslation(
-        translation: Offset(0, -0.1),
+        translation: Offset(0, -0.18),
         child: ReactionsList(roomId: roomId, messageId: messageId, item: item),
       ),
     );

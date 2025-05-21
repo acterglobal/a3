@@ -75,7 +75,7 @@ class RoomsListNGWidgetState extends ConsumerState<RoomsListNGWidget> {
     }
 
     return Text(
-      title ?? lang.chatNG,
+      title ?? lang.chat,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }

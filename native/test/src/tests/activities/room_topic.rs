@@ -46,8 +46,8 @@ async fn test_room_topic() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomTopic");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -58,8 +58,8 @@ async fn test_room_topic() -> Result<()> {
         .expect("not a room topic event");
 
     assert_eq!(
-        content.change(),
-        Some("Set".to_owned()),
+        content.change().as_deref(),
+        Some("Set"),
         "room topic should be set"
     );
     assert_eq!(content.new_val(), topic, "new val of room topic is invalid");

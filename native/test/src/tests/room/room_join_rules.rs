@@ -82,18 +82,18 @@ async fn test_room_join_rules() -> Result<()> {
     assert_eq!(found_event_id, rule_event_id, "event id should match");
 
     assert_eq!(
-        content.change(),
-        Some("Changed".to_owned()),
+        content.change().as_deref(),
+        Some("Changed"),
         "room join rules should be changed"
     );
     assert_eq!(
         content.new_val(),
-        new_join_rule.as_str().to_owned(),
+        new_join_rule.as_str(),
         "new val of room join rules is invalid"
     );
     assert_eq!(
-        content.old_val(),
-        Some(default_join_rule.as_str().to_owned()),
+        content.old_val().as_deref(),
+        Some(default_join_rule.as_str()),
         "old val of room join rules is invalid"
     );
 

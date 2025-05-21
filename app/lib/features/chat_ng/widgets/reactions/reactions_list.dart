@@ -33,6 +33,7 @@ class ReactionsList extends ConsumerWidget {
   void showReactionsSheet(BuildContext context, List<ReactionItem> reactions) {
     showModalBottomSheet(
       context: context,
+      showDragHandle: true,
       builder:
           (context) =>
               ReactionDetailsSheet(roomId: roomId, reactions: reactions),

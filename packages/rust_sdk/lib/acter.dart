@@ -398,38 +398,38 @@ Uint8List createUint8ListFromInt(int value) {
   return uint8List;
 }
 
-class FfiConverterOptionalString {
-  static String? lift(RustBuffer buf) {
-    return FfiConverterOptionalString.read(buf.asUint8List()).value;
+class FfiConverterOptionalBool {
+  static bool? lift(RustBuffer buf) {
+    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
   }
 
-  static LiftRetVal<String?> read(Uint8List buf) {
+  static LiftRetVal<bool?> read(Uint8List buf) {
     if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0) {
       return LiftRetVal(null, 1);
     }
-    return FfiConverterString.read(
+    return FfiConverterBool.read(
             Uint8List.view(buf.buffer, buf.offsetInBytes + 1))
         .copyWithOffset(1);
   }
 
-  static int allocationSize([String? value]) {
+  static int allocationSize([bool? value]) {
     if (value == null) {
       return 1;
     }
-    return FfiConverterString.allocationSize(value) + 1;
+    return FfiConverterBool.allocationSize(value) + 1;
   }
 
-  static RustBuffer lower(String? value) {
+  static RustBuffer lower(bool? value) {
     if (value == null) {
       return toRustBuffer(Uint8List.fromList([0]));
     }
 
-    final length = FfiConverterOptionalString.allocationSize(value);
+    final length = FfiConverterOptionalBool.allocationSize(value);
 
     final Pointer<Uint8> frameData = calloc<Uint8>(length);
     final buf = frameData.asTypedList(length);
 
-    FfiConverterOptionalString.write(value, buf);
+    FfiConverterOptionalBool.write(value, buf);
 
     final bytes = calloc<ForeignBytes>();
     bytes.ref.len = length;
@@ -437,7 +437,7 @@ class FfiConverterOptionalString {
     return RustBuffer.fromBytes(bytes.ref);
   }
 
-  static int write(String? value, Uint8List buf) {
+  static int write(bool? value, Uint8List buf) {
     if (value == null) {
       buf[0] = 0;
       return 1;
@@ -445,7 +445,7 @@ class FfiConverterOptionalString {
 
     buf[0] = 1;
 
-    return FfiConverterString.write(
+    return FfiConverterBool.write(
             value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
         1;
   }
@@ -504,38 +504,38 @@ class FfiConverterString {
   }
 }
 
-class FfiConverterOptionalBool {
-  static bool? lift(RustBuffer buf) {
-    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
+class FfiConverterOptionalString {
+  static String? lift(RustBuffer buf) {
+    return FfiConverterOptionalString.read(buf.asUint8List()).value;
   }
 
-  static LiftRetVal<bool?> read(Uint8List buf) {
+  static LiftRetVal<String?> read(Uint8List buf) {
     if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0) {
       return LiftRetVal(null, 1);
     }
-    return FfiConverterBool.read(
+    return FfiConverterString.read(
             Uint8List.view(buf.buffer, buf.offsetInBytes + 1))
         .copyWithOffset(1);
   }
 
-  static int allocationSize([bool? value]) {
+  static int allocationSize([String? value]) {
     if (value == null) {
       return 1;
     }
-    return FfiConverterBool.allocationSize(value) + 1;
+    return FfiConverterString.allocationSize(value) + 1;
   }
 
-  static RustBuffer lower(bool? value) {
+  static RustBuffer lower(String? value) {
     if (value == null) {
       return toRustBuffer(Uint8List.fromList([0]));
     }
 
-    final length = FfiConverterOptionalBool.allocationSize(value);
+    final length = FfiConverterOptionalString.allocationSize(value);
 
     final Pointer<Uint8> frameData = calloc<Uint8>(length);
     final buf = frameData.asTypedList(length);
 
-    FfiConverterOptionalBool.write(value, buf);
+    FfiConverterOptionalString.write(value, buf);
 
     final bytes = calloc<ForeignBytes>();
     bytes.ref.len = length;
@@ -543,7 +543,7 @@ class FfiConverterOptionalBool {
     return RustBuffer.fromBytes(bytes.ref);
   }
 
-  static int write(bool? value, Uint8List buf) {
+  static int write(String? value, Uint8List buf) {
     if (value == null) {
       buf[0] = 0;
       return 1;
@@ -551,7 +551,7 @@ class FfiConverterOptionalBool {
 
     buf[0] = 1;
 
-    return FfiConverterBool.write(
+    return FfiConverterString.write(
             value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
         1;
   }

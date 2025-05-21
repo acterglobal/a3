@@ -46,7 +46,7 @@ async fn history_sync_restart() -> Result<()> {
     state_sync.cancel();
 
     let slides = space.latest_news_entries(1).await?;
-    let final_entry = slides.first().unwrap();
+    let final_entry = slides.first().expect("first slide should be available");
     let news_sub = final_entry.subscribe();
 
     // restarting sync. We do _not_ expect to see the subscribe issue anything

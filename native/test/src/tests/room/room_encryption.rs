@@ -80,8 +80,8 @@ async fn test_room_encryption() -> Result<()> {
     assert_eq!(found_event_id, encryption_event_id, "event id should match");
 
     assert_eq!(
-        content.algorithm_change(),
-        Some("Changed".to_owned()),
+        content.algorithm_change().as_deref(),
+        Some("Changed"),
         "algorithm in room encryption should be changed"
     );
     assert_eq!(

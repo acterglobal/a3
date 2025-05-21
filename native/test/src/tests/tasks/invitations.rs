@@ -57,7 +57,6 @@ async fn task_invitation() -> Result<()> {
     })
     .await?;
 
-    let _obj_id = obj_entry.event_id().to_string();
     // this is a mention, so we need to subscribe to the room
 
     let manager = obj_entry.invitations().await?;
@@ -67,13 +66,13 @@ async fn task_invitation() -> Result<()> {
     let _ = stream.next().await; // await the invite being sent
 
     // check activity
-    let activity = first.activity(event_id.to_string()).await?;
+    let activity = first.activity(event_id.clone()).await?;
 
     assert_eq!(activity.type_str(), "objectInvitation");
-    let object = activity.object().unwrap();
-    assert_eq!(object.object_id_str(), obj_entry.event_id().to_string());
+    let object = activity.object().expect("object should be available");
+    assert_eq!(object.object_id_str(), *obj_entry.event_id());
     assert_eq!(activity.whom().len(), 1);
-    assert_eq!(activity.whom()[0], second_user.user_id()?.to_string());
+    assert_eq!(activity.whom()[0], second_user.user_id()?);
     assert!(!activity.mentions_you());
 
     // see what the recipient sees
@@ -108,17 +107,14 @@ async fn task_invitation() -> Result<()> {
     // as it is a mention, we get it without having to actually
     // been subscribing to anything special
     let notification = second_user
-        .get_notification_item(space_id.to_string(), event_id.to_string())
+        .get_notification_item(space_id.to_string(), event_id)
         .await?;
     assert_eq!(notification.push_style(), "objectInvitation");
-    let parent = notification.parent().unwrap();
-    assert_eq!(parent.title().unwrap(), "Scroll news");
+    let parent = notification.parent().expect("parent should be available");
+    assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.type_str(), "task");
     assert_eq!(notification.sender().user_id(), first.user_id()?);
-    assert_eq!(
-        notification.whom(),
-        vec![second_user.user_id()?.to_string()]
-    );
+    assert_eq!(notification.whom(), vec![second_user.user_id()?]);
     assert!(notification.mentions_you());
 
     Ok(())
@@ -156,7 +152,6 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     let s_invites_stream = s_invites_manager.subscribe_stream();
     let mut s_invites_stream = s_invites_stream.fuse();
 
-    let _obj_id = obj_entry.event_id().to_string();
     // this is a mention, so we need to subscribe to the room
 
     let manager = obj_entry.invitations().await?;
@@ -165,7 +160,7 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     let second_user_str = second_user.user_id()?.to_string();
     assert!(manager.can_invite(second_user_str.clone())?);
 
-    let _event_id = manager.invite(second_user_str).await?;
+    manager.invite(second_user_str).await?;
     let _ = stream.next().await; // await the invite being sent
 
     // see what the recipient sees
@@ -213,7 +208,7 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
     assert_eq!(s_invites_stream.next().await, Some(true)); //invite was seen by the manager
     let object_invitations = s_invites_manager.object_invitations().await?;
     assert_eq!(object_invitations.len(), 1);
-    assert_eq!(object_invitations[0], task.event_id().to_string());
+    assert_eq!(object_invitations[0], *task.event_id());
 
     task.assign_self().await?; // this is the way we accept the task
 
@@ -312,7 +307,6 @@ async fn can_invite_after_unassign_task() -> Result<()> {
     })
     .await?;
 
-    let _obj_id = obj_entry.event_id().to_string();
     let second_user_str = second_user.user_id()?.to_string();
 
     // see what the recipient sees
@@ -379,7 +373,7 @@ async fn can_invite_after_unassign_task() -> Result<()> {
         })
         .await?;
 
-        assert!(!invites.can_invite(second_user_str.clone()).unwrap());
+        assert!(!invites.can_invite(second_user_str)?);
     }
 
     Ok(())

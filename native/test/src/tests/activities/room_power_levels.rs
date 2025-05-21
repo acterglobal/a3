@@ -45,8 +45,8 @@ async fn test_room_power_levels_ban() -> Result<()> {
     let meta = activity.event_meta();
     assert_eq!(meta.event_id.clone(), ban_event_id, "event id should match");
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -57,8 +57,8 @@ async fn test_room_power_levels_ban() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.ban_change(),
-        Some("Changed".to_owned()),
+        content.ban_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -120,8 +120,8 @@ async fn test_room_power_levels_events() -> Result<()> {
     );
 
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -132,8 +132,8 @@ async fn test_room_power_levels_events() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.events_change(event_type.to_string()),
-        Some("Set".to_owned()),
+        content.events_change(event_type.to_string()).as_deref(),
+        Some("Set"),
         "room power levels should be set"
     );
     assert_eq!(
@@ -194,8 +194,8 @@ async fn test_room_power_levels_events_default() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -206,8 +206,8 @@ async fn test_room_power_levels_events_default() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.events_default_change(),
-        Some("Changed".to_owned()),
+        content.events_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -266,8 +266,8 @@ async fn test_room_power_levels_invite() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -278,8 +278,8 @@ async fn test_room_power_levels_invite() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.invite_change(),
-        Some("Changed".to_owned()),
+        content.invite_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -338,8 +338,8 @@ async fn test_room_power_levels_kick() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -350,8 +350,8 @@ async fn test_room_power_levels_kick() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.kick_change(),
-        Some("Changed".to_owned()),
+        content.kick_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -410,8 +410,8 @@ async fn test_room_power_levels_redact() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -422,8 +422,8 @@ async fn test_room_power_levels_redact() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.redact_change(),
-        Some("Changed".to_owned()),
+        content.redact_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -484,8 +484,8 @@ async fn test_room_power_levels_state_default() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     assert_eq!(
         activity.origin_server_ts(),
@@ -498,8 +498,8 @@ async fn test_room_power_levels_state_default() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.state_default_change(),
-        Some("Changed".to_owned()),
+        content.state_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -560,8 +560,8 @@ async fn test_room_power_levels_users_default() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -572,8 +572,8 @@ async fn test_room_power_levels_users_default() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.users_default_change(),
-        Some("Changed".to_owned()),
+        content.users_default_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(
@@ -634,8 +634,8 @@ async fn test_room_power_levels_notifications() -> Result<()> {
         "event id should match"
     );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
-    assert_eq!(activity.event_id_str(), meta.event_id.to_string());
-    assert_eq!(activity.room_id_str(), room_id.to_string());
+    assert_eq!(activity.event_id_str(), meta.event_id);
+    assert_eq!(activity.room_id_str(), room_id);
     assert_eq!(activity.type_str(), "roomPowerLevels");
     let ts: u64 = meta.origin_server_ts.get().into();
     assert_eq!(activity.origin_server_ts(), ts);
@@ -646,8 +646,8 @@ async fn test_room_power_levels_notifications() -> Result<()> {
         .expect("not a room power levels event");
 
     assert_eq!(
-        content.notifications_change(),
-        Some("Changed".to_owned()),
+        content.notifications_change().as_deref(),
+        Some("Changed"),
         "room power levels should be changed"
     );
     assert_eq!(

@@ -15,6 +15,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   final MembershipContent? mockMembershipContent;
   final ProfileContent? mockProfileContent;
   final MockFfiListFfiString? mockReactionKeys;
+  final Map<String, FfiListReactionRecord>? mockReactionRecords;
   final bool? mockWasEdited;
   final String? mockInReplyToId;
   final TimelineEventItem? mockIsReplyToEvent;
@@ -29,6 +30,7 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
     this.mockMembershipContent,
     this.mockProfileContent,
     this.mockReactionKeys,
+    this.mockReactionRecords,
     this.mockWasEdited,
     this.mockInReplyToId,
     this.mockIsReplyToEvent,
@@ -61,6 +63,10 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
   @override
   FfiListFfiString reactionKeys() =>
       mockReactionKeys ?? MockFfiListFfiString(mockStrings: []);
+
+  @override
+  FfiListReactionRecord? reactionRecords(String key) =>
+      mockReactionRecords?[key];
 
   @override
   bool wasEdited() => mockWasEdited ?? false;

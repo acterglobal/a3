@@ -102,7 +102,7 @@ async fn image_attachment_on_pin() -> Result<()> {
     let base_draft = first
         .image_draft(
             png_file.path().to_string_lossy().to_string(),
-            "image/png".to_string(),
+            "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned());
     let notification_id = manager
@@ -119,10 +119,8 @@ async fn image_attachment_on_pin() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in attachment"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     assert_eq!(notification_item.title(), "🖼️ \"Fishy.png\"");
     let parent = notification_item.parent().expect("parent was found");
@@ -130,14 +128,14 @@ async fn image_attachment_on_pin() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/pins/{}?section=attachments&attachmentId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str(), "pin".to_owned());
-    assert_eq!(parent.title().unwrap(), "Acter Website".to_owned());
+    assert_eq!(parent.type_str(), "pin");
+    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -201,7 +199,7 @@ async fn file_attachment_on_event() -> Result<()> {
     let base_draft = first
         .file_draft(
             png_file.path().to_string_lossy().to_string(),
-            "document/x-src".to_string(),
+            "document/x-src".to_owned(),
         )
         .filename("Fishy.doc".to_owned());
     let notification_id = manager
@@ -218,10 +216,8 @@ async fn file_attachment_on_event() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in attachment"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     // notification_item.body().expect("found content");
     assert_eq!(notification_item.title(), "📄 \"Fishy.doc\"");
@@ -230,14 +226,14 @@ async fn file_attachment_on_event() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/events/{}?section=attachments&attachmentId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "event");
-    assert_eq!(parent.title().unwrap().as_str(), "First meeting");
+    assert_eq!(parent.type_str(), "event");
+    assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // pin
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -301,7 +297,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
     let base_draft = first
         .video_draft(
             png_file.path().to_string_lossy().to_string(),
-            "video/mpeg4".to_string(),
+            "video/mpeg4".to_owned(),
         )
         .filename("Fishy.mp4".to_owned());
     let notification_id = manager
@@ -318,10 +314,8 @@ async fn video_attachment_on_tasklist() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in attachment"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
-
-    let obj_id = obj_entry.event_id().to_string();
 
     // notification_item.body().expect("found content");
     assert_eq!(notification_item.title(), "🎥 \"Fishy.mp4\"");
@@ -330,14 +324,14 @@ async fn video_attachment_on_tasklist() -> Result<()> {
         notification_item.target_url(),
         format!(
             "/tasks/{}?section=attachments&attachmentId={}",
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "task-list");
-    assert_eq!(parent.title().unwrap().as_str(), "Onboarding list");
+    assert_eq!(parent.type_str(), "task-list");
+    assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list
-    assert_eq!(parent.object_id_str(), obj_id);
+    assert_eq!(parent.object_id_str(), *obj_entry.event_id());
 
     Ok(())
 }
@@ -365,7 +359,8 @@ async fn link_attachment_on_task() -> Result<()> {
             if tasks.is_empty() {
                 bail!("task not found");
             }
-            Ok(tasks.first().unwrap().clone())
+            let task = tasks.first().expect("first task should be available");
+            Ok(task.clone())
         }
     })
     .await?;
@@ -412,24 +407,22 @@ async fn link_attachment_on_task() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in attachment"),
-        obj_entry.event_id().to_string()
+        *obj_entry.event_id()
     );
 
-    let obj_id = obj_entry.event_id().to_string();
-
-    assert_eq!(notification_item.title().as_str(), "🔗 \"Acter Website\"");
+    assert_eq!(notification_item.title(), "🔗 \"Acter Website\"");
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
         format!(
             "/tasks/{}/{}?section=attachments&attachmentId={}",
             obj_entry.task_list_id_str(),
-            obj_id,
+            obj_entry.event_id(),
             encode(notification_id.as_str())
         )
     );
-    assert_eq!(parent.type_str().as_str(), "task");
-    assert_eq!(parent.title().unwrap().as_str(), "Scroll news");
+    assert_eq!(parent.type_str(), "task");
+    assert_eq!(parent.title().as_deref(), Some("Scroll news"));
     assert_eq!(parent.emoji(), "☑️"); // task
 
     Ok(())

@@ -154,6 +154,7 @@ class ShareSpaceObjectActionUI extends ConsumerWidget {
     Future<FileDetails> Function() fileDetailContentBuilder,
   ) {
     return FileShareOptions(
+      sectionTitle: L10n.of(context).asLocalFile,
       onTapOpen: () async {
         final fileDetails = await fileDetailContentBuilder();
         File file = fileDetails.file;
