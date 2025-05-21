@@ -27,6 +27,9 @@ class EncryptionBackupPage extends ConsumerStatefulWidget {
 class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   final isEnableNextButton = ValueNotifier<bool>(false);
 
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
@@ -151,10 +154,14 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           maintainState: true, // ensure the fields are having state
           child: Column(
             children: [
-              TextFormField(autofillHints: const [AutofillHints.username]),
+              TextField(
+                controller: usernameController,
+                autofillHints: const [AutofillHints.username],
+              ),
               const SizedBox(height: 16),
-              TextFormField(
-                autofillHints: const [AutofillHints.newPassword],
+              TextField(
+                controller: passwordController,
+                autofillHints: const [AutofillHints.password],
                 obscureText: true,
               ),
             ],
@@ -203,38 +210,12 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   void triggerAutofill(BuildContext context) {
     final encKey = ref.read(enableEncrptionBackUpProvider).valueOrNull;
-    bool foundUserName = false;
-    bool foundEncKey = false;
     if (encKey == null) {
       log.warning('No encryption key found');
       return;
     }
-    final state = AutofillGroup.of(context);
-    // set the inner fields
-    for (final client in state.autofillClients) {
-      if (client.textInputConfiguration.autofillConfiguration.autofillHints
-          .contains(AutofillHints.username)) {
-        client.autofill(
-          TextEditingValue(
-            text: L10n.of(context).userRecoveryKey(widget.username),
-          ),
-        );
-        foundUserName = true;
-      } else if (client
-          .textInputConfiguration
-          .autofillConfiguration
-          .autofillHints
-          .contains(AutofillHints.newPassword)) {
-        client.autofill(TextEditingValue(text: encKey));
-        foundEncKey = true;
-      }
-    }
-    if (!foundUserName) {
-      log.warning('Username field not found');
-    }
-    if (!foundEncKey) {
-      log.warning('Encryption key field not found');
-    }
+    usernameController.text = L10n.of(context).userRecoveryKey(widget.username);
+    passwordController.text = encKey;
     TextInput.finishAutofillContext(shouldSave: true);
   }
 }
