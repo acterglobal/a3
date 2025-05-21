@@ -24,8 +24,6 @@ void messageActions({
   final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
   if (messageBox == null) return;
 
-  final messagePosition = messageBox.localToGlobal(Offset.zero);
-
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -33,44 +31,53 @@ void messageActions({
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (context, animation, secondaryAnimation) {
+      final screenWidth = MediaQuery.sizeOf(context).width;
+      final maxActionsWidth = screenWidth * 0.9;
       return Stack(
         children: [
           _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
           Positioned(
-            left: messagePosition.dx,
+            left: isMe ? null : 0,
+            right: isMe ? 0 : null,
             top: 0,
-            width: messageBox.size.width,
             height: MediaQuery.sizeOf(context).height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment:
-                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                // Reaction Row
-                _AnimatedActionsContainer(
-                  animation: animation,
-                  tagId: '$messageId-reactions',
-                  child: ReactionSelector(
-                    isMe: isMe,
-                    messageId: messageId,
-                    roomId: roomId,
+            child: SizedBox(
+              width: maxActionsWidth,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment:
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  // Reaction Row
+                  _AnimatedActionsContainer(
+                    animation: animation,
+                    tagId: '$messageId-reactions',
+                    child: ReactionSelector(
+                      isMe: isMe,
+                      messageId: messageId,
+                      roomId: roomId,
+                    ),
                   ),
-                ),
-                // Message
-                Center(child: messageWidget),
-                // Message actions
-                _AnimatedActionsContainer(
-                  animation: animation,
-                  tagId: '$messageId-actions',
-                  child: MessageActionsWidget(
-                    isMe: isMe,
-                    canRedact: canRedact,
-                    item: item,
-                    messageId: messageId,
-                    roomId: roomId,
+                  // Message
+                  Align(
+                    alignment:
+                        isMe ? Alignment.centerRight : Alignment.centerLeft,
+                    child: messageWidget,
                   ),
-                ),
-              ],
+                  // Message actions
+                  _AnimatedActionsContainer(
+                    animation: animation,
+                    tagId: '$messageId-actions',
+                    child: MessageActionsWidget(
+                      isMe: isMe,
+                      canRedact: canRedact,
+                      item: item,
+                      messageId: messageId,
+                      roomId: roomId,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

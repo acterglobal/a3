@@ -27,20 +27,24 @@ class MessageActionsWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 200),
-      padding: const EdgeInsets.all(8.0),
-      margin: EdgeInsets.only(
-        top: 4,
-        left: isMe ? 0 : 12,
-        right: isMe ? 12 : 0,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-      ),
-      child: Column(
-        children: menuItems(context, ref, lang).map((e) => e).toList(),
+    final maxWidth =
+        MediaQuery.of(context).size.width * 0.7; // 70% of screen width
+    return IntrinsicWidth(
+      child: Container(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        padding: const EdgeInsets.all(8.0),
+        margin: EdgeInsets.only(
+          top: 4,
+          left: isMe ? 0 : 12,
+          right: isMe ? 12 : 0,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(5)),
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+        ),
+        child: Column(
+          children: menuItems(context, ref, lang).map((e) => e).toList(),
+        ),
       ),
     );
   }
