@@ -1,3 +1,6 @@
+import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
+import 'package:acter/features/onboarding/pages/onboarding_encryption_recovery_page.dart';
+import 'package:acter/features/showcases/pages/showcase_list_page.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ng/pages/chat_room.dart';
@@ -30,6 +33,51 @@ final List<GoRoute> showCaseRoutes =
               return MaterialPage(
                 key: state.pageKey,
                 child: ChatRoomNgPage(roomId: roomId ?? ''),
+              );
+            },
+          ),
+
+          // onboarding
+          GoRoute(
+            name: Routes.showCaseOnboardingEncryptionBackup.name,
+            path: Routes.showCaseOnboardingEncryptionBackup.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: EncryptionBackupPage(
+                  username: '@test:example.org',
+                  callNextPage: () {
+                    context.pop();
+                  },
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            name: Routes.showCaseOnboardingEncryptionRecovery.name,
+            path: Routes.showCaseOnboardingEncryptionRecovery.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: OnboardingEncryptionRecoveryPage(
+                  callNextPage: () {
+                    context.pop();
+                  },
+                ),
+              );
+            },
+          ),
+          // index
+          GoRoute(
+            name: Routes.showcaseList.name,
+            path: Routes.showcaseList.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: ShowcaseListPage(),
               );
             },
           ),
