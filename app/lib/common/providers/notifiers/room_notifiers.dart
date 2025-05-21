@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_list.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';

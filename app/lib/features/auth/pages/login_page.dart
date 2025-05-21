@@ -2,7 +2,7 @@ import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
@@ -224,7 +224,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (!mounted) return;
       // Handle all post-login steps
       TextInput.finishAutofillContext(shouldSave: true);
-      context.goNamed(Routes.onboarding.name,queryParameters: {'isLoginOnboarding': 'true'});
+      context.goNamed(
+        Routes.onboarding.name,
+        queryParameters: {'isLoginOnboarding': 'true'},
+      );
     } else {
       _log.severe('Failed to login', loginSuccess);
       EasyLoading.showError(loginSuccess, duration: const Duration(seconds: 3));

@@ -1,5 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/utils/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/categories/organize_categories_page.dart';

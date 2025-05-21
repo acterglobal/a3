@@ -4,7 +4,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat/models/chat_input_state/chat_input_state.dart';
 import 'package:acter/features/chat/models/chat_room_state/chat_room_state.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
