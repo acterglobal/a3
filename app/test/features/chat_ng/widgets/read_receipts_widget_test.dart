@@ -34,20 +34,11 @@ void main() {
           ),
         ),
       ],
-      child: Stack(
-        children: [
-          Positioned(
-            child: SizedBox(
-              width: 400,
-              child: ReadReceiptsWidget(
-                item: mockItem,
-                roomId: testRoomId,
-                messageId: testMessageId,
-                showAvatarsLimit: showAvatarsLimit,
-              ),
-            ),
-          ),
-        ],
+      child: ReadReceiptsWidget(
+        item: mockItem,
+        roomId: testRoomId,
+        messageId: testMessageId,
+        showAvatarsLimit: showAvatarsLimit,
       ),
     );
     await tester.pumpAndSettle();

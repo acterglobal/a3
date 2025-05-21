@@ -30,27 +30,31 @@ class ReadReceiptsWidget extends ConsumerWidget {
     final userIds = receipts.keys.toList();
     final timestamps = receipts.values.toList();
 
-    return QudsPopupButton(
-      items: _showDetails(userIds, timestamps),
-      child: Wrap(
-        spacing: -8,
-        children: [
-          ...List.generate(
-            userIds.length <= showAvatarsLimit
-                ? userIds.length
-                : showAvatarsLimit,
-            (i) => _buildUserReadAvatars(context, ref, userIds[i]),
-          ),
-          if (userIds.length > showAvatarsLimit)
-            CircleAvatar(
-              radius: 8.5,
-              child: Text(
-                '+${userIds.length - showAvatarsLimit}',
-                textScaler: const TextScaler.linear(0.6),
-                style: theme.textTheme.labelSmall,
-              ),
+    return Theme(
+      data: theme.copyWith(splashFactory: NoSplash.splashFactory),
+      child: QudsPopupButton(
+        items: _showDetails(context, userIds, timestamps),
+        child: Wrap(
+          spacing: -8,
+          children: [
+            ...List.generate(
+              userIds.length <= showAvatarsLimit
+                  ? userIds.length
+                  : showAvatarsLimit,
+              (i) => _buildUserReadAvatars(context, ref, userIds[i]),
             ),
-        ],
+            // overflow indicator
+            if (userIds.length > showAvatarsLimit)
+              CircleAvatar(
+                radius: 8.5,
+                child: Text(
+                  '+${userIds.length - showAvatarsLimit}',
+                  textScaler: const TextScaler.linear(0.6),
+                  style: theme.textTheme.labelSmall,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -70,14 +74,15 @@ class ReadReceiptsWidget extends ConsumerWidget {
   }
 
   List<QudsPopupMenuBase> _showDetails(
+    BuildContext context,
     List<String> userIds,
     List<int> timestamps,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return [
       QudsPopupMenuWidget(
         builder: (context) {
-          final colorScheme = Theme.of(context).colorScheme;
-          final textTheme = Theme.of(context).textTheme;
           return Container(
             key: ReadReceiptsWidget.readReceiptsPopupMenuKey,
             decoration: BoxDecoration(
@@ -93,49 +98,10 @@ class ReadReceiptsWidget extends ConsumerWidget {
                     style: textTheme.labelLarge,
                   ),
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: userIds.length,
-                  itemBuilder: (context, index) {
-                    final userId = userIds[index];
-                    final timestamp = timestamps[index];
-                    return Consumer(
-                      builder: (context, ref, child) {
-                        final member = ref.watch(
-                          memberAvatarInfoProvider((
-                            userId: userId,
-                            roomId: roomId,
-                          )),
-                        );
-                        return ListTile(
-                          minTileHeight: 10,
-                          horizontalTitleGap: 4,
-                          dense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                          ),
-                          leading: ActerAvatar(
-                            options: AvatarOptions.DM(member, size: 8),
-                          ),
-                          title: Text(
-                            member.displayName ?? userId,
-                            style: textTheme.labelSmall,
-                          ),
-                          trailing: Text(
-                            jiffyDateTimestamp(
-                              context,
-                              timestamp,
-                              showDay: true,
-                            ),
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        );
-                      },
-                    );
-                  },
+                _ReadReceiptsList(
+                  userIds: userIds,
+                  timestamps: timestamps,
+                  roomId: roomId,
                 ),
               ],
             ),
@@ -143,5 +109,55 @@ class ReadReceiptsWidget extends ConsumerWidget {
         },
       ),
     ];
+  }
+}
+
+class _ReadReceiptsList extends ConsumerWidget {
+  const _ReadReceiptsList({
+    required this.userIds,
+    required this.timestamps,
+    required this.roomId,
+  });
+  final List<String> userIds;
+  final List<int> timestamps;
+  final String roomId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: userIds.length,
+      itemBuilder: (context, index) {
+        final userId = userIds[index];
+        final timestamp = timestamps[index];
+        return Consumer(
+          builder: (context, ref, child) {
+            final member = ref.watch(
+              memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+            );
+            return ListTile(
+              minTileHeight: 10,
+              horizontalTitleGap: 4,
+              dense: true,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              leading: ActerAvatar(options: AvatarOptions.DM(member, size: 8)),
+              title: Text(
+                member.displayName ?? userId,
+                style: textTheme.labelSmall,
+              ),
+              trailing: Text(
+                jiffyDateTimestamp(context, timestamp, showDay: true),
+                style: textTheme.labelSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
