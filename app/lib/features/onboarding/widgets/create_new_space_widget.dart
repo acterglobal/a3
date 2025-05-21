@@ -59,33 +59,41 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildHeadlineText(context),
-                      const SizedBox(height: 30),
-                      _avatarBuilder(),
-                      const SizedBox(height: 40),
-                      _buildSpaceNameTextField(),
-                      const SizedBox(height: 10),
-                      _buildChekbox(context),
-                    ],
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildHeadlineText(context),
+                          const SizedBox(height: 30),
+                          _avatarBuilder(),
+                          const SizedBox(height: 40),
+                          _buildSpaceNameTextField(),
+                          const SizedBox(height: 10),
+                          _buildChekbox(context),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                _buildActionButton(context),
-                const SizedBox(height: 50),
-              ],
-            ),
+              ),
+              _buildActionButton(context),
+              const SizedBox(height: 50),
+            ],
           ),
         ),
+      ),
     );
   }
 

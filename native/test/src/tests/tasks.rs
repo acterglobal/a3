@@ -308,6 +308,7 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(tasks[0].event_id(), task_1_id);
 
     let task = tasks.pop().expect("first task should be available");
+    assert_eq!(task.room_id_str(), space.room_id_str());
 
     // START actual comment on task
 
