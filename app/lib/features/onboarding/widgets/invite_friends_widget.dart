@@ -6,7 +6,6 @@ import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
 import 'package:acter/features/onboarding/actions/generate_invitecode_externally_actions.dart';
 import 'package:acter/features/onboarding/types.dart';
-import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +65,6 @@ class _InviteFriendsWidgetState extends ConsumerState<InviteFriendsWidget> {
   Widget _buildInviteExternallyWidget(BuildContext context) {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final inviteCodeList = ref.watch(superInvitesForRoom(widget.roomId)).valueOrNull ?? [];
     String inviteCode;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -85,7 +83,7 @@ class _InviteFriendsWidgetState extends ConsumerState<InviteFriendsWidget> {
                 context, 
                 PhosphorIcons.copy(),
                 () async {
-                  inviteCode = await getInviteCode(context, inviteCodeList, ref, widget.roomId);
+                  inviteCode = await getInviteCode(context, ref, widget.roomId);
                   if (context.mounted) {
                     await copyInviteCodeToClipboard(inviteCode, context);
                   }
@@ -96,7 +94,7 @@ class _InviteFriendsWidgetState extends ConsumerState<InviteFriendsWidget> {
                 context, 
                 PhosphorIcons.qrCode(),
                 () async {
-                  inviteCode = await getInviteCode(context, inviteCodeList, ref, widget.roomId);
+                  inviteCode = await getInviteCode(context, ref, widget.roomId);
                   if (context.mounted) {
                     await showQrCode(context, inviteCode);
                   }

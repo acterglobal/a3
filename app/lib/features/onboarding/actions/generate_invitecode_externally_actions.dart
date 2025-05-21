@@ -2,7 +2,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/features/super_invites/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -24,12 +23,12 @@ Future<String> generateNewInviteCode(
       );
       final inviteCode = generateInviteCodeName(displayName);
 
-      await newSuperInviteForRooms(ref, [
+      final generatedInviteCode = await newSuperInviteForRooms(ref, [
         roomId,
       ], inviteCode: inviteCode);
       ref.invalidate(superInvitesProvider);
       EasyLoading.dismiss();
-      return inviteCode;
+      return generatedInviteCode;
     } catch (e, s) {
       _log.severe('Invite code activation failed', e, s);
       if (!context.mounted) {
@@ -50,7 +49,8 @@ Future<void> copyInviteCodeToClipboard(String inviteCode, BuildContext context) 
   EasyLoading.showToast(L10n.of(context).inviteCopiedToClipboard);
 }
 
-Future<String> getInviteCode(BuildContext context, List<SuperInviteToken> inviteCodeList, WidgetRef ref, String roomId) async {
+Future<String> getInviteCode(BuildContext context, WidgetRef ref, String roomId) async {
+    final inviteCodeList = ref.watch(superInvitesForRoom(roomId)).valueOrNull ?? [];
     if(inviteCodeList.isEmpty) {
       return await generateNewInviteCode(context, ref, roomId);
     } else {
