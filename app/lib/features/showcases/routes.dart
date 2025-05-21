@@ -1,6 +1,7 @@
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
 import 'package:acter/features/onboarding/pages/onboarding_encryption_recovery_page.dart';
+import 'package:acter/features/showcases/pages/one_step_onboarding.dart';
 import 'package:acter/features/showcases/pages/showcase_list_page.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/config/constants.dart';
@@ -53,11 +54,12 @@ final List<GoRoute> showCaseRoutes =
                       (ref) => Future.value('test-encryption-key'),
                     ),
                   ],
-                  child: EncryptionBackupPage(
-                    callNextPage: () {
-                      context.pop();
-                    },
-                    username: '@test:example.org',
+                  child: OneStepOnboardingPage(
+                    builder:
+                        (onCallNext) => EncryptionBackupPage(
+                          callNextPage: onCallNext,
+                          username: '@test:example.org',
+                        ),
                   ),
                 ),
               );
