@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
@@ -45,6 +46,7 @@ class Dashboard extends ConsumerWidget {
 
   AppBar _buildDashboardAppBar(BuildContext context) {
     final lang = L10n.of(context);
+    final title = Text(isDesktop ? lang.myDashboard : lang.acter);
     return AppBar(
       leading:
           !isDesktop
@@ -54,7 +56,13 @@ class Dashboard extends ConsumerWidget {
               )
               : const SizedBox.shrink(),
       centerTitle: true,
-      title: Text(isDesktop ? lang.myDashboard : lang.acter),
+      title:
+          includeShowCases
+              ? InkWell(
+                onTap: () => context.pushNamed(Routes.showcaseList.name),
+                child: title,
+              )
+              : title,
       actions: <Widget>[
         InkWell(
           onTap: () => context.pushNamed(Routes.settings.name),
