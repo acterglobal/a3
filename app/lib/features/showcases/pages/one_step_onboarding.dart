@@ -46,7 +46,6 @@ class _OneStepOnboardingPageState extends State<OneStepOnboardingPage> {
   late List<Widget> _screens;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _screens = [
       widget.builder(_nextPage),
