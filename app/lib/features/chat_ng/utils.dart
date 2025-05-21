@@ -54,17 +54,6 @@ bool isStateEvent(String eventType) {
 bool isMemberEvent(String eventType) =>
     ['MembershipChange', 'ProfileChange'].contains(eventType);
 
-class ChatEditorUtils {
-  /// base height for the editor (single line)
-  static const double baseHeight = 56.0;
-
-  /// toolbar offset for the editor
-  static const double toolbarOffset = 50.0;
-
-  /// max height for the editor
-  static const double maxHeight = 200.0;
-}
-
 /// The Material Design accent color swatches.
 const List<MaterialAccentColor> chatBubbleDisplayNameColors =
     <MaterialAccentColor>[

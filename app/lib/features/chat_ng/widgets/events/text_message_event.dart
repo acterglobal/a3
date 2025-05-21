@@ -1,6 +1,7 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
@@ -73,7 +74,6 @@ class TextMessageEvent extends ConsumerWidget {
       repliedTo: repliedTo,
     );
   }
-
   // Default factory constructor
   factory TextMessageEvent({
     Key? key,
@@ -105,9 +105,11 @@ class TextMessageEvent extends ConsumerWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Html(
-          data: body,
-          defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
+        child: ActerSelectionArea(
+          child: Html(
+            data: body,
+            defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
+          ),
         ),
       );
     }
@@ -117,32 +119,34 @@ class TextMessageEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
-        Html(
-          shrinkToFit: true,
-          pillBuilder:
-              ({
-                required String identifier,
-                required String url,
-                OnPillTap? onTap,
-              }) => ActerPillBuilder(
-                identifier: identifier,
-                uri: url,
-                roomId: roomId,
-              ),
-          renderNewlines: true,
-          maxLines: _type == TextMessageType.reply ? 2 : null,
-          onLinkTap: (Uri uri) {
-            openUri(ref: ref, uri: uri, lang: L10n.of(context));
-          },
-          defaultTextStyle: textTheme.bodySmall?.copyWith(
-            color:
-                _type == TextMessageType.notice
-                    ? colorScheme.onSurface.withValues(alpha: 0.5)
-                    : colorScheme.onSurface.withValues(alpha: 0.9),
-            overflow:
-                _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
+        ActerSelectionArea(
+          child: Html(
+            shrinkToFit: true,
+            pillBuilder:
+                ({
+                  required String identifier,
+                  required String url,
+                  OnPillTap? onTap,
+                }) => ActerPillBuilder(
+                  identifier: identifier,
+                  uri: url,
+                  roomId: roomId,
+                ),
+            renderNewlines: true,
+            maxLines: _type == TextMessageType.reply ? 2 : null,
+            onLinkTap: (Uri uri) {
+              openUri(ref: ref, uri: uri, lang: L10n.of(context));
+            },
+            defaultTextStyle: textTheme.bodySmall?.copyWith(
+              color:
+                  _type == TextMessageType.notice
+                      ? colorScheme.onSurface.withValues(alpha: 0.5)
+                      : colorScheme.onSurface.withValues(alpha: 0.9),
+              overflow:
+                  _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
+            ),
+            data: body,
           ),
-          data: body,
         ),
       ],
     );

@@ -1,0 +1,1 @@
+- [Fix] : Fixed overflow issue with long activity titles to maintain layout consistency.
