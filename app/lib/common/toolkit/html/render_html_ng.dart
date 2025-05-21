@@ -40,6 +40,7 @@ class RenderHtmlNg extends ConsumerWidget {
       onTapUrl:
           (url) => openLink(ref: ref, target: url, lang: L10n.of(context)),
       textStyle: defaultTextStyle,
+
       customWidgetBuilder:
           (dom.Element element) => customWidgetBuilder(context, ref, element),
     );
@@ -55,9 +56,10 @@ class RenderHtmlNg extends ConsumerWidget {
         (defaultTextStyle?.height ??
             Theme.of(context).textTheme.bodyMedium?.height ??
             1);
-    return SizedBox(
-      height: (mxLines * fontSize * lineHeight).toDouble(),
-      child: ClipRect(child: htmlWidget),
+    final maxHeight = (mxLines * fontSize * lineHeight).toDouble();
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: ClipRect(clipBehavior: Clip.antiAlias, child: htmlWidget),
     );
   }
 
