@@ -74,29 +74,31 @@ String jiffyDateForActvity(BuildContext context, int timeInterval) {
 String jiffyDateTimestamp(
   BuildContext context,
   int timeInterval, {
-  bool use24HourFormat = false,
   bool showDay = false,
 }) {
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.parseFromDateTime(DateTime.now().toUtc());
-  final timestamp = use24HourFormat ? jiffyTime.Hm : jiffyTime.jm;
+  final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
+  final formattedTime = use24HourFormat ? jiffyTime.Hm : jiffyTime.jm;
+
+  if (!showDay) return formattedTime;
 
   if (now.isSame(jiffyTime, unit: Unit.day)) {
-    return timestamp;
+    return formattedTime;
   }
 
   final week = now.subtract(weeks: 1);
   final year = now.subtract(years: 1);
+
   if (jiffyTime.isBetween(week, now)) {
-    // between current week
-    return showDay ? '${jiffyTime.E} $timestamp' : timestamp;
-  } else if (jiffyTime.isBefore(week) && jiffyTime.isAfter(year)) {
-    // before week but within same year
-    return showDay ? '${jiffyTime.MMMEd} $timestamp' : timestamp;
-  } else {
-    // difference greater than year, show full datetime
-    return showDay ? '${jiffyTime.yMMMEd} $timestamp' : timestamp;
+    return '${jiffyTime.E} $formattedTime';
   }
+
+  if (jiffyTime.isBefore(week) && jiffyTime.isAfter(year)) {
+    return '${jiffyTime.MMMEd} $formattedTime';
+  }
+
+  return '${jiffyTime.yMMMEd} $formattedTime';
 }
 
 extension TimeOfDayExtension on TimeOfDay {

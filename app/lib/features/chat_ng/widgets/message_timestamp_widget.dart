@@ -18,12 +18,9 @@ class MessageTimestampWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final chatTheme = Theme.of(context).chatTheme;
 
-    final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
-
     String formattedTime = jiffyDateTimestamp(
       context,
       timestamp,
-      use24HourFormat: use24HourFormat,
       showDay: false,
     );
 

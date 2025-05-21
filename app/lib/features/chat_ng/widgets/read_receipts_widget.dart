@@ -26,35 +26,31 @@ class ReadReceiptsWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
     final receipts = ref.watch(messageReadReceiptsProvider(item));
     final userIds = receipts.keys.toList();
     final timestamps = receipts.values.toList();
 
-    return Theme(
-      data: theme.copyWith(splashFactory: NoSplash.splashFactory),
-      child: QudsPopupButton(
-        items: _showDetails(userIds, timestamps, use24HourFormat),
-        child: Wrap(
-          spacing: -8,
-          children: [
-            ...List.generate(
-              userIds.length <= showAvatarsLimit
-                  ? userIds.length
-                  : showAvatarsLimit,
-              (i) => _buildUserReadAvatars(context, ref, userIds[i]),
-            ),
-            if (userIds.length > showAvatarsLimit)
-              CircleAvatar(
-                radius: 8.5,
-                child: Text(
-                  '+${userIds.length - showAvatarsLimit}',
-                  textScaler: const TextScaler.linear(0.6),
-                  style: theme.textTheme.labelSmall,
-                ),
+    return QudsPopupButton(
+      items: _showDetails(userIds, timestamps),
+      child: Wrap(
+        spacing: -8,
+        children: [
+          ...List.generate(
+            userIds.length <= showAvatarsLimit
+                ? userIds.length
+                : showAvatarsLimit,
+            (i) => _buildUserReadAvatars(context, ref, userIds[i]),
+          ),
+          if (userIds.length > showAvatarsLimit)
+            CircleAvatar(
+              radius: 8.5,
+              child: Text(
+                '+${userIds.length - showAvatarsLimit}',
+                textScaler: const TextScaler.linear(0.6),
+                style: theme.textTheme.labelSmall,
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -76,7 +72,6 @@ class ReadReceiptsWidget extends ConsumerWidget {
   List<QudsPopupMenuBase> _showDetails(
     List<String> userIds,
     List<int> timestamps,
-    bool show24HourFormat,
   ) {
     return [
       QudsPopupMenuWidget(
@@ -130,7 +125,6 @@ class ReadReceiptsWidget extends ConsumerWidget {
                             jiffyDateTimestamp(
                               context,
                               timestamp,
-                              use24HourFormat: show24HourFormat,
                               showDay: true,
                             ),
                             style: textTheme.labelSmall?.copyWith(
