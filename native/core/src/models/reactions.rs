@@ -98,7 +98,7 @@ impl ReactionManager {
     }
 
     pub fn construct_like_event(&self) -> ReactionEventContent {
-        self.construct_reaction_event(LIKE_HEART.to_string())
+        self.construct_reaction_event(LIKE_HEART.to_owned())
     }
 
     pub fn construct_reaction_event(&self, key: String) -> ReactionEventContent {

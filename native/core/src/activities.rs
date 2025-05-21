@@ -521,7 +521,7 @@ impl Activity {
             | ActivityContent::RoomTombstone(_)
             | ActivityContent::RoomTopic(_)
             | ActivityContent::SpaceChild(_)
-            | ActivityContent::SpaceParent(_) => "/activities".to_string(), // fallback for state events
+            | ActivityContent::SpaceParent(_) => "/activities".to_owned(), // fallback for state events
         }
     }
 
@@ -970,11 +970,11 @@ impl Activity {
             | AnyActerModel::CommentUpdate(_)
             | AnyActerModel::AttachmentUpdate(_)
             | AnyActerModel::ReadReceipt(_) => Err(crate::Error::Custom(
-                "Converting model into activity not yet supported".to_string(),
+                "Converting model into activity not yet supported".to_owned(),
             )),
             #[cfg(any(test, feature = "testing"))]
             AnyActerModel::TestModel(_) => Err(crate::Error::Custom(
-                "Converting test model into activity not supported".to_string(),
+                "Converting test model into activity not supported".to_owned(),
             )),
         }
     }
