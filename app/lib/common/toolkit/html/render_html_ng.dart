@@ -43,6 +43,12 @@ class RenderHtmlNg extends ConsumerWidget {
 
       customWidgetBuilder:
           (dom.Element element) => customWidgetBuilder(context, ref, element),
+
+      customStylesBuilder: // overwriting the default link color
+          (element) =>
+              element.localName?.toLowerCase() == 'a'
+                  ? {'color': linkTextStyle?.color?.toString() ?? 'white'}
+                  : null,
     );
     final mxLines = maxLines;
     if (mxLines == null) {
