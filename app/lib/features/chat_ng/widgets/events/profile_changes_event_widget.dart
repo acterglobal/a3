@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -55,14 +54,12 @@ class ProfileChangesEventWidget extends ConsumerWidget {
         textStyle ?? lastMessageTextStyle(context, ref, roomId);
 
     //Render membership event text
-    return ActerSelectionArea(
-      child: Text(
-        membershipEventText,
-        maxLines: 2,
-        style: messageTextStyle,
-        textAlign: textAlign,
-        overflow: TextOverflow.ellipsis,
-      ),
+    return Text(
+      membershipEventText,
+      maxLines: 2,
+      style: messageTextStyle,
+      textAlign: textAlign,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
