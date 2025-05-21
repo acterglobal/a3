@@ -714,7 +714,7 @@ impl VerificationController {
                     let methods = content
                         .methods
                         .iter()
-                        .map(|x| x.to_string())
+                        .map(ToString::to_string)
                         .collect::<Vec<String>>();
                     msg.set_content("methods".to_owned(), methods.join(","));
                     msg.set_content("to".to_owned(), content.to.to_string());

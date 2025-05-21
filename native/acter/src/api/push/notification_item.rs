@@ -325,7 +325,7 @@ impl NotificationItem {
         self.thread_id.clone()
     }
     pub fn room_invite_str(&self) -> Option<String> {
-        self.inner.room_invite().map(|r| r.to_string())
+        self.inner.room_invite().as_deref().map(ToString::to_string)
     }
     pub fn mentions_you(&self) -> bool {
         self.mentions_you
