@@ -5,6 +5,7 @@ import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/categories/organize_categories_page.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
 import 'package:acter/features/chat/pages/sub_chats_page.dart';
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
 import 'package:acter/features/events/pages/create_event_page.dart';
@@ -121,7 +122,7 @@ final homeShellRoutes = [
         final roomId = state.pathParameters['roomId'];
         return MaterialPage(
           key: state.pageKey,
-          child: ChatRoomNgPage(roomId: roomId ?? ''),
+          child: ChatRoomNgPage(key: chatRoomKey, roomId: roomId ?? ''),
         );
       },
     ),

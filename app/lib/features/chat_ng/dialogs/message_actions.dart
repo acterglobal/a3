@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -22,6 +23,11 @@ void messageActions({
   if (!context.mounted) return;
 
   final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
+  final chatRoomBox =
+      chatRoomKey.currentContext?.findRenderObject() as RenderBox?;
+  final chatRoomOffset = chatRoomBox?.localToGlobal(Offset.zero);
+  final chatRoomSize = chatRoomBox?.size;
+  final screenWidth = MediaQuery.sizeOf(context).width;
   if (messageBox == null) return;
 
   showGeneralDialog(
@@ -31,24 +37,21 @@ void messageActions({
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 200),
     pageBuilder: (context, animation, secondaryAnimation) {
-      final screenWidth = MediaQuery.sizeOf(context).width;
-      final maxActionsWidth = screenWidth * 0.9;
       return Stack(
         children: [
           _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
           Positioned(
-            left: isMe ? null : 0,
-            right: isMe ? 0 : null,
-            top: 0,
-            height: MediaQuery.sizeOf(context).height,
+            left: chatRoomOffset?.dx,
+            top: chatRoomOffset?.dy,
+            width: chatRoomSize?.width,
+            height: chatRoomSize?.height,
             child: SizedBox(
-              width: maxActionsWidth,
+              width: (chatRoomSize?.width ?? screenWidth) * 0.9,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment:
                     isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  // Reaction Row
                   _AnimatedActionsContainer(
                     animation: animation,
                     tagId: '$messageId-reactions',
@@ -58,13 +61,7 @@ void messageActions({
                       roomId: roomId,
                     ),
                   ),
-                  // Message
-                  Align(
-                    alignment:
-                        isMe ? Alignment.centerRight : Alignment.centerLeft,
-                    child: messageWidget,
-                  ),
-                  // Message actions
+                  messageWidget,
                   _AnimatedActionsContainer(
                     animation: animation,
                     tagId: '$messageId-actions',
