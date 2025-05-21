@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat_ng/providers/chat_list_providers.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
@@ -55,9 +55,8 @@ class ProfileChangesEventWidget extends ConsumerWidget {
         textStyle ?? lastMessageTextStyle(context, ref, roomId);
 
     //Render membership event text
-    return selectableText(
-      context,
-      Text(
+    return ActerSelectionArea(
+      child: Text(
         membershipEventText,
         maxLines: 2,
         style: messageTextStyle,

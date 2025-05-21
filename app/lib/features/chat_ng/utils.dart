@@ -82,12 +82,3 @@ const List<MaterialAccentColor> chatBubbleDisplayNameColors =
       Colors.orangeAccent,
       Colors.deepOrangeAccent,
     ];
-
-Widget selectableText(BuildContext context, Widget child) => TextSelectionTheme(
-  data: TextSelectionThemeData(
-    selectionColor: Theme.of(
-      context,
-    ).colorScheme.secondary.withValues(alpha: 0.3),
-  ),
-  child: SelectionArea(child: child),
-);

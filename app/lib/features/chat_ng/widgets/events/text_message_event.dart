@@ -1,8 +1,8 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat/widgets/pill_builder.dart';
-import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
@@ -105,9 +105,8 @@ class TextMessageEvent extends ConsumerWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: selectableText(
-          context,
-          Html(
+        child: ActerSelectionArea(
+          child: Html(
             data: body,
             defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
           ),
@@ -120,9 +119,8 @@ class TextMessageEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
-        selectableText(
-          context,
-          Html(
+        ActerSelectionArea(
+          child: Html(
             shrinkToFit: true,
             pillBuilder:
                 ({
