@@ -4,7 +4,7 @@ import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/tutorial_dialogs/bottom_navigation_tutorials/bottom_navigation_tutorials.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/common/widgets/user_avatar.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';

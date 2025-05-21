@@ -23,7 +23,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
     final roomId = arg;
 
     // if we are in chat showcase mode, return a mock convo
-    if (includeChatShowcase &&
+    if (includeShowCases &&
         mockChatList.any((mockChatItem) => mockChatItem.roomId == arg)) {
       return mockChatList
           .firstWhere((mockChatItem) => mockChatItem.roomId == arg)
@@ -67,7 +67,7 @@ class AsyncLatestMsgNotifier
     final roomId = arg;
 
     // if we are in chat showcase mode, return a mock timeline item
-    if (includeChatShowcase &&
+    if (includeShowCases &&
         mockChatList.any((mockChatItem) => mockChatItem.roomId == arg)) {
       return mockChatList
           .firstWhere((mockChatItem) => mockChatItem.roomId == arg)

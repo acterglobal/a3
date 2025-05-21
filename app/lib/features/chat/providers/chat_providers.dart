@@ -176,7 +176,7 @@ final isRoomEncryptedProvider = FutureProvider.family<bool, String>((
 final chatTypingEventProvider = StreamProvider.autoDispose
     .family<List<types.User>, String>((ref, roomId) async* {
       // if we are in chat showcase mode, return mock typing users
-      if (includeChatShowcase &&
+      if (includeShowCases &&
           mockChatList.any((mockChatItem) => mockChatItem.roomId == roomId)) {
         final mockChatItem = mockChatList.firstWhere(
           (mockChatItem) => mockChatItem.roomId == roomId,

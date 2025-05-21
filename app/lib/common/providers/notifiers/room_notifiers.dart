@@ -28,7 +28,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   @override
   Future<Room?> build(String arg) async {
     // if we are in chat showcase mode, return a mock room
-    if (includeChatShowcase &&
+    if (includeShowCases &&
         mockChatList.any((mockChatItem) => mockChatItem.roomId == arg)) {
       return mockChatList
           .firstWhere((mockChatItem) => mockChatItem.roomId == arg)
