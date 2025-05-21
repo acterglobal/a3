@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -30,10 +31,8 @@ class RoomUpdateEvent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
-    return Text(
-      stateText,
-      style: textStyle ?? stateEventTextStyle(context),
-      textAlign: textAlign,
+    return ActerSelectionArea(
+      child: Text(stateText, style: textStyle ?? stateEventTextStyle(context)),
     );
   }
 
