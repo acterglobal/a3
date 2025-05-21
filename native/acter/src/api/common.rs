@@ -231,9 +231,9 @@ impl ComposeDraft {
 
     pub fn draft_type(&self) -> String {
         match &(self.inner.draft_type) {
-            ComposerDraftType::NewMessage => "new".to_string(),
-            ComposerDraftType::Edit { event_id } => "edit".to_string(),
-            ComposerDraftType::Reply { event_id } => "reply".to_string(),
+            ComposerDraftType::NewMessage => "new".to_owned(),
+            ComposerDraftType::Edit { event_id } => "edit".to_owned(),
+            ComposerDraftType::Reply { event_id } => "reply".to_owned(),
         }
     }
 }

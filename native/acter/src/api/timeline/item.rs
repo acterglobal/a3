@@ -52,13 +52,13 @@ pub struct EventSendState {
 impl EventSendState {
     fn new(inner: &SdkEventSendState, send_handle: Option<SendHandle>) -> Self {
         let (state, error, event_id) = match inner {
-            SdkEventSendState::NotSentYet => ("NotSentYet".to_string(), None, None),
+            SdkEventSendState::NotSentYet => ("NotSentYet".to_owned(), None, None),
             SdkEventSendState::SendingFailed {
                 error,
                 is_recoverable,
-            } => ("SendingFailed".to_string(), Some(error.to_string()), None),
+            } => ("SendingFailed".to_owned(), Some(error.to_string()), None),
             SdkEventSendState::Sent { event_id } => {
-                ("Sent".to_string(), None, Some(event_id.clone()))
+                ("Sent".to_owned(), None, Some(event_id.clone()))
             }
         };
         EventSendState {
@@ -138,7 +138,7 @@ impl TimelineEventItemBuilder {
                 MsgLikeKind::Message(msg) => {
                     self.event_type("m.room.message".to_owned());
                     let msg_type = msg.msgtype();
-                    self.msg_type(Some(msg_type.msgtype().to_string()));
+                    self.msg_type(Some(msg_type.msgtype().to_owned()));
                     self.content(TimelineEventContent::try_from(msg_type).ok());
                     if let Some(in_reply_to) = &msg_like.in_reply_to {
                         self.in_reply_to_id(Some(in_reply_to.event_id.clone()));
@@ -157,21 +157,21 @@ impl TimelineEventItemBuilder {
                 }
                 MsgLikeKind::Redacted => {
                     info!("Edit event applies to a redacted message");
-                    self.event_type("m.room.redaction".to_string());
+                    self.event_type("m.room.redaction".to_owned());
                 }
                 MsgLikeKind::Sticker(s) => {
-                    self.event_type("m.sticker".to_string());
+                    self.event_type("m.sticker".to_owned());
                     // FIXME: proper sticker support needed
                     // self.msg_content(Some(MsgContent::from(s.content())));
                 }
                 MsgLikeKind::UnableToDecrypt(encrypted_msg) => {
                     info!("Edit event applies to event that couldn’t be decrypted");
-                    self.event_type("m.room.encrypted".to_string());
+                    self.event_type("m.room.encrypted".to_owned());
                 }
 
                 MsgLikeKind::Poll(s) => {
                     info!("Edit event applies to a poll state");
-                    self.event_type("m.poll.start".to_string());
+                    self.event_type("m.poll.start".to_owned());
                     if let Some(fallback) = s.fallback_text() {
                         let msg_content = MsgContent::from_text(fallback);
                         self.content(Some(TimelineEventContent::Message(msg_content)));
@@ -180,14 +180,14 @@ impl TimelineEventItemBuilder {
             },
             SdkTimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to membership change event");
-                self.event_type("MembershipChange".to_string());
+                self.event_type("MembershipChange".to_owned());
                 if let Ok(content) = MembershipContent::try_from(m) {
                     self.content(Some(TimelineEventContent::MembershipChange(content)));
                 }
             }
             SdkTimelineItemContent::ProfileChange(p) => {
                 info!("Edit event applies to profile change event");
-                self.event_type("ProfileChange".to_string());
+                self.event_type("ProfileChange".to_owned());
                 let content = ProfileContent::from(p);
                 self.content(Some(TimelineEventContent::ProfileChange(content)));
             }
@@ -478,7 +478,7 @@ impl TimelineEventItem {
         // apply this way for only function that string vector is calculated indirectly.
         let mut users = vec![];
         for seen_by in self.read_receipts.keys() {
-            users.push(seen_by.to_string());
+            users.push(seen_by.clone());
         }
         users
     }
@@ -790,16 +790,16 @@ impl From<&VirtualTimelineItem> for TimelineVirtualItem {
                     None
                 };
                 TimelineVirtualItem {
-                    event_type: "DayDivider".to_string(),
+                    event_type: "DayDivider".to_owned(),
                     desc,
                 }
             }
             VirtualTimelineItem::TimelineStart => TimelineVirtualItem {
-                event_type: "TimelineStart".to_string(),
+                event_type: "TimelineStart".to_owned(),
                 desc: None,
             },
             VirtualTimelineItem::ReadMarker => TimelineVirtualItem {
-                event_type: "ReadMarker".to_string(),
+                event_type: "ReadMarker".to_owned(),
                 desc: None,
             },
         }

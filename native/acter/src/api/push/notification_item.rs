@@ -199,7 +199,7 @@ impl NotificationItemInner {
                 encode(device_id.as_str()),
                 encode(room_id.as_str())
             ),
-            NotificationItemInner::Invite { room_id } => "/activities/invites".to_string(),
+            NotificationItemInner::Invite { room_id } => "/activities/invites".to_owned(),
             NotificationItemInner::ChatMessage { room_id, .. } => format!("/chat/{room_id}"),
             NotificationItemInner::Activity(a) => a.target_url(),
         }
@@ -537,7 +537,7 @@ impl NotificationItemBuilder {
                     builder.title(match details {
                         RefDetails::CalendarEvent { .. } => format!("🗓️ {title}"),
                         RefDetails::Pin { .. } => format!("📌 {title}"),
-                        RefDetails::News { .. } => "🚀 boost".to_string(),
+                        RefDetails::News { .. } => "🚀 boost".to_owned(),
                         RefDetails::Task { .. } => format!("☑️ {title}"),
                         RefDetails::TaskList { .. } => format!("📋 {title}"),
                         RefDetails::Link { .. } => format!("🔗 {title}"),
