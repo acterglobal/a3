@@ -1,6 +1,6 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/settings/pages/settings_page.dart';
 import 'package:acter/features/settings/widgets/auto_download_tile.dart';
@@ -37,7 +37,7 @@ class ChatSettingsPage extends ConsumerWidget {
                   initialValue: false,
                   onToggle: (newVal) {},
                 ),
-                if (includeChatShowcase)
+                if (includeShowCases)
                   CustomSettingsTile(
                     child: Card(
                       margin: EdgeInsets.zero,

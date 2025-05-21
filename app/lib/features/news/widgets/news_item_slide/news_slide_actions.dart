@@ -1,6 +1,6 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/components/text_theme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/features/events/widgets/event_item.dart';
 import 'package:acter/features/news/model/news_references_model.dart';
