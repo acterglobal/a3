@@ -214,8 +214,10 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       log.warning('No encryption key found');
       return;
     }
-    usernameController.text = L10n.of(context).userRecoveryKey(widget.username);
-    passwordController.text = encKey;
+    usernameController.value = TextEditingValue(
+      text: L10n.of(context).userRecoveryKey(widget.username),
+    );
+    passwordController.value = TextEditingValue(text: encKey);
     TextInput.finishAutofillContext(shouldSave: true);
   }
 }
