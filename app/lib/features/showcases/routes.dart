@@ -1,3 +1,4 @@
+import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
 import 'package:acter/features/onboarding/pages/onboarding_encryption_recovery_page.dart';
 import 'package:acter/features/showcases/pages/showcase_list_page.dart';
@@ -7,6 +8,7 @@ import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ui_showcase/pages/chat_list_showcase_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final List<GoRoute> showCaseRoutes =
@@ -45,11 +47,18 @@ final List<GoRoute> showCaseRoutes =
             pageBuilder: (context, state) {
               return MaterialPage(
                 key: state.pageKey,
-                child: EncryptionBackupPage(
-                  username: '@test:example.org',
-                  callNextPage: () {
-                    context.pop();
-                  },
+                child: ProviderScope(
+                  overrides: [
+                    enableEncrptionBackUpProvider.overrideWith(
+                      (ref) => Future.value('test-encryption-key'),
+                    ),
+                  ],
+                  child: EncryptionBackupPage(
+                    callNextPage: () {
+                      context.pop();
+                    },
+                    username: '@test:example.org',
+                  ),
                 ),
               );
             },

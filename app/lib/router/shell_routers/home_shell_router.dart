@@ -48,7 +48,7 @@ import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
-import 'package:acter/router/shell_routers/show_cases.dart';
+import 'package:acter/features/showcases/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
