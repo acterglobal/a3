@@ -1,0 +1,1 @@
+ - [Fix] : Old timestamp is removed from activity card in activities page.
