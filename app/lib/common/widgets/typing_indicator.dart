@@ -1,4 +1,3 @@
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';

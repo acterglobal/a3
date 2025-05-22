@@ -29,7 +29,7 @@ void main() {
             ),
           ),
         ],
-        child: TypingIndicator(roomId: 'mock-room-1'),
+        child: TypingIndicator(roomId: 'mock-room-1', isSelected: true),
       );
       // Wait for the async provider to load
       await tester.pump();
