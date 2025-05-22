@@ -234,8 +234,10 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
       ],
 );
 
+final productTeamMutedWithSingleTypingUserRoom2RoomId = 'mock-room-2';
+
 final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
-  roomId: 'mock-room-2',
+  roomId: productTeamMutedWithSingleTypingUserRoom2RoomId,
   displayName: 'Product Team',
   notificationMode: 'muted',
   activeMembersIds: [
