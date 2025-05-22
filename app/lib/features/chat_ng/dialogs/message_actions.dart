@@ -27,6 +27,7 @@ void messageActions({
       chatRoomKey.currentContext?.findRenderObject() as RenderBox?;
   final chatRoomOffset = chatRoomBox?.localToGlobal(Offset.zero);
   final chatRoomSize = chatRoomBox?.size;
+  final left = chatRoomOffset?.dx ?? 0;
   final screenWidth = MediaQuery.sizeOf(context).width;
   if (messageBox == null) return;
 
@@ -41,7 +42,7 @@ void messageActions({
         children: [
           _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
           Positioned(
-            left: chatRoomOffset?.dx,
+            left: isMe ? left : left + 36,
             top: chatRoomOffset?.dy,
             width: chatRoomSize?.width,
             height: chatRoomSize?.height,

@@ -33,11 +33,7 @@ class MessageActionsWidget extends ConsumerWidget {
       child: Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
         padding: const EdgeInsets.all(8.0),
-        margin: EdgeInsets.only(
-          top: 4,
-          left: isMe ? 0 : 12,
-          right: isMe ? 12 : 0,
-        ),
+        margin: EdgeInsets.only(top: 4, left: 12, right: 12),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(5)),
           color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
