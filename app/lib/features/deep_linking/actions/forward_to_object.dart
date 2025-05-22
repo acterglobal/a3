@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/deep_linking/actions/show_item_preview.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:flutter/material.dart';

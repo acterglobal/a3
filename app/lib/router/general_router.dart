@@ -2,7 +2,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/pages/fatal_fail.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/avatar/full_screen_avatar_page.dart';
 import 'package:acter/common/widgets/dialog_page.dart';
 import 'package:acter/common/widgets/side_sheet_page.dart';

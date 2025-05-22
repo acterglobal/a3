@@ -3,13 +3,21 @@ import 'package:acter/features/encryption_backup_feature/widgets/encryption_back
 import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+final log = Logger('a3:onboarding:encryption_backup_page');
 
 class EncryptionBackupPage extends ConsumerStatefulWidget {
   final CallNextPage? callNextPage;
-
-  const EncryptionBackupPage({super.key, required this.callNextPage});
+  final String username;
+  const EncryptionBackupPage({
+    super.key,
+    required this.callNextPage,
+    required this.username,
+  });
 
   @override
   ConsumerState<EncryptionBackupPage> createState() =>
@@ -19,9 +27,11 @@ class EncryptionBackupPage extends ConsumerStatefulWidget {
 class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
   final isEnableNextButton = ValueNotifier<bool>(false);
 
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final lang = L10n.of(context);
     final primaryColor = Theme.of(context).colorScheme.primary;
     return Scaffold(
       appBar: AppBar(),
@@ -35,13 +45,13 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
                 const SizedBox(height: 24),
                 Icon(PhosphorIcons.lockKey(), size: 80, color: primaryColor),
                 const SizedBox(height: 24),
-                _buildHeader(context, lang),
+                _buildHeader(context),
                 const SizedBox(height: 16),
-                _buildDescription(context, lang),
+                _buildDescription(context),
                 const SizedBox(height: 32),
                 _buildEncryptionKey(context),
                 const SizedBox(height: 32),
-                _buildNavigationButtons(context, lang),
+                _buildNavigationButtons(context),
                 const SizedBox(height: 30),
               ],
             ),
@@ -51,17 +61,17 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, L10n lang) {
+  Widget _buildHeader(BuildContext context) {
     return Text(
-      lang.encryptionKeyBackupTitle,
+      L10n.of(context).encryptionKeyBackupTitle,
       style: Theme.of(context).textTheme.titleLarge,
       textAlign: TextAlign.center,
     );
   }
 
-  Widget _buildDescription(BuildContext context, L10n lang) {
+  Widget _buildDescription(BuildContext context) {
     return Text(
-      lang.encryptionKeyBackupDescription,
+      L10n.of(context).encryptionKeyBackupDescription,
       style: Theme.of(context).textTheme.labelMedium?.copyWith(fontSize: 14),
       textAlign: TextAlign.center,
     );
@@ -75,7 +85,12 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            PasswordManagerBackupWidget(encryptionKey: data),
+            PasswordManagerBackupWidget(
+              encryptionKey: data,
+              onButtonPressed: () {
+                isEnableNextButton.value = true;
+              },
+            ),
           ],
         );
       },
@@ -123,34 +138,86 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     );
   }
 
-  Widget _buildNavigationButtons(BuildContext context, L10n lang) {
-    return Column(
+  Widget _buildNavigationButtons(BuildContext context) => AutofillGroup(
+    onDisposeAction: AutofillContextAction.commit,
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildNextButton(context, lang),
+        _buildNextButton(context),
         const SizedBox(height: 16),
-        _buidSkipButton(context, lang),
+        _buidSkipButton(context),
         const SizedBox(height: 16),
-      ],
-    );
-  }
 
-  Widget _buildNextButton(BuildContext context, L10n lang) {
+        Visibility(
+          // hidden auto save items
+          visible: false,
+          maintainState: true, // ensure the fields are having state
+          child: Column(
+            children: [
+              TextField(
+                controller: usernameController,
+                autofillHints: const [AutofillHints.username],
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: passwordController,
+                autofillHints: const [AutofillHints.password],
+                obscureText: true,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildNextButton(BuildContext context) {
     return ValueListenableBuilder<bool>(
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled ? () => widget.callNextPage?.call() : null,
-          child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+          onPressed:
+              isEnabled
+                  ? () {
+                    triggerAutofill(context);
+                    widget.callNextPage?.call();
+                  }
+                  : null,
+          child: Text(
+            L10n.of(context).next,
+            style: const TextStyle(fontSize: 16),
+          ),
         );
       },
     );
   }
 
-  Widget _buidSkipButton(BuildContext context, L10n lang) {
-    return OutlinedButton(
-      onPressed: () => widget.callNextPage?.call(),
-      child: Text(L10n.of(context).skip),
+  Widget _buidSkipButton(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      // we need the context to be within the autofill group
+      valueListenable: isEnableNextButton,
+      builder:
+          (context, _, _) => OutlinedButton(
+            onPressed: () {
+              triggerAutofill(context);
+              // Continue to next page
+              widget.callNextPage?.call();
+            },
+            child: Text(L10n.of(context).skip),
+          ),
     );
+  }
+
+  void triggerAutofill(BuildContext context) {
+    final encKey = ref.read(enableEncrptionBackUpProvider).valueOrNull;
+    if (encKey == null) {
+      log.warning('No encryption key found');
+      return;
+    }
+    usernameController.value = TextEditingValue(
+      text: L10n.of(context).userRecoveryKey(widget.username),
+    );
+    passwordController.value = TextEditingValue(text: encKey);
+    TextInput.finishAutofillContext(shouldSave: true);
   }
 }

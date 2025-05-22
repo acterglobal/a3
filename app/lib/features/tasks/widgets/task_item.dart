@@ -1,7 +1,7 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_avatar_builder.dart';
 import 'package:acter/common/widgets/user_avatar.dart';

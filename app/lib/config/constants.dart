@@ -36,7 +36,7 @@ const autoGuestLogin = Env.autoLoginAsGuest;
 const inCI = Env.isCI;
 const isDemo = Env.isDemo;
 const isNightly = Env.isNightly;
-const includeChatShowcase = isNightly || isDevBuild;
+const includeShowCases = isNightly || isDevBuild;
 
 final defaultServers = parseServers(Env.defaultSearchServers);
 

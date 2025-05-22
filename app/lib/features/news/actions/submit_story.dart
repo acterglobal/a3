@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/space_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/spaces/space_selector_drawer.dart';
 import 'package:acter/features/news/actions/make_image_slide.dart';
 import 'package:acter/features/news/actions/make_text_slide.dart';

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/input_text_field.dart';
 import 'package:acter/features/files/actions/pick_avatar.dart';
 import 'package:acter/features/room/model/room_join_rule.dart';

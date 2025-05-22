@@ -2,8 +2,8 @@ import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/config/constants.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/auth/actions/register_action.dart';
 import 'package:acter/features/auth/providers/auth_providers.dart';
@@ -60,7 +60,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       )) {
         navigator.goNamed(
           Routes.onboarding.name,
-          queryParameters: {'username': username.text, 'isLoginOnboarding': 'false'},
+          queryParameters: {
+            'username': username.text,
+            'isLoginOnboarding': 'false',
+          },
         );
       }
     } catch (errorMsg) {

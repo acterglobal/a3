@@ -30,7 +30,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Verify basic structure
@@ -70,7 +70,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       //Encryption key loading indicator
@@ -87,7 +87,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Initial pump to start the async operation
@@ -96,12 +96,12 @@ void main() {
       // Verify loading indicator is gone
       expect(find.byType(LinearProgressIndicator), findsNothing);
 
-      // Verify the encryption key is displayed in SelectableText
-      expect(find.byType(SelectableText), findsOneWidget);
-      final selectableText = tester.widget<SelectableText>(
-        find.byType(SelectableText),
+      
+      expect(find.byKey(Key('encryption-key-input-field')), findsOneWidget);
+      final textFormField = tester.widget<TextFormField>(
+        find.byKey(Key('encryption-key-input-field')),
       );
-      expect(selectableText.data, equals('test-encryption-key'));
+      expect(textFormField.controller?.text, equals('test-encryption-key'));
     });
 
     testWidgets('shows error message when encryption key fetch fails', (
@@ -118,7 +118,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Wait for the async operation to complete
@@ -134,7 +134,7 @@ void main() {
             (ref) => mockBackupManager.enable(),
           ),
         ],
-        child: EncryptionBackupPage(callNextPage: () {}),
+        child: EncryptionBackupPage(callNextPage: () {}, username: 'test-username'),
       );
 
       // Wait for the async operation to complete

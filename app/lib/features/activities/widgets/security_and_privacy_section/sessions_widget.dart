@@ -1,6 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:acter/features/settings/providers/session_providers.dart';
 import 'package:acter/features/settings/widgets/session_card.dart';

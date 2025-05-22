@@ -1,6 +1,6 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/calendar_sync/actions/set_room_sync_preference.dart';
 import 'package:acter/features/calendar_sync/providers/calendar_sync_active_provider.dart';
 import 'package:acter/features/calendar_sync/providers/events_to_sync_provider.dart';

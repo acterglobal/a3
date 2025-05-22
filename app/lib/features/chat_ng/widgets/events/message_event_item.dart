@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';

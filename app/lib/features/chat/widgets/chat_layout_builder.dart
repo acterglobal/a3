@@ -1,5 +1,5 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/chat/pages/chat_select_page.dart';
 import 'package:acter/features/chat/widgets/rooms_list.dart';
 import 'package:flutter/material.dart';

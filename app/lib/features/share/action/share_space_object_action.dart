@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/attachments/actions/attach_ref_details.dart';
 import 'package:acter/features/deep_linking/widgets/reference_details_item.dart';
 import 'package:acter/features/files/actions/download_file.dart';

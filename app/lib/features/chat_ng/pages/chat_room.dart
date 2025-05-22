@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/chat_ng/widgets/chat_editor/chat_editor_view.dart';
 import 'package:acter/features/chat_ng/widgets/chat_messages.dart';
 import 'package:acter/features/chat_ng/widgets/chat_room/app_bar_widget.dart';

@@ -92,8 +92,6 @@ enum Routes {
   settings('/settings'),
   settingsLabs('/settings/labs'),
   settingsChat('/settings/chat'),
-  chatListShowcase('/settings/chat/chat-showcase'),
-  chatRoomShowcase('/settings/chat/chat-showcase/:roomId([^/]+)'),
   settingsCalendar('/settings/calendar'),
   settingsCustomizations('/settings/customizations'),
   settingSessions('/settings/sessions'),
@@ -115,6 +113,18 @@ enum Routes {
   scanQrCode('/scan-qr-code'),
   // -- coming in from a push notification
   forward('/forward'),
+
+  // -- showcaes
+
+  chatListShowcase('/demo/chat/chat-showcase'),
+  chatRoomShowcase('/demo/chat/chat-showcase/:roomId([^/]+)'),
+
+  // onboarding
+  showCaseOnboardingEncryptionRecovery('/demo/onboarding/encryption-recovery'),
+  showCaseOnboardingEncryptionBackup('/demo/onboarding/encryption-backup'),
+  // showcase index
+  showcaseList('/demo'),
+
   // -- fatal failure
   fatalFail('/error');
 

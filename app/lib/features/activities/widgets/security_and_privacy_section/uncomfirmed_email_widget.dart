@@ -1,5 +1,5 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/activities/providers/activities_providers.dart';
 import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';

@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';

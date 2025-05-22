@@ -1,6 +1,6 @@
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/features/tasks/widgets/skeleton/tasks_list_skeleton.dart';
 import 'package:acter/features/tasks/widgets/task_list_item_card.dart';

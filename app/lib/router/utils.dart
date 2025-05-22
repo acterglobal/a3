@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/main/app_shell.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/router/providers/router_providers.dart';

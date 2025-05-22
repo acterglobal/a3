@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/public_room_search/widgets/public_room_search.dart';
 import 'package:acter/features/room/actions/join_room.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';

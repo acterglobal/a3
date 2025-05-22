@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/common/widgets/no_internet.dart';
 import 'package:acter/features/onboarding/types.dart';
@@ -60,7 +60,6 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
       }
       _tokenController.clear();
       EasyLoading.dismiss();
-      
     } catch (e) {
       if (mounted) {
         EasyLoading.showError(
@@ -352,11 +351,11 @@ class _RedeemInvitationsPageState extends ConsumerState<RedeemInvitationsPage> {
         return;
       }
       EasyLoading.showSuccess(lang.addedToSpacesAndChats(rooms.length));
-      
+
       if (rooms.isNotEmpty) {
         ref.read(hasSpaceRedeemedInInviteCodeProvider.notifier).state = true;
       }
-      
+
       // Remove redeemed token from list
       setState(() {
         validTokens.remove(token);

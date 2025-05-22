@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/activities/pages/activities_page.dart';
 import 'package:acter/features/invitations/pages/invites_page.dart';
 import 'package:acter/router/router.dart';
