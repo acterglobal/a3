@@ -7,13 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatTypingLastMessageContainerWidget extends ConsumerWidget {
   final String roomId;
-  const ChatTypingLastMessageContainerWidget({super.key, required this.roomId});
+  final bool isSelected;
+  const ChatTypingLastMessageContainerWidget({super.key, required this.roomId, required this.isSelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typingUsers = _getTypingUsers(ref);
     return typingUsers.isNotEmpty
-        ? TypingIndicator(roomId: roomId)
+        ? TypingIndicator(roomId: roomId, isSelected: isSelected)
         : LastMessageWidget(roomId: roomId);
   }
 

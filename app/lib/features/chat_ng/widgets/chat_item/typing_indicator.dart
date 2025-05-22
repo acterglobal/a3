@@ -1,5 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -9,8 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TypingIndicator extends ConsumerWidget {
   final String roomId;
+  final bool isSelected;
 
-  const TypingIndicator({super.key, required this.roomId});
+  const TypingIndicator({super.key, required this.roomId, required this.isSelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +26,7 @@ class TypingIndicator extends ConsumerWidget {
     //Animated circles
     final animatedCircles = Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: AnimatedCircles(theme: theme.typingIndicatorTheme),
+      child: AnimatedCircles(theme: theme.typingIndicatorTheme,isSelected: isSelected),
     );
 
     //If it's a DM, return the animated circles
@@ -39,7 +41,7 @@ class TypingIndicator extends ConsumerWidget {
         Text(
           typingText,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.primary,
+            color: isSelected && isDesktop(context) ? theme.colorScheme.surfaceTint : theme.colorScheme.primary,
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
