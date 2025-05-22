@@ -1,7 +1,8 @@
-use acter::{Activity, Client, SyncState};
+use acter::{Activities, Activity, Client, SyncState};
 use anyhow::{bail, Result};
 use futures::{pin_mut, StreamExt};
-use matrix_sdk::ruma::OwnedRoomId;
+use matrix_sdk::ruma::{OwnedRoomId};
+use tokio::sync::broadcast::Receiver;
 use std::future;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -34,6 +35,7 @@ mod space_child;
 mod space_parent;
 mod status;
 mod tasks;
+
 
 async fn get_latest_activity(
     cl: &Client,
@@ -79,4 +81,22 @@ async fn setup_accounts(
     sync_state2.await_has_synced_history().await?;
 
     Ok(((admin, sync_state1), (observer, sync_state2), room_id))
+}
+
+pub(crate) type ActivitiesAndRcv = (Activities, Receiver<()>);
+
+pub(crate) async fn all_activities_observer(cl: &Client) -> Result<ActivitiesAndRcv> {
+    let activities = cl.all_activities()?;
+    let rcv = activities.subscribe();
+    return Ok((activities, rcv  ))
+}
+
+pub(crate) async fn assert_triggered_with_latest_activity(
+    activities_and_rcv: &mut ActivitiesAndRcv,
+    latest_activity_id: String,
+) -> Result<()> {
+    let (activities, rcv) = activities_and_rcv;
+    assert!(rcv.try_recv().is_ok(), "Activity stream did not trigger");
+    assert_eq!(activities.get_ids(0, 1).await?, vec![latest_activity_id], "Latest activity id is not the expected one");
+    Ok(())
 }

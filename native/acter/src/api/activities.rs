@@ -234,4 +234,12 @@ impl Client {
             client: self.clone(),
         })
     }
+
+    pub fn all_activities(&self) -> anyhow::Result<Activities> {
+        todo!()
+        // Ok(Activities {
+        //     index: IndexKey::All,
+        //     client: self.clone(),
+        // })
+    }
 }
