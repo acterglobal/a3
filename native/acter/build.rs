@@ -20,7 +20,7 @@ fn main() {
 
     // whether the target is 32bits or 64bits
     let is32bit = std::env::var("CARGO_CFG_TARGET_POINTER_WIDTH")
-        .unwrap_or("64".to_string())
+        .unwrap_or("64".to_owned())
         .as_str()
         == "32";
 

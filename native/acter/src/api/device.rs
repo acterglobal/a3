@@ -79,13 +79,13 @@ impl DeviceController {
                 if let Some(user_devices) = device_updates.new.get(my_id) {
                     for (dev_id, dev) in user_devices {
                         info!("device-new device id: {}", dev_id);
-                        new_devices.push(dev_id.to_owned());
+                        new_devices.push(dev_id.clone());
                     }
                 }
                 if let Some(user_devices) = device_updates.changed.get(my_id) {
                     for (dev_id, dev) in user_devices {
                         info!("device-changed device id: {}", dev_id);
-                        changed_devices.push(dev_id.to_owned());
+                        changed_devices.push(dev_id.clone());
                     }
                 }
                 if !new_devices.is_empty() || !changed_devices.is_empty() {

@@ -125,7 +125,7 @@ impl ActerModel for NewsEntryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.news_entry.event_id.to_owned()])
+        Some(vec![self.inner.news_entry.event_id.clone()])
     }
 }
 

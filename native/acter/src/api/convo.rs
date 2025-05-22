@@ -301,12 +301,10 @@ impl Convo {
 
                 Ok(OptionComposeDraft::new(draft.map(|composer_draft| {
                     let (msg_type, event_id) = match composer_draft.draft_type {
-                        ComposerDraftType::NewMessage => ("new".to_string(), None),
-                        ComposerDraftType::Edit { event_id } => {
-                            ("edit".to_string(), Some(event_id))
-                        }
+                        ComposerDraftType::NewMessage => ("new".to_owned(), None),
+                        ComposerDraftType::Edit { event_id } => ("edit".to_owned(), Some(event_id)),
                         ComposerDraftType::Reply { event_id } => {
-                            ("reply".to_string(), Some(event_id))
+                            ("reply".to_owned(), Some(event_id))
                         }
                     };
                     ComposeDraft::new(

@@ -113,7 +113,7 @@ impl PublicSearchResultItem {
         match self.chunk.room_type {
             None => "Chat".to_owned(),
             Some(RoomType::Space) => "Space".to_owned(),
-            Some(RoomType::_Custom(_)) => "Custom".to_string(),
+            Some(RoomType::_Custom(_)) => "Custom".to_owned(),
             _ => "unknown".to_owned(),
         }
     }

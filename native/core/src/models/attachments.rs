@@ -62,7 +62,7 @@ impl AttachmentsManager {
     pub async fn attachments(&self) -> Result<Vec<Attachment>> {
         let attachments = self
             .store
-            .get_list(&Attachment::index_for(self.event_id.to_owned()))
+            .get_list(&Attachment::index_for(self.event_id.clone()))
             .await?
             .filter_map(|e| match e {
                 AnyActerModel::Attachment(c) => Some(c),
@@ -110,12 +110,12 @@ impl AttachmentsManager {
 
     pub fn draft_builder(&self) -> AttachmentBuilder {
         AttachmentBuilder::default()
-            .on(self.event_id.to_owned())
+            .on(self.event_id.clone())
             .to_owned()
     }
 
     pub fn update_key(&self) -> ExecuteReference {
-        Self::stats_field_for(self.event_id.to_owned())
+        Self::stats_field_for(self.event_id.clone())
     }
 
     pub async fn save(&self) -> Result<ExecuteReference> {
@@ -154,7 +154,7 @@ impl Attachment {
 
     pub fn updater(&self) -> AttachmentUpdateBuilder {
         AttachmentUpdateBuilder::default()
-            .attachment(self.meta.event_id.to_owned())
+            .attachment(self.meta.event_id.clone())
             .to_owned()
     }
 
@@ -163,7 +163,7 @@ impl Attachment {
         store: &Store,
         redaction_model: Option<RedactedActerModel>,
     ) -> Result<Vec<ExecuteReference>> {
-        let belongs_to = self.inner.on.event_id.to_owned();
+        let belongs_to = self.inner.on.event_id.clone();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying attachment");
 
         let manager = {
@@ -206,9 +206,9 @@ impl Attachment {
 impl ActerModel for Attachment {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            Attachment::index_for(self.inner.on.event_id.to_owned()),
-            IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()),
-            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+            Attachment::index_for(self.inner.on.event_id.clone()),
+            IndexKey::ObjectHistory(self.inner.on.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
     fn event_meta(&self) -> &EventMeta {
@@ -277,8 +277,8 @@ pub struct AttachmentUpdate {
 impl ActerModel for AttachmentUpdate {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            IndexKey::ObjectHistory(self.inner.attachment.event_id.to_owned()),
-            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.attachment.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
 
@@ -287,7 +287,7 @@ impl ActerModel for AttachmentUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.attachment.event_id.to_owned()])
+        Some(vec![self.inner.attachment.event_id.clone()])
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {

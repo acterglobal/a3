@@ -316,26 +316,26 @@ pub enum RefDetails {
 impl RefDetails {
     pub fn type_str(&self) -> String {
         match self {
-            RefDetails::Task { .. } => "task".to_string(),
-            RefDetails::TaskList { .. } => "task-list".to_string(),
-            RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
-            RefDetails::Link { .. } => "link".to_string(),
-            RefDetails::Room { is_space, .. } if *is_space => "space".to_string(),
-            RefDetails::Room { .. } => "chat".to_string(),
-            RefDetails::SuperInviteToken { .. } => "super-invite".to_string(),
-            RefDetails::Pin { .. } => "pin".to_string(),
-            RefDetails::News { .. } => "news".to_string(),
+            RefDetails::Task { .. } => "task".to_owned(),
+            RefDetails::TaskList { .. } => "task-list".to_owned(),
+            RefDetails::CalendarEvent { .. } => "calendar-event".to_owned(),
+            RefDetails::Link { .. } => "link".to_owned(),
+            RefDetails::Room { is_space, .. } if *is_space => "space".to_owned(),
+            RefDetails::Room { .. } => "chat".to_owned(),
+            RefDetails::SuperInviteToken { .. } => "super-invite".to_owned(),
+            RefDetails::Pin { .. } => "pin".to_owned(),
+            RefDetails::News { .. } => "news".to_owned(),
         }
     }
 
     pub fn embed_action_str(&self) -> String {
         match self {
-            RefDetails::Link { .. } => "link".to_string(),
-            RefDetails::Room { is_space, .. } if *is_space => "space".to_string(),
-            RefDetails::Room { .. } => "chat".to_string(),
-            RefDetails::SuperInviteToken { .. } => "super-invite".to_string(),
-            RefDetails::Pin { .. } => "pin".to_string(),
-            RefDetails::News { .. } => "news".to_string(),
+            RefDetails::Link { .. } => "link".to_owned(),
+            RefDetails::Room { is_space, .. } if *is_space => "space".to_owned(),
+            RefDetails::Room { .. } => "chat".to_owned(),
+            RefDetails::SuperInviteToken { .. } => "super-invite".to_owned(),
+            RefDetails::Pin { .. } => "pin".to_owned(),
+            RefDetails::News { .. } => "news".to_owned(),
             RefDetails::Task { action, .. } => action.to_string(),
             RefDetails::TaskList { action, .. } => action.to_string(),
             RefDetails::CalendarEvent { action, .. } => action.to_string(),

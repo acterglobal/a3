@@ -57,7 +57,7 @@ impl TaskList {
 
     pub fn updater(&self) -> TaskListUpdateBuilder {
         TaskListUpdateBuilder::default()
-            .task_list(self.meta.event_id.to_owned())
+            .task_list(self.meta.event_id.clone())
             .to_owned()
     }
 }
@@ -153,7 +153,7 @@ impl ActerModel for TaskListUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task_list.event_id.to_owned()])
+        Some(vec![self.inner.task_list.event_id.clone()])
     }
 }
 
