@@ -398,56 +398,30 @@ Uint8List createUint8ListFromInt(int value) {
   return uint8List;
 }
 
-class FfiConverterOptionalBool {
-  static bool? lift(RustBuffer buf) {
-    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
+class FfiConverterBool {
+  static bool lift(int value) {
+    return value == 1;
   }
 
-  static LiftRetVal<bool?> read(Uint8List buf) {
-    if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0) {
-      return LiftRetVal(null, 1);
-    }
-    return FfiConverterBool.read(
-            Uint8List.view(buf.buffer, buf.offsetInBytes + 1))
-        .copyWithOffset(1);
+  static int lower(bool value) {
+    return value ? 1 : 0;
   }
 
-  static int allocationSize([bool? value]) {
-    if (value == null) {
-      return 1;
-    }
-    return FfiConverterBool.allocationSize(value) + 1;
+  static LiftRetVal<bool> read(Uint8List buf) {
+    return LiftRetVal(FfiConverterBool.lift(buf.first), 1);
   }
 
-  static RustBuffer lower(bool? value) {
-    if (value == null) {
-      return toRustBuffer(Uint8List.fromList([0]));
-    }
-
-    final length = FfiConverterOptionalBool.allocationSize(value);
-
-    final Pointer<Uint8> frameData = calloc<Uint8>(length);
-    final buf = frameData.asTypedList(length);
-
-    FfiConverterOptionalBool.write(value, buf);
-
-    final bytes = calloc<ForeignBytes>();
-    bytes.ref.len = length;
-    bytes.ref.data = frameData;
-    return RustBuffer.fromBytes(bytes.ref);
+  static RustBuffer lowerIntoRustBuffer(bool value) {
+    return toRustBuffer(Uint8List.fromList([FfiConverterBool.lower(value)]));
   }
 
-  static int write(bool? value, Uint8List buf) {
-    if (value == null) {
-      buf[0] = 0;
-      return 1;
-    }
+  static int allocationSize([bool value = false]) {
+    return 1;
+  }
 
-    buf[0] = 1;
-
-    return FfiConverterBool.write(
-            value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
-        1;
+  static int write(bool value, Uint8List buf) {
+    buf.setAll(0, [value ? 1 : 0]);
+    return allocationSize();
   }
 }
 
@@ -474,33 +448,6 @@ class FfiConverterString {
     buf.buffer.asByteData(buf.offsetInBytes).setInt32(0, list.length);
     buf.setAll(4, list);
     return list.length + 4;
-  }
-}
-
-class FfiConverterBool {
-  static bool lift(int value) {
-    return value == 1;
-  }
-
-  static int lower(bool value) {
-    return value ? 1 : 0;
-  }
-
-  static LiftRetVal<bool> read(Uint8List buf) {
-    return LiftRetVal(FfiConverterBool.lift(buf.first), 1);
-  }
-
-  static RustBuffer lowerIntoRustBuffer(bool value) {
-    return toRustBuffer(Uint8List.fromList([FfiConverterBool.lower(value)]));
-  }
-
-  static int allocationSize([bool value = false]) {
-    return 1;
-  }
-
-  static int write(bool value, Uint8List buf) {
-    buf.setAll(0, [value ? 1 : 0]);
-    return allocationSize();
   }
 }
 
@@ -552,6 +499,59 @@ class FfiConverterOptionalString {
     buf[0] = 1;
 
     return FfiConverterString.write(
+            value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
+        1;
+  }
+}
+
+class FfiConverterOptionalBool {
+  static bool? lift(RustBuffer buf) {
+    return FfiConverterOptionalBool.read(buf.asUint8List()).value;
+  }
+
+  static LiftRetVal<bool?> read(Uint8List buf) {
+    if (ByteData.view(buf.buffer, buf.offsetInBytes).getInt8(0) == 0) {
+      return LiftRetVal(null, 1);
+    }
+    return FfiConverterBool.read(
+            Uint8List.view(buf.buffer, buf.offsetInBytes + 1))
+        .copyWithOffset(1);
+  }
+
+  static int allocationSize([bool? value]) {
+    if (value == null) {
+      return 1;
+    }
+    return FfiConverterBool.allocationSize(value) + 1;
+  }
+
+  static RustBuffer lower(bool? value) {
+    if (value == null) {
+      return toRustBuffer(Uint8List.fromList([0]));
+    }
+
+    final length = FfiConverterOptionalBool.allocationSize(value);
+
+    final Pointer<Uint8> frameData = calloc<Uint8>(length);
+    final buf = frameData.asTypedList(length);
+
+    FfiConverterOptionalBool.write(value, buf);
+
+    final bytes = calloc<ForeignBytes>();
+    bytes.ref.len = length;
+    bytes.ref.data = frameData;
+    return RustBuffer.fromBytes(bytes.ref);
+  }
+
+  static int write(bool? value, Uint8List buf) {
+    if (value == null) {
+      buf[0] = 0;
+      return 1;
+    }
+
+    buf[0] = 1;
+
+    return FfiConverterBool.write(
             value, Uint8List.view(buf.buffer, buf.offsetInBytes + 1)) +
         1;
   }

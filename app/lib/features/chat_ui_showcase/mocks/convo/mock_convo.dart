@@ -52,5 +52,6 @@ class MockConvo extends Mock implements Convo {
   TimelineStream timelineStream() => mockTimelineStream;
 
   @override
-  Future<OptionComposeDraft> msgDraft() => Future.value(mockMsgDraft);
+  Future<OptionComposeDraft> msgDraft() =>
+      Future.value(mockMsgDraft ?? MockOptionComposeDraft());
 }
