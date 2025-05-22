@@ -8,6 +8,7 @@ mod calendar;
 mod categories;
 mod formatted_body;
 mod invitation;
+mod msg_draft;
 mod msg_edit;
 mod news;
 mod notifications;
