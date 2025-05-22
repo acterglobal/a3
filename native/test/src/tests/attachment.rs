@@ -38,7 +38,8 @@ content = { body = "example pin data" }
 #[tokio::test]
 async fn attachment_can_redact() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("attachment_can_redact", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("attachment_can_redact", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -108,7 +109,8 @@ async fn attachment_can_redact() -> Result<()> {
 #[tokio::test]
 async fn attachment_download_media() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("attachment_download_media", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("attachment_download_media", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -172,10 +174,16 @@ async fn attachment_download_media() -> Result<()> {
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
     let downloaded_path = attachment.download_media(None, dir_path).await?;
-    assert!(downloaded_path.text().is_some(), "my attachment should be downloadable");
+    assert!(
+        downloaded_path.text().is_some(),
+        "my attachment should be downloadable"
+    );
 
     let media_path = attachment.media_path(false).await?;
-    assert!(media_path.text().is_some(), "media path should be accessible if it was downloaded once");
+    assert!(
+        media_path.text().is_some(),
+        "media path should be accessible if it was downloaded once"
+    );
 
     Ok(())
 }

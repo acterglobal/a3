@@ -282,10 +282,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
             if comments.len() < 2 {
                 bail!("Expected 2 comments, got {}", comments.len());
             }
-            match comments
-                .iter()
-                .find(|c| c.event_id() == replied_id)
-            {
+            match comments.iter().find(|c| c.event_id() == replied_id) {
                 Some(comment) => Ok(comment.clone()),
                 None => bail!("Expected comment with id {replied_id} not found"),
             }
