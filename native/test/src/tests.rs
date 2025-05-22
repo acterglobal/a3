@@ -1,4 +1,5 @@
 mod activities;
+mod attachment;
 mod auth;
 mod backup;
 mod blurhash;
