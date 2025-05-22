@@ -1959,8 +1959,25 @@ object Comment {
     /// create a draft builder to reply to this comment
     fn reply_builder() -> CommentDraft;
 
+    /// update builder
+    fn update_builder() -> Result<CommentUpdateBuilder>;
+
+    /// replace the current task with one with the latest state
+    fn refresh() -> Future<Result<Comment>>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
+}
+
+object CommentUpdateBuilder {
+    /// set description text
+    fn content_text(body: string);
+
+    /// set description html text
+    fn content_formatted(body: string, html_body: string);
+
+    /// send builder update
+    fn send() -> Future<Result<EventId>>;
 }
 
 /// Reference to the comments section of a particular item

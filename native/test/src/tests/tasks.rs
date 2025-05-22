@@ -214,9 +214,10 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
+    let initial_body = "I think this is very important";
     let comment_1_id = comments_manager
         .comment_draft()?
-        .content_text("I think this is very important".to_owned())
+        .content_text(initial_body.to_owned())
         .send()
         .await?;
 
@@ -231,8 +232,41 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
-    assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I think this is very important");
+    let comment = &comments[0];
+    assert_eq!(comment.event_id(), comment_1_id);
+    assert_eq!(comment.content().body, initial_body);
+
+    let updated_body = "Sorry, this is not important";
+    comment
+        .update_builder()?
+        .content_text(updated_body.to_owned())
+        .send()
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let comments = comments_manager.comments().await?;
+    assert_eq!(comments.len(), 1);
+    let comment = &comments[0];
+
+    Retry::spawn(retry_strategy, move || {
+        let comment = comment.clone();
+        async move {
+            let edited_comment = comment.refresh().await?;
+            if edited_comment.content().body != updated_body {
+                bail!("Update not yet received");
+            }
+            Ok(())
+        }
+    })
+    .await?;
 
     Ok(())
 }
