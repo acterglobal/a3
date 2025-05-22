@@ -1,32 +1,25 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/widgets/typing_indicator.dart'
     show AnimatedCircles;
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/typing_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart';
+import '../../../../helpers/font_loader.dart';
 import '../../../../helpers/test_util.dart';
-import '../../../../common/mock_data/mock_avatar_info.dart';
 
 void main() {
   group('TypingIndicator Tests', () {
     Future<void> createWidgetUnderTest({
       required WidgetTester tester,
-      List<User> typingUsers = const [],
+      List<String> typingUsers = const [],
       bool isDM = false,
     }) async {
       await tester.pumpProviderWidget(
         overrides: [
-          chatTypingEventProvider.overrideWith(
-            (ref, roomId) => Stream.value(typingUsers),
-          ),
           isDirectChatProvider.overrideWith((ref, roomId) => isDM),
-          memberAvatarInfoProvider.overrideWith(
-            (ref, info) => MockAvatarInfo(
-              uniqueId: info.userId,
-              mockDisplayName: info.userId == 'user1' ? 'Alice' : 'Bob',
-            ),
+          chatTypingUsersDisplayNameProvider.overrideWith(
+            (ref, roomId) => typingUsers,
           ),
         ],
         child: TypingIndicator(roomId: 'mock-room-1'),
@@ -47,7 +40,7 @@ void main() {
       (WidgetTester tester) async {
         await createWidgetUnderTest(
           tester: tester,
-          typingUsers: [User(id: 'user1')],
+          typingUsers: ['user1'],
           isDM: true,
         );
         expect(find.byType(AnimatedCircles), findsOneWidget);
@@ -60,7 +53,7 @@ void main() {
       (WidgetTester tester) async {
         await createWidgetUnderTest(
           tester: tester,
-          typingUsers: [User(id: 'user1')],
+          typingUsers: ['Alice'],
           isDM: false,
         );
         expect(find.byType(AnimatedCircles), findsOneWidget);
@@ -73,7 +66,7 @@ void main() {
     ) async {
       await createWidgetUnderTest(
         tester: tester,
-        typingUsers: [User(id: 'user1'), User(id: 'user2')],
+        typingUsers: ['Alice', 'Bob'],
         isDM: false,
       );
       expect(find.byType(AnimatedCircles), findsOneWidget);
@@ -85,7 +78,7 @@ void main() {
     ) async {
       await createWidgetUnderTest(
         tester: tester,
-        typingUsers: [User(id: 'user1'), User(id: 'user2'), User(id: 'user3')],
+        typingUsers: ['Alice', 'Bob', 'Charlie'],
         isDM: false,
       );
       expect(find.byType(AnimatedCircles), findsOneWidget);
@@ -95,7 +88,7 @@ void main() {
     testWidgets('should use correct text style', (WidgetTester tester) async {
       await createWidgetUnderTest(
         tester: tester,
-        typingUsers: [User(id: 'user1')],
+        typingUsers: ['Alice'],
         isDM: false,
       );
       final textWidget = tester.widget<Text>(find.text('Alice is typing'));
@@ -109,7 +102,7 @@ void main() {
     ) async {
       await createWidgetUnderTest(
         tester: tester,
-        typingUsers: [User(id: 'user1')],
+        typingUsers: ['user1'],
         isDM: true,
       );
       // Find the Padding widget that wraps the AnimatedCircles
@@ -121,6 +114,31 @@ void main() {
 
       final padding = tester.widget<Padding>(paddingFinder);
       expect(padding.padding, equals(const EdgeInsets.only(top: 10)));
+    });
+
+    testWidgets('should show nothing when no users are typing', (
+      WidgetTester tester,
+    ) async {
+      await createWidgetUnderTest(tester: tester);
+      expect(find.byType(SizedBox), findsOneWidget);
+    });
+
+    testWidgets("doesn't overwrap if the display name is very long", (
+      WidgetTester tester,
+    ) async {
+      await loadTestFonts();
+      await tester.configureTesterForSize(Size(600, 200));
+      await createWidgetUnderTest(
+        tester: tester,
+        typingUsers: ['Mohammad Kumarpalsinh Amoereias de Cabra e Santini'],
+      );
+
+      await expectLater(
+        find.byType(TypingIndicator),
+        matchesGoldenFile(
+          'goldens/typing_indicator_test_long_display_name.png',
+        ),
+      );
     });
   });
 }

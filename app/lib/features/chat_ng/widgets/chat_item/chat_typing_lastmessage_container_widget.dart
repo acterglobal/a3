@@ -1,8 +1,7 @@
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/last_message_widget.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/typing_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatTypingLastMessageContainerWidget extends ConsumerWidget {
@@ -11,14 +10,8 @@ class ChatTypingLastMessageContainerWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final typingUsers = _getTypingUsers(ref);
-    return typingUsers.isNotEmpty
+    return ref.watch(isSomeoneTypingProvider(roomId))
         ? TypingIndicator(roomId: roomId)
         : LastMessageWidget(roomId: roomId);
-  }
-
-  List<User> _getTypingUsers(WidgetRef ref) {
-    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    return users ?? [];
   }
 }
