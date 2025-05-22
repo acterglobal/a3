@@ -63,19 +63,20 @@ void messageActions({
                       roomId: roomId,
                     ),
                   ),
-                ),
-                // Message
-                Center(child: ActerSelectionArea(child: messageWidget)),
-                // Message actions
-                _AnimatedActionsContainer(
-                  animation: animation,
-                  tagId: '$messageId-actions',
-                  child: MessageActionsWidget(
-                    isMe: isMe,
-                    canRedact: canRedact,
-                    item: item,
-                    messageId: messageId,
-                    roomId: roomId,
+
+                  // Message
+                  Center(child: ActerSelectionArea(child: messageWidget)),
+                  // Message actions
+                  _AnimatedActionsContainer(
+                    animation: animation,
+                    tagId: '$messageId-actions',
+                    child: MessageActionsWidget(
+                      isMe: isMe,
+                      canRedact: canRedact,
+                      item: item,
+                      messageId: messageId,
+                      roomId: roomId,
+                    ),
                   ),
                 ],
               ),
