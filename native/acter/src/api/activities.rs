@@ -236,10 +236,9 @@ impl Client {
     }
 
     pub fn all_activities(&self) -> anyhow::Result<Activities> {
-        todo!()
-        // Ok(Activities {
-        //     index: IndexKey::All,
-        //     client: self.clone(),
-        // })
+        Ok(Activities {
+            index: IndexKey::AllHistory,
+            client: self.clone(),
+        })
     }
 }
