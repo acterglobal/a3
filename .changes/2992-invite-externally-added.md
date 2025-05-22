@@ -1,1 +1,0 @@
-- [Implemented] : Added functionality to invite external users in the "Invite Friends" view during onboarding for new space creation, enabling users to either copy an auto-generated invite code to the clipboard or display it as a QR code.
