@@ -349,3 +349,15 @@ final chatEditorStateProvider =
     NotifierProvider.autoDispose<ChatEditorNotifier, ChatEditorState>(
       () => ChatEditorNotifier(),
     );
+
+// gives read receipts for a message, takes timeline item
+final messageReadReceiptsProvider = Provider.autoDispose
+    .family<Map<String, int>, TimelineEventItem>((ref, item) {
+      // user read receipts for timeline event item
+      Map<String, int> receipts = {};
+      for (final userId in asDartStringList(item.readUsers())) {
+        final ts = item.receiptTs(userId);
+        if (ts != null) receipts[userId] = ts;
+      }
+      return receipts;
+    });

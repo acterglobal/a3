@@ -1,8 +1,7 @@
-mod invitations;
-
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
+use matrix_sdk_base::ruma::events::room::redaction::RoomRedactionEvent;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -318,9 +317,10 @@ async fn task_comment_smoketests() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
+    let body = "I updated the task";
     let comment_1_id = comments_manager
         .comment_draft()?
-        .content_text("I updated the task".to_owned())
+        .content_text(body.to_owned())
         .send()
         .await?;
 
@@ -335,8 +335,39 @@ async fn task_comment_smoketests() -> Result<()> {
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
-    assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I updated the task");
+
+    let comment = &comments[0];
+    assert_eq!(comment.event_id(), comment_1_id);
+    assert_eq!(comment.content().body, body);
+
+    let deletable = comment.can_redact().await?;
+    assert!(deletable, "my comment should be deletable");
+    let reason = "This is test redaction";
+    let redact_id = space
+        .redact_content(comment_1_id.to_string(), Some(reason.to_owned()))
+        .await?;
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    // timeline reorders events and doesn’t assign redaction as separate event
+    // it is impossible to get redaction event by event id on timeline
+    // so we don’t use retry-loop about redact_id
+
+    // but it is possible to get redaction event by event id on convo
+    let ev = space.event(&redact_id, None).await?;
+    let event_content = ev.kind.raw().deserialize_as::<RoomRedactionEvent>()?;
+    let original = event_content
+        .as_original()
+        .context("Redaction event should get original event")?;
+    assert_eq!(original.redacts, Some(comment_1_id));
+    assert_eq!(original.content.reason.as_deref(), Some(reason));
 
     Ok(())
 }

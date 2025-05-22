@@ -1,32 +1,29 @@
 import 'package:acter/common/themes/acter_theme.dart';
+import 'package:acter/common/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:jiffy/jiffy.dart';
 
 class MessageTimestampWidget extends StatelessWidget {
   final int timestamp;
   final Color? textColor;
+  final bool showDay;
 
   const MessageTimestampWidget({
     super.key,
     required this.timestamp,
     this.textColor,
+    this.showDay = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final chatTheme = Theme.of(context).chatTheme;
 
-    final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timestamp);
+    String formattedTime = jiffyDateTimestamp(
+      context,
+      timestamp,
+      showDay: false,
+    );
 
-    final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
-
-    String formattedTime;
-
-    if (use24HourFormat) {
-      formattedTime = jiffyTime.Hm;
-    } else {
-      formattedTime = jiffyTime.jm;
-    }
     return Text(
       formattedTime,
       style: chatTheme.emptyChatPlaceholderTextStyle.copyWith(

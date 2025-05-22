@@ -30,11 +30,7 @@ class RoomUpdateEvent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stateText = getStateEventStr(context, ref, item);
     if (stateText == null) return const SizedBox.shrink();
-    return Text(
-      stateText,
-      style: textStyle ?? stateEventTextStyle(context),
-      textAlign: textAlign,
-    );
+    return Text(stateText, style: textStyle ?? stateEventTextStyle(context));
   }
 
   String? getStateEventStr(

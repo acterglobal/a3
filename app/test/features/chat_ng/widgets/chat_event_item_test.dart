@@ -128,6 +128,9 @@ void main() {
 
     final testOverrides = [
       messageReactionsProvider.overrideWith((ref, item) => []),
+      messageReadReceiptsProvider.overrideWith(
+        (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+      ),
       renderableChatMessagesProvider.overrideWith(
         (ref, roomId) => ['test-message'],
       ),
@@ -174,6 +177,9 @@ void main() {
             }
             return null;
           }),
+          messageReadReceiptsProvider.overrideWith(
+            (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+          ),
         ],
         child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
       );
@@ -210,6 +216,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -242,6 +251,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -276,6 +288,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
             myUserIdStrProvider.overrideWith((ref) => 'test-user'),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
@@ -311,6 +326,9 @@ void main() {
               return null;
             }),
             myUserIdStrProvider.overrideWith((ref) => 'other-user'),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -344,6 +362,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -374,6 +395,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );
@@ -404,6 +428,9 @@ void main() {
               }
               return null;
             }),
+            messageReadReceiptsProvider.overrideWith(
+              (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+            ),
           ],
           child: const ChatEvent(roomId: 'test-room', eventId: 'test-message'),
         );

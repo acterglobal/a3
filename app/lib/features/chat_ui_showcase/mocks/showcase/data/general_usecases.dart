@@ -1,8 +1,9 @@
 import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_profile_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item_diff.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
-import 'package:acter/features/chat_ui_showcase/mocks/user/mock_user.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_list_ffi_string.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_string.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_ffi_list_reaction_record.dart';
@@ -16,12 +17,13 @@ this room mention: <a href="matrix:roomid/mock-room-1:acter.global">#mock-room-1
 and external URI to a task list: <a href="https://app.m-1.acter.global/p/f31a795eb64a3c408c2f44cb1e3b70efd914d6b1?roomDisplayName=Kigis+Climate+Action+Group&title=Protest+Organization+2&via=%5B%27m-1.acter.global%27%5D&userId=jackie%3Am-1.acter.global#o/PIcnDNIUnpLcoFXnHf:m-1.acter.global/taskList/grq23hwTAXn3jx3d2btyIPkHtfBiat7QTMCSeH6xOaw">Protest Organization</a>
 and this internal link to an event <a href="acter:o/uUufOaBOZwafrtxhoO:effektio.org/calendarEvent/qXG1py1eda2xApRmiN0MQYuBHhiIYgXW1CWK3tNLhi4?via=acter.global&via=matrix.org&via=m-1.acter.global&roomDisplayName=ACTER%20Community&title=Acter%20App%20Demo%20-%20May%20%233&participants=1&startAtUtc=1748424600">event</a>!
 ''';
+final emilyDmMutedBookmarkedRoom1RoomId = 'emily-mock-dm-room-1';
 
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
-  roomId: 'mock-room-1',
+  roomId: emilyDmMutedBookmarkedRoom1RoomId,
   displayName: 'Emily Davis',
   notificationMode: 'muted',
-  activeMembersIds: ['@emily:acter.global', '@acter1:m-1.acter.global'],
+  activeMembersIds: ['@emily:acter.global'],
   isDm: true,
   isBookmarked: true,
   unreadNotificationCount: 4,
@@ -246,8 +248,10 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   ],
 );
 
+final productTeamMutedWithSingleTypingUserRoom2RoomId = 'mock-room-2';
+
 final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
-  roomId: 'mock-room-2',
+  roomId: productTeamMutedWithSingleTypingUserRoom2RoomId,
   displayName: 'Product Team',
   notificationMode: 'muted',
   activeMembersIds: [
@@ -255,477 +259,486 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
     '@michael:acter.global',
     '@lisa:acter.global',
     '@alex:acter.global',
-    '@acter1:m-1.acter.global',
   ],
   unreadNotificationCount: 2,
   unreadMessages: 2,
-  typingUsers: [
-    MockUser(mockDisplayName: 'Emily', mockUserId: '@emily:acter.global'),
-  ],
-  timelineEventItems: [
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-23',
-      mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096555000, // April 8, 2025 15:35:55
-      mockEventType: 'm.room.encrypted',
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-24',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096555000, // April 8, 2025 15:35:55
-      mockEventType: 'm.room.encrypted',
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-25',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096555000, // April 8, 2025 15:35:55
-      mockEventType: 'm.room.encrypted',
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-26',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096556000, // April 8, 2025 15:35:56
-      mockEventType: 'm.room.redaction',
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-27',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096556000, // April 8, 2025 15:35:56
-      mockEventType: 'm.room.redaction',
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-28',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096556000, // April 8, 2025 15:35:56
-      mockEventType: 'm.room.redaction',
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-29',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096566000, // April 8, 2025 15:36:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-30',
-      mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096626000, // April 8, 2025 15:37:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'I\'ve reviewed the checklist. Everything looks good.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-31',
-      mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096636000, // April 8, 2025 15:37:16
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Just need to confirm the database backup is scheduled.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-32',
-      mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096686000, // April 8, 2025 15:38:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Database backup is scheduled for 1 PM.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-33',
-      mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096696000, // April 8, 2025 15:38:16
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@lisa:acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'Lisa Park',
-        mockDisplayNameNewVal: 'Lisa P.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-34',
-      mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744096746000, // April 8, 2025 15:39:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'I\'ll be handling the frontend deployment.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-35',
-      mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744096756000, // April 8, 2025 15:39:16
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@alex:acter.global',
-        mockAvatarUrlChange: 'Changed',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-36',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096806000, // April 8, 2025 15:40:06
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'Backend deployment is ready. I\'ve tested the staging environment.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-37',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096816000, // April 8, 2025 15:40:16
-      mockMsgContent: MockMsgContent(
-        mockBody: 'All API endpoints are responding correctly.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-38',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744096826000, // April 8, 2025 15:40:26
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@acter1:m-1.acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'David Miller',
-        mockDisplayNameNewVal: 'David M.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-39',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744096866000, // April 8, 2025 15:41:06
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'Great! Let\'s go through the deployment steps:\n\n1. Database backup (1 PM)\n2. Frontend deployment (1:30 PM)\n3. Backend deployment (1:45 PM)\n4. Smoke testing (2 PM)\n5. Monitoring for 30 minutes\n\nEveryone clear on their roles?',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-40',
-      mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096926000, // April 8, 2025 15:42:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Yes, I\'ll be monitoring the logs during deployment.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-41',
-      mockSenderId: '@michael:acter.global',
-      mockOriginServerTs: 1744096936000, // April 8, 2025 15:42:16
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@michael:acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'Michael Chen',
-        mockDisplayNameNewVal: 'Michael C.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-42',
-      mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096986000, // April 8, 2025 15:43:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'I\'ll handle the smoke testing.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-43',
-      mockSenderId: '@lisa:acter.global',
-      mockOriginServerTs: 1744096996000, // April 8, 2025 15:43:16
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@lisa:acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'Lisa P.',
-        mockDisplayNameNewVal: 'Lisa Park',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-44',
-      mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744097046000, // April 8, 2025 15:44:06
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'Frontend is ready to go. I\'ve prepared the deployment script.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-45',
-      mockSenderId: '@alex:acter.global',
-      mockOriginServerTs: 1744097056000, // April 8, 2025 15:44:16
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@alex:acter.global',
-        mockAvatarUrlChange: 'Changed',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-46',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744097106000, // April 8, 2025 15:45:06
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'Perfect! Let\'s meet in the deployment channel 10 minutes before start time.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-47',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744097116000, // April 8, 2025 15:45:16
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@sarah:acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'Sarah Wilson',
-        mockDisplayNameNewVal: 'Sarah W.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-48',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744097166000, // April 8, 2025 15:46:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Will do! See you all tomorrow.',
-      ),
-    ),
+  typingUserNames: ['Emily'],
+  timelineEventItemsBuilder:
+      (userId) => [
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-23',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096555000, // April 8, 2025 15:35:55
+          mockEventType: 'm.room.encrypted',
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-24',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096555000, // April 8, 2025 15:35:55
+          mockEventType: 'm.room.encrypted',
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-25',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096555000, // April 8, 2025 15:35:55
+          mockEventType: 'm.room.encrypted',
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-26',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744096556000, // April 8, 2025 15:35:56
+          mockEventType: 'm.room.redaction',
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-27',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744096556000, // April 8, 2025 15:35:56
+          mockEventType: 'm.room.redaction',
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-28',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744096556000, // April 8, 2025 15:35:56
+          mockEventType: 'm.room.redaction',
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-29',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744096566000, // April 8, 2025 15:36:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Deployment tomorrow at 2 PM. Review checklist.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-30',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096626000, // April 8, 2025 15:37:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'I\'ve reviewed the checklist. Everything looks good.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-31',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096636000, // April 8, 2025 15:37:16
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Just need to confirm the database backup is scheduled.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-32',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096686000, // April 8, 2025 15:38:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Database backup is scheduled for 1 PM.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-33',
+          mockSenderId: '@lisa:acter.global',
+          mockOriginServerTs: 1744096696000, // April 8, 2025 15:38:16
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: '@lisa:acter.global',
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'Lisa Park',
+            mockDisplayNameNewVal: 'Lisa P.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-34',
+          mockSenderId: '@alex:acter.global',
+          mockOriginServerTs: 1744096746000, // April 8, 2025 15:39:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'I\'ll be handling the frontend deployment.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-35',
+          mockSenderId: '@alex:acter.global',
+          mockOriginServerTs: 1744096756000, // April 8, 2025 15:39:16
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: '@alex:acter.global',
+            mockAvatarUrlChange: 'Changed',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-36',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096806000, // April 8, 2025 15:40:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Backend deployment is ready. I\'ve tested the staging environment.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-37',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096816000, // April 8, 2025 15:40:16
+          mockMsgContent: MockMsgContent(
+            mockBody: 'All API endpoints are responding correctly.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-38',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096826000, // April 8, 2025 15:40:26
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'David Miller',
+            mockDisplayNameNewVal: 'David M.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-39',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744096866000, // April 8, 2025 15:41:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Great! Let\'s go through the deployment steps:\n\n1. Database backup (1 PM)\n2. Frontend deployment (1:30 PM)\n3. Backend deployment (1:45 PM)\n4. Smoke testing (2 PM)\n5. Monitoring for 30 minutes\n\nEveryone clear on their roles?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-40',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096926000, // April 8, 2025 15:42:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Yes, I\'ll be monitoring the logs during deployment.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-41',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744096936000, // April 8, 2025 15:42:16
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: '@michael:acter.global',
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'Michael Chen',
+            mockDisplayNameNewVal: 'Michael C.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-42',
+          mockSenderId: '@lisa:acter.global',
+          mockOriginServerTs: 1744096986000, // April 8, 2025 15:43:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'I\'ll handle the smoke testing.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-43',
+          mockSenderId: '@lisa:acter.global',
+          mockOriginServerTs: 1744096996000, // April 8, 2025 15:43:16
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: '@lisa:acter.global',
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'Lisa P.',
+            mockDisplayNameNewVal: 'Lisa Park',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-44',
+          mockSenderId: '@alex:acter.global',
+          mockOriginServerTs: 1744097046000, // April 8, 2025 15:44:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Frontend is ready to go. I\'ve prepared the deployment script.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-45',
+          mockSenderId: '@alex:acter.global',
+          mockOriginServerTs: 1744097056000, // April 8, 2025 15:44:16
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: '@alex:acter.global',
+            mockAvatarUrlChange: 'Changed',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-46',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097106000, // April 8, 2025 15:45:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Perfect! Let\'s meet in the deployment channel 10 minutes before start time.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-47',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097116000, // April 8, 2025 15:45:16
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: '@sarah:acter.global',
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'Sarah Wilson',
+            mockDisplayNameNewVal: 'Sarah W.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-48',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097166000, // April 8, 2025 15:46:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Will do! See you all tomorrow.',
+          ),
+        ),
 
-    // --- Reply-to-message example ---
-    MockTimelineEventItem(
-      mockEventId: 'mock-reply-base',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'I would like to see some UI example of how media messages are renders in ...',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-reply-1',
-      mockSenderId: '@sarah:acter.global',
-      mockOriginServerTs: 1744098060000, // April 8, 2025 16:01:00
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
-      ),
-      mockInReplyToId: 'mock-reply-base',
-      mockIsReplyToEvent: MockTimelineEventItem(
-        mockEventId: 'mock-reply-base',
-        mockSenderId: '@acter1:m-1.acter.global',
-        mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
-        mockMsgContent: MockMsgContent(
-          mockBody:
-              'I would like to see some UI example of how media messages are renders in ...',
-        ),
-      ),
-      mockReactionKeys: MockFfiListFfiString(
-        mockStrings: [
-          MockFfiString('👍'),
-          MockFfiString('❤️'),
-          MockFfiString('🎉'),
-          MockFfiString('👏'),
-          MockFfiString('🔥'),
-          MockFfiString('🚀'),
-          MockFfiString('💯'),
-        ],
-      ),
-      mockReactionRecords: {
-        '👍': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@acter1:m-1.acter.global'),
-              mockTimestamp: 1744098070000,
-              mockSentByMe: true,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
-              mockTimestamp: 1744098080000,
-              mockSentByMe: false,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
-              mockTimestamp: 1744098090000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '❤️': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
-              mockTimestamp: 1744098110000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '🎉': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
-              mockTimestamp: 1744098120000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '👏': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@acter1:m-1.acter.global'),
-              mockTimestamp: 1744098130000,
-              mockSentByMe: true,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
-              mockTimestamp: 1744098140000,
-              mockSentByMe: false,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
-              mockTimestamp: 1744098150000,
-              mockSentByMe: false,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
-              mockTimestamp: 1744098160000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '🔥': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
-              mockTimestamp: 1744098170000,
-              mockSentByMe: false,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
-              mockTimestamp: 1744098180000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '🚀': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@acter1:m-1.acter.global'),
-              mockTimestamp: 1744098190000,
-              mockSentByMe: true,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
-              mockTimestamp: 1744098200000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '💯': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
-              mockTimestamp: 1744098210000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-      },
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-reply-2',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744098120000, // April 8, 2025 16:02:00
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Thanks Sarah! I will check the file and get back to you.',
-      ),
-      mockInReplyToId: 'mock-reply-1',
-      mockIsReplyToEvent: MockTimelineEventItem(
-        mockEventId: 'mock-reply-1',
-        mockSenderId: '@sarah:acter.global',
-        mockOriginServerTs: 1744098060000,
-        mockMsgContent: MockMsgContent(
-          mockBody:
-              'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
-        ),
-        mockInReplyToId: 'mock-reply-base',
-        mockIsReplyToEvent: MockTimelineEventItem(
+        // --- Reply-to-message example ---
+        MockTimelineEventItem(
           mockEventId: 'mock-reply-base',
-          mockSenderId: '@acter1:m-1.acter.global',
-          mockOriginServerTs: 1744098000000,
+          mockSenderId: userId,
+          mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
           mockMsgContent: MockMsgContent(
             mockBody:
                 'I would like to see some UI example of how media messages are renders in ...',
           ),
         ),
-      ),
-      mockReactionKeys: MockFfiListFfiString(
-        mockStrings: [
-          MockFfiString('👍'),
-          MockFfiString('🙏'),
-          MockFfiString('✨'),
-        ],
-      ),
-      mockReactionRecords: {
-        '👍': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
-              mockTimestamp: 1744098220000,
-              mockSentByMe: false,
-            ),
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
-              mockTimestamp: 1744098230000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '🙏': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
-              mockTimestamp: 1744098240000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-        '✨': MockFfiListReactionRecord(
-          records: [
-            MockReactionRecord(
-              mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
-              mockTimestamp: 1744098250000,
-              mockSentByMe: false,
-            ),
-          ],
-        ),
-      },
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-reply-3',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744098180000, // April 8, 2025 16:03:00
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Let me know if you need any more examples or help!',
-      ),
-      mockInReplyToId: 'mock-reply-1',
-      mockIsReplyToEvent: MockTimelineEventItem(
-        mockEventId: 'mock-reply-1',
-        mockSenderId: '@sarah:acter.global',
-        mockOriginServerTs: 1744098060000,
-        mockMsgContent: MockMsgContent(
-          mockBody:
-              'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
-        ),
-        mockInReplyToId: 'mock-reply-base',
-        mockIsReplyToEvent: MockTimelineEventItem(
-          mockEventId: 'mock-reply-base',
-          mockSenderId: '@acter1:m-1.acter.global',
-          mockOriginServerTs: 1744098000000,
+        MockTimelineEventItem(
+          mockEventId: 'mock-reply-1',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744098060000, // April 8, 2025 16:01:00
           mockMsgContent: MockMsgContent(
             mockBody:
-                'I would like to see some UI example of how media messages are renders in ...',
+                'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+          ),
+          mockInReplyToId: 'mock-reply-base',
+          mockIsReplyToEvent: MockTimelineEventItem(
+            mockEventId: 'mock-reply-base',
+            mockSenderId: userId,
+            mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
+            mockMsgContent: MockMsgContent(
+              mockBody:
+                  'I would like to see some UI example of how media messages are renders in ...',
+            ),
+          ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [
+              MockFfiString('👍'),
+              MockFfiString('❤️'),
+              MockFfiString('🎉'),
+              MockFfiString('👏'),
+              MockFfiString('🔥'),
+              MockFfiString('🚀'),
+              MockFfiString('💯'),
+            ],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098070000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+                  mockTimestamp: 1744098080000,
+                  mockSentByMe: false,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+                  mockTimestamp: 1744098090000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '❤️': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+                  mockTimestamp: 1744098110000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🎉': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+                  mockTimestamp: 1744098120000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '👏': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098130000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+                  mockTimestamp: 1744098140000,
+                  mockSentByMe: false,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+                  mockTimestamp: 1744098150000,
+                  mockSentByMe: false,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+                  mockTimestamp: 1744098160000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🔥': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+                  mockTimestamp: 1744098170000,
+                  mockSentByMe: false,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+                  mockTimestamp: 1744098180000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🚀': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098190000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+                  mockTimestamp: 1744098200000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '💯': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+                  mockTimestamp: 1744098210000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-reply-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744098120000, // April 8, 2025 16:02:00
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Thanks Sarah! I will check the file and get back to you.',
+          ),
+          mockInReplyToId: 'mock-reply-1',
+          mockIsReplyToEvent: MockTimelineEventItem(
+            mockEventId: 'mock-reply-1',
+            mockSenderId: '@sarah:acter.global',
+            mockOriginServerTs: 1744098060000,
+            mockMsgContent: MockMsgContent(
+              mockBody:
+                  'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+            ),
+            mockInReplyToId: 'mock-reply-base',
+            mockIsReplyToEvent: MockTimelineEventItem(
+              mockEventId: 'mock-reply-base',
+              mockSenderId: userId,
+              mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
+              mockMsgContent: MockMsgContent(
+                mockBody:
+                    'I would like to see some UI example of how media messages are renders in ...',
+              ),
+            ),
+          ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [
+              MockFfiString('👍'),
+              MockFfiString('🙏'),
+              MockFfiString('✨'),
+            ],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+                  mockTimestamp: 1744098220000,
+                  mockSentByMe: false,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+                  mockTimestamp: 1744098230000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🙏': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+                  mockTimestamp: 1744098240000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '✨': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+                  mockTimestamp: 1744098250000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-reply-3',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744098180000, // April 8, 2025 16:03:00
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Let me know if you need any more examples or help!',
+          ),
+          mockInReplyToId: 'mock-reply-1',
+          mockIsReplyToEvent: MockTimelineEventItem(
+            mockEventId: 'mock-reply-1',
+            mockSenderId: '@sarah:acter.global',
+            mockOriginServerTs: 1744098060000,
+            mockMsgContent: MockMsgContent(
+              mockBody:
+                  'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+            ),
+            mockInReplyToId: 'mock-reply-base',
+            mockIsReplyToEvent: MockTimelineEventItem(
+              mockEventId: 'mock-reply-base',
+              mockSenderId: userId,
+              mockOriginServerTs: 1744098000000,
+              mockMsgContent: MockMsgContent(
+                mockBody:
+                    'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+              ),
+              mockInReplyToId: 'mock-reply-base',
+              mockIsReplyToEvent: MockTimelineEventItem(
+                mockEventId: 'mock-reply-base',
+                mockSenderId: userId,
+                mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
+                mockMsgContent: MockMsgContent(
+                  mockBody:
+                      'I would like to see some UI example of how media messages are renders in ...',
+                ),
+              ),
+            ),
           ),
         ),
-      ),
-    ),
-  ],
+      ],
 );
 
 final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
@@ -799,9 +812,7 @@ final sarahDmWithTypingRoom6 = createMockChatItem(
   displayName: 'Sarah Wilson',
   activeMembersIds: ['@sarah:acter.global', '@kumarpalsinh:acter.global'],
   isDm: true,
-  typingUsers: [
-    MockUser(mockDisplayName: 'Sarah', mockUserId: '@sarah:acter.global'),
-  ],
+  typingUserNames: ['Sarah'],
   timelineEventItems: [
     MockTimelineEventItem(
       mockEventId: 'mock-event-id-34',
@@ -818,11 +829,7 @@ final sarahDmWithTypingRoom6 = createMockChatItem(
 final projectAlphaWithMultipleTypingRoom7 = createMockChatItem(
   roomId: 'mock-room-7',
   displayName: 'Project Alpha',
-  typingUsers: [
-    MockUser(mockDisplayName: 'Jennifer', mockUserId: '@jennifer:acter.global'),
-    MockUser(mockDisplayName: 'James', mockUserId: '@james:acter.global'),
-    MockUser(mockDisplayName: 'David', mockUserId: '@david:acter.global'),
-  ],
+  typingUserNames: ['Jennifer', 'James', 'David'],
   activeMembersIds: [
     '@jennifer:acter.global',
     '@james:acter.global',
@@ -863,7 +870,6 @@ final teamUpdatesBookmarkedVideoMessageRoom9 = createMockChatItem(
   roomId: 'mock-room-9',
   displayName: 'Team Updates',
   activeMembersIds: [
-    '@emily:acter.global',
     '@alex:acter.global',
     '@christopher:acter.global',
     '@daniel:acter.global',
@@ -959,7 +965,7 @@ final lisaDmRoom13 = createMockChatItem(
 );
 
 final productFeedbackGroupRoom14 = createMockChatItem(
-  roomId: 'mock-room-14',
+  roomId: 'mock-product-feedbackroom-14',
   displayName: 'Product Feedback',
   activeMembersIds: [
     '@daniel:acter.global',
@@ -973,6 +979,51 @@ final productFeedbackGroupRoom14 = createMockChatItem(
       mockSenderId: '@daniel:acter.global',
       mockOriginServerTs: 1743059766000, // March 27, 2025
       mockMsgContent: MockMsgContent(mockBody: 'Feature requests prioritized.'),
+    ),
+  ],
+  mockMessagesStream: Stream.periodic(
+    const Duration(seconds: 1),
+    (count) => MockTimelineItemDiff(
+      mockAction: 'PushBack',
+      mockTimelineItem: MockTimelineItem(
+        mockTimelineEventItem: MockTimelineEventItem(
+          mockEventId: 'mock-event-id-456-$count',
+          mockSenderId: // fizzBuzz :D
+              count % 15 == 0
+                  ? '@daniel:acter.global'
+                  : count % 5 == 0
+                  ? '@james:acter.global'
+                  : count % 3 == 0
+                  ? '@patricia:acter.global'
+                  : '@david:acter.global',
+          mockOriginServerTs:
+              (1743059766000 + count * 36000).toInt(), // March 27, 2025
+          mockMsgContent: MockMsgContent(mockBody: 'Sending ping $count'),
+        ),
+      ),
+    ),
+  ),
+);
+
+final superLongUserTypingRoom15 = createMockChatItem(
+  roomId: 'mock-large-typing',
+  displayName: 'Super Long Username typing',
+  activeMembersIds: [
+    '@berry:acter.global',
+    '@james:acter.global',
+    '@patricia:acter.global',
+    '@david:acter.global',
+  ],
+  typingUserNames: [
+    'Mohamad Kumarpalsinh van Amruth Amoreias de Cabra e Silva em Balagem',
+    'Michael de Camu van der Bellen de Berrisville the twenty third of wales',
+  ],
+  timelineEventItems: [
+    MockTimelineEventItem(
+      mockEventId: 'mock-event-id-456',
+      mockSenderId: '@berry:acter.global',
+      mockOriginServerTs: 1743059766000, // March 27, 2025
+      mockMsgContent: MockMsgContent(mockBody: 'start message'),
     ),
   ],
 );

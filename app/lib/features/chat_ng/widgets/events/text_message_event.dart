@@ -1,6 +1,7 @@
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/html/render_html.dart';
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,7 +70,6 @@ class TextMessageEvent extends ConsumerWidget {
       repliedTo: repliedTo,
     );
   }
-
   // Default factory constructor
   factory TextMessageEvent({
     Key? key,
@@ -101,10 +101,12 @@ class TextMessageEvent extends ConsumerWidget {
               : chatTheme.receivedEmojiMessageTextStyle;
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: RenderHtml(
-          text: body,
-          defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
-          roomId: roomId,
+        child: ActerSelectionArea(
+          child: RenderHtml(
+            text: body,
+            defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
+            roomId: roomId,
+          ),
         ),
       );
     }
@@ -114,19 +116,21 @@ class TextMessageEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
-        RenderHtml(
-          text: body,
-          roomId: roomId,
-          shrinkToFit: true,
-          renderNewlines: true,
-          maxLines: _type == TextMessageType.reply ? 2 : null,
-          defaultTextStyle: textTheme.bodySmall?.copyWith(
-            color:
-                _type == TextMessageType.notice
-                    ? colorScheme.onSurface.withValues(alpha: 0.5)
-                    : colorScheme.onSurface.withValues(alpha: 0.9),
-            overflow:
-                _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
+        ActerSelectionArea(
+          child: RenderHtml(
+            text: body,
+            roomId: roomId,
+            shrinkToFit: true,
+            renderNewlines: true,
+            maxLines: _type == TextMessageType.reply ? 2 : null,
+            defaultTextStyle: textTheme.bodySmall?.copyWith(
+              color:
+                  _type == TextMessageType.notice
+                      ? colorScheme.onSurface.withValues(alpha: 0.5)
+                      : colorScheme.onSurface.withValues(alpha: 0.9),
+              overflow:
+                  _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
+            ),
           ),
         ),
       ],

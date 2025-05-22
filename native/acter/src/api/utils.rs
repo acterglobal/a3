@@ -40,7 +40,7 @@ where
 impl<T> ApiVectorDiff<T> {
     pub fn current_items(values: Vec<T>) -> Self {
         ApiVectorDiff {
-            action: "Reset".to_string(),
+            action: "Reset".to_owned(),
             values: Some(values),
             index: None,
             value: None,
@@ -57,76 +57,76 @@ where
     match diff {
         // Append the given elements at the end of the `Vector` and notify subscribers
         VectorDiff::Append { values } => ApiVectorDiff {
-            action: "Append".to_string(),
+            action: "Append".to_owned(),
             values: Some(values.into_iter().map(mapper).collect()),
             index: None,
             value: None,
         },
         // Insert an element at the given position and notify subscribers
         VectorDiff::Insert { index, value } => ApiVectorDiff {
-            action: "Insert".to_string(),
+            action: "Insert".to_owned(),
             values: None,
             index: Some(index),
             value: Some(mapper(value)),
         },
         // Replace the element at the given position, notify subscribers and return the previous element at that position
         VectorDiff::Set { index, value } => ApiVectorDiff {
-            action: "Set".to_string(),
+            action: "Set".to_owned(),
             values: None,
             index: Some(index),
             value: Some(mapper(value)),
         },
         // Remove the element at the given position, notify subscribers and return the element
         VectorDiff::Remove { index } => ApiVectorDiff {
-            action: "Remove".to_string(),
+            action: "Remove".to_owned(),
             values: None,
             index: Some(index),
             value: None,
         },
         // Add an element at the back of the list and notify subscribers
         VectorDiff::PushBack { value } => ApiVectorDiff {
-            action: "PushBack".to_string(),
+            action: "PushBack".to_owned(),
             values: None,
             index: None,
             value: Some(mapper(value)),
         },
         // Add an element at the front of the list and notify subscribers
         VectorDiff::PushFront { value } => ApiVectorDiff {
-            action: "PushFront".to_string(),
+            action: "PushFront".to_owned(),
             values: None,
             index: None,
             value: Some(mapper(value)),
         },
         // Remove the last element, notify subscribers and return the element
         VectorDiff::PopBack => ApiVectorDiff {
-            action: "PopBack".to_string(),
+            action: "PopBack".to_owned(),
             values: None,
             index: None,
             value: None,
         },
         // Remove the first element, notify subscribers and return the element
         VectorDiff::PopFront => ApiVectorDiff {
-            action: "PopFront".to_string(),
+            action: "PopFront".to_owned(),
             values: None,
             index: None,
             value: None,
         },
         // Clear out all of the elements in this `Vector` and notify subscribers
         VectorDiff::Clear => ApiVectorDiff {
-            action: "Clear".to_string(),
+            action: "Clear".to_owned(),
             values: None,
             index: None,
             value: None,
         },
         VectorDiff::Reset { values } => ApiVectorDiff {
-            action: "Reset".to_string(),
+            action: "Reset".to_owned(),
             values: Some(values.into_iter().map(mapper).collect()),
             index: None,
             value: None,
         },
         // Truncate the vector to `len` elements and notify subscribers
         VectorDiff::Truncate { length } => ApiVectorDiff {
-            action: "Truncate".to_string(),
+            action: "Truncate".to_owned(),
             values: None,
             index: Some(length),
             value: None,
