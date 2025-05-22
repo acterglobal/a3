@@ -65,7 +65,7 @@ void messageActions({
                   ),
 
                   // Message
-                  Center(child: ActerSelectionArea(child: messageWidget)),
+                  ActerSelectionArea(child: messageWidget),
                   // Message actions
                   _AnimatedActionsContainer(
                     animation: animation,
