@@ -7,21 +7,21 @@ use tokio_retry::{
 };
 
 use super::{get_latest_activity, setup_accounts};
-use crate::utils::random_user;
+use crate::{tests::activities::{all_activities_observer, assert_triggered_with_latest_activity}, utils::random_user};
 
 #[tokio::test]
 async fn initial_events() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("initial-events").await?;
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
     assert_eq!(activity.type_str(), "roomName");
 
     let activity = get_latest_activity(&observer, room_id.to_string(), "roomName").await?;
     assert_eq!(activity.type_str(), "roomName");
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // // check the create event
     // let room_activities = observer_room_activities.clone();
     // let created = Retry::spawn(retry_strategy.clone(), move || {
@@ -59,7 +59,7 @@ async fn invite_and_join() -> Result<()> {
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync();
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;
     let mut obs_observer = observer_room_activities.subscribe();
@@ -95,7 +95,7 @@ async fn invite_and_join() -> Result<()> {
 
     assert_eq!(r.change(), "invited");
     assert_eq!(r.user_id(), to_invite_user_name);
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // let the third accept the invite
 
     let third = third.clone();
@@ -139,7 +139,7 @@ async fn invite_and_join() -> Result<()> {
     assert_eq!(r.change(), "invitationAccepted");
     assert_eq!(r.user_id(), to_invite_user_name);
     assert_eq!(meta.sender, r.user_id());
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -148,7 +148,7 @@ async fn kicked() -> Result<()> {
     let _ = env_logger::try_init();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("kicked").await?;
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     let admin_room = admin.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
     let mut activities_listenerd = room_activities.subscribe();
@@ -182,6 +182,7 @@ async fn kicked() -> Result<()> {
     assert_eq!(r.change(), "kicked");
     assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -194,7 +195,7 @@ async fn invite_and_rejected() -> Result<()> {
     let mut third = random_user("mickey").await?;
     let to_invite_user_name = third.user_id()?;
     let _third_state = third.start_sync();
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     let admin_room = admin.room(room_id.to_string()).await?;
     let observer_room_activities = observer.activities_for_room(room_id.to_string())?;
     let mut obs_observer = observer_room_activities.subscribe();
@@ -232,7 +233,7 @@ async fn invite_and_rejected() -> Result<()> {
     assert_eq!(r.change(), "invited");
     assert_eq!(r.user_id(), to_invite_user_name);
     assert_eq!(meta.sender, admin.user_id()?);
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // let the third accept the invite
 
     let third = third.clone();
@@ -276,7 +277,7 @@ async fn invite_and_rejected() -> Result<()> {
     assert_eq!(r.change(), "invitationRejected");
     assert_eq!(r.user_id(), to_invite_user_name);
     assert_eq!(meta.sender, r.user_id());
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -290,7 +291,7 @@ async fn kickban_and_unban() -> Result<()> {
     let admin_room = admin.room(room_id.to_string()).await?;
     let main_room_activities = admin.activities_for_room(room_id.to_string())?;
     let mut activities_listenerd = main_room_activities.subscribe();
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     // ensure it was sent
     admin_room.ban_user(&observer.user_id()?, None).await?;
 
@@ -320,7 +321,7 @@ async fn kickban_and_unban() -> Result<()> {
     assert_eq!(r.change(), "kickedAndBanned");
     assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // ensure it was sent
     admin_room.unban_user(&observer.user_id()?, None).await?;
 
@@ -350,6 +351,7 @@ async fn kickban_and_unban() -> Result<()> {
     assert_eq!(r.change(), "unbanned");
     assert_eq!(r.user_id(), observer.user_id()?);
     assert_eq!(meta.sender, admin.user_id()?);
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -362,7 +364,7 @@ async fn left() -> Result<()> {
     let room = observer.room(room_id.to_string()).await?;
     let room_activities = admin.activities_for_room(room_id.to_string())?;
     let mut activities_listenerd = room_activities.subscribe();
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     // ensure it was sent
     room.leave().await?;
 
@@ -402,7 +404,7 @@ async fn left() -> Result<()> {
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())
     );
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -410,7 +412,7 @@ async fn left() -> Result<()> {
 async fn display_name() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("display-name").await?;
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     // ensure it was sent
     let account = observer.account()?;
     account.set_display_name("Mickey Mouse".to_owned()).await?;
@@ -435,7 +437,7 @@ async fn display_name() -> Result<()> {
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())
     );
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -443,7 +445,7 @@ async fn display_name() -> Result<()> {
 async fn avatar_url() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) = setup_accounts("avatar-url").await?;
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     let bytes = include_bytes!("../fixtures/kingfisher.jpg");
     let mut tmp_jpg = Builder::new().suffix(".jpg").tempfile()?;
     tmp_jpg.as_file_mut().write_all(bytes)?;
@@ -476,6 +478,6 @@ async fn avatar_url() -> Result<()> {
         activity.origin_server_ts(),
         Into::<u64>::into(meta.origin_server_ts.get())
     );
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }

@@ -4,7 +4,7 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_random_convo;
+use crate::{tests::activities::{all_activities_observer, assert_triggered_with_latest_activity}, utils::random_user_with_random_convo};
 
 #[tokio::test]
 async fn test_room_create() -> Result<()> {
@@ -13,7 +13,7 @@ async fn test_room_create() -> Result<()> {
     let (mut user, room_id) = random_user_with_random_convo("room-create").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-
+    let mut act_obs = all_activities_observer(&user).await?;
     let room = user.room(room_id.to_string()).await?;
     let room_activities = user.activities_for_room(room_id.to_string())?;
 
@@ -50,6 +50,8 @@ async fn test_room_create() -> Result<()> {
     let _content = activity
         .room_create_content()
         .expect("not a room create event");
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

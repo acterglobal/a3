@@ -134,6 +134,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
 
+    let mut act_obs = all_activities_observer(&first).await?;
     // ensure we are expected to see these activities
     let obj_id = obj_entry.event_id().to_string();
 
@@ -183,6 +184,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     assert_eq!(parent.emoji(), "🗓️"); // calendar
     assert_eq!(parent.object_id_str(), obj_id);
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity_id.to_string()).await?;
+
     Ok(())
 }
 
@@ -209,6 +212,7 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
 
+    let mut act_obs = all_activities_observer(&first).await?;
     let ref_details = pin.ref_details().await?;
 
     let fetcher_client = second_user.clone();
@@ -266,6 +270,8 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     assert_eq!(parent.title().as_deref(), Some("First meeting"));
     assert_eq!(parent.emoji(), "🗓️"); // calendar
     assert_eq!(parent.object_id_str(), obj_id);
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity_id.to_string()).await?;
 
     Ok(())
 }

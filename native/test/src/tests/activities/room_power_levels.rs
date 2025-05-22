@@ -5,6 +5,8 @@ use tokio_retry::{
     Retry,
 };
 
+use crate::tests::activities::{all_activities_observer, assert_triggered_with_latest_activity};
+
 use super::setup_accounts;
 
 #[tokio::test]
@@ -14,6 +16,8 @@ async fn test_room_power_levels_ban() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-ban").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -72,6 +76,8 @@ async fn test_room_power_levels_ban() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -82,6 +88,8 @@ async fn test_room_power_levels_events() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-events").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -147,6 +155,8 @@ async fn test_room_power_levels_events() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -157,6 +167,8 @@ async fn test_room_power_levels_events_default() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-events-default").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -221,6 +233,8 @@ async fn test_room_power_levels_events_default() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -231,6 +245,8 @@ async fn test_room_power_levels_invite() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-invite").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -293,6 +309,8 @@ async fn test_room_power_levels_invite() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -303,6 +321,8 @@ async fn test_room_power_levels_kick() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-kick").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -365,6 +385,8 @@ async fn test_room_power_levels_kick() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -375,6 +397,8 @@ async fn test_room_power_levels_redact() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-redact").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -437,6 +461,8 @@ async fn test_room_power_levels_redact() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -447,6 +473,8 @@ async fn test_room_power_levels_state_default() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-state-default").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -513,6 +541,8 @@ async fn test_room_power_levels_state_default() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -523,6 +553,8 @@ async fn test_room_power_levels_users_default() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-users-default").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -587,6 +619,8 @@ async fn test_room_power_levels_users_default() -> Result<()> {
         "old val of room power levels is invalid"
     );
 
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
+
     Ok(())
 }
 
@@ -597,6 +631,8 @@ async fn test_room_power_levels_notifications() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-power-levels-notifications").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -660,6 +696,8 @@ async fn test_room_power_levels_notifications() -> Result<()> {
         Some(default_level),
         "old val of room power levels is invalid"
     );
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

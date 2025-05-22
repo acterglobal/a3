@@ -4,6 +4,8 @@ use tempfile::Builder;
 use tracing::info;
 use uuid::Uuid;
 
+use crate::tests::activities::{all_activities_observer, assert_triggered_with_latest_activity};
+
 use super::{get_latest_activity, setup_accounts};
 
 #[allow(dead_code)]
@@ -17,6 +19,8 @@ async fn change_space_name() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("change-space-name").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
@@ -36,7 +40,7 @@ async fn change_space_name() -> Result<()> {
     // for example, it-room-change-space-name-9a2b3db1-d3f9-4f58-a471-81c04bdaa9f4
     assert!(room_name.contains("change-space-name"));
     assert_eq!(activity.target_url(), "/activities");
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // let new_name = new_room_name("update-space-name");
     // let room = admin.room(room_id.to_string()).await?;
     // room.set_name(new_name).await?;
@@ -58,6 +62,8 @@ async fn change_space_avatar() -> Result<()> {
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("change-space-avatar").await?;
 
+    let mut act_obs = all_activities_observer(&observer).await?;
+
     let bytes = include_bytes!("../fixtures/kingfisher.jpg");
     let mut jpg_file = Builder::new().prefix("Fishy").suffix(".jpg").tempfile()?;
     jpg_file.as_file_mut().write_all(bytes)?;
@@ -76,7 +82,7 @@ async fn change_space_avatar() -> Result<()> {
         .expect("space topic should be already assigned");
     assert_eq!(room_avatar, uri.as_str());
     assert_eq!(activity.target_url(), "/activities");
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
 
@@ -85,6 +91,8 @@ async fn change_space_topic() -> Result<()> {
     let _ = env_logger::try_init();
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("change-space-topic").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     // admin changes space topic
     let room = admin.room(room_id.to_string()).await?;
@@ -98,6 +106,6 @@ async fn change_space_topic() -> Result<()> {
         .expect("space topic should be already assigned");
     assert_eq!(room_topic, "Here is playground");
     assert_eq!(activity.target_url(), "/activities");
-
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }
