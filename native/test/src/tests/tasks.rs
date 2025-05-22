@@ -1,7 +1,7 @@
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
-use matrix_sdk_base::ruma::events::room::redaction::RoomRedactionEvent;
+use matrix_sdk_base::ruma::{events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -371,6 +371,7 @@ async fn task_comment_smoketests() -> Result<()> {
 
     let comments_manager = task.comments().await?;
     assert!(!comments_manager.stats().has_comments());
+    let initial_ts: u64 = MilliSecondsSinceUnixEpoch::now().get().into();
 
     // ---- let’s make a comment
 
@@ -398,6 +399,7 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(comment.event_id(), comment_id);
     assert_eq!(comment.content().body, body);
     assert_eq!(comment.msg_content().body(), body);
+    assert!(initial_ts < comment.origin_server_ts());
 
     let updated_body = "Sorry, this is not important";
     let updated_html = "**Sorry, this is not important**";
