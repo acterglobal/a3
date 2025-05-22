@@ -220,7 +220,7 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
               height: widget.theme.animatedCircleSize,
               width: widget.theme.animatedCircleSize,
               decoration: BoxDecoration(
-                color: widget.isSelected && isDesktop(context) ? colorScheme.surfaceTint : widget.theme.animatedCirclesColor,
+                color: widget.isSelected ? colorScheme.surfaceTint : widget.theme.animatedCirclesColor,
                 shape: BoxShape.circle,
               ),
             ),

@@ -1,6 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
-import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -41,7 +40,7 @@ class TypingIndicator extends ConsumerWidget {
         Text(
           typingText,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: isSelected && isDesktop(context) ? theme.colorScheme.surfaceTint : theme.colorScheme.primary,
+            color: isSelected ? theme.colorScheme.surfaceTint : theme.colorScheme.primary,
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
