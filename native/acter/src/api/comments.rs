@@ -71,7 +71,7 @@ impl Comment {
     }
 
     pub async fn can_redact(&self) -> Result<bool> {
-        let sender = self.sender().to_owned();
+        let sender = self.sender();
         let room = self.room.clone();
 
         RUNTIME

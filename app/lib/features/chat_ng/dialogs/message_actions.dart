@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:acter/features/chat_ng/globals.dart';
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -62,17 +63,19 @@ void messageActions({
                       roomId: roomId,
                     ),
                   ),
-                  messageWidget,
-                  _AnimatedActionsContainer(
-                    animation: animation,
-                    tagId: '$messageId-actions',
-                    child: MessageActionsWidget(
-                      isMe: isMe,
-                      canRedact: canRedact,
-                      item: item,
-                      messageId: messageId,
-                      roomId: roomId,
-                    ),
+                ),
+                // Message
+                Center(child: ActerSelectionArea(child: messageWidget)),
+                // Message actions
+                _AnimatedActionsContainer(
+                  animation: animation,
+                  tagId: '$messageId-actions',
+                  child: MessageActionsWidget(
+                    isMe: isMe,
+                    canRedact: canRedact,
+                    item: item,
+                    messageId: messageId,
+                    roomId: roomId,
                   ),
                 ],
               ),

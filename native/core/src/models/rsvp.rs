@@ -75,13 +75,11 @@ impl RsvpManager {
     }
 
     pub fn draft_builder(&self) -> RsvpBuilder {
-        RsvpBuilder::default()
-            .to(self.event_id.to_owned())
-            .to_owned()
+        RsvpBuilder::default().to(self.event_id.clone()).to_owned()
     }
 
     pub fn update_key(&self) -> ExecuteReference {
-        Self::stats_field_for(self.event_id.to_owned())
+        Self::stats_field_for(self.event_id.clone())
     }
 
     pub async fn save(&self) -> Result<ExecuteReference> {
@@ -123,7 +121,7 @@ impl ActerModel for Rsvp {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
             Rsvp::index_for(self.inner.to.event_id.clone()),
-            IndexKey::ObjectHistory(self.inner.to.event_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.to.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
         ]
     }
@@ -137,7 +135,7 @@ impl ActerModel for Rsvp {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
-        let belongs_to = self.inner.to.event_id.to_owned();
+        let belongs_to = self.inner.to.event_id.clone();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying rsvp");
 
         let manager = {

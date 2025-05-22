@@ -279,7 +279,7 @@ impl TaskBuilder {
     fn validate(&self) -> CoreResult<(), String> {
         if let Some(Some(percent)) = &self.progress_percent {
             if *percent > 100 {
-                return Err("Progress percent can’t be higher than 100".to_string());
+                return Err("Progress percent can’t be higher than 100".to_owned());
             }
         }
         Ok(())

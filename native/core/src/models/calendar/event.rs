@@ -174,7 +174,7 @@ impl ActerModel for CalendarEventUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.calendar_event.event_id.to_owned()])
+        Some(vec![self.inner.calendar_event.event_id.clone()])
     }
 }
 

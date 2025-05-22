@@ -124,7 +124,7 @@ impl Executor {
         event_meta: EventMeta,
         reason: UnsignedRoomRedactionEvent,
     ) -> Result<()> {
-        let event_id = event_meta.event_id.to_owned();
+        let event_id = event_meta.event_id.clone();
         trace!(event_id=?event_id, ?model_type, "asked to redact");
 
         match self.store.get(&event_id).await {
@@ -133,16 +133,14 @@ impl Executor {
             }
             Ok(model) => {
                 trace!("previous model found. overwriting");
-                let redacted =
-                    RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
+                let redacted = RedactedActerModel::new(model_type, event_meta, reason.into());
                 let keys = model.redact(&self.store, redacted).await?;
                 info!("******************** found model redacted: {:?}", &keys);
                 self.notify(keys);
             }
             Err(Error::ModelNotFound(_)) => {
                 trace!("no model found, storing redaction model");
-                let redacted =
-                    RedactedActerModel::new(model_type.to_owned(), event_meta, reason.into());
+                let redacted = RedactedActerModel::new(model_type, event_meta, reason.into());
                 let keys = redacted.execute(&self.store).await?;
                 info!("******************** not found redacted: {:?}", &keys);
                 self.notify(keys);
@@ -158,7 +156,7 @@ impl Executor {
             return Ok(());
         };
 
-        let event_id = meta.event_id.to_owned();
+        let event_id = meta.event_id.clone();
 
         match self.store.get(&event_id).await {
             Ok(AnyActerModel::RedactedActerModel(_)) => {
