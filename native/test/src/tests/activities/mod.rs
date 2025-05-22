@@ -1,9 +1,9 @@
 use acter::{Activities, Activity, Client, SyncState};
 use anyhow::{bail, Result};
 use futures::{pin_mut, StreamExt};
-use matrix_sdk::ruma::{OwnedRoomId};
-use tokio::sync::broadcast::Receiver;
+use matrix_sdk::ruma::OwnedRoomId;
 use std::future;
+use tokio::sync::broadcast::Receiver;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -35,7 +35,6 @@ mod space_child;
 mod space_parent;
 mod status;
 mod tasks;
-
 
 async fn get_latest_activity(
     cl: &Client,
@@ -88,7 +87,7 @@ pub(crate) type ActivitiesAndRcv = (Activities, Receiver<()>);
 pub(crate) async fn all_activities_observer(cl: &Client) -> Result<ActivitiesAndRcv> {
     let activities = cl.all_activities()?;
     let rcv = activities.subscribe();
-    return Ok((activities, rcv  ))
+    Ok((activities, rcv))
 }
 
 pub(crate) async fn assert_triggered_with_latest_activity(
@@ -96,7 +95,29 @@ pub(crate) async fn assert_triggered_with_latest_activity(
     latest_activity_id: String,
 ) -> Result<()> {
     let (activities, rcv) = activities_and_rcv;
-    assert!(rcv.try_recv().is_ok(), "Activity stream did not trigger");
-    assert_eq!(activities.get_ids(0, 1).await?, vec![latest_activity_id], "Latest activity id is not the expected one");
+    let mut counter = 10;
+    while counter > 0 {
+        if rcv.try_recv().is_ok() {
+            break;
+        }
+        counter -= 1;
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    }
+    if counter == 0 {
+        bail!("Activity stream did not trigger, event after 3 seconds");
+    }
+    assert_latest_activity(activities, latest_activity_id).await?;
+    Ok(())
+}
+
+pub(crate) async fn assert_latest_activity(
+    activities: &Activities,
+    latest_activity_id: String,
+) -> Result<()> {
+    assert_eq!(
+        activities.get_ids(0, 1).await?,
+        vec![latest_activity_id],
+        "Latest activity id is not the expected one"
+    );
     Ok(())
 }

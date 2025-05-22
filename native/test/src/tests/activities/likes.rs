@@ -5,7 +5,10 @@ use tokio_retry::{
 };
 
 use super::get_latest_activity;
-use crate::{tests::activities::{all_activities_observer, assert_triggered_with_latest_activity}, utils::random_users_with_random_space_under_template};
+use crate::{
+    tests::activities::{all_activities_observer, assert_triggered_with_latest_activity},
+    utils::random_users_with_random_space_under_template,
+};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -55,7 +58,7 @@ async fn like_activity_on_news() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = news_entry.reactions().await?;
     reactions.send_like().await?;
@@ -99,7 +102,7 @@ async fn like_activity_on_story() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = story.reactions().await?;
     reactions.send_like().await?;

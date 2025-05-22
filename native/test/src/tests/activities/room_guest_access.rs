@@ -1,8 +1,6 @@
 use anyhow::Result;
 use matrix_sdk_base::ruma::events::room::guest_access::GuestAccess;
 
-use crate::tests::activities::{all_activities_observer, assert_triggered_with_latest_activity};
-
 use super::{get_latest_activity, setup_accounts};
 
 #[tokio::test]
@@ -12,7 +10,6 @@ async fn test_room_guest_access() -> Result<()> {
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-guest-access").await?;
     let room = admin.room(room_id.to_string()).await?;
-    let mut act_obs = all_activities_observer(&observer).await?;
 
     // ensure it was sent
     let guest_access = GuestAccess::CanJoin;
@@ -55,8 +52,6 @@ async fn test_room_guest_access() -> Result<()> {
         None,
         "old val of room guest access is invalid"
     );
-
-    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

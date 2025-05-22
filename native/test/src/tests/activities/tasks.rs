@@ -4,7 +4,10 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::{tests::activities::{all_activities_observer, assert_triggered_with_latest_activity}, utils::random_user_with_template};
+use crate::{
+    tests::activities::{all_activities_observer, assert_triggered_with_latest_activity},
+    utils::random_user_with_template,
+};
 
 const TMPL: &str = r#"
 version = "0.1"

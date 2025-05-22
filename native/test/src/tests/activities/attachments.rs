@@ -9,7 +9,10 @@ use tokio_retry::{
 use acter::ActerModel;
 use urlencoding::encode;
 
-use crate::{tests::activities::{all_activities_observer, assert_triggered_with_latest_activity}, utils::random_users_with_random_space_under_template};
+use crate::{
+    tests::activities::{all_activities_observer, assert_triggered_with_latest_activity},
+    utils::random_users_with_random_space_under_template,
+};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -39,6 +42,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
+    let mut act_obs = all_activities_observer(first).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
@@ -54,8 +58,6 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
         }
     })
     .await?;
-
-    let mut act_obs = all_activities_observer(&first).await?;
 
     // ensure we are expected to see these activities
     let obj_id = obj_entry.event_id().to_string();
@@ -106,7 +108,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     assert_eq!(parent.emoji(), "📌"); // pin
     assert_eq!(parent.object_id_str(), obj_id);
 
-    assert_triggered_with_latest_activity(&mut act_obs, activity_id.to_string()).await?;
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }
@@ -134,7 +136,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
     // ensure we are expected to see these activities
     let obj_id = obj_entry.event_id().to_string();
 
@@ -212,7 +214,7 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
     let ref_details = pin.ref_details().await?;
 
     let fetcher_client = second_user.clone();

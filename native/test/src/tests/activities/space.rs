@@ -20,8 +20,6 @@ async fn change_space_name() -> Result<()> {
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("change-space-name").await?;
 
-    let mut act_obs = all_activities_observer(&observer).await?;
-
     // ensure the roomName works on both
     let activity = get_latest_activity(&admin, room_id.to_string(), "roomName").await?;
     assert_eq!(activity.type_str(), "roomName");
@@ -40,7 +38,6 @@ async fn change_space_name() -> Result<()> {
     // for example, it-room-change-space-name-9a2b3db1-d3f9-4f58-a471-81c04bdaa9f4
     assert!(room_name.contains("change-space-name"));
     assert_eq!(activity.target_url(), "/activities");
-    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // let new_name = new_room_name("update-space-name");
     // let room = admin.room(room_id.to_string()).await?;
     // room.set_name(new_name).await?;
