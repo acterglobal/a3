@@ -370,7 +370,7 @@ impl CoreClient {
 
             let me = SpaceRelation {
                 target_type,
-                room_id: target.to_owned(),
+                room_id: target.clone(),
                 suggested: false,
                 via: original.content.via.clone(),
             };
@@ -436,19 +436,19 @@ impl CoreClient {
                 .unwrap_or_else(|| target.to_string());
             let me = SpaceRelation {
                 target_type,
-                room_id: target.to_owned(),
+                room_id: target.clone(),
                 suggested: original.content.suggested,
                 via: original.content.via.clone(),
             };
             children.push((order, me))
         }
 
-        children.sort_by_key(|(x, _)| x.to_owned());
+        children.sort_by_key(|(k, _)| k.clone());
 
         Ok(SpaceRelations {
             main_parent,
             other_parents: parents,
-            children: children.into_iter().map(|(_, c)| c).collect(),
+            children: children.into_iter().map(|(_, r)| r).collect(),
         })
     }
 }

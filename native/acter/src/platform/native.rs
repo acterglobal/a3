@@ -208,7 +208,7 @@ pub fn rotate_log_file() -> Result<String> {
             bail!("You didn’t set up file logger.");
         }
     }
-    Ok("".to_string())
+    Ok("".to_owned())
 }
 
 fn parse_log_level(level: &str) -> Level {

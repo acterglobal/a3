@@ -139,7 +139,7 @@ impl ActerModel for Task {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task_list_id.event_id.to_owned()])
+        Some(vec![self.inner.task_list_id.event_id.clone()])
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
@@ -199,7 +199,7 @@ impl ActerModel for TaskUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task.event_id.to_owned()])
+        Some(vec![self.inner.task.event_id.clone()])
     }
 }
 
@@ -282,7 +282,7 @@ impl ActerModel for TaskSelfAssign {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task.event_id.to_owned()])
+        Some(vec![self.inner.task.event_id.clone()])
     }
 }
 
@@ -356,7 +356,7 @@ impl ActerModel for TaskSelfUnassign {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task.event_id.to_owned()])
+        Some(vec![self.inner.task.event_id.clone()])
     }
 }
 
