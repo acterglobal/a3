@@ -57,7 +57,6 @@ final List<GoRoute> showCaseRoutes =
                     callNextPage: () {
                       context.pop();
                     },
-                    username: '@test:example.org',
                   ),
                 ),
               );
