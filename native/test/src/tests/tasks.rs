@@ -215,7 +215,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     let comments_listener = comments_manager.subscribe();
     let initial_body = "I think this is very important";
-    let comment_1_id = comments_manager
+    let comment_id = comments_manager
         .comment_draft()?
         .content_text(initial_body.to_owned())
         .send()
@@ -233,7 +233,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     let comment = &comments[0];
-    assert_eq!(comment.event_id(), comment_1_id);
+    assert_eq!(comment.event_id(), comment_id);
     assert_eq!(comment.content().body, initial_body);
 
     let updated_body = "Sorry, this is not important";
@@ -243,7 +243,6 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
@@ -256,7 +255,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
     let comment = &comments[0];
 
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let comment = comment.clone();
         async move {
             let edited_comment = comment.refresh().await?;
@@ -267,6 +266,34 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         }
     })
     .await?;
+
+    let reply_body = "Okay, I will do it";
+    let replied_id = comment
+        .reply_draft()?
+        .content_text(reply_body.to_owned())
+        .send()
+        .await?;
+
+    let reply_comment = Retry::spawn(retry_strategy, move || {
+        let comments_manager = comments_manager.clone();
+        let replied_id = replied_id.clone();
+        async move {
+            let comments = comments_manager.comments().await?;
+            if comments.len() < 2 {
+                bail!("Expected 2 comments, got {}", comments.len());
+            }
+            match comments
+                .iter()
+                .find(|c| c.event_id() == replied_id)
+            {
+                Some(comment) => Ok(comment.clone()),
+                None => bail!("Expected comment with id {replied_id} not found"),
+            }
+        }
+    })
+    .await?;
+
+    assert_eq!(reply_comment.content().body, reply_body);
 
     Ok(())
 }
@@ -351,8 +378,8 @@ async fn task_comment_smoketests() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
-    let body = "I updated the task";
-    let comment_1_id = comments_manager
+    let body = "I think this is very important";
+    let comment_id = comments_manager
         .comment_draft()?
         .content_text(body.to_owned())
         .send()
@@ -371,14 +398,47 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
 
     let comment = &comments[0];
-    assert_eq!(comment.event_id(), comment_1_id);
+    assert_eq!(comment.event_id(), comment_id);
     assert_eq!(comment.content().body, body);
+    assert_eq!(comment.msg_content().body(), body);
+
+    let updated_body = "Sorry, this is not important";
+    let updated_html = "**Sorry, this is not important**";
+    comment
+        .update_builder()?
+        .content_formatted(updated_body.to_owned(), updated_html.to_owned())
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let comments = comments_manager.comments().await?;
+    assert_eq!(comments.len(), 1);
+    let comment = &comments[0];
+
+    Retry::spawn(retry_strategy.clone(), move || {
+        let comment = comment.clone();
+        async move {
+            let edited_comment = comment.refresh().await?;
+            if edited_comment.content().body != updated_body {
+                bail!("Update not yet received");
+            }
+            Ok(())
+        }
+    })
+    .await?;
 
     let deletable = comment.can_redact().await?;
     assert!(deletable, "my comment should be deletable");
     let reason = "This is test redaction";
     let redact_id = space
-        .redact_content(comment_1_id.to_string(), Some(reason.to_owned()))
+        .redact_content(comment_id.to_string(), Some(reason.to_owned()))
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -400,7 +460,7 @@ async fn task_comment_smoketests() -> Result<()> {
     let original = event_content
         .as_original()
         .context("Redaction event should get original event")?;
-    assert_eq!(original.redacts, Some(comment_1_id));
+    assert_eq!(original.redacts, Some(comment_id));
     assert_eq!(original.content.reason.as_deref(), Some(reason));
 
     Ok(())
