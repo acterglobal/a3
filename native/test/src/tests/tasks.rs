@@ -1,7 +1,9 @@
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
-use matrix_sdk_base::ruma::{events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch};
+use matrix_sdk_base::ruma::{
+    events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch,
+};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
