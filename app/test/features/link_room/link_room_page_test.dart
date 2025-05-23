@@ -14,9 +14,9 @@ import '../../helpers/test_util.dart';
 void main() {
   group('Link Room Page - chats', () {
     testWidgets('Only shows non-dm chats', (tester) async {
-      final mockChatA = MockConvo('chat-a');
-      final mockChatB = MockConvo('other-chat');
-      final dmConvo = MockConvo('dm-chat');
+      final mockChatA = MockConvo(roomId: 'chat-a');
+      final mockChatB = MockConvo(roomId: 'other-chat');
+      final dmConvo = MockConvo(roomId: 'dm-chat');
 
       final mockedNames = {
         'chat-a': 'Mega super chat',

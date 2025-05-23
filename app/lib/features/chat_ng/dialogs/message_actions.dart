@@ -24,12 +24,6 @@ void messageActions({
   if (!context.mounted) return;
 
   final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
-  final chatRoomBox =
-      chatRoomKey.currentContext?.findRenderObject() as RenderBox?;
-  final chatRoomOffset = chatRoomBox?.localToGlobal(Offset.zero);
-  final chatRoomSize = chatRoomBox?.size;
-  final left = chatRoomOffset?.dx ?? 0;
-  final screenWidth = MediaQuery.sizeOf(context).width;
   if (messageBox == null) return;
 
   showGeneralDialog(
@@ -38,59 +32,99 @@ void messageActions({
     barrierLabel: '',
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 200),
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return Stack(
-        children: [
-          _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
-          Positioned(
-            left: isMe ? left : left + 36,
-            top: chatRoomOffset?.dy,
-            width: chatRoomSize?.width,
-            height: chatRoomSize?.height,
-            child: SizedBox(
-              width: (chatRoomSize?.width ?? screenWidth) * 0.9,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment:
-                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _AnimatedActionsContainer(
-                    animation: animation,
-                    tagId: '$messageId-reactions',
-                    child: ReactionSelector(
-                      isMe: isMe,
-                      messageId: messageId,
-                      roomId: roomId,
-                    ),
-                  ),
+    pageBuilder:
+        (context, animation, secondaryAnimation) => MessageActions(
+          animation: animation,
+          canRedact: canRedact,
+          item: item,
+          roomId: roomId,
+          messageId: messageId,
+          messageWidget: messageWidget,
+          isMe: isMe,
+        ),
+  );
+}
 
-                  // Message with scroll capability
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: ActerSelectionArea(child: messageWidget),
-                    ),
+class MessageActions extends StatelessWidget {
+  final Animation<double> animation;
+  final bool canRedact;
+  final TimelineEventItem item;
+  final String roomId;
+  final String messageId;
+  final Widget messageWidget;
+  final bool isMe;
+
+  const MessageActions({
+    super.key,
+    required this.animation,
+    required this.canRedact,
+    required this.item,
+    required this.roomId,
+    required this.messageId,
+    required this.messageWidget,
+    required this.isMe,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final chatRoomBox =
+        chatRoomKey.currentContext?.findRenderObject() as RenderBox?;
+    final chatRoomOffset = chatRoomBox?.localToGlobal(Offset.zero);
+    final chatRoomSize = chatRoomBox?.size;
+    final left = chatRoomOffset?.dx ?? 0;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    return Stack(
+      children: [
+        _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
+        Positioned(
+          left: isMe ? left : left + 36,
+          top: chatRoomOffset?.dy,
+          width: chatRoomSize?.width,
+          height: chatRoomSize?.height,
+          child: SizedBox(
+            width: (chatRoomSize?.width ?? screenWidth) * 0.9,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment:
+                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _AnimatedActionsContainer(
+                  animation: animation,
+                  tagId: '$messageId-reactions',
+                  child: ReactionSelector(
+                    isMe: isMe,
+                    messageId: messageId,
+                    roomId: roomId,
                   ),
-                  // Message actions
-                  _AnimatedActionsContainer(
-                    animation: animation,
-                    tagId: '$messageId-actions',
-                    child: MessageActionsWidget(
-                      isMe: isMe,
-                      canRedact: canRedact,
-                      item: item,
-                      messageId: messageId,
-                      roomId: roomId,
-                    ),
+                ),
+
+                // Message with scroll capability
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: ActerSelectionArea(child: messageWidget),
                   ),
-                ],
-              ),
+                ),
+                // Message actions
+                _AnimatedActionsContainer(
+                  animation: animation,
+                  tagId: '$messageId-actions',
+                  child: MessageActionsWidget(
+                    isMe: isMe,
+                    canRedact: canRedact,
+                    item: item,
+                    messageId: messageId,
+                    roomId: roomId,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      );
-    },
-  );
+        ),
+      ],
+    );
+  }
 }
 
 class _BlurOverlay extends StatelessWidget {

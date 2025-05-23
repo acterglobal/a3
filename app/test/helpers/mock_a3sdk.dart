@@ -24,7 +24,7 @@ class MockClient extends Mock implements Client {
 
   @override
   Future<Convo> convoWithRetry(String roomId, [int attempt = 0]) async {
-    return MockConvo(roomId);
+    return MockConvo(roomId: roomId);
   }
 }
 
@@ -42,12 +42,16 @@ class MockOptionComposeDraft extends Mock implements OptionComposeDraft {
 class MockConvo extends Mock implements Convo {
   static final Map<String, MockComposeDraft> _drafts = {};
   final String roomId;
-  MockConvo(this.roomId);
+  final bool isDirectChat;
+  MockConvo({required this.roomId, this.isDirectChat = false});
 
   @override
   Future<OptionComposeDraft> msgDraft() async {
     return MockOptionComposeDraft(_drafts[roomId]);
   }
+
+  @override
+  bool isDm() => isDirectChat;
 
   @override
   String getRoomIdStr() => roomId;
