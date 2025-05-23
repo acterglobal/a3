@@ -740,7 +740,7 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockSenderId: userId,
           mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
           mockMsgContent: MockMsgContent(
-            mockBody:
+            mockFormattedBody:
                 'I found a great resource about CI/CD best practices: https://medium.com/tech-blog/ci-cd-best-practices-2025',
           ),
         ),
