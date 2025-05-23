@@ -1,1 +1,1 @@
-- [Fixed] : Link on chat message is now have better visibility with back color contrast
+- [Fixed] : Link on chat message is now have better visibility with back color contrast.
