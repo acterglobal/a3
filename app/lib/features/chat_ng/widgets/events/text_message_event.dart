@@ -118,6 +118,10 @@ class TextMessageEvent extends ConsumerWidget {
         if (replied != null) ...[replied, const SizedBox(height: 10)],
 
         Html(
+          linkStyle: TextStyle(
+            color: colorScheme.onPrimary,
+            decoration: TextDecoration.underline,
+          ),
           shrinkToFit: true,
           pillBuilder:
               ({
