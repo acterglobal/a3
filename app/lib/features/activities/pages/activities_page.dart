@@ -19,8 +19,9 @@ class ActivitiesPage extends ConsumerWidget {
     if (syncStateWidget != null) sectionWidgetList.add(syncStateWidget);
 
     // Invitation Section
-    final invitationWidget = buildInvitationSectionWidget(context, ref);
-    if (invitationWidget != null) sectionWidgetList.add(invitationWidget);
+    if (InvitationSectionWidget.shouldBeShown(ref)) {
+      sectionWidgetList.add(const InvitationSectionWidget());
+    }
 
     // Security and Privacy Section
     final securityWidget = buildSecurityAndPrivacySectionWidget(context, ref);

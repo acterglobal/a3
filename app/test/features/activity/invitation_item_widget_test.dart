@@ -3,29 +3,13 @@ import 'dart:typed_data';
 import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../helpers/mock_invites.dart';
 import '../../helpers/mock_room_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-
-// Mock classes
-class MockInvitation extends Mock implements RoomInvitation {}
-
-class MockUserProfile extends Mock implements UserProfile {}
-
-class MockOptionBuffer extends Mock implements OptionBuffer {}
-
-class MockOptionString extends Mock implements OptionString {
-  final String? _text;
-
-  MockOptionString(this._text);
-
-  @override
-  String? text() => _text;
-}
 
 void main() {
   late MockInvitation mockInvitation;
