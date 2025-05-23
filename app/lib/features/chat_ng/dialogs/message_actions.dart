@@ -53,6 +53,7 @@ void messageActions({
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment:
                     isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   _AnimatedActionsContainer(
                     animation: animation,
@@ -64,8 +65,12 @@ void messageActions({
                     ),
                   ),
 
-                  // Message
-                  ActerSelectionArea(child: messageWidget),
+                  // Message with scroll capability
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: ActerSelectionArea(child: messageWidget),
+                    ),
+                  ),
                   // Message actions
                   _AnimatedActionsContainer(
                     animation: animation,
