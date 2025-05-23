@@ -757,6 +757,15 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
         ),
         MockTimelineEventItem(
           mockEventId: 'mock-mention-2',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097226000, // April 8, 2025 15:47:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                '[@{$userId}](https://matrix.to/#/$userId) can you review the deployment checklist?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-mention-3',
           mockSenderId: userId,
           mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
           mockMsgContent: MockMsgContent(
