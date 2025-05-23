@@ -1,5 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';

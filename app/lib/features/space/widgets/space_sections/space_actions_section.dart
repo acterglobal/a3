@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/space/actions/activate_feature.dart';
 import 'package:acter/features/space/actions/set_acter_feature.dart';
 import 'package:acter/features/space/settings/pages/apps_settings_page.dart';

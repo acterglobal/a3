@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/providers/mock_chats_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -23,7 +23,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
     final roomId = arg;
 
     // if we are in chat showcase mode, return a mock convo
-    if (includeChatShowcase) {
+    if (includeShowCases) {
       final mockConfo = ref.watch(mockConvoProvider(roomId));
       if (mockConfo != null) {
         return mockConfo;
@@ -67,7 +67,7 @@ class AsyncLatestMsgNotifier
     final roomId = arg;
 
     // if we are in chat showcase mode, return a mock timeline item
-    if (includeChatShowcase) {
+    if (includeShowCases) {
       final mockLatestMessage = ref.watch(mockLatestMessageProvider(roomId));
       if (mockLatestMessage != null) {
         return mockLatestMessage;

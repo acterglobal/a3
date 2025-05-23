@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:acter/common/providers/network_provider.dart';
 import 'package:acter/common/providers/sdk_provider.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/auth/pages/register_page.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
