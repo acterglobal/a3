@@ -2971,5 +2971,13 @@
   "keyDestroyed": "Key destroyed",
   "@keyDestroyed": {},
   "keyDestroyedFailed": "Key destruction failed",
-  "@keyDestroyedFailed": {}
+  "@keyDestroyedFailed": {},
+  "storeTheKeySecurely": "Store the key securely",
+  "@storeTheKeySecurely": {},
+  "storeTheKeySecurelyDescription": "Store the key securely in a safe place. You can recover it later.",
+  "@storeTheKeySecurelyDescription": {},
+  "showKey": "Show the key",
+  "@showKey": {},
+  "dontRemindMe": "Don't remind me again",
+  "@dontRemindMe": {}
 }
