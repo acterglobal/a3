@@ -23846,13 +23846,6 @@ class Api {
   late final _convoMediaBinary =
       _convoMediaBinaryPtr
           .asFunction<int Function(int, int, int, int, int, int)>();
-  late final _convoRoomTypePtr =
-      _lookup<ffi.NativeFunction<_ConvoRoomTypeReturn Function(ffi.IntPtr)>>(
-        "__Convo_room_type",
-      );
-
-  late final _convoRoomType =
-      _convoRoomTypePtr.asFunction<_ConvoRoomTypeReturn Function(int)>();
   late final _convoIsDmPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
         "__Convo_is_dm",
@@ -51542,34 +51535,6 @@ class Convo {
     return tmp10;
   }
 
-  /// get the user status on this room
-  String roomType() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._convoRoomType(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
   /// is this a direct message
   bool isDm() {
     var tmp0 = 0;
@@ -72274,15 +72239,6 @@ class _ConvoLatestMessageReturn extends ffi.Struct {
 }
 
 class _ConvoGetRoomIdStrReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
-class _ConvoRoomTypeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
   @ffi.UintPtr()
