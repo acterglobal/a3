@@ -63,7 +63,10 @@ class TypingIndicator extends ConsumerWidget {
   Widget _buildAnimatedCircles(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: AnimatedCircles(theme: Theme.of(context).typingIndicatorTheme),
+      child: AnimatedCircles(
+        theme: Theme.of(context).typingIndicatorTheme,
+        isSelected: isSelected,
+      ),
     );
   }
 }
