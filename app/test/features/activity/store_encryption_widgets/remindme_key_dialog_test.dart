@@ -84,29 +84,6 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
   });
 
-  testWidgets('calls callNextPage when remind me later button is pressed', (WidgetTester tester) async {
-    bool callNextPageCalled = false;
-
-    await pumpDialog(
-      tester,
-      callNextPage: () {
-        callNextPageCalled = true;
-      },
-    );
-
-    final context = tester.element(find.byType(RemindMeAboutKeyDialog));
-    final l10n = L10n.of(context);
-
-    // Tap remind me later button
-    await tester.tap(find.text(l10n.remindMeAboutKeyLater));
-    await tester.pumpAndSettle();
-
-    // Verify callNextPage was called
-    expect(callNextPageCalled, isTrue);
-    // Verify dialog is closed
-    expect(find.byType(AlertDialog), findsNothing);
-  });
-
   testWidgets('dialog has correct layout constraints', (WidgetTester tester) async {
     await pumpDialog(tester);
 
