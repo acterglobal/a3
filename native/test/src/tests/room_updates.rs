@@ -1,7 +1,4 @@
-use crate::utils::{
-    invite_user, match_text_msg, random_user, random_user_with_random_convo,
-    random_user_with_random_space,
-};
+use acter::api::new_vec_string_builder;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -12,6 +9,11 @@ use tokio_retry::{
     Retry,
 };
 use tracing::info;
+
+use crate::utils::{
+    invite_user, match_text_msg, random_user, random_user_with_random_convo,
+    random_user_with_random_space,
+};
 
 #[tokio::test]
 async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
@@ -180,6 +182,13 @@ async fn joining_room_triggers_room_update() -> Result<()> {
     assert_eq!(room.state(), RoomState::Invited);
     assert!(room.is_space());
     assert_eq!(room.sender_id(), sisko.user_id()?);
+
+    let mut server_names = new_vec_string_builder();
+    server_names.add("localhost".to_owned());
+    let preview = kyra
+        .room_preview(room_id.to_string(), Box::new(server_names))
+        .await?;
+    assert_eq!(preview.state_str(), "invited");
 
     let mut room_stream = kyra.subscribe_room_stream(room_id.to_string())?;
     // clear the streem
