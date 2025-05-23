@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:acter/common/providers/keyboard_visbility_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
@@ -131,7 +132,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final onBoardingPermissionsProvider = ref.watch(onboardingPermissionsProvider);
-
+    final keyboardVisibility = ref.watch(keyboardVisibleProvider);  
     return onBoardingPermissionsProvider.when(
       loading: () => const OnboardingSkeleton(),
       error: (error, stack) => Scaffold(body: Center(child: Text('Error: $error'))),
@@ -146,6 +147,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                 onPageChanged: (index) => setState(() => _currentPage = index),
                 children: _screens,
               ),
+              if (keyboardVisibility.valueOrNull != true)
               Positioned(
                 left: 0,
                 right: 0,
