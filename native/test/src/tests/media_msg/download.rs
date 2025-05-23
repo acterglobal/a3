@@ -99,10 +99,18 @@ async fn room_msg_can_download_image() -> Result<()> {
     let event_id = found.context("Even after 30 seconds, image msg not received")?;
 
     let dir_path = env::temp_dir().to_string_lossy().to_string();
-    let downloaded_path = convo.download_media(event_id, None, dir_path).await?;
+    let downloaded_path = convo
+        .download_media(event_id.clone(), None, dir_path)
+        .await?;
     assert!(
         downloaded_path.text().is_some(),
         "image msg should be downloadable"
+    );
+
+    let media_path = convo.media_path(event_id, false).await?;
+    assert!(
+        media_path.text().is_some(),
+        "media path should be accessible if it was downloaded once"
     );
 
     Ok(())
