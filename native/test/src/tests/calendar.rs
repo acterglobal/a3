@@ -33,6 +33,10 @@ type = "calendar-event"
 title = "Onboarding on Acter"
 utc_start = "{{ future(add_days=20).as_rfc3339 }}"
 utc_end = "{{ future(add_days=25).as_rfc3339 }}"
+locations = [
+  { type = "Physical", name = "Denver University" },
+  { type = "Virtual", uri = "mxc://acter.global/test", name = "Tech Test Channel" }
+]
 "#;
 
 #[tokio::test]
@@ -59,9 +63,19 @@ async fn calendar_smoketest() -> Result<()> {
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
-
     let main_space = spaces.first().expect("main space should be available");
-    assert_eq!(main_space.calendar_events().await?.len(), 3);
+
+    let cal_events = main_space.calendar_events().await?;
+    assert_eq!(cal_events.len(), 3);
+    let main_event = cal_events.first().expect("main event should be available");
+
+    let locations = main_event.locations();
+    assert_eq!(locations.len(), 2);
+    assert_eq!(locations[0].location_type(), "Physical");
+    assert_eq!(locations[0].name().as_deref(), Some("Denver University"));
+    assert_eq!(locations[1].location_type(), "Virtual");
+    assert_eq!(locations[1].name().as_deref(), Some("Tech Test Channel"));
+
     Ok(())
 }
 
