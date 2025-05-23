@@ -30,7 +30,7 @@ impl PublicProfile {
             return Ok(None);
         };
         let request = MediaRequestParameters {
-            source: MediaSource::Plain(url.to_owned()),
+            source: MediaSource::Plain(url.clone()),
             format,
         };
         let buf = self

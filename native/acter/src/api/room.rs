@@ -1145,7 +1145,7 @@ impl Room {
                 room.user_defined_notification_mode()
                     .await
                     .map(|x| room_notification_mode_name(&x))
-                    .unwrap_or("none".to_string())
+                    .unwrap_or("none".to_owned())
             })
             .await?)
     }
@@ -1338,11 +1338,11 @@ impl Room {
 
     pub fn room_type(&self) -> String {
         match self.room.state() {
-            RoomState::Joined => "joined".to_string(),
-            RoomState::Left => "left".to_string(),
-            RoomState::Invited => "invited".to_string(),
-            RoomState::Knocked => "knocked".to_string(),
-            RoomState::Banned => "banned".to_string(),
+            RoomState::Joined => "joined".to_owned(),
+            RoomState::Left => "left".to_owned(),
+            RoomState::Invited => "invited".to_owned(),
+            RoomState::Knocked => "knocked".to_owned(),
+            RoomState::Banned => "banned".to_owned(),
         }
     }
 
@@ -1655,7 +1655,7 @@ impl Room {
                     .state_store()
                     .set_custom_value_no_read(&key, path_text.as_bytes().to_vec())
                     .await?;
-                Ok(OptionString::new(Some(path_text.to_string())))
+                Ok(OptionString::new(Some(path_text.to_owned())))
             })
             .await?
     }
@@ -1711,7 +1711,7 @@ impl Room {
                 let Some(path_vec) = client.state_store().get_custom_value(&key).await? else {
                     return Ok(OptionString::new(None));
                 };
-                let path_str = std::str::from_utf8(&path_vec)?.to_string();
+                let path_str = std::str::from_utf8(&path_vec)?.to_owned();
                 if matches!(exists(&path_str), Ok(true)) {
                     return Ok(OptionString::new(Some(path_str)));
                 }

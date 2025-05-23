@@ -1,10 +1,9 @@
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/widgets/typing_indicator.dart';
-import 'package:acter/features/chat/providers/chat_providers.dart';
+import 'package:acter/features/chat_ng/providers/chat_typing_event_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TypingIndicator extends ConsumerWidget {
@@ -15,76 +14,56 @@ class TypingIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDM = ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+
+    final typingUsersDisplayNames = ref.watch(
+      chatTypingUsersDisplayNameProvider(roomId),
+    );
+    final lang = L10n.of(context);
+
+    //If there are no typing users, return an empty string
+    if (typingUsersDisplayNames.isEmpty) return const SizedBox.shrink();
+
+    if (isDM) {
+      return _buildAnimatedCircles(context);
+    }
+
     final theme = Theme.of(context);
 
-    //Get the typing users and the typing text
-    final typingUsers = _getTypingUsers(ref);
-    final typingText = _getTypingText(context, ref, typingUsers);
-    if (typingText.isEmpty) return const SizedBox.shrink();
-
-    //Animated circles
-    final animatedCircles = Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: AnimatedCircles(theme: theme.typingIndicatorTheme,isSelected: isSelected),
-    );
-
-    //If it's a DM, return the animated circles
-    final isDM = _getIsDM(ref);
-    if (isDM == true) return animatedCircles;
-
-    //Show the typing text with the animated circles
-    return Wrap(
+    return Row(
       children: [
-        animatedCircles,
-        const SizedBox(width: 4),
-        Text(
-          typingText,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: isSelected ? theme.colorScheme.surfaceTint : theme.colorScheme.primary,
+        Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: _buildAnimatedCircles(context),
+        ),
+        Expanded(
+          child: Text(
+            switch (typingUsersDisplayNames.length) {
+              1 => lang.typingUser1(typingUsersDisplayNames.first),
+              2 => lang.typingUser2(
+                typingUsersDisplayNames.first,
+                typingUsersDisplayNames.last,
+              ),
+              _ => lang.typingUserN(
+                typingUsersDisplayNames.first,
+                typingUsersDisplayNames.length - 1,
+              ),
+            },
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
   }
 
-  String _getTypingText(BuildContext context, ref, List<User> typingUsers) {
-    final lang = L10n.of(context);
-
-    //If there are no typing users, return an empty string
-    if (typingUsers.isEmpty) return '';
-
-    //If there is only one typing user, show the user's name
-    if (typingUsers.length == 1) {
-      final name = _getDisplayNameFromUserId(typingUsers.first.id, ref);
-      return lang.typingUser1(name);
-    } else if (typingUsers.length == 2) {
-      //If there are two typing users, show the users' names
-      final name1 = _getDisplayNameFromUserId(typingUsers.first.id, ref);
-      final name2 = _getDisplayNameFromUserId(typingUsers.last.id, ref);
-      return lang.typingUser2(name1, name2);
-    } else {
-      //If there are more than two typing users, show the first user's name and the number of users
-      final name = _getDisplayNameFromUserId(typingUsers.first.id, ref);
-      return lang.typingUserN(name, typingUsers.length - 1);
-    }
-  }
-
-  String _getDisplayNameFromUserId(String userId, WidgetRef ref) {
-    final avatarInfo = ref.watch(
-      memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+  Widget _buildAnimatedCircles(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: AnimatedCircles(theme: Theme.of(context).typingIndicatorTheme),
     );
-    return avatarInfo.displayName ?? userId;
-  }
-
-  List<User> _getTypingUsers(WidgetRef ref) {
-    final users = ref.watch(chatTypingEventProvider(roomId)).valueOrNull;
-    return users ?? [];
-  }
-
-  bool _getIsDM(WidgetRef ref) {
-    final isDM = ref.watch(isDirectChatProvider(roomId));
-    return isDM.valueOrNull ?? false;
   }
 }

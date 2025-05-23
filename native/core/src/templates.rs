@@ -351,7 +351,7 @@ impl Engine {
                     "parsing input",
                 );
                 if input.is_required() && !context.contains_key(name) {
-                    return Err(Error::MissingInputs(vec![name.to_string()]));
+                    return Err(Error::MissingInputs(vec![name.clone()]));
                 }
                 if input.is_default() {
                     if input.is_user() {
@@ -362,7 +362,7 @@ impl Engine {
                         default_user = Some(
                             users
                                 .get(name)
-                                .ok_or(Error::MissingInputs(vec![name.to_string()]))?
+                                .ok_or(Error::MissingInputs(vec![name.clone()]))?
                                 .clone(),
                         );
                     }
@@ -385,19 +385,19 @@ impl Engine {
             for (count, (key, fields)) in objects.into_iter().enumerate() {
                 trace!(count, ?key, "executing");
                 let reformatted = execute_value_template(TomlValue::Table(fields), &env, &context)
-                    .map_err(|e| Error::RenderingObject(key.to_string(), e.to_string()))?;
+                    .map_err(|e| Error::RenderingObject(key.clone(), e.to_string()))?;
                 let TomlValue::Table(t) = reformatted else {
                     unreachable!("We always get back a table after sending in a table.");
                 };
                 let Object { room, user, obj } = Table::try_into::<Object>(t)?;
 
                 let client = if user.is_none() || user == default_user_key  {
-                    default_user.clone().ok_or_else(|| Error::NoDefaultSet("user".to_string(), key.to_string()))?
+                    default_user.clone().ok_or_else(|| Error::NoDefaultSet("user".to_owned(), key.clone()))?
                 } else { // must be the case
                     let Some(username) = user else {
                         unimplemented!("never reached");
                     };
-                    users.get(&username).ok_or_else(|| Error::UnknownReference("user".to_string(), key.to_string(), username))?.clone()
+                    users.get(&username).ok_or_else(|| Error::UnknownReference("user".to_owned(), key.clone(), username))?.clone()
                 };
 
                 if let ObjectInner::Space { is_default, fields } = obj {
@@ -409,11 +409,11 @@ impl Engine {
                         .await
                         .map_err(|e| Error::Remap(format!("Creating space '{key}' failed"), e.to_string()))?;
                     context.insert(
-                        key.to_string(),
+                        key.clone(),
                         Value::from_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())),
                     );
                     if is_default {
-                        default_space = Some(key.to_string());
+                        default_space = Some(key.clone());
                     }
                     let retry_strategy = FibonacciBackoff::from_millis(100)
                         .map(jitter)
@@ -437,12 +437,12 @@ impl Engine {
 
                 let room_name = match room {
                     Some(r) => r,
-                    None => default_space.clone().ok_or_else(|| Error::NoDefaultSet("room".to_string(), key.to_string()))?
+                    None => default_space.clone().ok_or_else(|| Error::NoDefaultSet("room".to_owned(), key.clone()))?
                 };
 
                 let room_id_str = context
                     .get(&room_name)
-                    .ok_or_else(|| Error::UnknownReference("room".to_string(), room_name.clone(), key.to_string()))?
+                    .ok_or_else(|| Error::UnknownReference("room".to_owned(), room_name.clone(), key.clone()))?
                     .get_attr("id")
                     .map_err(|e| Error::Remap(format!("{key} room={room_name} attr=id"), e.to_string()))?
                     .to_string();
@@ -453,7 +453,7 @@ impl Engine {
                 let room = client
                     .client()
                     .get_room(&room_id)
-                    .ok_or_else(|| Error::UnknownReference(format!("{key}.room"), room_name.clone(), key.to_string()))?;
+                    .ok_or_else(|| Error::UnknownReference(format!("{key}.room"), room_name.clone(), key.clone()))?;
 
                 match obj {
                     ObjectInner::TaskList { fields } => {
@@ -465,7 +465,7 @@ impl Engine {
                             .event_id;
                         trace!(?id, "task list created");
                         context.insert(
-                            key.to_string(),
+                            key.clone(),
                             Value::from_object(ObjRef::new(id.to_string(), "task-list".to_owned())),
                         );
                         yield
@@ -479,7 +479,7 @@ impl Engine {
                             .event_id;
                         trace!(?id, "task created");
                         context.insert(
-                            key.to_string(),
+                            key.clone(),
                             Value::from_object(ObjRef::new(id.to_string(), "task".to_owned())),
                         );
                         yield
@@ -493,7 +493,7 @@ impl Engine {
                             .event_id;
                         trace!(?id, "calendar event created");
                         context.insert(
-                            key.to_string(),
+                            key.clone(),
                             Value::from_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())),
                         );
                         yield
@@ -507,7 +507,7 @@ impl Engine {
                             .event_id;
                         trace!(?id, "pin created");
                         context.insert(
-                            key.to_string(),
+                            key.clone(),
                             Value::from_object(ObjRef::new(id.to_string(), "pin".to_owned())),
                         );
                         yield
@@ -521,7 +521,7 @@ impl Engine {
                             .event_id;
                         trace!(?id, "news created");
                         context.insert(
-                            key.to_string(),
+                            key.clone(),
                             Value::from_object(ObjRef::new(id.to_string(), "news-entry".to_owned())),
                         );
                         yield
@@ -535,7 +535,7 @@ impl Engine {
                             .event_id;
                         trace!(?id, "story created");
                         context.insert(
-                            key.to_string(),
+                            key.clone(),
                             Value::from_object(ObjRef::new(id.to_string(), "story".to_owned())),
                         );
                         yield
@@ -557,7 +557,7 @@ impl Engine {
 impl CoreClient {
     pub async fn template_engine(&self, template: &str) -> Result<Engine, Error> {
         let mut engine = Engine::with_template(template)?;
-        engine.add_user("main".to_string(), self.clone()).await?;
+        engine.add_user("main".to_owned(), self.clone()).await?;
         Ok(engine)
     }
 }

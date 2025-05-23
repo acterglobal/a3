@@ -24,13 +24,13 @@ void main() {
           children: [
             Material(
               child: ChatEvent(
-                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                roomId: productTeamMutedWithSingleTypingUserRoom2RoomId,
                 eventId: 'mock-reply-1',
               ),
             ),
             Material(
               child: ChatEvent(
-                roomId: productTeamMutedWithSingleTypingUserRoom2.roomId,
+                roomId: productTeamMutedWithSingleTypingUserRoom2RoomId,
                 eventId: 'mock-reply-2',
               ),
             ),

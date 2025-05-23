@@ -59,10 +59,10 @@ impl<'de> Visitor<'de> for LabelsVisitor {
             if let Some((prefix, res)) = key.split_once(':') {
                 match prefix {
                     // first has priority
-                    "m.type" if me.msgtype.is_none() => me.msgtype = Some(res.to_string()),
-                    "m.tag" => me.tags.push(res.to_string()),
-                    "m.section" => me.sections.push(res.to_string()),
-                    "m.cat" => me.categories.push(res.to_string()),
+                    "m.type" if me.msgtype.is_none() => me.msgtype = Some(res.to_owned()),
+                    "m.tag" => me.tags.push(res.to_owned()),
+                    "m.section" => me.sections.push(res.to_owned()),
+                    "m.cat" => me.categories.push(res.to_owned()),
                     _ => me.others.push(key),
                 }
             } else {
@@ -88,15 +88,11 @@ mod test {
     #[test]
     fn smoketest() -> Result<(), serde_json::Error> {
         let labels = Labels {
-            msgtype: Some("m.message".to_string()),
-            tags: vec![
-                "dog".to_string(),
-                "animal".to_string(),
-                "carnivor".to_string(),
-            ],
-            categories: vec!["animals".to_string()],
-            sections: vec!["work".to_string()],
-            others: vec!["whatever".to_string(), "with:other:test".to_string()],
+            msgtype: Some("m.message".to_owned()),
+            tags: vec!["dog".to_owned(), "animal".to_owned(), "carnivor".to_owned()],
+            categories: vec!["animals".to_owned()],
+            sections: vec!["work".to_owned()],
+            others: vec!["whatever".to_owned(), "with:other:test".to_owned()],
         };
         let ser = serde_json::to_string(&labels)?;
         println!("Serialized: {ser:}");
@@ -109,15 +105,11 @@ mod test {
     #[test]
     fn first_type_has_priority() -> Result<(), serde_json::Error> {
         let labels = Labels {
-            msgtype: Some("m.message".to_string()),
-            tags: vec![
-                "dog".to_string(),
-                "animal".to_string(),
-                "carnivor".to_string(),
-            ],
-            categories: vec!["animals".to_string()],
-            sections: vec!["work".to_string()],
-            others: vec!["m.type:whatever".to_string(), "with:other:test".to_string()],
+            msgtype: Some("m.message".to_owned()),
+            tags: vec!["dog".to_owned(), "animal".to_owned(), "carnivor".to_owned()],
+            categories: vec!["animals".to_owned()],
+            sections: vec!["work".to_owned()],
+            others: vec!["m.type:whatever".to_owned(), "with:other:test".to_owned()],
         };
         let ser = serde_json::to_string(&labels)?;
         println!("Serialized: {ser:}");

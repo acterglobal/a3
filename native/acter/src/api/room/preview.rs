@@ -73,12 +73,12 @@ impl RoomPreview {
 
     pub fn state_str(&self) -> String {
         match self.inner.state {
-            None => "unknown".to_string(),
-            Some(RoomState::Invited) => "invited".to_string(),
-            Some(RoomState::Joined) => "joined".to_string(),
-            Some(RoomState::Left) => "left".to_string(),
-            Some(RoomState::Knocked) => "knocked".to_string(),
-            Some(RoomState::Banned) => "banned".to_string(),
+            None => "unknown".to_owned(),
+            Some(RoomState::Invited) => "invited".to_owned(),
+            Some(RoomState::Joined) => "joined".to_owned(),
+            Some(RoomState::Left) => "left".to_owned(),
+            Some(RoomState::Knocked) => "knocked".to_owned(),
+            Some(RoomState::Banned) => "banned".to_owned(),
         }
     }
 
