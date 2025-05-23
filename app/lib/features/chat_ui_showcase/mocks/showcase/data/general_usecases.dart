@@ -724,6 +724,26 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
             ),
           ),
         ),
+
+        // --- URL messages example ---
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097206000, // April 8, 2025 15:46:46
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Check out the deployment documentation at https://docs.example.com/deployment-guide',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'I found a great resource about CI/CD best practices: https://medium.com/tech-blog/ci-cd-best-practices-2025',
+          ),
+        ),
       ],
 );
 
