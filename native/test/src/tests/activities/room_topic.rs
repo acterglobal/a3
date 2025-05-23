@@ -4,6 +4,8 @@ use tokio_retry::{
     Retry,
 };
 
+use crate::tests::activities::{all_activities_observer, assert_triggered_with_latest_activity};
+
 use super::setup_accounts;
 
 #[tokio::test]
@@ -15,6 +17,7 @@ async fn test_room_topic() -> Result<()> {
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
+    let mut act_obs = all_activities_observer(&observer).await?;
     let mut activities_listenerd = room_activities.subscribe();
 
     // ensure it was sent
@@ -63,6 +66,7 @@ async fn test_room_topic() -> Result<()> {
         "room topic should be set"
     );
     assert_eq!(content.new_val(), topic, "new val of room topic is invalid");
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

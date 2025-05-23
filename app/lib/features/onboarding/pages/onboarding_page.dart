@@ -19,7 +19,7 @@ import 'package:acter/features/onboarding/pages/redeem_invitations_page.dart';
 import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
 import 'package:acter/features/onboarding/pages/link_email_page.dart';
 import 'package:acter/features/onboarding/pages/upload_avatar_page.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:go_router/go_router.dart';
 import 'package:acter/features/onboarding/providers/onboarding_provider.dart';
 
@@ -53,8 +53,12 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 
   List<Widget> _buildOnboardingScreens(OnboardingPermissions permissions) {
-    final hasSpaceRedeemedInvites = ref.watch(hasSpaceRedeemedInInviteCodeProvider);
-    final hasRecommendedSpaceJoined = ref.watch(hasRecommendedSpaceJoinedProvider);
+    final hasSpaceRedeemedInvites = ref.watch(
+      hasSpaceRedeemedInInviteCodeProvider,
+    );
+    final hasRecommendedSpaceJoined = ref.watch(
+      hasRecommendedSpaceJoinedProvider,
+    );
     final backupState = ref.watch(backupStateProvider);
 
     return [
@@ -73,7 +77,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         if (!hasSpaceRedeemedInvites && !hasRecommendedSpaceJoined)
           OnboardingSpaceCreationPage(callNextPage: () => _nextPage()),
       ],
-      if (backupState == RecoveryState.incomplete) 
+      if (backupState == RecoveryState.incomplete)
         OnboardingEncryptionRecoveryPage(callNextPage: () => _nextPage()),
       if (backupState == RecoveryState.disabled)
         MissingEncryptionBackupPage(callNextPage: () => _nextPage()),
@@ -101,22 +105,18 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
           totalPages,
-              (index) =>
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
+          (index) => Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color:
                   _currentPage == index
-                      ? Theme
-                      .of(context)
-                      .colorScheme
-                      .primary
+                      ? Theme.of(context).colorScheme.primary
                       : Colors.grey,
-                ),
-              ),
+            ),
+          ),
         ),
       ),
     );
@@ -130,11 +130,15 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final onBoardingPermissionsProvider = ref.watch(onboardingPermissionsProvider);
+    final onBoardingPermissionsProvider = ref.watch(
+      onboardingPermissionsProvider,
+    );
 
     return onBoardingPermissionsProvider.when(
       loading: () => const OnboardingSkeleton(),
-      error: (error, stack) => Scaffold(body: Center(child: Text('Error: $error'))),
+      error:
+          (error, stack) =>
+              Scaffold(body: Center(child: Text('Error: $error'))),
       data: (permissions) {
         _screens = _buildOnboardingScreens(permissions);
         return Scaffold(

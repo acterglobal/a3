@@ -1,6 +1,6 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
@@ -30,8 +30,7 @@ class AnalyticsOptInWidget extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (callNextPage == null)
-                  _buildCloseIconButton(context),
+                if (callNextPage == null) _buildCloseIconButton(context),
                 const SizedBox(height: 20),
                 _buildTitleText(context, lang),
                 const SizedBox(height: 10),
@@ -259,9 +258,25 @@ class AnalyticsOptInWidget extends ConsumerWidget {
     WidgetRef ref,
     bool newValue,
   ) async {
-    await updateAnalyticsPreference(AnalyticsPreferenceKey.crashReporting, newValue, ref);
-    await updateAnalyticsPreference(AnalyticsPreferenceKey.basicTelemetry, newValue, ref);
-    await updateAnalyticsPreference(AnalyticsPreferenceKey.appAnalytics, newValue, ref);
-    await updateAnalyticsPreference(AnalyticsPreferenceKey.research, newValue, ref);
+    await updateAnalyticsPreference(
+      AnalyticsPreferenceKey.crashReporting,
+      newValue,
+      ref,
+    );
+    await updateAnalyticsPreference(
+      AnalyticsPreferenceKey.basicTelemetry,
+      newValue,
+      ref,
+    );
+    await updateAnalyticsPreference(
+      AnalyticsPreferenceKey.appAnalytics,
+      newValue,
+      ref,
+    );
+    await updateAnalyticsPreference(
+      AnalyticsPreferenceKey.research,
+      newValue,
+      ref,
+    );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/providers/mock_chats_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -35,7 +35,7 @@ final chatTypingUsersAvatarInfoProvider =
     });
 
 final isSomeoneTypingProvider = Provider.family<bool, String>((ref, roomId) {
-  if (includeChatShowcase) {
+  if (includeShowCases) {
     final mockTyping = ref.watch(mockTypingUserNamesProvider(roomId));
     if (mockTyping != null) {
       return mockTyping.isNotEmpty;
@@ -49,7 +49,7 @@ final chatTypingUsersDisplayNameProvider = Provider.family<
   List<String>,
   String
 >((ref, roomId) {
-  if (includeChatShowcase) {
+  if (includeShowCases) {
     final mockTyping = ref.watch(mockTypingUserNamesProvider(roomId));
     if (mockTyping != null) {
       return mockTyping;

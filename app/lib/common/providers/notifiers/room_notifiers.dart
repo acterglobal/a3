@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/providers/mock_chats_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -28,7 +28,7 @@ class AsyncMaybeRoomNotifier extends FamilyAsyncNotifier<Room?, String> {
   @override
   Future<Room?> build(String arg) async {
     // if we are in chat showcase mode, return a mock room
-    if (includeChatShowcase) {
+    if (includeShowCases) {
       final mockRoom = ref.watch(mockRoomProvider(arg));
       if (mockRoom != null) {
         return mockRoom;
