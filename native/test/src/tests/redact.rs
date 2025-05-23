@@ -1,4 +1,3 @@
-use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, FutureExt, StreamExt};
@@ -10,7 +9,7 @@ use tokio_retry::{
 };
 use tracing::info;
 
-use crate::utils::random_user_with_random_convo;
+use crate::utils::{match_text_msg, random_user_with_random_convo};
 
 #[tokio::test]
 async fn message_redaction() -> Result<()> {
@@ -51,7 +50,7 @@ async fn message_redaction() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(event_id) = match_room_msg(value, "Hi, everyone") {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
                             received = Some(event_id);
                             break;
                         }
@@ -61,7 +60,7 @@ async fn message_redaction() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff set action should have valid value");
-                    if let Some(event_id) = match_room_msg(&value, "Hi, everyone") {
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
                         received = Some(event_id);
                     }
                 }
@@ -114,19 +113,4 @@ async fn message_redaction() -> Result<()> {
     assert_eq!(original.content.reason.as_deref(), Some("redact-test"));
 
     Ok(())
-}
-
-fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body {
-                // exclude the pending msg
-                if let Some(event_id) = event_item.event_id() {
-                    return Some(event_id);
-                }
-            }
-        }
-    }
-    None
 }
