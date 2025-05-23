@@ -93,7 +93,7 @@ class UserChip extends ConsumerWidget {
               defaultOnTap: () => onTapFallback(context),
             ),
         child: Container(
-          margin: EdgeInsets.symmetric(vertical: 2, horizontal: 3),
+          margin: EdgeInsets.symmetric(vertical: 2),
           decoration: decoration,
           padding: EdgeInsets.symmetric(
             horizontal: (fontSize / 2).toDouble(),
