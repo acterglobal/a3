@@ -2979,5 +2979,7 @@
   "showKey": "Show the key",
   "@showKey": {},
   "dontRemindMe": "Don't remind me again",
-  "@dontRemindMe": {}
+  "@dontRemindMe": {},
+  "encryptionBackupDestroyAction": "Destroying",
+  "@encryptionBackupDestroyAction": {}
 }

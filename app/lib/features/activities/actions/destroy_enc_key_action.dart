@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void destroyEncKey(BuildContext context, WidgetRef ref, [VoidCallback? callNextPage]) async {
     final lang = L10n.of(context);
-    EasyLoading.show(status: lang.encryptionBackupRecoverRecovering);
+    EasyLoading.show(status: lang.encryptionBackupDestroyAction);
     try {
       final manager = await ref.read(backupManagerProvider.future);
       final destroyed = await manager.destroyStoredEncKey();
