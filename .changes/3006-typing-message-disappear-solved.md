@@ -1,0 +1,1 @@
+- [Fix] : Typing indicator disappearance on selected chat is solved.

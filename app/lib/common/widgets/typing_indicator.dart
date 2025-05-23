@@ -136,7 +136,8 @@ class AvatarHandler extends StatelessWidget {
 
 /// Animated Circles Widget.
 class AnimatedCircles extends StatefulWidget {
-  const AnimatedCircles({super.key, required this.theme});
+  final bool isSelected;
+  const AnimatedCircles({super.key, required this.theme, this.isSelected = false});
 
   final TypingIndicatorTheme theme;
 
@@ -205,6 +206,7 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(
@@ -217,7 +219,7 @@ class _AnimatedCirclesState extends State<AnimatedCircles>
               height: widget.theme.animatedCircleSize,
               width: widget.theme.animatedCircleSize,
               decoration: BoxDecoration(
-                color: widget.theme.animatedCirclesColor,
+                color: widget.isSelected ? colorScheme.surfaceTint : widget.theme.animatedCirclesColor,
                 shape: BoxShape.circle,
               ),
             ),

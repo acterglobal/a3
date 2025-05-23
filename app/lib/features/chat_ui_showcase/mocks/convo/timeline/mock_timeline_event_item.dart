@@ -76,4 +76,10 @@ class MockTimelineEventItem extends Mock implements TimelineEventItem {
 
   @override
   TimelineEventItem? inReplyToEvent() => mockIsReplyToEvent;
+
+  @override
+  FfiListFfiString readUsers() => MockFfiListFfiString(mockStrings: []);
+
+  @override
+  int? receiptTs(String userId) => 1744018801000;
 }

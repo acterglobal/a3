@@ -8,8 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TypingIndicator extends ConsumerWidget {
   final String roomId;
+  final bool isSelected;
 
-  const TypingIndicator({super.key, required this.roomId});
+  const TypingIndicator({super.key, required this.roomId, required this.isSelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,7 +50,7 @@ class TypingIndicator extends ConsumerWidget {
               ),
             },
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.primary,
+              color: isSelected ? theme.colorScheme.surfaceTint : theme.colorScheme.primary,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -62,7 +63,10 @@ class TypingIndicator extends ConsumerWidget {
   Widget _buildAnimatedCircles(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: AnimatedCircles(theme: Theme.of(context).typingIndicatorTheme),
+      child: AnimatedCircles(
+        theme: Theme.of(context).typingIndicatorTheme,
+        isSelected: isSelected,
+      ),
     );
   }
 }
