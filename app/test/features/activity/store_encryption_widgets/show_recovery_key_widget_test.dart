@@ -41,13 +41,17 @@ void main() {
     const testKey = 'test-recovery-key-123';
     String? clipboardData;
     
-    // Mock clipboard
-    SystemChannels.platform.setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'Clipboard.setData') {
-        clipboardData = methodCall.arguments['text'] as String;
-      }
-      return null;
-    });
+    // Mock clipboard using TestDefaultBinaryMessengerBinding
+    final binding = TestDefaultBinaryMessengerBinding.instance;
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (MethodCall methodCall) async {
+        if (methodCall.method == 'Clipboard.setData') {
+          clipboardData = methodCall.arguments['text'] as String;
+        }
+        return null;
+      },
+    );
 
     await pumpProviderWidget(tester, recoveryKey: testKey);
     
