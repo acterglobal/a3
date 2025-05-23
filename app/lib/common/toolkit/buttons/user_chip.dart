@@ -59,7 +59,7 @@ class UserChip extends ConsumerWidget {
                   context,
                 ).colorScheme.outline.withValues(alpha: 0.2),
               ),
-              borderRadius: BorderRadius.circular(fontSize),
+              borderRadius: BorderRadius.circular(8),
             )
             : BoxDecoration(
               color: Colors.black12,
@@ -68,7 +68,7 @@ class UserChip extends ConsumerWidget {
                   context,
                 ).colorScheme.outline.withValues(alpha: 0.2),
               ),
-              borderRadius: BorderRadius.circular(fontSize),
+              borderRadius: BorderRadius.circular(8),
             );
     final trailing = trailingBuilder?.call(
       context,
@@ -97,7 +97,7 @@ class UserChip extends ConsumerWidget {
           decoration: decoration,
           padding: EdgeInsets.symmetric(
             horizontal: (fontSize / 2).toDouble(),
-            vertical: 1,
+            vertical: 2,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
