@@ -18,8 +18,8 @@ impl UserValue {
         let user_id = c
             .user_id()
             .ok_or(Error::Remap(
-                "user".to_string(),
-                "missing user_id".to_string(),
+                "user".to_owned(),
+                "missing user_id".to_owned(),
             ))?
             .to_string();
         let display_name = match c.account().get_display_name().await {

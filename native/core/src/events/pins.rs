@@ -115,7 +115,7 @@ mod tests {
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.acter.global","age":11523850}"#;
         let event = serde_json::from_str::<OriginalPinEvent>(json_raw)?;
-        assert_eq!(event.content.title, "Seat arrangement".to_string());
+        assert_eq!(event.content.title, "Seat arrangement");
         Ok(())
     }
 
@@ -128,7 +128,7 @@ mod tests {
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.acter.global","age":11523850}"#;
         let event = serde_json::from_str::<OriginalPinEvent>(json_raw)?;
-        assert_eq!(event.content.title, "Seat arrangement".to_string());
+        assert_eq!(event.content.title, "Seat arrangement");
         Ok(())
     }
 }

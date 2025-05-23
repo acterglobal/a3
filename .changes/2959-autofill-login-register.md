@@ -1,1 +1,0 @@
-- [Improvement] : Added autofill support and enabled password manager compatibility for login and registration forms on both Android and iOS.

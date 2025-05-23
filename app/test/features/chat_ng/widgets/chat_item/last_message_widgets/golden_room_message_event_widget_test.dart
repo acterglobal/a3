@@ -20,8 +20,9 @@ void main() {
         overrides: [
           isActiveProvider(LabsFeature.chatNG).overrideWith((ref) => true),
           selectedChatIdProvider.overrideWith(
-            () =>
-                MockSelectedChatIdNotifier(membershipEventjoinedRoom22.roomId),
+            () => MockSelectedChatIdNotifier(
+              membershipEventjoinedRoom22('@emily:acter.global').roomId,
+            ),
           ),
           utcNowProvider.overrideWith(
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
@@ -31,65 +32,100 @@ void main() {
           shrinkWrap: true,
           children: [
             Material(
-              child: ChatItemWidget(roomId: membershipEventjoinedRoom22.roomId),
-            ),
-            Material(
-              child: ChatItemWidget(roomId: membershipEventLeftRoom23.roomId),
-            ),
-            Material(
               child: ChatItemWidget(
-                roomId: membershipEventInvitationAcceptedRoom24.roomId,
+                roomId:
+                    membershipEventjoinedRoom22('@emily:acter.global').roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventInvitationRejectedRoom25.roomId,
+                roomId: membershipEventLeftRoom23('@emily:acter.global').roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventInvitationRevokedRoom26.roomId,
+                roomId:
+                    membershipEventInvitationAcceptedRoom24(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventKnockAcceptedRoom27.roomId,
+                roomId:
+                    membershipEventInvitationRejectedRoom25(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventKnockRetractedRoom28.roomId,
+                roomId:
+                    membershipEventInvitationRevokedRoom26(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventKnockDeniedRoom29.roomId,
-              ),
-            ),
-            Material(
-              child: ChatItemWidget(roomId: membershipEventBannedRoom30.roomId),
-            ),
-            Material(
-              child: ChatItemWidget(
-                roomId: membershipEventUnbannedRoom31.roomId,
-              ),
-            ),
-            Material(
-              child: ChatItemWidget(roomId: membershipEventKickedRoom32.roomId),
-            ),
-            Material(
-              child: ChatItemWidget(
-                roomId: membershipEventInvitedRoom33.roomId,
+                roomId:
+                    membershipEventKnockAcceptedRoom27(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventKickedAndBannedRoom34.roomId,
+                roomId:
+                    membershipEventKnockRetractedRoom28(
+                      '@emily:acter.global',
+                    ).roomId,
               ),
             ),
             Material(
               child: ChatItemWidget(
-                roomId: membershipEventKnockedRoom35.roomId,
+                roomId:
+                    membershipEventKnockDeniedRoom29(
+                      '@emily:acter.global',
+                    ).roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId:
+                    membershipEventBannedRoom30('@emily:acter.global').roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId:
+                    membershipEventUnbannedRoom31('@emily:acter.global').roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId:
+                    membershipEventKickedRoom32('@emily:acter.global').roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId:
+                    membershipEventInvitedRoom33('@emily:acter.global').roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId:
+                    membershipEventKickedAndBannedRoom34(
+                      '@emily:acter.global',
+                    ).roomId,
+              ),
+            ),
+            Material(
+              child: ChatItemWidget(
+                roomId:
+                    membershipEventKnockedRoom35('@emily:acter.global').roomId,
               ),
             ),
           ],
