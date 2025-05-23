@@ -744,6 +744,26 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
                 'I found a great resource about CI/CD best practices: https://medium.com/tech-blog/ci-cd-best-practices-2025',
           ),
         ),
+
+        // --- User mention messages example ---
+        MockTimelineEventItem(
+          mockEventId: 'mock-mention-1',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097226000, // April 8, 2025 15:47:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                '[@Michael](https://matrix.to/#/@michael:acter.global) can you review the deployment checklist?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-mention-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                '[@Sarah](https://matrix.to/#/@sarah:acter.global) [@Lisa](https://matrix.to/#/@lisa:acter.global) I need your input on the database schema changes',
+          ),
+        ),
       ],
 );
 
