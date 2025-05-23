@@ -5,6 +5,8 @@ use tokio_retry::{
     Retry,
 };
 
+use crate::tests::activities::{all_activities_observer, assert_triggered_with_latest_activity};
+
 use super::setup_accounts;
 
 #[tokio::test]
@@ -14,6 +16,8 @@ async fn test_room_encryption() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let ((admin, _handle1), (observer, _handle2), room_id) =
         setup_accounts("room-encryption").await?;
+
+    let mut act_obs = all_activities_observer(&observer).await?;
 
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
@@ -74,6 +78,8 @@ async fn test_room_encryption() -> Result<()> {
         None,
         "old val of algorithm in room encryption is invalid"
     );
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

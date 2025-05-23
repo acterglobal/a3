@@ -4,16 +4,16 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_random_convo;
+use crate::utils::random_user_with_random_space;
 
 #[tokio::test]
 async fn test_room_create() -> Result<()> {
     let _ = env_logger::try_init();
 
-    let (mut user, room_id) = random_user_with_random_convo("room-create").await?;
+    let (mut user, room_id) = random_user_with_random_space("room-create").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
-
+    let _activities = user.all_activities()?;
     let room = user.room(room_id.to_string()).await?;
     let room_activities = user.activities_for_room(room_id.to_string())?;
 

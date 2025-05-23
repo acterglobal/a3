@@ -3920,6 +3920,10 @@ object Client {
     /// get the activities listener for a room
     fn activities_for_room(key: string) -> Result<Activities>;
 
+
+    /// get the activities listener for a all historic events
+    fn all_activities() -> Result<Activities>;
+
     /// get the activities listener for a specific object
     fn activities_for_obj(key: string) -> Result<Activities>;
 

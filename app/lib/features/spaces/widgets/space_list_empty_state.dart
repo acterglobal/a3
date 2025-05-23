@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

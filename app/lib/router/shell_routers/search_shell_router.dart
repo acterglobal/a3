@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/search/pages/quick_search_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';

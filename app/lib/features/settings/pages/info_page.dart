@@ -4,7 +4,7 @@ import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/toolkit/buttons/danger_action_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/config/setup.dart';

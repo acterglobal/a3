@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:acter/l10n/generated/l10n.dart';

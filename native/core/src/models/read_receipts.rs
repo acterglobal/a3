@@ -158,6 +158,7 @@ impl ActerModel for ReadReceipt {
             ReadReceipt::index_for(self.inner.on.event_id.clone()),
             IndexKey::ObjectHistory(self.inner.on.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

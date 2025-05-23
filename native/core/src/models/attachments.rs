@@ -209,6 +209,7 @@ impl ActerModel for Attachment {
             Attachment::index_for(self.inner.on.event_id.clone()),
             IndexKey::ObjectHistory(self.inner.on.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
     fn event_meta(&self) -> &EventMeta {
@@ -279,6 +280,7 @@ impl ActerModel for AttachmentUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.attachment.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
