@@ -1,4 +1,7 @@
 import 'dart:typed_data';
+import 'package:acter/common/providers/common_providers.dart';
+import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/preview/actions/show_room_preview.dart';
@@ -145,20 +148,47 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ElevatedButton(
-          onPressed: () => _onTapAcceptInvite(context),
-          child: Text(isDM ? lang.startDM : lang.accept),
+        ActerPrimaryActionButton.icon(
+          onPressed: _onTapAcceptInvite,
+          icon: const Icon(Icons.check),
+          label: Text(isDM ? lang.startDM : lang.accept),
         ),
         const SizedBox(width: 8),
-        OutlinedButton(
-          onPressed: () => _onTapDeclineInvite(context),
-          child: Text(lang.decline),
+        MenuAnchor(
+          builder: (
+            BuildContext context,
+            MenuController controller,
+            Widget? child,
+          ) {
+            return ActerInlineTextButton(
+              onPressed: () {
+                if (controller.isOpen) {
+                  controller.close();
+                } else {
+                  controller.open();
+                }
+              },
+              child: Text(lang.decline),
+            );
+          },
+          menuChildren: [
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.close),
+              onPressed: _onTapDeclineInvite,
+              child: Text(lang.decline),
+            ),
+            MenuItemButton(
+              leadingIcon: const Icon(Icons.block),
+              onPressed: _onTapDeclineAndBlockInvite,
+              child: Text(lang.declineAndBlock),
+            ),
+          ],
         ),
       ],
     );
   }
 
-  void _onTapAcceptInvite(BuildContext context) async {
+  void _onTapAcceptInvite() async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.joining);
     final client = await ref.read(alwaysClientProvider.future);
@@ -168,10 +198,6 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
     } catch (e, s) {
       _log.severe('Failure accepting invite', e, s);
       ref.invalidate(invitationListProvider);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
       EasyLoading.showError(
         lang.failedToAcceptInvite(e),
         duration: const Duration(seconds: 3),
@@ -183,36 +209,44 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
       // timeout to wait for 10seconds to ensure the room is ready
       await client.waitForRoom(roomId, 10);
     } catch (e) {
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
       EasyLoading.showToast(lang.joinedDelayed);
       // do not forward in this case
       return;
     }
-    if (!context.mounted) {
-      EasyLoading.dismiss();
-      return;
-    }
     EasyLoading.showToast(lang.joined);
-    if (isSpace) {
-      goToSpace(context, roomId);
-    } else {
-      goToChat(context, roomId);
+    if (context.mounted) {
+      if (isSpace) {
+        goToSpace(context, roomId);
+      } else {
+        goToChat(context, roomId);
+      }
     }
   }
 
-  void _onTapDeclineInvite(BuildContext context) async {
+  void _onTapDeclineAndBlockInvite() async {
+    final lang = L10n.of(context);
+    final senderId = widget.invitation.senderIdStr();
+    final rejected = await _onTapDeclineInvite();
+    if (!rejected) return;
+    final account = await ref.read(accountProvider.future);
+    try {
+      await account.ignoreUser(senderId);
+      EasyLoading.showToast(lang.userAddedToBlockList(senderId));
+    } catch (e) {
+      _log.severe('Failure blocking user', e);
+      EasyLoading.showError(
+        lang.failedToBlockUser(e),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<bool> _onTapDeclineInvite() async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.rejecting);
     try {
       bool res = await widget.invitation.reject();
       ref.invalidate(invitationListProvider);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
       if (res) {
         EasyLoading.showToast(lang.rejected);
       } else {
@@ -221,17 +255,16 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
           lang.failedToReject,
           duration: const Duration(seconds: 3),
         );
+        return false;
       }
     } catch (e, s) {
       _log.severe('Failure reject invite', e, s);
-      if (!context.mounted) {
-        EasyLoading.dismiss();
-        return;
-      }
       EasyLoading.showError(
         lang.failedToRejectInvite(e),
         duration: const Duration(seconds: 3),
       );
+      return false;
     }
+    return true;
   }
 }

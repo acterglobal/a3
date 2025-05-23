@@ -1,6 +1,7 @@
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/onboarding/pages/encrption_backup_page.dart';
 import 'package:acter/features/onboarding/pages/onboarding_encryption_recovery_page.dart';
+import 'package:acter/features/showcases/pages/invitations/invitations_section.dart';
 import 'package:acter/features/showcases/pages/showcase_list_page.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/config/constants.dart';
@@ -77,6 +78,19 @@ final List<GoRoute> showCaseRoutes =
               );
             },
           ),
+
+          GoRoute(
+            name: Routes.invitationsSectionShowcase.name,
+            path: Routes.invitationsSectionShowcase.route,
+            redirect: authGuardRedirect,
+            pageBuilder: (context, state) {
+              return MaterialPage(
+                key: state.pageKey,
+                child: InvitationsSectionShowcasePage(),
+              );
+            },
+          ),
+
           // index
           GoRoute(
             name: Routes.showcaseList.name,

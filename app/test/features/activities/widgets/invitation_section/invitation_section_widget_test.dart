@@ -2,69 +2,13 @@ import 'package:acter/features/activities/widgets/invitation_section/invitation_
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
 import 'package:acter/features/invitations/widgets/has_invites_tile.dart';
 import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
+import 'package:acter/features/showcases/pages/invitations/mock_invitations.dart';
 import 'package:acter/features/space/widgets/space_sections/section_header.dart';
 import 'package:acter/l10n/generated/l10n.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import '../../../../helpers/mock_invites.dart';
-import '../../../../helpers/mock_room_providers.dart';
 import '../../../../helpers/test_util.dart';
-
-class MockRoomInvitation extends Mock implements RoomInvitation {
-  final String roomId;
-  final String senderId;
-  final String senderDisplayNameStr;
-  final String roomDisplayNameStr;
-
-  MockRoomInvitation({
-    required this.roomId,
-    required this.senderId,
-    required this.senderDisplayNameStr,
-    required this.roomDisplayNameStr,
-  });
-
-  @override
-  String roomIdStr() => roomId;
-
-  @override
-  bool isDm() => false;
-
-  @override
-  MockRoom room() {
-    final mockRoom = MockRoom(isJoined: false);
-
-    when(() => mockRoom.isSpace()).thenReturn(true);
-
-    when(
-      () => mockRoom.displayName(),
-    ).thenAnswer((_) => Future.value(MockOptionString(roomDisplayNameStr)));
-
-    // Add room avatar mock
-    when(
-      () => mockRoom.avatar(null),
-    ).thenAnswer((_) => Future.value(MockOptionBuffer()));
-    return mockRoom;
-  }
-
-  @override
-  MockUserProfile? senderProfile() {
-    final mockSenderProfile = MockUserProfile();
-    when(
-      () => mockSenderProfile.displayName(),
-    ).thenReturn(senderDisplayNameStr);
-    when(() => mockSenderProfile.hasAvatar()).thenReturn(false);
-    when(
-      () => mockSenderProfile.getAvatar(null),
-    ).thenAnswer((_) => Future.value(MockOptionBuffer()));
-    return mockSenderProfile;
-  }
-
-  @override
-  String senderIdStr() => senderId;
-}
 
 class SectionTestWidget extends ConsumerWidget {
   const SectionTestWidget({super.key});
@@ -87,15 +31,7 @@ void main() {
     late List<MockRoomInvitation> mockInvitations;
 
     setUp(() {
-      mockInvitations = List.generate(
-        5,
-        (index) => MockRoomInvitation(
-          roomId: 'roomId$index',
-          senderId: 'senderId$index',
-          senderDisplayNameStr: 'senderDisplayName$index',
-          roomDisplayNameStr: 'roomDisplayName$index',
-        ),
-      );
+      mockInvitations = generateMockInvitations(5);
     });
     testWidgets('shows nothing', (tester) async {
       await tester.pumpProviderWidget(
