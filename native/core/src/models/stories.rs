@@ -47,6 +47,7 @@ impl ActerModel for Story {
             IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Stories),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -113,6 +114,7 @@ impl ActerModel for StoryUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.story_entry.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

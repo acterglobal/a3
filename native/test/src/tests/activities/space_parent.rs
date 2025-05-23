@@ -5,6 +5,8 @@ use tokio_retry::{
     Retry,
 };
 
+use crate::tests::activities::{all_activities_observer, assert_triggered_with_latest_activity};
+
 use super::setup_accounts;
 
 #[tokio::test]
@@ -16,7 +18,7 @@ async fn test_space_parent() -> Result<()> {
 
     let settings = CreateConvoSettingsBuilder::default().build()?;
     let parent_room_id = admin.create_convo(Box::new(settings)).await?;
-
+    let mut act_obs = all_activities_observer(&observer).await?;
     let room = admin.room(room_id.to_string()).await?;
     let room_activities = observer.activities_for_room(room_id.to_string())?;
     let mut activities_listenerd = room_activities.subscribe();
@@ -86,6 +88,8 @@ async fn test_space_parent() -> Result<()> {
         !content.canonical_new_val(),
         "new val of canonical is invalid"
     );
+
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
 
     Ok(())
 }

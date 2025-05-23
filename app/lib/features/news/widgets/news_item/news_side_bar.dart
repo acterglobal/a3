@@ -4,7 +4,7 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/like_button.dart';
 import 'package:acter/common/widgets/visibility/shadow_effect_widget.dart';
 import 'package:acter/features/comments/providers/comments_providers.dart';

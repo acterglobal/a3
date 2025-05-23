@@ -1,6 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/utils/constants.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/categories/organize_categories_page.dart';
 import 'package:acter/features/categories/utils/category_utils.dart';
@@ -52,6 +51,7 @@ import 'package:acter/features/tasks/pages/task_item_detail_page.dart';
 import 'package:acter/features/tasks/pages/task_list_details_page.dart';
 import 'package:acter/features/tasks/pages/tasks_list_page.dart';
 import 'package:acter/router/router.dart';
+import 'package:acter/features/showcases/routes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -676,4 +676,5 @@ final homeShellRoutes = [
       );
     },
   ),
+  ...showCaseRoutes,
 ];

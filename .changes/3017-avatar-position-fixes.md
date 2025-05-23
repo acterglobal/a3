@@ -1,0 +1,1 @@
+- [Fix] : Now user avatar position remains consistent event when there are reaction on message.

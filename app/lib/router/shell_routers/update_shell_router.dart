@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/news/pages/news_list_page.dart';
 import 'package:acter/router/router.dart';
 import 'package:flutter/material.dart';

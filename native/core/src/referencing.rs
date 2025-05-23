@@ -61,6 +61,7 @@ pub enum IndexKey {
     ObjectList(OwnedEventId, ObjectListIndex),
     Special(SpecialListsIndex),
     Redacted,
+    AllHistory,
 }
 
 #[derive(
