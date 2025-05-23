@@ -50,7 +50,7 @@ class TypingIndicator extends ConsumerWidget {
               ),
             },
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.primary,
+              color: isSelected ? theme.colorScheme.surfaceTint : theme.colorScheme.primary,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
