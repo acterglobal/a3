@@ -95,7 +95,10 @@ impl RedactedActerModel {
 
 impl ActerModel for RedactedActerModel {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
-        let mut indizes = vec![IndexKey::RoomHistory(self.meta.room_id.clone())];
+        let mut indizes = vec![
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
+        ];
         if let Some(origin_event_id) = self.content.content.redacts.as_ref() {
             indizes.push(IndexKey::ObjectHistory(origin_event_id.clone()))
         }

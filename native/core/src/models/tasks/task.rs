@@ -110,6 +110,7 @@ impl ActerModel for Task {
             IndexKey::RoomHistory(self.meta.room_id.clone()),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::ObjectHistory(self.inner.task_list_id.event_id.clone()),
+            IndexKey::AllHistory,
         ];
         if self.is_assigned(user_id) {
             indizes.push(if self.is_done() {
@@ -187,6 +188,7 @@ impl ActerModel for TaskUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -255,6 +257,7 @@ impl ActerModel for TaskSelfAssign {
         vec![
             IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -329,6 +332,7 @@ impl ActerModel for TaskSelfUnassign {
         vec![
             IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
