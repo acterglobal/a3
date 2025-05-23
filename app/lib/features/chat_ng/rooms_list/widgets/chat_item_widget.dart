@@ -69,7 +69,7 @@ class ChatItemWidget extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(child: ChatTypingLastMessageContainerWidget(roomId: roomId)),
+        Expanded(child: ChatTypingLastMessageContainerWidget(roomId: roomId, isSelected: isChatSelected)),
         BookmarkIconWidget(roomId: roomId),
         MuteIconWidget(roomId: roomId),
         UnreadCountWidget(roomId: roomId, isSelected: isChatSelected),

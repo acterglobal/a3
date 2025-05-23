@@ -132,30 +132,25 @@ class _ReadReceiptsList extends ConsumerWidget {
       itemBuilder: (context, index) {
         final userId = userIds[index];
         final timestamp = timestamps[index];
-        return Consumer(
-          builder: (context, ref, child) {
-            final member = ref.watch(
-              memberAvatarInfoProvider((userId: userId, roomId: roomId)),
-            );
-            return ListTile(
-              minTileHeight: 10,
-              horizontalTitleGap: 4,
-              dense: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-              leading: ActerAvatar(options: AvatarOptions.DM(member, size: 8)),
-              title: Text(
-                member.displayName ?? userId,
-                style: textTheme.labelSmall,
-              ),
-              trailing: Text(
-                jiffyDateTimestamp(context, timestamp, showDay: true),
-                style: textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurface,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            );
-          },
+        final member = ref.watch(
+          memberAvatarInfoProvider((userId: userId, roomId: roomId)),
+        );
+
+        return ListTile(
+          minTileHeight: 10,
+          horizontalTitleGap: 4,
+          dense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+          leading: ActerAvatar(options: AvatarOptions.DM(member, size: 8)),
+          title: Text(
+            member.displayName ?? userId,
+            style: textTheme.labelSmall,
+          ),
+          trailing: Text(
+            jiffyDateTimestamp(context, timestamp, showDay: true),
+            style: textTheme.labelSmall?.copyWith(color: colorScheme.onSurface),
+            overflow: TextOverflow.ellipsis,
+          ),
         );
       },
     );

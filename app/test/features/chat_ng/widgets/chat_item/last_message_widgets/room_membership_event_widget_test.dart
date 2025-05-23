@@ -53,18 +53,17 @@ void main() {
 
     group('Member changes with 2 cases', () {
       testWidgets('Joined message - Mine', (WidgetTester tester) async {
+        final senderId = '@emily:acter.global';
         final mockEventItemData =
-            membershipEventjoinedRoom22
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
-        final senderId = mockEventItemData!.sender().toString();
+            membershipEventjoinedRoom22(
+              senderId,
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
 
         await createWidgetUnderTest(
           tester: tester,
           roomId: 'room-id',
           myUserId: senderId,
-          mockEventItem: mockEventItemData,
+          mockEventItem: mockEventItemData!,
         );
 
         final lang = L10n.of(
@@ -78,10 +77,9 @@ void main() {
 
       testWidgets('Joined message - Other', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventjoinedRoom22
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventjoinedRoom22(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -103,10 +101,9 @@ void main() {
 
       testWidgets('Left message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventLeftRoom23
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventLeftRoom23(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -124,10 +121,9 @@ void main() {
 
       testWidgets('Left message - Other', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventLeftRoom23
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventLeftRoom23(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -151,10 +147,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitationAcceptedRoom24
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitationAcceptedRoom24(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -177,10 +172,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitationAcceptedRoom24
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitationAcceptedRoom24(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -206,10 +200,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitationRejectedRoom25
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitationRejectedRoom25(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -232,10 +225,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitationRejectedRoom25
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitationRejectedRoom25(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -261,10 +253,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitationRevokedRoom26
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitationRevokedRoom26(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -287,10 +278,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitationRevokedRoom26
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitationRevokedRoom26(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -314,10 +304,9 @@ void main() {
 
       testWidgets('Knock accepted message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventKnockAcceptedRoom27
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKnockAcceptedRoom27(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -340,10 +329,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKnockAcceptedRoom27
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKnockAcceptedRoom27(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -369,10 +357,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKnockRetractedRoom28
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKnockRetractedRoom28(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -395,10 +382,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKnockRetractedRoom28
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKnockRetractedRoom28(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -422,10 +408,9 @@ void main() {
 
       testWidgets('Knock denied message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventKnockDeniedRoom29
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKnockDeniedRoom29(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -446,10 +431,9 @@ void main() {
 
       testWidgets('Knock denied message - Other', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventKnockDeniedRoom29
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKnockDeniedRoom29(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -475,10 +459,9 @@ void main() {
     group('Member changes with 3 cases', () {
       testWidgets('Banned message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventBannedRoom30
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventBannedRoom30(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -500,10 +483,9 @@ void main() {
 
       testWidgets('Banned message - On me', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventBannedRoom30
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventBannedRoom30(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -527,10 +509,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventBannedRoom30
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventBannedRoom30(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
         final contentUserId =
             mockEventItemData.membershipContent()?.userId().toString() ?? '';
@@ -555,10 +536,9 @@ void main() {
 
       testWidgets('Unbanned message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventUnbannedRoom31
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventUnbannedRoom31(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -582,10 +562,9 @@ void main() {
 
       testWidgets('Unbanned message - On me', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventUnbannedRoom31
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventUnbannedRoom31(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -609,10 +588,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventUnbannedRoom31
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventUnbannedRoom31(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
         final contentUserId =
             mockEventItemData.membershipContent()?.userId().toString() ?? '';
@@ -637,10 +615,9 @@ void main() {
 
       testWidgets('Kicked message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventKickedRoom32
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKickedRoom32(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -662,10 +639,9 @@ void main() {
 
       testWidgets('Kicked message - On me', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventKickedRoom32
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKickedRoom32(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -689,10 +665,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKickedRoom32
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKickedRoom32(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
         final contentUserId =
             mockEventItemData.membershipContent()?.userId().toString() ?? '';
@@ -717,10 +692,9 @@ void main() {
 
       testWidgets('Invited message - Mine', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventInvitedRoom33
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitedRoom33(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -744,10 +718,9 @@ void main() {
 
       testWidgets('Invited message - On me', (WidgetTester tester) async {
         final mockEventItemData =
-            membershipEventInvitedRoom33
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitedRoom33(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -771,10 +744,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventInvitedRoom33
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventInvitedRoom33(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
         final contentUserId =
             mockEventItemData.membershipContent()?.userId().toString() ?? '';
@@ -801,10 +773,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKickedAndBannedRoom34
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKickedAndBannedRoom34(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final contentUserId =
             mockEventItemData!.membershipContent()?.userId().toString() ?? '';
 
@@ -830,10 +801,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKickedAndBannedRoom34
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKickedAndBannedRoom34(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
 
         await createWidgetUnderTest(
@@ -859,10 +829,9 @@ void main() {
         WidgetTester tester,
       ) async {
         final mockEventItemData =
-            membershipEventKickedAndBannedRoom34
-                .mockConvo
-                .mockTimelineItem
-                ?.mockTimelineEventItem;
+            membershipEventKickedAndBannedRoom34(
+              '@emily:acter.global',
+            ).mockConvo.mockTimelineItem?.mockTimelineEventItem;
         final senderId = mockEventItemData!.sender().toString();
         final contentUserId =
             mockEventItemData.membershipContent()?.userId().toString() ?? '';

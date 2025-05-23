@@ -1,5 +1,4 @@
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/chat/models/media_chat_state/media_chat_state.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
@@ -84,13 +83,11 @@ class FileMessageEvent extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          child: ActerSelectionArea(
-            child: Text(
-              content.body(),
-              style: textTheme.labelLarge,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
+          child: Text(
+            content.body(),
+            style: textTheme.labelLarge,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ),
         const SizedBox(height: 5),

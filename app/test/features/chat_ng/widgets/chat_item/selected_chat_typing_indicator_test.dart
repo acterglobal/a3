@@ -1,5 +1,4 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/notifiers/chat_notifiers.dart';
 import 'package:acter/features/chat_ng/rooms_list/widgets/chat_item_widget.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/data/general_usecases.dart';
@@ -36,9 +35,9 @@ void main() {
         overrides: [
           isActiveProvider(LabsFeature.chatNG).overrideWith((ref) => true),
           isActiveProvider(LabsFeature.chatUnread).overrideWith((ref) => true),
-          myUserIdStrProvider.overrideWith((ref) => '@emily:acter.global'),
           selectedChatIdProvider.overrideWith(
-            () => MockSelectedChatIdNotifier(emilyDmMutedBookmarkedRoom1RoomId),
+            () =>
+                MockSelectedChatIdNotifier(productTeamMutedWithSingleTypingUserRoom2('@michael:acter.global').roomId)
           ),
           utcNowProvider.overrideWith(
             (ref) => MockUtcNowNotifier(ts: 1744707051000),
@@ -49,7 +48,7 @@ void main() {
           children: [
             Material(
               child: ChatItemWidget(
-                roomId: emilyDmMutedBookmarkedRoom1RoomId,
+                roomId: productTeamMutedWithSingleTypingUserRoom2('@michael:acter.global').roomId,
                 showSelectedIndication: true,
               ),
             ),
@@ -64,7 +63,7 @@ void main() {
 
       await expectLater(
         find.byType(ChatItemWidget),
-        matchesGoldenFile('goldens/unread_counter_visible_on_selection.png'),
+        matchesGoldenFile('goldens/typing_indicator_visible_on_selection.png'),
       );
     });
   });
