@@ -92,6 +92,7 @@ impl ActerModel for CalendarEvent {
             IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Calendar),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -162,6 +163,7 @@ impl ActerModel for CalendarEventUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.calendar_event.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

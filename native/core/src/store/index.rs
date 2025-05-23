@@ -272,9 +272,12 @@ pub enum StoreIndex {
 impl StoreIndex {
     pub fn new_for(key: &IndexKey, meta: &EventMeta) -> StoreIndex {
         match key {
-            IndexKey::ObjectHistory(_) | IndexKey::RoomHistory(_) => StoreIndex::Ranked(
-                RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
-            ),
+            IndexKey::AllHistory | IndexKey::ObjectHistory(_) | IndexKey::RoomHistory(_) => {
+                StoreIndex::Ranked(RankedIndex::new_with(
+                    meta.origin_server_ts,
+                    meta.event_id.clone(),
+                ))
+            }
             //RSVPs are latest first for collection
             IndexKey::ObjectList(_, ObjectListIndex::Rsvp) => StoreIndex::Ranked(
                 RankedIndex::new_with(meta.origin_server_ts, meta.event_id.clone()),
