@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 
 enum LabsFeature {

@@ -269,6 +269,7 @@ impl ActerModel for Reaction {
             Reaction::index_for(self.inner.relates_to.event_id.clone()),
             IndexKey::ObjectHistory(self.inner.relates_to.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

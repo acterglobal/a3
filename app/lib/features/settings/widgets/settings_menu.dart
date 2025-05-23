@@ -2,7 +2,7 @@ import 'package:acter/common/dialogs/deactivation_confirmation.dart';
 import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
 import 'package:acter/router/providers/router_providers.dart';

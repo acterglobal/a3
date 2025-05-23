@@ -5,7 +5,7 @@ use tokio_retry::{
 };
 
 use super::get_latest_activity;
-use crate::utils::random_user_with_template;
+use crate::{tests::activities::assert_latest_activity, utils::random_user_with_template};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -46,6 +46,7 @@ async fn calendar_creation_activity() -> Result<()> {
     .await?;
 
     assert_eq!(user.calendar_events().await?.len(), 1);
+    let activities = user.all_activities()?;
 
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
@@ -58,5 +59,8 @@ async fn calendar_creation_activity() -> Result<()> {
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "event");
     assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
+
+    assert_latest_activity(&activities, activity.event_id_str()).await?;
+
     Ok(())
 }
