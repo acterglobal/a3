@@ -136,6 +136,8 @@ async fn state_update_triggers_room_update() -> Result<()> {
     // clear the streem
     while room_stream.next().now_or_never().flatten().is_some() {}
 
+    let notifi_mode = convo.notification_mode().await?;
+    assert_eq!(notifi_mode, "none");
     convo.set_name("a fresh new name".to_owned()).await?;
     sleep(Duration::from_secs(2)).await; // make sure it came through the sync
     assert_eq!(room_stream.next().now_or_never().flatten(), Some(true));
