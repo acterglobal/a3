@@ -1,4 +1,4 @@
-use acter::api::{ActerModel, MediaSource, ThumbnailInfo, TimelineItem};
+use acter::api::ActerModel;
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -11,7 +11,8 @@ use tokio_retry::{
 };
 
 use crate::utils::{
-    random_user_with_random_convo, random_user_with_random_space, random_user_with_template,
+    match_media_msg, random_user_with_random_convo, random_user_with_random_space,
+    random_user_with_template,
 };
 
 #[tokio::test]
@@ -64,9 +65,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
 
     // image msg may reach via pushback action or reset action
     let mut i = 30;
-    let mut found = false;
-    let mut thumbnail_source = None;
-    let mut thumbnail_info = None;
+    let mut found = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -74,12 +73,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some((thumb_src, thumb_info)) =
-                        match_media_msg(&value, "image/jpeg", &jpg_name)
-                    {
-                        found = true;
-                        thumbnail_source = thumb_src;
-                        thumbnail_info = thumb_info;
+                    if let Some(msg_content) = match_media_msg(&value, "image/jpeg", &jpg_name) {
+                        found = Some(msg_content);
                     }
                 }
                 "Reset" => {
@@ -87,12 +82,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some((thumb_src, thumb_info)) =
-                            match_media_msg(value, "image/jpeg", &jpg_name)
-                        {
-                            found = true;
-                            thumbnail_source = thumb_src;
-                            thumbnail_info = thumb_info;
+                        if let Some(msg_content) = match_media_msg(value, "image/jpeg", &jpg_name) {
+                            found = Some(msg_content);
                             break;
                         }
                     }
@@ -100,18 +91,17 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
                 _ => {}
             }
             // yay
-            if found {
+            if found.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        thumbnail_source.is_some(),
-        "Even after 30 seconds, image msg not received",
-    );
-    let thumbnail_info = thumbnail_info.context("Even after 30 seconds, image msg not received")?;
+    let msg_content = found.context("Even after 30 seconds, image msg not received")?;
+    let thumbnail_info = msg_content
+        .thumbnail_info()
+        .context("thumbnail info should exist")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
         Some("image/png"),
@@ -176,9 +166,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
 
     // image msg may reach via pushback action or reset action
     let mut i = 30;
-    let mut found = false;
-    let mut thumbnail_source = None;
-    let mut thumbnail_info = None;
+    let mut found = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -186,12 +174,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some((thumb_src, thumb_info)) =
-                        match_media_msg(&value, "video/mp4", &mp4_name)
-                    {
-                        found = true;
-                        thumbnail_source = thumb_src;
-                        thumbnail_info = thumb_info;
+                    if let Some(msg_content) = match_media_msg(&value, "video/mp4", &mp4_name) {
+                        found = Some(msg_content);
                     }
                 }
                 "Reset" => {
@@ -199,12 +183,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some((thumb_src, thumb_info)) =
-                            match_media_msg(value, "video/mp4", &mp4_name)
-                        {
-                            found = true;
-                            thumbnail_source = thumb_src;
-                            thumbnail_info = thumb_info;
+                        if let Some(msg_content) = match_media_msg(value, "video/mp4", &mp4_name) {
+                            found = Some(msg_content);
                             break;
                         }
                     }
@@ -212,18 +192,17 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
                 _ => {}
             }
             // yay
-            if found {
+            if found.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    assert!(
-        thumbnail_source.is_some(),
-        "Even after 30 seconds, image msg not received",
-    );
-    let thumbnail_info = thumbnail_info.context("Even after 30 seconds, image msg not received")?;
+    let msg_content = found.context("Even after 30 seconds, image msg not received")?;
+    let thumbnail_info = msg_content
+        .thumbnail_info()
+        .context("thumbnail info should exist")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
         Some("image/png"),
@@ -236,30 +215,6 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     );
 
     Ok(())
-}
-
-fn match_media_msg(
-    msg: &TimelineItem,
-    content_type: &str,
-    body: &str,
-) -> Option<(Option<MediaSource>, Option<ThumbnailInfo>)> {
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if let Some(mimetype) = msg_content.mimetype() {
-                if mimetype == content_type && msg_content.body() == body {
-                    // exclude the pending msg
-                    if event_item.event_id().is_some() {
-                        return Some((
-                            msg_content.thumbnail_source(),
-                            msg_content.thumbnail_info(),
-                        ));
-                    }
-                }
-            }
-        }
-    }
-    None
 }
 
 #[tokio::test]

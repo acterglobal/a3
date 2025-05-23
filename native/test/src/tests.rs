@@ -6,6 +6,7 @@ mod blurhash;
 mod bookmarks;
 mod calendar;
 mod categories;
+mod download;
 mod formatted_body;
 mod invitation;
 mod msg_draft;

@@ -1,4 +1,3 @@
-use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -10,7 +9,7 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_random_convo;
+use crate::utils::{match_media_msg, random_user_with_random_convo};
 
 #[tokio::test]
 async fn image_blurhash_support() -> Result<()> {
@@ -56,7 +55,7 @@ async fn image_blurhash_support() -> Result<()> {
 
     // image msg may reach via pushback action or reset action
     let mut i = 30;
-    let mut blurhash = None;
+    let mut found = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -64,8 +63,8 @@ async fn image_blurhash_support() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(bhash) = match_media_msg(&value, "image/jpeg", &jpg_name) {
-                        blurhash = Some(bhash);
+                    if let Some(msg_content) = match_media_msg(&value, "image/jpeg", &jpg_name) {
+                        found = Some(msg_content);
                     }
                 }
                 "Reset" => {
@@ -73,8 +72,8 @@ async fn image_blurhash_support() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(bhash) = match_media_msg(value, "image/jpeg", &jpg_name) {
-                            blurhash = Some(bhash);
+                        if let Some(msg_content) = match_media_msg(value, "image/jpeg", &jpg_name) {
+                            found = Some(msg_content);
                             break;
                         }
                     }
@@ -82,16 +81,16 @@ async fn image_blurhash_support() -> Result<()> {
                 _ => {}
             }
             // yay
-            if blurhash.is_some() {
+            if found.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let blurhash = blurhash.context("Even after 30 seconds, image msg not received")?;
+    let msg_content = found.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        blurhash.as_deref(),
+        msg_content.blurhash().as_deref(),
         Some("KingFisher"),
         "image blurhash not available",
     );
@@ -143,7 +142,7 @@ async fn video_blurhash_support() -> Result<()> {
 
     // image msg may reach via pushback action or reset action
     let mut i = 30;
-    let mut blurhash = None;
+    let mut found = None;
     while i > 0 {
         if let Some(diff) = stream.next().now_or_never().flatten() {
             match diff.action().as_str() {
@@ -151,8 +150,8 @@ async fn video_blurhash_support() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(bhash) = match_media_msg(&value, "video/mp4", &mp4_name) {
-                        blurhash = Some(bhash);
+                    if let Some(msg_content) = match_media_msg(&value, "video/mp4", &mp4_name) {
+                        found = Some(msg_content);
                     }
                 }
                 "Reset" => {
@@ -160,8 +159,8 @@ async fn video_blurhash_support() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(bhash) = match_media_msg(value, "video/mp4", &mp4_name) {
-                            blurhash = Some(bhash);
+                        if let Some(msg_content) = match_media_msg(value, "video/mp4", &mp4_name) {
+                            found = Some(msg_content);
                             break;
                         }
                     }
@@ -169,36 +168,19 @@ async fn video_blurhash_support() -> Result<()> {
                 _ => {}
             }
             // yay
-            if blurhash.is_some() {
+            if found.is_some() {
                 break;
             }
         }
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let blurhash = blurhash.context("Even after 30 seconds, image msg not received")?;
+    let msg_content = found.context("Even after 30 seconds, image msg not received")?;
     assert_eq!(
-        blurhash.as_deref(),
+        msg_content.blurhash().as_deref(),
         Some("Big Buck Bunny"),
         "video blurhash not available",
     );
 
     Ok(())
-}
-
-fn match_media_msg(msg: &TimelineItem, content_type: &str, body: &str) -> Option<Option<String>> {
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if let Some(mimetype) = msg_content.mimetype() {
-                if mimetype == content_type && msg_content.body() == body {
-                    // exclude the pending msg
-                    if event_item.event_id().is_some() {
-                        return Some(msg_content.blurhash());
-                    }
-                }
-            }
-        }
-    }
-    None
 }
