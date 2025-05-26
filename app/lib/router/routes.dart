@@ -122,6 +122,10 @@ enum Routes {
   // onboarding
   showCaseOnboardingEncryptionRecovery('/demo/onboarding/encryption-recovery'),
   showCaseOnboardingEncryptionBackup('/demo/onboarding/encryption-backup'),
+
+  // invitations
+  invitationsSectionShowcase('/demo/invitations/invitations-section'),
+
   // showcase index
   showcaseList('/demo'),
 
