@@ -1,4 +1,6 @@
 import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
@@ -11,13 +13,18 @@ import 'package:go_router/go_router.dart';
 class InvitePage extends ConsumerWidget {
   static const invitePageKey = Key('room-invite-page-key');
   final String roomId;
+  final CallNextPage? callNextPage;
 
-  const InvitePage({required this.roomId, super.key = invitePageKey});
+  const InvitePage({
+    required this.roomId,
+    this.callNextPage,
+    super.key = invitePageKey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: callNextPage == null ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }
@@ -92,25 +99,44 @@ class InvitePage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            MenuItemWidget(
-              iconData: Icons.people_alt_outlined,
-              title: lang.inviteSpaceMembersTitle,
-              subTitle: lang.inviteSpaceMembersSubtitle,
-              onTap:
-                  () => context.pushNamed(
-                    Routes.inviteSpaceMembers.name,
-                    queryParameters: {'roomId': roomId.toString()},
-                  ),
-            ),
+            if (callNextPage == null)
+              MenuItemWidget(
+                iconData: Icons.people_alt_outlined,
+                title: lang.inviteSpaceMembersTitle,
+                subTitle: lang.inviteSpaceMembersSubtitle,
+                onTap:
+                    () => context.pushNamed(
+                      Routes.inviteSpaceMembers.name,
+                      queryParameters: {'roomId': roomId.toString()},
+                    ),
+              ),
             MenuItemWidget(
               iconData: Icons.person_add_alt_1,
               title: lang.inviteIndividualUsersTitle,
               subTitle: lang.inviteIndividualUsersSubtitle,
-              onTap:
-                  () => context.pushNamed(
+              onTap: () {
+                if (callNextPage != null) {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                    showDragHandle: true,
+                    context: context,
+                    useSafeArea: true,
+                    isScrollControlled: true,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    builder: (context) {    
+                      return InviteIndividualUsers(
+                        roomId: roomId,
+                        callNextPage: callNextPage,
+                      );
+                    },
+                  );
+                } else {
+                  context.pushNamed(
                     Routes.inviteIndividual.name,
                     queryParameters: {'roomId': roomId.toString()},
-                  ),
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -148,7 +174,10 @@ class InvitePage extends ConsumerWidget {
               style: textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
-            InviteCodeUI(roomId: roomId),
+            InviteCodeUI(
+              roomId: roomId,
+              callNextPage: callNextPage,
+            ),
           ],
         ),
       ),

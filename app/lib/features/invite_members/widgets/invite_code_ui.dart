@@ -2,6 +2,8 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/invite_members/pages/share_invite_code.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/dotted_border_widget.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';
@@ -19,8 +21,9 @@ final _log = Logger('a3::invite::invite_code');
 
 class InviteCodeUI extends ConsumerStatefulWidget {
   final String roomId;
+  final CallNextPage? callNextPage;
 
-  const InviteCodeUI({super.key, required this.roomId});
+  const InviteCodeUI({super.key, required this.roomId, this.callNextPage});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _InviteCodeUIState();
@@ -113,29 +116,49 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
           ),
         ),
         const SizedBox(height: 10),
-        Align(
-          alignment: Alignment.centerRight,
-          child: ActerInlineTextButton(
-            onPressed: () async {
-              final token = await ref.read(
-                superInviteTokenProvider(inviteCode).future,
-              );
-              if (!context.mounted) return;
-              context.pushNamed(Routes.createSuperInvite.name, extra: token);
-            },
-            child: Text(lang.manage),
+        if (widget.callNextPage == null)
+          Align(
+            alignment: Alignment.centerRight,
+            child: ActerInlineTextButton(
+              onPressed: () async {
+                final token = await ref.read(
+                  superInviteTokenProvider(inviteCode).future,
+                );
+                if (!context.mounted) return;
+                context.pushNamed(Routes.createSuperInvite.name, extra: token);
+              },
+              child: Text(lang.manage),
+            ),
           ),
-        ),
         const SizedBox(height: 10),
         ActerPrimaryActionButton(
-          onPressed:
-              () => context.pushNamed(
+          onPressed: () {
+            if (widget.callNextPage != null) {
+              Navigator.pop(context);
+              showModalBottomSheet(
+                showDragHandle: true,
+                context: context,
+                useSafeArea: true,
+                isScrollControlled: true,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                builder: (context) {
+                  return ShareInviteCode(
+                    inviteCode: inviteCode,
+                    roomId: widget.roomId,
+                    callNextPage: widget.callNextPage,
+                  );
+                },
+              );
+            } else {
+              context.pushNamed(
                 Routes.shareInviteCode.name,
                 queryParameters: {
                   'inviteCode': inviteCode,
                   'roomId': widget.roomId,
                 },
-              ),
+              );
+            }
+          },
           child: Text(lang.share),
         ),
       ],

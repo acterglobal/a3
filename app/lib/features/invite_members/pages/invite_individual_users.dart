@@ -1,8 +1,10 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
+import 'package:acter/features/onboarding/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -10,13 +12,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
+  final CallNextPage? callNextPage;
 
-  const InviteIndividualUsers({super.key, required this.roomId});
+  const InviteIndividualUsers({super.key, required this.roomId, this.callNextPage});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: callNextPage == null ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }
@@ -36,11 +39,13 @@ class InviteIndividualUsers extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
-            Text(
-              lang.inviteIndividualUsersDescription,
-              textAlign: TextAlign.center,
-            ),
+            if (callNextPage == null)...[
+              const SizedBox(height: 10),
+              Text(
+                lang.inviteIndividualUsersDescription,
+                textAlign: TextAlign.center,
+              ),
+            ],
             const SizedBox(height: 10),
             ActerSearchWidget(
               initialText: ref.read(userSearchValueProvider),
@@ -72,9 +77,32 @@ class InviteIndividualUsers extends ConsumerWidget {
                 },
               ),
             ),
+            if (callNextPage != null)...[
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildActionButton(context, lang),
+              ),
+              const SizedBox(height: 16),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+   Widget _buildActionButton(BuildContext context, L10n lang) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ActerPrimaryActionButton(
+          onPressed: () {
+            Navigator.pop(context);
+            callNextPage?.call();
+          },
+          child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+        ),
+      ],
     );
   }
 
