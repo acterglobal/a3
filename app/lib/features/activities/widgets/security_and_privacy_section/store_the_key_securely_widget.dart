@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/providers/key_storage_urgency_provider.dart';
 import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/show_recovery_key_widget.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
@@ -24,8 +25,8 @@ class StoreTheKeySecurelyWidget extends ConsumerWidget {
             if (keyText == null || keyText.isEmpty) {
               return SizedBox.shrink();
             }
-            final urgency = KeyStorageUrgencyAction.getUrgencyLevel(storedTimestamp);
-            final urgencyColor = KeyStorageUrgencyAction.getUrgencyColor(context, urgency);
+            final urgency = ref.watch(keyStorageUrgencyProvider(storedTimestamp));
+            final urgencyColor = getUrgencyColor(context, urgency);
             
             return ActivitySectionItemWidget(
               icon: PhosphorIcons.lock(),
