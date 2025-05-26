@@ -68,7 +68,7 @@ void main() {
         'This is a longer message that will definitely span multiple lines. It contains more text to ensure we test how the dialog handles longer content while maintaining proper alignment and spacing of all components.';
     final superLongMessage =
         'This is an extremely long message that will require scrolling to view completely. ' *
-        10;
+        20;
 
     Future<void> showMessageActionsDialog(
       WidgetTester tester, {
@@ -130,35 +130,36 @@ void main() {
         ],
         child: Builder(
           builder: (context) {
-            final messageWidget = ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              child:
-                  isMe
-                      ? ChatBubble.me(
-                        context: context,
-                        isFirstMessageBySender: true,
-                        isLastMessageBySender: true,
-                        child: TextMessageEvent(
-                          content: messageItem.mockMsgContent as MsgContent,
-                          roomId: roomId,
-                        ),
-                      )
-                      : ChatBubble(
-                        context: context,
-                        isFirstMessageBySender: true,
-                        isLastMessageBySender: true,
-                        child: TextMessageEvent(
-                          content: messageItem.mockMsgContent as MsgContent,
-                          roomId: roomId,
-                        ),
-                      ),
-            );
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (context.mounted) {
+                final roomContext = chatRoomKey.currentContext;
+                final messageWidget = ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(roomContext!).size.width * 0.7,
+                  ),
+                  child:
+                      isMe
+                          ? ChatBubble.me(
+                            context: roomContext,
+                            isFirstMessageBySender: true,
+                            isLastMessageBySender: true,
+                            child: TextMessageEvent(
+                              content: messageItem.mockMsgContent as MsgContent,
+                              roomId: roomId,
+                            ),
+                          )
+                          : ChatBubble(
+                            context: roomContext,
+                            isFirstMessageBySender: true,
+                            isLastMessageBySender: true,
+                            child: TextMessageEvent(
+                              content: messageItem.mockMsgContent as MsgContent,
+                              roomId: roomId,
+                            ),
+                          ),
+                );
                 await showGeneralDialog(
-                  context: context,
+                  context: roomContext,
                   pageBuilder:
                       (context, animation, secondaryAnimation) =>
                           MessageActions(
