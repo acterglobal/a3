@@ -14,63 +14,48 @@ class StoreTheKeySecurelyWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final encKey = ref.watch(storedEncKeyProvider);
-    final timestamp = ref.watch(storedEncKeyTimestampProvider);
-    
-    return timestamp.when(
-      data: (storedTimestamp) {
-        return encKey.when(
-          data: (data) {
-            final keyText = data.text();
-            if (keyText == null || keyText.isEmpty) {
-              return SizedBox.shrink();
-            }
-            final urgency = ref.watch(keyStorageUrgencyProvider(storedTimestamp));
-            final urgencyColor = getUrgencyColor(context, urgency);
-            
-            return ActivitySectionItemWidget(
-              icon: PhosphorIcons.lock(),
-              iconColor: urgencyColor,
-              borderColor: urgencyColor,
-              title: lang.dontForgetToStoreTheKeySecurely,
-              subtitle: lang.storeTheKeySecurelyDescription,
-              actions: [
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: urgencyColor,
-                    side: BorderSide(color: urgencyColor),
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ShowRecoveryKeyWidget(
-                        recoveryKey: keyText,
-                        onKeyDestroyed: () {
-                          ref.invalidate(storedEncKeyProvider);
-                          ref.invalidate(storedEncKeyTimestampProvider);
-                        },
-                      ),
-                    );
-                  },
-                  child: Text(lang.showKey),
-                ),
-              ],
+    final encKey = ref.watch(storedEncKeyProvider).valueOrNull;
+    final timestamp = ref.watch(storedEncKeyTimestampProvider).valueOrNull;
+
+    if (timestamp == null || encKey == null) {
+      return SizedBox.shrink();
+    }
+
+    final keyText = encKey.text();
+    if (keyText == null || keyText.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    final urgency = ref.watch(keyStorageUrgencyProvider(timestamp));
+    final urgencyColor = getUrgencyColor(context, urgency);
+
+    return ActivitySectionItemWidget(
+      icon: PhosphorIcons.lock(),
+      iconColor: urgencyColor,
+      borderColor: urgencyColor,
+      title: lang.dontForgetToStoreTheKeySecurely,
+      subtitle: lang.storeTheKeySecurelyDescription,
+      actions: [
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: urgencyColor,
+            side: BorderSide(color: urgencyColor),
+          ),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => ShowRecoveryKeyWidget(
+                recoveryKey: keyText,
+                onKeyDestroyed: () {
+                  ref.invalidate(storedEncKeyProvider);
+                  ref.invalidate(storedEncKeyTimestampProvider);
+                },
+              ),
             );
           },
-          error: (error, stack) {
-            return SizedBox.shrink();
-          },
-          loading: () {
-            return SizedBox.shrink();
-          },
-        );
-      },
-      error: (error, stack) {
-        return SizedBox.shrink();
-      },
-      loading: () {
-        return SizedBox.shrink();
-      },
+          child: Text(lang.showKey),
+        ),
+      ],
     );
   }
 }
