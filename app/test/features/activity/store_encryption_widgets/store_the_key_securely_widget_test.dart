@@ -46,7 +46,7 @@ void main() {
     final l10n = L10n.of(context);
 
     // Verify widget is displayed
-    expect(find.text(l10n.storeTheKeySecurely), findsOneWidget);
+    expect(find.text(l10n.dontForgetToStoreTheKeySecurely), findsOneWidget);
     expect(find.text(l10n.showKey), findsOneWidget);
   });
 
