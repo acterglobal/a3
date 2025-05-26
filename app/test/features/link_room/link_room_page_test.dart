@@ -5,7 +5,6 @@ import 'package:acter/features/link_room/pages/link_room_page.dart';
 import 'package:acter/features/link_room/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/mock_a3sdk.dart';
 import '../../helpers/mock_space_providers.dart';
@@ -14,19 +13,15 @@ import '../../helpers/test_util.dart';
 void main() {
   group('Link Room Page - chats', () {
     testWidgets('Only shows non-dm chats', (tester) async {
-      final mockChatA = MockConvo(roomId: 'chat-a');
-      final mockChatB = MockConvo(roomId: 'other-chat');
-      final dmConvo = MockConvo(roomId: 'dm-chat');
+      final mockChatA = MockConvo(roomId: 'chat-a', isDirectChat: false);
+      final mockChatB = MockConvo(roomId: 'other-chat', isDirectChat: false);
+      final dmConvo = MockConvo(roomId: 'dm-chat', isDirectChat: true);
 
       final mockedNames = {
         'chat-a': 'Mega super chat',
         'other-chat': 'Other cool chat',
         'dm-chat': 'Private DM chat',
       };
-
-      when(() => mockChatA.isDm()).thenReturn(false);
-      when(() => mockChatB.isDm()).thenReturn(false);
-      when(() => dmConvo.isDm()).thenReturn(true); // should not show up
 
       await tester.pumpProviderWidget(
         overrides: [

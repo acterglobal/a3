@@ -68,7 +68,7 @@ void main() {
         'This is a longer message that will definitely span multiple lines. It contains more text to ensure we test how the dialog handles longer content while maintaining proper alignment and spacing of all components.';
     final superLongMessage =
         'This is an extremely long message that will require scrolling to view completely. ' *
-        15;
+        10;
 
     Future<void> showMessageActionsDialog(
       WidgetTester tester, {
