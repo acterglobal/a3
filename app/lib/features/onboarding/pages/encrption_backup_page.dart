@@ -144,8 +144,20 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled ? () => widget.callNextPage?.call() : null,
-          child: Text(lang.savedKeySecurely, style: const TextStyle(fontSize: 16)),
+          onPressed:
+              isEnabled
+                  ? () => showDialog(
+                    context: context,
+                    builder:
+                        (BuildContext context) => RemindMeAboutKeyDialog(
+                          callNextPage: widget.callNextPage,
+                        ),
+                  )
+                  : null,
+          child: Text(
+            lang.savedKeySecurely,
+            style: const TextStyle(fontSize: 16),
+          ),
         );
       },
     );
@@ -153,12 +165,7 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
 
   Widget _buildRemindMeButton(BuildContext context, L10n lang) {
     return OutlinedButton(
-      onPressed: () => showDialog(
-        context: context,
-        builder: (BuildContext context) => RemindMeAboutKeyDialog(
-          callNextPage: widget.callNextPage,
-        ),
-      ),
+      onPressed: () => widget.callNextPage?.call(),
       child: Text(L10n.of(context).remindMeLater),
     );
   }
