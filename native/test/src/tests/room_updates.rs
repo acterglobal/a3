@@ -35,7 +35,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     .await?;
 
     let mut room_stream = user.subscribe_room_stream(room_id.to_string())?;
-    // clear the streem
+    // clear the stream
     while room_stream.next().now_or_never().flatten().is_some() {}
 
     let timeline = convo.timeline_stream();
@@ -133,7 +133,7 @@ async fn state_update_triggers_room_update() -> Result<()> {
     .await?;
 
     let mut room_stream = user.subscribe_room_stream(room_id.to_string())?;
-    // clear the streem
+    // clear the stream
     while room_stream.next().now_or_never().flatten().is_some() {}
 
     let notifi_mode = convo.notification_mode().await?;
@@ -193,7 +193,7 @@ async fn joining_room_triggers_room_update() -> Result<()> {
     assert_eq!(preview.state_str(), "invited");
 
     let mut room_stream = kyra.subscribe_room_stream(room_id.to_string())?;
-    // clear the streem
+    // clear the stream
     while room_stream.next().now_or_never().flatten().is_some() {}
 
     room.join().await?;
