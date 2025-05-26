@@ -1,3 +1,4 @@
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/keyboard_visbility_provider.dart';
@@ -10,7 +11,8 @@ import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/models/chat_editor_state.dart';
 import 'package:acter/features/chat_ng/providers/notifiers/chat_editor_notifier.dart';
-import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
+import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
+import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter/material.dart';
@@ -132,17 +134,26 @@ void main() {
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.7,
               ),
-              child: MessageEventItem(
-                roomId: roomId,
-                messageId: timelineItem.id,
-                item: messageItem,
-                isMe: isMe,
-                isDM: false,
-                canRedact: true,
-                isFirstMessageBySender: true,
-                isLastMessageBySender: true,
-                isLastMessage: true,
-              ),
+              child:
+                  isMe
+                      ? ChatBubble.me(
+                        context: context,
+                        isFirstMessageBySender: true,
+                        isLastMessageBySender: true,
+                        child: TextMessageEvent(
+                          content: messageItem.mockMsgContent as MsgContent,
+                          roomId: roomId,
+                        ),
+                      )
+                      : ChatBubble(
+                        context: context,
+                        isFirstMessageBySender: true,
+                        isLastMessageBySender: true,
+                        child: TextMessageEvent(
+                          content: messageItem.mockMsgContent as MsgContent,
+                          roomId: roomId,
+                        ),
+                      ),
             );
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               if (context.mounted) {
