@@ -66,7 +66,7 @@ void main() {
         'This is an extremely long message that will require scrolling to view completely. ' *
         20;
 
-    Future<void> showMessageActionsDialog(
+    Future<void> runMessageActionWidgetTest(
       WidgetTester tester, {
       required String message,
       required bool isMe,
@@ -195,98 +195,105 @@ void main() {
       }
     }
 
-    Future<void> runPlatformTest({
-      required WidgetTester tester,
-      required String message,
-      required bool isMe,
-      required String baseGoldenPath,
-    }) async {
+    testWidgets('Own message - short text', (tester) async {
+      await loadTestFonts();
       await tester.pump(const Duration(milliseconds: 300));
-      await showMessageActionsDialog(tester, message: message, isMe: isMe);
+      await runMessageActionWidgetTest(
+        tester,
+        message: shortMessage,
+        isMe: true,
+      );
       await tester.pump(const Duration(milliseconds: 300));
-      await expectGoldenMatch(tester, baseGoldenPath);
-    }
+      await expectGoldenMatch(tester, 'goldens/message_actions_own_short.png');
+    });
 
-    group('Mobile Tests', () {
-      testWidgets('Own message - short text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: shortMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_short.png',
-        );
-      });
+    testWidgets('Own message - medium text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: mediumMessage,
+        isMe: true,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(tester, 'goldens/message_actions_own_medium.png');
+    });
 
-      testWidgets('Own message - medium text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: mediumMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_medium.png',
-        );
-      });
+    testWidgets('Own message - long text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: longMessage,
+        isMe: true,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(tester, 'goldens/message_actions_own_long.png');
+    });
 
-      testWidgets('Own message - long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: longMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_long.png',
-        );
-      });
+    testWidgets('Own message - super long text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: superLongMessage,
+        isMe: true,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(
+        tester,
+        'goldens/message_actions_own_super_long.png',
+      );
+    });
 
-      testWidgets('Own message - super long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: superLongMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_super_long.png',
-        );
-      });
+    testWidgets('Other user message - short text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: shortMessage,
+        isMe: false,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(
+        tester,
+        'goldens/message_actions_other_short.png',
+      );
+    });
 
-      testWidgets('Other user message - short text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: shortMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_short.png',
-        );
-      });
+    testWidgets('Other user message - medium text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: mediumMessage,
+        isMe: false,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(
+        tester,
+        'goldens/message_actions_other_medium.png',
+      );
+    });
 
-      testWidgets('Other user message - medium text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: mediumMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_medium.png',
-        );
-      });
+    testWidgets('Other user message - long text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: longMessage,
+        isMe: false,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(tester, 'goldens/message_actions_other_long.png');
+    });
 
-      testWidgets('Other user message - long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: longMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_long.png',
-        );
-      });
-
-      testWidgets('Other user message - super long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: superLongMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_super_long.png',
-        );
-      });
+    testWidgets('Other user message - super long text', (tester) async {
+      await loadTestFonts();
+      await runMessageActionWidgetTest(
+        tester,
+        message: superLongMessage,
+        isMe: false,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await expectGoldenMatch(
+        tester,
+        'goldens/message_actions_other_super_long.png',
+      );
     });
   });
 }
