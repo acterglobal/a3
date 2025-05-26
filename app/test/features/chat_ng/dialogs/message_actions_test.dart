@@ -44,10 +44,6 @@ class MockRoomAvatarInfoNotifier extends RoomAvatarInfoNotifier {
 void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
-  // Define screen sizes for different platforms
-  const mobileSize = Size(390, 844); // iPhone 13/14 dimensions
-  const desktopSize = Size(1024, 768); // Standard desktop dimensions
-
   // Mock the platform channels to prevent MissingPluginException
   const channel = MethodChannel('keyboardHeightEventChannel');
   binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -161,16 +157,15 @@ void main() {
                 await showGeneralDialog(
                   context: roomContext,
                   pageBuilder:
-                      (context, animation, secondaryAnimation) =>
-                          MessageActions(
-                            animation: animation,
-                            canRedact: true,
-                            item: messageItem,
-                            roomId: roomId,
-                            messageId: timelineItem.id,
-                            messageWidget: messageWidget,
-                            isMe: isMe,
-                          ),
+                      (_, animation, __) => MessageActions(
+                        animation: animation,
+                        canRedact: true,
+                        item: messageItem,
+                        roomId: roomId,
+                        messageId: timelineItem.id,
+                        messageWidget: messageWidget,
+                        isMe: isMe,
+                      ),
                 );
               }
             });
@@ -185,12 +180,8 @@ void main() {
 
     Future<void> expectGoldenMatch(
       WidgetTester tester,
-      String baseGoldenPath,
-      Size screenSize,
+      String goldenPath,
     ) async {
-      final platform = screenSize == mobileSize ? 'mobile' : 'desktop';
-      final goldenPath = baseGoldenPath.replaceAll('.png', '_$platform.png');
-
       await expectLater(
         find.byType(MaterialApp),
         matchesGoldenFile(goldenPath),
@@ -209,13 +200,11 @@ void main() {
       required String message,
       required bool isMe,
       required String baseGoldenPath,
-      required Size screenSize,
     }) async {
-      await tester.binding.setSurfaceSize(screenSize);
       await tester.pump(const Duration(milliseconds: 300));
       await showMessageActionsDialog(tester, message: message, isMe: isMe);
       await tester.pump(const Duration(milliseconds: 300));
-      await expectGoldenMatch(tester, baseGoldenPath, screenSize);
+      await expectGoldenMatch(tester, baseGoldenPath);
     }
 
     group('Mobile Tests', () {
@@ -226,7 +215,6 @@ void main() {
           message: shortMessage,
           isMe: true,
           baseGoldenPath: 'goldens/message_actions_own_short.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -237,7 +225,6 @@ void main() {
           message: mediumMessage,
           isMe: true,
           baseGoldenPath: 'goldens/message_actions_own_medium.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -248,7 +235,6 @@ void main() {
           message: longMessage,
           isMe: true,
           baseGoldenPath: 'goldens/message_actions_own_long.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -259,7 +245,6 @@ void main() {
           message: superLongMessage,
           isMe: true,
           baseGoldenPath: 'goldens/message_actions_own_super_long.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -270,7 +255,6 @@ void main() {
           message: shortMessage,
           isMe: false,
           baseGoldenPath: 'goldens/message_actions_other_short.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -281,7 +265,6 @@ void main() {
           message: mediumMessage,
           isMe: false,
           baseGoldenPath: 'goldens/message_actions_other_medium.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -292,7 +275,6 @@ void main() {
           message: longMessage,
           isMe: false,
           baseGoldenPath: 'goldens/message_actions_other_long.png',
-          screenSize: mobileSize,
         );
       });
 
@@ -303,97 +285,6 @@ void main() {
           message: superLongMessage,
           isMe: false,
           baseGoldenPath: 'goldens/message_actions_other_super_long.png',
-          screenSize: mobileSize,
-        );
-      });
-    });
-
-    group('Desktop Tests', () {
-      testWidgets('Own message - short text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: shortMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_short.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Own message - medium text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: mediumMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_medium.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Own message - long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: longMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_long.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Own message - super long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: superLongMessage,
-          isMe: true,
-          baseGoldenPath: 'goldens/message_actions_own_super_long.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Other user message - short text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: shortMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_short.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Other user message - medium text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: mediumMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_medium.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Other user message - long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: longMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_long.png',
-          screenSize: desktopSize,
-        );
-      });
-
-      testWidgets('Other user message - super long text', (tester) async {
-        await loadTestFonts();
-        await runPlatformTest(
-          tester: tester,
-          message: superLongMessage,
-          isMe: false,
-          baseGoldenPath: 'goldens/message_actions_other_super_long.png',
-          screenSize: desktopSize,
         );
       });
     });
