@@ -451,11 +451,6 @@ async fn task_comment_smoketests() -> Result<()> {
     })
     .await?;
 
-    // timeline reorders events and doesn’t assign redaction as separate event
-    // it is impossible to get redaction event by event id on timeline
-    // so we don’t use retry-loop about redact_id
-
-    // but it is possible to get redaction event by event id on convo
     let ev = space.event(&redact_id, None).await?;
     let event_content = ev.kind.raw().deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
