@@ -45,7 +45,7 @@ void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
   // Define screen sizes for different platforms
-  const mobileSize = Size(440, 956); // iPhone 16 Pro Max dimensions
+  const mobileSize = Size(390, 844); // iPhone 13/14 dimensions
   const desktopSize = Size(1024, 768); // Standard desktop dimensions
 
   // Mock the platform channels to prevent MissingPluginException
@@ -68,7 +68,7 @@ void main() {
         'This is a longer message that will definitely span multiple lines. It contains more text to ensure we test how the dialog handles longer content while maintaining proper alignment and spacing of all components.';
     final superLongMessage =
         'This is an extremely long message that will require scrolling to view completely. ' *
-        20;
+        15;
 
     Future<void> showMessageActionsDialog(
       WidgetTester tester, {
