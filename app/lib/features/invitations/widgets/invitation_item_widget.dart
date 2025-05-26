@@ -216,8 +216,12 @@ class _InvitationWidgetState extends ConsumerState<InvitationItemWidget> {
     EasyLoading.showToast(lang.joined);
     if (context.mounted) {
       if (isSpace) {
+        // linting false positive
+        // ignore: use_build_context_synchronously
         goToSpace(context, roomId);
       } else {
+        // linting false positive
+        // ignore: use_build_context_synchronously
         goToChat(context, roomId);
       }
     }
