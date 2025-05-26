@@ -1,13 +1,11 @@
 use acter::{
     api::{
-        Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, MsgContent,
-        SyncState,
+        Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, MsgContent, Room,
+        SyncState, TimelineItem,
     },
     testing::ensure_user,
 };
-use acter::{Room, TimelineItem};
-use acter_core::models::status::RoomPinnedEventsContent;
-use acter_core::templates::Engine;
+use acter_core::{models::status::RoomPinnedEventsContent, templates::Engine};
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;
