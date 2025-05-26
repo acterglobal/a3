@@ -32,7 +32,7 @@ class StoreTheKeySecurelyWidget extends ConsumerWidget {
               icon: PhosphorIcons.lock(),
               iconColor: urgencyColor,
               borderColor: urgencyColor,
-              title: lang.storeTheKeySecurely,
+              title: lang.dontForgetToStoreTheKeySecurely,
               subtitle: lang.storeTheKeySecurelyDescription,
               actions: [
                 OutlinedButton(

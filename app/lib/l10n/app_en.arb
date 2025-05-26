@@ -2981,5 +2981,7 @@
   "dontRemindMe": "Don't remind me again",
   "@dontRemindMe": {},
   "encryptionBackupDestroyAction": "Destroying",
-  "@encryptionBackupDestroyAction": {}
+  "@encryptionBackupDestroyAction": {},
+  "dontForgetToStoreTheKeySecurely": "Don't forget to store your Encryption Backup Key securely",
+  "@dontForgetToStoreTheKeySecurely": {}
 }
