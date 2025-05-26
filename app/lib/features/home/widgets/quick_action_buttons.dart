@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/inline_text_button.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/action_button_widget.dart';
 import 'package:acter/config/env.g.dart';
 import 'package:acter/features/bug_report/actions/open_bug_report.dart';

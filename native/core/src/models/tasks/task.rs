@@ -116,6 +116,7 @@ impl ActerModel for Task {
             IndexKey::RoomHistory(self.meta.room_id.clone()),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::ObjectHistory(self.inner.task_list_id.event_id.clone()),
+            IndexKey::AllHistory,
         ];
         if self.is_assigned(user_id) {
             indizes.push(if self.is_done() {
@@ -145,7 +146,7 @@ impl ActerModel for Task {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task_list_id.event_id.to_owned()])
+        Some(vec![self.inner.task_list_id.event_id.clone()])
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> Result<bool> {
@@ -193,6 +194,7 @@ impl ActerModel for TaskUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -205,7 +207,7 @@ impl ActerModel for TaskUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task.event_id.to_owned()])
+        Some(vec![self.inner.task.event_id.clone()])
     }
 }
 
@@ -261,6 +263,7 @@ impl ActerModel for TaskSelfAssign {
         vec![
             IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -288,7 +291,7 @@ impl ActerModel for TaskSelfAssign {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task.event_id.to_owned()])
+        Some(vec![self.inner.task.event_id.clone()])
     }
 }
 
@@ -335,6 +338,7 @@ impl ActerModel for TaskSelfUnassign {
         vec![
             IndexKey::ObjectHistory(self.inner.task.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -362,7 +366,7 @@ impl ActerModel for TaskSelfUnassign {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task.event_id.to_owned()])
+        Some(vec![self.inner.task.event_id.clone()])
     }
 }
 

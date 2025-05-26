@@ -249,7 +249,7 @@ impl Deref for TaskList {
 /// helpers for content
 impl TaskList {
     pub fn name(&self) -> String {
-        self.content.name.to_owned()
+        self.content.name.clone()
     }
 
     pub fn description(&self) -> Option<MsgContent> {
@@ -285,7 +285,7 @@ impl TaskList {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for keyword in &self.content.keywords {
-            result.push(keyword.to_owned());
+            result.push(keyword.clone());
         }
         result
     }
@@ -296,7 +296,7 @@ impl TaskList {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for category in &self.content.categories {
-            result.push(category.to_owned());
+            result.push(category.clone());
         }
         result
     }
@@ -491,7 +491,7 @@ impl Deref for Task {
 /// helpers for content
 impl Task {
     pub fn title(&self) -> String {
-        self.content.title().to_owned()
+        self.content.title().clone()
     }
 
     pub fn event_id_str(&self) -> String {
@@ -563,7 +563,7 @@ impl Task {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for keyword in &self.content.keywords {
-            result.push(keyword.to_owned());
+            result.push(keyword.clone());
         }
         result
     }
@@ -574,7 +574,7 @@ impl Task {
         // apply this way for only function that string vector is calculated indirectly.
         let mut result = vec![];
         for category in &self.content.categories {
-            result.push(category.to_owned());
+            result.push(category.clone());
         }
         result
     }

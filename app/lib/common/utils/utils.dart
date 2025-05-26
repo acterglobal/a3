@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +33,10 @@ bool isValidUrl(String url) {
   return urlPattern.hasMatch(url);
 }
 
-
 bool isDesktop(BuildContext context) =>
     desktopPlatforms.contains(Theme.of(context).platform);
 
 String jiffyTime(BuildContext context, int timeInterval, {DateTime? toWhen}) {
-
   final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
   final now = Jiffy.parseFromDateTime(
     toWhen ?? DateTime.now().toUtc(),
@@ -71,6 +69,36 @@ String jiffyDateForActvity(BuildContext context, int timeInterval) {
   }
 
   return activityDate.yMd;
+}
+
+String jiffyDateTimestamp(
+  BuildContext context,
+  int timeInterval, {
+  bool showDay = false,
+}) {
+  final jiffyTime = Jiffy.parseFromMillisecondsSinceEpoch(timeInterval);
+  final now = Jiffy.parseFromDateTime(DateTime.now().toUtc());
+  final use24HourFormat = MediaQuery.of(context).alwaysUse24HourFormat;
+  final formattedTime = use24HourFormat ? jiffyTime.Hm : jiffyTime.jm;
+
+  if (!showDay) return formattedTime;
+
+  if (now.isSame(jiffyTime, unit: Unit.day)) {
+    return formattedTime;
+  }
+
+  final week = now.subtract(weeks: 1);
+  final year = now.subtract(years: 1);
+
+  if (jiffyTime.isBetween(week, now)) {
+    return '${jiffyTime.E} $formattedTime';
+  }
+
+  if (jiffyTime.isBefore(week) && jiffyTime.isAfter(year)) {
+    return '${jiffyTime.MMMEd} $formattedTime';
+  }
+
+  return '${jiffyTime.yMMMEd} $formattedTime';
 }
 
 extension TimeOfDayExtension on TimeOfDay {

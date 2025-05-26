@@ -84,12 +84,12 @@ impl CommentsManager {
 
     pub fn draft_builder(&self) -> CommentBuilder {
         CommentBuilder::default()
-            .on(self.event_id.to_owned())
+            .on(self.event_id.clone())
             .to_owned()
     }
 
     pub fn update_key(&self) -> ExecuteReference {
-        Self::stats_field_for(self.event_id.to_owned())
+        Self::stats_field_for(self.event_id.clone())
     }
 
     pub async fn save(&self) -> Result<ExecuteReference> {
@@ -132,14 +132,15 @@ impl Comment {
 
     pub fn updater(&self) -> CommentUpdateBuilder {
         CommentUpdateBuilder::default()
-            .comment(self.meta.event_id.to_owned())
+            .comment(self.meta.event_id.clone())
             .to_owned()
     }
 
     pub fn reply_builder(&self) -> CommentBuilder {
+        let event_id = self.meta.event_id.clone();
         CommentBuilder::default()
-            .on(self.on.event_id.to_owned())
-            .reply_to(Some(self.meta.event_id.to_owned().into()))
+            .on(self.on.event_id.clone())
+            .reply_to(Some(event_id.into()))
             .to_owned()
     }
 
@@ -150,7 +151,7 @@ impl Comment {
             .as_ref()
             .map(|r| r.event_ids.clone())
             .unwrap_or_default();
-        references.push(self.inner.on.event_id.to_owned());
+        references.push(self.inner.on.event_id.clone());
         references
     }
 }
@@ -162,8 +163,9 @@ impl ActerModel for Comment {
             .into_iter()
             .map(Comment::index_for)
             .collect::<Vec<_>>();
-        indizes.push(IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()));
-        indizes.push(IndexKey::RoomHistory(self.meta.room_id.to_owned()));
+        indizes.push(IndexKey::ObjectHistory(self.inner.on.event_id.clone()));
+        indizes.push(IndexKey::RoomHistory(self.meta.room_id.clone()));
+        indizes.push(IndexKey::AllHistory);
         indizes
     }
 
@@ -248,8 +250,9 @@ pub struct CommentUpdate {
 impl ActerModel for CommentUpdate {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            IndexKey::ObjectHistory(self.inner.comment.event_id.to_owned()),
-            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.comment.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
     fn event_meta(&self) -> &EventMeta {
@@ -257,7 +260,7 @@ impl ActerModel for CommentUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.comment.event_id.to_owned()])
+        Some(vec![self.inner.comment.event_id.clone()])
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {

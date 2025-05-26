@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -11,7 +11,6 @@ import 'package:acter/features/chat_ng/widgets/events/image_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter/features/chat_ng/widgets/events/text_message_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/video_message_event.dart';
-import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/features/chat_ng/widgets/replied_to_preview.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
@@ -50,7 +49,6 @@ class MessageEventItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
     final sendingState = item.sendState();
     return SwipeTo(
       swipeSensitivity: Platform.isIOS ? 30 : 5,
@@ -62,7 +60,6 @@ class MessageEventItem extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildMessageUI(context, ref, roomId, messageId, item, isMe),
-          if (hasReactions) _buildReactionsList(roomId, messageId, item, isMe),
           if (sendingState != null || (isMe && isLastMessage))
             Align(
               alignment: Alignment.centerRight,
@@ -114,21 +111,6 @@ class MessageEventItem extends ConsumerWidget {
             roomId: roomId,
           ),
       child: Hero(tag: messageId, child: messageWidget),
-    );
-  }
-
-  Widget _buildReactionsList(
-    String roomId,
-    String messageId,
-    TimelineEventItem item,
-    bool isMe,
-  ) {
-    return Padding(
-      padding: EdgeInsets.only(right: isMe ? 12 : 0, left: isMe ? 0 : 12),
-      child: FractionalTranslation(
-        translation: Offset(0, -0.18),
-        child: ReactionsList(roomId: roomId, messageId: messageId, item: item),
-      ),
     );
   }
 

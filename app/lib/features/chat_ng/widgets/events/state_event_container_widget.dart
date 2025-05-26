@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:flutter/material.dart';
 
 class StateEventContainerWidget extends StatelessWidget {
@@ -8,21 +9,23 @@ class StateEventContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (child == const SizedBox.shrink()) return child;
 
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+    return ActerSelectionArea(
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+          ),
+          borderRadius: BorderRadius.circular(25),
         ),
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 100,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width - 100,
+          ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }

@@ -141,7 +141,7 @@ impl InvitationsManager {
     }
 
     pub fn update_key(&self) -> ExecuteReference {
-        Self::stats_field_for(self.event_id.to_owned())
+        Self::stats_field_for(self.event_id.clone())
     }
 
     pub async fn save(&self) -> Result<Vec<ExecuteReference>> {
@@ -154,7 +154,7 @@ impl InvitationsManager {
         let mut full_manager = MyInvitesManager::load(&self.store).await;
         let is_invited = self.stats.invited.contains(self.store.user_id());
         let was_changed = if is_invited {
-            full_manager.invited_to.insert(self.event_id.to_owned())
+            full_manager.invited_to.insert(self.event_id.clone())
         } else {
             full_manager.invited_to.remove(&self.event_id)
         };
@@ -196,8 +196,9 @@ impl ActerModel for ExplicitInvite {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
             ExplicitInvite::index_for(self.inner.to.event_id.clone()),
-            IndexKey::ObjectHistory(self.inner.to.event_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.to.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -210,7 +211,7 @@ impl ActerModel for ExplicitInvite {
     }
 
     async fn execute(self, store: &Store) -> Result<Vec<ExecuteReference>> {
-        let belongs_to = self.inner.to.event_id.to_owned();
+        let belongs_to = self.inner.to.event_id.clone();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying invite");
 
         let manager = {

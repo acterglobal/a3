@@ -51,12 +51,24 @@ class UserChip extends ConsumerWidget {
     final decoration =
         isMe
             ? BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(fontSize),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.3),
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8),
             )
             : BoxDecoration(
-              border: Border.all(color: Theme.of(context).colorScheme.outline),
-              borderRadius: BorderRadius.circular(fontSize),
+              color: Colors.black12,
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8),
             );
     final trailing = trailingBuilder?.call(
       context,
@@ -81,10 +93,11 @@ class UserChip extends ConsumerWidget {
               defaultOnTap: () => onTapFallback(context),
             ),
         child: Container(
+          margin: EdgeInsets.only(right: 4, bottom: 2),
           decoration: decoration,
           padding: EdgeInsets.symmetric(
             horizontal: (fontSize / 2).toDouble(),
-            vertical: 0,
+            vertical: 2,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -94,10 +107,7 @@ class UserChip extends ConsumerWidget {
               ),
               SizedBox(width: 4),
               if (isMe)
-                Text(
-                  L10n.of(context).you,
-                  style: style?.copyWith(fontWeight: FontWeight.bold),
-                )
+                Text(L10n.of(context).you, style: style)
               else
                 Text(memberInfo.displayName ?? memberId, style: style),
               if (trailing != null)

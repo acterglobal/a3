@@ -244,4 +244,11 @@ impl Client {
             client: self.clone(),
         })
     }
+
+    pub fn all_activities(&self) -> anyhow::Result<Activities> {
+        Ok(Activities {
+            index: IndexKey::AllHistory,
+            client: self.clone(),
+        })
+    }
 }

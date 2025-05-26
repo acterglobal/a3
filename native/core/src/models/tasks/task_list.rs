@@ -57,7 +57,7 @@ impl TaskList {
 
     pub fn updater(&self) -> TaskListUpdateBuilder {
         TaskListUpdateBuilder::default()
-            .task_list(self.meta.event_id.to_owned())
+            .task_list(self.meta.event_id.clone())
             .to_owned()
     }
 }
@@ -93,6 +93,7 @@ impl ActerModel for TaskList {
             IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Tasks),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -139,6 +140,7 @@ pub struct TaskListUpdate {
 impl ActerModel for TaskListUpdate {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
+            IndexKey::AllHistory,
             IndexKey::RoomHistory(self.meta.room_id.clone()),
             IndexKey::ObjectHistory(self.inner.task_list.event_id.clone()),
         ]
@@ -153,7 +155,7 @@ impl ActerModel for TaskListUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.task_list.event_id.to_owned()])
+        Some(vec![self.inner.task_list.event_id.clone()])
     }
 }
 

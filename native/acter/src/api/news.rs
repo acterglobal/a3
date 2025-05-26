@@ -118,7 +118,7 @@ impl NewsSlide {
     }
 
     pub fn colors(&self) -> Option<Colorize> {
-        self.inner.colors.to_owned()
+        self.inner.colors.clone()
     }
 
     pub fn msg_content(&self) -> MsgContent {
@@ -519,7 +519,7 @@ impl NewsEntryDraft {
             .spawn(async move {
                 let mut slides = vec![];
                 for slide in &slides_drafts {
-                    let saved_slide = slide.to_owned().build(&client, &room).await?;
+                    let saved_slide = slide.clone().build(&client, &room).await?;
                     slides.push(saved_slide);
                 }
                 builder.slides(slides);

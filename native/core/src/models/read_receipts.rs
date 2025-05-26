@@ -87,7 +87,7 @@ impl ReadReceiptsManager {
     }
 
     pub fn update_key(&self) -> ExecuteReference {
-        Self::stats_field_for(self.event_id.to_owned())
+        Self::stats_field_for(self.event_id.clone())
     }
 
     async fn save(&self) -> Result<ExecuteReference> {
@@ -130,7 +130,7 @@ impl ReadReceipt {
     }
 
     async fn apply(&self, store: &Store) -> Result<Vec<ExecuteReference>> {
-        let belongs_to = self.inner.on.event_id.to_owned();
+        let belongs_to = self.inner.on.event_id.clone();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying read receipt");
 
         let model = store.get(&belongs_to).await?;
@@ -155,9 +155,10 @@ impl ReadReceipt {
 impl ActerModel for ReadReceipt {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            ReadReceipt::index_for(self.inner.on.event_id.to_owned()),
-            IndexKey::ObjectHistory(self.inner.on.event_id.to_owned()),
+            ReadReceipt::index_for(self.inner.on.event_id.clone()),
+            IndexKey::ObjectHistory(self.inner.on.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

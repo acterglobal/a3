@@ -270,7 +270,7 @@ impl Client {
             CustomAuthSession {
                 user_id: session.meta().user_id.clone(),
                 device_id: session.meta().device_id.clone(),
-                access_token: session.access_token().to_string(),
+                access_token: session.access_token().to_owned(),
             },
             homeurl,
             is_guest,

@@ -47,6 +47,7 @@ impl ActerModel for Story {
             IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Stories),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -111,8 +112,9 @@ pub struct StoryUpdate {
 impl ActerModel for StoryUpdate {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            IndexKey::ObjectHistory(self.inner.story_entry.event_id.to_owned()),
-            IndexKey::RoomHistory(self.meta.room_id.to_owned()),
+            IndexKey::ObjectHistory(self.inner.story_entry.event_id.clone()),
+            IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -125,7 +127,7 @@ impl ActerModel for StoryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.story_entry.event_id.to_owned()])
+        Some(vec![self.inner.story_entry.event_id.clone()])
     }
 }
 

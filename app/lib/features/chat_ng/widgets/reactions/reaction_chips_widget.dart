@@ -23,7 +23,7 @@ class ReactionChipsWidget extends StatelessWidget {
         maxWidth: MediaQuery.of(context).size.width * 0.65,
       ),
       margin: EdgeInsets.symmetric(horizontal: 6),
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: EdgeInsets.symmetric(horizontal: 6),
       child: Wrap(
         spacing: 6,
         runSpacing: 6,

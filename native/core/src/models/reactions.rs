@@ -98,7 +98,7 @@ impl ReactionManager {
     }
 
     pub fn construct_like_event(&self) -> ReactionEventContent {
-        self.construct_reaction_event(LIKE_HEART.to_string())
+        self.construct_reaction_event(LIKE_HEART.to_owned())
     }
 
     pub fn construct_reaction_event(&self, key: String) -> ReactionEventContent {
@@ -184,7 +184,7 @@ impl ReactionManager {
     }
 
     pub fn update_key(&self) -> ExecuteReference {
-        Self::stats_field_for(self.event_id.to_owned())
+        Self::stats_field_for(self.event_id.clone())
     }
 
     pub async fn save(&self) -> Result<ExecuteReference> {
@@ -227,7 +227,7 @@ impl Reaction {
         store: &Store,
         redaction_model: Option<RedactedActerModel>,
     ) -> Result<Vec<ExecuteReference>> {
-        let belongs_to = self.inner.relates_to.event_id.to_owned();
+        let belongs_to = self.inner.relates_to.event_id.clone();
         trace!(event_id=?self.event_id(), ?belongs_to, "applying reaction");
 
         let manager = {
@@ -266,9 +266,10 @@ impl Reaction {
 impl ActerModel for Reaction {
     fn indizes(&self, _user_id: &UserId) -> Vec<IndexKey> {
         vec![
-            Reaction::index_for(self.inner.relates_to.event_id.to_owned()),
-            IndexKey::ObjectHistory(self.inner.relates_to.event_id.to_owned()),
+            Reaction::index_for(self.inner.relates_to.event_id.clone()),
+            IndexKey::ObjectHistory(self.inner.relates_to.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

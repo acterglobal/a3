@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/menu_item_widget.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/room/room_profile_header.dart';
 import 'package:acter/features/invite_members/widgets/invite_code_ui.dart';
 import 'package:acter/features/super_invites/providers/super_invites_providers.dart';

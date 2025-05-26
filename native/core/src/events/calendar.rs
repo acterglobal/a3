@@ -95,8 +95,8 @@ impl EventLocationInfo {
 
     pub fn location_type(&self) -> String {
         match &self.inner {
-            EventLocation::Physical { .. } => "Physical".to_string(),
-            EventLocation::Virtual { .. } => "Virtual".to_string(),
+            EventLocation::Physical { .. } => "Physical".to_owned(),
+            EventLocation::Virtual { .. } => "Virtual".to_owned(),
         }
     }
 

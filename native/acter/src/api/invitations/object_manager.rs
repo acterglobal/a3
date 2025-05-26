@@ -103,7 +103,7 @@ impl ObjectInvitationsManager {
     pub async fn reload(&self) -> Result<Self> {
         let client = self.client.clone();
         let room = self.room.clone();
-        let event_id = self.inner.event_id().to_owned();
+        let event_id = self.inner.event_id();
         RUNTIME
             .spawn(async move { ObjectInvitationsManager::new(client, room, event_id).await })
             .await?

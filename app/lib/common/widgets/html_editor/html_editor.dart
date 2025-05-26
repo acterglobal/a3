@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
@@ -264,11 +265,12 @@ class HtmlEditor extends StatefulWidget {
   final String? hintText;
   final Widget? header;
   final Widget? footer;
+  final double? minHeight;
+  final double? maxHeight;
   final bool editable;
   final bool shrinkWrap;
   final bool disableAutoScroll;
   final EditorState? editorState;
-  final EditorScrollController? scrollController;
   final TextStyleConfiguration? textStyleConfiguration;
   final ExportCallback? onSave;
   final ExportCallback? onChanged;
@@ -286,18 +288,24 @@ class HtmlEditor extends StatefulWidget {
     this.editable = false,
     this.shrinkWrap = false,
     this.disableAutoScroll = false,
-    this.scrollController,
     this.header,
     this.footer,
+    this.minHeight,
+    this.maxHeight,
   });
 
   @override
-  HtmlEditorState createState() => HtmlEditorState();
+  State<HtmlEditor> createState() => _HtmlEditorState();
 }
 
-class HtmlEditorState extends State<HtmlEditor> {
+const innnerMargin = 4.0;
+const defaultMinHeight = 40.0;
+
+class _HtmlEditorState extends State<HtmlEditor> {
   late EditorState editorState;
   late EditorScrollController editorScrollController;
+
+  late ValueNotifier<double> _contentHeightNotifier;
 
   // we store this to the stream stays alive
   StreamSubscription<EditorTransactionValue>? _changeListener;
@@ -305,34 +313,70 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   void initState() {
     super.initState();
-    updateEditorState(widget.editorState ?? EditorState.blank());
+    _contentHeightNotifier = ValueNotifier(
+      widget.minHeight ?? defaultMinHeight,
+    );
     AppFlowyRichTextKeys.partialSliced.addAll([
       userMentionChar,
       roomMentionChar,
     ]);
+
+    updateEditorState(widget.editorState ?? EditorState.blank());
+  }
+
+  void _updateContentHeight() {
+    final scrollService = editorState.scrollableState;
+    final innerHeight = scrollService?.position.maxScrollExtent;
+    if (innerHeight == null || innerHeight <= 0) {
+      final minHeight = widget.minHeight;
+      if (minHeight != null) {
+        _contentHeightNotifier.value = minHeight;
+      }
+      return;
+    }
+
+    double newHeight =
+        innerHeight +
+        (scrollService?.position.viewportDimension ?? 0) +
+        innnerMargin;
+
+    final maxHeight = widget.maxHeight;
+    if (maxHeight != null) {
+      newHeight = min(newHeight, maxHeight);
+    }
+    final minHeight = widget.minHeight;
+    if (minHeight != null) {
+      newHeight = max(newHeight, minHeight);
+    }
+    if (_contentHeightNotifier.value != newHeight) {
+      _contentHeightNotifier.value = newHeight;
+    }
   }
 
   void updateEditorState(EditorState newEditorState) {
-    setState(() {
-      editorState = newEditorState;
+    editorState = newEditorState;
 
-      editorScrollController = EditorScrollController(
-        editorState: editorState,
-        shrinkWrap: widget.shrinkWrap,
+    editorScrollController = EditorScrollController(
+      editorState: editorState,
+      shrinkWrap: widget.shrinkWrap,
+      // scrollController: widget.scrollController,
+    );
+
+    editorScrollController.visibleRangeNotifier.addListener(() {
+      _updateContentHeight();
+    });
+
+    _changeListener?.cancel();
+    widget.onChanged.map((cb) {
+      _changeListener = editorState.transactionStream.listen(
+        (data) => _triggerExport(cb),
+        onError: (e, s) {
+          _log.severe('tx stream errored', e, s);
+        },
+        onDone: () {
+          _log.info('tx stream ended');
+        },
       );
-
-      _changeListener?.cancel();
-      widget.onChanged.map((cb) {
-        _changeListener = editorState.transactionStream.listen(
-          (data) => _triggerExport(cb),
-          onError: (e, s) {
-            _log.severe('tx stream errored', e, s);
-          },
-          onDone: () {
-            _log.info('tx stream ended');
-          },
-        );
-      });
     });
   }
 
@@ -347,9 +391,6 @@ class HtmlEditorState extends State<HtmlEditor> {
   @override
   void dispose() {
     editorState.selectionNotifier.dispose();
-    if (widget.scrollController == null) {
-      editorScrollController.dispose();
-    }
     _changeListener?.cancel();
     super.dispose();
   }
@@ -426,47 +467,28 @@ class HtmlEditorState extends State<HtmlEditor> {
     return null;
   }
 
-  Widget desktopEditor(String? roomId) {
-    return FloatingToolbar(
-      items: [
-        paragraphItem,
-        ...headingItems,
-        ...markdownFormatItems,
-        quoteItem,
-        bulletedListItem,
-        numberedListItem,
-        linkItem,
-      ],
+  Widget desktopEditor(String? roomId) => FloatingToolbar(
+    items: [
+      paragraphItem,
+      ...headingItems,
+      ...markdownFormatItems,
+      quoteItem,
+      bulletedListItem,
+      numberedListItem,
+      linkItem,
+    ],
+    textDirection: Directionality.of(context),
+    editorState: editorState,
+    editorScrollController: editorScrollController,
+    style: FloatingToolbarStyle(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
+    ),
+    child: Directionality(
       textDirection: Directionality.of(context),
-      editorState: editorState,
-      editorScrollController: editorScrollController,
-      style: FloatingToolbarStyle(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        toolbarActiveColor: Theme.of(context).colorScheme.tertiary,
-      ),
-      child: Directionality(
-        textDirection: Directionality.of(context),
-        child: AppFlowyEditor(
-          // widget pass through
-          editable: widget.editable,
-          shrinkWrap: widget.shrinkWrap,
-          autoFocus: true,
-          header: widget.header,
-          // local states
-          editorScrollController:
-              widget.scrollController ?? editorScrollController,
-          editorState: editorState,
-          editorStyle: desktopEditorStyle(),
-          footer: generateFooter(),
-          blockComponentBuilders: _buildBlockComponentBuilders(),
-          characterShortcutEvents: _buildCharacterShortcutEvents(),
-          commandShortcutEvents: standardCommandShortcutEvents,
-          disableAutoScroll: widget.disableAutoScroll,
-          autoScrollEdgeOffset: 20,
-        ),
-      ),
-    );
-  }
+      child: _editor(editorStyle: desktopEditorStyle(), autoFocus: true),
+    ),
+  );
 
   Widget mobileEditor(String? roomId) {
     return MobileToolbarV2(
@@ -488,7 +510,7 @@ class HtmlEditorState extends State<HtmlEditor> {
         quoteMobileToolbarItem,
         codeMobileToolbarItem,
       ],
-      toolbarHeight: 50,
+      toolbarHeight: 40,
       editorState: editorState,
       child: MobileFloatingToolbar(
         editorScrollController: editorScrollController,
@@ -511,25 +533,43 @@ class HtmlEditorState extends State<HtmlEditor> {
             anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
-        child: AppFlowyEditor(
-          // widget pass through
-          editable: widget.editable,
-          shrinkWrap: widget.shrinkWrap,
-          autoFocus: false,
-          header: widget.header,
-          // local states
-          editorState: editorState,
-          editorScrollController:
-              widget.scrollController ?? editorScrollController,
-          editorStyle: mobileEditorStyle(),
-          footer: generateFooter(),
-          blockComponentBuilders: _buildBlockComponentBuilders(),
-          characterShortcutEvents: _buildCharacterShortcutEvents(),
-          commandShortcutEvents: standardCommandShortcutEvents,
-          disableAutoScroll: false,
-          autoScrollEdgeOffset: 20,
-        ),
+        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: true),
       ),
+    );
+  }
+
+  Widget _editor({required EditorStyle editorStyle, required bool autoFocus}) {
+    final editor = AppFlowyEditor(
+      // widget pass through
+      editable: widget.editable,
+      shrinkWrap: widget.shrinkWrap,
+      autoFocus: autoFocus,
+      header: widget.header,
+      // local states
+      editorState: editorState,
+      editorScrollController: editorScrollController,
+      editorStyle: editorStyle,
+      footer: generateFooter(),
+      blockComponentBuilders: _buildBlockComponentBuilders(),
+      characterShortcutEvents: _buildCharacterShortcutEvents(),
+      commandShortcutEvents: standardCommandShortcutEvents,
+      disableAutoScroll: false,
+      autoScrollEdgeOffset: 20,
+    );
+
+    if (widget.maxHeight == null && widget.minHeight == null) {
+      return editor;
+    }
+
+    return ValueListenableBuilder(
+      valueListenable: _contentHeightNotifier,
+      builder:
+          (context, value, child) => AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            width: MediaQuery.sizeOf(context).width,
+            height: max(value, widget.minHeight ?? 50),
+            child: editor,
+          ),
     );
   }
 

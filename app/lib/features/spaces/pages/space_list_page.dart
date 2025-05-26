@@ -1,4 +1,4 @@
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/spaces/model/keys.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';

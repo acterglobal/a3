@@ -123,10 +123,11 @@ packages:
   appflowy_editor:
     dependency: "direct main"
     description:
-      name: appflowy_editor
-      sha256: "77e7a8da4474b3ee95aee860d782a48400ed57bbf4f8bd574231cfb21218dabb"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: ben-mobile-expandable-editor
+      resolved-ref: f8dbf8a43c61d0aebead83e1b71af8c2c4c53a79
+      url: "https://github.com/acterglobal/appflowy-editor"
+    source: git
     version: "5.2.0"
   archive:
     dependency: transitive

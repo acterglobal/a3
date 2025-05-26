@@ -47,6 +47,7 @@ impl ActerModel for NewsEntry {
             IndexKey::RoomSection(self.meta.room_id.clone(), SectionIndex::Boosts),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -113,6 +114,7 @@ impl ActerModel for NewsEntryUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.news_entry.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -125,7 +127,7 @@ impl ActerModel for NewsEntryUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<OwnedEventId>> {
-        Some(vec![self.inner.news_entry.event_id.to_owned()])
+        Some(vec![self.inner.news_entry.event_id.clone()])
     }
 }
 

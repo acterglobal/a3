@@ -225,7 +225,7 @@ impl Store {
         let key = mdl.event_id().to_owned();
         let user_id = self.user_id();
         let room_id = mdl.room_id().to_owned();
-        let keys_changed = vec![key.to_owned()];
+        let keys_changed = vec![key.clone()];
         trace!(user = ?user_id, ?key, "saving");
         let mut new_indizes = mdl.indizes(user_id);
         let mut removed_indizes = Vec::new();
@@ -313,7 +313,7 @@ impl Store {
 
     pub async fn clear_room(&self, room_id: &OwnedRoomId) -> Result<Vec<ExecuteReference>> {
         info!(?room_id, "clearing room");
-        let idx = IndexKey::RoomModels(room_id.to_owned());
+        let idx = IndexKey::RoomModels(room_id.clone());
         let mut total_changed = {
             let mut dirty = self.dirty.lock()?; // hold the lock
             let mut total_changed = Vec::new();

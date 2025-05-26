@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
@@ -57,7 +58,7 @@ void messageActions({
                   ),
                 ),
                 // Message
-                Center(child: messageWidget),
+                Center(child: ActerSelectionArea(child: messageWidget)),
                 // Message actions
                 _AnimatedActionsContainer(
                   animation: animation,

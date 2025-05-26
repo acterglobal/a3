@@ -73,7 +73,6 @@ class TextMessageEvent extends ConsumerWidget {
       repliedTo: repliedTo,
     );
   }
-
   // Default factory constructor
   factory TextMessageEvent({
     Key? key,
@@ -117,7 +116,12 @@ class TextMessageEvent extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
+
         Html(
+          linkStyle: TextStyle(
+            color: colorScheme.onPrimary,
+            decoration: TextDecoration.underline,
+          ),
           shrinkToFit: true,
           pillBuilder:
               ({

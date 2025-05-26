@@ -1,5 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/widgets/acter_search_widget.dart';
 import 'package:acter/features/public_room_search/models/public_search_filters.dart';
 import 'package:acter/features/public_room_search/providers/public_search_providers.dart';
