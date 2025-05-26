@@ -1779,9 +1779,6 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn media_binary(event_id: string, thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 
-    /// get the user status on this room
-    fn room_type() -> string;
-
     /// is this a direct message
     fn is_dm() -> bool;
 
