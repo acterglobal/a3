@@ -252,29 +252,22 @@ impl TimelineEventItem {
                     .map(|(u, receipt)| (u.to_string(), receipt.clone()))
                     .collect(),
             )
-            .reactions(
-                event
-                    .content()
-                    .reactions()
-                    .iter()
-                    .map(|(key, group)| {
-                        (
-                            key.clone(),
-                            group
-                                .iter()
-                                .map(|(sender_id, info)| {
-                                    ReactionRecord::new(
-                                        sender_id.clone(),
-                                        info.timestamp,
-                                        *sender_id == my_id,
-                                    )
-                                })
-                                .collect::<Vec<ReactionRecord>>(),
+            .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
+
+        if let Some(reactions) = event.content().reactions() {
+            me.reactions(reactions.iter().map(|(key, reactions_by_sender)| (
+                key.clone(),
+                reactions_by_sender.iter()
+                    .map(|(sender_id, info)| {
+                        ReactionRecord::new(
+                            sender_id.clone(),
+                            info.timestamp,
+                            *sender_id == my_id,
                         )
                     })
-                    .collect(),
-            )
-            .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
+                    .collect::<Vec<ReactionRecord>>(),),
+                ).collect());
+        }
 
         me.parse_content(event.content(), event.timestamp().get().into(), my_id);
         me.build().expect("Building Room Event doesn’t fail")
