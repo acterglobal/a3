@@ -1,21 +1,11 @@
 import 'package:acter/features/activities/widgets/security_and_privacy_section/store_the_key_securely_widget.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/general/mock_option_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show OptionString;
 import 'package:acter/l10n/generated/l10n.dart';
-
 import '../../../helpers/test_util.dart';
-
-class MockOptionString extends Mock implements OptionString {
-  final String? mockText;
-
-  MockOptionString({this.mockText});
-
-  @override
-  String? text() => mockText;
-}
 
 void main() {
   Future<void> pumpProviderWidget(
