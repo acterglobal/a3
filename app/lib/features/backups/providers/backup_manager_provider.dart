@@ -11,3 +11,13 @@ final enableEncrptionBackUpProvider = FutureProvider((ref) async {
   final manager = await ref.watch(backupManagerProvider.future);
   return manager.enable();
 });
+
+final storedEncKeyProvider = FutureProvider((ref) async {
+  final manager = await ref.watch(backupManagerProvider.future);
+  return manager.storedEncKey();
+});
+
+final storedEncKeyTimestampProvider = FutureProvider((ref) async {
+  final manager = await ref.watch(backupManagerProvider.future);
+  return manager.storedEncKeyWhen();
+});

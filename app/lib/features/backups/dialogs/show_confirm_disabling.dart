@@ -58,6 +58,7 @@ class _ShowConfirmResetDialog extends ConsumerWidget {
         Navigator.pop(context);
         showRecoveryKeyDialog(context, ref, newKey);
       }
+      ref.invalidate(storedEncKeyProvider);
     } catch (error) {
       if (!context.mounted) {
         EasyLoading.dismiss();

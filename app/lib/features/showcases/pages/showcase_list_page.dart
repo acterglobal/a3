@@ -17,6 +17,10 @@ const List<ShowCaseItem> _onboardingShowcase = [
   ),
 ];
 
+const List<ShowCaseItem> _invitationsShowcase = [
+  (title: 'Invitations', route: Routes.invitationsSectionShowcase),
+];
+
 typedef ShowCaseGroup = ({String title, List<ShowCaseItem> items});
 
 typedef ShowCaseItem = ({String title, Routes route});
@@ -25,6 +29,7 @@ typedef ShowCaseItem = ({String title, Routes route});
 const List<ShowCaseGroup> _showCases = [
   (title: 'Onboarding Wizard', items: _onboardingShowcase),
   (title: 'Chat Ng', items: _chatShowcase),
+  (title: 'Invitations', items: _invitationsShowcase),
 ];
 
 class ShowcaseListPage extends StatelessWidget {
