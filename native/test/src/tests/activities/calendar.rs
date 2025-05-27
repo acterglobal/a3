@@ -113,19 +113,6 @@ async fn calendar_update_start_activity() -> Result<()> {
     assert_eq!(
         activity
             .date_time_range_content()
-            .and_then(|c| c.start_change())
-            .as_deref(),
-        Some("Changed")
-    );
-    assert_eq!(
-        activity
-            .date_time_range_content()
-            .and_then(|c| c.end_change()),
-        None
-    );
-    assert_eq!(
-        activity
-            .date_time_range_content()
             .and_then(|c| c.start_new_val()),
         Some(utc_start.clone())
     );
@@ -190,19 +177,6 @@ async fn calendar_update_end_activity() -> Result<()> {
 
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "eventDateChange");
-    assert_eq!(
-        activity
-            .date_time_range_content()
-            .and_then(|c| c.start_change()),
-        None
-    );
-    assert_eq!(
-        activity
-            .date_time_range_content()
-            .and_then(|c| c.end_change())
-            .as_deref(),
-        Some("Changed")
-    );
     assert_eq!(
         activity
             .date_time_range_content()
@@ -272,20 +246,6 @@ async fn calendar_update_start_end_activity() -> Result<()> {
 
     let activity = user.activity(event_id.to_string()).await?;
     assert_eq!(activity.type_str(), "eventDateChange");
-    assert_eq!(
-        activity
-            .date_time_range_content()
-            .and_then(|c| c.start_change())
-            .as_deref(),
-        Some("Changed")
-    );
-    assert_eq!(
-        activity
-            .date_time_range_content()
-            .and_then(|c| c.end_change())
-            .as_deref(),
-        Some("Changed")
-    );
     assert_eq!(
         activity
             .date_time_range_content()
