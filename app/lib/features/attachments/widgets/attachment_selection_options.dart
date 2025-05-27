@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/models/types.dart';
@@ -80,6 +81,16 @@ class AttachmentSelectionOptions extends StatelessWidget {
     );
   }
 
+  Color _getColorFromTitle(String title) {
+    final random = Random(title.hashCode);
+    return Color.fromRGBO(
+      random.nextInt(200) + 55, // R: 55-255
+      random.nextInt(200) + 55, // G: 55-255
+      random.nextInt(200) + 55, // B: 55-255
+      1.0,
+    );
+  }
+
   Widget _attachmentOptionItem({
     required BuildContext context,
     required String title,
@@ -88,17 +99,23 @@ class AttachmentSelectionOptions extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
+      child: SizedBox(
         height: 100,
         width: 100,
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Icon(iconData, color: _getColorFromTitle(title)),
+            ),
+            const SizedBox(height: 10),
+            Text(title, style: Theme.of(context).textTheme.labelMedium),
+          ],
         ),
-        child: Column(children: [Expanded(child: Icon(iconData)), Text(title)]),
       ),
     );
   }
