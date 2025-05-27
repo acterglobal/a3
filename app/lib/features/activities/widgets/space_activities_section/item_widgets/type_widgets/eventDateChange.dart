@@ -49,53 +49,27 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
       _log.severe('failed to get content of date time range change');
       return null;
     }
-    switch (content.startChange()) {
-      case 'Changed':
-        // for now, we can't support the old value
-        // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.startNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityStartTimeYouChanged(newVal);
-        } else {
-          return lang.activityStartTimeOtherChanged(senderName, newVal);
-        }
-      case 'Set':
-        final newVal = content.startNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityStartTimeYouSet(newVal);
-        } else {
-          return lang.activityStartTimeOtherSet(senderName, newVal);
-        }
-      case 'Unset':
-        if (isMe) {
-          return lang.activityStartTimeYouUnset;
-        } else {
-          return lang.activityStartTimeOtherUnset(senderName);
-        }
+    // for now, we can't support the old value
+    // because the internal state machine is not ready about acter custom message, like pin or task
+    final startNewVal = content.startNewVal();
+    if (startNewVal != null) {
+      final newVal = startNewVal.toRfc3339();
+      if (isMe) {
+        return lang.activityStartTimeYouChanged(newVal);
+      } else {
+        return lang.activityStartTimeOtherChanged(senderName, newVal);
+      }
     }
-    switch (content.endChange()) {
-      case 'Changed':
-        // for now, we can't support the old value
-        // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityEndTimeYouChanged(newVal);
-        } else {
-          return lang.activityEndTimeOtherChanged(senderName, newVal);
-        }
-      case 'Set':
-        final newVal = content.endNewVal()?.toRfc3339() ?? '';
-        if (isMe) {
-          return lang.activityEndTimeYouSet(newVal);
-        } else {
-          return lang.activityEndTimeOtherSet(senderName, newVal);
-        }
-      case 'Unset':
-        if (isMe) {
-          return lang.activityEndTimeYouUnset;
-        } else {
-          return lang.activityEndTimeOtherUnset(senderName);
-        }
+    // for now, we can't support the old value
+    // because the internal state machine is not ready about acter custom message, like pin or task
+    final endNewVal = content.endNewVal();
+    if (endNewVal != null) {
+      final newVal = endNewVal.toRfc3339();
+      if (isMe) {
+        return lang.activityEndTimeYouChanged(newVal);
+      } else {
+        return lang.activityEndTimeOtherChanged(senderName, newVal);
+      }
     }
     return null;
   }

@@ -2799,9 +2799,7 @@ object DateContent {
 }
 
 object DateTimeRangeContent {
-    fn start_change() -> Option<string>;
     fn start_new_val() -> Option<UtcDateTime>;
-    fn end_change() -> Option<string>;
     fn end_new_val() -> Option<UtcDateTime>;
 }
 

@@ -68,37 +68,20 @@ impl DateContent {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DateTimeRangeContent {
-    start_change: Option<String>,
     start_new_val: Option<UtcDateTime>,
-    end_change: Option<String>,
     end_new_val: Option<UtcDateTime>,
 }
 
 impl DateTimeRangeContent {
-    pub fn new(
-        start_change: Option<String>,
-        start_new_val: Option<UtcDateTime>,
-        end_change: Option<String>,
-        end_new_val: Option<UtcDateTime>,
-    ) -> Self {
+    pub fn new(start_new_val: Option<UtcDateTime>, end_new_val: Option<UtcDateTime>) -> Self {
         Self {
-            start_change,
             start_new_val,
-            end_change,
             end_new_val,
         }
     }
 
-    pub fn start_change(&self) -> Option<String> {
-        self.start_change.clone()
-    }
-
     pub fn start_new_val(&self) -> Option<UtcDateTime> {
         self.start_new_val
-    }
-
-    pub fn end_change(&self) -> Option<String> {
-        self.end_change.clone()
     }
 
     pub fn end_new_val(&self) -> Option<UtcDateTime> {

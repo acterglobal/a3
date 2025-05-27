@@ -805,12 +805,8 @@ impl Activity {
                     match (e.inner.utc_start, e.inner.utc_end) {
                         (Some(utc_start), Some(utc_end)) => {
                             // changed both start and end
-                            let content = status::DateTimeRangeContent::new(
-                                Some("Changed".to_owned()),
-                                Some(utc_start),
-                                Some("Changed".to_owned()),
-                                Some(utc_end),
-                            );
+                            let content =
+                                status::DateTimeRangeContent::new(Some(utc_start), Some(utc_end));
                             return Ok(Self::new(
                                 meta,
                                 ActivityContent::EventDateChange { object, content },
@@ -818,12 +814,7 @@ impl Activity {
                         }
                         (Some(utc_start), None) => {
                             // changed only start
-                            let content = status::DateTimeRangeContent::new(
-                                Some("Changed".to_owned()),
-                                Some(utc_start),
-                                None,
-                                None,
-                            );
+                            let content = status::DateTimeRangeContent::new(Some(utc_start), None);
                             return Ok(Self::new(
                                 meta,
                                 ActivityContent::EventDateChange { object, content },
@@ -831,12 +822,7 @@ impl Activity {
                         }
                         (None, Some(utc_end)) => {
                             // changed only end
-                            let content = status::DateTimeRangeContent::new(
-                                None,
-                                None,
-                                Some("Changed".to_owned()),
-                                Some(utc_end),
-                            );
+                            let content = status::DateTimeRangeContent::new(None, Some(utc_end));
                             return Ok(Self::new(
                                 meta,
                                 ActivityContent::EventDateChange { object, content },

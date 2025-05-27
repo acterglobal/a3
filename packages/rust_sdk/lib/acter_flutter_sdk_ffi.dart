@@ -26649,15 +26649,6 @@ class Api {
   late final _dateContentNewVal =
       _dateContentNewValPtr
           .asFunction<_DateContentNewValReturn Function(int)>();
-  late final _dateTimeRangeContentStartChangePtr = _lookup<
-    ffi.NativeFunction<
-      _DateTimeRangeContentStartChangeReturn Function(ffi.IntPtr)
-    >
-  >("__DateTimeRangeContent_start_change");
-
-  late final _dateTimeRangeContentStartChange =
-      _dateTimeRangeContentStartChangePtr
-          .asFunction<_DateTimeRangeContentStartChangeReturn Function(int)>();
   late final _dateTimeRangeContentStartNewValPtr = _lookup<
     ffi.NativeFunction<
       _DateTimeRangeContentStartNewValReturn Function(ffi.IntPtr)
@@ -26667,15 +26658,6 @@ class Api {
   late final _dateTimeRangeContentStartNewVal =
       _dateTimeRangeContentStartNewValPtr
           .asFunction<_DateTimeRangeContentStartNewValReturn Function(int)>();
-  late final _dateTimeRangeContentEndChangePtr = _lookup<
-    ffi.NativeFunction<
-      _DateTimeRangeContentEndChangeReturn Function(ffi.IntPtr)
-    >
-  >("__DateTimeRangeContent_end_change");
-
-  late final _dateTimeRangeContentEndChange =
-      _dateTimeRangeContentEndChangePtr
-          .asFunction<_DateTimeRangeContentEndChangeReturn Function(int)>();
   late final _dateTimeRangeContentEndNewValPtr = _lookup<
     ffi.NativeFunction<
       _DateTimeRangeContentEndNewValReturn Function(ffi.IntPtr)
@@ -58748,37 +58730,6 @@ class DateTimeRangeContent {
 
   DateTimeRangeContent._(this._api, this._box);
 
-  String? startChange() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._dateTimeRangeContentStartChange(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
-    return tmp2;
-  }
-
   UtcDateTime? startNewVal() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -58792,37 +58743,6 @@ class DateTimeRangeContent {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = UtcDateTime._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  String? endChange() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._dateTimeRangeContentEndChange(tmp0);
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    if (tmp5 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
-    List<int> tmp4_buf = [];
-    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp5; i++) {
-      int char = tmp4_precast.elementAt(i).value;
-      tmp4_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
-    }
     return tmp2;
   }
 
@@ -73557,33 +73477,11 @@ class _DateContentNewValReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _DateTimeRangeContentStartChangeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
 class _DateTimeRangeContentStartNewValReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
-}
-
-class _DateTimeRangeContentEndChangeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
 }
 
 class _DateTimeRangeContentEndNewValReturn extends ffi.Struct {
