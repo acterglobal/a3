@@ -2,11 +2,13 @@ import 'package:acter/features/bookmarks/providers/bookmarks_provider.dart';
 import 'package:acter/features/bookmarks/types.dart';
 import 'package:acter/features/events/providers/event_type_provider.dart';
 import 'package:acter/features/events/actions/sort_event_list.dart';
+import 'package:acter/features/events/providers/notifiers/event_location_notifiers.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
 import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
 import 'package:acter/features/search/providers/quick_search_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 
 //SINGLE CALENDER EVENT DETAILS PROVIDER
@@ -259,3 +261,11 @@ final eventListQuickSearchedProvider =
 
       return _filterEventBySearchTerm(searchTerm, allEventList);
     });
+
+//EVENT LOCATIONS
+final eventLocationsProvider = AutoDisposeFamilyAsyncNotifierProvider<
+  AsyncEventLocationsNotifier,
+  List<EventLocationInfo>,
+  String>(
+  AsyncEventLocationsNotifier.new,
+);
