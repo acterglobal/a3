@@ -22,6 +22,7 @@ pub enum ActivityObject {
     CalendarEvent {
         object_id: OwnedEventId,
         title: String,
+        description: Option<TextMessageEventContent>,
         utc_start: UtcDateTime,
         utc_end: UtcDateTime,
     },
@@ -117,6 +118,7 @@ impl ActivityObject {
     pub fn description(&self) -> Option<TextMessageEventContent> {
         match self {
             ActivityObject::Pin { description, .. } => description.clone(),
+            ActivityObject::CalendarEvent { description, .. } => description.clone(),
             _ => None,
         }
     }
@@ -157,6 +159,7 @@ impl TryFrom<&AnyActerModel> for ActivityObject {
             AnyActerModel::CalendarEvent(e) => Ok(ActivityObject::CalendarEvent {
                 object_id: e.event_id().to_owned(),
                 title: e.title(),
+                description: e.description.clone(),
                 utc_start: e.utc_start(),
                 utc_end: e.utc_end(),
             }),

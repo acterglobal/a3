@@ -5,8 +5,8 @@ use tokio_retry::{
     Retry,
 };
 
-use super::get_latest_activity;
-use crate::{tests::activities::assert_latest_activity, utils::random_user_with_template};
+use super::{assert_latest_activity, get_latest_activity};
+use crate::utils::random_user_with_template;
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -321,6 +321,22 @@ async fn calendar_update_description() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
+    let spaces = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            // client would have the default space
+            let spaces = client.spaces().await?;
+            if spaces.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(spaces)
+        }
+    })
+    .await?;
+    let main_space = spaces.first().expect("main space should be available");
+
+    // wait for sync to catch up
+    let fetcher_client = user.clone();
     let cal_events = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
@@ -341,7 +357,7 @@ async fn calendar_update_description() -> Result<()> {
 
     // set up the description
     let desc_text = "This is test calendar event";
-    let event_id = cal_event
+    cal_event
         .update_builder()?
         .description_text(desc_text.to_owned())
         .send()
@@ -356,7 +372,8 @@ async fn calendar_update_description() -> Result<()> {
     })
     .await?;
 
-    let activity = user.activity(event_id.to_string()).await?;
+    let activity =
+        get_latest_activity(&user, main_space.room_id().to_string(), "descriptionChange").await?;
     assert_eq!(activity.type_str(), "descriptionChange");
     assert_eq!(
         activity
@@ -373,8 +390,13 @@ async fn calendar_update_description() -> Result<()> {
         Some(desc_text)
     );
 
+    // again, acquire cal event updater so that we can check for description deletion
+    let cal_events = user.calendar_events().await?;
+    let cal_event = cal_events.first().unwrap();
+    let cal_updater = cal_event.subscribe();
+
     // delete the description
-    let event_id = cal_event
+    cal_event
         .update_builder()?
         .unset_description()
         .send()
@@ -388,7 +410,8 @@ async fn calendar_update_description() -> Result<()> {
     })
     .await?;
 
-    let activity = user.activity(event_id.to_string()).await?;
+    let activity =
+        get_latest_activity(&user, main_space.room_id().to_string(), "descriptionChange").await?;
     assert_eq!(activity.type_str(), "descriptionChange");
     assert_eq!(
         activity
