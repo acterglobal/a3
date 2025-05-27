@@ -173,7 +173,7 @@ pub enum NotificationItemInner {
         content: MessageType,
         room_id: OwnedRoomId,
     },
-    Activity(Activity),
+    Activity(Box<Activity>),
 }
 
 impl NotificationItemInner {
