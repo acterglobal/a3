@@ -66,6 +66,8 @@ impl DateContent {
     }
 }
 
+// Utc start & end are required in calendar event and unset is impossible
+// change mode is only `Changed`, so start_change or end_change are not needed
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct DateTimeRangeContent {
     start_new_val: Option<UtcDateTime>,
