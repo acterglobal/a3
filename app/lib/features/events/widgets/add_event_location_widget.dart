@@ -21,9 +21,9 @@ class _AddEventLocationWidgetState
   final _formKey = GlobalKey<FormState>(debugLabel: 'location form key');
   final _locationNameController = TextEditingController();
   final _locationUrlController = TextEditingController();
-  final _locationAddressController = TextEditingController();
 
-  EditorState textEditorState = EditorState.blank();
+  EditorState textEditorNoteState = EditorState.blank();
+  EditorState textEditorAddressState = EditorState.blank();
   LocationType _selectedType = LocationType.virtual;
 
   @override
@@ -134,18 +134,29 @@ class _AddEventLocationWidgetState
       children: [
         Text(lang.addLocationAddress),
         const SizedBox(height: 10),
-        TextFormField(
-          key: EventsKeys.eventLocationAddressTextField,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          controller: _locationAddressController,
-          decoration: InputDecoration(hintText: lang.enterLocationAddress),
-          // required field, space not allowed
-          validator:
-              (val) =>
-                  val == null || val.trim().isEmpty
-                      ? lang.pleaseEnterLocationAddress
-                      : null,
+       InputDecorator(
+          decoration: InputDecoration(
+            hintText: lang.enterLocationAddress,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            contentPadding: const EdgeInsets.all(12),
+          ),
+          child: SizedBox(
+            height: 100,
+            child: HtmlEditor(
+              key: EventsKeys.eventLocationAddressTextField,
+              editorState: textEditorAddressState,
+              editable: true,
+              autofocus: false,
+              hintText: lang.enterLocationAddress,
+              onChanged: (body, html) {
+                textEditorAddressState = EditorState(
+                  document: ActerDocumentHelpers.parse(body, htmlContent: html),
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
@@ -170,11 +181,12 @@ class _AddEventLocationWidgetState
             height: 100,
             child: HtmlEditor(
               key: EventsKeys.eventLocationNoteTextField,
-              editorState: textEditorState,
+              editorState: textEditorNoteState,
               editable: true,
               autofocus: false,
+              hintText: lang.enterNote,
               onChanged: (body, html) {
-                textEditorState = EditorState(
+                textEditorNoteState = EditorState(
                   document: ActerDocumentHelpers.parse(body, htmlContent: html),
                 );
               },
