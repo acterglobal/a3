@@ -6,7 +6,9 @@ use tokio_retry::{
 };
 
 use crate::{
-    tests::activities::{all_activities_observer, assert_triggered_with_latest_activity},
+    tests::activities::{
+        all_activities_observer, assert_triggered_with_latest_activity, get_latest_activity,
+    },
     utils::random_user_with_template,
 };
 
@@ -42,7 +44,7 @@ async fn task_creation_activity() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy, move || {
+    let task_lists = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
             let task_lists = client.task_lists().await?;
@@ -60,7 +62,18 @@ async fn task_creation_activity() -> Result<()> {
         .first()
         .expect("first tasklist should be available");
 
-    let tasks = task_list.tasks().await?;
+    let target_list = task_list.clone();
+    let tasks = Retry::spawn(retry_strategy, move || {
+        let task_list = target_list.clone();
+        async move {
+            let tasks = task_list.tasks().await?;
+            if tasks.len() != 1 {
+                bail!("not all tasks found");
+            }
+            Ok(tasks)
+        }
+    })
+    .await?;
     assert_eq!(tasks.len(), 1);
 
     let task = tasks.first().expect("first task should be available");
@@ -96,7 +109,23 @@ async fn task_update_description() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy, move || {
+    let spaces = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            // client would have the default space
+            let spaces = client.spaces().await?;
+            if spaces.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(spaces)
+        }
+    })
+    .await?;
+    let main_space = spaces.first().expect("main space should be available");
+
+    // wait for sync to catch up
+    let fetcher_client = user.clone();
+    let task_lists = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
             let task_lists = client.task_lists().await?;
@@ -112,7 +141,18 @@ async fn task_update_description() -> Result<()> {
 
     let task_list = task_lists.first().unwrap();
 
-    let tasks = task_list.tasks().await?;
+    let target_list = task_list.clone();
+    let tasks = Retry::spawn(retry_strategy, move || {
+        let task_list = target_list.clone();
+        async move {
+            let tasks = task_list.tasks().await?;
+            if tasks.len() != 1 {
+                bail!("not all tasks found");
+            }
+            Ok(tasks)
+        }
+    })
+    .await?;
     assert_eq!(tasks.len(), 1);
 
     let task = tasks.first().unwrap();
@@ -121,8 +161,7 @@ async fn task_update_description() -> Result<()> {
 
     // set up the description
     let desc_text = "This is test content of task";
-    let event_id = task
-        .update_builder()?
+    task.update_builder()?
         .description_text(desc_text.to_owned())
         .send()
         .await?;
@@ -136,7 +175,8 @@ async fn task_update_description() -> Result<()> {
     })
     .await?;
 
-    let activity = user.activity(event_id.to_string()).await?;
+    let activity =
+        get_latest_activity(&user, main_space.room_id().to_string(), "descriptionChange").await?;
     assert_eq!(activity.type_str(), "descriptionChange");
     assert_eq!(
         activity.msg_content().map(|c| c.body()).as_deref(),
@@ -156,6 +196,13 @@ async fn task_update_description() -> Result<()> {
             .as_deref(),
         Some(desc_text)
     );
+
+    // again, acquire task updater so that we can check for description deletion
+    let task_lists = user.task_lists().await?;
+    let task_list = task_lists.first().unwrap();
+    let tasks = task_list.tasks().await?;
+    let task = tasks.first().unwrap();
+    let task_updater = task.subscribe();
 
     // delete the description
     let event_id = task.update_builder()?.unset_description().send().await?;
@@ -266,7 +313,23 @@ async fn task_update_due_date() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy, move || {
+    let spaces = Retry::spawn(retry_strategy.clone(), move || {
+        let client = fetcher_client.clone();
+        async move {
+            // client would have the default space
+            let spaces = client.spaces().await?;
+            if spaces.len() != 1 {
+                bail!("not all spaces found");
+            }
+            Ok(spaces)
+        }
+    })
+    .await?;
+    let main_space = spaces.first().expect("main space should be available");
+
+    // wait for sync to catch up
+    let fetcher_client = user.clone();
+    let task_lists = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         async move {
             let task_lists = client.task_lists().await?;
@@ -282,7 +345,18 @@ async fn task_update_due_date() -> Result<()> {
 
     let task_list = task_lists.first().unwrap();
 
-    let tasks = task_list.tasks().await?;
+    let target_list = task_list.clone();
+    let tasks = Retry::spawn(retry_strategy, move || {
+        let task_list = target_list.clone();
+        async move {
+            let tasks = task_list.tasks().await?;
+            if tasks.len() != 1 {
+                bail!("not all tasks found");
+            }
+            Ok(tasks)
+        }
+    })
+    .await?;
     assert_eq!(tasks.len(), 1);
 
     let task = tasks.first().unwrap();
@@ -292,8 +366,7 @@ async fn task_update_due_date() -> Result<()> {
     // set up the due date
     let today = Utc::now().date_naive();
     let tomorrow = today + Duration::days(1);
-    let event_id = task
-        .update_builder()?
+    task.update_builder()?
         .due_date(tomorrow.year(), tomorrow.month0() + 1, tomorrow.day0() + 1)
         .send()
         .await?;
@@ -307,7 +380,8 @@ async fn task_update_due_date() -> Result<()> {
     })
     .await?;
 
-    let activity = user.activity(event_id.to_string()).await?;
+    let activity =
+        get_latest_activity(&user, main_space.room_id().to_string(), "taskDueDateChange").await?;
     assert_eq!(activity.type_str(), "taskDueDateChange");
     assert_eq!(
         activity.date_content().map(|c| c.change()).as_deref(),
@@ -324,6 +398,13 @@ async fn task_update_due_date() -> Result<()> {
     assert!(object.utc_start().is_none());
     assert!(object.utc_end().is_none());
     assert_eq!(object.due_date(), Some(tomorrow));
+
+    // again, acquire task updater so that we can check for description deletion
+    let task_lists = user.task_lists().await?;
+    let task_list = task_lists.first().unwrap();
+    let tasks = task_list.tasks().await?;
+    let task = tasks.first().unwrap();
+    let task_updater = task.subscribe();
 
     // delete the due date
     let event_id = task.update_builder()?.unset_due_date().send().await?;
