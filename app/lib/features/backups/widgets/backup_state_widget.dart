@@ -57,7 +57,11 @@ class BackupStateWidget extends ConsumerWidget {
       actions: [
         OutlinedButton(
           onPressed: () => showConfirmResetDialog(context, ref),
-          child: Text(lang.reset),
+          child: Text(lang.encryptionBackupRotateKey),
+        ),
+        OutlinedButton(
+          onPressed: () => showConfirmResetDialog(context, ref),
+          child: Text(lang.encryptionBackupResetIdentity),
         ),
       ],
     );

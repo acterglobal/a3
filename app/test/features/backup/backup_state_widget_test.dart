@@ -4,6 +4,7 @@ import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/providers/notifiers/backup_state_notifier.dart';
 import 'package:acter/features/backups/types.dart';
 import 'package:acter/features/backups/widgets/backup_state_widget.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -79,9 +80,12 @@ void main() {
           allowDisabling: true,
         );
 
+        final context = tester.element(find.byType(BackupStateWidget));
+        final lang = L10n.of(context);
+
         expect(find.byIcon(Atlas.check_website_thin), findsOneWidget);
-        expect(find.byType(OutlinedButton), findsOneWidget);
-        expect(find.textContaining('Reset'), findsOneWidget);
+        expect(find.text(lang.encryptionBackupRotateKey), findsOneWidget);
+        expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
       },
     );
 
