@@ -1,9 +1,9 @@
-import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:acter/features/analytics/pages/analytics_opt_in_page.dart';
 import 'package:acter/features/analytics/providers/analytics_preferences_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../helpers/pref_provider_mocks.dart';
 import '../../../helpers/test_util.dart';
 
 void main() {
@@ -12,29 +12,15 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.crashReporting.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.appAnalytics.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.basicTelemetry.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
-          researchProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.research.name,
-              false,
-            ),
-          ),
+          researchProvider.overrideWith(() => MockAsyncPrefNotifier(false)),
         ],
         child: const AnalyticsOptInWidget(),
       );
@@ -51,29 +37,15 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.crashReporting.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.appAnalytics.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.basicTelemetry.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
-          researchProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.research.name,
-              false,
-            ),
-          ),
+          researchProvider.overrideWith(() => MockAsyncPrefNotifier(false)),
         ],
         child: const AnalyticsOptInWidget(),
       );
@@ -88,29 +60,15 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.crashReporting.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.appAnalytics.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.basicTelemetry.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
-          researchProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.research.name,
-              false,
-            ),
-          ),
+          researchProvider.overrideWith(() => MockAsyncPrefNotifier(false)),
         ],
         child: const AnalyticsOptInWidget(),
       );
@@ -128,29 +86,15 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.crashReporting.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.appAnalytics.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.basicTelemetry.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
-          researchProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.research.name,
-              false,
-            ),
-          ),
+          researchProvider.overrideWith(() => MockAsyncPrefNotifier(false)),
         ],
         child: const AnalyticsOptInWidget(),
       );
@@ -166,29 +110,15 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.crashReporting.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.appAnalytics.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.basicTelemetry.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
-          researchProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.research.name,
-              false,
-            ),
-          ),
+          researchProvider.overrideWith(() => MockAsyncPrefNotifier(false)),
         ],
         child: const AnalyticsOptInWidget(),
       );
@@ -210,29 +140,15 @@ void main() {
         await tester.pumpProviderWidget(
           overrides: [
             canReportSentryProvider.overrideWith(
-              () => AsyncPrefNotifier(
-                AnalyticsPreferenceKey.crashReporting.name,
-                true,
-              ),
+              () => MockAsyncPrefNotifier(true),
             ),
             matomoAnalyticsProvider.overrideWith(
-              () => AsyncPrefNotifier(
-                AnalyticsPreferenceKey.appAnalytics.name,
-                true,
-              ),
+              () => MockAsyncPrefNotifier(true),
             ),
             basicTelemetryProvider.overrideWith(
-              () => AsyncPrefNotifier(
-                AnalyticsPreferenceKey.basicTelemetry.name,
-                true,
-              ),
+              () => MockAsyncPrefNotifier(true),
             ),
-            researchProvider.overrideWith(
-              () => AsyncPrefNotifier(
-                AnalyticsPreferenceKey.research.name,
-                true,
-              ),
-            ),
+            researchProvider.overrideWith(() => MockAsyncPrefNotifier(true)),
           ],
           child: const AnalyticsOptInWidget(),
         );
@@ -255,29 +171,15 @@ void main() {
       await tester.pumpProviderWidget(
         overrides: [
           canReportSentryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.crashReporting.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           matomoAnalyticsProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.appAnalytics.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
           basicTelemetryProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.basicTelemetry.name,
-              false,
-            ),
+            () => MockAsyncPrefNotifier(false),
           ),
-          researchProvider.overrideWith(
-            () => AsyncPrefNotifier(
-              AnalyticsPreferenceKey.research.name,
-              false,
-            ),
-          ),
+          researchProvider.overrideWith(() => MockAsyncPrefNotifier(false)),
         ],
         child: const AnalyticsOptInWidget(),
       );
