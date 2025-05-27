@@ -533,7 +533,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
             anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
-        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: true),
+        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: false),
       ),
     );
   }
