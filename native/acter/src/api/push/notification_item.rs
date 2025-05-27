@@ -636,7 +636,7 @@ impl NotificationItemBuilder {
         };
 
         Ok(builder
-            .inner(NotificationItemInner::Activity(activity))
+            .inner(NotificationItemInner::Activity(Box::new(activity)))
             .build()?)
     }
 }
