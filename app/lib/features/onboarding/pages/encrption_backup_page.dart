@@ -1,6 +1,7 @@
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/encryption_backup_feature/widgets/encryption_backup_widget.dart';
 import 'package:acter/features/onboarding/types.dart';
+import 'package:acter/features/onboarding/widgets/remindme_key_dialog.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,7 +76,10 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
           children: [
             _buildEncryptionKeyContent(context, data),
             const SizedBox(height: 32),
-            PasswordManagerBackupWidget(encryptionKey: data),
+            PasswordManagerBackupWidget(
+              encryptionKey: data,
+              onButtonPressed: () => isEnableNextButton.value = true,
+            ),
           ],
         );
       },
@@ -127,30 +131,42 @@ class _EncryptionBackupPageState extends ConsumerState<EncryptionBackupPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildNextButton(context, lang),
+        _buildSaveKeySecurelyButton(context, lang),
         const SizedBox(height: 16),
-        _buidSkipButton(context, lang),
+        _buildRemindMeButton(context, lang),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildNextButton(BuildContext context, L10n lang) {
+  Widget _buildSaveKeySecurelyButton(BuildContext context, L10n lang) {
     return ValueListenableBuilder<bool>(
       valueListenable: isEnableNextButton,
       builder: (context, isEnabled, _) {
         return ElevatedButton(
-          onPressed: isEnabled ? () => widget.callNextPage?.call() : null,
-          child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+          onPressed:
+              isEnabled
+                  ? () => showDialog(
+                    context: context,
+                    builder:
+                        (BuildContext context) => RemindMeAboutKeyDialog(
+                          callNextPage: widget.callNextPage,
+                        ),
+                  )
+                  : null,
+          child: Text(
+            lang.savedKeySecurely,
+            style: const TextStyle(fontSize: 16),
+          ),
         );
       },
     );
   }
 
-  Widget _buidSkipButton(BuildContext context, L10n lang) {
+  Widget _buildRemindMeButton(BuildContext context, L10n lang) {
     return OutlinedButton(
       onPressed: () => widget.callNextPage?.call(),
-      child: Text(L10n.of(context).skip),
+      child: Text(L10n.of(context).remindMeLater),
     );
   }
 }

@@ -89,7 +89,7 @@ pub use bookmarks::Bookmarks;
 pub use calendar_events::{CalendarEvent, CalendarEventDraft, CalendarEventUpdateBuilder};
 pub use categories::{Categories, CategoriesBuilder};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, LocalUrlPreview, SyncState};
-pub use comments::{Comment, CommentDraft, CommentsManager};
+pub use comments::{Comment, CommentDraft, CommentUpdateBuilder, CommentsManager};
 pub use common::{
     duration_from_secs, new_colorize_builder, new_display_builder, new_obj_ref_builder,
     new_thumb_size, ComposeDraft, DeviceRecord, MediaSource, OptionBuffer, OptionComposeDraft,

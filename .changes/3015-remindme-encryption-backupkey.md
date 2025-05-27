@@ -1,0 +1,2 @@
+- [Implemented] : Updated encryption key onboarding with new confirmation flow and UI actions for secure storage.  
+- [Implemented] : Added visual status indicators and key management options in Security & Privacy settings.

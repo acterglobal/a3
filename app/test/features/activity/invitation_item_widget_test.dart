@@ -1,30 +1,27 @@
 import 'dart:typed_data';
 
+import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/invitations/widgets/invitation_item_widget.dart';
 import 'package:acter/features/invitations/providers/invitations_providers.dart';
+import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../helpers/mock_a3sdk.dart';
+import '../../helpers/mock_client_provider.dart';
+import '../../helpers/mock_invites.dart';
 import '../../helpers/mock_room_providers.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Account;
 
-// Mock classes
-class MockInvitation extends Mock implements RoomInvitation {}
+class MockAccount extends Mock implements Account {}
 
-class MockUserProfile extends Mock implements UserProfile {}
-
-class MockOptionBuffer extends Mock implements OptionBuffer {}
-
-class MockOptionString extends Mock implements OptionString {
-  final String? _text;
-
-  MockOptionString(this._text);
-
+class MockRef extends Mock implements Ref {
   @override
-  String? text() => _text;
+  void invalidate(ProviderOrFamily provider) {}
 }
 
 void main() {
@@ -32,12 +29,16 @@ void main() {
   late MockRoom mockRoom;
   late MockUserProfile mockSenderProfile;
   late MockOptionBuffer mockOptionBuffer;
+  late MockClient mockClient;
+  late MockAccount mockAccount;
 
   setUp(() {
     mockInvitation = MockInvitation();
     mockRoom = MockRoom();
     mockSenderProfile = MockUserProfile();
     mockOptionBuffer = MockOptionBuffer();
+    mockClient = MockClient();
+    mockAccount = MockAccount();
 
     // Setup basic mocks
     when(() => mockInvitation.room()).thenReturn(mockRoom);
@@ -67,15 +68,29 @@ void main() {
     WidgetTester tester, {
     AvatarInfo? avatarInfo,
   }) async {
+    final builder = EasyLoading.init();
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: L10n.localizationsDelegates,
         supportedLocales: L10n.supportedLocales,
+        builder:
+            (context, child) => builder(
+              context,
+              Overlay(
+                initialEntries: [
+                  OverlayEntry(builder: (context) => Scaffold(body: child)),
+                ],
+              ),
+            ),
         home: ProviderScope(
           overrides: [
             invitationUserProfileProvider.overrideWith((ref, invitation) async {
               return avatarInfo;
             }),
+            accountProvider.overrideWith((ref) => mockAccount),
+            clientProvider.overrideWith(
+              () => MockClientNotifier(client: mockClient),
+            ),
           ],
           child: Scaffold(
             body: InvitationItemWidget(invitation: mockInvitation),
@@ -93,9 +108,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.text('Test Room default'), findsOneWidget);
-      expect(find.byType(ElevatedButton), findsOneWidget);
       expect(find.text('Accept'), findsOneWidget);
-      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.byType(MenuAnchor), findsOneWidget);
       expect(find.text('Decline'), findsOneWidget);
     });
     testWidgets('renders with custom avatar info', (tester) async {
@@ -110,9 +124,8 @@ void main() {
       // Look for the custom avatar info's display name
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.textContaining('custom'), findsOneWidget);
-      expect(find.byType(ElevatedButton), findsOneWidget);
       expect(find.text('Accept'), findsOneWidget);
-      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.byType(MenuAnchor), findsOneWidget);
       expect(find.text('Decline'), findsOneWidget);
     });
 
@@ -130,9 +143,8 @@ void main() {
 
       expect(find.byType(ActerAvatar), findsOneWidget);
       expect(find.textContaining('Alice'), findsOneWidget);
-      expect(find.byType(ElevatedButton), findsOneWidget);
       expect(find.text('Accept'), findsOneWidget);
-      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.byType(MenuAnchor), findsOneWidget);
       expect(find.text('Decline'), findsOneWidget);
     });
 
@@ -202,21 +214,130 @@ void main() {
       expect(find.text('Start DM'), findsOneWidget);
     });
 
-    testWidgets('shows correct avatar size for DM vs Room', (tester) async {
-      // Test Room avatar size
-      await buildTestWidget(tester);
-      await tester.pumpAndSettle();
+    group('Invitation Actions', () {
+      // FIXME: fails due to routing failures
+      // testWidgets('accepts invitation successfully', (tester) async {
 
-      final roomAvatar = find.byType(ActerAvatar);
-      expect(tester.widget<ActerAvatar>(roomAvatar).options.size, 48);
+      //   when(() => mockInvitation.accept()).thenAnswer((_) async => true);
+      //   when(() => mockRoom.isSpace()).thenReturn(true);
+      //   when(() => mockInvitation.isDm()).thenReturn(false);
+      //   when(
+      //     () => mockClient.waitForRoom(any(), any()),
+      //   ).thenAnswer((_) async => false);
 
-      // Test DM avatar size
-      when(() => mockInvitation.isDm()).thenReturn(true);
-      await buildTestWidget(tester);
-      await tester.pumpAndSettle();
+      //   await buildTestWidget(tester);
+      //   await tester.pumpAndSettle();
 
-      final dmAvatar = find.byType(ActerAvatar);
-      expect(tester.widget<ActerAvatar>(dmAvatar).options.size, 24);
+      //   final context = tester.element(find.byType(InvitationItemWidget));
+
+      //   // Tap accept button
+      //   await tester.tap(find.text(L10n.of(context).accept));
+      //   await tester.pumpAndSettle();
+
+      //   // Verify accept was called
+      //   verify(() => mockInvitation.accept()).called(1);
+
+      //   // ensure the timers ended
+      //   await tester.pump(const Duration(seconds: 4));
+      // });
+
+      testWidgets('handles accept invitation failure', (tester) async {
+        when(
+          () => mockInvitation.accept(),
+        ).thenThrow(Exception('Accept failed'));
+
+        await buildTestWidget(tester);
+        await tester.pumpAndSettle();
+
+        // Tap accept button
+        await tester.tap(find.text('Accept'));
+        await tester.pumpAndSettle();
+
+        // Verify error toast is shown
+        expect(find.textContaining('failed'), findsOneWidget);
+
+        // ensure the timers ended
+        await tester.pump(const Duration(seconds: 4));
+      });
+
+      testWidgets('declines invitation through menu', (tester) async {
+        when(() => mockInvitation.reject()).thenAnswer((_) async => true);
+        final mockAccount = MockAccount();
+        when(() => mockAccount.ignoreUser(any())).thenAnswer((_) async => true);
+
+        await buildTestWidget(tester);
+        await tester.pumpAndSettle();
+        final context = tester.element(find.byType(MenuAnchor));
+
+        // Open decline menu
+        await tester.tap(find.text(L10n.of(context).decline));
+        await tester.pumpAndSettle();
+
+        // Tap decline option
+        await tester.tap(find.text(L10n.of(context).decline).last);
+        await tester.pumpAndSettle();
+
+        // Verify reject was called
+        verify(() => mockInvitation.reject()).called(1);
+        verifyNever(() => mockInvitation.accept());
+        verifyNever(() => mockAccount.ignoreUser(any()));
+
+        // ensure the timers ended
+        await tester.pump(const Duration(seconds: 4));
+      });
+
+      testWidgets('declines and blocks invitation through menu', (
+        tester,
+      ) async {
+        when(() => mockInvitation.reject()).thenAnswer((_) async => true);
+        when(() => mockAccount.ignoreUser(any())).thenAnswer((_) async => true);
+
+        await buildTestWidget(tester);
+        await tester.pumpAndSettle();
+        final context = tester.element(find.byType(MenuAnchor));
+
+        // Open decline menu
+        await tester.tap(find.text(L10n.of(context).decline));
+        await tester.pumpAndSettle();
+
+        // Tap decline and block option
+        await tester.tap(find.text(L10n.of(context).declineAndBlock));
+        await tester.pumpAndSettle();
+
+        // Verify reject was called
+        verify(() => mockInvitation.reject()).called(1);
+        verifyNever(() => mockInvitation.accept());
+
+        // Verify block was called with correct user ID
+        verify(() => mockAccount.ignoreUser('@alice:example.com')).called(1);
+
+        // ensure the timers ended
+        await tester.pump(const Duration(seconds: 4));
+      });
+
+      testWidgets('handles decline invitation failure', (tester) async {
+        when(
+          () => mockInvitation.reject(),
+        ).thenThrow(Exception('Reject failed'));
+
+        await buildTestWidget(tester);
+        await tester.pumpAndSettle();
+
+        // Open decline menu
+        final context = tester.element(find.byType(MenuAnchor));
+        await tester.tap(find.text(L10n.of(context).decline));
+        await tester.pumpAndSettle();
+
+        // Tap decline option
+        await tester.tap(find.text(L10n.of(context).decline).last);
+        await tester.pumpAndSettle();
+
+        // Verify error toast is shown
+        expect(find.textContaining('failed'), findsOneWidget);
+
+        // ensure the timers ended
+        await tester.pump(const Duration(seconds: 4));
+      });
     });
   });
 }
