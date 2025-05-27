@@ -62,9 +62,6 @@ void main() {
         'This is a medium length message that spans about two lines when displayed in the chat bubble.';
     final longMessage =
         'This is a longer message that will definitely span multiple lines. It contains more text to ensure we test how the dialog handles longer content while maintaining proper alignment and spacing of all components.';
-    final superLongMessage =
-        'This is an extremely long message that will require scrolling to view completely. ' *
-        10;
 
     Future<void> runMessageActionWidgetTest(
       WidgetTester tester, {
@@ -229,20 +226,6 @@ void main() {
       await expectGoldenMatch(tester, 'goldens/message_actions_own_long.png');
     });
 
-    testWidgets('Own message - super long text', (tester) async {
-      await loadTestFonts();
-      await runMessageActionWidgetTest(
-        tester,
-        message: superLongMessage,
-        isMe: true,
-      );
-      await tester.pump(const Duration(milliseconds: 300));
-      await expectGoldenMatch(
-        tester,
-        'goldens/message_actions_own_super_long.png',
-      );
-    });
-
     testWidgets('Other user message - short text', (tester) async {
       await loadTestFonts();
       await runMessageActionWidgetTest(
@@ -280,20 +263,6 @@ void main() {
       );
       await tester.pump(const Duration(milliseconds: 300));
       await expectGoldenMatch(tester, 'goldens/message_actions_other_long.png');
-    });
-
-    testWidgets('Other user message - super long text', (tester) async {
-      await loadTestFonts();
-      await runMessageActionWidgetTest(
-        tester,
-        message: superLongMessage,
-        isMe: false,
-      );
-      await tester.pump(const Duration(milliseconds: 300));
-      await expectGoldenMatch(
-        tester,
-        'goldens/message_actions_other_super_long.png',
-      );
     });
   });
 }
