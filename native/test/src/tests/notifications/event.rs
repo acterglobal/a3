@@ -60,8 +60,9 @@ async fn event_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
+    let title = "First meeting";
     let mut draft = main_space.calendar_event_draft()?;
-    draft.title("First meeting".to_owned());
+    draft.title(title.to_owned());
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
@@ -78,7 +79,7 @@ async fn event_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/events/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().as_deref(), Some("First meeting"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), event_id);
 
@@ -115,8 +116,9 @@ async fn event_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
+    let title = "Renamed Event";
     let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Event".to_owned());
+    update.title(title.to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -130,7 +132,7 @@ async fn event_title_update() -> Result<()> {
         obj_entry.event_id()
     );
 
-    assert_eq!(notification_item.title(), "Renamed Event"); // new title
+    assert_eq!(notification_item.title(), title); // new title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -174,8 +176,9 @@ async fn event_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
+    let desc = "Added content";
     let mut update = obj_entry.update_builder()?;
-    update.description_text("Added content".to_owned());
+    update.description_text(desc.to_owned());
     let notification_ev = update.send().await?;
 
     let notification_item = first
@@ -190,7 +193,7 @@ async fn event_desc_update() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added content"); // new description
+    assert_eq!(content.body(), desc); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -253,8 +256,14 @@ async fn event_rescheduled() -> Result<()> {
         obj_entry.event_id()
     );
 
-    assert_eq!(notification_item.new_date(), Some(utc_start));
-    assert_eq!(notification_item.title(), utc_start.to_rfc3339());
+    assert_eq!(notification_item.utc_start(), Some(utc_start.clone()));
+    assert_eq!(notification_item.utc_end(), Some(utc_end.clone()));
+    let title = format!(
+        "From: {}, To: {}",
+        utc_start.to_rfc3339(),
+        utc_end.to_rfc3339()
+    );
+    assert_eq!(notification_item.title(), title);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -301,10 +310,11 @@ async fn event_rsvp() -> Result<()> {
     let rsvp_manager = obj_entry.rsvps().await?;
     // test yes
     {
-        let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("yes".to_owned());
-
-        let notification_ev = rsvp.send().await?;
+        let notification_ev = rsvp_manager
+            .rsvp_draft()?
+            .status("yes".to_owned())
+            .send()
+            .await?;
 
         let notification_item = first
             .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -330,10 +340,11 @@ async fn event_rsvp() -> Result<()> {
 
     // test no
     {
-        let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("no".to_owned());
-
-        let notification_ev = rsvp.send().await?;
+        let notification_ev = rsvp_manager
+            .rsvp_draft()?
+            .status("no".to_owned())
+            .send()
+            .await?;
 
         let notification_item = first
             .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -359,10 +370,11 @@ async fn event_rsvp() -> Result<()> {
 
     // test no
     {
-        let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("maybe".to_owned());
-
-        let notification_ev = rsvp.send().await?;
+        let notification_ev = rsvp_manager
+            .rsvp_draft()?
+            .status("maybe".to_owned())
+            .send()
+            .await?;
 
         let notification_item = first
             .get_notification_item(space_id.to_string(), notification_ev.to_string())
