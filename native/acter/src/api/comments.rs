@@ -1,5 +1,5 @@
 use acter_core::{
-    events::comments::CommentBuilder,
+    events::comments::{self, CommentBuilder},
     models::{self, can_redact, ActerModel, AnyActerModel},
 };
 use anyhow::{bail, Result};
@@ -55,6 +55,14 @@ impl Deref for Comment {
 }
 
 impl Comment {
+    pub(crate) fn new(client: Client, room: Room, inner: models::Comment) -> Self {
+        Comment {
+            client,
+            room,
+            inner,
+        }
+    }
+
     fn is_joined(&self) -> bool {
         matches!(self.room.state(), RoomState::Joined)
     }
@@ -68,6 +76,21 @@ impl Comment {
             room: self.room.clone(),
             inner: self.inner.reply_builder(),
         })
+    }
+
+    pub async fn refresh(&self) -> Result<Comment> {
+        let key = self.inner.event_id().to_owned();
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let AnyActerModel::Comment(inner) = client.store().get(&key).await? else {
+                    bail!("Refreshing failed. {key} not a comment")
+                };
+                Ok(Comment::new(client, room, inner))
+            })
+            .await?
     }
 
     pub async fn can_redact(&self) -> Result<bool> {
@@ -89,6 +112,17 @@ impl Comment {
 
     pub fn msg_content(&self) -> MsgContent {
         (&self.inner.content).into()
+    }
+
+    pub fn update_builder(&self) -> Result<CommentUpdateBuilder> {
+        if !self.is_joined() {
+            bail!("Can only update comments in joined rooms");
+        }
+        Ok(CommentUpdateBuilder {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            inner: self.inner.updater(),
+        })
     }
 }
 
@@ -113,6 +147,45 @@ pub struct CommentDraft {
 }
 
 impl CommentDraft {
+    pub fn content_text(&mut self, body: String) -> &mut Self {
+        self.inner.content(TextMessageEventContent::plain(body));
+        self
+    }
+
+    pub fn content_formatted(&mut self, body: String, html_body: String) -> &mut Self {
+        self.inner
+            .content(TextMessageEventContent::html(body, html_body));
+        self
+    }
+
+    pub async fn send(&self) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let my_id = self.client.user_id()?;
+        let inner = self.inner.build()?;
+
+        RUNTIME
+            .spawn(async move {
+                let permitted = room
+                    .can_user_send_message(&my_id, MessageLikeEventType::RoomMessage)
+                    .await?;
+                if !permitted {
+                    bail!("No permissions to send message in this room");
+                }
+                let response = room.send(inner).await?;
+                Ok(response.event_id)
+            })
+            .await?
+    }
+}
+
+#[derive(Clone)]
+pub struct CommentUpdateBuilder {
+    client: Client,
+    room: Room,
+    inner: comments::CommentUpdateBuilder,
+}
+
+impl CommentUpdateBuilder {
     pub fn content_text(&mut self, body: String) -> &mut Self {
         self.inner.content(TextMessageEventContent::plain(body));
         self

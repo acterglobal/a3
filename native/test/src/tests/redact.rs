@@ -1,4 +1,4 @@
-use acter::api::TimelineItem;
+use acter::api::{TimelineEventItem, TimelineItem};
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, FutureExt, StreamExt};
@@ -10,7 +10,7 @@ use tokio_retry::{
 };
 use tracing::info;
 
-use crate::utils::random_user_with_random_convo;
+use crate::utils::{match_text_msg, random_user_with_random_convo};
 
 #[tokio::test]
 async fn message_redaction() -> Result<()> {
@@ -51,7 +51,7 @@ async fn message_redaction() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(event_id) = match_room_msg(value, "Hi, everyone") {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
                             received = Some(event_id);
                             break;
                         }
@@ -61,7 +61,7 @@ async fn message_redaction() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff set action should have valid value");
-                    if let Some(event_id) = match_room_msg(&value, "Hi, everyone") {
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
                         received = Some(event_id);
                     }
                 }
@@ -88,18 +88,60 @@ async fn message_redaction() -> Result<()> {
     })
     .await?;
 
+    let reason = "redact-test";
     let redact_id = convo
         .redact_message(
             received.clone(),
             user.user_id()?.to_string(),
-            Some("redact-test".to_owned()),
+            Some(reason.to_owned()),
             None,
         )
         .await?;
 
-    // timeline reorders events and doesn’t assign redaction as separate event
+    // redaction event may reach via reset action or set action
+    let mut i = 30;
+    let mut found = None;
+    while i > 0 {
+        if let Some(diff) = stream.next().now_or_never().flatten() {
+            info!("stream diff: {}", diff.action());
+            match diff.action().as_str() {
+                "Reset" => {
+                    let values = diff
+                        .values()
+                        .expect("diff reset action should have valid values");
+                    for value in values.iter() {
+                        if let Some(event_item) = match_redaction_event(value) {
+                            found = Some(event_item);
+                            break;
+                        }
+                    }
+                }
+                "Set" => {
+                    let value = diff
+                        .value()
+                        .expect("diff set action should have valid value");
+                    if let Some(event_item) = match_redaction_event(&value) {
+                        found = Some(event_item);
+                    }
+                }
+                _ => {}
+            }
+            // yay
+            if found.is_some() {
+                break;
+            }
+        }
+        i -= 1;
+        sleep(Duration::from_secs(1)).await;
+    }
+    let event_item = found.context("Even after 30 seconds, redaction event not received")?;
+
+    // timeline accumulates the events and doesn’t assign redaction as separate event
     // it is impossible to get redaction event by event id on timeline
-    // so we don’t use retry-loop about redact_id
+    assert_eq!(
+        event_item.event_id(),
+        Some(received.clone()) // not redact_id
+    );
 
     // but it is possible to get redaction event by event id on convo
     let ev = convo.event(&redact_id, None).await?;
@@ -111,20 +153,19 @@ async fn message_redaction() -> Result<()> {
         original.redacts.as_deref().map(ToString::to_string),
         Some(received)
     );
-    assert_eq!(original.content.reason.as_deref(), Some("redact-test"));
+    assert_eq!(original.content.reason.as_deref(), Some(reason));
 
     Ok(())
 }
 
-fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
+fn match_redaction_event(msg: &TimelineItem) -> Option<TimelineEventItem> {
+    info!("match room msg - {:?}", msg.clone());
     if !msg.is_virtual() {
         let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body {
-                // exclude the pending msg
-                if let Some(event_id) = event_item.event_id() {
-                    return Some(event_id);
-                }
+        if event_item.event_type() == "m.room.redaction" {
+            // exclude the pending msg
+            if event_item.event_id().is_some() {
+                return Some(event_item);
             }
         }
     }

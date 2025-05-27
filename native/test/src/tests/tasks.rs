@@ -1,7 +1,9 @@
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
-use matrix_sdk_base::ruma::events::room::redaction::RoomRedactionEvent;
+use matrix_sdk_base::ruma::{
+    events::room::redaction::RoomRedactionEvent, MilliSecondsSinceUnixEpoch,
+};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -227,9 +229,10 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
-    let comment_1_id = comments_manager
+    let initial_body = "I think this is very important";
+    let comment_id = comments_manager
         .comment_draft()?
-        .content_text("I think this is very important".to_owned())
+        .content_text(initial_body.to_owned())
         .send()
         .await?;
 
@@ -244,8 +247,65 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
-    assert_eq!(comments[0].event_id(), comment_1_id);
-    assert_eq!(comments[0].content().body, "I think this is very important");
+    let comment = &comments[0];
+    assert_eq!(comment.event_id(), comment_id);
+    assert_eq!(comment.content().body, initial_body);
+
+    let updated_body = "Sorry, this is not important";
+    comment
+        .update_builder()?
+        .content_text(updated_body.to_owned())
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let comments = comments_manager.comments().await?;
+    assert_eq!(comments.len(), 1);
+    let comment = &comments[0];
+
+    Retry::spawn(retry_strategy.clone(), move || {
+        let comment = comment.clone();
+        async move {
+            let edited_comment = comment.refresh().await?;
+            if edited_comment.content().body != updated_body {
+                bail!("Update not yet received");
+            }
+            Ok(())
+        }
+    })
+    .await?;
+
+    let reply_body = "Okay, I will do it";
+    let replied_id = comment
+        .reply_draft()?
+        .content_text(reply_body.to_owned())
+        .send()
+        .await?;
+
+    let reply_comment = Retry::spawn(retry_strategy, move || {
+        let comments_manager = comments_manager.clone();
+        let replied_id = replied_id.clone();
+        async move {
+            let comments = comments_manager.comments().await?;
+            if comments.len() < 2 {
+                bail!("Expected 2 comments, got {}", comments.len());
+            }
+            match comments.iter().find(|c| c.event_id() == replied_id) {
+                Some(comment) => Ok(comment.clone()),
+                None => bail!("Expected comment with id {replied_id} not found"),
+            }
+        }
+    })
+    .await?;
+
+    assert_eq!(reply_comment.content().body, reply_body);
 
     Ok(())
 }
@@ -326,12 +386,13 @@ async fn task_comment_smoketests() -> Result<()> {
 
     let comments_manager = task.comments().await?;
     assert!(!comments_manager.stats().has_comments());
+    let initial_ts: u64 = MilliSecondsSinceUnixEpoch::now().get().into();
 
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
-    let body = "I updated the task";
-    let comment_1_id = comments_manager
+    let body = "I think this is very important";
+    let comment_id = comments_manager
         .comment_draft()?
         .content_text(body.to_owned())
         .send()
@@ -350,14 +411,48 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
 
     let comment = &comments[0];
-    assert_eq!(comment.event_id(), comment_1_id);
+    assert_eq!(comment.event_id(), comment_id);
     assert_eq!(comment.content().body, body);
+    assert_eq!(comment.msg_content().body(), body);
+    assert!(initial_ts < comment.origin_server_ts());
+
+    let updated_body = "Sorry, this is not important";
+    let updated_html = "**Sorry, this is not important**";
+    comment
+        .update_builder()?
+        .content_formatted(updated_body.to_owned(), updated_html.to_owned())
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if comments_listener.is_empty() {
+            bail!("all still empty");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let comments = comments_manager.comments().await?;
+    assert_eq!(comments.len(), 1);
+    let comment = &comments[0];
+
+    Retry::spawn(retry_strategy.clone(), move || {
+        let comment = comment.clone();
+        async move {
+            let edited_comment = comment.refresh().await?;
+            if edited_comment.content().body != updated_body {
+                bail!("Update not yet received");
+            }
+            Ok(())
+        }
+    })
+    .await?;
 
     let deletable = comment.can_redact().await?;
     assert!(deletable, "my comment should be deletable");
     let reason = "This is test redaction";
     let redact_id = space
-        .redact_content(comment_1_id.to_string(), Some(reason.to_owned()))
+        .redact_content(comment_id.to_string(), Some(reason.to_owned()))
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -369,17 +464,12 @@ async fn task_comment_smoketests() -> Result<()> {
     })
     .await?;
 
-    // timeline reorders events and doesn’t assign redaction as separate event
-    // it is impossible to get redaction event by event id on timeline
-    // so we don’t use retry-loop about redact_id
-
-    // but it is possible to get redaction event by event id on convo
     let ev = space.event(&redact_id, None).await?;
     let event_content = ev.kind.raw().deserialize_as::<RoomRedactionEvent>()?;
     let original = event_content
         .as_original()
         .context("Redaction event should get original event")?;
-    assert_eq!(original.redacts, Some(comment_1_id));
+    assert_eq!(original.redacts, Some(comment_id));
     assert_eq!(original.content.reason.as_deref(), Some(reason));
 
     Ok(())
