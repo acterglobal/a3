@@ -1,10 +1,11 @@
 use acter::{
-    api::{Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, SyncState},
+    api::{
+        Client, Convo, CreateConvoSettingsBuilder, CreateSpaceSettingsBuilder, MsgContent, Room,
+        SyncState, TimelineItem,
+    },
     testing::ensure_user,
 };
-use acter::{Room, TimelineItem};
-use acter_core::models::status::RoomPinnedEventsContent;
-use acter_core::templates::Engine;
+use acter_core::{models::status::RoomPinnedEventsContent, templates::Engine};
 use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;
@@ -275,6 +276,27 @@ pub(crate) fn match_text_msg(msg: &TimelineItem, body: &str, modified: bool) -> 
                 // exclude the pending msg
                 if let Some(event_id) = event_item.event_id() {
                     return Some(event_id);
+                }
+            }
+        }
+    }
+    None
+}
+
+pub(crate) fn match_media_msg(
+    msg: &TimelineItem,
+    content_type: &str,
+    body: &str,
+) -> Option<MsgContent> {
+    if !msg.is_virtual() {
+        let event_item = msg.event_item().expect("room msg should have event item");
+        if let Some(msg_content) = event_item.msg_content() {
+            if let Some(mimetype) = msg_content.mimetype() {
+                if mimetype == content_type && msg_content.body() == body {
+                    // exclude the pending msg
+                    if event_item.event_id().is_some() {
+                        return Some(msg_content);
+                    }
                 }
             }
         }

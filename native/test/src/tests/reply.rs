@@ -1,4 +1,3 @@
-use acter::api::TimelineItem;
 use anyhow::{Context, Result};
 use core::time::Duration;
 use futures::{pin_mut, stream::StreamExt, FutureExt};
@@ -9,7 +8,7 @@ use tokio_retry::{
 };
 use tracing::info;
 
-use crate::utils::random_users_with_random_convo;
+use crate::utils::{match_text_msg, random_users_with_random_convo};
 
 #[tokio::test]
 async fn sisko_reads_kyra_reply() -> Result<()> {
@@ -74,7 +73,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_room_msg(value, "Hi, everyone") {
+                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
                             received = Some(event_id);
                             break;
                         }
@@ -85,7 +84,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_room_msg(&value, "Hi, everyone") {
+                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
                         received = Some(event_id);
                     }
                 }
@@ -131,7 +130,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                     .value()
                     .expect("diff pushback action should have valid value");
                 info!("diff pushback - {:?}", value);
-                if match_room_msg(&value, "Sorry, it’s my bad").is_some() {
+                if match_text_msg(&value, "Sorry, it’s my bad", false).is_some() {
                     found = true;
                 }
             }
@@ -148,20 +147,4 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     assert!(found, "Even after 10 seconds, msg reply not received");
 
     Ok(())
-}
-
-fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
-    info!("match room msg - {:?}", msg.clone());
-    if !msg.is_virtual() {
-        let event_item = msg.event_item().expect("room msg should have event item");
-        if let Some(msg_content) = event_item.msg_content() {
-            if msg_content.body() == body {
-                // exclude the pending msg
-                if let Some(event_id) = event_item.event_id() {
-                    return Some(event_id);
-                }
-            }
-        }
-    }
-    None
 }

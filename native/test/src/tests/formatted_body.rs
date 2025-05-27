@@ -61,7 +61,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
         let timeline = room_tl.clone();
         async move {
             for v in timeline.items().await {
-                let Some(event_id) = match_room_msg(&v, "<strong>Hello</strong>") else {
+                let Some(event_id) = match_html_msg(&v, "<strong>Hello</strong>") else {
                     continue;
                 };
                 return Ok(event_id);
@@ -74,7 +74,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     Ok(())
 }
 
-fn match_room_msg(msg: &TimelineItem, body: &str) -> Option<String> {
+fn match_html_msg(msg: &TimelineItem, body: &str) -> Option<String> {
     info!("match room msg - {:?}", msg.clone());
     if msg.is_virtual() {
         return None;
