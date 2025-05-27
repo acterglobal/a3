@@ -5,6 +5,7 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -155,6 +156,21 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                 const Icon(Atlas.pencil_edit_thin),
                 const SizedBox(width: 10),
                 Text(lang.editDescription),
+              ],
+            ),
+          ),
+        );
+
+        // Add Location
+        actions.add(
+          PopupMenuItem(
+            key: EventsKeys.eventEditBtn,
+            onTap: () => showEventLocationList(event.roomIdStr()),
+            child: Row(
+              children: <Widget>[
+                const Icon(Icons.add_location_alt_outlined),
+                const SizedBox(width: 10),
+                Text(lang.addLocation),
               ],
             ),
           ),
@@ -599,6 +615,24 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ),
         ],
       ),
+    );
+  }
+
+  void showEventLocationList(String roomId) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: true,
+      showDragHandle: true,
+      constraints: const BoxConstraints(maxHeight: 350),
+      useSafeArea: true,
+      builder: (_) {
+        return EventLocationListWidget(
+            roomId: roomId,
+            locations: [],
+        );
+      },
     );
   }
 
