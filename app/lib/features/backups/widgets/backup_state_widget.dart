@@ -1,3 +1,4 @@
+import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/activities/widgets/activity_section_item_widget.dart';
 import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
@@ -76,6 +77,15 @@ class BackupStateWidget extends ConsumerWidget {
       iconColor: warningColor,
       title: lang.encryptionBackupProvideKeyFailed,
       subtitle: lang.encryptionBackupProvideKeyFailedExplainer,
+      trailing: InkWell(
+        onTap:
+            () => openLink(
+              ref: ref,
+              target: 'https://acter.global/guide/understanding-key-backups-2/',
+              lang: L10n.of(context),
+            ),
+        child: const Icon(Icons.info),
+      ),
       actions: [
         provideKeyAction(context, ref),
         const SizedBox(width: 8),
