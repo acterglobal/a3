@@ -3,7 +3,7 @@ import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum LocationType { virtual, realWorld }
@@ -12,58 +12,67 @@ class AddEventLocationWidget extends ConsumerStatefulWidget {
   const AddEventLocationWidget({super.key});
 
   @override
-  ConsumerState<AddEventLocationWidget> createState() => _AddEventLocationWidgetState();
+  ConsumerState<AddEventLocationWidget> createState() =>
+      _AddEventLocationWidgetState();
 }
 
-class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget> {
+class _AddEventLocationWidgetState
+    extends ConsumerState<AddEventLocationWidget> {
+  final _formKey = GlobalKey<FormState>(debugLabel: 'location form key');
   final _locationNameController = TextEditingController();
+  final _locationUrlController = TextEditingController();
+  final _locationAddressController = TextEditingController();
+
   EditorState textEditorState = EditorState.blank();
   LocationType _selectedType = LocationType.virtual;
 
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FilterChip(
-              label: Text(lang.virtual),
-              selected: _selectedType == LocationType.virtual,
-              onSelected: (selected) {
-                if (!(_selectedType == LocationType.virtual)) {
-                  setState(() => _selectedType = LocationType.virtual);
-                }
-              },
-            ),
-            const SizedBox(width: 8),
-            FilterChip(
-              label: Text(lang.realWorld),
-              selected: _selectedType == LocationType.realWorld,
-              onSelected: (selected) {
-                if (!(_selectedType == LocationType.realWorld)) {
-                  setState(() => _selectedType = LocationType.realWorld);
-                }
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        _locationNameField(context),
-        const SizedBox(height: 10),
-        if (_selectedType == LocationType.virtual)
-          _locationUrlField(context)
-        else
-          _locationAddressField(context),
-        const SizedBox(height: 10),
-        _buildNoteField(context),
-        const SizedBox(height: 40),
-        _buildActionButtons(context),
-        ],
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FilterChip(
+                    label: Text(lang.virtual),
+                    selected: _selectedType == LocationType.virtual,
+                    onSelected: (selected) {
+                      if (!(_selectedType == LocationType.virtual)) {
+                        setState(() => _selectedType = LocationType.virtual);
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  FilterChip(
+                    label: Text(lang.realWorld),
+                    selected: _selectedType == LocationType.realWorld,
+                    onSelected: (selected) {
+                      if (!(_selectedType == LocationType.realWorld)) {
+                        setState(() => _selectedType = LocationType.realWorld);
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _locationNameField(context),
+              const SizedBox(height: 10),
+              if (_selectedType == LocationType.virtual)
+                _locationUrlField(context)
+              else
+                _locationAddressField(context),
+              const SizedBox(height: 10),
+              _buildNoteField(context),
+              const SizedBox(height: 40),
+              _buildActionButtons(context),
+            ],
+          ),
         ),
       ),
     );
@@ -105,7 +114,7 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
           key: EventsKeys.eventLocationUrlTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
-          controller: _locationNameController,
+          controller: _locationUrlController,
           decoration: InputDecoration(hintText: lang.enterLocationUrl),
           // required field, space not allowed
           validator:
@@ -129,7 +138,7 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
           key: EventsKeys.eventLocationAddressTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
-          controller: _locationNameController,
+          controller: _locationAddressController,
           decoration: InputDecoration(hintText: lang.enterLocationAddress),
           // required field, space not allowed
           validator:
