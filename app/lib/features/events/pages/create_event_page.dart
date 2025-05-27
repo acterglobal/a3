@@ -2,6 +2,7 @@ import 'package:acter/common/actions/select_space.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
@@ -139,6 +140,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDateAndTime(),
               const SizedBox(height: 10),
+              _buildEventLocationWidget(),
+              const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
               SelectSpaceFormField(
@@ -176,6 +179,36 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                       : null,
         ),
       ],
+    );
+  }
+
+  // Event location field
+  Widget _buildEventLocationWidget() {
+    final theme = Theme.of(context);
+    final lang = L10n.of(context);
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        leading: Icon(Icons.location_on_outlined, color: theme.colorScheme.primary),
+        title: Text(lang.eventLocations),
+        trailing: IconButton(
+          icon: const Icon(Icons.add_circle_outline),
+          tooltip: lang.addLocation,
+          onPressed: () {
+            // Open add location dialog/sheet
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              isDismissible: true,
+              enableDrag: true,
+              showDragHandle: true,
+              useSafeArea: true,
+              builder: (context) => const AddEventLocationWidget(),
+            );
+          },
+        ),
+      ),
     );
   }
 
