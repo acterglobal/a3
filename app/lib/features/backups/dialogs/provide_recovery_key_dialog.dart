@@ -8,6 +8,10 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::backups::recovery_key');
 
+final recoveryKeyFormKey = GlobalKey<FormState>(
+  debugLabel: 'Recovery Key Form',
+);
+
 class _RecoveryKeyDialog extends ConsumerStatefulWidget {
   const _RecoveryKeyDialog();
 
@@ -38,6 +42,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: recoveryKey,
+                key: recoveryKeyFormKey,
                 obscureText: !showInput,
                 decoration: InputDecoration(
                   hintText: lang.encryptionBackupRecoverInputHint,
