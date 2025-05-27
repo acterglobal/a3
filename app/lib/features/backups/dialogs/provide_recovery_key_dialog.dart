@@ -1,5 +1,6 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
+import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -91,6 +92,7 @@ class __RecoveryKeyDialogState extends ConsumerState<_RecoveryKeyDialog> {
       final manager = await ref.read(backupManagerProvider.future);
       final recoveryWorked = await manager.recover(key);
       if (recoveryWorked) {
+        ref.read(hasProvidedKeyProvider.notifier).set(true);
         if (!context.mounted) {
           EasyLoading.dismiss();
           return;

@@ -8,10 +8,15 @@ class MockAsyncPrefNotifier<T> extends AsyncNotifier<T>
   MockAsyncPrefNotifier(this.value);
 
   final T value;
+  T? wasSetTo;
 
   @override
   Future<T> build() async => value;
 
   @override
-  Future<void> set(T value) async => state = AsyncValue.data(value);
+  Future<void> set(T value) {
+    wasSetTo = value;
+    state = AsyncValue.data(value);
+    return Future.value();
+  }
 }

@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:acter/common/providers/notifiers/client_pref_notifier.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/features/backups/dialogs/provide_recovery_key_dialog.dart';
+import 'package:acter/features/backups/dialogs/show_confirm_reset_identity.dart';
 import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/providers/notifiers/backup_state_notifier.dart';
@@ -16,8 +16,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockingjay/mockingjay.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../helpers/pref_provider_mocks.dart';
+import '../../helpers/mock_pref_notifier.dart';
 import '../../helpers/test_util.dart';
 
 class MockRecoveryStateNotifier extends Notifier<RecoveryState>
@@ -153,174 +152,253 @@ void main() {
       final icon = tester.widget<Icon>(iconFinder);
       expect(icon.color, isA<Color>());
     });
-  });
 
-  group('BackupStateWidget flows', () {
-    testWidgets('populates the key on provide flow simple', (
-      WidgetTester tester,
-    ) async {
-      final recoveryStateNotifier = MockRecoveryStateNotifier(
-        RecoveryState.incomplete,
-      );
-      final mockBackupManager = MockBackupManager();
-
-      await tester.pumpProviderWidget(
-        child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
-        overrides: [
-          backupStateProvider.overrideWith(() => recoveryStateNotifier),
-          backupManagerProvider.overrideWith((ref) => mockBackupManager),
-        ],
-      );
-
-      await tester.pump();
-
-      final context = tester.element(find.byType(BackupStateWidget));
-      final lang = L10n.of(context);
-
-      final provideActionFinder = find.text(
-        lang.encryptionBackupProvideKeyAction,
-      );
-      expect(provideActionFinder, findsOneWidget);
-
-      final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
-
-      when(() => mockBackupManager.recover(newlyCreatedKey)).thenAnswer((
-        _,
+    group('flows', () {
+      testWidgets('populates the key on provide flow simple', (
+        WidgetTester tester,
       ) async {
-        // we update the state if you provided the right key
-        recoveryStateNotifier.state = RecoveryState.enabled;
-        return true;
-      });
+        final recoveryStateNotifier = MockRecoveryStateNotifier(
+          RecoveryState.incomplete,
+        );
+        final mockBackupManager = MockBackupManager();
+        final mockHasProvidedKeyProvider = MockAsyncPrefNotifier(false);
 
-      await tester.runAsync(() async {
-        await tester.tap(provideActionFinder);
-        await tester.pumpAndSettle();
+        await tester.pumpProviderWidget(
+          child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
+          overrides: [
+            backupStateProvider.overrideWith(() => recoveryStateNotifier),
+            backupManagerProvider.overrideWith((ref) => mockBackupManager),
+            hasProvidedKeyProvider.overrideWith(
+              () => mockHasProvidedKeyProvider,
+            ),
+          ],
+        );
 
-        final textField = find.byKey(recoveryKeyFormKey);
-        expect(textField, findsOneWidget);
-        await tester.enterText(textField, newlyCreatedKey);
+        await tester.pump();
 
-        await tester.tap(find.text(lang.encryptionBackupRecoverAction));
-        await tester.pumpAndSettle();
+        final context = tester.element(find.byType(BackupStateWidget));
+        final lang = L10n.of(context);
+
+        final provideActionFinder = find.text(
+          lang.encryptionBackupProvideKeyAction,
+        );
+        expect(provideActionFinder, findsOneWidget);
+
+        final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
+
+        when(() => mockBackupManager.recover(newlyCreatedKey)).thenAnswer((
+          _,
+        ) async {
+          // we update the state if you provided the right key
+          recoveryStateNotifier.state = RecoveryState.enabled;
+          return true;
+        });
+
+        await tester.runAsync(() async {
+          await tester.tap(provideActionFinder);
+          await tester.pumpAndSettle();
+
+          final textField = find.byKey(recoveryKeyFormKey);
+          expect(textField, findsOneWidget);
+          await tester.enterText(textField, newlyCreatedKey);
+
+          await tester.tap(find.text(lang.encryptionBackupRecoverAction));
+          await tester.pumpAndSettle();
+
+          expect(find.text(lang.encryptionBackupRotateKey), findsOneWidget);
+          expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
+          // the new key is shown
+        });
 
         // we are in the proper state now
         expect(recoveryStateNotifier.state, RecoveryState.enabled);
+        expect(mockHasProvidedKeyProvider.wasSetTo, true);
+
+        verify(() => mockBackupManager.recover(newlyCreatedKey)).called(1);
+      });
+
+      testWidgets('stays incomplete despite the key provided', (
+        WidgetTester tester,
+      ) async {
+        final recoveryStateNotifier = MockRecoveryStateNotifier(
+          RecoveryState.incomplete,
+        );
+        final mockBackupManager = MockBackupManager();
+        final mockHasProvidedKeyProvider = MockAsyncPrefNotifier(false);
+
+        await tester.pumpProviderWidget(
+          child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
+          overrides: [
+            backupStateProvider.overrideWith(() => recoveryStateNotifier),
+            backupManagerProvider.overrideWith((ref) => mockBackupManager),
+            hasProvidedKeyProvider.overrideWith(
+              () => mockHasProvidedKeyProvider,
+            ),
+          ],
+        );
+
+        await tester.pump();
+
+        final context = tester.element(find.byType(BackupStateWidget));
+        final lang = L10n.of(context);
+
+        final provideActionFinder = find.text(
+          lang.encryptionBackupProvideKeyAction,
+        );
+        expect(provideActionFinder, findsOneWidget);
+
+        final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
+
+        when(() => mockBackupManager.recover(newlyCreatedKey)).thenAnswer((
+          _,
+        ) async {
+          // this stays incompleted
+          recoveryStateNotifier.state = RecoveryState.incomplete;
+          return true;
+        });
+
+        await tester.runAsync(() async {
+          await tester.tap(provideActionFinder);
+          await tester.pumpAndSettle();
+
+          final textField = find.byKey(recoveryKeyFormKey);
+          expect(textField, findsOneWidget);
+          await tester.enterText(textField, newlyCreatedKey);
+
+          await tester.tap(find.text(lang.encryptionBackupRecoverAction));
+          await tester.pumpAndSettle();
+
+          // we are in the proper state now
+          expect(recoveryStateNotifier.state, RecoveryState.incomplete);
+          expect(mockHasProvidedKeyProvider.wasSetTo, true);
+
+          // we have been incompleted but the key is not working, we mark it
+          // as such and allow the user to retry or reset the idenity.
+
+          expect(
+            find.text(lang.encryptionBackupProvideKeyAction),
+            findsOneWidget,
+          );
+          expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
+          // the new key is shown
+        });
+
+        verify(() => mockBackupManager.recover(newlyCreatedKey)).called(1);
+      });
+
+      testWidgets('shows the key on rotate flow', (WidgetTester tester) async {
+        final recoveryStateNotifier = MockRecoveryStateNotifier(
+          RecoveryState.enabled,
+        );
+        final mockBackupManager = MockBackupManager();
+        final mockHasProvidedKeyProvider = MockAsyncPrefNotifier(true);
+        await tester.pumpProviderWidget(
+          child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
+          overrides: [
+            backupStateProvider.overrideWith(() => recoveryStateNotifier),
+            backupManagerProvider.overrideWith((ref) => mockBackupManager),
+            hasProvidedKeyProvider.overrideWith(
+              () => mockHasProvidedKeyProvider,
+            ),
+          ],
+        );
+
+        await tester.pump();
+
+        final context = tester.element(find.byType(BackupStateWidget));
+        final lang = L10n.of(context);
+
+        final resetFinder = find.text(lang.encryptionBackupRotateKey);
+        expect(resetFinder, findsOneWidget);
+        expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
+
+        final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
+
+        when(
+          () => mockBackupManager.resetKey(),
+        ).thenAnswer((_) async => newlyCreatedKey);
+
+        await tester.runAsync(() async {
+          await tester.tap(resetFinder);
+          await tester.pumpAndSettle();
+
+          final resetIdentityFinder = find.text(
+            lang.encryptionBackupDisableActionDestroyIt,
+          );
+          expect(resetIdentityFinder, findsOneWidget);
+
+          await tester.tap(resetIdentityFinder);
+          await tester.pumpAndSettle();
+
+          // the new key is shown
+          expect(find.text(newlyCreatedKey), findsOneWidget);
+        });
+        // rotation means the state has been updated
+        expect(mockHasProvidedKeyProvider.wasSetTo, false);
+      });
+
+      testWidgets('shows the key on reset identity flow', (
+        WidgetTester tester,
+      ) async {
+        final recoveryStateNotifier = MockRecoveryStateNotifier(
+          RecoveryState.enabled,
+        );
+        final mockBackupManager = MockBackupManager();
+        final mockHasProvidedKeyProvider = MockAsyncPrefNotifier(true);
+        await tester.pumpProviderWidget(
+          child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
+          overrides: [
+            backupStateProvider.overrideWith(() => recoveryStateNotifier),
+            backupManagerProvider.overrideWith((ref) => mockBackupManager),
+            hasProvidedKeyProvider.overrideWith(
+              () => mockHasProvidedKeyProvider,
+            ),
+          ],
+        );
+
+        await tester.pump();
+
+        final context = tester.element(find.byType(BackupStateWidget));
+        final lang = L10n.of(context);
 
         expect(find.text(lang.encryptionBackupRotateKey), findsOneWidget);
-        expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
-        // the new key is shown
-      });
+        final resetFinder = find.text(lang.encryptionBackupResetIdentity);
+        expect(resetFinder, findsOneWidget);
 
-      verify(() => mockBackupManager.recover(newlyCreatedKey)).called(1);
-    });
+        final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
+        final newPassword = 'new-password-${Random().nextInt(1000000)}';
 
-    testWidgets('stays incomplete despite the key provided', (
-      WidgetTester tester,
-    ) async {
-      final recoveryStateNotifier = MockRecoveryStateNotifier(
-        RecoveryState.incomplete,
-      );
-      final mockBackupManager = MockBackupManager();
+        when(() => mockBackupManager.resetIdentity(newPassword)).thenAnswer((
+          _,
+        ) async {
+          // this is a success case
+          recoveryStateNotifier.state = RecoveryState.enabled;
+          return newlyCreatedKey;
+        });
 
-      await tester.pumpProviderWidget(
-        child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
-        overrides: [
-          backupStateProvider.overrideWith(() => recoveryStateNotifier),
-          backupManagerProvider.overrideWith((ref) => mockBackupManager),
-        ],
-      );
+        await tester.runAsync(() async {
+          await tester.tap(resetFinder);
+          await tester.pumpAndSettle();
 
-      await tester.pump();
+          final textField = find.byKey(passwordFormKey);
+          expect(textField, findsOneWidget);
+          await tester.enterText(textField, newPassword);
 
-      final context = tester.element(find.byType(BackupStateWidget));
-      final lang = L10n.of(context);
+          final resetIdentityFinder = find.text(
+            lang.encryptionBackupResetIdentityKeyActionDestroyIt,
+          );
+          expect(resetIdentityFinder, findsOneWidget);
 
-      final provideActionFinder = find.text(
-        lang.encryptionBackupProvideKeyAction,
-      );
-      expect(provideActionFinder, findsOneWidget);
+          await tester.tap(resetIdentityFinder);
+          await tester.pumpAndSettle();
 
-      final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
+          expect(find.text(newlyCreatedKey), findsOneWidget);
+          // the new key is shown
+        });
+        // rotation means the state has been updated
+        expect(mockHasProvidedKeyProvider.wasSetTo, false);
 
-      when(() => mockBackupManager.recover(newlyCreatedKey)).thenAnswer((
-        _,
-      ) async {
-        // this stays incompleted
-        recoveryStateNotifier.state = RecoveryState.incomplete;
-        return true;
-      });
-
-      await tester.runAsync(() async {
-        await tester.tap(provideActionFinder);
-        await tester.pumpAndSettle();
-
-        final textField = find.byKey(recoveryKeyFormKey);
-        expect(textField, findsOneWidget);
-        await tester.enterText(textField, newlyCreatedKey);
-
-        await tester.tap(find.text(lang.encryptionBackupRecoverAction));
-        await tester.pumpAndSettle();
-
-        // we are in the proper state now
-        expect(recoveryStateNotifier.state, RecoveryState.incomplete);
-
-        // we have been incompleted but the key is not working, we mark it
-        // as such and allow the user to retry or reset the idenity.
-
-        expect(
-          find.text(lang.encryptionBackupProvideKeyAction),
-          findsOneWidget,
-        );
-        expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
-        // the new key is shown
-      });
-
-      verify(() => mockBackupManager.recover(newlyCreatedKey)).called(1);
-    });
-
-    testWidgets('shows the key on rotate flow', (WidgetTester tester) async {
-      final recoveryStateNotifier = MockRecoveryStateNotifier(
-        RecoveryState.enabled,
-      );
-      final mockBackupManager = MockBackupManager();
-
-      await tester.pumpProviderWidget(
-        child: Scaffold(body: BackupStateWidget(allowDisabling: true)),
-        overrides: [
-          backupStateProvider.overrideWith(() => recoveryStateNotifier),
-          backupManagerProvider.overrideWith((ref) => mockBackupManager),
-        ],
-      );
-
-      await tester.pump();
-
-      final context = tester.element(find.byType(BackupStateWidget));
-      final lang = L10n.of(context);
-
-      final resetFinder = find.text(lang.encryptionBackupRotateKey);
-      expect(resetFinder, findsOneWidget);
-      expect(find.text(lang.encryptionBackupResetIdentity), findsOneWidget);
-
-      final newlyCreatedKey = 'new-key-${Random().nextInt(1000000)}';
-
-      when(
-        () => mockBackupManager.resetKey(),
-      ).thenAnswer((_) async => newlyCreatedKey);
-
-      await tester.runAsync(() async {
-        await tester.tap(resetFinder);
-        await tester.pumpAndSettle();
-
-        final resetIdentityFinder = find.text(
-          lang.encryptionBackupDisableActionDestroyIt,
-        );
-        expect(resetIdentityFinder, findsOneWidget);
-
-        await tester.tap(resetIdentityFinder);
-        await tester.pumpAndSettle();
-
-        expect(find.text(newlyCreatedKey), findsOneWidget);
-        // the new key is shown
+        verify(() => mockBackupManager.resetIdentity(newPassword)).called(1);
       });
     });
   });

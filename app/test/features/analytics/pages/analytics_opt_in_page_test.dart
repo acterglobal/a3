@@ -3,7 +3,7 @@ import 'package:acter/features/analytics/providers/analytics_preferences_provide
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../helpers/pref_provider_mocks.dart';
+import '../../../helpers/mock_pref_notifier.dart';
 import '../../../helpers/test_util.dart';
 
 void main() {
