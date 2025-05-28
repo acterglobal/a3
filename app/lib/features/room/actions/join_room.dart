@@ -4,7 +4,6 @@ import 'package:acter/common/providers/sdk_provider.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +35,7 @@ Future<T> _ensureLoadedWithinTime<T>(
 }
 
 Future<String?> joinRoom({
-  required BuildContext context,
+  required L10n lang,
   required WidgetRef ref,
   required String roomIdOrAlias,
   required List<String>? serverNames,
@@ -46,7 +45,6 @@ Future<String?> joinRoom({
   /// configure to throw on error rather than return null
   bool throwOnError = false,
 }) async {
-  final lang = L10n.of(context);
   EasyLoading.show(
     status: displayMsg ?? lang.tryingToJoin(roomName ?? roomIdOrAlias),
   );
@@ -61,7 +59,7 @@ Future<String?> joinRoom({
     }
     final newRoom = await client.joinRoom(roomIdOrAlias, servers);
     final roomId = newRoom.roomIdStr();
-    ref.read(hasRecommendedSpaceJoinedProvider.notifier).state = true;
+    // ref.read(hasRecommendedSpaceJoinedProvider.notifier).state = true;
     final isSpace = await _ensureLoadedWithinTime(() async {
       final room = await ref.refresh(maybeRoomProvider(roomId).future);
       return room?.isJoined() == true ? room!.isSpace() : null;

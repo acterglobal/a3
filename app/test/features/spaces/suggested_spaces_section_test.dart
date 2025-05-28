@@ -1,4 +1,3 @@
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/features/space/providers/suggested_provider.dart';
