@@ -259,11 +259,3 @@ final eventListQuickSearchedProvider =
 
       return _filterEventBySearchTerm(searchTerm, allEventList);
     });
-
-//EVENT LOCATIONS
-// final eventLocationsProvider = AutoDisposeFamilyAsyncNotifierProvider<
-//   AsyncEventLocationsNotifier,
-//   List<EventLocationInfo>,
-//   String>(
-//   AsyncEventLocationsNotifier.new,
-// );
