@@ -1,17 +1,14 @@
 import 'package:acter/features/events/model/event_location_model.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EventLocationListWidget extends ConsumerWidget {
-  final List<EventLocationDraft> locations;
-  final Function(EventLocationDraft) onRemove;
   final VoidCallback onAdd;
 
   const EventLocationListWidget({
     super.key,
-    required this.locations,
-    required this.onRemove,
     required this.onAdd,
   });
 
@@ -19,6 +16,7 @@ class EventLocationListWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final lang = L10n.of(context);
+    final locations = ref.watch(eventLocationsProvider);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -74,7 +72,9 @@ class EventLocationListWidget extends ConsumerWidget {
                   ),
                   trailing: IconButton(
                     icon: Icon(Icons.delete, color: theme.colorScheme.error),
-                    onPressed: () => onRemove(loc),
+                    onPressed: () => ref
+                        .read(eventLocationsProvider.notifier)
+                        .removeLocation(loc),
                   ),
                 );
               },

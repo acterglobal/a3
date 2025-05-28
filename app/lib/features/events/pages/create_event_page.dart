@@ -23,6 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:acter/features/events/widgets/event_location_list_widget.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -56,7 +57,12 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
 
-  final List<EventLocationDraft> _locations = [];
+  @override
+  void dispose() {
+    // Clear locations when page is disposed
+    ref.read(eventLocationsProvider.notifier).clearLocations();
+    super.dispose();
+  }
 
   void _setFromTemplate(CalendarEvent event) {
     // title
@@ -207,34 +213,23 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               enableDrag: true,
               showDragHandle: true,
               useSafeArea: true,
-              builder: (context) => StatefulBuilder(
-                builder: (context, setModalState) => EventLocationListWidget(
-                  locations: _locations,
-                  onRemove: (location) {
-                    setModalState(() {
-                      _locations.remove(location);
-                    });
-                    setState(() {}); // Update parent widget state
-                  },
-                  onAdd: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      isDismissible: true,
-                      enableDrag: true,
-                      showDragHandle: true,
-                      useSafeArea: true,
-                      builder: (context) => AddEventLocationWidget(
-                        onAdd: (location) {
-                          setState(() {
-                            _locations.add(location);
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  },
-                ),
+              builder: (context) => EventLocationListWidget(
+                onAdd: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    isDismissible: true,
+                    enableDrag: true,
+                    showDragHandle: true,
+                    useSafeArea: true,
+                    builder: (context) => AddEventLocationWidget(
+                      onAdd: (location) {
+                        ref.read(eventLocationsProvider.notifier).addLocation(location);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  );
+                },
               ),
             );
           },
@@ -530,6 +525,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       draft.utcStartFromRfc3339(utcStartDateTime);
       draft.utcEndFromRfc3339(utcEndDateTime);
       draft.descriptionHtml(plainDescription, htmlBodyDescription);
+
+      // Add locations to the event
+      final locations = ref.read(eventLocationsProvider);
+      for (final location in locations) {
+        if (location.type == LocationType.realWorld) {
+        
+        } 
+        if(location.type == LocationType.virtual) {
+        
+        }
+      }
+
       final eventId = (await draft.send()).toString();
       final client = await ref.read(alwaysClientProvider.future);
       final calendarEvent = await client.waitForCalendarEvent(eventId, null);
