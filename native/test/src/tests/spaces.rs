@@ -247,6 +247,10 @@ async fn create_subspace() -> Result<()> {
 
     let settings = new_space_settings_builder()
         .set_name("subspace".to_owned())
+        .set_visibility("Public".to_owned())
+        .set_alias("#friendlyname:localhost".to_owned())
+        .set_topic("Here is test space".to_owned())
+        .set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned())
         .set_parent(first.room_id().to_string())
         .build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -390,10 +394,11 @@ async fn create_with_custom_space_settings() -> Result<()> {
         .rsvp_permissions(9)
         .users_default(10)
         .events_default(11)
-        .kick(12)
-        .invite(13)
-        .redact(14)
-        .state_default(15);
+        .ban(12)
+        .kick(13)
+        .invite(14)
+        .redact(15)
+        .state_default(16);
     let settings = new_space_settings_builder()
         .set_name("my space".to_owned())
         .set_permissions(Box::new(permissions_builder.clone()))
@@ -453,14 +458,15 @@ async fn create_with_custom_space_settings() -> Result<()> {
     assert_eq!(power_levels.rsvp(), Some(9i64));
 
     // default power levels
-    assert_eq!(power_levels.kick(), 12i64);
-    assert_eq!(power_levels.invite(), 13i64);
-    assert_eq!(power_levels.redact(), 14i64);
+    assert_eq!(power_levels.ban(), 12i64);
+    assert_eq!(power_levels.kick(), 13i64);
+    assert_eq!(power_levels.invite(), 14i64);
+    assert_eq!(power_levels.redact(), 15i64);
 
     //
     assert_eq!(power_levels.users_default(), 10i64);
     assert_eq!(power_levels.events_default(), 11i64);
-    assert_eq!(power_levels.state_default(), 15i64);
+    assert_eq!(power_levels.state_default(), 16i64);
     Ok(())
 }
 

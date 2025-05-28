@@ -1,3 +1,4 @@
+use acter_core::events::DisplayBuilder;
 use anyhow::{bail, Result};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
@@ -32,12 +33,14 @@ async fn categories_e2e() -> Result<()> {
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
 
+    let display = DisplayBuilder::default().color(0xffff0000).build()?;
     let new_cat = space_cats
         .new_category_builder()
         .add_entry("a".to_owned())
         .add_entry("b".to_owned())
         .add_entry("c".to_owned())
         .title("Campaigns".to_owned())
+        .display(Box::new(display))
         .build()?;
     let mut builder = space_cats.update_builder();
     let space_cat_updater = builder.add(Box::new(new_cat.clone()));
@@ -63,10 +66,12 @@ async fn categories_e2e() -> Result<()> {
     assert_eq!(categories.len(), 1, "Exepected one item");
     let campaign = categories[0].clone();
     assert_eq!(campaign, new_cat);
+    assert_eq!(campaign.title(), "Campaigns");
     assert_eq!(
         campaign.entries(),
         ["a".to_owned(), "b".to_owned(), "c".to_owned()]
     );
+    assert_eq!(campaign.display().and_then(|d| d.color()), Some(0xffff0000));
 
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
@@ -75,6 +80,8 @@ async fn categories_e2e() -> Result<()> {
     let updated = campaign
         .update_builder()
         .title("Backoffice".to_owned())
+        .clear_entries()
+        .unset_display()
         .build()?;
 
     let new_cat = new_space_categories
@@ -110,6 +117,7 @@ async fn categories_e2e() -> Result<()> {
 
     let categories = new_new_space_categories.categories();
     assert_eq!(categories, [updated, new_cat]);
+    assert_eq!(categories[0].display(), None);
 
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());

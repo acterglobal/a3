@@ -33,7 +33,10 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
 
     // let’s create a new one
     let mut builder = SuperInvitesTokenUpdateBuilder::new();
-    let token_builder = builder.add_room(room_id.to_string());
+    let given_token = "1234567890"; // will not use the auto-generated token string
+    let token_builder = builder
+        .token(given_token.to_owned())
+        .add_room(room_id.to_string());
 
     let token = super_invites
         .create_or_update_token(Box::new(token_builder.clone()))
@@ -44,6 +47,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(rooms[0], room_id);
 
     let token_str = token.token();
+    assert_eq!(token_str, given_token);
 
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 1); // we have one now
