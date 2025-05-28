@@ -30,7 +30,6 @@ class _AddEventLocationWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final lang = L10n.of(context);
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -38,37 +37,14 @@ class _AddEventLocationWidgetState
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,   
-                children: [
-                  FilterChip(
-                    label: Text(lang.virtual),
-                    selected: _selectedType == LocationType.virtual,
-                    onSelected: (selected) {
-                      if (!(_selectedType == LocationType.virtual)) {
-                        setState(() => _selectedType = LocationType.virtual);
-                      }
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    label: Text(lang.realWorld),
-                    selected: _selectedType == LocationType.realWorld,
-                    onSelected: (selected) {
-                      if (!(_selectedType == LocationType.realWorld)) {
-                        setState(() => _selectedType = LocationType.realWorld);
-                      }
-                    },
-                  ),
-                ],
-              ),
+              _buildTypeSelector(context),
               const SizedBox(height: 16),
-              _locationNameField(context),
+              _buildLocationNameField(context),
               const SizedBox(height: 10),
               if (_selectedType == LocationType.virtual)
-                _locationUrlField(context)
+                _buildLocationUrlField(context)
               else
-                _locationAddressField(context),
+                _buildLocationAddressField(context),
               const SizedBox(height: 10),
               _buildNoteField(context),
               const SizedBox(height: 40),
@@ -80,8 +56,36 @@ class _AddEventLocationWidgetState
     );
   }
 
+  Widget _buildTypeSelector(BuildContext context) {
+    final lang = L10n.of(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        FilterChip(
+          label: Text(lang.virtual),
+          selected: _selectedType == LocationType.virtual,
+          onSelected: (selected) {
+            if (!(_selectedType == LocationType.virtual)) {
+              setState(() => _selectedType = LocationType.virtual);
+            }
+          },
+        ),
+        const SizedBox(width: 8),
+        FilterChip(
+          label: Text(lang.realWorld),
+          selected: _selectedType == LocationType.realWorld,
+          onSelected: (selected) {
+            if (!(_selectedType == LocationType.realWorld)) {
+              setState(() => _selectedType = LocationType.realWorld);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
   // Event name field
-  Widget _locationNameField(BuildContext context) {
+  Widget _buildLocationNameField(BuildContext context) {
     final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +109,7 @@ class _AddEventLocationWidgetState
     );
   }
 
-  Widget _locationUrlField(BuildContext context) {
+  Widget _buildLocationUrlField(BuildContext context) {
     final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +133,7 @@ class _AddEventLocationWidgetState
     );
   }
 
-  Widget _locationAddressField(BuildContext context) {
+  Widget _buildLocationAddressField(BuildContext context) {
     final lang = L10n.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +159,10 @@ class _AddEventLocationWidgetState
               onChanged: (body, html) {
                 setState(() {
                   textEditorAddressState = EditorState(
-                    document: ActerDocumentHelpers.parse(body, htmlContent: html),
+                    document: ActerDocumentHelpers.parse(
+                      body,
+                      htmlContent: html,
+                    ),
                   );
                   _addressError = null; // Clear error on change
                 });
@@ -207,40 +214,49 @@ class _AddEventLocationWidgetState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () {
-            bool valid = _formKey.currentState?.validate() ?? false;
-            setState(() {
-              _addressError = null;
-            });
-            if (_selectedType == LocationType.realWorld) {
-              final address = textEditorAddressState.intoMarkdown().trim();
-              if (address.isEmpty) {
-                setState(() {
-                  _addressError = L10n.of(context).pleaseEnterLocationAddress;
-                });
-                valid = false;
-              }
-            }
-            if (valid) {
-              final location = EventLocationDraft(
-                name: _locationNameController.text,
-                type: _selectedType,
-                url: _selectedType == LocationType.virtual
-                    ? _locationUrlController.text
-                    : null,
-                address: _selectedType == LocationType.realWorld
-                    ? textEditorAddressState.intoMarkdown()
-                    : null,
-                note: textEditorNoteState.intoMarkdown(),
-              );
-              widget.onAdd(location);
-            }
-          },
+          onPressed: () => _addLocation(),
           child: Text(lang.addLocation),
         ),
         const SizedBox(height: 10),
-        OutlinedButton(onPressed: () {Navigator.pop(context);}, child: Text(lang.cancel)),
+        OutlinedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(lang.cancel),
+        ),
       ],
     );
+  }
+
+  void _addLocation() {
+    bool valid = _formKey.currentState?.validate() ?? false;
+    setState(() {
+      _addressError = null;
+    });
+    if (_selectedType == LocationType.realWorld) {
+      final address = textEditorAddressState.intoMarkdown().trim();
+      if (address.isEmpty) {
+        setState(() {
+          _addressError = L10n.of(context).pleaseEnterLocationAddress;
+        });
+        valid = false;
+      }
+    }
+    if (valid) {
+      final location = EventLocationDraft(
+        name: _locationNameController.text,
+        type: _selectedType,
+        url:
+            _selectedType == LocationType.virtual
+                ? _locationUrlController.text
+                : null,
+        address:
+            _selectedType == LocationType.realWorld
+                ? textEditorAddressState.intoMarkdown()
+                : null,
+        note: textEditorNoteState.intoMarkdown(),
+      );
+      widget.onAdd(location);
+    }
   }
 }
