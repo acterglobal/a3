@@ -186,7 +186,7 @@ class InvitePage extends ConsumerWidget {
             const SizedBox(height: 20),
             InviteCodeUI(
               roomId: roomId,
-              callNextPage: callNextPage,
+              isManageInviteCode: false,
             ),
           ],
         ),
