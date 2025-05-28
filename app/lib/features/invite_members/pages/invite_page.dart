@@ -15,17 +15,19 @@ class InvitePage extends ConsumerWidget {
   static const invitePageKey = Key('room-invite-page-key');
   final String roomId;
   final CallNextPage? callNextPage;
+  final bool showInviteSpaceMembers;
 
   const InvitePage({
     required this.roomId,
     this.callNextPage,
+    this.showInviteSpaceMembers = true,
     super.key = invitePageKey,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: callNextPage == null ? _buildAppBar(context) : null,
+      appBar: showInviteSpaceMembers ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }
@@ -79,7 +81,7 @@ class InvitePage extends ConsumerWidget {
             ),
           ),
         ),
-        if (callNextPage != null)
+        if (!showInviteSpaceMembers)
           _buildActionButtons(context),
       ],
     );
@@ -108,7 +110,7 @@ class InvitePage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (callNextPage == null)
+            if (showInviteSpaceMembers)
               MenuItemWidget(
                 iconData: Icons.people_alt_outlined,
                 title: lang.inviteSpaceMembersTitle,
@@ -124,7 +126,7 @@ class InvitePage extends ConsumerWidget {
               title: lang.inviteIndividualUsersTitle,
               subTitle: lang.inviteIndividualUsersSubtitle,
               onTap: () {
-                if (callNextPage != null) {
+                if (!showInviteSpaceMembers) {
                   showModalBottomSheet(
                     showDragHandle: true,
                     context: context,

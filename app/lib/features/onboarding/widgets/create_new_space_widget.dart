@@ -262,7 +262,7 @@ class _CreateNewSpaceWidgetState extends ConsumerState<CreateNewSpaceWidget> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) {
-        return InvitePage(roomId: spaceId, callNextPage: widget.callNextPage);
+        return InvitePage(roomId: spaceId, callNextPage: widget.callNextPage, showInviteSpaceMembers: false);
       },
     );
   }
