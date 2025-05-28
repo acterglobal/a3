@@ -5,6 +5,8 @@ import 'package:acter/features/super_invites/providers/super_invites_providers.d
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:acter/l10n/generated/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import '../../helpers/test_util.dart';
 import '../../helpers/mock_tasks_providers.dart';
 import '../super_invites/mock_data/mock_super_invites.dart';
@@ -30,9 +32,18 @@ void main() {
           (ref) => Future.value(tokens ?? []),
         ),
       ],
-      child: InviteCodeUI(
-        roomId: roomId,
-        isManageInviteCode: isManageInviteCode,
+      child: MaterialApp(
+        localizationsDelegates: [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.supportedLocales,
+        home: InviteCodeUI(
+          roomId: roomId,
+          isManageInviteCode: isManageInviteCode,
+        ),
       ),
     );
     await tester.pump();
@@ -42,8 +53,12 @@ void main() {
     testWidgets('shows generate button when no invite code exists', (tester) async {
       await createWidgetUnderTest(tester: tester);
 
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(InviteCodeUI));
+      final lang = L10n.of(context);
+
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
-      expect(find.text('Generate Invite Code'), findsOneWidget);
+      expect(find.text(lang.generateInviteCode), findsOneWidget);
     });
 
     testWidgets('displays invite code when available', (tester) async {
@@ -62,8 +77,12 @@ void main() {
         tokens: [mockToken],
       );
 
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(InviteCodeUI));
+      final lang = L10n.of(context);
+
       expect(find.byType(ActerInlineTextButton), findsOneWidget);
-      expect(find.text('Manage'), findsOneWidget);
+      expect(find.text(lang.manage), findsOneWidget);
     });
 
     testWidgets('shows manage button when isManageInviteCode is false', (tester) async {
@@ -73,8 +92,12 @@ void main() {
         isManageInviteCode: false,
       );
 
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(InviteCodeUI));
+      final lang = L10n.of(context);
+
       expect(find.byType(ActerInlineTextButton), findsNothing);
-      expect(find.text('Manage'), findsNothing);
+      expect(find.text(lang.manage), findsNothing);
     });
 
     testWidgets('shows share button with invite code', (tester) async {
@@ -83,8 +106,12 @@ void main() {
         tokens: [mockToken],
       );
 
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(InviteCodeUI));
+      final lang = L10n.of(context);
+
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
-      expect(find.text('Share'), findsOneWidget);
+      expect(find.text(lang.share), findsOneWidget);
     });
 
     testWidgets('shows dropdown when multiple invite codes exist', (tester) async {
@@ -110,15 +137,23 @@ void main() {
         tokens: [mockTokenWithMultipleRooms],
       );
 
-      expect(find.text('+2 additional rooms'), findsOneWidget);
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(InviteCodeUI));
+      final lang = L10n.of(context);
+
+      expect(find.text(lang.moreRooms(2)), findsOneWidget);
     });
 
     testWidgets('generates new invite code when generate button is pressed', (tester) async {
       await createWidgetUnderTest(tester: tester);
 
+      // Get the context and L10n instance
+      final BuildContext context = tester.element(find.byType(InviteCodeUI));
+      final lang = L10n.of(context);
+
       // Verify initial state - generate button is visible
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
-      expect(find.text('Generate Invite Code'), findsOneWidget);
+      expect(find.text(lang.generateInviteCode), findsOneWidget);
 
       // Tap the generate button
       await tester.tap(find.byType(ActerPrimaryActionButton));
