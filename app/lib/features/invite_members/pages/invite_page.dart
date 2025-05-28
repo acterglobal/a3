@@ -134,7 +134,7 @@ class InvitePage extends ConsumerWidget {
                     builder: (context) {    
                       return InviteIndividualUsers(
                         roomId: roomId,
-                        callNextPage: callNextPage,
+                        isFullPageMode: false,
                       );
                     },
                   );

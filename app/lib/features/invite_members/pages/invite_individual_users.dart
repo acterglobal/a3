@@ -4,7 +4,6 @@ import 'package:acter/features/invite_members/widgets/direct_invite.dart';
 import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:acter/features/member/widgets/user_search_results.dart';
-import 'package:acter/features/onboarding/types.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -12,14 +11,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class InviteIndividualUsers extends ConsumerWidget {
   final String roomId;
-  final CallNextPage? callNextPage;
+  final bool isFullPageMode;
 
-  const InviteIndividualUsers({super.key, required this.roomId, this.callNextPage});
+  const InviteIndividualUsers({super.key, required this.roomId, this.isFullPageMode = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: callNextPage == null ? _buildAppBar(context) : null,
+      appBar: isFullPageMode ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }
@@ -39,7 +38,7 @@ class InviteIndividualUsers extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (callNextPage == null)...[
+            if (isFullPageMode)...[
               const SizedBox(height: 10),
               Text(
                 lang.inviteIndividualUsersDescription,
@@ -77,7 +76,7 @@ class InviteIndividualUsers extends ConsumerWidget {
                 },
               ),
             ),
-            if (callNextPage != null)...[
+            if (!isFullPageMode)...[
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
