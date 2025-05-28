@@ -1,6 +1,7 @@
+import 'package:acter/common/dialogs/bottom_sheet_container_widget.dart';
+import 'package:acter/features/attachments/widgets/attachment_selection_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:acter/features/attachments/actions/select_attachment.dart';
 import '../../helpers/test_util.dart';
 import '../../helpers/font_loader.dart';
 
@@ -13,15 +14,17 @@ void main() {
     await loadTestFonts();
     await tester.pumpProviderWidget(
       child: Material(
-        child: AttachmentSelectionModal(
-          onSelected: (files, type) async {},
-          onLinkSelected: (title, link) async {},
+        child: BottomSheetContainerWidget(
+          child: AttachmentSelectionOptions(
+            onSelected: (files, type) async {},
+            onLinkSelected: (title, link) async {},
+          ),
         ),
       ),
     );
     await tester.pumpAndSettle();
     await expectLater(
-      find.byType(AttachmentSelectionModal),
+      find.byType(BottomSheetContainerWidget),
       matchesGoldenFile('goldens/attachment_selection_modal.png'),
     );
   });

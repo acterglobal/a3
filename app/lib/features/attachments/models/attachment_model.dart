@@ -1,12 +1,13 @@
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 enum AttachmentIconType {
-  link(icon: Icons.link, color: Colors.blue),
-  camera(icon: Icons.camera, color: Colors.deepOrangeAccent),
-  image(icon: Icons.image, color: Colors.tealAccent),
-  video(icon: Icons.video_library, color: Colors.amberAccent),
-  audio(icon: Icons.headphones, color: Colors.cyanAccent),
-  file(icon: Icons.file_present, color: Colors.purpleAccent);
+  link(icon: Atlas.link, color: Colors.blue),
+  camera(icon: Atlas.camera, color: Colors.deepOrangeAccent),
+  image(icon: Atlas.file_image, color: Colors.tealAccent),
+  video(icon: Atlas.file_video, color: Colors.amberAccent),
+  audio(icon: Atlas.audio_headphones, color: Colors.cyanAccent),
+  file(icon: Atlas.file, color: Colors.purpleAccent);
 
   final IconData icon;
   final Color color;
