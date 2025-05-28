@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/notifiers/relations_notifier.dart';
 import 'package:acter/common/providers/notifiers/space_notifiers.dart';
@@ -47,14 +49,17 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
     });
 
 /// Map a spaceId to the space, keeps up to date with underlying client
-/// throws is the space isn’t found.
+/// it will pend forever if the space isn’t found.
 final spaceProvider = FutureProvider.family<Space, String>((
   ref,
   spaceId,
 ) async {
   final maybeSpace = await ref.watch(maybeSpaceProvider(spaceId).future);
-  if (maybeSpace == null) throw 'Space not found';
-  return maybeSpace;
+  if (maybeSpace != null) {
+    return maybeSpace;
+  }
+  final completer = Completer<Space>();
+  return completer.future;
 });
 
 final isActerSpace = FutureProvider.autoDispose.family<bool, String>((
@@ -65,13 +70,11 @@ final isActerSpace = FutureProvider.autoDispose.family<bool, String>((
   return await space.isActerSpace();
 });
 
-final createSpaceOnboardingDataProvider = FutureProvider.autoDispose.family<bool, String>((
-  ref,
-  spaceId,
-) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return await space.createOnboardingData();
-});
+final createSpaceOnboardingDataProvider = FutureProvider.autoDispose
+    .family<bool, String>((ref, spaceId) async {
+      final space = await ref.watch(spaceProvider(spaceId).future);
+      return await space.createOnboardingData();
+    });
 
 final spaceIsBookmarkedProvider = FutureProvider.family<bool, String>((
   ref,
