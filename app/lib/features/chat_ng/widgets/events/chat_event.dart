@@ -222,7 +222,14 @@ class ChatEvent extends ConsumerWidget {
             Align(
               alignment: isMe ? Alignment.bottomRight : Alignment.bottomLeft,
               child: Padding(
-                padding: EdgeInsets.only(left: isMe ? 0 : 50),
+                padding: EdgeInsets.only(
+                  left:
+                      isMe
+                          ? 0
+                          : isDM
+                          ? 20
+                          : 50,
+                ),
                 child: FractionalTranslation(
                   translation: Offset(0, -0.25),
                   child: ReactionsList(
