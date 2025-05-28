@@ -1,7 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/features/onboarding/types.dart';
 import 'package:acter/features/share/widgets/external_share_options.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -10,19 +9,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ShareInviteCode extends ConsumerWidget {
   final String inviteCode;
   final String roomId;
-  final CallNextPage? callNextPage;
+  final bool isFullPageMode;
 
   const ShareInviteCode({
     super.key,
     required this.inviteCode,
     required this.roomId,
-    this.callNextPage,
+    this.isFullPageMode = true,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: callNextPage == null ? _buildAppBar(context) : null,
+      appBar: isFullPageMode ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }

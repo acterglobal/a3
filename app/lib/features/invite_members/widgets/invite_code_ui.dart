@@ -144,7 +144,7 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
                   return ShareInviteCode(
                     inviteCode: inviteCode,
                     roomId: widget.roomId,
-                    callNextPage: widget.callNextPage,
+                    isFullPageMode: false,
                   );
                 },
               );
