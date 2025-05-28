@@ -430,11 +430,11 @@ impl NotificationItem {
         }
 
         // fallback chat message:
-        if let NotificationEvent::Timeline(a) = inner.event
-        {
-            if let AnySyncTimelineEvent::MessageLike(
-                AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(event)),
-            ) = a.as_ref() {
+        if let NotificationEvent::Timeline(a) = inner.event {
+            if let AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+                SyncMessageLikeEvent::Original(event),
+            )) = a.as_ref()
+            {
                 let content = event.content.msgtype.clone();
                 return Ok(builder
                     .inner(NotificationItemInner::ChatMessage {
