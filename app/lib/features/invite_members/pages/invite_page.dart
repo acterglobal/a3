@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
 import 'package:acter/features/invite_members/pages/invite_individual_users.dart';
 import 'package:acter/features/onboarding/types.dart';
@@ -58,21 +59,29 @@ class InvitePage extends ConsumerWidget {
   }
 
   Widget _buildBody(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 10),
-          _buildInviteHeader(context, ref),
-          const SizedBox(height: 20),
-          _buildInviteMethods(context),
-          const SizedBox(height: 20),
-          const Divider(indent: 70, endIndent: 70),
-          const SizedBox(height: 30),
-          if (ref.watch(hasSuperTokensAccess).valueOrNull == true)
-            _buildInviteFromCode(context, ref),
-        ],
-      ),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 10),
+                _buildInviteHeader(context, ref),
+                const SizedBox(height: 20),
+                _buildInviteMethods(context),
+                const SizedBox(height: 20),
+                const Divider(indent: 70, endIndent: 70),
+                const SizedBox(height: 30),
+                if (ref.watch(hasSuperTokensAccess).valueOrNull == true)
+                  _buildInviteFromCode(context, ref),
+              ],
+            ),
+          ),
+        ),
+        if (callNextPage != null)
+          _buildActionButtons(context),
+      ],
     );
   }
 
@@ -116,7 +125,6 @@ class InvitePage extends ConsumerWidget {
               subTitle: lang.inviteIndividualUsersSubtitle,
               onTap: () {
                 if (callNextPage != null) {
-                  Navigator.pop(context);
                   showModalBottomSheet(
                     showDragHandle: true,
                     context: context,
@@ -180,6 +188,33 @@ class InvitePage extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    final lang = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ActerPrimaryActionButton(
+          onPressed: () {
+            Navigator.pop(context);
+            callNextPage?.call();
+          },
+          child: Text(lang.wizzardContinue),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            callNextPage?.call();
+          },
+          child: Text(lang.skip),
+          ),
+        ],
       ),
     );
   }

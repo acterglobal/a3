@@ -134,7 +134,6 @@ class _InviteCodeUIState extends ConsumerState<InviteCodeUI> {
         ActerPrimaryActionButton(
           onPressed: () {
             if (widget.callNextPage != null) {
-              Navigator.pop(context);
               showModalBottomSheet(
                 showDragHandle: true,
                 context: context,

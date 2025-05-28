@@ -1,3 +1,4 @@
+import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
@@ -54,6 +55,10 @@ void main() {
       expect(find.byType(MenuItemWidget), findsOneWidget);
       expect(find.text('Invite Individual Users'), findsOneWidget);
       expect(find.text('Invite Space Members'), findsNothing);
+      expect(find.byType(OutlinedButton), findsOneWidget);
+      expect(find.text('Skip'), findsOneWidget);
+      expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
+      expect(find.text('Continue'), findsOneWidget);
     });
 
     testWidgets('shows invite code UI when has super tokens access', (WidgetTester tester) async {

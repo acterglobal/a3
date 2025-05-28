@@ -114,11 +114,10 @@ class ShareInviteCode extends ConsumerWidget {
 
   Widget _buildDoneButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: ActerPrimaryActionButton(
         onPressed: () {
           Navigator.pop(context);
-          callNextPage?.call();
         },
         child: Text(L10n.of(context).done),
       ),

@@ -98,9 +98,8 @@ class InviteIndividualUsers extends ConsumerWidget {
         ActerPrimaryActionButton(
           onPressed: () {
             Navigator.pop(context);
-            callNextPage?.call();
           },
-          child: Text(lang.next, style: const TextStyle(fontSize: 16)),
+          child: Text(lang.done, style: const TextStyle(fontSize: 16)),
         ),
       ],
     );
