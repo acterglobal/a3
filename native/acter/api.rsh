@@ -3568,7 +3568,7 @@ object CreateConvoSettingsBuilder {
     /// set the parent of convo
     fn set_parent(value: string);
 
-    fn build() -> CreateConvoSettings;
+    fn build() -> Result<CreateConvoSettings>;
 }
 
 object CreateConvoSettings {}
@@ -3588,7 +3588,7 @@ object CreateSpaceSettingsBuilder {
     fn join_rule(value: string);
 
     /// append user id that will be invited to this space
-    fn add_invitee(value: string) -> Result<()>;
+    fn add_invitee(value: string);
 
     /// set the alias of space
     fn set_alias(value: string);
@@ -3608,7 +3608,7 @@ object CreateSpaceSettingsBuilder {
     /// set the permissions for apps and events for the space creation
     fn set_permissions(value: AppPermissionsBuilder);
 
-    fn build() -> CreateSpaceSettings;
+    fn build() -> Result<CreateSpaceSettings>;
 }
 
 object CreateSpaceSettings {}
