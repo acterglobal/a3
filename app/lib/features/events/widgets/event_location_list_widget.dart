@@ -20,7 +20,9 @@ class EventLocationListWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildHeader(context, lang),
-        locations.isEmpty ? _buildEmptyState(context) : _buildLocationList(context, ref, locations),
+        locations.isEmpty
+            ? _buildEmptyState(context)
+            : _buildLocationList(context, ref, locations),
         if (locations.isNotEmpty) _buildActionButton(context, ref),
       ],
     );
@@ -91,37 +93,75 @@ class EventLocationListWidget extends ConsumerWidget {
       ),
       title: Text(location.name),
       subtitle: Text(
-        isVirtual ? (location.url ?? '') : (location.address?.split('\n').first ?? ''),
+        isVirtual
+            ? (location.url ?? '')
+            : (location.address?.split('\n').first ?? ''),
         style: theme.textTheme.bodySmall,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       trailing: IconButton(
         icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
-        onPressed: () =>
-            ref.read(eventLocationsProvider.notifier).removeLocation(location),
+        onPressed:
+            () => ref
+                .read(eventLocationsProvider.notifier)
+                .removeLocation(location),
       ),
     );
   }
 
   Widget _buildActionButton(BuildContext context, WidgetRef ref) {
-    return Padding(padding: const EdgeInsets.all(16.0), child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-      Expanded(child: OutlinedButton(
-        onPressed: () {
-          ref.read(eventLocationsProvider.notifier).clearLocations();
-          Navigator.of(context).pop();
-        },
-        child: Text(L10n.of(context).cancel),
-       )),
-       const SizedBox(width: 16),
-       Expanded(child: ActerPrimaryActionButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(L10n.of(context).save),
-        ),
-       ),
-      ],
-    ));
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () {
+                showDiscardLocationDialog(context, ref);
+              },
+              child: Text(L10n.of(context).cancel),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: ActerPrimaryActionButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(L10n.of(context).save),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showDiscardLocationDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        final lang = L10n.of(context);
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [Text(lang.discardChanges)],
+          ),
+          content: Text(lang.discardChangesDescription),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: <Widget>[
+            OutlinedButton(child: Text(lang.keepChanges), onPressed: () => Navigator.pop(context)),
+            ActerPrimaryActionButton(
+              onPressed: () {
+                ref.read(eventLocationsProvider.notifier).clearLocations();
+                Navigator.pop(context);
+              },
+              child: Text(lang.discard),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

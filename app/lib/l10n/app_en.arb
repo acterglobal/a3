@@ -3023,5 +3023,13 @@
   "pleaseEnterNote": "Please enter note",
   "@pleaseEnterNote": {},
   "noLocationsAdded": "No locations added",
-  "@noLocationsAdded": {}
+  "@noLocationsAdded": {},
+  "discardChanges": "Discard Changes?",
+  "@discardChanges": {},
+  "discardChangesDescription": "You are about to discard the changes you've made. Are you sure you want to discard them?",
+  "@discardChangesDescription": {},
+  "keepChanges": "Keep editing",
+  "@keepChanges": {},
+  "discard": "Discard",
+  "@discard": {}
 }
