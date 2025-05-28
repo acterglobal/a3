@@ -248,7 +248,7 @@ async fn create_subspace() -> Result<()> {
     let settings = new_space_settings_builder()
         .set_name("subspace".to_owned())
         .set_visibility("Public".to_owned())
-        .set_alias("#friendlyname:localhost".to_owned())
+        .set_alias("wombat".to_owned()) // this means #wombat:example.com
         .set_topic("Here is test space".to_owned())
         .set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned())
         .set_parent(first.room_id().to_string())
