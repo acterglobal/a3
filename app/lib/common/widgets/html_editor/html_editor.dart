@@ -274,7 +274,6 @@ class HtmlEditor extends StatefulWidget {
   final TextStyleConfiguration? textStyleConfiguration;
   final ExportCallback? onSave;
   final ExportCallback? onChanged;
-  final bool autofocus;
   final Function()? onCancel;
 
   const HtmlEditor({
@@ -293,7 +292,6 @@ class HtmlEditor extends StatefulWidget {
     this.footer,
     this.minHeight,
     this.maxHeight,
-    this.autofocus = true,
   });
 
   @override
@@ -535,7 +533,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
             anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
-        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: widget.autofocus),
+        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: false),
       ),
     );
   }

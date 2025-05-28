@@ -151,7 +151,6 @@ class _AddEventLocationWidgetState
               key: EventsKeys.eventLocationAddressTextField,
               editorState: textEditorAddressState,
               editable: true,
-              autofocus: false,
               hintText: lang.enterLocationAddress,
               onChanged: (body, html) {
                 setState(() {
@@ -189,7 +188,6 @@ class _AddEventLocationWidgetState
               key: EventsKeys.eventLocationNoteTextField,
               editorState: textEditorNoteState,
               editable: true,
-              autofocus: false,
               hintText: lang.enterNote,
               onChanged: (body, html) {
                 textEditorNoteState = EditorState(
