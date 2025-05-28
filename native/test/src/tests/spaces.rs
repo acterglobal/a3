@@ -245,11 +245,10 @@ async fn create_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut cfg = new_space_settings_builder();
-    cfg.set_name("subspace".to_owned());
-    cfg.set_parent(first.room_id().to_string());
-
-    let settings = cfg.build()?;
+    let settings = new_space_settings_builder()
+        .set_name("subspace".to_owned())
+        .set_parent(first.room_id().to_string())
+        .build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -372,33 +371,33 @@ async fn create_with_custom_space_settings() -> Result<()> {
     let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 
-    let mut cfg = new_space_settings_builder();
-    cfg.set_name("my space".to_owned());
-    let mut settings = new_app_permissions_builder(); // all on by default
-                                                      // we turn them all off
-    settings.news(false);
-    settings.pins(false);
-    settings.tasks(false);
-    settings.calendar_events(false);
-    settings.stories(false);
-    settings.news_permissions(1);
-    settings.pins_permissions(2);
-    settings.task_lists_permissions(3);
-    settings.tasks_permissions(4);
-    settings.calendar_events_permissions(5);
-    settings.stories_permissions(6);
-    settings.comments_permissions(7);
-    settings.attachments_permissions(8);
-    settings.rsvp_permissions(9);
-    settings.users_default(10);
-    settings.events_default(11);
-    settings.kick(12);
-    settings.invite(13);
-    settings.redact(14);
-    settings.state_default(15);
-    cfg.set_permissions(Box::new(settings));
-
-    let settings = cfg.build()?;
+    let mut builder = new_app_permissions_builder(); // all on by default
+                                                     // we turn them all off
+    let permissions_builder = builder
+        .news(false)
+        .pins(false)
+        .tasks(false)
+        .calendar_events(false)
+        .stories(false)
+        .news_permissions(1)
+        .pins_permissions(2)
+        .task_lists_permissions(3)
+        .tasks_permissions(4)
+        .calendar_events_permissions(5)
+        .stories_permissions(6)
+        .comments_permissions(7)
+        .attachments_permissions(8)
+        .rsvp_permissions(9)
+        .users_default(10)
+        .events_default(11)
+        .kick(12)
+        .invite(13)
+        .redact(14)
+        .state_default(15);
+    let settings = new_space_settings_builder()
+        .set_name("my space".to_owned())
+        .set_permissions(Box::new(permissions_builder.clone()))
+        .build()?;
     user.create_acter_space(Box::new(settings)).await?;
 
     // wait for sync to catch up
@@ -677,8 +676,9 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
+    let mut builder = new_join_rule_builder();
     let join_rule = "invite";
-    let rule_builder = new_join_rule_builder().join_rule(join_rule.to_owned());
+    let rule_builder = builder.join_rule(join_rule.to_owned());
 
     space.set_join_rule(Box::new(rule_builder.clone())).await?;
 
@@ -699,8 +699,9 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     assert!(matches!(join_rule, JoinRule::Invite));
 
+    let mut builder = new_join_rule_builder();
     let join_rule = "restricted";
-    let rule_builder = new_join_rule_builder()
+    let rule_builder = builder
         .join_rule(join_rule.to_owned())
         .add_room(space_parent.room_id().to_string());
 
