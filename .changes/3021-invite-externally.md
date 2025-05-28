@@ -1,0 +1,1 @@
+- [Improvement] : Added Invite Individuals and Invite to Join Acter steps during the Create New Space onboarding flow
