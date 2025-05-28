@@ -32,8 +32,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
     // let’s create a new one
-    let mut builder = SuperInvitesTokenUpdateBuilder::new();
-    builder.add_room(room_id.to_string());
+    let builder = SuperInvitesTokenUpdateBuilder::new().add_room(room_id.to_string());
 
     let token = super_invites
         .create_or_update_token(Box::new(builder))
@@ -94,8 +93,7 @@ async fn super_invites_manage() -> Result<()> {
 
     // let’s create a new one
 
-    let mut builder = SuperInvitesTokenUpdateBuilder::new();
-    builder.add_room(room_id.to_string());
+    let builder = SuperInvitesTokenUpdateBuilder::new().add_room(room_id.to_string());
     let token = super_invites
         .create_or_update_token(Box::new(builder))
         .await?;
@@ -107,9 +105,10 @@ async fn super_invites_manage() -> Result<()> {
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 1); // we start with zero tokens
 
-    let mut builder = token.update_builder();
-    builder.remove_room(room_id.to_string());
-    builder.create_dm(true);
+    let builder = token
+        .update_builder()
+        .remove_room(room_id.to_string())
+        .create_dm(true);
     let token = super_invites
         .create_or_update_token(Box::new(builder))
         .await?;

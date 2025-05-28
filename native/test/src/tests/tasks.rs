@@ -38,11 +38,12 @@ async fn task_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Starting up".to_owned());
-        draft.send().await?
-    };
+    let name = "Starting up";
+    let task_list_id = space
+        .task_list_draft()?
+        .name(name.to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 
@@ -58,14 +59,15 @@ async fn task_smoketests() -> Result<()> {
     .await?
     .expect("freshly created Task List couldn’t be found");
 
-    assert_eq!(task_list.name(), "Starting up");
+    assert_eq!(task_list.name(), name);
     assert_eq!(task_list.tasks().await?.len(), 0);
 
     let task_list_listener = task_list.subscribe();
 
+    let title = "Testing 1";
     let task_1_id = task_list
         .task_builder()?
-        .title("Testing 1".into())
+        .title(title.to_owned())
         .send()
         .await?;
 
@@ -84,14 +86,15 @@ async fn task_smoketests() -> Result<()> {
     assert_eq!(tasks[0].event_id(), task_1_id);
 
     let task_1 = tasks[0].clone();
-    assert_eq!(task_1.title(), "Testing 1");
+    assert_eq!(task_1.title(), title);
     assert!(!task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
 
+    let title = "Testing 2";
     let task_2_id = task_list
         .task_builder()?
-        .title("Testing 2".into())
+        .title(title.to_owned())
         .send()
         .await?;
 
@@ -110,14 +113,15 @@ async fn task_smoketests() -> Result<()> {
     assert_eq!(tasks[1].event_id(), task_2_id);
 
     let task_2 = tasks[1].clone();
-    assert_eq!(task_2.title(), "Testing 2");
+    assert_eq!(task_2.title(), title);
     assert!(!task_2.is_done());
 
     let task_1_updater = task_1.subscribe();
 
+    let new_title = "Replacement Name";
     task_1
         .update_builder()?
-        .title("Replacement Name".into())
+        .title(new_title.to_owned())
         .mark_done()
         .send()
         .await?;
@@ -133,15 +137,17 @@ async fn task_smoketests() -> Result<()> {
 
     let task_1 = task_1.refresh().await?;
     // Update has been applied properly
-    assert_eq!(task_1.title(), "Replacement Name");
+    assert_eq!(task_1.title(), new_title);
     assert!(task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
 
+    let new_name = "Setup";
+    let new_body = "All done now";
     task_list
         .update_builder()?
-        .name("Setup".into())
-        .description_text("All done now".into())
+        .name(new_name.to_owned())
+        .description_text(new_body.to_owned())
         .send()
         .await?;
 
@@ -156,9 +162,11 @@ async fn task_smoketests() -> Result<()> {
 
     let task_list = task_list.refresh().await?;
 
-    assert_eq!(task_list.name(), "Setup");
-    let description = task_list.description().expect("description needed");
-    assert_eq!(description.body(), "All done now");
+    assert_eq!(task_list.name(), new_name);
+    assert_eq!(
+        task_list.description().map(|desc| desc.body()).as_ref(),
+        Some(new_body)
+    );
 
     Ok(())
 }
@@ -190,11 +198,12 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Comments test".to_owned());
-        draft.send().await?
-    };
+    let name = "Comments test";
+    let task_list_id = space
+        .task_list_draft()?
+        .name(name.to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 
@@ -209,7 +218,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     let comments_manager = task_list.comments().await?;
 
-    assert_eq!(task_list.name(), "Comments test");
+    assert_eq!(task_list.name(), name);
     assert_eq!(task_list.tasks().await?.len(), 0);
     assert!(!comments_manager.stats().has_comments());
 
@@ -324,11 +333,12 @@ async fn task_comment_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Starting up".to_owned());
-        draft.send().await?
-    };
+    let name = "Starting up";
+    let task_list_id = space
+        .task_list_draft()?
+        .name(name.to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 
@@ -341,7 +351,7 @@ async fn task_comment_smoketests() -> Result<()> {
     .await?
     .expect("freshly created Task List couldn’t be found");
 
-    assert_eq!(task_list.name(), "Starting up");
+    assert_eq!(task_list.name(), name);
     assert_eq!(task_list.tasks().await?.len(), 0);
 
     let task_list_listener = task_list.subscribe();
@@ -489,11 +499,11 @@ async fn task_list_external_link() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Starting up".to_owned());
-        draft.send().await?
-    };
+    let task_list_id = space
+        .task_list_draft()?
+        .name("Starting up".to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 

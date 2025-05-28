@@ -12,6 +12,7 @@ impl Categories {
     pub fn new(inner: Option<CategoriesStateEventContent>) -> Self {
         Categories { inner }
     }
+
     pub fn categories(&self) -> Vec<Category> {
         self.inner
             .as_ref()
@@ -30,12 +31,16 @@ impl Categories {
 }
 
 impl CategoriesBuilder {
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self) -> &mut Self {
         self.entries.clear();
+        self
     }
-    pub fn add(&mut self, cat: Box<Category>) {
+
+    pub fn add(&mut self, cat: Box<Category>) -> &mut Self {
         self.entries.push(*cat);
+        self
     }
+
     pub(crate) fn build(self) -> CategoriesStateEventContent {
         CategoriesStateEventContent {
             categories: self.entries,

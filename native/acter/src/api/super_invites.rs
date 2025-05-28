@@ -120,20 +120,24 @@ impl SuperInvitesTokenUpdateBuilder {
         }
     }
 
-    pub fn token(&mut self, token: String) {
+    pub fn token(&mut self, token: String) -> &mut Self {
         self.token.token = Some(token);
+        self
     }
 
-    pub fn add_room(&mut self, room: String) {
+    pub fn add_room(&mut self, room: String) -> &mut Self {
         self.token.rooms.push(room);
+        self
     }
 
-    pub fn remove_room(&mut self, room: String) {
+    pub fn remove_room(&mut self, room: String) -> &mut Self {
         self.token.rooms.retain(|a| a != &room);
+        self
     }
 
-    pub fn create_dm(&mut self, val: bool) {
+    pub fn create_dm(&mut self, val: bool) -> &mut Self {
         self.token.create_dm = Some(val);
+        self
     }
 
     fn has_token(&self) -> bool {

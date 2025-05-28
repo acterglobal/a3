@@ -492,12 +492,12 @@ async fn create_private_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut cfg = new_space_settings_builder();
-    cfg.set_name("subspace".to_owned());
-    cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("invite".to_owned());
-
-    let settings = cfg.build()?;
+    let join_rule = "invite";
+    let settings = new_space_settings_builder()
+        .set_name("subspace".to_owned())
+        .set_parent(first.room_id().to_string())
+        .join_rule(join_rule.to_owned())
+        .build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -513,7 +513,7 @@ async fn create_private_subspace() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    assert_eq!(space.join_rule_str(), "invite");
+    assert_eq!(space.join_rule_str(), join_rule);
     let space_parent = Retry::spawn(retry_strategy, move || {
         let space = space.clone();
         async move {
@@ -568,12 +568,11 @@ async fn create_public_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut cfg = new_space_settings_builder();
-    cfg.set_name("subspace".to_owned());
-    cfg.set_parent(first.room_id().to_string());
-    cfg.join_rule("PUBLIC".to_owned());
-
-    let settings = cfg.build()?;
+    let settings = new_space_settings_builder()
+        .set_name("subspace".to_owned())
+        .set_parent(first.room_id().to_string())
+        .join_rule("PUBLIC".to_owned())
+        .build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -644,11 +643,12 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut cfg = new_space_settings_builder();
-    cfg.set_name("subspace".to_owned());
-    cfg.set_parent(first.room_id().to_string());
+    let settings = new_space_settings_builder()
+        .set_name("subspace".to_owned())
+        .set_parent(first.room_id().to_string())
+        .build()?;
 
-    let subspace_id = user.create_acter_space(Box::new(cfg.build()?)).await?;
+    let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
     Retry::spawn(retry_strategy.clone(), move || {
@@ -677,16 +677,16 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
-    let mut update = new_join_rule_builder();
-    update.join_rule("invite".to_owned());
+    let join_rule = "invite";
+    let rule_builder = new_join_rule_builder().join_rule(join_rule.to_owned());
 
-    space.set_join_rule(Box::new(update)).await?;
+    space.set_join_rule(Box::new(rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     let space = Retry::spawn(retry_strategy, || async {
         let space = user.space(subspace_id.to_string()).await?;
-        if space.join_rule_str() != "invite" {
+        if space.join_rule_str() != join_rule {
             bail!("update did not occur");
         }
         Ok(space)
@@ -694,22 +694,23 @@ async fn change_subspace_join_rule() -> Result<()> {
     .await?;
 
     // let’s move it back to restricted
-    assert_eq!(space.join_rule_str(), "invite");
+    assert_eq!(space.join_rule_str(), join_rule);
     let join_rule = space.join_rule();
 
     assert!(matches!(join_rule, JoinRule::Invite));
 
-    let mut update = new_join_rule_builder();
-    update.join_rule("restricted".to_owned());
-    update.add_room(space_parent.room_id().to_string());
+    let join_rule = "restricted";
+    let rule_builder = new_join_rule_builder()
+        .join_rule(join_rule.to_owned())
+        .add_room(space_parent.room_id().to_string());
 
-    space.set_join_rule(Box::new(update)).await?;
+    space.set_join_rule(Box::new(rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
     Retry::spawn(retry_strategy, || async {
         let space = user.space(subspace_id.to_string()).await?;
-        if space.join_rule_str() != "restricted" {
+        if space.join_rule_str() != join_rule {
             bail!("update did not occur");
         }
         Ok(())

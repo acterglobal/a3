@@ -32,15 +32,14 @@ async fn categories_e2e() -> Result<()> {
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
 
-    let mut new_cat_builder = space_cats.new_category_builder();
-    new_cat_builder.add_entry("a".to_owned());
-    new_cat_builder.add_entry("b".to_owned());
-    new_cat_builder.add_entry("c".to_owned());
-    new_cat_builder.title("Campaigns".to_owned());
-    let new_cat = new_cat_builder.build()?;
-
-    let mut space_cat_updater = space_cats.update_builder();
-    space_cat_updater.add(Box::new(new_cat.clone()));
+    let new_cat = space_cats
+        .new_category_builder()
+        .add_entry("a".to_owned())
+        .add_entry("b".to_owned())
+        .add_entry("c".to_owned())
+        .title("Campaigns".to_owned())
+        .build()?;
+    let space_cat_updater = space_cats.update_builder().add(Box::new(new_cat.clone()));
 
     space
         .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
@@ -72,22 +71,24 @@ async fn categories_e2e() -> Result<()> {
     assert!(chat_cats.categories().is_empty());
 
     // let’s overwrite it
-    let mut updater = campaign.update_builder();
-    updater.title("Backoffice".to_owned());
-    let updated = updater.build()?;
+    let updated = campaign
+        .update_builder()
+        .title("Backoffice".to_owned())
+        .build()?;
 
-    let mut space_cat_updater = new_space_categories.update_builder();
-    space_cat_updater.clear();
-    space_cat_updater.add(Box::new(updated.clone()));
-
-    // and we add a second now.
-    let mut new_cat_builder = new_space_categories.new_category_builder();
-    new_cat_builder.add_entry("c".to_owned());
-    new_cat_builder.add_entry("b".to_owned());
-    new_cat_builder.add_entry("a".to_owned());
-    new_cat_builder.title("Campaigns".to_owned());
-    let new_cat = new_cat_builder.build()?;
-    space_cat_updater.add(Box::new(new_cat.clone()));
+    let new_cat = new_space_categories
+        .new_category_builder()
+        .add_entry("c".to_owned())
+        .add_entry("b".to_owned())
+        .add_entry("a".to_owned())
+        .title("Campaigns".to_owned())
+        .build()?;
+    let space_cat_updater = new_space_categories
+        .update_builder()
+        .clear()
+        .add(Box::new(updated.clone()))
+        // and we add a second now.
+        .add(Box::new(new_cat.clone()));
 
     space
         .set_categories("spaces".to_owned(), Box::new(space_cat_updater))

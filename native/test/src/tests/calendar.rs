@@ -106,9 +106,12 @@ async fn edit_calendar_event() -> Result<()> {
 
     let subscriber = main_event.subscribe();
 
-    let mut builder = main_event.update_builder()?;
-    builder.title("Onboarding on Acter1".to_owned());
-    builder.send().await?;
+    let title = "Onboarding on Acter1";
+    main_event
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let cal_event = main_event.clone();
 
@@ -124,7 +127,7 @@ async fn edit_calendar_event() -> Result<()> {
         let cal_event = cal_event.clone();
         async move {
             let edited_event = cal_event.refresh().await?;
-            if edited_event.title() != "Onboarding on Acter1" {
+            if edited_event.title() != title {
                 bail!("Update not yet received");
             }
             Ok(())

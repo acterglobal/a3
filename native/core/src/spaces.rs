@@ -92,11 +92,12 @@ pub struct CreateSpaceSettings {
 
 // helper for built-in setters
 impl CreateSpaceSettingsBuilder {
-    pub fn set_name(&mut self, value: String) {
+    pub fn set_name(&mut self, value: String) -> &mut Self {
         self.name(value);
+        self
     }
 
-    pub fn set_visibility(&mut self, value: String) {
+    pub fn set_visibility(&mut self, value: String) -> &mut Self {
         match value.as_str() {
             "Public" => {
                 self.visibility(Visibility::Public);
@@ -106,9 +107,10 @@ impl CreateSpaceSettingsBuilder {
             }
             _ => {}
         }
+        self
     }
 
-    pub fn add_invitee(&mut self, value: String) -> Result<()> {
+    pub fn add_invitee(&mut self, value: String) -> &mut Self {
         if let Ok(user_id) = UserId::parse(value) {
             if let Some(mut invites) = self.invites.clone() {
                 invites.push(user_id);
@@ -117,29 +119,35 @@ impl CreateSpaceSettingsBuilder {
                 self.invites = Some(vec![user_id]);
             }
         }
-        Ok(())
+        self
     }
 
-    pub fn set_alias(&mut self, value: String) {
+    pub fn set_alias(&mut self, value: String) -> &mut Self {
         self.alias(value);
+        self
     }
 
-    pub fn set_topic(&mut self, value: String) {
+    pub fn set_topic(&mut self, value: String) -> &mut Self {
         self.topic(value);
+        self
     }
 
-    pub fn set_avatar_uri(&mut self, value: String) {
+    pub fn set_avatar_uri(&mut self, value: String) -> &mut Self {
         self.avatar_uri(value);
+        self
     }
 
-    pub fn set_parent(&mut self, value: String) {
+    pub fn set_parent(&mut self, value: String) -> &mut Self {
         if let Ok(parent) = RoomId::parse(value) {
             self.parent(parent);
         }
+        self
     }
+
     #[allow(clippy::boxed_local)]
-    pub fn set_permissions(&mut self, value: Box<AppPermissionsBuilder>) {
+    pub fn set_permissions(&mut self, value: Box<AppPermissionsBuilder>) -> &mut Self {
         self.permissions(*value);
+        self
     }
 }
 
