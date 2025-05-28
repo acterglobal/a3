@@ -4,6 +4,7 @@ pub struct Categories {
     inner: Option<CategoriesStateEventContent>,
 }
 
+#[derive(Clone)]
 pub struct CategoriesBuilder {
     entries: Vec<Category>,
 }

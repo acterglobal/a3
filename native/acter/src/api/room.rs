@@ -526,6 +526,7 @@ impl SpaceHierarchyRoomInfo {
     }
 }
 
+#[derive(Clone)]
 pub struct JoinRuleBuilder {
     rule: String,
     restricted_rooms: Vec<String>,

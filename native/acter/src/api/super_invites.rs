@@ -103,6 +103,7 @@ pub struct SuperInvites {
     client: Client,
 }
 
+#[derive(Clone)]
 pub struct SuperInvitesTokenUpdateBuilder {
     token: CreateToken,
 }
