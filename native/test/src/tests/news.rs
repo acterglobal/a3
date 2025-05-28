@@ -791,7 +791,7 @@ async fn news_read_receipt_test() -> Result<()> {
         .await?;
 
         let receipts_manager = main_receipts_manager.clone();
-        Retry::spawn(retry_strategy, move || {
+        Retry::spawn(retry_strategy.clone(), move || {
             let receipts_manager = receipts_manager.clone();
             async move {
                 let new_receipts_manager = receipts_manager.reload().await?;
@@ -950,7 +950,7 @@ async fn multi_news_read_receipt_test() -> Result<()> {
         .await?;
 
         let receipts_manager = older_slide_rr_manager.clone();
-        Retry::spawn(retry_strategy, move || {
+        Retry::spawn(retry_strategy.clone(), move || {
             let receipts_manager = receipts_manager.clone();
             async move {
                 let new_receipts_manager = receipts_manager.reload().await?;
