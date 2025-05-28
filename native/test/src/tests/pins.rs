@@ -106,7 +106,7 @@ async fn pin_comments() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -204,7 +204,7 @@ async fn pin_attachments() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -319,7 +319,7 @@ async fn pin_self_ref_attachments() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }

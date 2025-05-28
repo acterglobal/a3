@@ -94,7 +94,7 @@ async fn tasklist_title_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -155,7 +155,7 @@ async fn tasklist_desc_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -218,7 +218,7 @@ async fn tasklist_redaction() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = first.clone();
-    let event = Retry::spawn(retry_strategy.clone(), move || {
+    let event = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -273,7 +273,7 @@ async fn task_created() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -336,7 +336,7 @@ async fn task_title_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -401,7 +401,7 @@ async fn task_desc_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -470,7 +470,7 @@ async fn task_due_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -545,7 +545,7 @@ async fn task_done_and_undone() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -644,7 +644,7 @@ async fn task_self_assign_and_unassign() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;

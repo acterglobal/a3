@@ -96,7 +96,7 @@ async fn event_title_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.calendar_events().await?;
@@ -155,7 +155,7 @@ async fn event_desc_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.calendar_events().await?;
@@ -215,7 +215,7 @@ async fn event_rescheduled() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.calendar_events().await?;
@@ -279,7 +279,7 @@ async fn event_rsvp() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.calendar_events().await?;
@@ -401,7 +401,7 @@ async fn event_redaction() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = first.clone();
-    let event = Retry::spawn(retry_strategy.clone(), move || {
+    let event = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.calendar_events().await?;

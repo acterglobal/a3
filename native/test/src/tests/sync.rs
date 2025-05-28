@@ -31,7 +31,7 @@ async fn history_sync_restart() -> Result<()> {
     draft.send().await?;
 
     let space_cl = space.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
         async move {
             if inner_space.latest_news_entries(1).await?.len() != 1 {

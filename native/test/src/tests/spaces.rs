@@ -83,7 +83,7 @@ async fn leaving_spaces() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             if client.spaces().await?.len() != 3 {
@@ -186,7 +186,7 @@ async fn leaving_spaces() -> Result<()> {
         Ok(())
     })
     .await?;
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if news_listener.is_empty() {
             // not yet.
             bail!("News listener didn’t react");
@@ -266,7 +266,7 @@ async fn create_subspace() -> Result<()> {
 
     let space = user.space(subspace_id.to_string()).await?;
     assert_eq!(space.join_rule_str(), "restricted");
-    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+    let space_parent = Retry::spawn(retry_strategy, move || {
         let space = space.clone();
         async move {
             let space_relations = space.space_relations().await?;
@@ -282,7 +282,7 @@ async fn create_subspace() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
         }
@@ -319,7 +319,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let settings = Retry::spawn(retry_strategy.clone(), || {
+    let settings = Retry::spawn(retry_strategy, || {
         let first = first.clone();
         async move {
             let Some(settings) = first.app_settings_content().await? else {
@@ -420,7 +420,7 @@ async fn create_with_custom_space_settings() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let settings = Retry::spawn(retry_strategy.clone(), || {
+    let settings = Retry::spawn(retry_strategy, || {
         let first = first.clone();
         async move {
             let Some(settings) = first.app_settings_content().await? else {
@@ -512,7 +512,7 @@ async fn create_private_subspace() -> Result<()> {
 
     let space = user.space(subspace_id.to_string()).await?;
     assert_eq!(space.join_rule_str(), "invite");
-    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+    let space_parent = Retry::spawn(retry_strategy, move || {
         let space = space.clone();
         async move {
             let space_relations = space.space_relations().await?;
@@ -528,7 +528,7 @@ async fn create_private_subspace() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
         }
@@ -587,7 +587,7 @@ async fn create_public_subspace() -> Result<()> {
 
     let space = user.space(subspace_id.to_string()).await?;
     assert_eq!(space.join_rule_str(), "public");
-    let space_parent = Retry::spawn(retry_strategy.clone(), move || {
+    let space_parent = Retry::spawn(retry_strategy, move || {
         let space = space.clone();
         async move {
             let space_relations = space.space_relations().await?;
@@ -603,7 +603,7 @@ async fn create_public_subspace() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
         }
@@ -659,7 +659,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    let space_parent = Retry::spawn(retry_strategy.clone(), || {
+    let space_parent = Retry::spawn(retry_strategy, || {
         let space = space.clone();
         async move {
             let space_relations = space.space_relations().await?;
@@ -680,7 +680,7 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    let space = Retry::spawn(retry_strategy.clone(), || async {
+    let space = Retry::spawn(retry_strategy, || async {
         let space = user.space(subspace_id.to_string()).await?;
         if space.join_rule_str() != "invite" {
             bail!("update did not occur");
@@ -703,7 +703,7 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         let space = user.space(subspace_id.to_string()).await?;
         if space.join_rule_str() != "restricted" {
             bail!("update did not occur");
@@ -738,7 +738,7 @@ async fn update_name() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             if client.spaces().await?.len() != 1 {
@@ -761,7 +761,7 @@ async fn update_name() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_clone = space.clone();
     let user_id = user.user_id()?;
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let space = space_clone.clone();
         let uid = user_id.clone();
         async move {
@@ -783,7 +783,7 @@ async fn update_name() -> Result<()> {
     let fetcher_client = user.clone();
     let space_id_clone = space_id.clone();
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let space_id = space_id_clone.clone();
         async move {
@@ -799,7 +799,7 @@ async fn update_name() -> Result<()> {
     // and we’ve seen the update
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if listener.is_empty() {
             bail!("no updates received");
         };
@@ -833,7 +833,7 @@ async fn update_name() -> Result<()> {
 
     // // and we’ve seen the update
 
-    // Retry::spawn(retry_strategy.clone(), move || {
+    // Retry::spawn(retry_strategy, move || {
     //     let mut listener = listener.resubscribe();
     //     async move {
     //         loop {
@@ -861,7 +861,7 @@ async fn update_topic() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             if client.spaces().await?.len() != 1 {
@@ -902,7 +902,7 @@ async fn update_topic() -> Result<()> {
 
     // and we’ve seen the update
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if listener.is_empty() {
             bail!("no updates received");
         }

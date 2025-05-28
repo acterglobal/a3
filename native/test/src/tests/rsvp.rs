@@ -90,7 +90,7 @@ async fn rsvp_last_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -162,7 +162,7 @@ async fn rsvp_my_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -239,7 +239,7 @@ async fn rsvp_count_at_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -316,7 +316,7 @@ async fn rsvp_users_at_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }

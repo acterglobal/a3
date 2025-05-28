@@ -57,7 +57,7 @@ async fn like_on_news() -> Result<()> {
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let obj_id = obj_id.clone();
         async move {
