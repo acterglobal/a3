@@ -43,7 +43,7 @@ void main() {
         // Assert
         verify(() => mockBuilder.news(true)).called(1);
         verify(
-          () => mockBuilder.newsPermisisons(PermissionLevel.admin.value),
+          () => mockBuilder.newsPermissions(PermissionLevel.admin.value),
         ).called(1);
         verify(() => mockBuilder.stories(false)).called(1);
         verifyNoMoreInteractions(mockBuilder);
@@ -114,31 +114,31 @@ void main() {
       // Assert
       verify(() => mockBuilder.news(true)).called(1);
       verify(
-        () => mockBuilder.newsPermisisons(PermissionLevel.admin.value),
+        () => mockBuilder.newsPermissions(PermissionLevel.admin.value),
       ).called(1);
       verify(() => mockBuilder.stories(true)).called(1);
       verify(
-        () => mockBuilder.storiesPermisisons(PermissionLevel.everyone.value),
+        () => mockBuilder.storiesPermissions(PermissionLevel.everyone.value),
       ).called(1);
       verify(() => mockBuilder.pins(true)).called(1);
       verify(
-        () => mockBuilder.pinsPermisisons(PermissionLevel.moderator.value),
+        () => mockBuilder.pinsPermissions(PermissionLevel.moderator.value),
       ).called(1);
       verify(() => mockBuilder.calendarEvents(true)).called(1);
       verify(
-        () => mockBuilder.calendarEventsPermisisons(
+        () => mockBuilder.calendarEventsPermissions(
           PermissionLevel.moderator.value,
         ),
       ).called(1);
       verify(
-        () => mockBuilder.rsvpPermisisons(PermissionLevel.everyone.value),
+        () => mockBuilder.rsvpPermissions(PermissionLevel.everyone.value),
       ).called(1);
       verify(() => mockBuilder.tasks(true)).called(1);
       verify(
-        () => mockBuilder.taskListsPermisisons(PermissionLevel.admin.value),
+        () => mockBuilder.taskListsPermissions(PermissionLevel.admin.value),
       ).called(1);
       verify(
-        () => mockBuilder.tasksPermisisons(PermissionLevel.moderator.value),
+        () => mockBuilder.tasksPermissions(PermissionLevel.moderator.value),
       ).called(1);
     });
 
