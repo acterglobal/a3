@@ -33,7 +33,10 @@ async fn categories_e2e() -> Result<()> {
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
 
-    let display = DisplayBuilder::default().color(0xffff0000).build()?;
+    let display = DisplayBuilder::default()
+        .color(0xffff0000)
+        .icon("emoji".to_owned(), "🚀".to_owned())
+        .build()?;
     let new_cat = space_cats
         .new_category_builder()
         .add_entry("a".to_owned())
@@ -84,12 +87,19 @@ async fn categories_e2e() -> Result<()> {
         .unset_display()
         .build()?;
 
+    let display = DisplayBuilder::default()
+        .color(0xffff0000)
+        .icon("emoji".to_owned(), "🚀".to_owned())
+        .unset_color()
+        .unset_icon()
+        .build()?;
     let new_cat = new_space_categories
         .new_category_builder()
         .add_entry("c".to_owned())
         .add_entry("b".to_owned())
         .add_entry("a".to_owned())
         .title("Campaigns".to_owned())
+        .display(Box::new(display))
         .build()?;
     let mut builder = new_space_categories.update_builder();
     let space_cat_updater = builder
@@ -118,6 +128,12 @@ async fn categories_e2e() -> Result<()> {
     let categories = new_new_space_categories.categories();
     assert_eq!(categories, [updated, new_cat]);
     assert_eq!(categories[0].display(), None);
+    assert_eq!(categories[1].display().and_then(|d| d.color()), None);
+    assert_eq!(
+        categories[1].display().and_then(|d| d.icon_type_str()),
+        None
+    );
+    assert_eq!(categories[1].display().and_then(|d| d.icon_str()), None);
 
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
