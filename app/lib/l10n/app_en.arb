@@ -3021,5 +3021,7 @@
   "enterNote": "Enter note",
   "@enterNote": {},
   "pleaseEnterNote": "Please enter note",
-  "@pleaseEnterNote": {}
+  "@pleaseEnterNote": {},
+  "noLocationsAdded": "No locations added",
+  "@noLocationsAdded": {}
 }

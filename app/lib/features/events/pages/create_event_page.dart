@@ -2,6 +2,7 @@ import 'package:acter/common/actions/select_space.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
@@ -21,6 +22,7 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -53,6 +55,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   DateTime _selectedEndDate = DateTime.now();
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
+
+  List<EventLocationDraft> _locations = [];
 
   void _setFromTemplate(CalendarEvent event) {
     // title
@@ -184,19 +188,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
   // Event location field
   Widget _buildEventLocationWidget() {
-    final theme = Theme.of(context);
-    final lang = L10n.of(context);
-
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        leading: Icon(Icons.location_on_outlined, color: theme.colorScheme.primary),
-        title: Text(lang.eventLocations),
+        leading: Icon(
+          Icons.location_on_outlined,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        title: Text(L10n.of(context).eventLocations),
         trailing: IconButton(
           icon: const Icon(Icons.add_circle_outline),
-          tooltip: lang.addLocation,
+          tooltip: L10n.of(context).addLocation,
           onPressed: () {
-            // Open add location dialog/sheet
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -204,7 +207,35 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               enableDrag: true,
               showDragHandle: true,
               useSafeArea: true,
-              builder: (context) => const AddEventLocationWidget(),
+              builder: (context) => StatefulBuilder(
+                builder: (context, setModalState) => EventLocationListWidget(
+                  locations: _locations,
+                  onRemove: (location) {
+                    setModalState(() {
+                      _locations.remove(location);
+                    });
+                    setState(() {}); // Update parent widget state
+                  },
+                  onAdd: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      isDismissible: true,
+                      enableDrag: true,
+                      showDragHandle: true,
+                      useSafeArea: true,
+                      builder: (context) => AddEventLocationWidget(
+                        onAdd: (location) {
+                          setState(() {
+                            _locations.add(location);
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
             );
           },
         ),

@@ -1,15 +1,16 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum LocationType { virtual, realWorld }
-
 class AddEventLocationWidget extends ConsumerStatefulWidget {
-  const AddEventLocationWidget({super.key});
+  final Function(EventLocationDraft) onAdd;
+
+  const AddEventLocationWidget({super.key, required this.onAdd});
 
   @override
   ConsumerState<AddEventLocationWidget> createState() =>
@@ -25,6 +26,7 @@ class _AddEventLocationWidgetState
   EditorState textEditorNoteState = EditorState.blank();
   EditorState textEditorAddressState = EditorState.blank();
   LocationType _selectedType = LocationType.virtual;
+  String? _addressError;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class _AddEventLocationWidgetState
           child: Column(
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,   
                 children: [
                   FilterChip(
                     label: Text(lang.virtual),
@@ -134,13 +136,14 @@ class _AddEventLocationWidgetState
       children: [
         Text(lang.addLocationAddress),
         const SizedBox(height: 10),
-       InputDecorator(
+        InputDecorator(
           decoration: InputDecoration(
             hintText: lang.enterLocationAddress,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
             contentPadding: const EdgeInsets.all(12),
+            errorText: _addressError,
           ),
           child: SizedBox(
             height: 100,
@@ -151,9 +154,12 @@ class _AddEventLocationWidgetState
               autofocus: false,
               hintText: lang.enterLocationAddress,
               onChanged: (body, html) {
-                textEditorAddressState = EditorState(
-                  document: ActerDocumentHelpers.parse(body, htmlContent: html),
-                );
+                setState(() {
+                  textEditorAddressState = EditorState(
+                    document: ActerDocumentHelpers.parse(body, htmlContent: html),
+                  );
+                  _addressError = null; // Clear error on change
+                });
               },
             ),
           ),
@@ -203,15 +209,39 @@ class _AddEventLocationWidgetState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ActerPrimaryActionButton(
-          onPressed: () {},
+          onPressed: () {
+            bool valid = _formKey.currentState?.validate() ?? false;
+            setState(() {
+              _addressError = null;
+            });
+            if (_selectedType == LocationType.realWorld) {
+              final address = textEditorAddressState.intoMarkdown().trim();
+              if (address.isEmpty) {
+                setState(() {
+                  _addressError = L10n.of(context).pleaseEnterLocationAddress;
+                });
+                valid = false;
+              }
+            }
+            if (valid) {
+              final location = EventLocationDraft(
+                name: _locationNameController.text,
+                type: _selectedType,
+                url: _selectedType == LocationType.virtual
+                    ? _locationUrlController.text
+                    : null,
+                address: _selectedType == LocationType.realWorld
+                    ? textEditorAddressState.intoMarkdown()
+                    : null,
+                note: textEditorNoteState.intoMarkdown(),
+              );
+              widget.onAdd(location);
+            }
+          },
           child: Text(lang.addLocation),
         ),
         const SizedBox(height: 10),
-         OutlinedButton(
-          onPressed: () {},
-          child: Text(lang.cancel),
-        ),
-        
+        OutlinedButton(onPressed: () {Navigator.pop(context);}, child: Text(lang.cancel)),
       ],
     );
   }

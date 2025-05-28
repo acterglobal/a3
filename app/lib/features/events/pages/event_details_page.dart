@@ -629,8 +629,13 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       useSafeArea: true,
       builder: (_) {
         return EventLocationListWidget(
-            roomId: roomId,
-            locations: [],
+          locations: [],
+          onRemove: (location) {
+            // TODO: Implement delete location
+          },
+          onAdd: () {
+            // TODO: Implement add location
+          },
         );
       },
     );
