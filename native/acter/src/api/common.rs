@@ -404,8 +404,7 @@ pub fn new_obj_ref_builder(
 pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
     if let matrix_sdk::Error::Http(boxed) = &err {
         match boxed.as_ref() {
-            HttpError::Api(a) => 
-            match a.deref() {
+            HttpError::Api(a) => match a.deref() {
                 FromHttpResponseError::Deserialization(des) => {
                     return anyhow::anyhow!("Deserialization failed: {des}");
                 }
