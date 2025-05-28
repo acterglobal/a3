@@ -13,6 +13,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 
+import '../../../helpers/mock_a3sdk.dart';
+import '../../../helpers/mock_space_providers.dart';
+
 // Mocks
 class MockClient extends Mock implements sdk.Client {}
 
@@ -67,12 +70,14 @@ class TestApp extends StatelessWidget {
   }
 }
 
-class MockHasRecommendedSpaceJoinedNotifier extends Mock
+class MockHasRecommendedSpaceJoinedController extends Mock
     implements StateController<bool> {
   @override
   bool get state => false;
   @override
-  set state(bool value) => state = value;
+  set state(bool value) {
+    // do nothing
+  }
 }
 
 void main() {
@@ -82,8 +87,8 @@ void main() {
   late MockVecStringBuilder mockVecStringBuilder;
   late MockWidgetRef mockRef;
   late MockL10n mockL10n;
-  late MockHasRecommendedSpaceJoinedNotifier
-  mockHasRecommendedSpaceJoinedNotifier;
+  late MockHasRecommendedSpaceJoinedController
+  mockHasRecommendedSpaceJoinedController;
 
   setUpAll(() {
     // Register fallback values for types used with any()
@@ -100,13 +105,13 @@ void main() {
     mockSdk = MockSdk(MockSdkApi(mockVecStringBuilder));
     mockRef = MockWidgetRef();
     mockL10n = MockL10n();
-    mockHasRecommendedSpaceJoinedNotifier =
-        MockHasRecommendedSpaceJoinedNotifier();
+    mockHasRecommendedSpaceJoinedController =
+        MockHasRecommendedSpaceJoinedController();
 
     // Setup default behaviors
     when(
       () => mockRef.read(hasRecommendedSpaceJoinedProvider.notifier),
-    ).thenReturn(mockHasRecommendedSpaceJoinedNotifier);
+    ).thenReturn(mockHasRecommendedSpaceJoinedController);
     when(
       () => mockRef.read(alwaysClientProvider.future),
     ).thenAnswer((_) => Future.value(mockClient));
@@ -130,6 +135,9 @@ void main() {
         () => mockRef.refresh(maybeRoomProvider('!test:example.com').future),
       ).thenAnswer((_) => Future.value(mockRoom));
       when(() => mockRoom.roomIdStr()).thenReturn('!test:example.com');
+      when(
+        () => mockRef.refresh(chatProvider('!test:example.com').future),
+      ).thenAnswer((_) => Future.value(MockConvo(roomId: '!test:example.com')));
 
       // Act
       final result = await joinRoom(
@@ -140,6 +148,80 @@ void main() {
       );
       // Assert
       expect(result, equals('!test:example.com'));
+      verify(() => mockClient.joinRoom('!test:example.com', any())).called(1);
+      verify(() => mockVecStringBuilder.add('example.com')).called(1);
+      verify(
+        () => mockRef.refresh(chatProvider('!test:example.com').future),
+      ).called(1);
+    });
+    testWidgets('successfully joins a chat that takes a while to load', (
+      WidgetTester tester,
+    ) async {
+      // Arrange
+      await tester.pumpWidget(const TestApp(child: SizedBox()));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockClient.joinRoom(any(), any()),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(
+        () => mockRef.refresh(maybeRoomProvider('!test:example.com').future),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(() => mockRoom.roomIdStr()).thenReturn('!test:example.com');
+      int counter = 0;
+      when(
+        () => mockRef.refresh(chatProvider('!test:example.com').future),
+      ).thenAnswer((_) {
+        counter++;
+        return Future.value(MockConvo(roomId: '!test:example.com'));
+      });
+
+      // Act
+      final result = await joinRoom(
+        lang: mockL10n,
+        ref: mockRef,
+        roomIdOrAlias: '!test:example.com',
+        serverNames: ['example.com'],
+      );
+      // Assert
+      expect(result, equals('!test:example.com'));
+      verify(() => mockClient.joinRoom('!test:example.com', any())).called(1);
+      verify(() => mockVecStringBuilder.add('example.com')).called(1);
+      verify(
+        () => mockRef.invalidate(chatProvider('!test:example.com')),
+      ).called(1);
+      expect(counter, equals(1));
+    });
+
+    testWidgets('joins a chat that takes a while to load and doesn\'t load', (
+      WidgetTester tester,
+    ) async {
+      // Arrange
+      await tester.pumpWidget(const TestApp(child: SizedBox()));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockClient.joinRoom(any(), any()),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(
+        () => mockRef.refresh(maybeRoomProvider('!test:example.com').future),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(() => mockRoom.roomIdStr()).thenReturn('!test:example.com');
+      when(
+        () => mockRef.refresh(chatProvider('!test:example.com').future),
+      ).thenAnswer(
+        (_) => Future.error('Failed to load'),
+      ); // this provider fails to load
+
+      // Act
+      final result = await joinRoom(
+        lang: mockL10n,
+        ref: mockRef,
+        roomIdOrAlias: '!test:example.com',
+        serverNames: ['example.com'],
+      );
+      // Assert
+      expect(result, isNull);
       verify(() => mockClient.joinRoom('!test:example.com', any())).called(1);
       verify(() => mockVecStringBuilder.add('example.com')).called(1);
       verify(
@@ -160,6 +242,11 @@ void main() {
       ).thenAnswer((_) => Future.value(mockRoom));
       when(() => mockRoom.roomIdStr()).thenReturn('!test2:example.com');
       when(() => mockRoom.isSpace()).thenReturn(true);
+      when(
+        () => mockRef.refresh(maybeSpaceProvider('!test2:example.com').future),
+      ).thenAnswer((_) {
+        return Future.value(MockSpace());
+      });
 
       // Act
       final result = await joinRoom(
@@ -172,8 +259,91 @@ void main() {
       // Assert
       expect(result, equals('!test2:example.com'));
       verify(
-        () => mockRef.invalidate(maybeSpaceProvider('!test2:example.com')),
+        () => mockRef.refresh(maybeSpaceProvider('!test2:example.com').future),
       ).called(1);
+      verify(() => mockVecStringBuilder.add('otherserver.org')).called(1);
+    });
+
+    testWidgets('successfully joins a space that takes a while to load', (
+      WidgetTester tester,
+    ) async {
+      // Arrange
+      await tester.pumpWidget(const TestApp(child: SizedBox()));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockClient.joinRoom(any(), any()),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(
+        () => mockRef.refresh(maybeRoomProvider('!test2:example.com').future),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(() => mockRoom.roomIdStr()).thenReturn('!test2:example.com');
+      when(() => mockRoom.isSpace()).thenReturn(true);
+
+      int counter = 0;
+      when(
+        () => mockRef.refresh(maybeSpaceProvider('!test2:example.com').future),
+      ).thenAnswer((_) {
+        counter++;
+        if (counter < 4) {
+          return Future.value(null);
+        }
+        return Future.value(MockSpace());
+      });
+
+      // Act
+      final result = await tester.runAsync(
+        () async => await joinRoom(
+          lang: mockL10n,
+          ref: mockRef,
+          roomIdOrAlias: '!test2:example.com',
+          serverNames: ['otherserver.org'],
+        ),
+      );
+
+      // Assert
+      expect(result, equals('!test2:example.com'));
+      verify(
+        () => mockRef.refresh(maybeSpaceProvider('!test2:example.com').future),
+      ).called(4);
+      verify(() => mockVecStringBuilder.add('otherserver.org')).called(1);
+      expect(counter, equals(4));
+    });
+
+    testWidgets('joins a space that takes a while to load and doesn\'t load', (
+      WidgetTester tester,
+    ) async {
+      // Arrange
+      await tester.pumpWidget(const TestApp(child: SizedBox()));
+      await tester.pumpAndSettle();
+
+      when(
+        () => mockClient.joinRoom(any(), any()),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(
+        () => mockRef.refresh(maybeRoomProvider('!test2:example.com').future),
+      ).thenAnswer((_) => Future.value(mockRoom));
+      when(() => mockRoom.roomIdStr()).thenReturn('!test2:example.com');
+      when(() => mockRoom.isSpace()).thenReturn(true);
+      when(
+        () => mockRef.refresh(maybeSpaceProvider('!test2:example.com').future),
+      ).thenAnswer((_) => Future.value(null));
+
+      // Act
+      final result = await tester.runAsync(
+        () async => await joinRoom(
+          lang: mockL10n,
+          ref: mockRef,
+          roomIdOrAlias: '!test2:example.com',
+          serverNames: ['otherserver.org'],
+        ),
+      );
+
+      // Assert
+      expect(result, isNull);
+      verify(
+        () => mockRef.refresh(maybeSpaceProvider('!test2:example.com').future),
+      ).called(20);
       verify(() => mockVecStringBuilder.add('otherserver.org')).called(1);
     });
 

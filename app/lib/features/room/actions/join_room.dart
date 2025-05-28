@@ -11,6 +11,11 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::room::join');
 
+class TimeoutError extends Error {
+  final String message;
+  TimeoutError(this.message);
+}
+
 Future<T> _ensureLoadedWithinTime<T>(
   Future<T?> Function() callback, {
   int delayMs = 300,
@@ -31,7 +36,9 @@ Future<T> _ensureLoadedWithinTime<T>(
     await Future.delayed(Duration(milliseconds: delayMs));
   }
 
-  throw 'Loading timed out';
+  throw TimeoutError(
+    'Loading timed out after $attempts attempts ($delayMs ms delay)',
+  );
 }
 
 Future<String?> joinRoom({
@@ -59,19 +66,42 @@ Future<String?> joinRoom({
     }
     final newRoom = await client.joinRoom(roomIdOrAlias, servers);
     final roomId = newRoom.roomIdStr();
-    // ref.read(hasRecommendedSpaceJoinedProvider.notifier).state = true;
+    ref.read(hasRecommendedSpaceJoinedProvider.notifier).state = true;
     final isSpace = await _ensureLoadedWithinTime(() async {
       final room = await ref.refresh(maybeRoomProvider(roomId).future);
       return room?.isJoined() == true ? room!.isSpace() : null;
     });
 
+    bool loaded = false;
+
     if (isSpace) {
-      ref.invalidate(maybeSpaceProvider(roomId));
+      try {
+        await _ensureLoadedWithinTime(
+          () async => (await ref.refresh(maybeSpaceProvider(roomId).future)),
+        );
+        loaded = true;
+      } on TimeoutError {
+        loaded = false;
+      }
     } else {
       ref.invalidate(chatProvider(roomId));
+      try {
+        // this provider has an internal timeout so we don't retry
+        // and have to catch the error on failure
+        final convo = await ref.refresh(chatProvider(roomId).future);
+        loaded = convo != null;
+      } catch (e, s) {
+        _log.severe('Failed to load chat provider', e, s);
+        loaded = false;
+      }
     }
-    EasyLoading.dismiss();
-    return roomId;
+    if (loaded) {
+      EasyLoading.dismiss();
+      return roomId;
+    } else {
+      EasyLoading.showToast(lang.joiningRoomTakesTime);
+      return null;
+    }
   } catch (e, s) {
     if (throwOnError) {
       EasyLoading.dismiss();

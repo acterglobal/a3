@@ -603,6 +603,8 @@
   "@joined": {},
   "joiningFailed": "Joining failed: {error}",
   "@joiningFailed": {},
+  "joiningRoomTakesTime": "Joining has been issued, but takes longer than expected. It will take a bit to load.",
+  "@joiningRoomTakesTime": {},
   "joinActer": "Join Acter",
   "@joinActer": {},
   "joinRuleNotSupportedYet": "Join Rule {role} not supported yet. Sorry",
