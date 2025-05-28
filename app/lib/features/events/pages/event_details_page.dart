@@ -631,10 +631,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         return EventLocationListWidget(
           locations: [],
           onRemove: (location) {
-            // TODO: Implement delete location
+
           },
           onAdd: () {
-            // TODO: Implement add location
+
           },
         );
       },

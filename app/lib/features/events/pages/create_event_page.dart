@@ -56,7 +56,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
 
-  List<EventLocationDraft> _locations = [];
+  final List<EventLocationDraft> _locations = [];
 
   void _setFromTemplate(CalendarEvent event) {
     // title
