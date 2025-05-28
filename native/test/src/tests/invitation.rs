@@ -34,7 +34,7 @@ async fn chat_invitation_shows_up() -> Result<()> {
 
     convo.invite_user_by_id(&kyra.user_id()?).await?;
 
-    let invited = Retry::spawn(retry_strategy.clone(), || async {
+    let invited = Retry::spawn(retry_strategy, || async {
         let invited = kyra.invitations().room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))
@@ -77,7 +77,7 @@ async fn space_invitation_shows_up() -> Result<()> {
 
     invite_user(&sisko, &room_id, &kyra.user_id()?).await?;
 
-    let invited = Retry::spawn(retry_strategy.clone(), || async {
+    let invited = Retry::spawn(retry_strategy, || async {
         let invited = kyra.invitations().room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))
@@ -149,7 +149,7 @@ async fn space_invitation_disappears_when_joined() -> Result<()> {
     room.join().await?;
     let manager = invites.clone();
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         let invited = manager.room_invitations().await?;
         if !invited.is_empty() {
             Err(anyhow::anyhow!("still pending invitations found"))
@@ -223,7 +223,7 @@ async fn invitations_update_count_when_joined() -> Result<()> {
     room.join().await?;
     let manager = invites.clone();
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         let invited = manager.room_invitations().await?;
         if invited.len() != 2 {
             Err(anyhow::anyhow!("not yet updated"))
@@ -323,7 +323,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
         .await?;
 
     // ensure we received the message
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         let Some(event) = timeline.latest_event().await else {
             bail!("no event");
         };
@@ -409,7 +409,7 @@ async fn invitations_update_count_when_rejected() -> Result<()> {
     room.reject().await?;
     let manager = invites.clone();
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         let invited = manager.room_invitations().await?;
         if invited.len() != 2 {
             Err(anyhow::anyhow!("not yet updated"))

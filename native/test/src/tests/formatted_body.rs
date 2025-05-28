@@ -57,7 +57,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // wait for sync to catch up
     let room_tl = kyra_convo.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let timeline = room_tl.clone();
         async move {
             for v in timeline.items().await {

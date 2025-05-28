@@ -37,18 +37,23 @@ impl Display {
 }
 
 impl DisplayBuilder {
-    pub fn color(&mut self, value: u32) {
+    pub fn color(&mut self, value: u32) -> &mut Self {
         self.color_typed(value);
+        self
     }
 
-    pub fn unset_color(&mut self) {
+    pub fn unset_color(&mut self) -> &mut Self {
         self.color_typed(None);
+        self
     }
 
-    pub fn icon(&mut self, typ: String, value: String) {
+    pub fn icon(&mut self, typ: String, value: String) -> &mut Self {
         self.icon_typed(Icon::parse(typ, value));
+        self
     }
-    pub fn unset_icon(&mut self) {
+
+    pub fn unset_icon(&mut self) -> &mut Self {
         self.icon_typed(None);
+        self
     }
 }

@@ -41,7 +41,7 @@ async fn task_invitation() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = first.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -79,7 +79,7 @@ async fn task_invitation() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = second_user.clone();
-    let invites = Retry::spawn(retry_strategy.clone(), move || {
+    let invites = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.task_lists().await?;
@@ -249,7 +249,7 @@ async fn accept_and_decline_task_invitation() -> Result<()> {
 
     {
         let fetcher_task = task.clone();
-        let invites = Retry::spawn(retry_strategy.clone(), move || {
+        let invites = Retry::spawn(retry_strategy, move || {
             let task = fetcher_task.clone();
             async move {
                 let invites = task.invitations().await?;
@@ -361,7 +361,7 @@ async fn can_invite_after_unassign_task() -> Result<()> {
 
     {
         let fetcher_manager = manager.clone();
-        let invites = Retry::spawn(retry_strategy.clone(), move || {
+        let invites = Retry::spawn(retry_strategy, move || {
             let manager = fetcher_manager.clone();
             async move {
                 let invites = manager.reload().await?;

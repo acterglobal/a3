@@ -163,7 +163,7 @@ async fn joining_room_triggers_room_update() -> Result<()> {
 
     invite_user(&sisko, &room_id, &kyra.user_id()?).await?;
 
-    let invited = Retry::spawn(retry_strategy.clone(), || async {
+    let invited = Retry::spawn(retry_strategy, || async {
         let invited = kyra.invitations().room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))

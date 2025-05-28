@@ -84,7 +84,7 @@ pub async fn random_users_with_random_space(
     let mut users = vec![];
     for _x in 0..user_count {
         let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
-        settings.add_invitee(new_user.user_id()?.to_string())?;
+        settings.add_invitee(new_user.user_id()?.to_string());
         users.push(new_user)
     }
 
@@ -336,7 +336,7 @@ pub(crate) async fn invite_user(
 ) -> Result<Room> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
-    let room = Retry::spawn(retry_strategy.clone(), || async {
+    let room = Retry::spawn(retry_strategy, || async {
         client.room(room_id.as_str().into()).await
     })
     .await?;

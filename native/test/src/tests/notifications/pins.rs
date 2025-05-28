@@ -58,9 +58,12 @@ async fn pins_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.pin_draft()?;
-    draft.title("Acter Website".to_owned());
-    let event_id = draft.send().await?;
+    let title = "Acter Website";
+    let event_id = main_space
+        .pin_draft()?
+        .title(title.to_owned())
+        .send()
+        .await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -71,7 +74,7 @@ async fn pins_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "pin");
-    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), event_id);
 
@@ -89,7 +92,7 @@ async fn pin_title_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.pins().await?;
@@ -108,9 +111,12 @@ async fn pin_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Pin".to_owned());
-    let notification_ev = update.send().await?;
+    let title = "Renamed Pin";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -125,7 +131,7 @@ async fn pin_title_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(notification_item.title(), "Renamed Pin"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
     assert_eq!(parent.type_str(), "pin");
@@ -147,7 +153,7 @@ async fn pin_desc_update() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
+    let obj_entry = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.pins().await?;
@@ -166,9 +172,12 @@ async fn pin_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.content_text("Added description".to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Added content";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -182,7 +191,7 @@ async fn pin_desc_update() -> Result<()> {
     let obj_id = obj_entry.event_id_str();
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added description"); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
     assert_eq!(parent.type_str(), "pin");
@@ -205,7 +214,7 @@ async fn pin_redaction() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = first.clone();
-    let pin = Retry::spawn(retry_strategy.clone(), move || {
+    let pin = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let entries = client.pins().await?;

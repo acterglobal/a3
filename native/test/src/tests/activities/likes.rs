@@ -63,7 +63,7 @@ async fn like_activity_on_news() -> Result<()> {
     let reactions = news_entry.reactions().await?;
     reactions.send_like().await?;
 
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let first = first.clone();
         let space_id = space_id.clone();
         async move { get_latest_activity(&first, space_id.to_string(), "reaction").await }
@@ -107,7 +107,7 @@ async fn like_activity_on_story() -> Result<()> {
     let reactions = story.reactions().await?;
     reactions.send_like().await?;
 
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let first = first.clone();
         let space_id = space_id.clone();
         async move { get_latest_activity(&first, space_id.to_string(), "reaction").await }

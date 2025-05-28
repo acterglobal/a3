@@ -53,7 +53,7 @@ async fn upgrade_flow() -> Result<()> {
     space.set_acter_space_states().await?;
 
     let fetcher_client = user.clone();
-    let space = Retry::spawn(retry_strategy.clone(), move || {
+    let space = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             let spaces = client.spaces().await?;

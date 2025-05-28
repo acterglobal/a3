@@ -76,7 +76,7 @@ async fn onboarding_is_created() -> Result<()> {
     .await?;
 
     let news_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = news_client.clone();
         async move {
             if client.latest_news_entries(10).await?.len() != 1 {

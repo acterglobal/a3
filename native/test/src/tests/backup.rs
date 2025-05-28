@@ -116,7 +116,7 @@ async fn can_recover_and_read_message() -> Result<()> {
     // and try again to read the message.
 
     let convo_loader = convo.clone();
-    let msg = Retry::spawn(retry_strategy.clone(), move || {
+    let msg = Retry::spawn(retry_strategy, move || {
         let convo = convo_loader.clone();
         async move {
             let Some(msg) = convo.latest_message() else {

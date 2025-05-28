@@ -85,7 +85,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
 
     let fetcher_client = first.clone();
     let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let activity_id = activity_id_str.clone();
         async move { client.activity(activity_id).await }
@@ -163,7 +163,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
 
     let fetcher_client = first.clone();
     let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let activity_id = activity_id_str.clone();
         async move { client.activity(activity_id).await }
@@ -242,7 +242,7 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
 
     let fetcher_client = first.clone();
     let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let activity_id = activity_id_str.clone();
         async move { client.activity(activity_id).await }

@@ -117,7 +117,7 @@ async fn bookmarks_e2e() -> Result<()> {
         .remove("pins".to_owned(), "AsdfG".to_owned())
         .await?;
     let fetch_account = account.clone();
-    let bookmarks = Retry::spawn(retry_strategy.clone(), move || {
+    let bookmarks = Retry::spawn(retry_strategy, move || {
         let account = fetch_account.clone();
         async move {
             let bookmarks = account.bookmarks().await?;
