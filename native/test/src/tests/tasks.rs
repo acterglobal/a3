@@ -164,7 +164,7 @@ async fn task_smoketests() -> Result<()> {
 
     assert_eq!(task_list.name(), new_name);
     assert_eq!(
-        task_list.description().map(|desc| desc.body()).as_ref(),
+        task_list.description().map(|desc| desc.body()).as_deref(),
         Some(new_body)
     );
 

@@ -680,7 +680,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     let join_rule = "invite";
     let rule_builder = new_join_rule_builder().join_rule(join_rule.to_owned());
 
-    space.set_join_rule(Box::new(rule_builder)).await?;
+    space.set_join_rule(Box::new(*rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
@@ -704,7 +704,7 @@ async fn change_subspace_join_rule() -> Result<()> {
         .join_rule(join_rule.to_owned())
         .add_room(space_parent.room_id().to_string());
 
-    space.set_join_rule(Box::new(rule_builder)).await?;
+    space.set_join_rule(Box::new(*rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 

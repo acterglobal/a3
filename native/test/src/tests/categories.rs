@@ -42,7 +42,7 @@ async fn categories_e2e() -> Result<()> {
     let space_cat_updater = space_cats.update_builder().add(Box::new(new_cat.clone()));
 
     space
-        .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
+        .set_categories("spaces".to_owned(), Box::new(*space_cat_updater))
         .await?;
 
     let fetching_space = space.clone();
@@ -91,7 +91,7 @@ async fn categories_e2e() -> Result<()> {
         .add(Box::new(new_cat.clone()));
 
     space
-        .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
+        .set_categories("spaces".to_owned(), Box::new(*space_cat_updater))
         .await?;
 
     let fetching_space = space.clone();
