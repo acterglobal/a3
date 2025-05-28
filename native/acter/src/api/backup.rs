@@ -60,12 +60,9 @@ impl BackupManager {
         let inner = self.inner.clone();
         let store = self.store.clone();
         RUNTIME
-            .spawn(async move {
-                Ok(enable_inner(inner, store).await?)
-            })
+            .spawn(async move { enable_inner(inner, store).await })
             .await?
     }
-
 
     pub async fn reset_key(&self) -> Result<String> {
         let inner = self.inner.clone();
@@ -81,7 +78,6 @@ impl BackupManager {
             .await?
     }
 
-
     pub async fn reset_identity(&self, password: String) -> Result<String> {
         let inner = self.inner.clone();
         let store = self.store.clone();
@@ -92,18 +88,22 @@ impl BackupManager {
                     match handle.auth_type() {
                         CrossSigningResetAuthType::Uiaa(u) => {
                             let user_id = store.user_id().to_string();
-                            let mut password = uiaa::Password::new(uiaa::UserIdentifier::UserIdOrLocalpart(user_id), password);
+                            let mut password = uiaa::Password::new(
+                                uiaa::UserIdentifier::UserIdOrLocalpart(user_id),
+                                password,
+                            );
                             password.session = u.session.clone();
-                
-                            handle.reset(Some(uiaa::AuthData::Password(password))).await?;
+
+                            handle
+                                .reset(Some(uiaa::AuthData::Password(password)))
+                                .await?;
                         }
                         CrossSigningResetAuthType::OAuth(o) => {
                             return Err(anyhow::anyhow!("OAuth reset not yet supported"));
                         }
                     }
-
                 }
-                Ok(enable_inner(inner, store).await?)
+                enable_inner(inner, store).await
             })
             .await?
     }

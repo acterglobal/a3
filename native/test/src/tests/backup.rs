@@ -188,7 +188,6 @@ async fn key_is_kept_and_reset() -> Result<()> {
     Ok(())
 }
 
-
 #[tokio::test]
 async fn identiy_reset_and_fresh_key() -> Result<()> {
     let _ = env_logger::try_init();
@@ -219,8 +218,13 @@ async fn identiy_reset_and_fresh_key() -> Result<()> {
     );
     assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
 
-    let new_pass = backup_manager.reset_identity(default_user_password(user.user_id()?.localpart())).await?;
-    assert_eq!(backup_manager.stored_enc_key().await?.text(), Some(new_pass));
+    let new_pass = backup_manager
+        .reset_identity(default_user_password(user.user_id()?.localpart()))
+        .await?;
+    assert_eq!(
+        backup_manager.stored_enc_key().await?.text(),
+        Some(new_pass)
+    );
     assert_eq!(backup_manager.state_str(), "enabled");
     assert_ne!(backup_manager.stored_enc_key_when().await?, 0);
 
