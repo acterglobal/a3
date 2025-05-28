@@ -12,9 +12,9 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('InviteIndividualUsers Widget Tests', () {
-    testWidgets('renders correctly without callNextPage', (WidgetTester tester) async {
+    testWidgets('renders correctly with isFullPageMode true', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
-        child: const InviteIndividualUsers(roomId: 'test_room'),
+        child: const InviteIndividualUsers(roomId: 'test_room', isFullPageMode: true),
       );
 
       // Verify app bar is present
@@ -25,12 +25,12 @@ void main() {
       expect(find.byType(ActerSearchWidget), findsOneWidget);
     });
 
-    testWidgets('renders correctly with callNextPage', (WidgetTester tester) async {
+    testWidgets('renders correctly with isFullPageMode false', (WidgetTester tester) async {
       
       await tester.pumpProviderWidget(
         child: InviteIndividualUsers(
           roomId: 'test_room',
-          callNextPage: () => true,
+          isFullPageMode: false,
         ),
       );
 

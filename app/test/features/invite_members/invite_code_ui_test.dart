@@ -5,7 +5,6 @@ import 'package:acter/features/super_invites/providers/super_invites_providers.d
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:acter/features/onboarding/types.dart';
 import '../../helpers/test_util.dart';
 import '../../helpers/mock_tasks_providers.dart';
 import '../super_invites/mock_data/mock_super_invites.dart';
@@ -22,7 +21,7 @@ void main() {
   Future<void> createWidgetUnderTest({
     required WidgetTester tester,
     String roomId = 'test-room',
-    CallNextPage? callNextPage,
+    bool isManageInviteCode = true,
     List<SuperInviteToken>? tokens,
   }) async {
     await tester.pumpProviderWidget(
@@ -33,10 +32,10 @@ void main() {
       ],
       child: InviteCodeUI(
         roomId: roomId,
-        callNextPage: callNextPage,
+        isManageInviteCode: isManageInviteCode,
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   group('InviteCodeUI Widget Tests', () {
@@ -57,7 +56,7 @@ void main() {
       expect(find.byIcon(Icons.copy), findsOneWidget);
     });
 
-    testWidgets('shows manage button when no callNextPage is provided', (tester) async {
+    testWidgets('shows manage button when isManageInviteCode is true', (tester) async {
       await createWidgetUnderTest(
         tester: tester,
         tokens: [mockToken],
@@ -65,6 +64,17 @@ void main() {
 
       expect(find.byType(ActerInlineTextButton), findsOneWidget);
       expect(find.text('Manage'), findsOneWidget);
+    });
+
+    testWidgets('shows manage button when isManageInviteCode is false', (tester) async {
+      await createWidgetUnderTest(
+        tester: tester,
+        tokens: [mockToken],
+        isManageInviteCode: false,
+      );
+
+      expect(find.byType(ActerInlineTextButton), findsNothing);
+      expect(find.text('Manage'), findsNothing);
     });
 
     testWidgets('shows share button with invite code', (tester) async {

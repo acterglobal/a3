@@ -18,7 +18,7 @@ void main() {
     const testUserName = 'Test User';
     const testUserId = 'test_user_id';
 
-    testWidgets('renders correctly without callNextPage', (WidgetTester tester) async {
+    testWidgets('renders correctly with isFullPageMode true', (WidgetTester tester) async {
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider(testRoomId).overrideWith((_) => testRoomName),
@@ -28,6 +28,7 @@ void main() {
         child: const ShareInviteCode(
           roomId: testRoomId,
           inviteCode: testInviteCode,
+          isFullPageMode: true,
         ),
       );
 
@@ -46,7 +47,7 @@ void main() {
       expect(find.text('Done'), findsOneWidget);
     });
 
-    testWidgets('renders correctly with callNextPage', (WidgetTester tester) async {    
+    testWidgets('renders correctly with isFullPageMode false', (WidgetTester tester) async {    
       await tester.pumpProviderWidget(
         overrides: [
           roomDisplayNameProvider(testRoomId).overrideWith((_) => testRoomName),
@@ -56,7 +57,7 @@ void main() {
         child: ShareInviteCode(
           roomId: testRoomId,
           inviteCode: testInviteCode,
-          callNextPage: () => true,
+          isFullPageMode: false,
         ),
       );
 
