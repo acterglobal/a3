@@ -192,11 +192,40 @@ pub struct CalendarEventEventContent {
 }
 
 impl CalendarEventBuilder {
-    pub fn into_event_loc(&mut self, loc_info: &EventLocationInfo) -> Self {
+    pub fn add_physical_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<TextMessageEventContent>,
+        coordinates: Option<String>,
+        uri: Option<String>,
+    ) -> &mut Self {
         let mut locations = self.locations.clone().unwrap_or_default();
-        locations.push(loc_info.inner.clone());
+        locations.push(EventLocation::Physical {
+            name,
+            description,
+            icon: None,
+            coordinates,
+            uri,
+        });
         self.locations = Some(locations);
-        self.clone()
+        self
+    }
+
+    pub fn add_virtual_location(
+        &mut self,
+        uri: String,
+        name: Option<String>,
+        description: Option<TextMessageEventContent>,
+    ) -> &mut Self {
+        let mut locations = self.locations.clone().unwrap_or_default();
+        locations.push(EventLocation::Virtual {
+            uri,
+            name,
+            description,
+            icon: None,
+        });
+        self.locations = Some(locations);
+        self
     }
 }
 

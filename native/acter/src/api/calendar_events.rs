@@ -1,4 +1,5 @@
 use acter_core::{
+    error::Error,
     events::{
         calendar::{
             self as calendar_events, CalendarEventBuilder, EventLocation, EventLocationInfo,
@@ -22,6 +23,7 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
+use regex::Regex;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -382,7 +384,7 @@ impl CalendarEventDraft {
         name: Option<String>,
         description: Option<String>,
         description_html: Option<String>,
-        cooridnates: Option<String>,
+        coordinates: Option<String>,
         uri: Option<String>,
     ) -> Result<()> {
         let mut desc_plain = None;
@@ -394,17 +396,68 @@ impl CalendarEventDraft {
                     description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
             }
         }
-        let inner = EventLocation::Physical {
-            name,
-            description: desc_html.or(desc_plain),
-            // TODO: add icon support
-            icon: None,
-            coordinates: cooridnates,
-            uri: uri.clone(),
-        };
-        let loc_info = EventLocationInfo { inner };
-        // convert object to enum and push it
-        self.inner.into_event_loc(&loc_info);
+        if let Some(coord) = &coordinates {
+            let re = Regex::new(
+                r"^geo:(?P<lat>-?\d+\.\d+),(?P<lon>-?\d+\.\d+)(?:,(?P<alt>-?\d+\.\d+))?(?:;(?P<params>.*))?$",
+            )?;
+            let caps = re.captures(coord).ok_or_else(|| Error::FailedToParse {
+                model_type: "GeoLocation".to_owned(),
+                msg: format!("Invalid geo URI: {}", coord),
+            })?;
+
+            // Parse latitude & longitude
+            let lat: f64 = caps["lat"].parse().map_err(|_| Error::FailedToParse {
+                model_type: "GeoLocation".to_owned(),
+                msg: format!("Invalid latitude format: {}", caps["lat"].to_owned()),
+            })?;
+            let lon: f64 = caps["lon"].parse().map_err(|_| Error::FailedToParse {
+                model_type: "GeoLocation".to_owned(),
+                msg: format!("Invalid longitude format: {}", caps["lon"].to_owned()),
+            })?;
+
+            // Validate bounds
+            if !(-90.0..=90.0).contains(&lat) {
+                let e = Error::FailedToParse {
+                    model_type: "GeoLocation".to_owned(),
+                    msg: format!("Invalid latitude value: {}", lat),
+                }
+                .into();
+                return Err(e);
+            }
+            if !(-180.0..=180.0).contains(&lon) {
+                let e = Error::FailedToParse {
+                    model_type: "GeoLocation".to_owned(),
+                    msg: format!("Invalid longitude value: {}", lon),
+                }
+                .into();
+                return Err(e);
+            }
+
+            // Optional: Validate altitude if present
+            if let Some(alt_str) = caps.name("alt") {
+                let alt: f64 = alt_str.as_str().parse().map_err(|_| Error::FailedToParse {
+                    model_type: "GeoLocation".to_owned(),
+                    msg: format!("Invalid altitude format: {}", alt_str.as_str()),
+                })?;
+                // No strict bounds in RFC 5870, but you can add checks if needed
+            }
+
+            // Optional: Validate parameters (e.g., `u=uncertainty`)
+            if let Some(params) = caps.name("params") {
+                for param in params.as_str().split(';') {
+                    if !param.is_empty() && !param.contains('=') {
+                        let e = Error::FailedToParse {
+                            model_type: "GeoLocation".to_owned(),
+                            msg: format!("Invalid parameter format: {}", param),
+                        }
+                        .into();
+                        return Err(e);
+                    }
+                }
+            }
+        }
+        self.inner
+            .add_physical_location(name, desc_html.or(desc_plain), coordinates, uri);
         Ok(())
     }
 
@@ -425,17 +478,8 @@ impl CalendarEventDraft {
                     description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
             }
         }
-
-        let inner = EventLocation::Virtual {
-            name,
-            description: desc_html.or(desc_plain),
-            // TODO: add icon support
-            icon: None,
-            uri,
-        };
-        let event_location = EventLocationInfo { inner };
-        // convert object to enum and push it
-        self.inner.into_event_loc(&event_location);
+        self.inner
+            .add_virtual_location(uri, name, desc_html.or(desc_plain));
         Ok(())
     }
 
