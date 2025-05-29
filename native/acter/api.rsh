@@ -4204,11 +4204,14 @@ object DeviceRecord {
 /// Manage Encryption Backups
 object BackupManager {
 
-    /// Create a new backup version, encrypted with a new backup recovery key.
+    /// Create a new backup, encrypted with a new backup recovery key.
     fn enable() -> Future<Result<string>>;
 
-    /// Reset the existing backup version, encrypted with a new backup recovery key.
-    fn reset() -> Future<Result<string>>;
+    /// Reset the existing backup, encrypted with a new backup recovery key.
+    fn reset_key() -> Future<Result<string>>;
+
+    /// Reset the existing backup and identity, encrypted with a new key.
+    fn reset_identity(password: string) -> Future<Result<string>>;
 
     /// Disable and delete the currently active backup.
     fn disable() -> Future<Result<bool>>;

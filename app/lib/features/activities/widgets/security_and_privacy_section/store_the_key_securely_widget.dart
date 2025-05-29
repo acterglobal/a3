@@ -11,22 +11,19 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class StoreTheKeySecurelyWidget extends ConsumerWidget {
   const StoreTheKeySecurelyWidget({super.key});
 
+  static bool shouldBeShown(WidgetRef ref) =>
+      ref.watch(storedEncKeyProvider).valueOrNull != null;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final encKey = ref.watch(storedEncKeyProvider).valueOrNull;
-    final timestamp = ref.watch(storedEncKeyTimestampProvider).valueOrNull;
 
-    if (timestamp == null || encKey == null) {
+    if (encKey == null) {
       return SizedBox.shrink();
     }
 
-    final keyText = encKey.text();
-    if (keyText == null || keyText.isEmpty) {
-      return SizedBox.shrink();
-    }
-
-    final urgency = ref.watch(keyStorageUrgencyProvider(timestamp));
+    final urgency = ref.watch(keyStorageUrgencyProvider);
     final urgencyColor = getUrgencyColor(context, urgency);
 
     return ActivitySectionItemWidget(
@@ -44,13 +41,14 @@ class StoreTheKeySecurelyWidget extends ConsumerWidget {
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => ShowRecoveryKeyWidget(
-                recoveryKey: keyText,
-                onKeyDestroyed: () {
-                  ref.invalidate(storedEncKeyProvider);
-                  ref.invalidate(storedEncKeyTimestampProvider);
-                },
-              ),
+              builder:
+                  (context) => ShowRecoveryKeyWidget(
+                    recoveryKey: encKey,
+                    onKeyDestroyed: () {
+                      ref.invalidate(storedEncKeyProvider);
+                      ref.invalidate(storedEncKeyTimestampProvider);
+                    },
+                  ),
             );
           },
           child: Text(lang.showKey),
