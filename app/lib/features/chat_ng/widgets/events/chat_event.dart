@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/features/chat/widgets/messages/encrypted_message.dart';
 import 'package:acter/features/chat/widgets/messages/redacted_message.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
@@ -11,6 +11,7 @@ import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
 import 'package:acter/features/chat_ng/widgets/read_receipts_widget.dart';
+import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:acter_avatar/acter_avatar.dart';
@@ -190,6 +191,8 @@ class ChatEvent extends ConsumerWidget {
             ? MainAxisAlignment.end
             : MainAxisAlignment.start;
 
+    final hasReactions = ref.watch(messageReactionsProvider(item)).isNotEmpty;
+
     return Padding(
       padding:
           isBubbleEvent
@@ -215,6 +218,28 @@ class ChatEvent extends ConsumerWidget {
               eventWidget,
             ],
           ),
+          if (hasReactions)
+            Align(
+              alignment: isMe ? Alignment.bottomRight : Alignment.bottomLeft,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left:
+                      isMe
+                          ? 0
+                          : isDM
+                          ? 20
+                          : 50,
+                ),
+                child: FractionalTranslation(
+                  translation: Offset(0, -0.25),
+                  child: ReactionsList(
+                    roomId: roomId,
+                    messageId: messageId,
+                    item: item,
+                  ),
+                ),
+              ),
+            ),
           if (hasReadReceipts)
             Padding(
               padding: const EdgeInsets.symmetric(

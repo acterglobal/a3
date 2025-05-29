@@ -1,9 +1,10 @@
 import 'package:acter/common/providers/chat_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/config/setup.dart';
 import 'package:acter/features/chat/pages/room_page.dart';
 import 'package:acter/features/chat/pages/room_profile_page.dart';
 import 'package:acter/features/chat/widgets/chat_layout_builder.dart';
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:acter/features/chat_ng/pages/chat_room.dart';
 import 'package:acter/features/chat_ng/layout/chat_ng_layout_builder.dart';
 import 'package:acter/features/invite_members/pages/invite_page.dart';
@@ -44,7 +45,10 @@ Page<dynamic> _chatPageBuilder({
       mainProviderContainer.read(isActiveProvider(LabsFeature.chatNG)) == true;
 
   if (isChatNg) {
-    final centerChild = roomId != null ? ChatRoomNgPage(roomId: roomId) : null;
+    final centerChild =
+        roomId != null
+            ? ChatRoomNgPage(key: chatRoomKey, roomId: roomId)
+            : null;
     return defaultPageBuilder(
       context: context,
       state: state,

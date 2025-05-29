@@ -165,6 +165,7 @@ impl ActerModel for Comment {
             .collect::<Vec<_>>();
         indizes.push(IndexKey::ObjectHistory(self.inner.on.event_id.clone()));
         indizes.push(IndexKey::RoomHistory(self.meta.room_id.clone()));
+        indizes.push(IndexKey::AllHistory);
         indizes
     }
 
@@ -251,6 +252,7 @@ impl ActerModel for CommentUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.comment.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
     fn event_meta(&self) -> &EventMeta {

@@ -4,7 +4,10 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_template;
+use crate::{
+    tests::activities::{all_activities_observer, assert_triggered_with_latest_activity},
+    utils::random_user_with_template,
+};
 
 const TMPL: &str = r#"
 version = "0.1"
@@ -32,6 +35,8 @@ async fn task_creation_activity() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, sync_state, _engine) = random_user_with_template("tasks_activities", TMPL).await?;
     sync_state.await_has_synced_history().await?;
+
+    let mut act_obs = all_activities_observer(&user).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
@@ -72,5 +77,6 @@ async fn task_creation_activity() -> Result<()> {
     let object = activity.object().expect("we have an object");
     assert_eq!(object.type_str(), "task-list");
     assert_eq!(object.title().as_deref(), Some("Onboarding on Acter"));
+    assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
 }

@@ -1779,9 +1779,6 @@ object Convo {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn media_binary(event_id: string, thumb_size: Option<ThumbnailSize>) -> Future<Result<buffer<u8>>>;
 
-    /// get the user status on this room
-    fn room_type() -> string;
-
     /// is this a direct message
     fn is_dm() -> bool;
 
@@ -3906,6 +3903,10 @@ object Client {
     /// get the activities listener for a room
     fn activities_for_room(key: string) -> Result<Activities>;
 
+
+    /// get the activities listener for a all historic events
+    fn all_activities() -> Result<Activities>;
+
     /// get the activities listener for a specific object
     fn activities_for_obj(key: string) -> Result<Activities>;
 
@@ -4203,11 +4204,14 @@ object DeviceRecord {
 /// Manage Encryption Backups
 object BackupManager {
 
-    /// Create a new backup version, encrypted with a new backup recovery key.
+    /// Create a new backup, encrypted with a new backup recovery key.
     fn enable() -> Future<Result<string>>;
 
-    /// Reset the existing backup version, encrypted with a new backup recovery key.
-    fn reset() -> Future<Result<string>>;
+    /// Reset the existing backup, encrypted with a new backup recovery key.
+    fn reset_key() -> Future<Result<string>>;
+
+    /// Reset the existing backup and identity, encrypted with a new key.
+    fn reset_identity(password: string) -> Future<Result<string>>;
 
     /// Disable and delete the currently active backup.
     fn disable() -> Future<Result<bool>>;

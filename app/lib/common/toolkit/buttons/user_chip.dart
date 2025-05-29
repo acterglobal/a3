@@ -60,7 +60,29 @@ class UserChip extends ConsumerWidget {
     final memberInfo = getMemberInfo(ref);
     final isMe = memberId == ref.watch(myUserIdStrProvider);
     final style = this.style ?? Theme.of(context).textTheme.bodySmall;
-    final fontSize = style?.fontSize ?? 14.0;
+    final fontSize = style?.fontSize ?? 12.0;
+    final decoration =
+        isMe
+            ? BoxDecoration(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.3),
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8),
+            )
+            : BoxDecoration(
+              color: Colors.black12,
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+              borderRadius: BorderRadius.circular(8),
+            );
     final trailing = trailingBuilder?.call(
       context,
       isMe: isMe,
@@ -80,13 +102,7 @@ class UserChip extends ConsumerWidget {
       leading: ActerAvatar(options: AvatarOptions(memberInfo, size: fontSize)),
       trailing: trailing,
       textStyle: isMe ? style?.copyWith(fontWeight: FontWeight.bold) : style,
-      decoration:
-          isMe
-              ? BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(fontSize),
-              )
-              : null,
+      decoration: decoration,
       text: isMe ? L10n.of(context).you : memberInfo.displayName ?? memberId,
       onTap:
           () => onTap(

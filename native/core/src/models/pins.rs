@@ -53,6 +53,7 @@ impl ActerModel for Pin {
             IndexKey::Section(SectionIndex::Pins),
             IndexKey::ObjectHistory(self.meta.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 
@@ -115,6 +116,7 @@ impl ActerModel for PinUpdate {
         vec![
             IndexKey::ObjectHistory(self.inner.pin.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

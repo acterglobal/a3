@@ -198,6 +198,7 @@ impl ActerModel for ExplicitInvite {
             ExplicitInvite::index_for(self.inner.to.event_id.clone()),
             IndexKey::ObjectHistory(self.inner.to.event_id.clone()),
             IndexKey::RoomHistory(self.meta.room_id.clone()),
+            IndexKey::AllHistory,
         ]
     }
 

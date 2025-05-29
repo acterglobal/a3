@@ -1,5 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/acter_icon_picker/utils.dart';
 import 'package:acter/features/comments/widgets/time_ago_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';

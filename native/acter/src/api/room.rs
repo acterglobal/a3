@@ -1336,16 +1336,6 @@ impl Room {
             .await?
     }
 
-    pub fn room_type(&self) -> String {
-        match self.room.state() {
-            RoomState::Joined => "joined".to_owned(),
-            RoomState::Left => "left".to_owned(),
-            RoomState::Invited => "invited".to_owned(),
-            RoomState::Knocked => "knocked".to_owned(),
-            RoomState::Banned => "banned".to_owned(),
-        }
-    }
-
     fn is_invited(&self) -> bool {
         matches!(self.room.state(), RoomState::Invited)
     }

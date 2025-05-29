@@ -1,5 +1,5 @@
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/features/chat_ng/actions/toggle_reaction_action.dart';
 import 'package:atlas_icons/atlas_icons.dart';

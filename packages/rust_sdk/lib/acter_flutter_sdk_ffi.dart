@@ -18217,7 +18217,7 @@ class Api {
     return tmp7;
   }
 
-  String? __backupManagerResetFuturePoll(
+  String? __backupManagerResetKeyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -18231,7 +18231,69 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _backupManagerResetFuturePoll(
+    final tmp6 = _backupManagerResetKeyFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      debugAllocation("handle error", tmp10, tmp11);
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 =
+          utf8.decode(tmp10_0.asTypedList(tmp11), allowMalformed: true);
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    if (tmp14 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_ptr = ffi.Pointer.fromAddress(tmp13);
+    List<int> tmp13_buf = [];
+    final tmp13_precast = tmp13_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp14; i++) {
+      int char = tmp13_precast.elementAt(i).value;
+      tmp13_buf.add(char);
+    }
+    final tmp7 = utf8.decode(tmp13_buf, allowMalformed: true);
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  String? __backupManagerResetIdentityFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _backupManagerResetIdentityFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -26629,16 +26691,6 @@ class Api {
         int,
         int,
         int,
-        int,
-      )>();
-  late final _convoRoomTypePtr = _lookup<
-      ffi.NativeFunction<
-          _ConvoRoomTypeReturn Function(
-            ffi.IntPtr,
-          )>>("__Convo_room_type");
-
-  late final _convoRoomType = _convoRoomTypePtr.asFunction<
-      _ConvoRoomTypeReturn Function(
         int,
       )>();
   late final _convoIsDmPtr = _lookup<
@@ -35383,6 +35435,16 @@ class Api {
         int,
         int,
       )>();
+  late final _clientAllActivitiesPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientAllActivitiesReturn Function(
+            ffi.IntPtr,
+          )>>("__Client_all_activities");
+
+  late final _clientAllActivities = _clientAllActivitiesPtr.asFunction<
+      _ClientAllActivitiesReturn Function(
+        int,
+      )>();
   late final _clientActivitiesForObjPtr = _lookup<
       ffi.NativeFunction<
           _ClientActivitiesForObjReturn Function(
@@ -36279,16 +36341,33 @@ class Api {
       int Function(
         int,
       )>();
-  late final _backupManagerResetPtr = _lookup<
+  late final _backupManagerResetKeyPtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
             ffi.IntPtr,
-          )>>("__BackupManager_reset");
+          )>>("__BackupManager_reset_key");
 
-  late final _backupManagerReset = _backupManagerResetPtr.asFunction<
+  late final _backupManagerResetKey = _backupManagerResetKeyPtr.asFunction<
       int Function(
         int,
       )>();
+  late final _backupManagerResetIdentityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.IntPtr Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.UintPtr,
+            ffi.UintPtr,
+          )>>("__BackupManager_reset_identity");
+
+  late final _backupManagerResetIdentity =
+      _backupManagerResetIdentityPtr.asFunction<
+          int Function(
+            int,
+            int,
+            int,
+            int,
+          )>();
   late final _backupManagerDisablePtr = _lookup<
       ffi.NativeFunction<
           ffi.IntPtr Function(
@@ -41581,17 +41660,32 @@ class Api {
             int,
             int,
           )>();
-  late final _backupManagerResetFuturePollPtr = _lookup<
+  late final _backupManagerResetKeyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _BackupManagerResetFuturePollReturn Function(
+          _BackupManagerResetKeyFuturePollReturn Function(
             ffi.IntPtr,
             ffi.IntPtr,
             ffi.Int64,
-          )>>("__BackupManager_reset_future_poll");
+          )>>("__BackupManager_reset_key_future_poll");
 
-  late final _backupManagerResetFuturePoll =
-      _backupManagerResetFuturePollPtr.asFunction<
-          _BackupManagerResetFuturePollReturn Function(
+  late final _backupManagerResetKeyFuturePoll =
+      _backupManagerResetKeyFuturePollPtr.asFunction<
+          _BackupManagerResetKeyFuturePollReturn Function(
+            int,
+            int,
+            int,
+          )>();
+  late final _backupManagerResetIdentityFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _BackupManagerResetIdentityFuturePollReturn Function(
+            ffi.IntPtr,
+            ffi.IntPtr,
+            ffi.Int64,
+          )>>("__BackupManager_reset_identity_future_poll");
+
+  late final _backupManagerResetIdentityFuturePoll =
+      _backupManagerResetIdentityFuturePollPtr.asFunction<
+          _BackupManagerResetIdentityFuturePollReturn Function(
             int,
             int,
             int,
@@ -58244,36 +58338,6 @@ class Convo {
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 = _nativeFuture(tmp11_1, _api.__convoMediaBinaryFuturePoll);
     return tmp10;
-  }
-
-  /// get the user status on this room
-  String roomType() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._convoRoomType(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    if (tmp4 == 0) {
-      print("returning empty string");
-      return "";
-    }
-    final ffi.Pointer<ffi.Uint8> tmp3_ptr = ffi.Pointer.fromAddress(tmp3);
-    List<int> tmp3_buf = [];
-    final tmp3_precast = tmp3_ptr.cast<ffi.Uint8>();
-    for (int i = 0; i < tmp4; i++) {
-      int char = tmp3_precast.elementAt(i).value;
-      tmp3_buf.add(char);
-    }
-    final tmp2 = utf8.decode(tmp3_buf, allowMalformed: true);
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
   }
 
   /// is this a direct message
@@ -75654,6 +75718,37 @@ class Client {
     return tmp6;
   }
 
+  /// get the activities listener for a all historic events
+  Activities allActivities() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientAllActivities(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 =
+          utf8.decode(tmp4_0.asTypedList(tmp5), allowMalformed: true);
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_Activities");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = Activities._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// get the activities listener for a specific object
   Activities activitiesForObj(
     String key,
@@ -77525,7 +77620,7 @@ class BackupManager {
 
   BackupManager._(this._api, this._box);
 
-  /// Create a new backup version, encrypted with a new backup recovery key.
+  /// Create a new backup, encrypted with a new backup recovery key.
   Future<String> enable() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -77540,19 +77635,53 @@ class BackupManager {
     return tmp2;
   }
 
-  /// Reset the existing backup version, encrypted with a new backup recovery key.
-  Future<String> reset() {
+  /// Reset the existing backup, encrypted with a new backup recovery key.
+  Future<String> resetKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._backupManagerReset(
+    final tmp1 = _api._backupManagerResetKey(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_reset_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__BackupManager_reset_key_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerResetFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__backupManagerResetKeyFuturePoll);
     return tmp2;
+  }
+
+  /// Reset the existing backup and identity, encrypted with a new key.
+  Future<String> resetIdentity(
+    String password,
+  ) {
+    final tmp1 = password;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._backupManagerResetIdentity(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__BackupManager_reset_identity_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__backupManagerResetIdentityFuturePoll);
+    return tmp6;
   }
 
   /// Disable and delete the currently active backup.
@@ -80644,15 +80773,6 @@ class _ConvoGetRoomIdStrReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ConvoRoomTypeReturn extends ffi.Struct {
-  @ffi.IntPtr()
-  external int arg0;
-  @ffi.UintPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-}
-
 class _CommentsManagerRoomIdStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -82477,6 +82597,19 @@ class _ClientNewLinkRefDetailsReturn extends ffi.Struct {
 }
 
 class _ClientActivitiesForRoomReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _ClientAllActivitiesReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -87947,7 +88080,26 @@ class _BackupManagerEnableFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _BackupManagerResetFuturePollReturn extends ffi.Struct {
+class _BackupManagerResetKeyFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.IntPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.UintPtr()
+  external int arg4;
+  @ffi.IntPtr()
+  external int arg5;
+  @ffi.UintPtr()
+  external int arg6;
+  @ffi.UintPtr()
+  external int arg7;
+}
+
+class _BackupManagerResetIdentityFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

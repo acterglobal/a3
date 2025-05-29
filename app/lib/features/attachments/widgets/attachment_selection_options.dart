@@ -5,6 +5,7 @@ import 'package:acter/common/models/types.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
+import 'package:acter/features/attachments/models/attachment_model.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_container.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -13,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
+
+enum AttachmentOptions { link, camera, image, video, audio, file }
 
 // Attachments Selection Media Type Widget (Mobile)
 class AttachmentSelectionOptions extends StatelessWidget {
@@ -40,38 +43,44 @@ class AttachmentSelectionOptions extends StatelessWidget {
               _attachmentOptionItem(
                 context: context,
                 title: lang.link,
-                iconData: Atlas.link,
+                iconData: AttachmentIconType.link.icon,
+                iconColor: AttachmentIconType.link.color,
                 onTap: () => onTapLink(context, onSelectLink),
               ),
             if (!isDesktop)
               _attachmentOptionItem(
                 context: context,
                 title: lang.camera,
-                iconData: Atlas.camera,
+                iconData: AttachmentIconType.camera.icon,
+                iconColor: AttachmentIconType.camera.color,
                 onTap: () => onTapCamera(context),
               ),
             _attachmentOptionItem(
               context: context,
               title: lang.image,
-              iconData: Atlas.file_image,
+              iconData: AttachmentIconType.image.icon,
+              iconColor: AttachmentIconType.image.color,
               onTap: () => onTapImage(context),
             ),
             _attachmentOptionItem(
               context: context,
               title: lang.video,
-              iconData: Atlas.file_video,
+              iconData: AttachmentIconType.video.icon,
+              iconColor: AttachmentIconType.video.color,
               onTap: () => onTapVideo(context),
             ),
             _attachmentOptionItem(
               context: context,
               title: lang.audio,
-              iconData: Atlas.audio_headphones,
+              iconData: AttachmentIconType.audio.icon,
+              iconColor: AttachmentIconType.audio.color,
               onTap: () => onTapAudio(context),
             ),
             _attachmentOptionItem(
               context: context,
               title: lang.file,
-              iconData: Atlas.file,
+              iconData: AttachmentIconType.file.icon,
+              iconColor: AttachmentIconType.file.color,
               onTap: () => onTapFile(context),
             ),
           ],
@@ -84,21 +93,28 @@ class AttachmentSelectionOptions extends StatelessWidget {
     required BuildContext context,
     required String title,
     required IconData iconData,
+    required Color iconColor,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
+      child: SizedBox(
         height: 100,
         width: 100,
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white12,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Icon(iconData, color: iconColor, size: 26),
+            ),
+            const SizedBox(height: 10),
+            Text(title, style: Theme.of(context).textTheme.labelMedium),
+          ],
         ),
-        child: Column(children: [Expanded(child: Icon(iconData)), Text(title)]),
       ),
     );
   }

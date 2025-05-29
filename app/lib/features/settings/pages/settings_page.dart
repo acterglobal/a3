@@ -1,6 +1,6 @@
 import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/providers/common_providers.dart';
-import 'package:acter/common/utils/routes.dart';
+import 'package:acter/router/routes.dart';
 import 'package:acter/features/deep_linking/widgets/qr_code_button.dart';
 import 'package:acter/features/settings/widgets/settings_menu.dart';
 import 'package:acter_avatar/acter_avatar.dart';

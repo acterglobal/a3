@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
-import 'package:acter/common/utils/constants.dart';
+import 'package:acter/config/constants.dart';
 import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
@@ -536,7 +536,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
             anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
-        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: true),
+        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: false),
       ),
     );
   }

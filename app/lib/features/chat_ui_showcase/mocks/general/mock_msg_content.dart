@@ -3,12 +3,13 @@ import 'package:mocktail/mocktail.dart';
 
 class MockMsgContent extends Mock implements MsgContent {
   final String? mockBody;
-  final String? mockHtml;
-  MockMsgContent({this.mockBody, this.mockHtml});
+  final String? mockFormattedBody;
+
+  MockMsgContent({this.mockBody, this.mockFormattedBody});
 
   @override
   String body() => mockBody ?? 'body';
 
   @override
-  String? formattedBody() => mockHtml;
+  String? formattedBody() => mockFormattedBody;
 }

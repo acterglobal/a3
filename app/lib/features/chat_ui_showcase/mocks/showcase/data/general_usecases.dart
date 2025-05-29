@@ -29,223 +29,335 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
   unreadNotificationCount: 4,
   unreadMentions: 2,
   unreadMessages: 2,
-  timelineEventItems: [
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-1',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744182966000, // April 9, 2025 10:16:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Hey, how\'s the new feature coming along?',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-2',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183026000, // April 9, 2025 10:17:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Making good progress! Just finished the core functionality.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-3',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183086000, // April 9, 2025 10:18:06
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'That\'s great! Did you get a chance to test the performance impact?',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-4',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183146000, // April 9, 2025 10:19:06
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'Yes, initial tests show about 15% improvement in response times.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-5',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183156000, // April 9, 2025 10:19:16
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'I also found a way to optimize the database queries further.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-6',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183166000, // April 9, 2025 10:19:26
-      mockMsgContent: MockMsgContent(
-        mockBody: 'That should give us another 5-10% boost.',
-        mockHtml:
-            '<p>That should give us another <strong>5-10%</strong> boost.</p>',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-7',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183176000, // April 9, 2025 10:19:36
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@acter1:m-1.acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'David Miller',
-        mockDisplayNameNewVal: 'David M.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-8',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183177000, // April 9, 2025 10:19:37
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@acter1:m-1.acter.global',
-        mockAvatarUrlChange: 'Changed',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-9',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183178000, // April 9, 2025 10:19:38
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@emily:acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'Emily Davis',
-        mockDisplayNameNewVal: 'Emily D.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-10',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183179000, // April 9, 2025 10:19:39
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@emily:acter.global',
-        mockAvatarUrlChange: 'Changed',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-11',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183180000, // April 9, 2025 10:19:40
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@acter1:m-1.acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'David M.',
-        mockDisplayNameNewVal: 'David Miller',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-12',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183206000, // April 9, 2025 10:20:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Awesome! Let\'s schedule a demo for the team tomorrow.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-13',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183216000, // April 9, 2025 10:20:16
-      mockMsgContent: MockMsgContent(
-        mockBody: 'I\'ll send out the calendar invite.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-14',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183266000, // April 9, 2025 10:21:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Sounds good. I\'ll prepare the presentation deck.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-15',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183276000, // April 9, 2025 10:21:16
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'I\'ll include a detailed breakdown of the performance improvements, including:\n\n• The database query optimizations we implemented\n• The caching strategy we\'re using for frequently accessed data\n• The new indexing approach that reduced query times by 40%\n• The load testing results under different scenarios\n• A comparison with the previous implementation\n\nThis should give the team a good understanding of the technical improvements.',
-        mockHtml:
-            '<p>I\'ll include a detailed breakdown of the performance improvements, including:</p><ul><li>The database query optimizations we implemented</li><li>The caching strategy we\'re using for frequently accessed data</li><li>The new indexing approach that reduced query times by 40%</li><li>The load testing results under different scenarios</li><li>A comparison with the previous implementation</li></ul><p>This should give the team a good understanding of the technical improvements.</p>',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-16',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183286000, // April 9, 2025 10:21:26
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@acter1:m-1.acter.global',
-        mockAvatarUrlChange: 'Changed',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-17',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183326000, // April 9, 2025 10:22:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Perfect! Let me know if you need any help with the demo.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-18',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183336000, // April 9, 2025 10:22:16
-      mockMsgContent: MockMsgContent(
-        mockBody: 'I can review the slides before the meeting.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-19',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183346000, // April 9, 2025 10:22:26
-      mockMsgContent: MockMsgContent(
-        mockBody:
-            'Also, I was thinking about the next steps after this feature launch. Here\'s what I have in mind:\n\n1. Monitor the performance metrics for at least a week to ensure stability\n2. Gather user feedback through the new analytics dashboard\n3. Plan a follow-up sprint to address any issues that come up\n4. Consider expanding the feature to other parts of the application\n5. Document the implementation details for the team wiki\n\nWhat do you think about this approach?',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-20',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183356000, // April 9, 2025 10:22:36
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@emily:acter.global',
-        mockDisplayNameChange: 'Changed',
-        mockDisplayNameOldVal: 'Emily D.',
-        mockDisplayNameNewVal: 'Emily Davis',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-21',
-      mockSenderId: '@emily:acter.global',
-      mockOriginServerTs: 1744183357000, // April 9, 2025 10:22:37
-      mockEventType: 'ProfileChange',
-      mockProfileContent: MockProfileContent(
-        mockUserId: '@emily:acter.global',
-        mockAvatarUrlChange: 'Changed',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-22',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183386000, // April 9, 2025 10:23:06
-      mockMsgContent: MockMsgContent(
-        mockBody: 'Will do! Thanks for checking in.',
-      ),
-    ),
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-23',
-      mockSenderId: '@acter1:m-1.acter.global',
-      mockOriginServerTs: 1744183396000, // April 9, 2025 10:23:16
-      mockMsgContent: MockMsgContent(mockHtml: complexHtmlMsg),
-    ),
-  ],
+  timelineEventItemsBuilder:
+      (userId) => [
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-1',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744182966000, // April 9, 2025 10:16:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Hey, how\'s the new feature coming along?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183026000, // April 9, 2025 10:17:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Making good progress! Just finished the core functionality.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-3',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183086000, // April 9, 2025 10:18:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'That\'s great! Did you get a chance to test the performance impact?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-4',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183146000, // April 9, 2025 10:19:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Yes, initial tests show about 15% improvement in response times.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-5',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183156000, // April 9, 2025 10:19:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'I also found a way to optimize the database queries further.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-6',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183166000, // April 9, 2025 10:19:26
+          mockMsgContent: MockMsgContent(
+            mockBody: 'That should give us another 5-10% boost.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-7',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183176000, // April 9, 2025 10:19:36
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'David Miller',
+            mockDisplayNameNewVal: 'David M.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-8',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183177000, // April 9, 2025 10:19:37
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockAvatarUrlChange: 'Changed',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-9',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183178000, // April 9, 2025 10:19:38
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'Emily Davis',
+            mockDisplayNameNewVal: 'Emily D.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-10',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183179000, // April 9, 2025 10:19:39
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockAvatarUrlChange: 'Changed',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-11',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183180000, // April 9, 2025 10:19:40
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'David M.',
+            mockDisplayNameNewVal: 'David Miller',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-12',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183206000, // April 9, 2025 10:20:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Awesome! Let\'s schedule a demo for the team tomorrow.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-13',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183216000, // April 9, 2025 10:20:16
+          mockMsgContent: MockMsgContent(
+            mockBody: 'I\'ll send out the calendar invite.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-14',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183266000, // April 9, 2025 10:21:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Sounds good. I\'ll prepare the presentation deck.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-15',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183276000, // April 9, 2025 10:21:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'I\'ll include a detailed breakdown of the performance improvements, including:\n\n• The database query optimizations we implemented\n• The caching strategy we\'re using for frequently accessed data\n• The new indexing approach that reduced query times by 40%\n• The load testing results under different scenarios\n• A comparison with the previous implementation\n\nThis should give the team a good understanding of the technical improvements.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-16',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183286000, // April 9, 2025 10:21:26
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockAvatarUrlChange: 'Changed',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-17',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183326000, // April 9, 2025 10:22:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Perfect! Let me know if you need any help with the demo.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-18',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183336000, // April 9, 2025 10:22:16
+          mockMsgContent: MockMsgContent(
+            mockBody: 'I can review the slides before the meeting.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-19',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183346000, // April 9, 2025 10:22:26
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Also, I was thinking about the next steps after this feature launch. Here\'s what I have in mind:\n\n1. Monitor the performance metrics for at least a week to ensure stability\n2. Gather user feedback through the new analytics dashboard\n3. Plan a follow-up sprint to address any issues that come up\n4. Consider expanding the feature to other parts of the application\n5. Document the implementation details for the team wiki\n\nWhat do you think about this approach?',
+          ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [
+              MockFfiString('👍'),
+              MockFfiString('❤️'),
+              MockFfiString('🎉'),
+              MockFfiString('👏'),
+              MockFfiString('🔥'),
+              MockFfiString('🚀'),
+              MockFfiString('💯'),
+            ],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098070000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098080000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '❤️': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098110000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🎉': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098120000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '👏': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098130000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098140000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🔥': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098170000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🚀': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098190000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098200000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '💯': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098210000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-20',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183356000, // April 9, 2025 10:22:36
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockDisplayNameChange: 'Changed',
+            mockDisplayNameOldVal: 'Emily D.',
+            mockDisplayNameNewVal: 'Emily Davis',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-21',
+          mockSenderId: '@emily:acter.global',
+          mockOriginServerTs: 1744183357000, // April 9, 2025 10:22:37
+          mockEventType: 'ProfileChange',
+          mockProfileContent: MockProfileContent(
+            mockUserId: userId,
+            mockAvatarUrlChange: 'Changed',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-22',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744183386000, // April 9, 2025 10:23:06
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Will do! Thanks for checking in.',
+          ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [MockFfiString('👍'), MockFfiString('❤️')],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098070000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098080000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '❤️': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098110000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
+        ),
+      ],
 );
 
 final productTeamMutedWithSingleTypingUserRoom2RoomId = 'mock-room-2';
@@ -736,6 +848,66 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
                 ),
               ),
             ),
+          ),
+        ),
+
+        // --- URL messages example ---
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097206000, // April 8, 2025 15:46:46
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Check out the deployment documentation at https://docs.example.com/deployment-guide',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                'I found a great resource about CI/CD best practices: https://medium.com/tech-blog/ci-cd-best-practices-2025',
+          ),
+        ),
+
+        // --- User mention messages example ---
+        MockTimelineEventItem(
+          mockEventId: 'mock-mention-1',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097226000, // April 8, 2025 15:47:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                '[@Michael](https://matrix.to/#/@michael:acter.global) can you review the deployment checklist?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-mention-2',
+          mockSenderId: '@sarah:acter.global',
+          mockOriginServerTs: 1744097226000, // April 8, 2025 15:47:06
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                '[@{$userId}](https://matrix.to/#/$userId) can you review the deployment checklist?',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-mention-3',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                '[@Sarah](https://matrix.to/#/@sarah:acter.global) [@Lisa](https://matrix.to/#/@lisa:acter.global) I need your input on the database schema changes',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-code-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097246000, // April 8, 2025 15:47:26
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                '<pre><code>\nclass MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}\n</code></pre>',
+            mockBody:
+                'class MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}',
           ),
         ),
       ],

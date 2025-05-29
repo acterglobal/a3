@@ -40,9 +40,9 @@ void main() {
       tester,
     ) async {
       // Arrange
-      final convo1 = MockConvo('roomId-1');
-      final convo2 = MockConvo('roomId-2');
-      final convo3 = MockConvo('roomId-3');
+      final convo1 = MockConvo(roomId: 'roomId-1');
+      final convo2 = MockConvo(roomId: 'roomId-2');
+      final convo3 = MockConvo(roomId: 'roomId-3');
 
       final provider = Provider<List<Convo>>((ref) => [convo1, convo2, convo3]);
 

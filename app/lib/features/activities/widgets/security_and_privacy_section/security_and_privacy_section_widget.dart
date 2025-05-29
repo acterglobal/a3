@@ -1,3 +1,4 @@
+import 'package:acter/features/activities/widgets/security_and_privacy_section/store_the_key_securely_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/uncomfirmed_email_widget.dart';
 import 'package:acter/features/backups/providers/backup_state_providers.dart';
 import 'package:acter/features/backups/types.dart';
@@ -16,6 +17,10 @@ Widget? buildSecurityAndPrivacySectionWidget(
   final stateEnabled = ref.watch(backupStateProvider) == RecoveryState.enabled;
   if (!stateEnabled) {
     securityWidgetList.add(BackupStateWidget());
+  }
+
+  if (StoreTheKeySecurelyWidget.shouldBeShown(ref)) {
+    securityWidgetList.add(const StoreTheKeySecurelyWidget());
   }
 
   //Add Unconfirmed Emails Widget if there are unconfirmed emails

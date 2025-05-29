@@ -9,17 +9,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ShareInviteCode extends ConsumerWidget {
   final String inviteCode;
   final String roomId;
+  final bool isFullPageMode;
 
   const ShareInviteCode({
     super.key,
     required this.inviteCode,
     required this.roomId,
+    this.isFullPageMode = true,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: isFullPageMode ? _buildAppBar(context) : null,
       body: _buildBody(context, ref),
     );
   }
@@ -111,9 +113,11 @@ class ShareInviteCode extends ConsumerWidget {
 
   Widget _buildDoneButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: ActerPrimaryActionButton(
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          Navigator.pop(context);
+        },
         child: Text(L10n.of(context).done),
       ),
     );
