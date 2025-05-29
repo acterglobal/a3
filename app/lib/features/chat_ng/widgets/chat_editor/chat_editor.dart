@@ -286,7 +286,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         disableAutoScroll: false,
         editorState: textEditorState,
         // scrollController: scrollController,
-        maxHeight: MediaQuery.sizeOf(context).height * 0.5,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.2,
         minHeight: 24,
         onChanged: (body, html) {
           final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;
