@@ -3,11 +3,17 @@ import 'package:acter/common/toolkit/html/render_html_ng.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 
 import '../../helpers/font_loader.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
+  setUp(() async {
+    await loadTestFonts();
+
+    useGoldenFileComparatorWithThreshold(0.01); // 1%
+  });
   group('HTML user Rendering Tests', () {
     testWidgets('renders matrix-to format', (tester) async {
       final html =
@@ -84,7 +90,6 @@ void main() {
 
   group('HTML object Rendering Tests', () {
     testWidgets('renders pin', (tester) async {
-      await loadTestFonts();
       final html =
           'abcd <a href="acter:o/room:acter.global/pin/pinId">\$pinId</a> end';
 
@@ -101,7 +106,6 @@ void main() {
       );
     });
     testWidgets('renders calendar event', (tester) async {
-      await loadTestFonts();
       final html =
           'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId">\$spaceObjectId</a> end';
 
@@ -118,7 +122,6 @@ void main() {
       );
     });
     testWidgets('renders when title only', (tester) async {
-      await loadTestFonts();
       final html =
           'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct">Code of Conduct</a> end';
 
@@ -138,7 +141,6 @@ void main() {
 
   group('HTML many Rendering Tests', () {
     testWidgets('renders many', (tester) async {
-      await loadTestFonts();
       final html = '''
       dfg
       <a href="https://matrix.to/#/@peter:example.com">@peter:example.com</a>, <a href="matrix:u/test:example.com">@test:example.com</a>
@@ -162,7 +164,6 @@ void main() {
     });
 
     testWidgets('accepts renamed objects', (tester) async {
-      await loadTestFonts();
       final html = '''
       dfg
       <a href="matrix:u/peter:example.com">@mr peter</a>, <a href="matrix:u/test:example.com">other username</a>

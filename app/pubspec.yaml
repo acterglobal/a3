@@ -198,6 +198,7 @@ dev_dependencies:
   enven: ^1.0.1
   mockingjay: ^1.0.0
   test_screenshot: ^0.0.7
+  hrk_flutter_test_batteries: ^1.2.0
 
 dependency_overrides:
   csslib: ">=0.17.1 <2.0.0"
