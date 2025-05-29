@@ -1,4 +1,5 @@
 use anyhow::{bail, Result};
+use chrono::{Duration, Utc};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -6,7 +7,7 @@ use tokio_retry::{
 
 use crate::utils::random_user_with_template;
 
-const TMPL: &str = r#"
+const THREE_EVENTS_TMPL: &str = r#"
 version = "0.1"
 name = "Smoketest Template"
 
@@ -42,7 +43,8 @@ locations = [
 #[tokio::test]
 async fn calendar_smoketest() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("calendar_smoke", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("calendar_smoke", THREE_EVENTS_TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -82,7 +84,8 @@ async fn calendar_smoketest() -> Result<()> {
 #[tokio::test]
 async fn edit_calendar_event() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("calendar_smoke", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("calendar_smoke", THREE_EVENTS_TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -106,9 +109,12 @@ async fn edit_calendar_event() -> Result<()> {
 
     let subscriber = main_event.subscribe();
 
-    let mut builder = main_event.update_builder()?;
-    builder.title("Onboarding on Acter1".to_owned());
-    builder.send().await?;
+    let title = "Onboarding on Acter1";
+    main_event
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let cal_event = main_event.clone();
 
@@ -120,11 +126,11 @@ async fn edit_calendar_event() -> Result<()> {
     })
     .await?;
 
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let cal_event = cal_event.clone();
         async move {
             let edited_event = cal_event.refresh().await?;
-            if edited_event.title() != "Onboarding on Acter1" {
+            if edited_event.title() != title {
                 bail!("Update not yet received");
             }
             Ok(())
@@ -138,13 +144,14 @@ async fn edit_calendar_event() -> Result<()> {
 #[tokio::test]
 async fn calendar_event_external_link() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("calendar_links", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("calendar_links", THREE_EVENTS_TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
             if client.calendar_events().await?.len() != 3 {
@@ -176,5 +183,100 @@ async fn calendar_event_external_link() -> Result<()> {
 
     let ext_url = url::Url::parse(&external_link)?;
     assert_eq!(ext_url.fragment().expect("must have fragment"), &path);
+    Ok(())
+}
+
+const TMPL: &str = r#"
+version = "0.1"
+name = "Smoketest Template"
+
+[inputs]
+main = { type = "user", is-default = true, required = true, description = "The starting user" }
+
+[objects.main_space]
+type = "space"
+name = "{{ main.display_name }}’s main test space"
+"#;
+
+#[tokio::test]
+async fn calendar_event_create() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("calendar_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let spaces = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("not all spaces found");
+        }
+        Ok(spaces)
+    })
+    .await?;
+    assert_eq!(spaces.len(), 1);
+    let main_space = spaces.first().expect("main space should be available");
+
+    let mut draft = main_space.calendar_event_draft()?;
+    let title = "First meeting";
+    draft.title(title.to_owned());
+    let now = Utc::now();
+    let utc_start = now + Duration::days(1);
+    let utc_end = now + Duration::days(2);
+    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+
+    let name = "Test Location";
+    let description = "Philadelphia Office";
+    let description_html = "**Here is our office**";
+    let coordinates = "geo:51.5074,-0.1278";
+    let uri = "https://example.com/location";
+    draft.physical_location(
+        Some(name.to_owned()),
+        Some(description.to_owned()),
+        Some(description_html.to_owned()),
+        Some(coordinates.to_owned()),
+        Some(uri.to_owned()),
+    )?;
+    draft.virtual_location(
+        Some(name.to_owned()),
+        Some(description.to_owned()),
+        Some(description_html.to_owned()),
+        uri.to_owned(),
+    )?;
+
+    let event_id = draft.send().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    let cal_events = Retry::spawn(retry_strategy, || async {
+        let cal_events = main_space.calendar_events().await?;
+        if cal_events.len() != 1 {
+            bail!("not all calendar_events found");
+        }
+        Ok(cal_events)
+    })
+    .await?;
+    assert_eq!(cal_events.len(), 1);
+    let main_event = cal_events.first().expect("main event should be available");
+
+    assert_eq!(main_event.event_id(), event_id);
+    assert_eq!(main_event.title(), title);
+    let locations = main_event.locations();
+    assert_eq!(locations.len(), 2);
+
+    assert_eq!(locations[0].location_type(), "Physical");
+    assert_eq!(locations[0].name().as_deref(), Some(name));
+    assert_eq!(locations[0].description().map(|d| d.body()).as_deref(), Some(description));
+    assert_eq!(locations[0].description().and_then(|d| d.formatted()).as_deref(), Some(description_html));
+    assert_eq!(locations[0].coordinates().as_deref(), Some(coordinates));
+    assert_eq!(locations[0].uri().as_deref(), Some(uri));
+
+    assert_eq!(locations[1].location_type(), "Virtual");
+    assert_eq!(locations[1].name().as_deref(), Some(name));
+    assert_eq!(locations[1].description().map(|d| d.body()).as_deref(), Some(description));
+    assert_eq!(locations[1].description().and_then(|d| d.formatted()).as_deref(), Some(description_html));
+    assert_eq!(locations[1].uri().as_deref(), Some(uri));
+
     Ok(())
 }
