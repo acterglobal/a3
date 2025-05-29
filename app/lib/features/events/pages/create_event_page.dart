@@ -57,12 +57,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
 
-  @override
-  void dispose() {
-    // Clear locations when page is disposed
-    ref.read(eventLocationsProvider.notifier).clearLocations();
-    super.dispose();
-  }
+  bool _isJitsiEnabled = false;
 
   void _setFromTemplate(CalendarEvent event) {
     // title
@@ -196,46 +191,90 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   Widget _buildEventLocationWidget() {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: Icon(
-          Icons.location_on_outlined,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        title: Text(L10n.of(context).eventLocations),
-        trailing: IconButton(
-          icon: const Icon(Icons.add_circle_outline),
-          tooltip: L10n.of(context).addLocation,
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              isDismissible: true,
-              enableDrag: true,
-              showDragHandle: true,
-              useSafeArea: true,
-              builder: (context) => EventLocationListWidget(
-                onAdd: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    isDismissible: true,
-                    enableDrag: true,
-                    showDragHandle: true,
-                    useSafeArea: true,
-                    builder: (context) => AddEventLocationWidget(
-                      onAdd: (location) {
-                        ref.read(eventLocationsProvider.notifier).addLocation(location);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  );
-                },
-              ),
-            );
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(
+              Icons.map_outlined,
+              color: Theme.of(context).colorScheme.primary,
+              size: 30,
+            ),
+            title: Text(L10n.of(context).eventLocations),
+            trailing: IconButton(
+              icon: const Icon(Icons.add_circle_outline, size: 26),
+              tooltip: L10n.of(context).addLocation,
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  isDismissible: true,
+                  enableDrag: true,
+                  showDragHandle: true,
+                  useSafeArea: true,
+                  builder:
+                      (context) => EventLocationListWidget(
+                        onAdd: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            isDismissible: true,
+                            enableDrag: true,
+                            showDragHandle: true,
+                            useSafeArea: true,
+                            builder:
+                                (context) => AddEventLocationWidget(
+                                  onAdd: (location) {
+                                    ref
+                                        .read(eventLocationsProvider.notifier)
+                                        .addLocation(location);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                          );
+                        },
+                      ),
+                );
+              },
+            ),
+          ),
+          _buildJitsiCallLinkWidget(),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  // Jitsi call link field
+  Widget _buildJitsiCallLinkWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Transform.scale(
+          scale: 0.6,
+          child: Switch(
+            value: _isJitsiEnabled,
+            onChanged: (value) {
+        setState(() {
+          _isJitsiEnabled = value;
+            });
           },
         ),
       ),
-    );
+      Text(L10n.of(context).createJitsiCallLink),
+      const SizedBox(width: 10),
+        
+    ]);
+  }
+
+  // Create Jitsi call link
+  String _createJitsiCallLink(String title) {   
+    // Generate a random 10-digit number
+    final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
+    // Format the number to ensure it's 10 digits by padding with zeros if needed
+    final formattedNumber = random.toString().padLeft(10, '0');
+    // Clean the title by removing spaces and special characters
+    final cleanTitle = title.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+    return 'https://meet.jit.si/$cleanTitle$formattedNumber';
   }
 
   // Event date and time field
@@ -529,11 +568,12 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       // Add locations to the event
       final locations = ref.read(eventLocationsProvider);
       for (final location in locations) {
-        if (location.type == LocationType.physical) {
-        
-        } 
-        if(location.type == LocationType.virtual) {
-        
+        if (location.type == LocationType.physical) {}
+        if (location.type == LocationType.virtual) {
+          if (_isJitsiEnabled) {
+            final jitsiLink = _createJitsiCallLink(title);
+            print('Jitsi Link: $jitsiLink');
+          }
         }
       }
 

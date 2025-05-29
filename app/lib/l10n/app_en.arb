@@ -3041,5 +3041,7 @@
   "address": "Address",
   "@address": {},
   "openLink": "Open link",
-  "@openLink": {}
+  "@openLink": {},
+  "createJitsiCallLink": "Create automatic Jitsi Call Link",
+  "@createJitsiCallLink": {}
 }
