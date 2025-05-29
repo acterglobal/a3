@@ -4,6 +4,7 @@ import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helpers/font_loader.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
@@ -83,6 +84,7 @@ void main() {
 
   group('HTML object Rendering Tests', () {
     testWidgets('renders pin', (tester) async {
+      await loadTestFonts();
       final html =
           'abcd <a href="acter:o/room:acter.global/pin/pinId">\$pinId</a> end';
 
@@ -93,8 +95,13 @@ void main() {
       expect(find.byType(UserChip), findsNothing);
       expect(find.byType(RoomChip), findsNothing);
       expect(find.byType(InlineItemPreview), findsOneWidget);
+      expect(
+        find.byType(RenderHtmlNg),
+        matchesGoldenFile('goldens/html_rendering_ng_pin.png'),
+      );
     });
     testWidgets('renders calendar event', (tester) async {
+      await loadTestFonts();
       final html =
           'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId">\$spaceObjectId</a> end';
 
@@ -105,8 +112,13 @@ void main() {
       expect(find.byType(UserChip), findsNothing);
       expect(find.byType(RoomChip), findsNothing);
       expect(find.byType(InlineItemPreview), findsOneWidget);
+      expect(
+        find.byType(RenderHtmlNg),
+        matchesGoldenFile('goldens/html_rendering_ng_calendar_event.png'),
+      );
     });
     testWidgets('renders when title only', (tester) async {
+      await loadTestFonts();
       final html =
           'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct">Code of Conduct</a> end';
 
@@ -117,11 +129,16 @@ void main() {
       expect(find.byType(UserChip), findsNothing);
       expect(find.byType(RoomChip), findsNothing);
       expect(find.byType(InlineItemPreview), findsOneWidget);
+      expect(
+        find.byType(RenderHtmlNg),
+        matchesGoldenFile('goldens/html_rendering_ng_title_only.png'),
+      );
     });
   });
 
   group('HTML many Rendering Tests', () {
     testWidgets('renders many', (tester) async {
+      await loadTestFonts();
       final html = '''
       dfg
       <a href="https://matrix.to/#/@peter:example.com">@peter:example.com</a>, <a href="matrix:u/test:example.com">@test:example.com</a>
@@ -138,9 +155,14 @@ void main() {
       expect(find.byType(UserChip), findsExactly(2));
       expect(find.byType(RoomChip), findsExactly(2));
       expect(find.byType(InlineItemPreview), findsExactly(3));
+      expect(
+        find.byType(RenderHtmlNg),
+        matchesGoldenFile('goldens/html_rendering_ng_many.png'),
+      );
     });
 
     testWidgets('accepts renamed objects', (tester) async {
+      await loadTestFonts();
       final html = '''
       dfg
       <a href="matrix:u/peter:example.com">@mr peter</a>, <a href="matrix:u/test:example.com">other username</a>
@@ -156,6 +178,12 @@ void main() {
       expect(find.byType(UserChip), findsExactly(2));
       expect(find.byType(RoomChip), findsExactly(2));
       expect(find.byType(InlineItemPreview), findsExactly(2));
+      expect(
+        find.byType(RenderHtmlNg),
+        matchesGoldenFile(
+          'goldens/html_rendering_ng_accepts_renamed_objects.png',
+        ),
+      );
     });
   });
 }
