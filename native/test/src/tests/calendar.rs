@@ -267,15 +267,33 @@ async fn calendar_event_create() -> Result<()> {
 
     assert_eq!(locations[0].location_type(), "Physical");
     assert_eq!(locations[0].name().as_deref(), Some(name));
-    assert_eq!(locations[0].description().map(|d| d.body()).as_deref(), Some(description));
-    assert_eq!(locations[0].description().and_then(|d| d.formatted()).as_deref(), Some(description_html));
+    assert_eq!(
+        locations[0].description().map(|d| d.body()).as_deref(),
+        Some(description)
+    );
+    assert_eq!(
+        locations[0]
+            .description()
+            .and_then(|d| d.formatted())
+            .as_deref(),
+        Some(description_html)
+    );
     assert_eq!(locations[0].coordinates().as_deref(), Some(coordinates));
     assert_eq!(locations[0].uri().as_deref(), Some(uri));
 
     assert_eq!(locations[1].location_type(), "Virtual");
     assert_eq!(locations[1].name().as_deref(), Some(name));
-    assert_eq!(locations[1].description().map(|d| d.body()).as_deref(), Some(description));
-    assert_eq!(locations[1].description().and_then(|d| d.formatted()).as_deref(), Some(description_html));
+    assert_eq!(
+        locations[1].description().map(|d| d.body()).as_deref(),
+        Some(description)
+    );
+    assert_eq!(
+        locations[1]
+            .description()
+            .and_then(|d| d.formatted())
+            .as_deref(),
+        Some(description_html)
+    );
     assert_eq!(locations[1].uri().as_deref(), Some(uri));
 
     Ok(())
