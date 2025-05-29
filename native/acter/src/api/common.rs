@@ -404,26 +404,27 @@ pub fn new_obj_ref_builder(
 pub fn clearify_error(err: matrix_sdk::Error) -> anyhow::Error {
     if let matrix_sdk::Error::Http(boxed) = &err {
         match boxed.as_ref() {
-            HttpError::Api(FromHttpResponseError::Deserialization(des)) => {
-                return anyhow::anyhow!("Deserialization failed: {des}");
-            }
-            HttpError::Api(FromHttpResponseError::Server(inner)) => match inner {
-                RumaApiError::ClientApi(error) => {
+            HttpError::Api(a) => match a.deref() {
+                FromHttpResponseError::Deserialization(des) => {
+                    return anyhow::anyhow!("Deserialization failed: {des}");
+                }
+                FromHttpResponseError::Server(RumaApiError::ClientApi(error)) => {
                     if let ErrorBody::Standard { kind, message } = &error.body {
                         return anyhow::anyhow!("{message:?} [{kind:?}]");
                     }
                     return anyhow::anyhow!("{0:?} [{1}]", error.body, error.status_code);
                 }
-                RumaApiError::Uiaa(uiaa_error) => {
+                FromHttpResponseError::Server(RumaApiError::Uiaa(uiaa_error)) => {
                     if let Some(err) = &uiaa_error.auth_error {
                         return anyhow::anyhow!("{:?} [{:?}]", err.message, err.kind);
                     }
                     error!(?uiaa_error, "Other UIAA response");
                     return anyhow::anyhow!("Unsupported User Interaction needed.");
                 }
-                RumaApiError::Other(err) => {
+                FromHttpResponseError::Server(RumaApiError::Other(err)) => {
                     return anyhow::anyhow!("{:?} [{:?}]", err.body, err.status_code);
                 }
+                _ => {}
             },
             HttpError::Reqwest(reqwest_error) => {
                 return anyhow::anyhow!("Transport error {:?}", reqwest_error);
