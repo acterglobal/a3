@@ -306,5 +306,31 @@ void main() {
       // verify container height is at minHeight
       expect(height, equals(minHeight));
     });
+
+    testWidgets('uses minHeight when viewport dimension is zero', (
+      tester,
+    ) async {
+      const minHeight = 50.0;
+
+      await tester.binding.setSurfaceSize(const Size(0, 0));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HtmlEditor(editable: true, minHeight: minHeight),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final container = find.byType(AnimatedContainer);
+      final containerWidget = tester.widget<AnimatedContainer>(container);
+      final height = containerWidget.constraints?.minHeight ?? 0.0;
+      expect(height, equals(minHeight));
+
+      // reset the surface size
+      await tester.binding.setSurfaceSize(null);
+    });
   });
 }
