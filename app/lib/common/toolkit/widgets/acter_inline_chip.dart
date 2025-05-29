@@ -36,8 +36,8 @@ class ActerInlineChip extends StatelessWidget {
   }
 
   Widget buildChild(BuildContext context) {
-    final fontSize =
-        (style ?? Theme.of(context).textTheme.bodySmall)?.fontSize ?? 12.0;
+    final textStyle = this.textStyle ?? Theme.of(context).textTheme.bodySmall;
+    final fontSize = textStyle?.fontSize ?? 12.0;
     final icon = leading;
     final end = trailing;
     return Container(
@@ -53,6 +53,7 @@ class ActerInlineChip extends StatelessWidget {
       ),
       child: RichText(
         text: TextSpan(
+          style: textStyle,
           children: [
             if (icon != null)
               WidgetSpan(
