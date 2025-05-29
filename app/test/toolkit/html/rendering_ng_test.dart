@@ -2,6 +2,7 @@ import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/html/render_html_ng.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hrk_flutter_test_batteries/hrk_flutter_test_batteries.dart';
 
@@ -9,139 +10,140 @@ import '../../helpers/font_loader.dart';
 import '../../helpers/test_util.dart';
 
 void main() {
-  setUp(() async {
-    await loadTestFonts();
+  group('HTML Rendering NG Tests', () {
+    setUp(() async {
+      await loadTestFonts();
 
-    useGoldenFileComparatorWithThreshold(0.01); // 1%
-  });
-  group('HTML user Rendering Tests', () {
-    testWidgets('renders matrix-to format', (tester) async {
-      final html =
-          'abcd <a href="https://matrix.to/#/@test:example.com">@test</a> end';
+      useGoldenFileComparatorWithThreshold(0.01); // 1%
+    });
+    group('user rendering', () {
+      testWidgets('renders matrix-to format', (tester) async {
+        final html =
+            'abcd <a href="https://matrix.to/#/@test:example.com">@test</a> end';
 
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
 
-      expect(find.byType(UserChip), findsOneWidget);
-      expect(find.byType(RoomChip), findsNothing);
+        expect(find.byType(UserChip), findsOneWidget);
+        expect(find.byType(RoomChip), findsNothing);
+      });
+
+      testWidgets('renders matrix: format', (tester) async {
+        final html = 'abcd <a href="matrix:u/test:example.com">@test</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsOneWidget);
+        expect(find.byType(RoomChip), findsNothing);
+      });
+
+      testWidgets('renders acter: format', (tester) async {
+        final html = 'abcd <a href="acter:u/test:example.com">@test</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsOneWidget);
+        expect(find.byType(RoomChip), findsNothing);
+      });
     });
 
-    testWidgets('renders matrix: format', (tester) async {
-      final html = 'abcd <a href="matrix:u/test:example.com">@test</a> end';
+    group('room rendering', () {
+      testWidgets('renders matrix-to format', (tester) async {
+        final html =
+            'abcd <a href="https://matrix.to/#/!test:example.com">!test:example.com</a> end';
 
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
 
-      expect(find.byType(UserChip), findsOneWidget);
-      expect(find.byType(RoomChip), findsNothing);
+        expect(find.byType(RoomChip), findsOneWidget);
+        expect(find.byType(UserChip), findsNothing);
+      });
+
+      testWidgets('renders matrix: format', (tester) async {
+        final html =
+            'abcd <a href="matrix:roomid/test:example.com">!test:example.com</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(RoomChip), findsOneWidget);
+        expect(find.byType(UserChip), findsNothing);
+      });
+
+      testWidgets('renders acter: format', (tester) async {
+        final html =
+            'abcd <a href="acter:roomid/test:example.com">!test:example.com</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(RoomChip), findsOneWidget);
+        expect(find.byType(UserChip), findsNothing);
+      });
     });
 
-    testWidgets('renders acter: format', (tester) async {
-      final html = 'abcd <a href="acter:u/test:example.com">@test</a> end';
+    group('objects rendering', () {
+      testWidgets('renders pin', (tester) async {
+        final html =
+            'abcd <a href="acter:o/room:acter.global/pin/pinId">\$pinId</a> end';
 
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
 
-      expect(find.byType(UserChip), findsOneWidget);
-      expect(find.byType(RoomChip), findsNothing);
+        expect(find.byType(UserChip), findsNothing);
+        expect(find.byType(RoomChip), findsNothing);
+        expect(find.byType(InlineItemPreview), findsOneWidget);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_pin.png'),
+        );
+      });
+      testWidgets('renders calendar event', (tester) async {
+        final html =
+            'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId">\$spaceObjectId</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsNothing);
+        expect(find.byType(RoomChip), findsNothing);
+        expect(find.byType(InlineItemPreview), findsOneWidget);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_calendar_event.png'),
+        );
+      });
+      testWidgets('renders when title only', (tester) async {
+        final html =
+            'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct">Code of Conduct</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsNothing);
+        expect(find.byType(RoomChip), findsNothing);
+        expect(find.byType(InlineItemPreview), findsOneWidget);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_title_only.png'),
+        );
+      });
     });
-  });
 
-  group('HTML Room Rendering Tests', () {
-    testWidgets('renders matrix-to format', (tester) async {
-      final html =
-          'abcd <a href="https://matrix.to/#/!test:example.com">!test:example.com</a> end';
-
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
-
-      expect(find.byType(RoomChip), findsOneWidget);
-      expect(find.byType(UserChip), findsNothing);
-    });
-
-    testWidgets('renders matrix: format', (tester) async {
-      final html =
-          'abcd <a href="matrix:roomid/test:example.com">!test:example.com</a> end';
-
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
-
-      expect(find.byType(RoomChip), findsOneWidget);
-      expect(find.byType(UserChip), findsNothing);
-    });
-
-    testWidgets('renders acter: format', (tester) async {
-      final html =
-          'abcd <a href="acter:roomid/test:example.com">!test:example.com</a> end';
-
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
-
-      expect(find.byType(RoomChip), findsOneWidget);
-      expect(find.byType(UserChip), findsNothing);
-    });
-  });
-
-  group('HTML object Rendering Tests', () {
-    testWidgets('renders pin', (tester) async {
-      final html =
-          'abcd <a href="acter:o/room:acter.global/pin/pinId">\$pinId</a> end';
-
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
-
-      expect(find.byType(UserChip), findsNothing);
-      expect(find.byType(RoomChip), findsNothing);
-      expect(find.byType(InlineItemPreview), findsOneWidget);
-      await expectLater(
-        find.byType(RenderHtmlNg),
-        matchesGoldenFile('goldens/html_rendering_ng_pin.png'),
-      );
-    });
-    testWidgets('renders calendar event', (tester) async {
-      final html =
-          'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId">\$spaceObjectId</a> end';
-
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
-
-      expect(find.byType(UserChip), findsNothing);
-      expect(find.byType(RoomChip), findsNothing);
-      expect(find.byType(InlineItemPreview), findsOneWidget);
-      await expectLater(
-        find.byType(RenderHtmlNg),
-        matchesGoldenFile('goldens/html_rendering_ng_calendar_event.png'),
-      );
-    });
-    testWidgets('renders when title only', (tester) async {
-      final html =
-          'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct">Code of Conduct</a> end';
-
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
-
-      expect(find.byType(UserChip), findsNothing);
-      expect(find.byType(RoomChip), findsNothing);
-      expect(find.byType(InlineItemPreview), findsOneWidget);
-      await expectLater(
-        find.byType(RenderHtmlNg),
-        matchesGoldenFile('goldens/html_rendering_ng_title_only.png'),
-      );
-    });
-  });
-
-  group('HTML many Rendering Tests', () {
-    testWidgets('renders many', (tester) async {
-      final html = '''
+    group('many', () {
+      testWidgets('renders many', (tester) async {
+        final html = '''
       dfg
       <a href="https://matrix.to/#/@peter:example.com">@peter:example.com</a>, <a href="matrix:u/test:example.com">@test:example.com</a>
       abcd <a href="matrix:roomid/test:example.com">!test:example.com</a>
@@ -150,21 +152,21 @@ void main() {
       <a href="matrix:roomid/room2:example.com?title=Room+2">Room 2</a>  <a href="acter:o/room:acter.global/pin/pinId">\$pinId</a> 
       end''';
 
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
 
-      expect(find.byType(UserChip), findsExactly(2));
-      expect(find.byType(RoomChip), findsExactly(2));
-      expect(find.byType(InlineItemPreview), findsExactly(3));
-      await expectLater(
-        find.byType(RenderHtmlNg),
-        matchesGoldenFile('goldens/html_rendering_ng_many.png'),
-      );
-    });
+        expect(find.byType(UserChip), findsExactly(2));
+        expect(find.byType(RoomChip), findsExactly(2));
+        expect(find.byType(InlineItemPreview), findsExactly(3));
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_many.png'),
+        );
+      });
 
-    testWidgets('accepts renamed objects', (tester) async {
-      final html = '''
+      testWidgets('accepts renamed objects', (tester) async {
+        final html = '''
       dfg
       <a href="matrix:u/peter:example.com">@mr peter</a>, <a href="matrix:u/test:example.com">other username</a>
       abcd <a href="matrix:roomid/test:example.com">#test</a>
@@ -172,19 +174,74 @@ void main() {
       <a href="matrix:roomid/room2:example.com">this room</a>  <a href="acter:o/room:acter.global/pin/pinId">this pin</a> 
       end''';
 
-      await tester.pumpProviderWidget(
-        child: RenderHtmlNg(text: html, roomId: 'test'),
-      );
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
 
-      expect(find.byType(UserChip), findsExactly(2));
-      expect(find.byType(RoomChip), findsExactly(2));
-      expect(find.byType(InlineItemPreview), findsExactly(2));
-      await expectLater(
-        find.byType(RenderHtmlNg),
-        matchesGoldenFile(
-          'goldens/html_rendering_ng_accepts_renamed_objects.png',
-        ),
-      );
+        expect(find.byType(UserChip), findsExactly(2));
+        expect(find.byType(RoomChip), findsExactly(2));
+        expect(find.byType(InlineItemPreview), findsExactly(2));
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_accepts_renamed_objects.png',
+          ),
+        );
+      });
+    });
+
+    group('maxLines', () {
+      testWidgets('renders many limits 2', (tester) async {
+        final html = '''
+      dfg
+      lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      end''';
+        await tester.pumpProviderWidget(
+          child: Scaffold(
+            body: RenderHtmlNg(text: html, roomId: 'test', maxLines: 2),
+          ),
+        );
+
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_many_max_2_lines.png'),
+        );
+      });
+
+      testWidgets('renders many limits 4', (tester) async {
+        final html = '''
+      dfg
+      lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      end''';
+        await tester.pumpProviderWidget(
+          child: Scaffold(
+            body: RenderHtmlNg(text: html, roomId: 'test', maxLines: 4),
+          ),
+        );
+
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_many_max_4_lines.png'),
+        );
+      });
+
+      testWidgets('one line', (tester) async {
+        final html = '''
+      dfg
+      lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. eiusmod
+      end''';
+
+        await tester.pumpProviderWidget(
+          child: Scaffold(
+            body: RenderHtmlNg(text: html, roomId: 'test', maxLines: 2),
+          ),
+        );
+
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_one_line_max_lines.png'),
+        );
+      });
     });
   });
 }
