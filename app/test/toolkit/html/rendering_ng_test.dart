@@ -100,7 +100,7 @@ void main() {
       expect(find.byType(UserChip), findsNothing);
       expect(find.byType(RoomChip), findsNothing);
       expect(find.byType(InlineItemPreview), findsOneWidget);
-      expect(
+      await expectLater(
         find.byType(RenderHtmlNg),
         matchesGoldenFile('goldens/html_rendering_ng_pin.png'),
       );
@@ -116,7 +116,7 @@ void main() {
       expect(find.byType(UserChip), findsNothing);
       expect(find.byType(RoomChip), findsNothing);
       expect(find.byType(InlineItemPreview), findsOneWidget);
-      expect(
+      await expectLater(
         find.byType(RenderHtmlNg),
         matchesGoldenFile('goldens/html_rendering_ng_calendar_event.png'),
       );
@@ -132,7 +132,7 @@ void main() {
       expect(find.byType(UserChip), findsNothing);
       expect(find.byType(RoomChip), findsNothing);
       expect(find.byType(InlineItemPreview), findsOneWidget);
-      expect(
+      await expectLater(
         find.byType(RenderHtmlNg),
         matchesGoldenFile('goldens/html_rendering_ng_title_only.png'),
       );
@@ -157,7 +157,7 @@ void main() {
       expect(find.byType(UserChip), findsExactly(2));
       expect(find.byType(RoomChip), findsExactly(2));
       expect(find.byType(InlineItemPreview), findsExactly(3));
-      expect(
+      await expectLater(
         find.byType(RenderHtmlNg),
         matchesGoldenFile('goldens/html_rendering_ng_many.png'),
       );
@@ -179,7 +179,7 @@ void main() {
       expect(find.byType(UserChip), findsExactly(2));
       expect(find.byType(RoomChip), findsExactly(2));
       expect(find.byType(InlineItemPreview), findsExactly(2));
-      expect(
+      await expectLater(
         find.byType(RenderHtmlNg),
         matchesGoldenFile(
           'goldens/html_rendering_ng_accepts_renamed_objects.png',
