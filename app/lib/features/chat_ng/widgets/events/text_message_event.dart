@@ -133,7 +133,6 @@ class TextMessageEvent extends ConsumerWidget {
                 uri: url,
                 roomId: roomId,
               ),
-          renderNewlines: true,
           maxLines: _type == TextMessageType.reply ? 2 : null,
           onLinkTap: (Uri uri) {
             openUri(ref: ref, uri: uri, lang: L10n.of(context));

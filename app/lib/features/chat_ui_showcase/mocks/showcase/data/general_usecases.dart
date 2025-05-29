@@ -200,6 +200,97 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
             mockBody:
                 'Also, I was thinking about the next steps after this feature launch. Here\'s what I have in mind:\n\n1. Monitor the performance metrics for at least a week to ensure stability\n2. Gather user feedback through the new analytics dashboard\n3. Plan a follow-up sprint to address any issues that come up\n4. Consider expanding the feature to other parts of the application\n5. Document the implementation details for the team wiki\n\nWhat do you think about this approach?',
           ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [
+              MockFfiString('👍'),
+              MockFfiString('❤️'),
+              MockFfiString('🎉'),
+              MockFfiString('👏'),
+              MockFfiString('🔥'),
+              MockFfiString('🚀'),
+              MockFfiString('💯'),
+            ],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098070000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098080000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '❤️': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098110000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🎉': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098120000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '👏': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098130000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098140000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🔥': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098170000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🚀': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098190000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098200000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '💯': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098210000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
         ),
         MockTimelineEventItem(
           mockEventId: 'mock-event-id-20',
@@ -230,6 +321,34 @@ final emilyDmMutedBookmarkedRoom1 = createMockChatItem(
           mockMsgContent: MockMsgContent(
             mockBody: 'Will do! Thanks for checking in.',
           ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [MockFfiString('👍'), MockFfiString('❤️')],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: userId),
+                  mockTimestamp: 1744098070000,
+                  mockSentByMe: true,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098080000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '❤️': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@emily:acter.global'),
+                  mockTimestamp: 1744098110000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
         ),
       ],
 );
@@ -771,6 +890,17 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockMsgContent: MockMsgContent(
             mockBody:
                 '[@Sarah](https://matrix.to/#/@sarah:acter.global) [@Lisa](https://matrix.to/#/@lisa:acter.global) I need your input on the database schema changes',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-code-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097246000, // April 8, 2025 15:47:26
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                '<pre><code>\nclass MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}\n</code></pre>',
+            mockBody:
+                'class MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}',
           ),
         ),
       ],

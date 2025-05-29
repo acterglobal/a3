@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:acter/features/chat_ng/globals.dart';
 import 'package:acter/common/toolkit/widgets/acter_selection_area.dart';
 import 'package:acter/features/chat_ng/widgets/message_actions_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_selector.dart';
@@ -25,29 +26,70 @@ void messageActions({
   final RenderBox? messageBox = context.findRenderObject() as RenderBox?;
   if (messageBox == null) return;
 
-  final messagePosition = messageBox.localToGlobal(Offset.zero);
-
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
     barrierLabel: '',
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 200),
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return Stack(
-        children: [
-          _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
-          Positioned(
-            left: messagePosition.dx,
-            top: 0,
-            width: messageBox.size.width,
-            height: MediaQuery.sizeOf(context).height,
+    pageBuilder:
+        (context, animation, secondaryAnimation) => MessageActions(
+          animation: animation,
+          canRedact: canRedact,
+          item: item,
+          roomId: roomId,
+          messageId: messageId,
+          messageWidget: messageWidget,
+          isMe: isMe,
+        ),
+  );
+}
+
+class MessageActions extends StatelessWidget {
+  final Animation<double> animation;
+  final bool canRedact;
+  final TimelineEventItem item;
+  final String roomId;
+  final String messageId;
+  final Widget messageWidget;
+  final bool isMe;
+
+  const MessageActions({
+    super.key,
+    required this.animation,
+    required this.canRedact,
+    required this.item,
+    required this.roomId,
+    required this.messageId,
+    required this.messageWidget,
+    required this.isMe,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final chatRoomBox =
+        chatRoomKey.currentContext?.findRenderObject() as RenderBox?;
+    final chatRoomOffset = chatRoomBox?.localToGlobal(Offset.zero);
+    final chatRoomSize = chatRoomBox?.size;
+    final left = chatRoomOffset?.dx ?? 0;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    return Stack(
+      children: [
+        _BlurOverlay(animation: animation, child: const SizedBox.shrink()),
+        Positioned(
+          left: isMe ? left : left + 36,
+          top: chatRoomOffset?.dy,
+          width: chatRoomSize?.width,
+          height: chatRoomSize?.height,
+          child: SizedBox(
+            width: (chatRoomSize?.width ?? screenWidth) * 0.9,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment:
                   isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Reaction Row
                 _AnimatedActionsContainer(
                   animation: animation,
                   tagId: '$messageId-reactions',
@@ -57,8 +99,13 @@ void messageActions({
                     roomId: roomId,
                   ),
                 ),
-                // Message
-                Center(child: ActerSelectionArea(child: messageWidget)),
+
+                // Message with scroll capability
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: ActerSelectionArea(child: messageWidget),
+                  ),
+                ),
                 // Message actions
                 _AnimatedActionsContainer(
                   animation: animation,
@@ -74,10 +121,10 @@ void messageActions({
               ],
             ),
           ),
-        ],
-      );
-    },
-  );
+        ),
+      ],
+    );
+  }
 }
 
 class _BlurOverlay extends StatelessWidget {
