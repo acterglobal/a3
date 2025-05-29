@@ -5,9 +5,12 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:acter/features/events/widgets/event_location_list_widget.dart';
+import 'package:acter/features/events/widgets/view_physical_location_widget.dart';
+import 'package:acter/features/events/widgets/view_virtual_location_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
@@ -283,6 +286,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             _buildEventRsvpActions(calendarEvent),
             const SizedBox(height: 10),
             _buildEventDataSet(calendarEvent),
+            const SizedBox(height: 10),
+            _buildEventLocationList(calendarEvent),
             const SizedBox(height: 10),
             _buildEventDescription(calendarEvent),
             const SizedBox(height: 40),
@@ -642,7 +647,8 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               builder:
                   (context) => AddEventLocationWidget(
                     onAdd: (location) {
-                      ref.read(eventLocationsProvider.notifier)
+                      ref
+                          .read(eventLocationsProvider.notifier)
                           .addLocation(location);
                       Navigator.pop(context);
                     },
@@ -726,6 +732,72 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           plainDescription: plainDescription,
         );
       },
+    );
+  }
+
+  Widget _buildEventLocationList(CalendarEvent ev) {
+    final locations =
+        ref.watch(asyncEventLocationsProvider(ev.eventId().toString())).valueOrNull ?? [];
+
+    if (locations.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: locations.length,
+      itemBuilder: (context, index) {
+        final location = locations[index];
+        return ListTile(
+          onTap: () => location.locationType().toLowerCase() ==
+                      LocationType.physical.name
+                  ? showPhysicalLocation(location)
+                  : showVirtualLocation(location),
+          leading:
+              location.locationType().toLowerCase() ==
+                      LocationType.physical.name
+                  ? const Icon(Icons.map_outlined)
+                  : const Icon(Icons.language),
+          title: Text(location.name() ?? ''),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (location.locationType().toLowerCase() ==
+                  LocationType.physical.name)
+                Text(location.description()?.body() ?? ''),
+              if (location.locationType() == LocationType.virtual.name)
+                Text(location.uri() ?? ''),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showPhysicalLocation(EventLocationInfo location) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      showDragHandle: true,
+      useSafeArea: true,
+      constraints: const BoxConstraints(maxHeight: 280),
+      builder: (context) => ViewPhysicalLocationWidget(context: context, location: location),
+    );
+  }
+  
+  void showVirtualLocation(EventLocationInfo location) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      showDragHandle: true,
+      useSafeArea: true,
+      constraints: const BoxConstraints(maxHeight: 280),
+      builder: (context) => ViewVirtualLocationWidget(context: context, location: location),
     );
   }
 }

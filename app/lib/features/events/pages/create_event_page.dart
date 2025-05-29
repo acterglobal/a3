@@ -529,7 +529,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       // Add locations to the event
       final locations = ref.read(eventLocationsProvider);
       for (final location in locations) {
-        if (location.type == LocationType.realWorld) {
+        if (location.type == LocationType.physical) {
         
         } 
         if(location.type == LocationType.virtual) {

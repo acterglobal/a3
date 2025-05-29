@@ -66,17 +66,25 @@ class _AddEventLocationWidgetState
           selected: _selectedType == LocationType.virtual,
           onSelected: (selected) {
             if (!(_selectedType == LocationType.virtual)) {
-              setState(() => _selectedType = LocationType.virtual);
+              setState(() {
+                _selectedType = LocationType.virtual;
+                // Reset address editor state when switching to virtual
+                textEditorAddressState = EditorState.blank();
+              });
             }
           },
         ),
         const SizedBox(width: 8),
         FilterChip(
           label: Text(lang.realWorld),
-          selected: _selectedType == LocationType.realWorld,
+          selected: _selectedType == LocationType.physical,
           onSelected: (selected) {
-            if (!(_selectedType == LocationType.realWorld)) {
-              setState(() => _selectedType = LocationType.realWorld);
+            if (!(_selectedType == LocationType.physical)) {
+              setState(() {
+                _selectedType = LocationType.physical;
+                // Reset URL controller when switching to physical
+                _locationUrlController.clear();
+              });
             }
           },
         ),
@@ -233,7 +241,7 @@ class _AddEventLocationWidgetState
     setState(() {
       _addressError = null;
     });
-    if (_selectedType == LocationType.realWorld) {
+    if (_selectedType == LocationType.physical) {
       final address = textEditorAddressState.intoMarkdown().trim();
       if (address.isEmpty) {
         setState(() {
@@ -251,7 +259,7 @@ class _AddEventLocationWidgetState
                 ? _locationUrlController.text
                 : null,
         address:
-            _selectedType == LocationType.realWorld
+            _selectedType == LocationType.physical
                 ? textEditorAddressState.intoMarkdown()
                 : null,
         note: textEditorNoteState.intoMarkdown(),

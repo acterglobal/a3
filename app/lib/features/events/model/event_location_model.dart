@@ -1,4 +1,4 @@
-enum LocationType { virtual, realWorld }
+enum LocationType { physical, virtual }
 
 class EventLocationDraft {
   final String name;
