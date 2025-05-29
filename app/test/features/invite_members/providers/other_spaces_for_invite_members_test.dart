@@ -57,6 +57,7 @@ void main() {
       expect(result, contains(mockSpace4));
       expect(result, isNot(contains(mockSpace1)));
       expect(result, isNot(contains(mockSpace2)));
+      tester.pumpAndSettle();
     });
 
     testWidgets('returns all spaces when no parent spaces exist', (
@@ -82,6 +83,7 @@ void main() {
       expect(result, contains(mockSpace3));
       expect(result, contains(mockSpace4));
       expect(result, isNot(contains(mockSpace1)));
+      tester.pumpAndSettle();
     });
 
     testWidgets('throws error when parent spaces are not available', (
@@ -103,6 +105,7 @@ void main() {
         container.read(otherSpacesForInviteMembersProvider('space1').future),
         throwsA('Parent spaces not available'),
       );
+      tester.pumpAndSettle();
     });
 
     testWidgets(
@@ -127,6 +130,7 @@ void main() {
         );
 
         expect(result, isEmpty);
+        tester.pumpAndSettle();
       },
     );
   });

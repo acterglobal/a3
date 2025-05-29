@@ -10,8 +10,7 @@ final otherSpacesForInviteMembersProvider = FutureProvider.autoDispose
       final allSpaces = ref.watch(spacesProvider);
 
       //GET PARENT SPACE
-      final parentSpaces = ref.watch(parentIdsProvider(spaceId)).valueOrNull;
-      if (parentSpaces == null) throw 'Parent spaces not available';
+      final parentSpaces = await ref.watch(parentIdsProvider(spaceId).future);
 
       //GET LIST OF SPACES EXCLUDING PARENT SPACES && EXCLUDING CURRENT SPACE
       final spacesExcludingParentSpacesAndCurrentSpace =
