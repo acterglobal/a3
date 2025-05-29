@@ -3011,5 +3011,15 @@
   "encryptionBackupDestroyAction": "Destroying",
   "@encryptionBackupDestroyAction": {},
   "dontForgetToStoreTheKeySecurely": "Don't forget to store your Encryption Backup Key securely",
-  "@dontForgetToStoreTheKeySecurely": {}
+  "@dontForgetToStoreTheKeySecurely": {},
+  "countMoreTasks": "{count} more tasks",
+  "@countMoreTasks": {},
+  "laterThisWeek": "Later this week",
+  "@laterThisWeek": {},
+  "later": "Later",
+  "@later": {},
+  "noTasks": "No tasks",
+  "@noTasks": {},
+  "overdue": "Overdue",
+  "@overdue": {}
 }
