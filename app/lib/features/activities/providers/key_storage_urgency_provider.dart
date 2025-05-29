@@ -1,10 +1,12 @@
 import 'package:acter/features/activities/actions/key_storage_urgency_action.dart';
+import 'package:acter/features/backups/providers/backup_manager_provider.dart';
 import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-final keyStorageUrgencyProvider = Provider.family<KeyStorageUrgency, int>((ref, timestamp) {
-  if (timestamp == 0) return KeyStorageUrgency.normal;
-  
+final keyStorageUrgencyProvider = Provider<KeyStorageUrgency>((ref) {
+  final timestamp = ref.watch(storedEncKeyTimestampProvider).valueOrNull;
+  if (timestamp == null) return KeyStorageUrgency.normal;
+
   final now = ref.watch(utcNowProvider).millisecondsSinceEpoch ~/ 1000;
   final daysSinceStored = (now - timestamp) ~/ (24 * 60 * 60);
 

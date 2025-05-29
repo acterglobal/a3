@@ -1,1 +1,0 @@
-- [Chat-NG] : Chat message with multiple line code block now have better view with vertical and horizontal scrolling behavior.
