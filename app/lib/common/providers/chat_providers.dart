@@ -9,6 +9,11 @@ final chatProvider =
       () => AsyncConvoNotifier(),
     );
 
+final maybeChatProvider =
+    AsyncNotifierProvider.family<AsyncConvoNotifier, Convo?, String>(
+      () => AsyncConvoNotifier(),
+    );
+
 // Chat Providers
 
 final latestMessageProvider =
