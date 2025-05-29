@@ -193,7 +193,7 @@ pub struct CalendarEventEventContent {
 
 impl CalendarEventBuilder {
     pub fn into_event_loc(&mut self, loc_info: &EventLocationInfo) -> Self {
-        let mut locations = self.locations.clone().unwrap_or(vec![]);
+        let mut locations = self.locations.clone().unwrap_or_default();
         locations.push(loc_info.inner.clone());
         self.locations = Some(locations);
         self.clone()
