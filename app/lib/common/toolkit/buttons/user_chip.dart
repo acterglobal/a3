@@ -99,7 +99,9 @@ class UserChip extends ConsumerWidget {
     return ActerInlineChip(
       style: style,
       tooltip: memberId,
-      leading: ActerAvatar(options: AvatarOptions(memberInfo, size: fontSize)),
+      leading: ActerAvatar(
+        options: AvatarOptions.DM(memberInfo, size: fontSize),
+      ),
       trailing: trailing,
       textStyle: isMe ? style?.copyWith(fontWeight: FontWeight.bold) : style,
       decoration: decoration,

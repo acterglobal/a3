@@ -20,8 +20,8 @@ class RenderHtmlNg extends ConsumerWidget {
   final TextStyle? linkTextStyle;
   final bool shrinkToFit;
   final int? maxLines;
-  final bool renderNewlines;
   final String? roomId;
+  final Color? backgroundColor;
   const RenderHtmlNg({
     super.key,
     required this.text,
@@ -29,8 +29,8 @@ class RenderHtmlNg extends ConsumerWidget {
     this.linkTextStyle,
     this.shrinkToFit = false,
     this.maxLines,
-    this.renderNewlines = false,
     this.roomId,
+    this.backgroundColor,
   });
 
   @override
@@ -63,9 +63,12 @@ class RenderHtmlNg extends ConsumerWidget {
             Theme.of(context).textTheme.bodyMedium?.height ??
             1);
     final maxHeight = (mxLines * fontSize * lineHeight).toDouble();
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: maxHeight),
-      child: ClipRect(clipBehavior: Clip.antiAlias, child: htmlWidget),
+    return Container(
+      color: backgroundColor,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: ClipRect(clipBehavior: Clip.antiAlias, child: htmlWidget),
+      ),
     );
   }
 

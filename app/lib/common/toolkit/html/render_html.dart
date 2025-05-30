@@ -21,16 +21,16 @@ class _MatrixRenderHtml extends ConsumerWidget {
   final TextStyle? linkTextStyle;
   final bool shrinkToFit;
   final int? maxLines;
-  final bool renderNewlines;
   final PillBuilder? pillBuilder;
+  final Color? backgroundColor;
   const _MatrixRenderHtml({
     required this.text,
     this.defaultTextStyle,
     this.linkTextStyle,
     this.shrinkToFit = false,
     this.maxLines,
-    this.renderNewlines = false,
     this.pillBuilder,
+    this.backgroundColor,
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,11 +44,11 @@ class _MatrixRenderHtml extends ConsumerWidget {
       },
       maxLines: maxLines,
       shrinkToFit: shrinkToFit,
-      renderNewlines: renderNewlines,
       data: text,
       pillBuilder: pillBuilder,
       defaultTextStyle: defaultTextStyle,
       linkStyle: linkTextStyle,
+      backgroundColor: backgroundColor,
     );
   }
 }
@@ -59,8 +59,8 @@ class RenderHtml extends ConsumerWidget {
   final TextStyle? linkTextStyle;
   final bool shrinkToFit;
   final int? maxLines;
-  final bool renderNewlines;
   final String? roomId;
+  final Color backgroundColor;
   const RenderHtml({
     super.key,
     required this.text,
@@ -68,31 +68,37 @@ class RenderHtml extends ConsumerWidget {
     this.linkTextStyle,
     this.shrinkToFit = false,
     this.maxLines,
-    this.renderNewlines = false,
     this.roomId,
+    this.backgroundColor = Colors.transparent,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nextHtml = ref.watch(isActiveProvider(LabsFeature.htmlNext));
+    final linkStyle =
+        linkTextStyle ??
+        TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
+          decoration: TextDecoration.underline,
+        );
     if (nextHtml) {
       return RenderHtmlNg(
         text: text,
         defaultTextStyle: defaultTextStyle,
-        linkTextStyle: linkTextStyle,
+        linkTextStyle: linkStyle,
         shrinkToFit: shrinkToFit,
         maxLines: maxLines,
-        renderNewlines: renderNewlines,
         roomId: roomId,
+        backgroundColor: backgroundColor,
       );
     } else {
       return _MatrixRenderHtml(
         text: text,
         defaultTextStyle: defaultTextStyle,
-        linkTextStyle: linkTextStyle,
+        linkTextStyle: linkStyle,
         shrinkToFit: shrinkToFit,
         maxLines: maxLines,
-        renderNewlines: renderNewlines,
+        backgroundColor: backgroundColor,
         pillBuilder:
             ({
               required String identifier,

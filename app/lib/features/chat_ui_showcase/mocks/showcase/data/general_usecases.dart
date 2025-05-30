@@ -10,13 +10,6 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_ffi_li
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_reaction_record.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_userId.dart';
 
-final complexHtmlMsg = '''
-Check out this <a href="https://www.google.com">link to google</a>,
-this user mention: <a href="matrix:u/emily:acter.global?action=chat">@emily:acter.global</a>,
-this room mention: <a href="matrix:roomid/mock-room-1:acter.global">#mock-room-1:acter.global</a>,
-and external URI to a task list: <a href="https://app.m-1.acter.global/p/f31a795eb64a3c408c2f44cb1e3b70efd914d6b1?roomDisplayName=Kigis+Climate+Action+Group&title=Protest+Organization+2&via=%5B%27m-1.acter.global%27%5D&userId=jackie%3Am-1.acter.global#o/PIcnDNIUnpLcoFXnHf:m-1.acter.global/taskList/grq23hwTAXn3jx3d2btyIPkHtfBiat7QTMCSeH6xOaw">Protest Organization</a>
-and this internal link to an event <a href="acter:o/uUufOaBOZwafrtxhoO:effektio.org/calendarEvent/qXG1py1eda2xApRmiN0MQYuBHhiIYgXW1CWK3tNLhi4?via=acter.global&via=matrix.org&via=m-1.acter.global&roomDisplayName=ACTER%20Community&title=Acter%20App%20Demo%20-%20May%20%233&participants=1&startAtUtc=1748424600">event</a>!
-''';
 final emilyDmMutedBookmarkedRoom1RoomId = 'emily-mock-dm-room-1';
 
 final emilyDmMutedBookmarkedRoom1 = createMockChatItem(

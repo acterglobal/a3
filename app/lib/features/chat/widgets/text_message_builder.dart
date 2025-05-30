@@ -138,7 +138,6 @@ class _TextWidget extends ConsumerWidget {
                   : RenderHtml(
                     text: message.text,
                     roomId: roomId,
-                    renderNewlines: true,
                     shrinkToFit: true,
                     defaultTextStyle: textTheme.bodySmall?.copyWith(
                       overflow: isReply ? TextOverflow.ellipsis : null,

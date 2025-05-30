@@ -107,7 +107,7 @@ void main() {
           matchesGoldenFile('goldens/html_rendering_ng_pin.png'),
         );
       });
-      testWidgets('renders calendar event', (tester) async {
+      testWidgets('renders calendar event without title', (tester) async {
         final html =
             'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId">\$spaceObjectId</a> end';
 

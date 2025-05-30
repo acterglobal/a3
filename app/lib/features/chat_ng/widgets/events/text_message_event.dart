@@ -114,10 +114,16 @@ class TextMessageEvent extends ConsumerWidget {
       children: [
         if (replied != null) ...[replied, const SizedBox(height: 10)],
         RenderHtml(
+          linkTextStyle: TextStyle(
+            color:
+                _type == TextMessageType.notice
+                    ? colorScheme.onSurface.withValues(alpha: 0.5)
+                    : colorScheme.onSurface.withValues(alpha: 0.9),
+            decoration: TextDecoration.underline,
+          ),
           text: body,
           roomId: roomId,
           shrinkToFit: true,
-          renderNewlines: true,
           maxLines: _type == TextMessageType.reply ? 2 : null,
           defaultTextStyle: textTheme.bodySmall?.copyWith(
             color:
