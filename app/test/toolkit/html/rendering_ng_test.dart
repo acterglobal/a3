@@ -22,7 +22,7 @@ void main() {
             'abcd <a href="https://matrix.to/#/@test:example.com">@test</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsOneWidget);
@@ -33,7 +33,7 @@ void main() {
         final html = 'abcd <a href="matrix:u/test:example.com">@test</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsOneWidget);
@@ -44,7 +44,7 @@ void main() {
         final html = 'abcd <a href="acter:u/test:example.com">@test</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsOneWidget);
@@ -58,7 +58,7 @@ void main() {
             'abcd <a href="https://matrix.to/#/!test:example.com">!test:example.com</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(RoomChip), findsOneWidget);
@@ -70,7 +70,7 @@ void main() {
             'abcd <a href="matrix:roomid/test:example.com">!test:example.com</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(RoomChip), findsOneWidget);
@@ -82,7 +82,7 @@ void main() {
             'abcd <a href="acter:roomid/test:example.com">!test:example.com</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(RoomChip), findsOneWidget);
@@ -96,7 +96,7 @@ void main() {
             'abcd <a href="acter:o/room:acter.global/pin/pinId">\$pinId</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsNothing);
@@ -112,7 +112,7 @@ void main() {
             'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId">\$spaceObjectId</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsNothing);
@@ -128,7 +128,7 @@ void main() {
             'abcd <a href="acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct">Code of Conduct</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsNothing);
@@ -146,7 +146,7 @@ void main() {
             'abcd <a href="https://acter.global">acter.global regular link</a> end';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsExactly(0));
@@ -168,7 +168,7 @@ void main() {
 
         await tester.pumpProviderWidget(
           child: RenderHtmlNg(
-            text: html,
+            html: html,
             roomId: 'test',
             linkTextStyle: const TextStyle(
               color: Colors.green,
@@ -189,6 +189,159 @@ void main() {
       });
     });
 
+    group('autodetects links', () {
+      testWidgets('renders regular links', (tester) async {
+        final text = 'abcd https://acter.global end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsExactly(0));
+        expect(find.byType(RoomChip), findsExactly(0));
+        expect(find.byType(InlineItemPreview), findsExactly(0));
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_links.png',
+          ),
+        );
+      });
+      testWidgets('renders regular links in custom color and decoration', (
+        tester,
+      ) async {
+        useGoldenFileComparatorWithThreshold(
+          0.0, // 0% -- we must be picky to fail
+        );
+        final text = 'abcd https://acter.global end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(
+            text: text,
+            roomId: 'test',
+            linkTextStyle: const TextStyle(
+              color: Colors.green,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        );
+
+        expect(find.byType(UserChip), findsExactly(0));
+        expect(find.byType(RoomChip), findsExactly(0));
+        expect(find.byType(InlineItemPreview), findsExactly(0));
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_links_custom_font.png',
+          ),
+        );
+      });
+
+      testWidgets('renders matrix-to format', (tester) async {
+        final text = 'abcd https://matrix.to/#/@test:example.com end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsOneWidget);
+        expect(find.byType(RoomChip), findsNothing);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_matrix_to.png',
+          ),
+        );
+      });
+
+      testWidgets('renders matrix: format', (tester) async {
+        final text = 'abcd matrix:u/test:example.com end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        // expect(find.byType(UserChip), findsOneWidget);
+        // expect(find.byType(RoomChip), findsNothing);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_matrix.png',
+          ),
+        );
+      });
+
+      testWidgets('renders acter: format', (tester) async {
+        final text = 'abcd acter:u/test:example.com end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        // expect(find.byType(UserChip), findsOneWidget);
+        // expect(find.byType(RoomChip), findsNothing);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_acter_user.png',
+          ),
+        );
+      });
+      testWidgets('renders pin', (tester) async {
+        final text = 'abcd acter:o/room:acter.global/pin/pinId end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        // expect(find.byType(UserChip), findsNothing);
+        // expect(find.byType(RoomChip), findsNothing);
+        // expect(find.byType(InlineItemPreview), findsOneWidget);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_acter_pin.png',
+          ),
+        );
+      });
+      testWidgets('renders calendar event without title', (tester) async {
+        final text =
+            'abcd acter:o/somewhere:example.org/calendarEvent/spaceObjectId end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        // expect(find.byType(UserChip), findsNothing);
+        // expect(find.byType(RoomChip), findsNothing);
+        // expect(find.byType(InlineItemPreview), findsOneWidget);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_calendar_event.png',
+          ),
+        );
+      });
+      testWidgets('renders when title only', (tester) async {
+        final text =
+            'abcd acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg.text(text: text, roomId: 'test'),
+        );
+
+        // expect(find.byType(UserChip), findsNothing);
+        // expect(find.byType(RoomChip), findsNothing);
+        // expect(find.byType(InlineItemPreview), findsOneWidget);
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_autodetect_title_only.png',
+          ),
+        );
+      });
+    });
+
     group('many', () {
       testWidgets('renders many', (tester) async {
         final html = '''
@@ -201,7 +354,7 @@ void main() {
       end''';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsExactly(2));
@@ -223,7 +376,7 @@ void main() {
       end''';
 
         await tester.pumpProviderWidget(
-          child: RenderHtmlNg(text: html, roomId: 'test'),
+          child: RenderHtmlNg(html: html, roomId: 'test'),
         );
 
         expect(find.byType(UserChip), findsExactly(2));
@@ -246,7 +399,7 @@ void main() {
       end''';
         await tester.pumpProviderWidget(
           child: Scaffold(
-            body: RenderHtmlNg(text: html, roomId: 'test', maxLines: 2),
+            body: RenderHtmlNg(html: html, roomId: 'test', maxLines: 2),
           ),
         );
 
@@ -263,7 +416,7 @@ void main() {
       end''';
         await tester.pumpProviderWidget(
           child: Scaffold(
-            body: RenderHtmlNg(text: html, roomId: 'test', maxLines: 4),
+            body: RenderHtmlNg(html: html, roomId: 'test', maxLines: 4),
           ),
         );
 
@@ -281,7 +434,7 @@ void main() {
 
         await tester.pumpProviderWidget(
           child: Scaffold(
-            body: RenderHtmlNg(text: html, roomId: 'test', maxLines: 2),
+            body: RenderHtmlNg(html: html, roomId: 'test', maxLines: 2),
           ),
         );
 

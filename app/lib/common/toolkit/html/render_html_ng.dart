@@ -7,10 +7,8 @@ import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
-    as html;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:logging/logging.dart';
 
@@ -47,8 +45,16 @@ class MaxSizeWidgetFactory extends WidgetFactory {
   }
 }
 
+final linkMatcher = RegExp(
+  r'(https?:\/\/|matrix:|acter:)([^\s]+)',
+  multiLine: true,
+  unicode: true,
+);
+
+/// Customized [html.HtmlWidget] that:
+/// - renders object links, room links, user links as pills
 class RenderHtmlNg extends ConsumerWidget {
-  final String text;
+  final String html;
   final TextStyle? defaultTextStyle;
   final TextStyle? linkTextStyle;
   final bool shrinkToFit;
@@ -57,7 +63,7 @@ class RenderHtmlNg extends ConsumerWidget {
   final Color? backgroundColor;
   const RenderHtmlNg({
     super.key,
-    required this.text,
+    required this.html,
     this.defaultTextStyle,
     this.linkTextStyle,
     this.shrinkToFit = false,
@@ -66,9 +72,25 @@ class RenderHtmlNg extends ConsumerWidget {
     this.backgroundColor,
   });
 
+  /// You don't have an HTML but want us to autodetect links?
+  /// provide the text and we will autodetect the links for you
+  RenderHtmlNg.text({
+    super.key,
+    required text,
+    this.defaultTextStyle,
+    this.linkTextStyle,
+    this.shrinkToFit = false,
+    this.maxLines,
+    this.roomId,
+    this.backgroundColor,
+  }) : html = text.replaceAllMapped(
+         linkMatcher,
+         (match) => '<a href="${match[0]!}">${match[2]!}</a>',
+       );
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) => html.HtmlWidget(
-    text,
+  Widget build(BuildContext context, WidgetRef ref) => HtmlWidget(
+    html,
     onTapUrl: (url) => openLink(ref: ref, target: url, lang: L10n.of(context)),
     textStyle: defaultTextStyle,
     renderMode: RenderMode.column,
@@ -163,17 +185,17 @@ class RenderHtmlNg extends ConsumerWidget {
   }
 
   Widget? _buildPill(UriParseResult parsed, Uri uri) => switch (parsed.type) {
-    (LinkType.userId) => html.InlineCustomWidget(
+    (LinkType.userId) => InlineCustomWidget(
       child: UserChip(
         roomId: roomId,
         memberId: parsed.target,
         style: defaultTextStyle,
       ),
     ),
-    (LinkType.roomId) => html.InlineCustomWidget(
+    (LinkType.roomId) => InlineCustomWidget(
       child: RoomChip(roomId: parsed.target, uri: uri),
     ),
-    (LinkType.spaceObject) => html.InlineCustomWidget(
+    (LinkType.spaceObject) => InlineCustomWidget(
       child: InlineItemPreview(roomId: roomId, uriResult: parsed),
     ),
     _ => null, // not yet supported
