@@ -17,6 +17,7 @@ class MyTasksSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final sortedTasks = ref.watch(sortedTasksProvider).value;
+    ref.watch(myOpenTasksProvider); // This ensures the widget rebuilds when tasks change
     
     if (sortedTasks?.totalCount == 0) return const SizedBox.shrink();
 
@@ -52,6 +53,7 @@ class MyTasksSection extends ConsumerWidget {
           itemBuilder: (context, index) {
             final task = tasksToShow[index];
             return TaskItem(
+              key: ValueKey('${task.eventIdStr()}-${task.dueDate()}'), // Unique key for rebuild
               taskListId: task.taskListIdStr(),
               taskId: task.eventIdStr(),
               showBreadCrumb: true,
