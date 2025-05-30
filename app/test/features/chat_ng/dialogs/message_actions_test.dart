@@ -133,7 +133,6 @@ void main() {
                   child:
                       isMe
                           ? ChatBubble.me(
-                            context: roomContext,
                             isFirstMessageBySender: true,
                             isLastMessageBySender: true,
                             child: TextMessageEvent(
@@ -142,7 +141,6 @@ void main() {
                             ),
                           )
                           : ChatBubble(
-                            context: roomContext,
                             isFirstMessageBySender: true,
                             isLastMessageBySender: true,
                             child: TextMessageEvent(
