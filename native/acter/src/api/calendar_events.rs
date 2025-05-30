@@ -392,20 +392,20 @@ impl CalendarEventDraft {
     ) -> Result<()> {
         let mut desc_plain = None;
         let mut desc_html = None;
-        if let Some(ref desc) = description {
+        if let Some(desc) = &description {
             if !desc.is_empty() {
                 desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
                 desc_html =
                     description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
             }
         }
-        if let Some(coord) = &coordinates {
+        if let Some(coords) = &coordinates {
             let re = Regex::new(
                 r"^geo:(?P<lat>-?\d+\.\d+),(?P<lon>-?\d+\.\d+)(?:,(?P<alt>-?\d+\.\d+))?(?:;(?P<params>.*))?$",
             )?;
-            let caps = re.captures(coord).ok_or_else(|| Error::FailedToParse {
+            let caps = re.captures(coords).ok_or_else(|| Error::FailedToParse {
                 model_type: "GeoLocation".to_owned(),
-                msg: format!("Invalid geo URI: {}", coord),
+                msg: format!("Invalid geo URI: {}", coords),
             })?;
 
             // Parse latitude & longitude
