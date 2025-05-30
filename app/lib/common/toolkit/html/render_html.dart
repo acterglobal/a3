@@ -61,6 +61,7 @@ class RenderHtml extends ConsumerWidget {
   final int? maxLines;
   final String? roomId;
   final Color backgroundColor;
+  final bool isHtml;
   const RenderHtml({
     super.key,
     required this.text,
@@ -70,27 +71,56 @@ class RenderHtml extends ConsumerWidget {
     this.maxLines,
     this.roomId,
     this.backgroundColor = Colors.transparent,
-  });
+  }) : isHtml = true;
+
+  /// You don't have an HTML but want us to autodetect links?
+  /// provide the text and we will autodetect the links for you
+  const RenderHtml.text({
+    super.key,
+    required this.text,
+    this.defaultTextStyle,
+    this.linkTextStyle,
+    this.shrinkToFit = false,
+    this.maxLines,
+    this.roomId,
+    this.backgroundColor = Colors.transparent,
+  }) : isHtml = false;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nextHtml = ref.watch(isActiveProvider(LabsFeature.htmlNext));
     final linkStyle =
         linkTextStyle ??
-        TextStyle(
+        defaultTextStyle?.copyWith(
+          decoration: TextDecoration.underline,
+        ) ?? // same style but underlined
+        Theme.of(context).textTheme.bodySmall?.copyWith(
+          // theme as fallback
           color: Theme.of(context).colorScheme.onSurface,
           decoration: TextDecoration.underline,
         );
     if (nextHtml) {
-      return RenderHtmlNg(
-        text: text,
-        defaultTextStyle: defaultTextStyle,
-        linkTextStyle: linkStyle,
-        shrinkToFit: shrinkToFit,
-        maxLines: maxLines,
-        roomId: roomId,
-        backgroundColor: backgroundColor,
-      );
+      if (isHtml) {
+        return RenderHtmlNg(
+          html: text,
+          defaultTextStyle: defaultTextStyle,
+          linkTextStyle: linkStyle,
+          shrinkToFit: shrinkToFit,
+          maxLines: maxLines,
+          roomId: roomId,
+          backgroundColor: backgroundColor,
+        );
+      } else {
+        return RenderHtmlNg.text(
+          text: text,
+          defaultTextStyle: defaultTextStyle,
+          linkTextStyle: linkStyle,
+          shrinkToFit: shrinkToFit,
+          maxLines: maxLines,
+          roomId: roomId,
+          backgroundColor: backgroundColor,
+        );
+      }
     } else {
       return _MatrixRenderHtml(
         text: text,

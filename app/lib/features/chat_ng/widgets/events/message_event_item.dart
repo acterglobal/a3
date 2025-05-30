@@ -211,16 +211,12 @@ class MessageEventItem extends ConsumerWidget {
     final wasEdited = item.wasEdited();
     final content = item.msgContent().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
-    Widget? repliedToBuilder;
 
     // whether it contains `replied to` event.
-    if (repliedToId != null) {
-      repliedToBuilder = RepliedToPreview(
-        roomId: roomId,
-        messageId: messageId,
-        isMe: isMe,
-      );
-    }
+    final repliedToBuilder =
+        (repliedToId != null)
+            ? RepliedToPreview(roomId: roomId, messageId: messageId, isMe: isMe)
+            : null;
 
     final child = TextMessageEvent(
       content: content,

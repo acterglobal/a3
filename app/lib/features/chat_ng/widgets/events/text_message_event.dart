@@ -84,25 +84,29 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
 
     final color =
         widget.isNotice
-            ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9);
+            ? colorScheme.onSurface.withValues(alpha: 0.5)
+            : colorScheme.onSurface.withValues(alpha: 0.9);
 
-    return RenderHtml(
-      linkTextStyle: TextStyle(
-        color: color,
-        decoration: TextDecoration.underline,
-      ),
-      text: bodyFormatted ?? body,
+    final html = bodyFormatted;
+    if (html != null) {
+      return RenderHtml(
+        text: html,
+        roomId: widget.roomId,
+        shrinkToFit: true,
+        maxLines: widget.isReply ? 2 : null,
+        defaultTextStyle: textTheme.bodySmall?.copyWith(
+          color: color,
+          overflow: widget.isNotice ? TextOverflow.ellipsis : null,
+        ),
+      );
+    }
+
+    // fallback to text with auto-link support if we don't have HTML
+    return RenderHtml.text(
+      text: body,
       roomId: widget.roomId,
       shrinkToFit: true,
       maxLines: widget.isReply ? 2 : null,
-      defaultTextStyle: textTheme.bodySmall?.copyWith(
-        color:
-            widget.isNotice
-                ? colorScheme.onSurface.withValues(alpha: 0.5)
-                : colorScheme.onSurface.withValues(alpha: 0.9),
-        overflow: widget.isNotice ? TextOverflow.ellipsis : null,
-      ),
     );
   }
 }

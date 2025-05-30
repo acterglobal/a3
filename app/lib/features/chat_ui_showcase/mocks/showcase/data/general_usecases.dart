@@ -927,8 +927,51 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockSenderId: userId,
           mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
           mockMsgContent: MockMsgContent(
-            mockFormattedBody:
+            mockBody:
                 'I found a great resource about CI/CD best practices: https://medium.com/tech-blog/ci-cd-best-practices-2025',
+          ),
+        ),
+
+        MockTimelineEventItem(
+          mockEventId: 'mock-user-url-1',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'acter:u/sarah:acter.global acter:u/lisa:acter.global I need your input on the database schema changes',
+          ),
+        ),
+
+        MockTimelineEventItem(
+          mockEventId: 'mock-acter-url-1',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct acter:o/somewhere:example.org/pin/spaceObjectId I need your input on those changes',
+          ),
+        ),
+
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-html-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097206000, // April 8, 2025 15:46:46
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                'Check out the deployment documentation at <a href="https://docs.example.com/deployment-guide">deployment-guide</a>',
+            mockBody:
+                'Check out the deployment documentation at https://docs.example.com/deployment-guide',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-html-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                'I found a great resource about CI/CD best practices: <a href="https://medium.com/tech-blog/ci-cd-best-practices-2025">ci-cd-best-practices-2025</a>',
+            mockBody:
+                'I found a great resource about CI/CD best practices: ttps://medium.com/tech-blog/ci-cd-best-practices-2025',
           ),
         ),
 

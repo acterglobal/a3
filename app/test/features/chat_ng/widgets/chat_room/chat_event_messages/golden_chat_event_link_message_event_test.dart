@@ -12,7 +12,105 @@ import '../../../../../helpers/test_util.dart';
 
 void main() {
   group('Chat NG - ChatEvent link message golden', () {
-    testWidgets('ChatEvent link message event widget legacy html', (
+    testWidgets('ChatEvent link html message event widget legacy html', (
+      tester,
+    ) async {
+      await loadTestFonts();
+      useGoldenFileComparatorWithThreshold(0.01); // 1%
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          myUserIdStrProvider.overrideWith((ref) => '@acter1:m-1.acter.global'),
+          isActiveProvider(LabsFeature.htmlNext).overrideWith((ref) => false),
+          messageReadReceiptsProvider.overrideWith(
+            (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+          ),
+        ],
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-url-html-1',
+              ),
+            ),
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-url-html-2',
+              ),
+            ),
+          ],
+        ),
+      );
+
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(ListView),
+        matchesGoldenFile('goldens_images/chat_event_link_message_event.png'),
+      );
+    });
+    testWidgets('ChatEvent link html message event widget html next', (
+      tester,
+    ) async {
+      await loadTestFonts();
+      useGoldenFileComparatorWithThreshold(0.0); // 0%
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          myUserIdStrProvider.overrideWith((ref) => '@acter1:m-1.acter.global'),
+          isActiveProvider(LabsFeature.htmlNext).overrideWith((ref) => true),
+          messageReadReceiptsProvider.overrideWith(
+            (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+          ),
+        ],
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-url-html-1',
+              ),
+            ),
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-url-html-2',
+              ),
+            ),
+          ],
+        ),
+      );
+
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(ListView),
+        matchesGoldenFile(
+          'goldens_images/chat_event_link_message_event_html_next.png',
+        ),
+      );
+    });
+    testWidgets('ChatEvent auto link message event widget legacy html', (
       tester,
     ) async {
       await loadTestFonts();
@@ -57,14 +155,16 @@ void main() {
 
       await expectLater(
         find.byType(ListView),
-        matchesGoldenFile('goldens_images/chat_event_link_message_event.png'),
+        matchesGoldenFile(
+          'goldens_images/chat_event_autolink_message_event.png',
+        ),
       );
     });
-    testWidgets('ChatEvent link message event widget html next', (
+    testWidgets('ChatEvent autolink message event widget html next', (
       tester,
     ) async {
       await loadTestFonts();
-      useGoldenFileComparatorWithThreshold(0.01); // 1%
+      useGoldenFileComparatorWithThreshold(0.0); // 0%
 
       await tester.pumpProviderWidget(
         overrides: [
@@ -95,6 +195,26 @@ void main() {
                 eventId: 'mock-url-2',
               ),
             ),
+
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-acter-url-1',
+              ),
+            ),
+
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-user-url-1',
+              ),
+            ),
           ],
         ),
       );
@@ -106,7 +226,7 @@ void main() {
       await expectLater(
         find.byType(ListView),
         matchesGoldenFile(
-          'goldens_images/chat_event_link_message_event_html_next.png',
+          'goldens_images/chat_event_autolink_message_event_html_next.png',
         ),
       );
     });
