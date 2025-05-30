@@ -847,7 +847,7 @@ packages:
     source: hosted
     version: "3.0.5"
   flutter_highlight:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_highlight
       sha256: "7b96333867aa07e122e245c033b8ad622e4e3a42a1a2372cbb098a2541d8782c"
@@ -1110,6 +1110,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_widget_from_html_core:
+    dependency: "direct main"
+    description:
+      name: flutter_widget_from_html_core
+      sha256: f77ea1aa1ba29a38fcce04483f44f12382f541b9e8c2150df37166c23bbbd30f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.0"
   freezed:
     dependency: "direct main"
     description:
@@ -1212,7 +1220,7 @@ packages:
     source: hosted
     version: "2.1.0"
   highlight:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: highlight
       sha256: "5353a83ffe3e3eca7df0abfb72dcf3fa66cc56b953728e7113ad4ad88497cf21"
@@ -1227,6 +1235,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  hrk_batteries:
+    dependency: transitive
+    description:
+      name: hrk_batteries
+      sha256: "392dbcfc81a68f1a1190ad0a1281793d50b4e95d83937b8185a3181c64aaa032"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
+  hrk_flutter_test_batteries:
+    dependency: "direct dev"
+    description:
+      name: hrk_flutter_test_batteries
+      sha256: d7a8206f4cdc0f2554e0dded2b1f718ea72ef731034fb7974ca37d3477a382ea
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
+  hrk_logging:
+    dependency: transitive
+    description:
+      name: hrk_logging
+      sha256: "2e6501f4b78439bec4c367a94b14f792fd17fe1c94f18d903086c7b8a48402f5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   html:
     dependency: "direct main"
     description:

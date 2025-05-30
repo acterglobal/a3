@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/features/chat/utils.dart';
 import 'package:acter/features/chat_ng/dialogs/message_actions.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/chat_ng/widgets/chat_bubble.dart';
@@ -212,38 +211,19 @@ class MessageEventItem extends ConsumerWidget {
     final wasEdited = item.wasEdited();
     final content = item.msgContent().expect('cannot be null');
     final isNotice = (msgType == 'm.notice' || msgType == 'm.server_notice');
-    Widget? repliedToBuilder;
 
     // whether it contains `replied to` event.
-    if (repliedToId != null) {
-      repliedToBuilder = RepliedToPreview(
-        roomId: roomId,
-        messageId: messageId,
-        isMe: isMe,
-      );
-    }
+    final repliedToBuilder =
+        (repliedToId != null)
+            ? RepliedToPreview(roomId: roomId, messageId: messageId, isMe: isMe)
+            : null;
 
-    // if only consists of emojis
-    if (isOnlyEmojis(content.body())) {
-      return TextMessageEvent.emoji(
-        content: content,
-        roomId: roomId,
-        isMe: isMe,
-      );
-    }
-
-    late Widget child;
-    isNotice
-        ? child = TextMessageEvent.notice(
-          content: content,
-          roomId: roomId,
-          repliedTo: repliedToBuilder,
-        )
-        : child = TextMessageEvent(
-          content: content,
-          roomId: roomId,
-          repliedTo: repliedToBuilder,
-        );
+    final child = TextMessageEvent(
+      content: content,
+      roomId: roomId,
+      repliedTo: repliedToBuilder,
+      isNotice: isNotice,
+    );
 
     if (isMe) {
       return ChatBubble.me(

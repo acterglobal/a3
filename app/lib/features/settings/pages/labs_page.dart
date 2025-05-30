@@ -28,6 +28,22 @@ class SettingsLabsPage extends ConsumerWidget {
         body: SettingsList(
           sections: [
             SettingsSection(
+              title: Text(lang.labsAppFeatures),
+              tiles: [
+                SettingsTile.switchTile(
+                  title: Text(lang.htmlNext),
+                  description: Text(lang.htmlNextExplainer),
+                  enabled: true,
+                  initialValue: ref.watch(
+                    isActiveProvider(LabsFeature.htmlNext),
+                  ),
+                  onToggle:
+                      (newVal) =>
+                          updateFeatureState(ref, LabsFeature.htmlNext, newVal),
+                ),
+              ],
+            ),
+            SettingsSection(
               title: Text(lang.spaces),
               tiles: [
                 SettingsTile.switchTile(
