@@ -17,7 +17,7 @@ class MyTasksSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final sortedTasks = ref.watch(sortedTasksProvider).value;
-    ref.watch(myOpenTasksProvider); // This ensures the widget rebuilds when tasks change
+    ref.watch(myOpenTasksProvider); 
     
     if (sortedTasks?.totalCount == 0) return const SizedBox.shrink();
 
