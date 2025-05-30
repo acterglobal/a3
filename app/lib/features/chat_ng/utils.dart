@@ -82,3 +82,8 @@ final _emojiRegex = RegExp(
 bool isOnlyEmojis(String text) {
   return _emojiRegex.hasMatch(text.trim());
 }
+
+extension ColorAsCssString on Color {
+  String toCssString() =>
+      'rgba(${(255 * r).toInt()},${(255 * g).toInt()},${(255 * b).toInt()},${a.toStringAsFixed(2)})';
+}

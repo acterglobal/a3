@@ -140,6 +140,54 @@ void main() {
         );
       });
     });
+    group('regular links', () {
+      testWidgets('renders regular links', (tester) async {
+        final html =
+            'abcd <a href="https://acter.global">acter.global regular link</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(text: html, roomId: 'test'),
+        );
+
+        expect(find.byType(UserChip), findsExactly(0));
+        expect(find.byType(RoomChip), findsExactly(0));
+        expect(find.byType(InlineItemPreview), findsExactly(0));
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_regular_links.png'),
+        );
+      });
+      testWidgets('renders regular links in custom color and decoration', (
+        tester,
+      ) async {
+        useGoldenFileComparatorWithThreshold(
+          0.0, // 0% -- we must be picky to fail
+        );
+        final html =
+            'abcd <a href="https://acter.global">acter.global regular link</a> end';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(
+            text: html,
+            roomId: 'test',
+            linkTextStyle: const TextStyle(
+              color: Colors.green,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        );
+
+        expect(find.byType(UserChip), findsExactly(0));
+        expect(find.byType(RoomChip), findsExactly(0));
+        expect(find.byType(InlineItemPreview), findsExactly(0));
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile(
+            'goldens/html_rendering_ng_regular_links_custom_font.png',
+          ),
+        );
+      });
+    });
 
     group('many', () {
       testWidgets('renders many', (tester) async {

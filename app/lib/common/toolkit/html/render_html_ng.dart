@@ -1,5 +1,6 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
@@ -66,36 +67,40 @@ class RenderHtmlNg extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return html.HtmlWidget(
-      text,
-      onTapUrl:
-          (url) => openLink(ref: ref, target: url, lang: L10n.of(context)),
-      textStyle: defaultTextStyle,
-      renderMode: RenderMode.column,
-      factoryBuilder: customWidgetFactory(context, ref),
+  Widget build(BuildContext context, WidgetRef ref) => html.HtmlWidget(
+    text,
+    onTapUrl: (url) => openLink(ref: ref, target: url, lang: L10n.of(context)),
+    textStyle: defaultTextStyle,
+    renderMode: RenderMode.column,
+    factoryBuilder: customWidgetFactory(context, ref),
 
-      customWidgetBuilder:
-          (dom.Element element) => customWidgetBuilder(context, ref, element),
+    customWidgetBuilder:
+        (dom.Element element) => customWidgetBuilder(context, ref, element),
 
-      // customStylesBuilder: // overwriting the default link color
-      //     (element) =>
-      //         element.localName?.toLowerCase() == 'a'
-      //             ? {
-      //               'color': linkTextStyle?.color?.toString() ?? 'white',
-      //               'text-decoration-line':
-      //                   linkTextStyle != null
-      //                       ? switch (linkTextStyle!.decoration) {
-      //                         TextDecoration.underline => 'underline',
-      //                         TextDecoration.none => 'none',
-      //                         TextDecoration.lineThrough => 'line-through',
-      //                         TextDecoration.overline => 'overline',
-      //                         _ => 'none',
-      //                       }
-      //                       : 'underline',
-      //             }
-      //             : null,
-    );
+    customStylesBuilder: // overwriting the default link color
+        (element) =>
+            element.localName?.toLowerCase() == 'a'
+                ? _LinkStylesBuilder()
+                : null,
+  );
+
+  Map<String, String>? _LinkStylesBuilder() {
+    final linkTextStyle = this.linkTextStyle;
+    if (linkTextStyle == null) {
+      return null;
+    }
+    final styles = <String, String>{
+      'color': linkTextStyle.color?.toCssString() ?? 'white',
+    };
+    if (linkTextStyle.decoration != TextDecoration.none) {
+      styles['text-decoration-line'] = switch (linkTextStyle.decoration) {
+        TextDecoration.underline => 'underline',
+        TextDecoration.lineThrough => 'line-through',
+        TextDecoration.overline => 'overline',
+        _ => 'none',
+      };
+    }
+    return styles;
   }
 
   WidgetFactory Function()? customWidgetFactory(
