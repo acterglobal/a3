@@ -1,4 +1,5 @@
 import 'package:acter/common/extensions/options.dart';
+import 'package:acter/features/tasks/pages/my_tasks_page.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/with_sidebar.dart';
 import 'package:acter/features/categories/organize_categories_page.dart';
@@ -440,6 +441,17 @@ final homeShellRoutes = [
       return MaterialPage(
         key: state.pageKey,
         child: SpaceNotificationConfigurationPage(spaceId: spaceId),
+      );
+    },
+  ),
+  GoRoute(
+    name: Routes.myTasks.name,
+    path: Routes.myTasks.route,
+    redirect: authGuardRedirect,
+    pageBuilder: (context, state) {
+      return MaterialPage(
+        key: state.pageKey,
+        child: const MyTasksPage(),
       );
     },
   ),

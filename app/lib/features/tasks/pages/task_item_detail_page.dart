@@ -21,6 +21,7 @@ import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
+import 'package:acter/features/home/providers/task_providers.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
@@ -379,6 +380,10 @@ class _TaskItemBody extends ConsumerWidget {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
+
+      // Invalidate both providers to ensure proper task reordering
+      ref.invalidate(myOpenTasksProvider);
+      ref.invalidate(sortedTasksProvider);
 
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) {
