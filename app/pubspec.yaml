@@ -275,6 +275,9 @@ flutter:
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto-Regular.ttf
+    - family: RobotoMono
+      fonts:
+        - asset: assets/fonts/RobotoMono-Regular.ttf
     - family: NotoEmoji
       fonts:
         - asset: assets/fonts/Noto-COLRv1.ttf
