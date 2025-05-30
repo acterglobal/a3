@@ -204,20 +204,15 @@ async fn calendar_event_create() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
         random_users_with_random_space_under_template("calendar_create", 1, TMPL).await?;
 
-    let user = users.first().expect("exists");
+    let user = users[0].clone();
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = user.clone();
-    let target_id = space_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    let space = Retry::spawn(retry_strategy, || async {
+        user.space(space_id.to_string()).await
     })
     .await?;
 
-    let space = user.space(space_id.to_string()).await?;
     let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
     draft.title(title.to_owned());
