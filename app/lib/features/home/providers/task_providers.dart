@@ -14,7 +14,6 @@ class MyOpenTasksNotifier extends AsyncNotifier<List<Task>> {
 
   @override
   Future<List<Task>> build() async {
-    // Load initial todo list from the remote repository
     final client = await ref.watch(alwaysClientProvider.future);
     _listener =
         client.subscribeMyOpenTasksStream(); // keep it resident in memory
