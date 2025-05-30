@@ -360,7 +360,7 @@ void main() {
       });
     });
 
-    group('many', () {
+    group('many items', () {
       testWidgets('renders many', (tester) async {
         final html = '''
       dfg
@@ -459,6 +459,69 @@ void main() {
         await expectLater(
           find.byType(RenderHtmlNg),
           matchesGoldenFile('goldens/html_rendering_ng_one_line_max_lines.png'),
+        );
+      });
+    });
+
+    group('code block', () {
+      testWidgets('rendersm dart code block', (tester) async {
+        final html = '''
+      dfg
+      <pre><code>\nclass MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}\n</code></pre>
+      end''';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(html: html, roomId: 'test'),
+        );
+
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_code_block_dart.png'),
+        );
+      });
+
+      testWidgets('renders large dart code block', (tester) async {
+        final html = '''
+      dfg
+      <pre><code>
+import 'dart:math' as math;
+
+// Coffee class is the best!
+class Coffee {
+  late int _temperature;
+
+  void heat() => _temperature = 100;
+  void chill() => _temperature = -5;
+
+  void sip() {
+    final bool isTooHot = math.max(37, _temperature) > 37;
+    if (isTooHot)
+      print("myyy liiips!");
+    else
+      print("mmmmm refreshing!");
+  }
+
+  int? get temperature => temperature;
+}
+void main() {
+  var coffee = Coffee();
+  coffee.heat();
+  coffee.sip();
+  coffee.chill();
+  coffee.sip();
+}
+/* And there
+        you have it */
+        </pre></code>
+      end''';
+
+        await tester.pumpProviderWidget(
+          child: RenderHtmlNg(html: html, roomId: 'test'),
+        );
+
+        await expectLater(
+          find.byType(RenderHtmlNg),
+          matchesGoldenFile('goldens/html_rendering_ng_code_block_large.png'),
         );
       });
     });
