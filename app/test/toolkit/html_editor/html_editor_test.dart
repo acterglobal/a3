@@ -1,4 +1,4 @@
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
