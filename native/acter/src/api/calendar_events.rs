@@ -379,6 +379,7 @@ impl CalendarEventDraft {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn physical_location(
         &mut self,
         name: Option<String>,
