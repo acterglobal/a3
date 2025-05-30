@@ -2,6 +2,8 @@ import 'package:acter/common/actions/select_space.dart';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/events/model/event_location_model.dart';
+import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
@@ -20,6 +22,8 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
+import 'package:acter/features/events/widgets/event_location_list_widget.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -52,6 +56,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   DateTime _selectedEndDate = DateTime.now();
   TimeOfDay _selectedEndTime = TimeOfDay.now();
   EditorState textEditorState = EditorState.blank();
+
+  bool _isJitsiEnabled = false;
 
   void _setFromTemplate(CalendarEvent event) {
     // title
@@ -139,6 +145,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
               const SizedBox(height: 10),
               _eventDateAndTime(),
               const SizedBox(height: 10),
+              _buildEventLocationWidget(),
+              const SizedBox(height: 10),
               _eventDescriptionField(),
               const SizedBox(height: 10),
               SelectSpaceFormField(
@@ -177,6 +185,96 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         ),
       ],
     );
+  }
+
+  // Event location field
+  Widget _buildEventLocationWidget() {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(
+              Icons.map_outlined,
+              color: Theme.of(context).colorScheme.primary,
+              size: 30,
+            ),
+            title: Text(L10n.of(context).eventLocations),
+            trailing: IconButton(
+              icon: const Icon(Icons.add_circle_outline, size: 26),
+              tooltip: L10n.of(context).addLocation,
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  isDismissible: true,
+                  enableDrag: true,
+                  showDragHandle: true,
+                  useSafeArea: true,
+                  builder:
+                      (context) => EventLocationListWidget(
+                        onAdd: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            isDismissible: true,
+                            enableDrag: true,
+                            showDragHandle: true,
+                            useSafeArea: true,
+                            builder:
+                                (context) => AddEventLocationWidget(
+                                  onAdd: (location) {
+                                    ref
+                                        .read(eventLocationsProvider.notifier)
+                                        .addLocation(location);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                          );
+                        },
+                      ),
+                );
+              },
+            ),
+          ),
+          _buildJitsiCallLinkWidget(),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  // Jitsi call link field
+  Widget _buildJitsiCallLinkWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Transform.scale(
+          scale: 0.6,
+          child: Switch(
+            value: _isJitsiEnabled,
+            onChanged: (value) {
+        setState(() {
+          _isJitsiEnabled = value;
+            });
+          },
+        ),
+      ),
+      Text(L10n.of(context).createJitsiCallLink),
+      const SizedBox(width: 10),
+        
+    ]);
+  }
+
+  // Create Jitsi call link
+  String _createJitsiCallLink(String title) {   
+    // Generate a random 10-digit number
+    final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
+    // Format the number to ensure it's 10 digits by padding with zeros if needed
+    final formattedNumber = random.toString().padLeft(10, '0');
+    // Clean the title by removing spaces and special characters
+    final cleanTitle = title.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+    return 'https://meet.jit.si/$cleanTitle$formattedNumber';
   }
 
   // Event date and time field
@@ -466,6 +564,19 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       draft.utcStartFromRfc3339(utcStartDateTime);
       draft.utcEndFromRfc3339(utcEndDateTime);
       draft.descriptionHtml(plainDescription, htmlBodyDescription);
+
+      // Add locations to the event
+      final locations = ref.read(eventLocationsProvider);
+      for (final location in locations) {
+        if (location.type == LocationType.physical) {}
+        if (location.type == LocationType.virtual) {
+          if (_isJitsiEnabled) {
+            final jitsiLink = _createJitsiCallLink(title);
+            print('Jitsi Link: $jitsiLink');
+          }
+        }
+      }
+
       final eventId = (await draft.send()).toString();
       final client = await ref.read(alwaysClientProvider.future);
       final calendarEvent = await client.waitForCalendarEvent(eventId, null);

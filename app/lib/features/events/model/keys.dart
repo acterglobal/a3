@@ -9,6 +9,12 @@ class EventsKeys {
   static const eventEndDate = Key('event-end-date');
   static const eventEndTime = Key('event-end-time');
 
+  // Add event location
+  static const eventLocationNameTextField = Key('event-location-name-text-field');
+  static const eventLocationUrlTextField = Key('event-location-url-text-field');
+  static const eventLocationAddressTextField = Key('event-location-address-text-field');
+  static const eventLocationNoteTextField = Key('event-location-note-text-field');
+
   // Create and edit button for event
   static const eventCreateEditBtn = Key('event-create-edit-btn');
 
