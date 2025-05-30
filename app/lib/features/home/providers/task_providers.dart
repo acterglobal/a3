@@ -45,7 +45,7 @@ final myOpenTasksProvider =
 
 final sortedTasksProvider = FutureProvider<SortedTasks>((ref) async {
   final tasks = await ref.watch(myOpenTasksProvider.future);
-  final now = DateTime.now();
+  final now = DateTime.now();  
   
   // Initialize categories map
   final categories = Map.fromEntries(
