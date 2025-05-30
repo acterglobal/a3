@@ -8,6 +8,7 @@ import 'package:acter/features/categories/providers/categories_providers.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/link_room/actions/unlink_child_room.dart';
 import 'package:acter/features/link_room/pages/link_room_page.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/spaces/providers/space_list_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';

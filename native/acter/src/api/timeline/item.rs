@@ -252,15 +252,16 @@ impl TimelineEventItem {
                     .map(|(u, receipt)| (u.to_string(), receipt.clone()))
                     .collect(),
             )
-            .reactions(
-                event
-                    .content()
-                    .reactions()
+            .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
+
+        if let Some(reactions) = event.content().reactions() {
+            me.reactions(
+                reactions
                     .iter()
-                    .map(|(key, group)| {
+                    .map(|(key, reactions_by_sender)| {
                         (
                             key.clone(),
-                            group
+                            reactions_by_sender
                                 .iter()
                                 .map(|(sender_id, info)| {
                                     ReactionRecord::new(
@@ -273,8 +274,8 @@ impl TimelineEventItem {
                         )
                     })
                     .collect(),
-            )
-            .editable(event.is_editable()); // which means _images_ can't be edited right now ... but that is probably fine
+            );
+        }
 
         me.parse_content(event.content(), event.timestamp().get().into(), my_id);
         me.build().expect("Building Room Event doesn’t fail")

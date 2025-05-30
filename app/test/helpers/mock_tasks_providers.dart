@@ -242,6 +242,9 @@ class MockFfiListFfiString extends Mock implements FfiListFfiString {
   bool get isEmpty => _strings.isEmpty;
 
   @override
+  bool get isNotEmpty => _strings.isNotEmpty;
+
+  @override
   FfiString operator [](int index) {
     return _strings[index];
   }

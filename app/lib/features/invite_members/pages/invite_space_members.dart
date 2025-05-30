@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/invite_members/providers/other_spaces_for_invite_members.dart';
 import 'package:acter/features/invite_members/widgets/space_member_invite_card.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
