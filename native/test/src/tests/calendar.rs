@@ -5,7 +5,7 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user_with_template;
+use crate::utils::{random_user_with_template, random_users_with_random_space_under_template};
 
 const THREE_EVENTS_TMPL: &str = r#"
 version = "0.1"
@@ -201,23 +201,24 @@ name = "{{ main.display_name }}’s main test space"
 #[tokio::test]
 async fn calendar_event_create() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("calendar_create", TMPL).await?;
-    sync_state.await_has_synced_history().await?;
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("calendar_create", 1, TMPL).await?;
+
+    let user = users.first().expect("exists");
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let spaces = Retry::spawn(retry_strategy, || async {
-        let spaces = user.spaces().await?;
-        if spaces.len() != 1 {
-            bail!("not all spaces found");
-        }
-        Ok(spaces)
+    let fetcher_client = user.clone();
+    let target_id = space_id.clone();
+    Retry::spawn(retry_strategy, move || {
+        let client = fetcher_client.clone();
+        let room_id = target_id.clone();
+        async move { client.space(room_id.to_string()).await }
     })
     .await?;
-    assert_eq!(spaces.len(), 1);
-    let main_space = spaces.first().expect("main space should be available");
 
-    let mut draft = main_space.calendar_event_draft()?;
+    let space = user.space(space_id.to_string()).await?;
+    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
     draft.title(title.to_owned());
     let now = Utc::now();
@@ -256,7 +257,7 @@ async fn calendar_event_create() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     let cal_events = Retry::spawn(retry_strategy, || async {
-        let cal_events = main_space.calendar_events().await?;
+        let cal_events = space.calendar_events().await?;
         if cal_events.len() != 1 {
             bail!("not all calendar_events found");
         }
