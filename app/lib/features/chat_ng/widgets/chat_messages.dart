@@ -149,7 +149,7 @@ class ChatMessagesConsumerState extends ConsumerState<ChatMessages> {
       key: ref.watch(animatedListChatMessagesProvider(widget.roomId)),
       controller: _scrollController,
       reverse: true,
-      padding: const EdgeInsets.only(bottom: 40),
+      padding: const EdgeInsets.only(bottom: 40, top: 60),
       itemBuilder:
           (_, index, animation) =>
               ChatEvent(roomId: widget.roomId, eventId: messages[index]),
