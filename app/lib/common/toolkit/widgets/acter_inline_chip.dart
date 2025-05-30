@@ -57,7 +57,11 @@ class ActerInlineChip extends StatelessWidget {
           children: [
             if (icon != null)
               WidgetSpan(
-                child: Padding(padding: EdgeInsets.only(right: 4), child: icon),
+                child: Padding(
+                  padding: EdgeInsets.only(right: 4, top: 1),
+                  child: icon,
+                ),
+                alignment: PlaceholderAlignment.top,
               ),
             TextSpan(text: text, style: textStyle),
             if (end != null)

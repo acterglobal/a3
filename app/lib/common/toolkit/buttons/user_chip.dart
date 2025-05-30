@@ -100,7 +100,7 @@ class UserChip extends ConsumerWidget {
       style: style,
       tooltip: memberId,
       leading: ActerAvatar(
-        options: AvatarOptions.DM(memberInfo, size: fontSize),
+        options: AvatarOptions.DM(memberInfo, size: fontSize / 1.75),
       ),
       trailing: trailing,
       textStyle: isMe ? style?.copyWith(fontWeight: FontWeight.bold) : style,
