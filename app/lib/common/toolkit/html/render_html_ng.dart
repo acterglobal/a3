@@ -83,12 +83,14 @@ class RenderHtmlNg extends ConsumerWidget {
     this.maxLines,
     this.roomId,
     this.backgroundColor,
-  }) : html = text.replaceAllMapped(
-         linkMatcher,
-         // we replace links we've found with an html version for the inner
-         // rendering engine
-         (match) => '<a href="${match[0]!}">${match[2]!}</a>',
-       );
+  }) : html = text
+           .replaceAllMapped(
+             linkMatcher,
+             // we replace links we've found with an html version for the inner
+             // rendering engine
+             (match) => '<a href="${match[0]!}">${match[2]!}</a>',
+           )
+           .replaceAll('\n', '<br>');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => HtmlWidget(
