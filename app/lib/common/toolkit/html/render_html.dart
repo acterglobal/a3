@@ -78,7 +78,7 @@ class RenderHtml extends ConsumerWidget {
     final linkStyle =
         linkTextStyle ??
         TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.onSurface,
           decoration: TextDecoration.underline,
         );
     if (nextHtml) {

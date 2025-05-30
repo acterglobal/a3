@@ -69,5 +69,64 @@ void main() {
         matchesGoldenFile('goldens_images/chat_event_reply_message_event.png'),
       );
     });
+    testWidgets('ChatEvent reply-to message event widget html next', (
+      tester,
+    ) async {
+      await loadTestFonts();
+      useGoldenFileComparatorWithThreshold(0.01); // 1%
+
+      await tester.pumpProviderWidget(
+        overrides: [
+          myUserIdStrProvider.overrideWith((ref) => '@acter1:m-1.acter.global'),
+          isActiveProvider(LabsFeature.htmlNext).overrideWith((ref) => true),
+          messageReadReceiptsProvider.overrideWith(
+            (ref, item) => {'@acter1:m-1.acter.global': 1716230400},
+          ),
+        ],
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-reply-1',
+              ),
+            ),
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-reply-2',
+              ),
+            ),
+            Material(
+              child: ChatEvent(
+                roomId:
+                    productTeamMutedWithSingleTypingUserRoom2(
+                      '@emily:acter.global',
+                    ).roomId,
+                eventId: 'mock-reply-3',
+              ),
+            ),
+          ],
+        ),
+      );
+
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      await expectLater(
+        find.byType(ListView),
+        matchesGoldenFile(
+          'goldens_images/chat_event_reply_message_event_html_next.png',
+        ),
+      );
+    });
   });
 }

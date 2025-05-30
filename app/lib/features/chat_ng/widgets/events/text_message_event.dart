@@ -1,140 +1,108 @@
-import 'package:acter/common/themes/acter_theme.dart';
 import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/common/toolkit/html/render_html.dart';
+import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:markdown/markdown.dart' as md;
 
-enum TextMessageType { regular, reply, emoji, notice }
-
-class TextMessageEvent extends ConsumerWidget {
+class TextMessageEvent extends ConsumerStatefulWidget {
   final String roomId;
   final MsgContent content;
-  final TextMessageType _type;
-  final bool _isMe; // Only needed for emoji messages to determine style
+  final bool isNotice;
+  final bool isReply;
   final Widget? repliedTo;
 
-  const TextMessageEvent.inner({
+  const TextMessageEvent({
     super.key,
     required this.content,
     required this.roomId,
-    required TextMessageType type,
-    bool isMe = false,
+    this.isNotice = false,
+    this.isReply = false,
     this.repliedTo,
-  }) : _type = type,
-       _isMe = isMe;
+  });
 
-  factory TextMessageEvent.emoji({
-    Key? key,
-    required MsgContent content,
-    required String roomId,
-    required bool isMe,
-  }) {
-    return TextMessageEvent.inner(
-      key: key,
-      content: content,
-      roomId: roomId,
-      type: TextMessageType.emoji,
-      isMe: isMe,
-    );
-  }
+  @override
+  ConsumerState<TextMessageEvent> createState() => _TextMessageEventState();
+}
 
-  // Factory constructor for reply messages
-  factory TextMessageEvent.reply({
-    Key? key,
-    required MsgContent content,
-    required String roomId,
-  }) {
-    return TextMessageEvent.inner(
-      key: key,
-      content: content,
-      roomId: roomId,
-      type: TextMessageType.reply,
-    );
-  }
+class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
+  late String body;
+  String? bodyFormatted;
 
-  // Factory constructor for notice messages
-  factory TextMessageEvent.notice({
-    Key? key,
-    required MsgContent content,
-    required String roomId,
-    Widget? repliedTo,
-  }) {
-    return TextMessageEvent.inner(
-      key: key,
-      content: content,
-      roomId: roomId,
-      type: TextMessageType.notice,
-      repliedTo: repliedTo,
-    );
-  }
-  // Default factory constructor
-  factory TextMessageEvent({
-    Key? key,
-    required MsgContent content,
-    required String roomId,
-    Widget? repliedTo,
-  }) {
-    return TextMessageEvent.inner(
-      key: key,
-      content: content,
-      roomId: roomId,
-      type: TextMessageType.regular,
-      repliedTo: repliedTo,
-    );
+  @override
+  void initState() {
+    super.initState();
+    bodyFormatted = widget.content.formattedBody();
+    body = widget.content.body();
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final textTheme = Theme.of(context).textTheme;
-    final chatTheme = Theme.of(context).chatTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    final body = content.formattedBody() ?? md.markdownToHtml(content.body());
+  void didUpdateWidget(TextMessageEvent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    bodyFormatted = widget.content.formattedBody();
+    body = widget.content.body();
+  }
 
-    // Handle emoji messages
-    if (_type == TextMessageType.emoji) {
-      final emojiTextStyle =
-          _isMe
-              ? chatTheme.sentEmojiMessageTextStyle
-              : chatTheme.receivedEmojiMessageTextStyle;
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: RenderHtml(
-          text: body,
-          roomId: roomId,
-          defaultTextStyle: emojiTextStyle.copyWith(fontFamily: emojiFont),
-        ),
-      );
+  @override
+  Widget build(BuildContext context) {
+    final inner =
+        (isOnlyEmojis(body))
+            ? _buildEmojiMessage(context)
+            : _buildTextMessage(context);
+
+    if (widget.isReply) {
+      // we return the widget without any additional reply data
+      return inner;
     }
-    final replied = repliedTo;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (replied != null) ...[replied, const SizedBox(height: 10)],
-        RenderHtml(
-          linkTextStyle: TextStyle(
-            color:
-                _type == TextMessageType.notice
-                    ? colorScheme.onSurface.withValues(alpha: 0.5)
-                    : colorScheme.onSurface.withValues(alpha: 0.9),
-            decoration: TextDecoration.underline,
-          ),
-          text: body,
-          roomId: roomId,
-          shrinkToFit: true,
-          maxLines: _type == TextMessageType.reply ? 2 : null,
-          defaultTextStyle: textTheme.bodySmall?.copyWith(
-            color:
-                _type == TextMessageType.notice
-                    ? colorScheme.onSurface.withValues(alpha: 0.5)
-                    : colorScheme.onSurface.withValues(alpha: 0.9),
-            overflow:
-                _type == TextMessageType.reply ? TextOverflow.ellipsis : null,
-          ),
-        ),
+        if (widget.repliedTo != null) ...[
+          widget.repliedTo!,
+          const SizedBox(height: 10),
+        ],
+        inner,
       ],
+    );
+  }
+
+  // emoji only special message
+  Widget _buildEmojiMessage(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    child: Text(
+      body, // what about formatted body?
+      style: EmojiConfig.emojiTextStyle?.copyWith(fontSize: 28),
+      maxLines: widget.isReply ? 2 : null,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
+
+  Widget _buildTextMessage(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final color =
+        widget.isNotice
+            ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9);
+
+    return RenderHtml(
+      linkTextStyle: TextStyle(
+        color: color,
+        decoration: TextDecoration.underline,
+      ),
+      text: bodyFormatted ?? body,
+      roomId: widget.roomId,
+      shrinkToFit: true,
+      maxLines: widget.isReply ? 2 : null,
+      defaultTextStyle: textTheme.bodySmall?.copyWith(
+        color:
+            widget.isNotice
+                ? colorScheme.onSurface.withValues(alpha: 0.5)
+                : colorScheme.onSurface.withValues(alpha: 0.9),
+        overflow: widget.isNotice ? TextOverflow.ellipsis : null,
+      ),
     );
   }
 }

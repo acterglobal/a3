@@ -9,10 +9,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
     as html;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::toolkit::html::render_html_ng');
+
+class MaxSizeWidgetFactory extends WidgetFactory {
+  final double maxHeight;
+  MaxSizeWidgetFactory({required this.maxHeight});
+
+  @override
+  Widget buildBodyWidget(BuildContext context, Widget child) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: ClipRect(clipBehavior: Clip.antiAlias, child: child),
+    );
+  }
+
+  @override
+  Widget buildColumnWidget(
+    BuildContext context,
+    List<Widget> children, {
+    CrossAxisAlignment? crossAxisAlignment,
+    TextDirection? dir,
+  }) {
+    if (children.length == 1) {
+      return children.first;
+    }
+
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      textDirection: dir,
+      children: children,
+    );
+  }
+}
 
 class RenderHtmlNg extends ConsumerWidget {
   final String text;
@@ -35,25 +67,46 @@ class RenderHtmlNg extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final htmlWidget = html.HtmlWidget(
+    return html.HtmlWidget(
       text,
       onTapUrl:
           (url) => openLink(ref: ref, target: url, lang: L10n.of(context)),
       textStyle: defaultTextStyle,
+      renderMode: RenderMode.column,
+      factoryBuilder: customWidgetFactory(context, ref),
 
       customWidgetBuilder:
           (dom.Element element) => customWidgetBuilder(context, ref, element),
 
-      customStylesBuilder: // overwriting the default link color
-          (element) =>
-              element.localName?.toLowerCase() == 'a'
-                  ? {'color': linkTextStyle?.color?.toString() ?? 'white'}
-                  : null,
+      // customStylesBuilder: // overwriting the default link color
+      //     (element) =>
+      //         element.localName?.toLowerCase() == 'a'
+      //             ? {
+      //               'color': linkTextStyle?.color?.toString() ?? 'white',
+      //               'text-decoration-line':
+      //                   linkTextStyle != null
+      //                       ? switch (linkTextStyle!.decoration) {
+      //                         TextDecoration.underline => 'underline',
+      //                         TextDecoration.none => 'none',
+      //                         TextDecoration.lineThrough => 'line-through',
+      //                         TextDecoration.overline => 'overline',
+      //                         _ => 'none',
+      //                       }
+      //                       : 'underline',
+      //             }
+      //             : null,
     );
+  }
+
+  WidgetFactory Function()? customWidgetFactory(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final mxLines = maxLines;
     if (mxLines == null) {
-      return htmlWidget;
+      return null;
     }
+
     final fontSize =
         (defaultTextStyle?.fontSize ??
             Theme.of(context).textTheme.bodyMedium?.fontSize ??
@@ -63,13 +116,7 @@ class RenderHtmlNg extends ConsumerWidget {
             Theme.of(context).textTheme.bodyMedium?.height ??
             1);
     final maxHeight = (mxLines * fontSize * lineHeight).toDouble();
-    return Container(
-      color: backgroundColor,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxHeight),
-        child: ClipRect(clipBehavior: Clip.antiAlias, child: htmlWidget),
-      ),
-    );
+    return () => MaxSizeWidgetFactory(maxHeight: maxHeight);
   }
 
   Widget? customWidgetBuilder(
@@ -112,7 +159,11 @@ class RenderHtmlNg extends ConsumerWidget {
 
   Widget? _buildPill(UriParseResult parsed, Uri uri) => switch (parsed.type) {
     (LinkType.userId) => html.InlineCustomWidget(
-      child: UserChip(roomId: roomId, memberId: parsed.target),
+      child: UserChip(
+        roomId: roomId,
+        memberId: parsed.target,
+        style: defaultTextStyle,
+      ),
     ),
     (LinkType.roomId) => html.InlineCustomWidget(
       child: RoomChip(roomId: parsed.target, uri: uri),
