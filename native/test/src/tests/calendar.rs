@@ -399,3 +399,79 @@ async fn calendar_event_format() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn calendar_event_coordinates() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (users, _sync_states, space_id, _engine) =
+        random_users_with_random_space_under_template("calendar_coordinates", 1, TMPL).await?;
+
+    let user = users[0].clone();
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
+    let space = Retry::spawn(retry_strategy, || async {
+        user.space(space_id.to_string()).await
+    })
+    .await?;
+
+    let mut draft = space.calendar_event_draft()?;
+    let title = "First meeting";
+    draft.title(title.to_owned());
+    let now = Utc::now();
+    let utc_start = now + Duration::days(1);
+    let utc_end = now + Duration::days(2);
+    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+
+    let name = "Test Location";
+    let description = "Philadelphia Office";
+    let description_html = "**Here is our office**";
+    let uri = "https://example.com/location";
+    let address = "123 Test St, Philadelphia, PA 19103";
+    let notes = "Please bring your laptop.";
+
+    let coordinates = "ceo:51.5074,-0.1278";
+    if let Err(e) = draft.physical_location(
+        Some(name.to_owned()),
+        Some(description.to_owned()),
+        Some(description_html.to_owned()),
+        Some(coordinates.to_owned()),
+        Some(uri.to_owned()),
+        Some(address.to_owned()),
+        Some(notes.to_owned()),
+    ) {
+        assert_eq!(
+            e.to_string(),
+            format!("Failed to parse geo URI: {}", coordinates)
+        );
+    }
+
+    let coordinates = "geo:151.5074,-0.1278";
+    if let Err(e) = draft.physical_location(
+        Some(name.to_owned()),
+        Some(description.to_owned()),
+        Some(description_html.to_owned()),
+        Some(coordinates.to_owned()),
+        Some(uri.to_owned()),
+        Some(address.to_owned()),
+        Some(notes.to_owned()),
+    ) {
+        assert_eq!(e.to_string(), "Failed to parse latitude value: 151.5074");
+    }
+
+    let coordinates = "geo:51.5074,-200.1278";
+    if let Err(e) = draft.physical_location(
+        Some(name.to_owned()),
+        Some(description.to_owned()),
+        Some(description_html.to_owned()),
+        Some(coordinates.to_owned()),
+        Some(uri.to_owned()),
+        Some(address.to_owned()),
+        Some(notes.to_owned()),
+    ) {
+        assert_eq!(e.to_string(), "Failed to parse longitude value: -200.1278");
+    }
+
+    Ok(())
+}

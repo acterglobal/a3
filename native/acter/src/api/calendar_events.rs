@@ -404,33 +404,33 @@ impl CalendarEventDraft {
                 r"^geo:(?P<lat>-?\d+\.\d+),(?P<lon>-?\d+\.\d+)(?:,(?P<alt>-?\d+\.\d+))?(?:;(?P<params>.*))?$",
             )?;
             let caps = re.captures(coords).ok_or_else(|| Error::FailedToParse {
-                model_type: "GeoLocation".to_owned(),
-                msg: format!("Invalid geo URI: {}", coords),
+                model_type: "geo URI".to_owned(),
+                msg: coords.clone(),
             })?;
 
             // Parse latitude & longitude
             let lat: f64 = caps["lat"].parse().map_err(|_| Error::FailedToParse {
-                model_type: "GeoLocation".to_owned(),
-                msg: format!("Invalid latitude format: {}", caps["lat"].to_owned()),
+                model_type: "latitude format".to_owned(),
+                msg: caps["lat"].to_owned(),
             })?;
             let lon: f64 = caps["lon"].parse().map_err(|_| Error::FailedToParse {
-                model_type: "GeoLocation".to_owned(),
-                msg: format!("Invalid longitude format: {}", caps["lon"].to_owned()),
+                model_type: "longitude format".to_owned(),
+                msg: caps["lon"].to_owned(),
             })?;
 
             // Validate bounds
             if !(-90.0..=90.0).contains(&lat) {
                 let e = Error::FailedToParse {
-                    model_type: "GeoLocation".to_owned(),
-                    msg: format!("Invalid latitude value: {}", lat),
+                    model_type: "latitude value".to_owned(),
+                    msg: caps["lat"].to_owned(),
                 }
                 .into();
                 return Err(e);
             }
             if !(-180.0..=180.0).contains(&lon) {
                 let e = Error::FailedToParse {
-                    model_type: "GeoLocation".to_owned(),
-                    msg: format!("Invalid longitude value: {}", lon),
+                    model_type: "longitude value".to_owned(),
+                    msg: caps["lon"].to_owned(),
                 }
                 .into();
                 return Err(e);
@@ -439,8 +439,8 @@ impl CalendarEventDraft {
             // Optional: Validate altitude if present
             if let Some(alt_str) = caps.name("alt") {
                 let alt: f64 = alt_str.as_str().parse().map_err(|_| Error::FailedToParse {
-                    model_type: "GeoLocation".to_owned(),
-                    msg: format!("Invalid altitude format: {}", alt_str.as_str()),
+                    model_type: "altitude format".to_owned(),
+                    msg: alt_str.as_str().to_owned(),
                 })?;
                 // No strict bounds in RFC 5870, but you can add checks if needed
             }
@@ -450,8 +450,8 @@ impl CalendarEventDraft {
                 for param in params.as_str().split(';') {
                     if !param.is_empty() && !param.contains('=') {
                         let e = Error::FailedToParse {
-                            model_type: "GeoLocation".to_owned(),
-                            msg: format!("Invalid parameter format: {}", param),
+                            model_type: "parameter format".to_owned(),
+                            msg: param.to_owned(),
                         }
                         .into();
                         return Err(e);
