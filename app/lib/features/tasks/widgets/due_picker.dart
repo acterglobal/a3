@@ -45,7 +45,7 @@ class _DueQuickPickerDrawer extends StatelessWidget {
             visualDensity: VisualDensity.compact,
             iconData: Icons.calendar_today,
             withMenu: false,
-            onTap: () => _submit(context, DateTime.now()),
+            onTap: () => _submit(context, DateTime.now().addDays(1)),
           ),
           ...renderPostponing(context),
           const SizedBox(height: 10),
