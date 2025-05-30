@@ -33,14 +33,19 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         coordinates: Option<String>,
 
-        /// further Link
+        /// Also physical location can have a website
         #[serde(default, skip_serializing_if = "Option::is_none")]
         uri: Option<String>,
+
+        /// Also physical location can have a website
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        address: Option<String>,
+
+        /// Also physical location can have a website
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        notes: Option<String>,
     },
     Virtual {
-        /// URI to this virtual location
-        uri: String,
-
         /// Optional name of this virtual location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         name: Option<String>,
@@ -52,6 +57,17 @@ pub enum EventLocation {
         /// Alternative Icon to show with this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
+
+        /// URI to this virtual location
+        uri: String,
+
+        /// Also physical location can have a website
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        address: Option<String>,
+
+        /// Also physical location can have a website
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        notes: Option<String>,
     },
 }
 
@@ -68,6 +84,8 @@ impl EventLocationInfo {
                 icon,
                 coordinates,
                 uri,
+                address,
+                notes,
             } => EventLocationInfo {
                 inner: EventLocation::Physical {
                     name: name.clone(),
@@ -75,19 +93,25 @@ impl EventLocationInfo {
                     icon: icon.clone(),
                     coordinates: coordinates.clone(),
                     uri: uri.clone(),
+                    address: address.clone(),
+                    notes: notes.clone(),
                 },
             },
             EventLocation::Virtual {
-                uri,
                 name,
                 description,
                 icon,
+                uri,
+                address,
+                notes,
             } => EventLocationInfo {
                 inner: EventLocation::Virtual {
-                    uri: uri.clone(),
                     name: name.clone(),
                     description: description.clone(),
                     icon: icon.clone(),
+                    uri: uri.clone(),
+                    address: address.clone(),
+                    notes: notes.clone(),
                 },
             },
         }
@@ -137,6 +161,20 @@ impl EventLocationInfo {
         match &self.inner {
             EventLocation::Physical { uri, .. } => uri.clone(),
             EventLocation::Virtual { uri, .. } => Some(uri.clone()),
+        }
+    }
+
+    pub fn address(&self) -> Option<String> {
+        match &self.inner {
+            EventLocation::Physical { address, .. } => address.clone(),
+            EventLocation::Virtual { address, .. } => address.clone(),
+        }
+    }
+
+    pub fn notes(&self) -> Option<String> {
+        match &self.inner {
+            EventLocation::Physical { notes, .. } => notes.clone(),
+            EventLocation::Virtual { notes, .. } => notes.clone(),
         }
     }
 }
@@ -198,6 +236,8 @@ impl CalendarEventBuilder {
         description: Option<TextMessageEventContent>,
         coordinates: Option<String>,
         uri: Option<String>,
+        address: Option<String>,
+        notes: Option<String>,
     ) -> &mut Self {
         let mut locations = self.locations.clone().unwrap_or_default();
         locations.push(EventLocation::Physical {
@@ -206,6 +246,8 @@ impl CalendarEventBuilder {
             icon: None,
             coordinates,
             uri,
+            address,
+            notes,
         });
         self.locations = Some(locations);
         self
@@ -213,9 +255,11 @@ impl CalendarEventBuilder {
 
     pub fn add_virtual_location(
         &mut self,
-        uri: String,
         name: Option<String>,
         description: Option<TextMessageEventContent>,
+        uri: String,
+        address: Option<String>,
+        notes: Option<String>,
     ) -> &mut Self {
         let mut locations = self.locations.clone().unwrap_or_default();
         locations.push(EventLocation::Virtual {
@@ -223,6 +267,8 @@ impl CalendarEventBuilder {
             name,
             description,
             icon: None,
+            address,
+            notes,
         });
         self.locations = Some(locations);
         self

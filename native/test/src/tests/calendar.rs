@@ -231,18 +231,24 @@ async fn calendar_event_create() -> Result<()> {
     let description_html = "**Here is our office**";
     let coordinates = "geo:51.5074,-0.1278";
     let uri = "https://example.com/location";
+    let address = "123 Test St, Philadelphia, PA 19103";
+    let notes = "Please bring your laptop.";
     draft.physical_location(
         Some(name.to_owned()),
         Some(description.to_owned()),
         Some(description_html.to_owned()),
         Some(coordinates.to_owned()),
         Some(uri.to_owned()),
+        Some(address.to_owned()),
+        Some(notes.to_owned()),
     )?;
     draft.virtual_location(
         Some(name.to_owned()),
         Some(description.to_owned()),
         Some(description_html.to_owned()),
         uri.to_owned(),
+        Some(address.to_owned()),
+        Some(notes.to_owned()),
     )?;
 
     let event_id = draft.send().await?;
@@ -280,6 +286,8 @@ async fn calendar_event_create() -> Result<()> {
     );
     assert_eq!(locations[0].coordinates().as_deref(), Some(coordinates));
     assert_eq!(locations[0].uri().as_deref(), Some(uri));
+    assert_eq!(locations[0].address().as_deref(), Some(address));
+    assert_eq!(locations[0].notes().as_deref(), Some(notes));
 
     assert_eq!(locations[1].location_type(), "Virtual");
     assert_eq!(locations[1].name().as_deref(), Some(name));
@@ -295,6 +303,8 @@ async fn calendar_event_create() -> Result<()> {
         Some(description_html)
     );
     assert_eq!(locations[1].uri().as_deref(), Some(uri));
+    assert_eq!(locations[1].address().as_deref(), Some(address));
+    assert_eq!(locations[1].notes().as_deref(), Some(notes));
 
     Ok(())
 }

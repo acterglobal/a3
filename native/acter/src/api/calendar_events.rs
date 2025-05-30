@@ -386,6 +386,8 @@ impl CalendarEventDraft {
         description_html: Option<String>,
         coordinates: Option<String>,
         uri: Option<String>,
+        address: Option<String>,
+        notes: Option<String>,
     ) -> Result<()> {
         let mut desc_plain = None;
         let mut desc_html = None;
@@ -456,8 +458,14 @@ impl CalendarEventDraft {
                 }
             }
         }
-        self.inner
-            .add_physical_location(name, desc_html.or(desc_plain), coordinates, uri);
+        self.inner.add_physical_location(
+            name,
+            desc_html.or(desc_plain),
+            coordinates,
+            uri,
+            address,
+            notes,
+        );
         Ok(())
     }
 
@@ -467,6 +475,8 @@ impl CalendarEventDraft {
         description: Option<String>,
         description_html: Option<String>,
         uri: String,
+        address: Option<String>,
+        notes: Option<String>,
     ) -> Result<()> {
         let calendar_event = self.inner.clone();
         let mut desc_plain = None;
@@ -479,7 +489,7 @@ impl CalendarEventDraft {
             }
         }
         self.inner
-            .add_virtual_location(uri, name, desc_html.or(desc_plain));
+            .add_virtual_location(name, desc_html.or(desc_plain), uri, address, notes);
         Ok(())
     }
 
