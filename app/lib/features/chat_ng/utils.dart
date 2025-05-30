@@ -71,3 +71,14 @@ const List<MaterialAccentColor> chatBubbleDisplayNameColors =
       Colors.orangeAccent,
       Colors.deepOrangeAccent,
     ];
+
+// inspired by https://github.com/mathiasbynens/emoji-regex under MIT license
+final _emojiRegex = RegExp(
+  r'^(\p{RI}{2}|(?![#*\d](?!\uFE0F?\u20E3))\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?)(?:\u200D\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?))*|\s)+$',
+  unicode: true,
+  multiLine: true,
+);
+
+bool isOnlyEmojis(String text) {
+  return _emojiRegex.hasMatch(text.trim());
+}
