@@ -80,11 +80,11 @@ class RenderHtmlNg extends ConsumerWidget {
     customStylesBuilder: // overwriting the default link color
         (element) =>
             element.localName?.toLowerCase() == 'a'
-                ? _LinkStylesBuilder()
+                ? _linkStylesBuilder()
                 : null,
   );
 
-  Map<String, String>? _LinkStylesBuilder() {
+  Map<String, String>? _linkStylesBuilder() {
     final linkTextStyle = this.linkTextStyle;
     if (linkTextStyle == null) {
       return null;
