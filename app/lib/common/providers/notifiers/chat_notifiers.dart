@@ -48,7 +48,7 @@ class AsyncConvoNotifier extends FamilyAsyncNotifier<Convo?, String> {
       },
     );
     ref.onDispose(() => _poller.cancel());
-    return await client.convoWithRetry(roomId, 120);
+    return await client.convoWithRetry(roomId, 20);
   }
 }
 

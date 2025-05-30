@@ -1,6 +1,6 @@
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/widgets/space_sections/other_chats_section.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
