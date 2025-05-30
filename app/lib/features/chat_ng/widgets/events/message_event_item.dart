@@ -247,7 +247,6 @@ class MessageEventItem extends ConsumerWidget {
 
     if (isMe) {
       return ChatBubble.me(
-        context: context,
         isFirstMessageBySender: isFirstMessageBySender,
         isLastMessageBySender: isLastMessageBySender,
         isEdited: wasEdited,
@@ -257,7 +256,6 @@ class MessageEventItem extends ConsumerWidget {
       );
     }
     return ChatBubble(
-      context: context,
       isFirstMessageBySender: isFirstMessageBySender,
       isLastMessageBySender: isLastMessageBySender,
       isEdited: wasEdited,
@@ -278,7 +276,6 @@ class MessageEventItem extends ConsumerWidget {
   ) {
     return isMe
         ? ChatBubble.me(
-          context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,
@@ -286,7 +283,6 @@ class MessageEventItem extends ConsumerWidget {
           child: mediaMessageWidget,
         )
         : ChatBubble(
-          context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
           isEdited: wasEdited,

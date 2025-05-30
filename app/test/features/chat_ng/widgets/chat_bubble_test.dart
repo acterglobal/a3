@@ -14,7 +14,6 @@ void main() {
       await tester.pumpProviderWidget(
         child: Center(
           child: ChatBubble(
-            context: tester.element(find.byType(Center)),
             timestamp: timestamp,
             isFirstMessageBySender: true,
             isLastMessageBySender: true,
@@ -38,7 +37,6 @@ void main() {
             builder: (context) {
               testContext = context;
               return ChatBubble(
-                context: context,
                 isEdited: true,
                 isFirstMessageBySender: true,
                 isLastMessageBySender: true,
@@ -63,7 +61,6 @@ void main() {
               builder: (context) {
                 testContext = context;
                 return ChatBubble(
-                  context: context,
                   isEdited: true,
                   timestamp: timestamp,
                   isFirstMessageBySender: true,
@@ -91,7 +88,6 @@ void main() {
             builder: (context) {
               testContext = context;
               return ChatBubble(
-                context: context,
                 isEdited: false,
                 isFirstMessageBySender: true,
                 isLastMessageBySender: true,
@@ -116,7 +112,6 @@ void main() {
           builder: (context) {
             testContext = context;
             return ChatBubble.me(
-              context: context,
               isEdited: true,
               timestamp: timestamp,
               isFirstMessageBySender: true,
