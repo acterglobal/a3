@@ -11,8 +11,13 @@ import 'package:acter/common/widgets/html_editor/services/constants.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor_codeblock/code_block_actions.dart';
+import 'package:appflowy_editor_codeblock/code_block_block_component.dart';
+import 'package:appflowy_editor_codeblock/code_block_shortcuts.dart';
+import 'package:appflowy_editor_codeblock/code_block_style.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::html_editor');
@@ -45,6 +50,11 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
 
 // contains final input string with mentions processed and mentions
 typedef MentionParsedText = (String, List<MentionAttributes>);
+
+final List<SelectionMenuItem> slashMenuItems = [
+  ...standardSelectionMenuItems,
+  codeBlockItem('Code Block', Icons.code),
+];
 
 extension ActerEditorStateHelpers on EditorState {
   // helper to parse mentions to markdown/html format
@@ -421,25 +431,52 @@ class _HtmlEditorState extends State<HtmlEditor> {
     return isDesktop ? desktopEditor(roomId) : mobileEditor(roomId);
   }
 
-  Map<String, BlockComponentBuilder> _buildBlockComponentBuilders() {
-    final map = {...standardBlockComponentBuilderMap};
-    map[ParagraphBlockKeys.type] = ParagraphBlockComponentBuilder(
-      showPlaceholder: (editorState, node) => editorState.document.isEmpty,
-      configuration: BlockComponentConfiguration(
-        placeholderText: (node) => widget.hintText ?? '',
-        padding: (node) => EdgeInsets.zero,
+  Map<String, BlockComponentBuilder> get _blockComponents => {
+    ...standardBlockComponentBuilderMap,
+    ...{
+      ParagraphBlockKeys.type: ParagraphBlockComponentBuilder(
+        showPlaceholder: (editorState, node) => editorState.document.isEmpty,
+        configuration: BlockComponentConfiguration(
+          placeholderText: (node) => widget.hintText ?? ' ',
+        ),
       ),
-    );
+      CodeBlockKeys.type: CodeBlockComponentBuilder(
+        configuration: BlockComponentConfiguration(
+          padding: (node) => EdgeInsets.zero,
+        ),
+        styleBuilder:
+            () => CodeBlockStyle(
+              backgroundColor:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Colors.grey[200]!
+                      : Colors.grey[800]!,
+              foregroundColor:
+                  Theme.of(context).brightness == Brightness.light
+                      ? Colors.blue
+                      : Colors.blue[800]!,
+            ),
+        actions: CodeBlockActions(
+          onCopy: (code) => Clipboard.setData(ClipboardData(text: code)),
+        ),
+      ),
+    },
+  };
 
-    return map;
-  }
+  List<CharacterShortcutEvent> get _characterShortcutEvents => [
+    // code block
+    ...codeBlockCharacterEvents,
+    // customize the slash menu command
+    customSlashCommand(slashMenuItems),
+    // defaults
+    ...standardCharacterShortcutEvents
+      ..removeWhere((element) => element == slashCommand),
+    if (widget.roomId != null) ...mentionShortcuts(context, widget.roomId!),
+  ];
 
-  List<CharacterShortcutEvent> _buildCharacterShortcutEvents() {
-    return [
-      ...standardCharacterShortcutEvents.where((e) => e != slashCommand),
-      if (widget.roomId != null) ...mentionShortcuts(context, widget.roomId!),
-    ];
-  }
+  List<CommandShortcutEvent> get _commandShortcutEvents => [
+    ...standardCommandShortcutEvents,
+    ...codeBlockCommands(),
+  ];
 
   Widget? generateFooter() {
     if (widget.footer != null) {
@@ -562,9 +599,9 @@ class _HtmlEditorState extends State<HtmlEditor> {
       editorScrollController: editorScrollController,
       editorStyle: editorStyle,
       footer: generateFooter(),
-      blockComponentBuilders: _buildBlockComponentBuilders(),
-      characterShortcutEvents: _buildCharacterShortcutEvents(),
-      commandShortcutEvents: standardCommandShortcutEvents,
+      blockComponentBuilders: _blockComponents,
+      characterShortcutEvents: _characterShortcutEvents,
+      commandShortcutEvents: _commandShortcutEvents,
       disableAutoScroll: false,
       autoScrollEdgeOffset: 20,
     );
