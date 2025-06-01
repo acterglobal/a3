@@ -11,13 +11,11 @@ import 'package:acter/common/widgets/html_editor/services/constants.dart';
 import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:appflowy_editor_codeblock/code_block_actions.dart';
 import 'package:appflowy_editor_codeblock/code_block_block_component.dart';
 import 'package:appflowy_editor_codeblock/code_block_shortcuts.dart';
 import 'package:appflowy_editor_codeblock/code_block_style.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::html_editor');
@@ -454,10 +452,8 @@ class _HtmlEditorState extends State<HtmlEditor> {
                   Theme.of(context).brightness == Brightness.light
                       ? Colors.blue
                       : Colors.blue[800]!,
+              fontSize: Theme.of(context).textTheme.bodySmall?.fontSize ?? 12,
             ),
-        actions: CodeBlockActions(
-          onCopy: (code) => Clipboard.setData(ClipboardData(text: code)),
-        ),
       ),
     },
   };
