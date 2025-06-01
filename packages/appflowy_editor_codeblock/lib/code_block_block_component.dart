@@ -13,6 +13,13 @@ import 'package:universal_platform/universal_platform.dart';
 
 import 'utils.dart';
 
+const defaultCodeBlockPadding = EdgeInsets.only(
+  top: 5,
+  left: 5,
+  right: 5,
+  bottom: 8,
+);
+
 final allCodeBlockLanguages = [
   'Assembly',
   'Bash',
@@ -134,12 +141,7 @@ typedef CodeBlockCopyBuilder = Widget Function(EditorState, Node);
 class CodeBlockComponentBuilder extends BlockComponentBuilder {
   CodeBlockComponentBuilder({
     super.configuration,
-    this.padding = const EdgeInsets.only(
-      top: 20,
-      left: 20,
-      right: 20,
-      bottom: 34,
-    ),
+    this.padding = defaultCodeBlockPadding,
     this.styleBuilder,
     this.actions = const CodeBlockActions(),
     this.actionWrapperBuilder,
@@ -195,7 +197,7 @@ class CodeBlockComponentWidget extends BlockComponentStatefulWidget {
     super.showActions,
     super.actionBuilder,
     super.configuration = const BlockComponentConfiguration(),
-    this.padding = const EdgeInsets.all(20),
+    this.padding = defaultCodeBlockPadding,
     this.style,
     this.actions = const CodeBlockActions(),
     this.actionWrapperBuilder,
@@ -352,44 +354,49 @@ class _CodeBlockComponentWidgetState extends State<CodeBlockComponentWidget>
               widget.style?.backgroundColor ??
               Theme.of(context).colorScheme.secondaryContainer,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
           textDirection: textDirection,
           children: [
-            MouseRegion(
-              onEnter: (_) => setState(() => canPanStart = false),
-              onExit: (_) => setState(() => canPanStart = true),
-              child: Opacity(
-                opacity: isHovering || isSelected ? 1.0 : 0.0,
-                child: Row(
-                  children: [
-                    _LanguageSelector(
-                      editorState: editorState,
-                      language: language,
-                      isSelected: isSelected,
-                      onLanguageSelected: (language) {
-                        updateLanguage(language);
-                        widget.actions.onLanguageChanged?.call(language);
-                      },
-                      onMenuOpen: () => isSelected = true,
-                      onMenuClose: () => setState(() => isSelected = false),
-                      languagePickerBuilder: widget.languagePickerBuilder,
-                      localizations: widget.localizations,
-                    ),
-                    const Spacer(),
-                    if (widget.actions.onCopy != null &&
-                        widget.copyButtonBuilder == null) ...[
-                      _CopyButton(
-                        node: node,
-                        onCopy: widget.actions.onCopy!,
+            Positioned(
+              right: 0,
+              top: 0,
+              child: MouseRegion(
+                onEnter: (_) => setState(() => canPanStart = false),
+                onExit: (_) => setState(() => canPanStart = true),
+                child: Opacity(
+                  opacity: isHovering || isSelected ? 1.0 : 0.0,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _LanguageSelector(
+                        editorState: editorState,
+                        language: language,
+                        isSelected: isSelected,
+                        onLanguageSelected: (language) {
+                          updateLanguage(language);
+                          widget.actions.onLanguageChanged?.call(language);
+                        },
+                        onMenuOpen: () => isSelected = true,
+                        onMenuClose: () => setState(() => isSelected = false),
+                        languagePickerBuilder: widget.languagePickerBuilder,
                         localizations: widget.localizations,
-                        foregroundColor: widget.style?.foregroundColor,
+                        fontSize: widget.style?.fontSize,
                       ),
-                    ] else if (widget.copyButtonBuilder != null) ...[
-                      widget.copyButtonBuilder!(editorState, node),
+                      if (widget.actions.onCopy != null &&
+                          widget.copyButtonBuilder == null) ...[
+                        _CopyButton(
+                          node: node,
+                          onCopy: widget.actions.onCopy!,
+                          localizations: widget.localizations,
+                          foregroundColor: widget.style?.foregroundColor,
+                          fontSize: widget.style?.fontSize,
+                        ),
+                      ] else if (widget.copyButtonBuilder != null) ...[
+                        widget.copyButtonBuilder!(editorState, node),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -431,6 +438,7 @@ class _CodeBlockComponentWidgetState extends State<CodeBlockComponentWidget>
       color:
           widget.style?.foregroundColor ??
           Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(155),
+      fontSize: widget.style?.fontSize,
     );
     final delta = node.delta ?? Delta();
     final content = delta.toPlainText();
@@ -606,7 +614,7 @@ class _LinesOfCodeNumbers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.only(right: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -624,13 +632,14 @@ class _CopyButton extends StatelessWidget {
     required this.onCopy,
     required this.localizations,
     this.foregroundColor,
+    this.fontSize,
   });
 
   final Node node;
   final void Function(String) onCopy;
   final CodeBlockLocalizations localizations;
   final Color? foregroundColor;
-
+  final double? fontSize;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -645,6 +654,7 @@ class _CopyButton extends StatelessWidget {
             }
           },
           hoverColor: Theme.of(context).colorScheme.secondaryContainer,
+          iconSize: fontSize,
           icon: Icon(
             Icons.copy,
             color:
@@ -667,6 +677,7 @@ class _LanguageSelector extends StatefulWidget {
     this.onMenuClose,
     this.languagePickerBuilder,
     required this.localizations,
+    this.fontSize,
   });
 
   final EditorState editorState;
@@ -678,7 +689,7 @@ class _LanguageSelector extends StatefulWidget {
 
   final CodeBlockLanguagePickerBuilder? languagePickerBuilder;
   final CodeBlockLocalizations localizations;
-
+  final double? fontSize;
   @override
   State<_LanguageSelector> createState() => _LanguageSelectorState();
 }
@@ -705,6 +716,7 @@ class _LanguageSelectorState extends State<_LanguageSelector> {
       localizations: widget.localizations,
       onMenuOpen: widget.onMenuOpen,
       onMenuClose: widget.onMenuClose,
+      fontSize: widget.fontSize,
     );
   }
 }
@@ -718,6 +730,7 @@ class _LanguageSelectionDropdown extends StatelessWidget {
     required this.localizations,
     this.onMenuOpen,
     this.onMenuClose,
+    this.fontSize,
   });
 
   final EditorState editorState;
@@ -727,44 +740,40 @@ class _LanguageSelectionDropdown extends StatelessWidget {
   final CodeBlockLocalizations localizations;
   final VoidCallback? onMenuOpen;
   final VoidCallback? onMenuClose;
-
+  final double? fontSize;
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16),
-      child: DropdownMenu<String>(
-        initialSelection: language ?? 'auto',
-        textStyle: const TextStyle(fontSize: 14),
-        inputDecorationTheme:
-            Theme.of(context).dropdownMenuTheme.inputDecorationTheme ??
-            const InputDecorationTheme(
-              constraints: BoxConstraints(maxWidth: 100),
-              border: UnderlineInputBorder(),
-              enabledBorder: UnderlineInputBorder(),
-              focusedBorder: UnderlineInputBorder(),
-              errorBorder: UnderlineInputBorder(),
-              focusedErrorBorder: UnderlineInputBorder(),
-            ),
-        menuHeight: 200,
-        onSelected: (value) {
-          if (value != null) {
-            onLanguageSelected(value);
-            onMenuClose?.call();
-          }
-        },
-        dropdownMenuEntries:
-            supportedLanguages
-                .map(
-                  (lang) => DropdownMenuEntry<String>(
-                    value: lang,
-                    label:
-                        lang == 'auto'
-                            ? localizations.autoLanguage
-                            : lang.capitalize(),
-                  ),
-                )
-                .toList(),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => DropdownMenu<String>(
+    initialSelection: language ?? 'auto',
+    textStyle: TextStyle(fontSize: fontSize ?? 12),
+    width: 100,
+    inputDecorationTheme:
+        Theme.of(context).dropdownMenuTheme.inputDecorationTheme ??
+        const InputDecorationTheme(
+          constraints: BoxConstraints(maxWidth: 100),
+          border: UnderlineInputBorder(),
+          enabledBorder: UnderlineInputBorder(),
+          focusedBorder: UnderlineInputBorder(),
+          errorBorder: UnderlineInputBorder(),
+          focusedErrorBorder: UnderlineInputBorder(),
+        ),
+    menuHeight: 200,
+    onSelected: (value) {
+      if (value != null) {
+        onLanguageSelected(value);
+        onMenuClose?.call();
+      }
+    },
+    dropdownMenuEntries:
+        supportedLanguages
+            .map(
+              (lang) => DropdownMenuEntry<String>(
+                value: lang,
+                label:
+                    lang == 'auto'
+                        ? localizations.autoLanguage
+                        : lang.capitalize(),
+              ),
+            )
+            .toList(),
+  );
 }
