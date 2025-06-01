@@ -1,12 +1,22 @@
+import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:appflowy_editor_codeblock/code_block_block_component.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:appflowy_editor_codeblock/appflowy_editor_codeblock.dart';
-
 void main() {
-  test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
+  group('Smoke tests', () {
+    setUp(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+    });
+
+    test('we see code block', () async {
+      final document =
+          Document.blank()..insert([0], [codeBlockNode(language: 'dart')]);
+
+      final editorState = EditorState(document: document);
+
+      editorState.selection = Selection.collapsed(Position(path: [0]));
+
+      expect(editorState.getNodeAtPath([0])?.type, CodeBlockKeys.type);
+    });
   });
 }
