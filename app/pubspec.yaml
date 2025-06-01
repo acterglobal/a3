@@ -70,6 +70,8 @@ dependencies:
     path: ../packages/acter_trigger_auto_complete
   acter_notifify:
     path: ../packages/acter_notifify
+  appflowy_editor_codeblock:
+    path: ../packages/appflowy_editor_codeblock
 
   # Code Generation
   flutter_localizations:
@@ -201,6 +203,11 @@ dev_dependencies:
 dependency_overrides:
   csslib: ">=0.17.1 <2.0.0"
   html: ">=0.15.4 <0.16.0"
+  appflowy_editor:
+    git:
+      url: https://github.com/acterglobal/appflowy-editor
+      ref: ben-mobile-expandable-editor
+
   # msix: # ^3.7.0
   #   # FIXME mainline `msix` comes with outdated VS redistribution libs
   #   # that make our app crash. We already copy over the proper ones in the
