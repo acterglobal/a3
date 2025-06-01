@@ -11,7 +11,6 @@ import 'package:highlight/languages/all.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_platform/universal_platform.dart';
 
-import 'code_block_themes.dart';
 import 'utils.dart';
 
 final allCodeBlockLanguages = [
@@ -180,8 +179,8 @@ class CodeBlockComponentBuilder extends BlockComponentBuilder {
     );
   }
 
-  @override
-  bool validate(Node node) => node.delta != null;
+  // @override
+  // bool validate(Node node) => node.delta != null;
 }
 
 /// A widget representing a code block component.
@@ -299,8 +298,7 @@ class _CodeBlockComponentWidgetState extends State<CodeBlockComponentWidget>
     canPanStart: (_) => canPanStart && !isSelected,
   );
 
-  late final StreamSubscription<(TransactionTime, Transaction)>
-  transactionSubscription;
+  late final StreamSubscription<EditorTransactionValue> transactionSubscription;
 
   @override
   void initState() {
@@ -429,6 +427,11 @@ class _CodeBlockComponentWidgetState extends State<CodeBlockComponentWidget>
 
   Widget _buildCodeBlock(BuildContext context, TextDirection textDirection) {
     final isLightMode = Theme.of(context).brightness == Brightness.light;
+    final textStyle = TextStyle(
+      color:
+          widget.style?.foregroundColor ??
+          Theme.of(context).colorScheme.onSecondaryContainer.withAlpha(155),
+    );
     final delta = node.delta ?? Delta();
     final content = delta.toPlainText();
 
@@ -454,16 +457,7 @@ class _CodeBlockComponentWidgetState extends State<CodeBlockComponentWidget>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.showLineNumbers) ...[
-            _LinesOfCodeNumbers(
-              linesOfCode: linesOfCode,
-              textStyle: textStyle.copyWith(
-                color:
-                    widget.style?.foregroundColor ??
-                    Theme.of(
-                      context,
-                    ).colorScheme.onSecondaryContainer.withAlpha(155),
-              ),
-            ),
+            _LinesOfCodeNumbers(linesOfCode: linesOfCode, textStyle: textStyle),
           ],
           Flexible(
             child: Padding(

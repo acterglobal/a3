@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:appflowy_editor_plugins/src/code_block/code_block_block_component.dart';
-import 'package:appflowy_editor_plugins/src/code_block/code_block_localization.dart';
+import 'package:appflowy_editor_codeblock/code_block_block_component.dart';
+import 'package:appflowy_editor_codeblock/code_block_localization.dart';
 
 final List<CharacterShortcutEvent> codeBlockCharacterEvents = [
   enterInCodeBlock,
