@@ -10,6 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  appflowy_editor: ^5.2.0
+  universal_platform: ^1.1.0
+  highlight: ^0.7.0
+  provider: ^6.1.5
 
 dev_dependencies:
   flutter_test:
