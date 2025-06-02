@@ -9,7 +9,7 @@ void main() {
     now = DateTime(2024, 3, 15, 12, 0); // A Friday
   });
 
-  group('SortedTasks.fromTasks', () {
+  group('SortedTasks', () {
     test('should categorize tasks correctly', () {
       final tasks = [
         MockTask(date: '2024-03-14'), // overdue
@@ -20,7 +20,7 @@ void main() {
         MockTask(date: null), // no due date
       ];
 
-      final sortedTasks = SortedTasks.fromTasks(tasks, now);
+      final sortedTasks = SortedTasks(tasks, now);
 
       expect(sortedTasks.overdue.length, 1);
       expect(sortedTasks.today.length, 1);
@@ -37,7 +37,7 @@ void main() {
         MockTask(date: '2024-03-12'),
       ];
 
-      final sortedTasks = SortedTasks.fromTasks(tasks, now);
+      final sortedTasks = SortedTasks(tasks, now);
 
       expect(sortedTasks.overdue.length, 3);
       expect(
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('should handle empty task list', () {
-      final sortedTasks = SortedTasks.fromTasks([], now);
+      final sortedTasks = SortedTasks([], now);
 
       expect(sortedTasks.totalCount, 0);
       expect(sortedTasks.allTasks, isEmpty);
@@ -63,7 +63,7 @@ void main() {
         MockTask(date: null), // no due date
       ];
 
-      final sortedTasks = SortedTasks.fromTasks(tasks, now);
+      final sortedTasks = SortedTasks(tasks, now);
 
       expect(sortedTasks.hasTasksInCategory(TaskDueCategory.overdue), true);
       expect(sortedTasks.hasTasksInCategory(TaskDueCategory.today), true);
