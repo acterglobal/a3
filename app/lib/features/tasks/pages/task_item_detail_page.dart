@@ -264,9 +264,7 @@ class _TaskItemBody extends ConsumerWidget {
 
     // Check if migration is needed
     final description = task.description();
-    if (description != null && description.formattedBody() == null) {
-      migrateTaskDescription(task);
-    }
+    migrateTaskDescription(task);
     if (description == null) return [];
     final formattedBody = description.formattedBody();
     final textTheme = Theme.of(context).textTheme;
