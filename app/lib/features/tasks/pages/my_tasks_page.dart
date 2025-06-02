@@ -14,7 +14,6 @@ class MyTasksPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final sortedTasks = ref.watch(sortedTasksProvider).valueOrNull;
-    ref.watch(myOpenTasksProvider);
 
     if (sortedTasks == null) {
       return const SizedBox.shrink();
