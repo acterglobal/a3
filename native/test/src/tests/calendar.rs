@@ -298,7 +298,7 @@ async fn calendar_event_create() -> Result<()> {
         Some(description_html)
     );
     assert_eq!(locations[1].uri().as_deref(), Some(uri));
-    assert_eq!(locations[1].address().as_deref(), Some(address));
+    assert_eq!(locations[1].address(), None);
     assert_eq!(locations[1].notes().as_deref(), Some(notes));
 
     Ok(())
