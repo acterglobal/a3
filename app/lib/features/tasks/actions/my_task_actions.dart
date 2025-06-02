@@ -13,16 +13,21 @@ enum TaskDueCategory {
 }
 
 class SortedTasks {
-  final Map<TaskDueCategory, List<Task>> _tasks;
+  final List<Task> overdue;
+  final List<Task> today;
+  final List<Task> tomorrow;
+  final List<Task> laterThisWeek;
+  final List<Task> later;
+  final List<Task> noDueDate;
   
-  const SortedTasks(this._tasks);
-
-  List<Task> get overdue => _tasks[TaskDueCategory.overdue] ?? [];
-  List<Task> get today => _tasks[TaskDueCategory.today] ?? [];
-  List<Task> get tomorrow => _tasks[TaskDueCategory.tomorrow] ?? [];
-  List<Task> get laterThisWeek => _tasks[TaskDueCategory.laterThisWeek] ?? [];
-  List<Task> get later => _tasks[TaskDueCategory.later] ?? [];
-  List<Task> get noDueDate => _tasks[TaskDueCategory.noDueDate] ?? [];
+  const SortedTasks({
+    required this.overdue,
+    required this.today,
+    required this.tomorrow,
+    required this.laterThisWeek,
+    required this.later,
+    required this.noDueDate,
+  });
 
   List<Task> get allTasks => [
         ...overdue,
@@ -35,11 +40,25 @@ class SortedTasks {
 
   int get totalCount => allTasks.length;
 
-  List<Task> getTasksForCategory(TaskDueCategory category) => 
-      _tasks[category] ?? [];
+  List<Task> getTasksForCategory(TaskDueCategory category) {
+    switch (category) {
+      case TaskDueCategory.overdue:
+        return overdue;
+      case TaskDueCategory.today:
+        return today;
+      case TaskDueCategory.tomorrow:
+        return tomorrow;
+      case TaskDueCategory.laterThisWeek:
+        return laterThisWeek;
+      case TaskDueCategory.later:
+        return later;
+      case TaskDueCategory.noDueDate:
+        return noDueDate;
+    }
+  }
 
   bool hasTasksInCategory(TaskDueCategory category) =>
-      (_tasks[category]?.isNotEmpty ?? false);
+      getTasksForCategory(category).isNotEmpty;
 }
 
 TaskDueCategory getTaskCategory(DateTime? dueDate, DateTime now) {
