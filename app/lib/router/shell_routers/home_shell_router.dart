@@ -600,9 +600,13 @@ final homeShellRoutes = [
       final roomId = state.uri.queryParameters['roomId'].expect(
         'inviteIndividual route needs roomId as query param',
       );
+      final task = state.extra as Task?;
       return MaterialPage(
         key: state.pageKey,
-        child: InviteIndividualUsers(roomId: roomId),
+        child: InviteIndividualUsers(
+          roomId: roomId,
+          task: task,
+        ),
       );
     },
   ),

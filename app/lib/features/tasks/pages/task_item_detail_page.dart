@@ -409,9 +409,7 @@ class _TaskItemBody extends ConsumerWidget {
       isScrollControlled: true,
       isDismissible: true,
       builder:
-          (context) => Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
+          (context) => Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -421,7 +419,6 @@ class _TaskItemBody extends ConsumerWidget {
                   automaticallyImplyLeading: false,
                   title: Text(L10n.of(context).assignment),
                 ),
-                const SizedBox(height: 10),
                 if (task.isAssignedToMe())
                   MenuItemWidget(
                     onTap: () {
@@ -445,9 +442,24 @@ class _TaskItemBody extends ConsumerWidget {
                     iconData: PhosphorIconsLight.plus,
                     withMenu: false,
                   ),
+                MenuItemWidget(
+                  onTap: () {
+                    context.pushNamed(
+                      Routes.inviteIndividual.name,
+                      queryParameters: {
+                        'roomId': task.roomIdStr(),
+                      },
+                      extra: task,
+                    );
+                    Navigator.pop(context);
+                  },
+                  title: lang.inviteSomeoneElse,
+                  withMenu: false,
+                  iconData: Icons.send,
+                  titleStyles: Theme.of(context).textTheme.bodyMedium,
+                ),
               ],
             ),
-          ),
     );
   }
 

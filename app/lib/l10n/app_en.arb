@@ -3013,5 +3013,7 @@
   "encryptionBackupDestroyAction": "Destroying",
   "@encryptionBackupDestroyAction": {},
   "dontForgetToStoreTheKeySecurely": "Don't forget to store your Encryption Backup Key securely",
-  "@dontForgetToStoreTheKeySecurely": {}
+  "@dontForgetToStoreTheKeySecurely": {},
+  "inviteSomeoneElse": "Invite someone else",
+  "@inviteSomeoneElse": {}
 }

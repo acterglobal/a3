@@ -87,6 +87,7 @@ class UserBuilder extends ConsumerWidget {
   final bool includeSharedRooms;
   final bool includeUserJoinState;
   final VoidCallback? onTap;
+  final Task? task;
 
   const UserBuilder({
     super.key,
@@ -96,6 +97,7 @@ class UserBuilder extends ConsumerWidget {
     this.onTap,
     this.includeSharedRooms = false,
     this.includeUserJoinState = true,
+    this.task,
   });
 
   @override
@@ -121,7 +123,11 @@ class UserBuilder extends ConsumerWidget {
     if (!includeUserJoinState) return null;
     return roomId.map((rId) {
       final room = ref.watch(maybeRoomProvider(rId)).valueOrNull;
-      return room.map((r) => UserStateButton(userId: userId, room: r)) ??
+      return room.map((r) => UserStateButton(
+        userId: userId, 
+        room: r, 
+        task: task,
+      )) ??
           const Skeletonizer(child: Text('user'));
     });
   }
@@ -207,14 +213,22 @@ class UserBuilder extends ConsumerWidget {
 class UserStateButton extends ConsumerWidget {
   final String userId;
   final Room room;
+  final Task? task;
 
-  const UserStateButton({super.key, required this.room, required this.userId});
+  const UserStateButton({super.key, required this.room, required this.userId, this.task});
 
   Future<void> _handleInvite(BuildContext context) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.invitingLoading(userId), dismissOnTap: false);
     try {
-      await room.inviteUser(userId);
+      if (task != null) {
+        final invitationsManager = await task?.invitations();
+        if (invitationsManager != null) {
+          await invitationsManager.invite(userId);
+        }
+      } else {
+        await room.inviteUser(userId);
+      }
       EasyLoading.dismiss();
     } catch (e) {
       // ignore: use_build_context_synchronously
