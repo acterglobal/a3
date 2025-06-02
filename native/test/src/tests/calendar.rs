@@ -237,7 +237,7 @@ async fn calendar_event_create() -> Result<()> {
         Some(uri.to_owned()),
         Some(address.to_owned()),
         Some(notes.to_owned()),
-    )?;
+    );
     draft.virtual_location(
         Some(name.to_owned()),
         Some(description.to_owned()),
@@ -245,7 +245,7 @@ async fn calendar_event_create() -> Result<()> {
         uri.to_owned(),
         Some(address.to_owned()),
         Some(notes.to_owned()),
-    )?;
+    );
 
     let event_id = draft.send().await?;
 
@@ -427,12 +427,12 @@ async fn calendar_event_coordinates() -> Result<()> {
     let name = "Test Location";
     let description = "Philadelphia Office";
     let description_html = "**Here is our office**";
+    let coordinates = "geo:51.5074,-0.1278";
     let uri = "https://example.com/location";
     let address = "123 Test St, Philadelphia, PA 19103";
     let notes = "Please bring your laptop.";
 
-    let coordinates = "ceo:51.5074,-0.1278";
-    if let Err(e) = draft.physical_location(
+    draft.physical_location(
         Some(name.to_owned()),
         Some(description.to_owned()),
         Some(description_html.to_owned()),
@@ -440,38 +440,7 @@ async fn calendar_event_coordinates() -> Result<()> {
         Some(uri.to_owned()),
         Some(address.to_owned()),
         Some(notes.to_owned()),
-    ) {
-        assert_eq!(
-            e.to_string(),
-            format!("Failed to parse geo URI: {}", coordinates)
-        );
-    }
-
-    let coordinates = "geo:151.5074,-0.1278";
-    if let Err(e) = draft.physical_location(
-        Some(name.to_owned()),
-        Some(description.to_owned()),
-        Some(description_html.to_owned()),
-        Some(coordinates.to_owned()),
-        Some(uri.to_owned()),
-        Some(address.to_owned()),
-        Some(notes.to_owned()),
-    ) {
-        assert_eq!(e.to_string(), "Failed to parse latitude value: 151.5074");
-    }
-
-    let coordinates = "geo:51.5074,-200.1278";
-    if let Err(e) = draft.physical_location(
-        Some(name.to_owned()),
-        Some(description.to_owned()),
-        Some(description_html.to_owned()),
-        Some(coordinates.to_owned()),
-        Some(uri.to_owned()),
-        Some(address.to_owned()),
-        Some(notes.to_owned()),
-    ) {
-        assert_eq!(e.to_string(), "Failed to parse longitude value: -200.1278");
-    }
+    );
 
     Ok(())
 }

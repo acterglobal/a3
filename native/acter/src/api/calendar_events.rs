@@ -388,7 +388,7 @@ impl CalendarEventDraft {
         uri: Option<String>,
         address: Option<String>,
         notes: Option<String>,
-    ) -> Result<()> {
+    ) -> &mut Self {
         let mut desc_plain = None;
         let mut desc_html = None;
         if let Some(desc) = &description {
@@ -406,7 +406,7 @@ impl CalendarEventDraft {
             address,
             notes,
         );
-        Ok(())
+        self
     }
 
     pub fn virtual_location(
@@ -417,11 +417,10 @@ impl CalendarEventDraft {
         uri: String,
         address: Option<String>,
         notes: Option<String>,
-    ) -> Result<()> {
-        let calendar_event = self.inner.clone();
+    ) -> &mut Self {
         let mut desc_plain = None;
         let mut desc_html = None;
-        if let Some(ref desc) = description {
+        if let Some(desc) = &description {
             if !desc.is_empty() {
                 desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
                 desc_html =
@@ -430,7 +429,7 @@ impl CalendarEventDraft {
         }
         self.inner
             .add_virtual_location(name, desc_html.or(desc_plain), uri, address, notes);
-        Ok(())
+        self
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {
