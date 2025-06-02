@@ -196,7 +196,7 @@ class MaybeDirectRoomActionWidget extends ConsumerWidget {
     final roomIdOrAlias = alias ?? roomId;
     if (roomIdOrAlias == null) throw 'neither room id nor alias available';
     final newRoomId = await joinRoom(
-      context: context,
+      lang: L10n.of(context),
       ref: ref,
       roomIdOrAlias: roomIdOrAlias,
       serverNames: serverNames,

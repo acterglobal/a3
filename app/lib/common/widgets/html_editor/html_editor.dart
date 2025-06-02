@@ -298,16 +298,15 @@ class HtmlEditor extends StatefulWidget {
   State<HtmlEditor> createState() => _HtmlEditorState();
 }
 
-const innnerMargin = 4.0;
+const innnerMargin = 10.0;
 const defaultMinHeight = 40.0;
+const lineHeight = 16.0;
 
 class _HtmlEditorState extends State<HtmlEditor> {
   late EditorState editorState;
   late EditorScrollController editorScrollController;
 
   late ValueNotifier<double> _contentHeightNotifier;
-
-  // we store this to the stream stays alive
   StreamSubscription<EditorTransactionValue>? _changeListener;
 
   @override
@@ -324,46 +323,17 @@ class _HtmlEditorState extends State<HtmlEditor> {
     updateEditorState(widget.editorState ?? EditorState.blank());
   }
 
-  void _updateContentHeight() {
-    final scrollService = editorState.scrollableState;
-    final innerHeight = scrollService?.position.maxScrollExtent;
-    if (innerHeight == null || innerHeight <= 0) {
-      final minHeight = widget.minHeight;
-      if (minHeight != null) {
-        _contentHeightNotifier.value = minHeight;
-      }
-      return;
-    }
-
-    double newHeight =
-        innerHeight +
-        (scrollService?.position.viewportDimension ?? 0) +
-        innnerMargin;
-
-    final maxHeight = widget.maxHeight;
-    if (maxHeight != null) {
-      newHeight = min(newHeight, maxHeight);
-    }
-    final minHeight = widget.minHeight;
-    if (minHeight != null) {
-      newHeight = max(newHeight, minHeight);
-    }
-    if (_contentHeightNotifier.value != newHeight) {
-      _contentHeightNotifier.value = newHeight;
-    }
-  }
-
   void updateEditorState(EditorState newEditorState) {
     editorState = newEditorState;
 
     editorScrollController = EditorScrollController(
       editorState: editorState,
       shrinkWrap: widget.shrinkWrap,
-      // scrollController: widget.scrollController,
     );
 
-    editorScrollController.visibleRangeNotifier.addListener(() {
-      _updateContentHeight();
+    // Listen to all editor transactions with a delay
+    editorState.transactionStream.listen((_) {
+      Future.delayed(const Duration(milliseconds: 50), _updateContentHeight);
     });
 
     _changeListener?.cancel();
@@ -390,9 +360,51 @@ class _HtmlEditorState extends State<HtmlEditor> {
 
   @override
   void dispose() {
-    editorState.selectionNotifier.dispose();
     _changeListener?.cancel();
     super.dispose();
+  }
+
+  void _updateContentHeight() {
+    final contentHeight = _calculateContentHeight();
+
+    double newHeight = contentHeight;
+    final maxHeight = widget.maxHeight;
+    if (maxHeight != null) {
+      newHeight = min(newHeight, maxHeight);
+    }
+    final minHeight = widget.minHeight ?? defaultMinHeight;
+    newHeight = max(newHeight, minHeight);
+
+    if ((_contentHeightNotifier.value - newHeight).abs() > 1.0) {
+      _contentHeightNotifier.value = newHeight;
+    }
+  }
+
+  double _calculateContentHeight() {
+    final scrollService = editorState.scrollableState;
+    if (scrollService == null) return widget.minHeight ?? defaultMinHeight;
+
+    final textWidth = scrollService.position.viewportDimension;
+    if (textWidth <= 0) return widget.minHeight ?? defaultMinHeight;
+
+    final textContent = editorState.document.root.children
+        .map((node) => node.delta?.toPlainText() ?? '')
+        .join('\n');
+
+    if (textContent.isEmpty) {
+      return defaultMinHeight;
+    }
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: textContent,
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+      textDirection: TextDirection.ltr,
+      maxLines: null,
+    )..layout(maxWidth: textWidth);
+
+    return textPainter.height + (2 * innnerMargin);
   }
 
   void _triggerExport(ExportCallback exportFn) {
@@ -533,7 +545,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
             anchors: TextSelectionToolbarAnchors(primaryAnchor: anchor),
           );
         },
-        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: true),
+        child: _editor(editorStyle: mobileEditorStyle(), autoFocus: false),
       ),
     );
   }
@@ -565,7 +577,8 @@ class _HtmlEditorState extends State<HtmlEditor> {
       valueListenable: _contentHeightNotifier,
       builder:
           (context, value, child) => AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOutCubic,
             width: MediaQuery.sizeOf(context).width,
             height: max(value, widget.minHeight ?? 50),
             child: editor,

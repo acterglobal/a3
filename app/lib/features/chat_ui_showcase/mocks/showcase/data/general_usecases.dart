@@ -892,6 +892,17 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
                 '[@Sarah](https://matrix.to/#/@sarah:acter.global) [@Lisa](https://matrix.to/#/@lisa:acter.global) I need your input on the database schema changes',
           ),
         ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-code-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097246000, // April 8, 2025 15:47:26
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                '<pre><code>\nclass MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}\n</code></pre>',
+            mockBody:
+                'class MessageEventItem extends ConsumerWidget {\n  final String roomId;\n  final String messageId;\n  final TimelineEventItem item;\n  final bool isMe;\n  final bool isDM;\n  final bool canRedact;\n  final bool isFirstMessageBySender;\n  final bool isLastMessageBySender;\n  final bool isLastMessage;\n}',
+          ),
+        ),
       ],
 );
 

@@ -1,10 +1,10 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/room/room_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_card.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_join_button.dart';
 import 'package:acter/common/widgets/room/room_hierarchy_options_menu.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/router/utils.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';

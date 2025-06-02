@@ -284,14 +284,12 @@ class ChatEvent extends ConsumerWidget {
 
     return isMe
         ? ChatBubble.me(
-          context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
           displayName: displayName,
           child: child,
         )
         : ChatBubble(
-          context: context,
           isFirstMessageBySender: isFirstMessageBySender,
           isLastMessageBySender: isLastMessageBySender,
           displayName: displayName,
