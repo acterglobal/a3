@@ -122,7 +122,6 @@ class _DueChipState extends ConsumerState<DueChip> {
 
       // Invalidate both providers to ensure proper task reordering
       ref.invalidate(myOpenTasksProvider);
-      ref.invalidate(sortedTasksProvider);
 
       if (!context.mounted) {
         EasyLoading.dismiss();

@@ -383,7 +383,6 @@ class _TaskItemBody extends ConsumerWidget {
 
       // Invalidate both providers to ensure proper task reordering
       ref.invalidate(myOpenTasksProvider);
-      ref.invalidate(sortedTasksProvider);
 
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) {
