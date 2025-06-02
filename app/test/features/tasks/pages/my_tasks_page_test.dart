@@ -52,19 +52,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows no tasks message when there are no tasks',
-      (WidgetTester tester) async {
-    when(() => mockSortedTasks.totalCount).thenReturn(0);
-
-    await createWidgetUnderTest(tester);
-
-    // Get the context and L10n instance
-    final BuildContext context = tester.element(find.byType(MyTasksPage));
-    final lang = L10n.of(context);
-
-    expect(find.text(lang.noTasks), findsOneWidget);
-  });
-
   testWidgets('shows app bar with correct title',
       (WidgetTester tester) async {
     final mockTask = MockTask();

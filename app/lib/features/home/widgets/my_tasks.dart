@@ -16,19 +16,19 @@ class MyTasksSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final sortedTasks = ref.watch(sortedTasksProvider).value;
+    final sortedTasks = ref.watch(sortedTasksProvider).valueOrNull;
     ref.watch(myOpenTasksProvider); 
     
-    if (sortedTasks?.totalCount == 0) return const SizedBox.shrink();
+    if (sortedTasks == null || sortedTasks.totalCount == 0) return const SizedBox.shrink();
 
     // Get tasks in priority order
     final tasksToShow = [
-      ...?sortedTasks?.overdue,
-      ...?sortedTasks?.today,
-      ...?sortedTasks?.tomorrow,
-      ...?sortedTasks?.laterThisWeek,
-      ...?sortedTasks?.later,
-      ...?sortedTasks?.noDueDate,
+      ...sortedTasks.overdue,
+      ...sortedTasks.today,
+      ...sortedTasks.tomorrow,
+      ...sortedTasks.laterThisWeek,
+      ...sortedTasks.later,
+      ...sortedTasks.noDueDate,
     ].take(limit).toList();
 
     if (tasksToShow.isEmpty) return const SizedBox.shrink();
@@ -61,13 +61,13 @@ class MyTasksSection extends ConsumerWidget {
             );
           },
         ),
-        if ((sortedTasks?.totalCount ?? 0) > limit)
+        if (sortedTasks.totalCount > limit)
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 8, bottom: 10),
             child: TextButton(
               onPressed: () => context.pushNamed(Routes.myTasks.name),
               child: Text(
-                lang.countMoreTasks((sortedTasks?.totalCount ?? 0) - limit),
+                lang.countMoreTasks(sortedTasks.totalCount - limit),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   decoration: TextDecoration.underline,
                 ),
