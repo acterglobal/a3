@@ -20920,8 +20920,16 @@ class Api {
           >();
   late final _calendarEventDraftPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
-      _CalendarEventDraftPhysicalLocationReturn Function(
+      ffi.Void Function(
         ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
         ffi.Uint8,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20949,7 +20957,15 @@ class Api {
   late final _calendarEventDraftPhysicalLocation =
       _calendarEventDraftPhysicalLocationPtr
           .asFunction<
-            _CalendarEventDraftPhysicalLocationReturn Function(
+            void Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
               int,
               int,
               int,
@@ -20975,7 +20991,7 @@ class Api {
           >();
   late final _calendarEventDraftVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
-      _CalendarEventDraftVirtualLocationReturn Function(
+      ffi.Void Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -20989,6 +21005,10 @@ class Api {
         ffi.IntPtr,
         ffi.UintPtr,
         ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
         ffi.IntPtr,
         ffi.UintPtr,
         ffi.UintPtr,
@@ -20999,7 +21019,11 @@ class Api {
   late final _calendarEventDraftVirtualLocation =
       _calendarEventDraftVirtualLocationPtr
           .asFunction<
-            _CalendarEventDraftVirtualLocationReturn Function(
+            void Function(
+              int,
+              int,
+              int,
+              int,
               int,
               int,
               int,
@@ -21062,6 +21086,20 @@ class Api {
   late final _eventLocationInfoUri =
       _eventLocationInfoUriPtr
           .asFunction<_EventLocationInfoUriReturn Function(int)>();
+  late final _eventLocationInfoAddressPtr = _lookup<
+    ffi.NativeFunction<_EventLocationInfoAddressReturn Function(ffi.IntPtr)>
+  >("__EventLocationInfo_address");
+
+  late final _eventLocationInfoAddress =
+      _eventLocationInfoAddressPtr
+          .asFunction<_EventLocationInfoAddressReturn Function(int)>();
+  late final _eventLocationInfoNotesPtr = _lookup<
+    ffi.NativeFunction<_EventLocationInfoNotesReturn Function(ffi.IntPtr)>
+  >("__EventLocationInfo_notes");
+
+  late final _eventLocationInfoNotes =
+      _eventLocationInfoNotesPtr
+          .asFunction<_EventLocationInfoNotesReturn Function(int)>();
   late final _rsvpManagerHasRsvpEntriesPtr =
       _lookup<ffi.NativeFunction<ffi.Uint8 Function(ffi.IntPtr)>>(
         "__RsvpManager_has_rsvp_entries",
@@ -43379,18 +43417,24 @@ class CalendarEventDraft {
   }
 
   /// set the physical location details for this calendar event
+  /// description_html means by markdown
+  /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
   void physicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
     String? coordinates,
     String? uri,
+    String? address,
+    String? notes,
   ) {
     final tmp1 = name;
     final tmp7 = description;
     final tmp13 = descriptionHtml;
     final tmp19 = coordinates;
     final tmp25 = uri;
+    final tmp31 = address;
+    final tmp37 = notes;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
@@ -43412,6 +43456,14 @@ class CalendarEventDraft {
     var tmp28 = 0;
     var tmp29 = 0;
     var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    var tmp38 = 0;
+    var tmp40 = 0;
+    var tmp41 = 0;
+    var tmp42 = 0;
     tmp0 = _box.borrow();
     if (tmp1 == null) {
       tmp2 = 0;
@@ -43483,7 +43535,35 @@ class CalendarEventDraft {
       tmp28 = tmp28_0.address;
       tmp30 = tmp29;
     }
-    final tmp31 = _api._calendarEventDraftPhysicalLocation(
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    if (tmp37 == null) {
+      tmp38 = 0;
+    } else {
+      tmp38 = 1;
+      final tmp39 = tmp37;
+      final tmp39_0 = utf8.encode(tmp39);
+      tmp41 = tmp39_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp40_0 = _api.__allocate(tmp41 * 1, 1);
+      final Uint8List tmp40_1 = tmp40_0.asTypedList(tmp41);
+      tmp40_1.setAll(0, tmp39_0);
+      tmp40 = tmp40_0.address;
+      tmp42 = tmp41;
+    }
+    _api._calendarEventDraftPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43505,39 +43585,32 @@ class CalendarEventDraft {
       tmp28,
       tmp29,
       tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+      tmp38,
+      tmp40,
+      tmp41,
+      tmp42,
     );
-    final tmp33 = tmp31.arg0;
-    final tmp34 = tmp31.arg1;
-    final tmp35 = tmp31.arg2;
-    final tmp36 = tmp31.arg3;
-    if (tmp33 == 0) {
-      debugAllocation("handle error", tmp34, tmp35);
-      final ffi.Pointer<ffi.Uint8> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
-      final tmp33_0 = utf8.decode(
-        tmp34_0.asTypedList(tmp35),
-        allowMalformed: true,
-      );
-      if (tmp35 > 0) {
-        final ffi.Pointer<ffi.Void> tmp34_0;
-        tmp34_0 = ffi.Pointer.fromAddress(tmp34);
-        _api.__deallocate(tmp34_0, tmp36, 1);
-      }
-      throw tmp33_0;
-    }
     return;
   }
 
   /// set the virtual location details for this calendar event
+  /// description_html means by markdown
   void virtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
     String uri,
+    String? notes,
   ) {
     final tmp1 = name;
     final tmp7 = description;
     final tmp13 = descriptionHtml;
     final tmp19 = uri;
+    final tmp23 = notes;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
@@ -43554,6 +43627,10 @@ class CalendarEventDraft {
     var tmp20 = 0;
     var tmp21 = 0;
     var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    var tmp28 = 0;
     tmp0 = _box.borrow();
     if (tmp1 == null) {
       tmp2 = 0;
@@ -43605,7 +43682,21 @@ class CalendarEventDraft {
     tmp20_1.setAll(0, tmp19_0);
     tmp20 = tmp20_0.address;
     tmp22 = tmp21;
-    final tmp23 = _api._calendarEventDraftVirtualLocation(
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      final tmp25_0 = utf8.encode(tmp25);
+      tmp27 = tmp25_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
+      final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
+      tmp26_1.setAll(0, tmp25_0);
+      tmp26 = tmp26_0.address;
+      tmp28 = tmp27;
+    }
+    _api._calendarEventDraftVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43622,25 +43713,11 @@ class CalendarEventDraft {
       tmp20,
       tmp21,
       tmp22,
+      tmp24,
+      tmp26,
+      tmp27,
+      tmp28,
     );
-    final tmp25 = tmp23.arg0;
-    final tmp26 = tmp23.arg1;
-    final tmp27 = tmp23.arg2;
-    final tmp28 = tmp23.arg3;
-    if (tmp25 == 0) {
-      debugAllocation("handle error", tmp26, tmp27);
-      final ffi.Pointer<ffi.Uint8> tmp26_0 = ffi.Pointer.fromAddress(tmp26);
-      final tmp25_0 = utf8.decode(
-        tmp26_0.asTypedList(tmp27),
-        allowMalformed: true,
-      );
-      if (tmp27 > 0) {
-        final ffi.Pointer<ffi.Void> tmp26_0;
-        tmp26_0 = ffi.Pointer.fromAddress(tmp26);
-        _api.__deallocate(tmp26_0, tmp28, 1);
-      }
-      throw tmp25_0;
-    }
     return;
   }
 
@@ -43783,6 +43860,70 @@ class EventLocationInfo {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._eventLocationInfoUri(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// available for physical event only
+  String? address() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoAddress(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    if (tmp5 == 0) {
+      print("returning empty string");
+      return "";
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_ptr = ffi.Pointer.fromAddress(tmp4);
+    List<int> tmp4_buf = [];
+    final tmp4_precast = tmp4_ptr.cast<ffi.Uint8>();
+    for (int i = 0; i < tmp5; i++) {
+      int char = tmp4_precast.elementAt(i).value;
+      tmp4_buf.add(char);
+    }
+    final tmp2 = utf8.decode(tmp4_buf, allowMalformed: true);
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// available for both physical and virtual
+  String? notes() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._eventLocationInfoNotes(tmp0);
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
@@ -70390,28 +70531,6 @@ class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _CalendarEventDraftPhysicalLocationReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
-class _CalendarEventDraftVirtualLocationReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-}
-
 class _EventLocationInfoLocationTypeReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -70451,6 +70570,28 @@ class _EventLocationInfoCoordinatesReturn extends ffi.Struct {
 }
 
 class _EventLocationInfoUriReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _EventLocationInfoAddressReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _EventLocationInfoNotesReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
