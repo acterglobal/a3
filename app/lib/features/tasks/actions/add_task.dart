@@ -9,6 +9,23 @@ import 'package:logging/logging.dart';
 
 final _log = Logger('a3::tasks::create_task');
 
+Future<void> migrateTaskDescription(Task task) async {
+  final description = task.description();
+  if (description == null) return;
+  
+  // Only migrate if the description doesn't have HTML format
+  if (description.formattedBody() == null) {
+    try {
+      final updater = task.updateBuilder();
+      final plainText = description.body();
+      updater.descriptionHtml(plainText, plainText);
+      await updater.send();
+    } catch (e, s) {
+      _log.severe('Failed to migrate task description', e, s);
+    }
+  }
+}
+
 Future<(String, String)?> addTask({
   required BuildContext context,
   required WidgetRef ref,
@@ -32,7 +49,7 @@ Future<(String, String)?> addTask({
   final taskDraft = taskList.taskBuilder();
   taskDraft.title(title);
   if (description != null && description.isNotEmpty == true) {
-    taskDraft.descriptionText(description);
+    taskDraft.descriptionHtml(description, description);
   }
   if (dueDate != null) {
     taskDraft.dueDate(dueDate.year, dueDate.month, dueDate.day);
