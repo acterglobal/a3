@@ -415,7 +415,6 @@ impl CalendarEventDraft {
         description: Option<String>,
         description_html: Option<String>,
         uri: String,
-        address: Option<String>,
         notes: Option<String>,
     ) -> &mut Self {
         let mut desc_plain = None;
@@ -428,7 +427,7 @@ impl CalendarEventDraft {
             }
         }
         self.inner
-            .add_virtual_location(name, desc_html.or(desc_plain), uri, address, notes);
+            .add_virtual_location(name, desc_html.or(desc_plain), uri, notes);
         self
     }
 

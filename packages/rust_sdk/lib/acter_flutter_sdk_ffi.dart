@@ -21012,10 +21012,6 @@ class Api {
         ffi.IntPtr,
         ffi.UintPtr,
         ffi.UintPtr,
-        ffi.Uint8,
-        ffi.IntPtr,
-        ffi.UintPtr,
-        ffi.UintPtr,
       )
     >
   >("__CalendarEventDraft_virtual_location");
@@ -21024,10 +21020,6 @@ class Api {
       _calendarEventDraftVirtualLocationPtr
           .asFunction<
             void Function(
-              int,
-              int,
-              int,
-              int,
               int,
               int,
               int,
@@ -43620,15 +43612,13 @@ class CalendarEventDraft {
     String? description,
     String? descriptionHtml,
     String uri,
-    String? address,
     String? notes,
   ) {
     final tmp1 = name;
     final tmp7 = description;
     final tmp13 = descriptionHtml;
     final tmp19 = uri;
-    final tmp23 = address;
-    final tmp29 = notes;
+    final tmp23 = notes;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp4 = 0;
@@ -43649,10 +43639,6 @@ class CalendarEventDraft {
     var tmp26 = 0;
     var tmp27 = 0;
     var tmp28 = 0;
-    var tmp30 = 0;
-    var tmp32 = 0;
-    var tmp33 = 0;
-    var tmp34 = 0;
     tmp0 = _box.borrow();
     if (tmp1 == null) {
       tmp2 = 0;
@@ -43718,20 +43704,6 @@ class CalendarEventDraft {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    if (tmp29 == null) {
-      tmp30 = 0;
-    } else {
-      tmp30 = 1;
-      final tmp31 = tmp29;
-      final tmp31_0 = utf8.encode(tmp31);
-      tmp33 = tmp31_0.length;
-
-      final ffi.Pointer<ffi.Uint8> tmp32_0 = _api.__allocate(tmp33 * 1, 1);
-      final Uint8List tmp32_1 = tmp32_0.asTypedList(tmp33);
-      tmp32_1.setAll(0, tmp31_0);
-      tmp32 = tmp32_0.address;
-      tmp34 = tmp33;
-    }
     _api._calendarEventDraftVirtualLocation(
       tmp0,
       tmp2,
@@ -43753,10 +43725,6 @@ class CalendarEventDraft {
       tmp26,
       tmp27,
       tmp28,
-      tmp30,
-      tmp32,
-      tmp33,
-      tmp34,
     );
     return;
   }

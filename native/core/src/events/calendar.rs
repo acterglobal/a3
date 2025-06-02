@@ -63,10 +63,6 @@ pub enum EventLocation {
 
         /// Also physical location can have a website
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        address: Option<String>,
-
-        /// Also physical location can have a website
-        #[serde(default, skip_serializing_if = "Option::is_none")]
         notes: Option<String>,
     },
 }
@@ -102,7 +98,6 @@ impl EventLocationInfo {
                 description,
                 icon,
                 uri,
-                address,
                 notes,
             } => EventLocationInfo {
                 inner: EventLocation::Virtual {
@@ -110,7 +105,6 @@ impl EventLocationInfo {
                     description: description.clone(),
                     icon: icon.clone(),
                     uri: uri.clone(),
-                    address: address.clone(),
                     notes: notes.clone(),
                 },
             },
@@ -167,7 +161,7 @@ impl EventLocationInfo {
     pub fn address(&self) -> Option<String> {
         match &self.inner {
             EventLocation::Physical { address, .. } => address.clone(),
-            EventLocation::Virtual { address, .. } => address.clone(),
+            _ => None,
         }
     }
 
@@ -258,7 +252,6 @@ impl CalendarEventBuilder {
         name: Option<String>,
         description: Option<TextMessageEventContent>,
         uri: String,
-        address: Option<String>,
         notes: Option<String>,
     ) -> &mut Self {
         let mut locations = self.locations.clone().unwrap_or_default();
@@ -267,7 +260,6 @@ impl CalendarEventBuilder {
             name,
             description,
             icon: None,
-            address,
             notes,
         });
         self.locations = Some(locations);

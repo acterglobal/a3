@@ -243,7 +243,6 @@ async fn calendar_event_create() -> Result<()> {
         Some(description.to_owned()),
         Some(description_html.to_owned()),
         uri.to_owned(),
-        Some(address.to_owned()),
         Some(notes.to_owned()),
     );
 

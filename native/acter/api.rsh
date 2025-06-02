@@ -804,7 +804,7 @@ object CalendarEventDraft {
     fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, address: Option<string>, notes: Option<string>);
+    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
