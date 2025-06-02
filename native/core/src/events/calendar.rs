@@ -37,11 +37,11 @@ pub enum EventLocation {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         uri: Option<String>,
 
-        /// Also physical location can have a website
+        /// Optional address of this physical location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         address: Option<String>,
 
-        /// Also physical location can have a website
+        /// Optional notes of this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         notes: Option<String>,
     },
@@ -61,7 +61,7 @@ pub enum EventLocation {
         /// URI to this virtual location
         uri: String,
 
-        /// Also physical location can have a website
+        /// Optional notes of this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         notes: Option<String>,
     },

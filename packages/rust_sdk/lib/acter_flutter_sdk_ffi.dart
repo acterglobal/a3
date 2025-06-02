@@ -43895,7 +43895,7 @@ class EventLocationInfo {
     return tmp2;
   }
 
-  /// available for both physical and virtual
+  /// available for physical event only
   String? address() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

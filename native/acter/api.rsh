@@ -824,7 +824,7 @@ object EventLocationInfo {
     /// an online link for the location
     fn uri() -> Option<string>;
 
-    /// available for both physical and virtual
+    /// available for physical event only
     fn address() -> Option<string>;
     /// available for both physical and virtual
     fn notes() -> Option<string>;
