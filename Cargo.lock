@@ -49,7 +49,6 @@ dependencies = [
  "openssl",
  "oslog",
  "parse-env-filter",
- "regex",
  "reqwest 0.12.15",
  "ruma",
  "ruma-common",

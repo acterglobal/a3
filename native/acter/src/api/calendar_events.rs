@@ -23,7 +23,6 @@ use matrix_sdk_base::{
     },
     RoomState,
 };
-use regex::Regex;
 use std::{
     collections::{hash_map::Entry, HashMap},
     ops::Deref,
@@ -397,66 +396,6 @@ impl CalendarEventDraft {
                 desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
                 desc_html =
                     description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
-            }
-        }
-        if let Some(coords) = &coordinates {
-            let re = Regex::new(
-                r"^geo:(?P<lat>-?\d+\.\d+),(?P<lon>-?\d+\.\d+)(?:,(?P<alt>-?\d+\.\d+))?(?:;(?P<params>.*))?$",
-            )?;
-            let caps = re.captures(coords).ok_or_else(|| Error::FailedToParse {
-                model_type: "geo URI".to_owned(),
-                msg: coords.clone(),
-            })?;
-
-            // Parse latitude & longitude
-            let lat: f64 = caps["lat"].parse().map_err(|_| Error::FailedToParse {
-                model_type: "latitude format".to_owned(),
-                msg: caps["lat"].to_owned(),
-            })?;
-            let lon: f64 = caps["lon"].parse().map_err(|_| Error::FailedToParse {
-                model_type: "longitude format".to_owned(),
-                msg: caps["lon"].to_owned(),
-            })?;
-
-            // Validate bounds
-            if !(-90.0..=90.0).contains(&lat) {
-                let e = Error::FailedToParse {
-                    model_type: "latitude value".to_owned(),
-                    msg: caps["lat"].to_owned(),
-                }
-                .into();
-                return Err(e);
-            }
-            if !(-180.0..=180.0).contains(&lon) {
-                let e = Error::FailedToParse {
-                    model_type: "longitude value".to_owned(),
-                    msg: caps["lon"].to_owned(),
-                }
-                .into();
-                return Err(e);
-            }
-
-            // Optional: Validate altitude if present
-            if let Some(alt_str) = caps.name("alt") {
-                let alt: f64 = alt_str.as_str().parse().map_err(|_| Error::FailedToParse {
-                    model_type: "altitude format".to_owned(),
-                    msg: alt_str.as_str().to_owned(),
-                })?;
-                // No strict bounds in RFC 5870, but you can add checks if needed
-            }
-
-            // Optional: Validate parameters (e.g., `u=uncertainty`)
-            if let Some(params) = caps.name("params") {
-                for param in params.as_str().split(';') {
-                    if !param.is_empty() && !param.contains('=') {
-                        let e = Error::FailedToParse {
-                            model_type: "parameter format".to_owned(),
-                            msg: param.to_owned(),
-                        }
-                        .into();
-                        return Err(e);
-                    }
-                }
             }
         }
         self.inner.add_physical_location(

@@ -44,7 +44,6 @@ mime = "0.3.17"
 mime2ext = "0.1.52"
 mime_guess = "2.0.4"
 parse-env-filter = "0.1.0"
-regex = "1"
 sanitize-filename-reader-friendly = "2.2.1"
 scc = { workspace = true }
 serde = { version = "1", features = ["derive"] }
