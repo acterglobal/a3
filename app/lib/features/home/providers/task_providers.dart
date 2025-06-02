@@ -5,6 +5,7 @@ import 'package:acter/features/tasks/actions/my_task_actions.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Client, Task;
 import 'package:logging/logging.dart';
 import 'package:riverpod/riverpod.dart';
+import 'package:acter/features/datetime/providers/utc_now_provider.dart';
 
 final _log = Logger('a3::home::task');
 
@@ -44,7 +45,7 @@ final myOpenTasksProvider =
 
 final sortedTasksProvider = FutureProvider<SortedTasks>((ref) async {
   final tasks = await ref.watch(myOpenTasksProvider.future);
-  final now = DateTime.now();  
+  final now = ref.watch(utcNowProvider);  
   
   // Initialize categories map
   final categories = Map.fromEntries(
