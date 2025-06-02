@@ -1,9 +1,6 @@
 import 'package:acter/features/tasks/actions/my_task_actions.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
-class MockTask extends Mock implements Task {}
+import '../../../helpers/mock_tasks_providers.dart';
 
 void main() {
   late DateTime now;
@@ -15,12 +12,12 @@ void main() {
   group('SortedTasks.fromTasks', () {
     test('should categorize tasks correctly', () {
       final tasks = [
-        _createTask('2024-03-14'), // overdue
-        _createTask('2024-03-15'), // today
-        _createTask('2024-03-16'), // tomorrow
-        _createTask('2024-03-17'), // later this week
-        _createTask('2024-03-20'), // later
-        _createTask(null), // no due date
+        MockTask(date: '2024-03-14'), // overdue
+        MockTask(date: '2024-03-15'), // today
+        MockTask(date: '2024-03-16'), // tomorrow
+        MockTask(date: '2024-03-17'), // later this week
+        MockTask(date: '2024-03-20'), // later
+        MockTask(date: null), // no due date
       ];
 
       final sortedTasks = SortedTasks.fromTasks(tasks, now);
@@ -35,9 +32,9 @@ void main() {
 
     test('should sort overdue tasks by date', () {
       final tasks = [
-        _createTask('2024-03-14'),
-        _createTask('2024-03-13'),
-        _createTask('2024-03-12'),
+        MockTask(date: '2024-03-14'),
+        MockTask(date: '2024-03-13'),
+        MockTask(date: '2024-03-12'),
       ];
 
       final sortedTasks = SortedTasks.fromTasks(tasks, now);
@@ -58,12 +55,12 @@ void main() {
 
     test('should correctly identify tasks in each category', () {
       final tasks = [
-        _createTask('2024-03-14'), // overdue
-        _createTask('2024-03-15'), // today
-        _createTask('2024-03-16'), // tomorrow
-        _createTask('2024-03-17'), // later this week
-        _createTask('2024-03-20'), // later
-        _createTask(null), // no due date
+        MockTask(date: '2024-03-14'), // overdue
+        MockTask(date: '2024-03-15'), // today
+        MockTask(date: '2024-03-16'), // tomorrow
+        MockTask(date: '2024-03-17'), // later this week
+        MockTask(date: '2024-03-20'), // later
+        MockTask(date: null), // no due date
       ];
 
       final sortedTasks = SortedTasks.fromTasks(tasks, now);
@@ -76,10 +73,4 @@ void main() {
       expect(sortedTasks.hasTasksInCategory(TaskDueCategory.noDueDate), true);
     });
   });
-}
-
-MockTask _createTask(String? dueDate) {
-  final task = MockTask();
-  when(() => task.dueDate()).thenReturn(dueDate);
-  return task;
 }
