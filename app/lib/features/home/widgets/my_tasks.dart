@@ -40,7 +40,7 @@ class MyTasksSection extends ConsumerWidget {
           title: lang.myTasks,
           showSectionBg: false,
           isShowSeeAllButton: true,
-          onTapSeeAll: () => context.pushNamed(Routes.tasks.name),
+          onTapSeeAll: () => context.pushNamed(Routes.myTasks.name),
         ),
         const SizedBox(height: 10),
         ListView.separated(
