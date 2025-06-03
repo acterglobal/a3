@@ -69,19 +69,22 @@ class _EditHtmlDescriptionSheetState
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Padding(
-      padding: MediaQuery.of(context).viewInsets,
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(widget.bottomSheetTitle ?? lang.editDescription),
           const SizedBox(height: 20),
           Container(
-            height: 200,
+            height: 150,
             decoration: BoxDecoration(
               border: Border.all(color: brandColor),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: HtmlEditor(editorState: textEditorState, editable: true),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: HtmlEditor(editorState: textEditorState, editable: true),
+            ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -109,7 +112,7 @@ class _EditHtmlDescriptionSheetState
               ),
             ],
           ),
-          const SizedBox(height: 100),
+          const SizedBox(height: 40),
         ],
       ),
     );

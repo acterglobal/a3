@@ -1,0 +1,1 @@
+- [Fixes] : Fixes task description view rendering issue to ensure proper display in the UI.
