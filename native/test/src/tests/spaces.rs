@@ -399,10 +399,12 @@ async fn create_with_custom_space_settings() -> Result<()> {
     permissions_builder.redact(15);
     permissions_builder.state_default(16);
 
-    let mut settings_builder = new_space_settings_builder();
-    settings_builder.set_name("my space".to_owned());
-    settings_builder.set_permissions(Box::new(permissions_builder));
-    let settings = settings_builder.build()?;
+    let settings = {
+        let mut builder = new_space_settings_builder();
+        builder.set_name("my space".to_owned());
+        builder.set_permissions(Box::new(permissions_builder));
+        builder.build()?
+    };
     user.create_acter_space(Box::new(settings)).await?;
 
     // wait for sync to catch up
@@ -498,11 +500,13 @@ async fn create_private_subspace() -> Result<()> {
     let first = spaces.pop().expect("first space should be available");
 
     let join_rule = "invite";
-    let mut settings_builder = new_space_settings_builder();
-    settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_parent(first.room_id().to_string())?;
-    settings_builder.join_rule(join_rule.to_owned());
-    let settings = settings_builder.build()?;
+    let settings = {
+        let mut builder = new_space_settings_builder();
+        builder.set_name("subspace".to_owned());
+        builder.set_parent(first.room_id().to_string())?;
+        builder.join_rule(join_rule.to_owned());
+        builder.build()?
+    };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -573,11 +577,13 @@ async fn create_public_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut settings_builder = new_space_settings_builder();
-    settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_parent(first.room_id().to_string())?;
-    settings_builder.join_rule("PUBLIC".to_owned());
-    let settings = settings_builder.build()?;
+    let settings = {
+        let mut builder = new_space_settings_builder();
+        builder.set_name("subspace".to_owned());
+        builder.set_parent(first.room_id().to_string())?;
+        builder.join_rule("PUBLIC".to_owned());
+        builder.build()?
+    };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -648,10 +654,12 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut settings_builder = new_space_settings_builder();
-    settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_parent(first.room_id().to_string())?;
-    let settings = settings_builder.build()?;
+    let settings = {
+        let mut builder = new_space_settings_builder();
+        builder.set_name("subspace".to_owned());
+        builder.set_parent(first.room_id().to_string())?;
+        builder.build()?
+    };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();

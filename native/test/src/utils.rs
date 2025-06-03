@@ -78,17 +78,18 @@ pub async fn random_users_with_random_space(
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
     assert!(user_count > 0, "User Counts must be more than 0");
     let (main_user, uuid) = random_user_with_uuid(prefix).await?;
-    let mut settings_builder = CreateSpaceSettingsBuilder::default();
-    settings_builder.name(format!("it-room-{prefix}-{uuid}"));
+    let (settings, mut users) = {
+        let mut builder = CreateSpaceSettingsBuilder::default();
+        builder.name(format!("it-room-{prefix}-{uuid}"));
 
-    let mut users = vec![];
-    for _x in 0..user_count {
-        let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
-        settings_builder.add_invitee(new_user.user_id()?.to_string())?;
-        users.push(new_user);
-    }
-
-    let settings = settings_builder.build()?;
+        let mut users = vec![];
+        for _x in 0..user_count {
+            let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
+            builder.add_invitee(new_user.user_id()?.to_string())?;
+            users.push(new_user);
+        }
+        (builder.build()?, users)
+    };
     let room_id = main_user.create_acter_space(Box::new(settings)).await?;
 
     for user in users.iter() {
@@ -137,17 +138,18 @@ pub async fn random_users_with_random_convo(
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
     assert!(user_count > 0, "User Counts must be more than 0");
     let (main_user, uuid) = random_user_with_uuid(prefix).await?;
-    let mut settings_builder = CreateConvoSettingsBuilder::default();
-    settings_builder.name(format!("it-room-{prefix}-{uuid}"));
+    let (settings, mut users) = {
+        let mut builder = CreateConvoSettingsBuilder::default();
+        builder.name(format!("it-room-{prefix}-{uuid}"));
 
-    let mut users = vec![];
-    for _x in 0..user_count {
-        let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
-        settings_builder.add_invitee(new_user.user_id()?.to_string())?;
-        users.push(new_user);
-    }
-
-    let settings = settings_builder.build()?;
+        let mut users = vec![];
+        for _x in 0..user_count {
+            let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
+            builder.add_invitee(new_user.user_id()?.to_string())?;
+            users.push(new_user);
+        }
+        (builder.build()?, users)
+    };
     let room_id = main_user.create_convo(Box::new(settings)).await?;
 
     users.insert(0, main_user);
