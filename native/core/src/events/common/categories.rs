@@ -43,29 +43,25 @@ impl Category {
 }
 
 impl CategoryBuilder {
-    pub fn clear_entries(&mut self) -> &mut Self {
+    pub fn clear_entries(&mut self) {
         self.entries = Some(Vec::new());
-        self
     }
 
-    pub fn add_entry(&mut self, entry: String) -> &mut Self {
+    pub fn add_entry(&mut self, entry: String) {
         match self.entries.as_mut() {
             Some(i) => i.push(entry),
             None => {
                 self.entries = Some(vec![entry]);
             }
         };
-        self
     }
 
-    pub fn unset_display(&mut self) -> &mut Self {
+    pub fn unset_display(&mut self) {
         self.display_typed(None);
-        self
     }
 
     #[allow(clippy::boxed_local)]
-    pub fn display(&mut self, display: Box<Display>) -> &mut Self {
+    pub fn display(&mut self, display: Box<Display>) {
         self.display_typed(Some(*display));
-        self
     }
 }

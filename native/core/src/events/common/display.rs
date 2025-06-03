@@ -21,9 +21,11 @@ impl Display {
     pub fn color(&self) -> Option<u32> {
         self.color
     }
+
     pub fn icon_type_str(&self) -> Option<String> {
         self.icon.as_ref().map(|i| i.icon_type_str())
     }
+
     pub fn icon_str(&self) -> Option<String> {
         self.icon.as_ref().map(|i| i.icon_str())
     }
@@ -37,23 +39,19 @@ impl Display {
 }
 
 impl DisplayBuilder {
-    pub fn color(&mut self, value: u32) -> &mut Self {
+    pub fn color(&mut self, value: u32) {
         self.color_typed(value);
-        self
     }
 
-    pub fn unset_color(&mut self) -> &mut Self {
+    pub fn unset_color(&mut self) {
         self.color_typed(None);
-        self
     }
 
-    pub fn icon(&mut self, typ: String, value: String) -> &mut Self {
+    pub fn icon(&mut self, typ: String, value: String) {
         self.icon_typed(Icon::parse(typ, value));
-        self
     }
 
-    pub fn unset_icon(&mut self) -> &mut Self {
+    pub fn unset_icon(&mut self) {
         self.icon_typed(None);
-        self
     }
 }

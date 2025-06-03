@@ -92,12 +92,11 @@ pub struct CreateSpaceSettings {
 
 // helper for built-in setters
 impl CreateSpaceSettingsBuilder {
-    pub fn set_name(&mut self, value: String) -> &mut Self {
+    pub fn set_name(&mut self, value: String) {
         self.name(value);
-        self
     }
 
-    pub fn set_visibility(&mut self, value: String) -> &mut Self {
+    pub fn set_visibility(&mut self, value: String) {
         match value.as_str() {
             "Public" => {
                 self.visibility(Visibility::Public);
@@ -107,7 +106,6 @@ impl CreateSpaceSettingsBuilder {
             }
             _ => {}
         }
-        self
     }
 
     pub fn add_invitee(&mut self, value: String) -> Result<()> {
@@ -121,32 +119,27 @@ impl CreateSpaceSettingsBuilder {
         Ok(())
     }
 
-    pub fn set_alias(&mut self, value: String) -> &mut Self {
+    pub fn set_alias(&mut self, value: String) {
         self.alias(value);
-        self
     }
 
-    pub fn set_topic(&mut self, value: String) -> &mut Self {
+    pub fn set_topic(&mut self, value: String) {
         self.topic(value);
-        self
     }
 
-    pub fn set_avatar_uri(&mut self, value: String) -> &mut Self {
+    pub fn set_avatar_uri(&mut self, value: String) {
         self.avatar_uri(value);
-        self
     }
 
-    pub fn set_parent(&mut self, value: String) -> &mut Self {
+    pub fn set_parent(&mut self, value: String) {
         if let Ok(parent) = RoomId::parse(value) {
             self.parent(parent);
         }
-        self
     }
 
     #[allow(clippy::boxed_local)]
-    pub fn set_permissions(&mut self, value: Box<AppPermissionsBuilder>) -> &mut Self {
+    pub fn set_permissions(&mut self, value: Box<AppPermissionsBuilder>) {
         self.permissions(*value);
-        self
     }
 }
 

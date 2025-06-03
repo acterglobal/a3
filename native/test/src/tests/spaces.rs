@@ -245,14 +245,14 @@ async fn create_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let settings = new_space_settings_builder()
-        .set_name("subspace".to_owned())
-        .set_visibility("Public".to_owned())
-        .set_alias("wombat".to_owned()) // this means #wombat:example.com
-        .set_topic("Here is test space".to_owned())
-        .set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned())
-        .set_parent(first.room_id().to_string())
-        .build()?;
+    let mut settings_builder = new_space_settings_builder();
+    settings_builder.set_name("subspace".to_owned());
+    settings_builder.set_visibility("Public".to_owned());
+    settings_builder.set_alias("wombat".to_owned()); // this means #wombat:example.com
+    settings_builder.set_topic("Here is test space".to_owned());
+    settings_builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
+    settings_builder.set_parent(first.room_id().to_string());
+    let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -398,10 +398,11 @@ async fn create_with_custom_space_settings() -> Result<()> {
     permissions_builder.invite(14);
     permissions_builder.redact(15);
     permissions_builder.state_default(16);
-    let settings = new_space_settings_builder()
-        .set_name("my space".to_owned())
-        .set_permissions(Box::new(permissions_builder))
-        .build()?;
+
+    let mut settings_builder = new_space_settings_builder();
+    settings_builder.set_name("my space".to_owned());
+    settings_builder.set_permissions(Box::new(permissions_builder));
+    let settings = settings_builder.build()?;
     user.create_acter_space(Box::new(settings)).await?;
 
     // wait for sync to catch up
@@ -497,11 +498,11 @@ async fn create_private_subspace() -> Result<()> {
     let first = spaces.pop().expect("first space should be available");
 
     let join_rule = "invite";
-    let settings = new_space_settings_builder()
-        .set_name("subspace".to_owned())
-        .set_parent(first.room_id().to_string())
-        .join_rule(join_rule.to_owned())
-        .build()?;
+    let mut settings_builder = new_space_settings_builder();
+    settings_builder.set_name("subspace".to_owned());
+    settings_builder.set_parent(first.room_id().to_string());
+    settings_builder.join_rule(join_rule.to_owned());
+    let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -572,11 +573,11 @@ async fn create_public_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let settings = new_space_settings_builder()
-        .set_name("subspace".to_owned())
-        .set_parent(first.room_id().to_string())
-        .join_rule("PUBLIC".to_owned())
-        .build()?;
+    let mut settings_builder = new_space_settings_builder();
+    settings_builder.set_name("subspace".to_owned());
+    settings_builder.set_parent(first.room_id().to_string());
+    settings_builder.join_rule("PUBLIC".to_owned());
+    let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
@@ -647,11 +648,10 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let settings = new_space_settings_builder()
-        .set_name("subspace".to_owned())
-        .set_parent(first.room_id().to_string())
-        .build()?;
-
+    let mut settings_builder = new_space_settings_builder();
+    settings_builder.set_name("subspace".to_owned());
+    settings_builder.set_parent(first.room_id().to_string());
+    let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
