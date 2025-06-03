@@ -28,7 +28,7 @@ class ChatRoomNgPage extends ConsumerWidget {
                     children: [
                       Positioned.fill(
                         child: Opacity(
-                          opacity: 0.08,
+                          opacity: 0.07,
                           child: Container(
                             decoration: BoxDecoration(
                               image: DecorationImage(
