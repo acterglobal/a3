@@ -371,7 +371,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 #[tokio::test]
 async fn create_with_custom_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
-    let mut user = random_user("settigs").await?;
+    let mut user = random_user("settings").await?;
     let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 

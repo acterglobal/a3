@@ -57,7 +57,7 @@ impl CategoryBuilder {
             None => {
                 self.entries = Some(vec![entry]);
             }
-        };
+        }
     }
 
     pub fn unset_display(&mut self) {
