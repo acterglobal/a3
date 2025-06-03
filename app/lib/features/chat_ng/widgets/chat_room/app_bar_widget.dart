@@ -34,7 +34,7 @@ class ChatRoomAppBarWidget extends ConsumerWidget
         children: [
           // Blur effect
           BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
             child: Container(
               color: Colors.black.withValues(alpha: 0.5), // Optional overlay
             ),
