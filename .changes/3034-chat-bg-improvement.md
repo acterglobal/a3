@@ -1,0 +1,1 @@
+- [Enhacement] : Chat-NG is getting even better with the greatness of all new chat background graphics and blurred chat header area.
