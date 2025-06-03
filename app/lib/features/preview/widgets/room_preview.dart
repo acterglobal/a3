@@ -203,7 +203,7 @@ class RoomPreviewWidget extends ConsumerWidget {
         ActerPrimaryActionButton(
           onPressed:
               () => joinRoom(
-                context: context,
+                lang: lang,
                 ref: ref,
                 roomIdOrAlias: roomId,
                 serverNames: viaServers,
@@ -217,7 +217,7 @@ class RoomPreviewWidget extends ConsumerWidget {
         OutlinedButton(
           onPressed:
               () => joinRoom(
-                context: context,
+                lang: lang,
                 ref: ref,
                 roomIdOrAlias: roomId,
                 serverNames: viaServers,

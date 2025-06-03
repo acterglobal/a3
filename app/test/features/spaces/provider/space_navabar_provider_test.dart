@@ -6,6 +6,7 @@ import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/news/providers/news_providers.dart';
 import 'package:acter/features/pins/providers/pins_provider.dart';
 import 'package:acter/features/space/providers/space_navbar_provider.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter/features/space/providers/topic_provider.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';

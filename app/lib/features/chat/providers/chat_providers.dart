@@ -17,6 +17,7 @@ import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter/features/labs/model/labs_features.dart';
 import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter/features/settings/providers/app_settings_provider.dart';
+import 'package:acter/features/space/providers/suggested_provider.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;

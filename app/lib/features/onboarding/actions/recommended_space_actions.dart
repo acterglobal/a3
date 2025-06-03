@@ -5,35 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> joinRecommendedSpace(
-    BuildContext context,
-    PublicSearchResultItem space,
-    VoidCallback callNextPage,
-    WidgetRef ref,
-  ) async {
-    final lang = L10n.of(context);
-    final roomId = space.roomIdStr();
-    final spaceName = space.name() ?? '';
+  BuildContext context,
+  PublicSearchResultItem space,
+  VoidCallback callNextPage,
+  WidgetRef ref,
+) async {
+  final lang = L10n.of(context);
+  final roomId = space.roomIdStr();
+  final spaceName = space.name() ?? '';
 
-    try {
-      await joinRoom(
-        context: context,
-        ref: ref,
-        roomIdOrAlias: roomId,
-        roomName: spaceName,
-        serverNames: ['acter.global'],
+  try {
+    await joinRoom(
+      lang: lang,
+      ref: ref,
+      roomIdOrAlias: roomId,
+      roomName: spaceName,
+      serverNames: ['acter.global'],
+    );
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(lang.successfullyJoined(spaceName))),
       );
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(lang.successfullyJoined(spaceName))));
-      }
-      callNextPage.call();
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(lang.joinError)));
-      }
+    }
+    callNextPage.call();
+  } catch (_) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(lang.joinError)));
     }
   }
+}

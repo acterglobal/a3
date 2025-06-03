@@ -1,1 +1,0 @@
-- [Chat NG]: [fix] message action UI remains correctly aligned on smaller message bubbles.

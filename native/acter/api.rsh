@@ -739,10 +739,8 @@ object CalendarEvent {
     /// get all location details
     fn locations() -> Vec<EventLocationInfo>;
 
-
     /// get the internal reference object
     fn ref_details() -> Future<Result<RefDetails>>;
-
 }
 
 object CalendarEventUpdateBuilder {
@@ -799,11 +797,14 @@ object CalendarEventDraft {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
-    /// set the physical location details for this calendar event
-    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>) -> Result<()>;
-    /// set the virtual location details for this calendar event
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string) -> Result<()>;
 
+    /// set the physical location details for this calendar event
+    /// description_html means by markdown
+    /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    /// set the virtual location details for this calendar event
+    /// description_html means by markdown
+    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -812,14 +813,21 @@ object CalendarEventDraft {
 object EventLocationInfo {
     /// either of `Physical` or `Virtual`
     fn location_type() -> string;
+
     /// get the name of location
     fn name() -> Option<string>;
     /// get the location description
     fn description() -> Option<TextMessageContent>;
+
     /// geo uri for the location
     fn coordinates() -> Option<string>;
     /// an online link for the location
     fn uri() -> Option<string>;
+
+    /// available for physical event only
+    fn address() -> Option<string>;
+    /// available for both physical and virtual
+    fn notes() -> Option<string>;
 }
 
 
@@ -4204,11 +4212,14 @@ object DeviceRecord {
 /// Manage Encryption Backups
 object BackupManager {
 
-    /// Create a new backup version, encrypted with a new backup recovery key.
+    /// Create a new backup, encrypted with a new backup recovery key.
     fn enable() -> Future<Result<string>>;
 
-    /// Reset the existing backup version, encrypted with a new backup recovery key.
-    fn reset() -> Future<Result<string>>;
+    /// Reset the existing backup, encrypted with a new backup recovery key.
+    fn reset_key() -> Future<Result<string>>;
+
+    /// Reset the existing backup and identity, encrypted with a new key.
+    fn reset_identity(password: string) -> Future<Result<string>>;
 
     /// Disable and delete the currently active backup.
     fn disable() -> Future<Result<bool>>;

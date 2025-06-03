@@ -1,7 +1,6 @@
 import 'package:acter/common/widgets/empty_state_widget.dart';
 import 'package:acter/features/activities/widgets/invitation_section/invitation_section_widget.dart';
 import 'package:acter/features/activities/widgets/security_and_privacy_section/security_and_privacy_section_widget.dart';
-import 'package:acter/features/activities/widgets/security_and_privacy_section/store_the_key_securely_widget.dart';
 import 'package:acter/features/activities/widgets/space_activities_section/space_activities_section_widget.dart';
 import 'package:acter/features/activities/widgets/sync_section/sync_state_section_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -28,7 +27,6 @@ class ActivitiesPage extends ConsumerWidget {
     final securityWidget = buildSecurityAndPrivacySectionWidget(context, ref);
     if (securityWidget != null) {
       sectionWidgetList.add(securityWidget);
-      sectionWidgetList.add(const StoreTheKeySecurelyWidget());
     }
     // Space Activities Section
     final spaceActivitiesWidget = buildSpaceActivitiesSectionWidget(

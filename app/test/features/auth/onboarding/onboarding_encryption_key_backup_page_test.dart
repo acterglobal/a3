@@ -16,12 +16,18 @@ void main() {
   setUp(() {
     mockBackupManager = MockBackupManager();
     mockCallNextPage = () {};
-    
+
     // Setup default mock behavior
     when(() => mockBackupManager.recover(any())).thenAnswer((_) async => true);
-    when(() => mockBackupManager.enable()).thenAnswer((_) async => 'test-encryption-key');
-    when(() => mockBackupManager.reset()).thenAnswer((_) async => 'test-encryption-key');
-    when(() => mockBackupManager.stateStream()).thenAnswer((_) => Stream.value('enabled'));
+    when(
+      () => mockBackupManager.enable(),
+    ).thenAnswer((_) async => 'test-encryption-key');
+    when(
+      () => mockBackupManager.resetKey(),
+    ).thenAnswer((_) async => 'test-encryption-key');
+    when(
+      () => mockBackupManager.stateStream(),
+    ).thenAnswer((_) => Stream.value('enabled'));
   });
 
   Future<void> pumpEncryptionKeyBackupPage(WidgetTester tester) async {
@@ -63,7 +69,9 @@ void main() {
       expect(find.byIcon(Icons.copy), findsOneWidget);
     });
 
-    testWidgets('copies text to clipboard when copy button is pressed', (tester) async {
+    testWidgets('copies text to clipboard when copy button is pressed', (
+      tester,
+    ) async {
       await pumpEncryptionKeyBackupPage(tester);
 
       // Enter text
@@ -122,7 +130,7 @@ void main() {
       await tester.tap(find.byType(ActerPrimaryActionButton));
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
-       // Verify next page was called
+      // Verify next page was called
       expect(wasCalled, isFalse);
     });
   });

@@ -145,7 +145,7 @@ class __SuggestedRoomsState extends ConsumerState<_SuggestedRooms> {
       try {
         final servers = room.viaServerNames().toDart();
         final newRoomId = await joinRoom(
-          context: context,
+          lang: L10n.of(context),
           ref: ref,
           roomIdOrAlias: roomId,
           serverNames: servers,
