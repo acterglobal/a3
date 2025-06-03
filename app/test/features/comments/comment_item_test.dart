@@ -1,6 +1,6 @@
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/render_html.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/comments/widgets/comment_item_widget.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:flutter_test/flutter_test.dart';

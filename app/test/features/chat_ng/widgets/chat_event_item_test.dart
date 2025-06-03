@@ -4,6 +4,8 @@ import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/sending_state_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reaction_chips_widget.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
+import 'package:acter/features/labs/model/labs_features.dart';
+import 'package:acter/features/labs/providers/labs_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         EventSendState,
@@ -138,6 +140,7 @@ void main() {
         }
         return null;
       }),
+      isActiveProvider(LabsFeature.htmlNext).overrideWith((a) => false),
     ];
 
     testWidgets('renders MessageEventItem for m.room.message', (tester) async {
