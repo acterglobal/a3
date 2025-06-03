@@ -251,7 +251,7 @@ async fn create_subspace() -> Result<()> {
     settings_builder.set_alias("wombat".to_owned()); // this means #wombat:example.com
     settings_builder.set_topic("Here is test space".to_owned());
     settings_builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
-    settings_builder.set_parent(first.room_id().to_string());
+    settings_builder.set_parent(first.room_id().to_string())?;
     let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
@@ -500,7 +500,7 @@ async fn create_private_subspace() -> Result<()> {
     let join_rule = "invite";
     let mut settings_builder = new_space_settings_builder();
     settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_parent(first.room_id().to_string());
+    settings_builder.set_parent(first.room_id().to_string())?;
     settings_builder.join_rule(join_rule.to_owned());
     let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -575,7 +575,7 @@ async fn create_public_subspace() -> Result<()> {
 
     let mut settings_builder = new_space_settings_builder();
     settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_parent(first.room_id().to_string());
+    settings_builder.set_parent(first.room_id().to_string())?;
     settings_builder.join_rule("PUBLIC".to_owned());
     let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -650,7 +650,7 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let mut settings_builder = new_space_settings_builder();
     settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_parent(first.room_id().to_string());
+    settings_builder.set_parent(first.room_id().to_string())?;
     let settings = settings_builder.build()?;
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 

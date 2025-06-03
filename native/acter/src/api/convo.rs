@@ -433,10 +433,10 @@ impl CreateConvoSettingsBuilder {
         self.avatar_uri(value);
     }
 
-    pub fn set_parent(&mut self, value: String) {
-        if let Ok(parent) = RoomId::parse(value) {
-            self.parent(parent);
-        }
+    pub fn set_parent(&mut self, value: String) -> Result<()> {
+        let room_id = RoomId::parse(value)?;
+        self.parent(room_id);
+        Ok(())
     }
 }
 

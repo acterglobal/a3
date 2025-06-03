@@ -28639,13 +28639,25 @@ class Api {
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderSetParentPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _CreateConvoSettingsBuilderSetParentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__CreateConvoSettingsBuilder_set_parent");
 
   late final _createConvoSettingsBuilderSetParent =
       _createConvoSettingsBuilderSetParentPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<
+            _CreateConvoSettingsBuilderSetParentReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _createConvoSettingsBuilderBuildPtr = _lookup<
     ffi.NativeFunction<
       _CreateConvoSettingsBuilderBuildReturn Function(ffi.IntPtr)
@@ -28732,13 +28744,25 @@ class Api {
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetParentPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _CreateSpaceSettingsBuilderSetParentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__CreateSpaceSettingsBuilder_set_parent");
 
   late final _createSpaceSettingsBuilderSetParent =
       _createSpaceSettingsBuilderSetParentPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<
+            _CreateSpaceSettingsBuilderSetParentReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _createSpaceSettingsBuilderSetPermissionsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__CreateSpaceSettingsBuilder_set_permissions",
@@ -64007,7 +64031,30 @@ class CreateConvoSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConvoSettingsBuilderSetParent(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._createConvoSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -64247,7 +64294,30 @@ class CreateSpaceSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createSpaceSettingsBuilderSetParent(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._createSpaceSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -73904,6 +73974,17 @@ class _CreateConvoSettingsBuilderAddInviteeReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _CreateConvoSettingsBuilderSetParentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
 class _CreateConvoSettingsBuilderBuildReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73918,6 +73999,17 @@ class _CreateConvoSettingsBuilderBuildReturn extends ffi.Struct {
 }
 
 class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _CreateSpaceSettingsBuilderSetParentReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
