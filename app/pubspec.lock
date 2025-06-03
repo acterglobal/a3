@@ -129,6 +129,13 @@ packages:
       url: "https://github.com/acterglobal/appflowy-editor"
     source: git
     version: "5.2.0"
+  appflowy_editor_codeblock:
+    dependency: "direct main"
+    description:
+      path: "../packages/appflowy_editor_codeblock"
+      relative: true
+    source: path
+    version: "0.0.1"
   archive:
     dependency: transitive
     description:
@@ -2004,10 +2011,10 @@ packages:
     dependency: transitive
     description:
       name: provider
-      sha256: c8a055ee5ce3fd98d6fc872478b03823ffdb448699c6ebdbbc71d59b596fd48c
+      sha256: "4abbd070a04e9ddc287673bf5a030c7ca8b685ff70218720abab8b092f53dd84"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.2"
+    version: "6.1.5"
   pub_semver:
     dependency: transitive
     description:
@@ -3047,5 +3054,5 @@ packages:
     source: hosted
     version: "1.1.2"
 sdks:
-  dart: ">=3.7.0 <4.0.0"
+  dart: ">=3.7.2 <4.0.0"
   flutter: ">=3.29.0"
