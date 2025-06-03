@@ -33,18 +33,23 @@ async fn categories_e2e() -> Result<()> {
     let chat_cats = space.categories("chats".to_owned()).await?;
     assert!(chat_cats.categories().is_empty());
 
-    let display = DisplayBuilder::default()
-        .color(0xffff0000)
-        .icon("emoji".to_owned(), "🚀".to_owned())
-        .build()?;
-    let new_cat = space_cats
-        .new_category_builder()
-        .add_entry("a".to_owned())
-        .add_entry("b".to_owned())
-        .add_entry("c".to_owned())
-        .title("Campaigns".to_owned())
-        .display(Box::new(display))
-        .build()?;
+    let display = {
+        let mut builder = DisplayBuilder::default();
+        builder.color(0xffff0000);
+        builder.icon("emoji".to_owned(), "🚀".to_owned());
+        builder.build()?
+    };
+
+    let new_cat = {
+        let mut builder = space_cats.new_category_builder();
+        builder.add_entry("a".to_owned());
+        builder.add_entry("b".to_owned());
+        builder.add_entry("c".to_owned());
+        builder.title("Campaigns".to_owned());
+        builder.display(Box::new(display));
+        builder.build()?
+    };
+
     let mut space_cat_updater = space_cats.update_builder();
     space_cat_updater.add(Box::new(new_cat.clone()));
 
@@ -80,27 +85,33 @@ async fn categories_e2e() -> Result<()> {
     assert!(chat_cats.categories().is_empty());
 
     // let’s overwrite it
-    let updated = campaign
-        .update_builder()
-        .title("Backoffice".to_owned())
-        .clear_entries()
-        .unset_display()
-        .build()?;
+    let updated = {
+        let mut builder = campaign.update_builder();
+        builder.title("Backoffice".to_owned());
+        builder.clear_entries();
+        builder.unset_display();
+        builder.build()?
+    };
 
-    let display = DisplayBuilder::default()
-        .color(0xffff0000)
-        .icon("emoji".to_owned(), "🚀".to_owned())
-        .unset_color()
-        .unset_icon()
-        .build()?;
-    let new_cat = new_space_categories
-        .new_category_builder()
-        .add_entry("c".to_owned())
-        .add_entry("b".to_owned())
-        .add_entry("a".to_owned())
-        .title("Campaigns".to_owned())
-        .display(Box::new(display))
-        .build()?;
+    let display = {
+        let mut builder = DisplayBuilder::default();
+        builder.color(0xffff0000);
+        builder.icon("emoji".to_owned(), "🚀".to_owned());
+        builder.unset_color();
+        builder.unset_icon();
+        builder.build()?
+    };
+
+    let new_cat = {
+        let mut builder = new_space_categories.new_category_builder();
+        builder.add_entry("c".to_owned());
+        builder.add_entry("b".to_owned());
+        builder.add_entry("a".to_owned());
+        builder.title("Campaigns".to_owned());
+        builder.display(Box::new(display));
+        builder.build()?
+    };
+
     let mut space_cat_updater = new_space_categories.update_builder();
     space_cat_updater.clear();
     space_cat_updater.add(Box::new(updated.clone()));
