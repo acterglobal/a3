@@ -49,7 +49,11 @@ impl CategoryBuilder {
 
     pub fn add_entry(&mut self, entry: String) {
         match self.entries.as_mut() {
-            Some(i) => i.push(entry),
+            Some(entries) => {
+                if !entries.contains(&entry) {
+                    entries.push(entry);
+                }
+            }
             None => {
                 self.entries = Some(vec![entry]);
             }
