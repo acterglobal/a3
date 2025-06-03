@@ -133,21 +133,25 @@ pub async fn random_user_under_token(prefix: &str, registration_token: &str) -> 
 
 pub async fn random_users_with_random_convo(
     prefix: &str,
-) -> Result<(Client, Client, Client, OwnedRoomId)> {
-    let (sisko, _) = random_user_with_uuid(prefix).await?;
-    let (kyra, _) = random_user_with_uuid(prefix).await?;
-    let (worf, _) = random_user_with_uuid(prefix).await?;
-
-    let uuid = Uuid::new_v4().to_string();
+    user_count: u8,
+) -> Result<(Vec<Client>, OwnedRoomId)> {
+    assert!(user_count > 0, "User Counts must be more than 0");
+    let (main_user, uuid) = random_user_with_uuid(prefix).await?;
     let mut settings_builder = CreateConvoSettingsBuilder::default();
     settings_builder.name(format!("it-room-{prefix}-{uuid}"));
-    settings_builder.add_invitee(kyra.user_id()?.to_string())?;
-    settings_builder.add_invitee(worf.user_id()?.to_string())?;
+
+    let mut users = vec![];
+    for _x in 0..user_count {
+        let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
+        settings_builder.add_invitee(new_user.user_id()?.to_string())?;
+        users.push(new_user);
+    }
 
     let settings = settings_builder.build()?;
-    let room_id = sisko.create_convo(Box::new(settings)).await?;
+    let room_id = main_user.create_convo(Box::new(settings)).await?;
 
-    Ok((sisko, kyra, worf, room_id))
+    users.insert(0, main_user);
+    Ok((users, room_id))
 }
 
 pub fn default_user_password(username: &str) -> String {
