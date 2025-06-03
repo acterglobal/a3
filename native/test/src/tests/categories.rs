@@ -45,11 +45,11 @@ async fn categories_e2e() -> Result<()> {
         .title("Campaigns".to_owned())
         .display(Box::new(display))
         .build()?;
-    let mut builder = space_cats.update_builder();
-    let space_cat_updater = builder.add(Box::new(new_cat.clone()));
+    let mut space_cat_updater = space_cats.update_builder();
+    space_cat_updater.add(Box::new(new_cat.clone()));
 
     space
-        .set_categories("spaces".to_owned(), Box::new(space_cat_updater.clone()))
+        .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
         .await?;
 
     let fetching_space = space.clone();
@@ -101,15 +101,14 @@ async fn categories_e2e() -> Result<()> {
         .title("Campaigns".to_owned())
         .display(Box::new(display))
         .build()?;
-    let mut builder = new_space_categories.update_builder();
-    let space_cat_updater = builder
-        .clear()
-        .add(Box::new(updated.clone()))
-        // and we add a second now.
-        .add(Box::new(new_cat.clone()));
+    let mut space_cat_updater = new_space_categories.update_builder();
+    space_cat_updater.clear();
+    space_cat_updater.add(Box::new(updated.clone()));
+    // and we add a second now.
+    space_cat_updater.add(Box::new(new_cat.clone()));
 
     space
-        .set_categories("spaces".to_owned(), Box::new(space_cat_updater.clone()))
+        .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
         .await?;
 
     let fetching_space = space.clone();

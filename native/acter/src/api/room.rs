@@ -526,7 +526,6 @@ impl SpaceHierarchyRoomInfo {
     }
 }
 
-#[derive(Clone)]
 pub struct JoinRuleBuilder {
     rule: String,
     restricted_rooms: Vec<String>,
@@ -540,14 +539,12 @@ impl JoinRuleBuilder {
         }
     }
 
-    pub fn join_rule(&mut self, input: String) -> &mut Self {
+    pub fn join_rule(&mut self, input: String) {
         self.rule = input;
-        self
     }
 
-    pub fn add_room(&mut self, new_room: String) -> &mut Self {
+    pub fn add_room(&mut self, new_room: String) {
         self.restricted_rooms.push(new_room);
-        self
     }
 
     fn build(self) -> Result<RoomJoinRulesEventContent> {

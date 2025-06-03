@@ -375,33 +375,32 @@ async fn create_with_custom_space_settings() -> Result<()> {
     let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 
-    let mut builder = new_app_permissions_builder(); // all on by default
-                                                     // we turn them all off
-    let permissions_builder = builder
-        .news(false)
-        .pins(false)
-        .tasks(false)
-        .calendar_events(false)
-        .stories(false)
-        .news_permissions(1)
-        .pins_permissions(2)
-        .task_lists_permissions(3)
-        .tasks_permissions(4)
-        .calendar_events_permissions(5)
-        .stories_permissions(6)
-        .comments_permissions(7)
-        .attachments_permissions(8)
-        .rsvp_permissions(9)
-        .users_default(10)
-        .events_default(11)
-        .ban(12)
-        .kick(13)
-        .invite(14)
-        .redact(15)
-        .state_default(16);
+    let mut permissions_builder = new_app_permissions_builder(); // all on by default
+                                                                 // we turn them all off
+    permissions_builder.news(false);
+    permissions_builder.pins(false);
+    permissions_builder.tasks(false);
+    permissions_builder.calendar_events(false);
+    permissions_builder.stories(false);
+    permissions_builder.news_permissions(1);
+    permissions_builder.pins_permissions(2);
+    permissions_builder.task_lists_permissions(3);
+    permissions_builder.tasks_permissions(4);
+    permissions_builder.calendar_events_permissions(5);
+    permissions_builder.stories_permissions(6);
+    permissions_builder.comments_permissions(7);
+    permissions_builder.attachments_permissions(8);
+    permissions_builder.rsvp_permissions(9);
+    permissions_builder.users_default(10);
+    permissions_builder.events_default(11);
+    permissions_builder.ban(12);
+    permissions_builder.kick(13);
+    permissions_builder.invite(14);
+    permissions_builder.redact(15);
+    permissions_builder.state_default(16);
     let settings = new_space_settings_builder()
         .set_name("my space".to_owned())
-        .set_permissions(Box::new(permissions_builder.clone()))
+        .set_permissions(Box::new(permissions_builder))
         .build()?;
     user.create_acter_space(Box::new(settings)).await?;
 
@@ -682,11 +681,11 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
-    let mut builder = new_join_rule_builder();
+    let mut rule_builder = new_join_rule_builder();
     let join_rule = "invite";
-    let rule_builder = builder.join_rule(join_rule.to_owned());
+    rule_builder.join_rule(join_rule.to_owned());
 
-    space.set_join_rule(Box::new(rule_builder.clone())).await?;
+    space.set_join_rule(Box::new(rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
@@ -705,13 +704,12 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     assert!(matches!(join_rule, JoinRule::Invite));
 
-    let mut builder = new_join_rule_builder();
+    let mut rule_builder = new_join_rule_builder();
     let join_rule = "restricted";
-    let rule_builder = builder
-        .join_rule(join_rule.to_owned())
-        .add_room(space_parent.room_id().to_string());
+    rule_builder.join_rule(join_rule.to_owned());
+    rule_builder.add_room(space_parent.room_id().to_string());
 
-    space.set_join_rule(Box::new(rule_builder.clone())).await?;
+    space.set_join_rule(Box::new(rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 

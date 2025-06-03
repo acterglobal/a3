@@ -4,7 +4,6 @@ pub struct Categories {
     inner: Option<CategoriesStateEventContent>,
 }
 
-#[derive(Clone)]
 pub struct CategoriesBuilder {
     entries: Vec<Category>,
 }
@@ -32,14 +31,12 @@ impl Categories {
 }
 
 impl CategoriesBuilder {
-    pub fn clear(&mut self) -> &mut Self {
+    pub fn clear(&mut self) {
         self.entries.clear();
-        self
     }
 
-    pub fn add(&mut self, cat: Box<Category>) -> &mut Self {
+    pub fn add(&mut self, cat: Box<Category>) {
         self.entries.push(*cat);
-        self
     }
 
     pub(crate) fn build(self) -> CategoriesStateEventContent {

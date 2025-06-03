@@ -94,155 +94,134 @@ impl AppPermissionsBuilder {
     }
 
     // Settings functions
-    pub fn news(&mut self, active: bool) -> &mut Self {
+    pub fn news(&mut self, active: bool) {
         self.settings.news = Some(
             SimpleSettingWithTurnOffBuilder::default()
                 .active(active)
                 .build()
                 .unwrap(),
         );
-        self
     }
 
-    pub fn stories(&mut self, active: bool) -> &mut Self {
+    pub fn stories(&mut self, active: bool) {
         self.settings.stories = Some(
             SimpleOnOffSettingBuilder::default()
                 .active(active)
                 .build()
                 .unwrap(),
         );
-        self
     }
 
-    pub fn pins(&mut self, active: bool) -> &mut Self {
+    pub fn pins(&mut self, active: bool) {
         self.settings.pins = Some(
             SimpleSettingWithTurnOffBuilder::default()
                 .active(active)
                 .build()
                 .unwrap(),
         );
-        self
     }
 
-    pub fn calendar_events(&mut self, active: bool) -> &mut Self {
+    pub fn calendar_events(&mut self, active: bool) {
         self.settings.events = Some(
             SimpleSettingWithTurnOffBuilder::default()
                 .active(active)
                 .build()
                 .unwrap(),
         );
-        self
     }
 
-    pub fn tasks(&mut self, active: bool) -> &mut Self {
+    pub fn tasks(&mut self, active: bool) {
         self.settings.tasks = Some(
             SimpleOnOffSettingBuilder::default()
                 .active(active)
                 .build()
                 .unwrap(),
         );
-        self
     }
 
     fn set_for_key(&mut self, key: TimelineEventType, value: u32) {
         self.permissions.events.insert(key, Int::from(value));
     }
 
-    pub fn news_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn news_permissions(&mut self, value: u32) {
         self.set_for_key(
             <NewsEntryEventContent as StaticEventContent>::TYPE.into(),
             value,
         );
-        self
     }
 
-    pub fn stories_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn stories_permissions(&mut self, value: u32) {
         self.set_for_key(
             <StoryEventContent as StaticEventContent>::TYPE.into(),
             value,
         );
-        self
     }
 
-    pub fn calendar_events_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn calendar_events_permissions(&mut self, value: u32) {
         self.set_for_key(
             <CalendarEventEventContent as StaticEventContent>::TYPE.into(),
             value,
         );
-        self
     }
 
-    pub fn task_lists_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn task_lists_permissions(&mut self, value: u32) {
         self.set_for_key(
             <TaskListEventContent as StaticEventContent>::TYPE.into(),
             value,
         );
-        self
     }
 
-    pub fn tasks_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn tasks_permissions(&mut self, value: u32) {
         self.set_for_key(<TaskEventContent as StaticEventContent>::TYPE.into(), value);
-        self
     }
 
-    pub fn pins_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn pins_permissions(&mut self, value: u32) {
         self.set_for_key(<PinEventContent as StaticEventContent>::TYPE.into(), value);
-        self
     }
 
-    pub fn comments_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn comments_permissions(&mut self, value: u32) {
         self.set_for_key(
             <CommentEventContent as StaticEventContent>::TYPE.into(),
             value,
         );
-        self
     }
 
-    pub fn attachments_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn attachments_permissions(&mut self, value: u32) {
         self.set_for_key(
             <AttachmentEventContent as StaticEventContent>::TYPE.into(),
             value,
         );
-        self
     }
 
-    pub fn rsvp_permissions(&mut self, value: u32) -> &mut Self {
+    pub fn rsvp_permissions(&mut self, value: u32) {
         self.set_for_key(<RsvpEventContent as StaticEventContent>::TYPE.into(), value);
-        self
     }
 
-    pub fn events_default(&mut self, value: u32) -> &mut Self {
+    pub fn events_default(&mut self, value: u32) {
         self.permissions.events_default = Int::from(value);
-        self
     }
 
-    pub fn users_default(&mut self, value: u32) -> &mut Self {
+    pub fn users_default(&mut self, value: u32) {
         self.permissions.users_default = Int::from(value);
-        self
     }
 
-    pub fn state_default(&mut self, value: u32) -> &mut Self {
+    pub fn state_default(&mut self, value: u32) {
         self.permissions.state_default = Int::from(value);
-        self
     }
 
-    pub fn kick(&mut self, value: u32) -> &mut Self {
+    pub fn kick(&mut self, value: u32) {
         self.permissions.kick = Int::from(value);
-        self
     }
 
-    pub fn ban(&mut self, value: u32) -> &mut Self {
+    pub fn ban(&mut self, value: u32) {
         self.permissions.ban = Int::from(value);
-        self
     }
 
-    pub fn invite(&mut self, value: u32) -> &mut Self {
+    pub fn invite(&mut self, value: u32) {
         self.permissions.invite = Int::from(value);
-        self
     }
 
-    pub fn redact(&mut self, value: u32) -> &mut Self {
+    pub fn redact(&mut self, value: u32) {
         self.permissions.redact = Int::from(value);
-        self
     }
 }

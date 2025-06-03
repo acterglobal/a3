@@ -32,14 +32,13 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
     // let’s create a new one
-    let mut builder = SuperInvitesTokenUpdateBuilder::new();
+    let mut token_builder = SuperInvitesTokenUpdateBuilder::new();
     let given_token = "1234567890"; // will not use the auto-generated token string
-    let token_builder = builder
-        .token(given_token.to_owned())
-        .add_room(room_id.to_string());
+    token_builder.token(given_token.to_owned());
+    token_builder.add_room(room_id.to_string());
 
     let token = super_invites
-        .create_or_update_token(Box::new(token_builder.clone()))
+        .create_or_update_token(Box::new(token_builder))
         .await?;
     assert_eq!(token.accepted_count(), 0);
     let rooms = token.rooms();
@@ -98,10 +97,10 @@ async fn super_invites_manage() -> Result<()> {
 
     // let’s create a new one
 
-    let mut builder = SuperInvitesTokenUpdateBuilder::new();
-    let token_builder = builder.add_room(room_id.to_string());
+    let mut token_builder = SuperInvitesTokenUpdateBuilder::new();
+    token_builder.add_room(room_id.to_string());
     let token = super_invites
-        .create_or_update_token(Box::new(token_builder.clone()))
+        .create_or_update_token(Box::new(token_builder))
         .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 1);
@@ -111,10 +110,11 @@ async fn super_invites_manage() -> Result<()> {
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 1); // we start with zero tokens
 
-    let mut builder = token.update_builder();
-    let token_builder = builder.remove_room(room_id.to_string()).create_dm(true);
+    let mut token_builder = token.update_builder();
+    token_builder.remove_room(room_id.to_string());
+    token_builder.create_dm(true);
     let token = super_invites
-        .create_or_update_token(Box::new(token_builder.clone()))
+        .create_or_update_token(Box::new(token_builder))
         .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 0);
