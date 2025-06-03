@@ -419,13 +419,12 @@ impl CreateConvoSettingsBuilder {
     }
 
     pub fn add_invitee(&mut self, value: String) -> Result<()> {
-        if let Ok(user_id) = UserId::parse(value) {
-            if let Some(mut invites) = self.invites.clone() {
-                invites.push(user_id);
-                self.invites = Some(invites);
-            } else {
-                self.invites = Some(vec![user_id]);
-            }
+        let user_id = UserId::parse(value)?;
+        if let Some(mut invites) = self.invites.clone() {
+            invites.push(user_id);
+            self.invites = Some(invites);
+        } else {
+            self.invites = Some(vec![user_id]);
         }
         Ok(())
     }

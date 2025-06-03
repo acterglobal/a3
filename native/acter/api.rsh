@@ -3596,7 +3596,7 @@ object CreateSpaceSettingsBuilder {
     fn join_rule(value: string);
 
     /// append user id that will be invited to this space
-    fn add_invitee(value: string);
+    fn add_invitee(value: string) -> Result<()>;
 
     /// set the alias of space
     fn set_alias(value: string);

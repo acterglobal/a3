@@ -110,16 +110,15 @@ impl CreateSpaceSettingsBuilder {
         self
     }
 
-    pub fn add_invitee(&mut self, value: String) -> &mut Self {
-        if let Ok(user_id) = UserId::parse(value) {
-            if let Some(mut invites) = self.invites.clone() {
-                invites.push(user_id);
-                self.invites = Some(invites);
-            } else {
-                self.invites = Some(vec![user_id]);
-            }
+    pub fn add_invitee(&mut self, value: String) -> Result<()> {
+        let user_id = UserId::parse(value)?;
+        if let Some(mut invites) = self.invites.clone() {
+            invites.push(user_id);
+            self.invites = Some(invites);
+        } else {
+            self.invites = Some(vec![user_id]);
         }
-        self
+        Ok(())
     }
 
     pub fn set_alias(&mut self, value: String) -> &mut Self {
