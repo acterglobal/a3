@@ -5,8 +5,6 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/services/mention_shortcuts.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
@@ -47,17 +45,12 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
     );
 
 // contains final input string with mentions processed and mentions
-typedef MentionParsedText = (String, List<MentionAttributes>);
+typedef MentionParsedText = (String, List<String>);
 
 extension ActerEditorStateHelpers on EditorState {
-  // helper to parse mentions to markdown/html format
-  MentionParsedText toMentionText(String plainText, String? htmlText) {
-    List<MentionAttributes> mentionAttributes = [];
-
-    // Get the base text
-    var processedText = htmlText ?? plainText;
-
-    // Process mentions
+  /// helper to parse mentions from editor text
+  List<String> getMentions(String plainText, String? htmlText) {
+    List<String> mentionIds = [];
     int index = 0;
     while (true) {
       final node = document.nodeAtPath([index]);
@@ -66,118 +59,48 @@ extension ActerEditorStateHelpers on EditorState {
       final delta = node.delta;
       if (delta != null) {
         for (final op in delta) {
-          if (op.attributes != null && op.attributes?['@'] != null) {
-            final mention = op.attributes!['@'] as MentionAttributes;
-            final displayText =
-                mention.displayName ?? mention.mentionId.substring(1);
-            final replacement =
-                htmlText != null
-                    ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
-                    : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
-            processedText = processedText.replaceFirst(
-              userMentionMarker,
-              replacement,
-            );
-            mentionAttributes.add(mention);
+          if (op.attributes != null) {
+            final href = op.attributes?[AppFlowyRichTextKeys.href] as String?;
+            if (href != null) {
+              final uri = Uri.tryParse(href);
+              if (uri != null) {
+                final parsed = parseActerUri(uri);
+                if (parsed.type == LinkType.userId ||
+                    parsed.type == LinkType.roomId) {
+                  mentionIds.add(parsed.target);
+                }
+              }
+            }
           }
         }
       }
       index++;
     }
 
-    // Remove only trailing <br> tag if it exists
-    if (processedText.endsWith('<br>')) {
-      processedText = processedText.substring(
-        0,
-        processedText.length - '<br>'.length,
-      );
-    }
-
-    return (processedText.trimRight(), mentionAttributes);
+    return mentionIds;
   }
 
-  void toMentionPills(String text, Node targetNode) {
-    final userMatches = userMentionRegExp.allMatches(text);
-    List<(int, int, String, String, MentionType)> allMentions = [];
-
-    for (final match in userMatches) {
-      final displayName = match.group(1);
-      final userId = match.group(2);
-      if (userId != null && displayName != null) {
-        allMentions.add((
-          match.start,
-          match.end,
-          userId,
-          displayName,
-          MentionType.user,
-        ));
-      }
-    }
-
-    bool hasMentions = allMentions.isNotEmpty;
-    if (!hasMentions) {
-      // no mentions found,insert plain text and return as it is
-      final transaction = this.transaction;
-      transaction.replaceText(targetNode, 0, 0, text);
-      apply(transaction);
-      return;
-    }
-    // else continue with processing mentions
-    // sort positions in reverse order to avoid index shifting
-    allMentions.sort((a, b) => b.$1.compareTo(a.$1));
-
-    // replace all matches with markers
-    for (final mention in allMentions) {
-      final start = mention.$1;
-      final end = mention.$2;
-
-      if (start >= 0 && end <= text.length && start < end) {
-        text = text.replaceRange(start, end, userMentionMarker);
-      }
+  /// copy message content to editor
+  void copyMessageText(String text, String? htmlText) {
+    final doc = ActerDocumentHelpers.parse(text, htmlContent: htmlText);
+    // clear current content first
+    if (!doc.isEmpty) {
+      clear();
     }
 
     final transaction = this.transaction;
-    transaction.replaceText(targetNode, 0, 0, text);
+
+    int index = 0;
+    for (final node in doc.root.children) {
+      transaction.insertNode([index], node);
+      index++;
+    }
     apply(transaction);
-
-    final targetNodeText = targetNode.delta?.toPlainText() ?? '';
-
-    // find all marker positions
-    final markerPositions = <int>[];
-    for (int i = 0; i < targetNodeText.length; i++) {
-      if (targetNodeText[i] == userMentionMarker) {
-        markerPositions.add(i);
-      }
-    }
-
-    // now apply attributes
-    if (markerPositions.isNotEmpty) {
-      for (int i = 0; i < allMentions.length; i++) {
-        if (i >= markerPositions.length) break;
-
-        final (_, _, mentionId, displayName, type) = allMentions[i];
-        final position = markerPositions[i];
-        final typeStr =
-            type == MentionType.user ? userMentionChar : roomMentionChar;
-
-        final replaceTransaction = this.transaction;
-        replaceTransaction.replaceText(
-          targetNode,
-          position,
-          1,
-          userMentionMarker,
-          attributes: {
-            typeStr: MentionAttributes(
-              type: type,
-              mentionId: mentionId,
-              displayName: displayName,
-            ),
-            'inline': true,
-          },
-        );
-        apply(replaceTransaction);
-      }
-    }
+    final node = doc.root.children.lastOrNull;
+    updateSelectionWithReason(
+      Selection.single(path: [0], startOffset: node?.delta?.length ?? 0),
+      reason: SelectionUpdateReason.uiEvent,
+    );
   }
 
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {

@@ -100,22 +100,12 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final msgContent = item.msgContent();
     if (msgContent == null) return;
 
-    final body = msgContent.body();
-    if (body.isEmpty) return;
     // clear the editor first
     textEditorState.clear();
-
-    final docNode = textEditorState.getNodeAtPath([0]);
-    if (docNode == null) return;
-
-    // process text and apply mention attributes , if any
-    textEditorState.toMentionPills(body, docNode);
-
-    final text = docNode.delta?.toPlainText() ?? '';
-    final pos = Position(path: [0], offset: text.length);
-    textEditorState.updateSelectionWithReason(
-      Selection.collapsed(pos),
-      reason: SelectionUpdateReason.uiEvent,
+    // copy the message text to the editor
+    textEditorState.copyMessageText(
+      msgContent.body(),
+      msgContent.formattedBody(),
     );
   }
 
