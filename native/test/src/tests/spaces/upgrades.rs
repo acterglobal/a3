@@ -48,7 +48,7 @@ async fn upgrade_flow() -> Result<()> {
     let member = space.get_my_membership().await?;
     assert!(member.can_string("CanUpgradeToActerSpace".to_owned())); // but we can upgrade
 
-    // let's upgrade
+    // let’s upgrade
 
     space.set_acter_space_states().await?;
 
@@ -70,10 +70,10 @@ async fn upgrade_flow() -> Result<()> {
 
     assert!(space.is_acter_space().await?);
     let member = space.get_my_membership().await?;
-    assert!(!member.can_string("CanUpgradeToActerSpace".to_owned())); // we can't upgrade
+    assert!(!member.can_string("CanUpgradeToActerSpace".to_owned())); // we can’t upgrade
 
     // but we can change settings
-    assert!(member.can_string("CanChangeAppSettings".to_owned())); // we can't upgrade
+    assert!(member.can_string("CanChangeAppSettings".to_owned())); // we can’t upgrade
 
     Ok(())
 }

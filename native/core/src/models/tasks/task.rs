@@ -1,5 +1,7 @@
-use matrix_sdk::ruma::OwnedEventId;
-use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, OwnedUserId, RoomId, UserId};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, OriginalMessageLikeEvent},
+    OwnedEventId, OwnedUserId, RoomId, UserId,
+};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -35,6 +37,10 @@ impl Deref for Task {
 impl Task {
     pub fn title(&self) -> String {
         self.inner.title.clone()
+    }
+
+    pub fn description(&self) -> Option<TextMessageEventContent> {
+        self.inner.description.clone()
     }
 
     pub fn assignees(&self) -> Vec<OwnedUserId> {

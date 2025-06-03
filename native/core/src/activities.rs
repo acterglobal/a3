@@ -1,14 +1,10 @@
-use chrono::{NaiveDate, NaiveTime, Utc};
 use matrix_sdk::ruma::{events::room::message::TextMessageEventContent, OwnedEventId, OwnedUserId};
 use object::ActivityObject;
 use urlencoding::encode;
 
 use crate::{
     client::CoreClient,
-    events::{
-        attachments::AttachmentContent, news::NewsContent, rsvp::RsvpStatus, RefDetails,
-        UtcDateTime,
-    },
+    events::{attachments::AttachmentContent, news::NewsContent, rsvp::RsvpStatus, RefDetails},
     models::{
         status::{
             MembershipContent, PolicyRuleRoomContent, PolicyRuleServerContent,
@@ -71,16 +67,16 @@ pub enum ActivityContent {
     },
     TitleChange {
         object: ActivityObject,
-        new_title: String,
+        content: status::TitleContent,
     },
     DescriptionChange {
         object: ActivityObject,
-        content: Option<TextMessageEventContent>,
+        content: status::DescriptionContent,
     },
     // event specific
     EventDateChange {
         object: ActivityObject,
-        new_date: UtcDateTime,
+        content: status::DateTimeRangeContent,
     },
     // event specific
     Rsvp {
@@ -98,7 +94,7 @@ pub enum ActivityContent {
     },
     TaskDueDateChange {
         object: ActivityObject,
-        new_due_date: Option<NaiveDate>,
+        content: status::DateContent,
     },
     TaskAccept {
         object: ActivityObject,
@@ -364,6 +360,7 @@ impl Activity {
         match &self.inner {
             ActivityContent::Attachment { content, .. } => content.name(),
             ActivityContent::TaskAdd { task_title, .. } => Some(task_title.clone()),
+            ActivityContent::TitleChange { content, .. } => Some(content.new_val()),
             _ => None,
         }
     }
@@ -440,18 +437,30 @@ impl Activity {
         }
     }
 
-    pub fn new_date(&self) -> Option<UtcDateTime> {
+    pub fn title_content(&self) -> Option<status::TitleContent> {
         match &self.inner {
-            &ActivityContent::EventDateChange { new_date, .. } => Some(new_date),
-            ActivityContent::TaskDueDateChange {
-                new_due_date: Some(new_due_date),
-                ..
-            } => Some(UtcDateTime::from_naive_utc_and_offset(
-                new_due_date.and_time(
-                    NaiveTime::from_num_seconds_from_midnight_opt(0, 0).expect("midnight exists"),
-                ),
-                Utc,
-            )),
+            ActivityContent::TitleChange { content, .. } => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn description_content(&self) -> Option<status::DescriptionContent> {
+        match &self.inner {
+            ActivityContent::DescriptionChange { content, .. } => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn date_time_range_content(&self) -> Option<status::DateTimeRangeContent> {
+        match &self.inner {
+            ActivityContent::EventDateChange { content, .. } => Some(content.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn date_content(&self) -> Option<status::DateContent> {
+        match &self.inner {
+            ActivityContent::TaskDueDateChange { content, .. } => Some(content.clone()),
             _ => None,
         }
     }
@@ -711,6 +720,7 @@ impl Activity {
                 let object = ActivityObject::Pin {
                     object_id: e.event_id().to_owned(),
                     title: e.title.clone(),
+                    description: e.content.clone(),
                 };
                 Ok(Self::new(meta, ActivityContent::Creation { object }))
             }
@@ -728,18 +738,21 @@ impl Activity {
                         object_id: e.inner.pin.event_id.clone(),
                     });
 
-                if let Some(new_title) = e.inner.title {
+                if let Some(title) = e.inner.title {
+                    let content = status::TitleContent::new("Changed".to_owned(), title);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::TitleChange { object, new_title },
+                        ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(new_content)) = e.inner.content {
+                } else if let Some(content) = e.inner.content {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::DescriptionChange {
-                            object,
-                            content: Some(new_content),
-                        },
+                        ActivityContent::DescriptionChange { object, content },
                     ))
                 } else {
                     // fallback: other changes
@@ -752,6 +765,9 @@ impl Activity {
                 let object = ActivityObject::CalendarEvent {
                     object_id: e.event_id().to_owned(),
                     title: e.inner.title,
+                    description: e.inner.description.clone(),
+                    utc_start: e.inner.utc_start,
+                    utc_end: e.inner.utc_end,
                 };
                 Ok(Self::new(meta, ActivityContent::Creation { object }))
             }
@@ -769,30 +785,51 @@ impl Activity {
                         object_id: e.inner.calendar_event.event_id.clone(),
                     });
 
-                if let Some(new_title) = e.inner.title {
+                if let Some(title) = e.inner.title {
+                    let content = status::TitleContent::new("Changed".to_owned(), title);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::TitleChange { object, new_title },
+                        ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(new_content)) = e.inner.description {
+                } else if let Some(content) = e.inner.description {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::DescriptionChange {
-                            object,
-                            content: Some(new_content),
-                        },
-                    ))
-                } else if let Some(new_date) = e.inner.utc_start {
-                    Ok(Self::new(
-                        meta,
-                        ActivityContent::EventDateChange { object, new_date },
-                    ))
-                } else if let Some(new_date) = e.inner.utc_end {
-                    Ok(Self::new(
-                        meta,
-                        ActivityContent::EventDateChange { object, new_date },
+                        ActivityContent::DescriptionChange { object, content },
                     ))
                 } else {
+                    match (e.inner.utc_start, e.inner.utc_end) {
+                        (Some(utc_start), Some(utc_end)) => {
+                            // changed both start and end
+                            let content =
+                                status::DateTimeRangeContent::new(Some(utc_start), Some(utc_end));
+                            return Ok(Self::new(
+                                meta,
+                                ActivityContent::EventDateChange { object, content },
+                            ));
+                        }
+                        (Some(utc_start), None) => {
+                            // changed only start
+                            let content = status::DateTimeRangeContent::new(Some(utc_start), None);
+                            return Ok(Self::new(
+                                meta,
+                                ActivityContent::EventDateChange { object, content },
+                            ));
+                        }
+                        (None, Some(utc_end)) => {
+                            // changed only end
+                            let content = status::DateTimeRangeContent::new(None, Some(utc_end));
+                            return Ok(Self::new(
+                                meta,
+                                ActivityContent::EventDateChange { object, content },
+                            ));
+                        }
+                        (None, None) => {}
+                    }
                     // fallback: other changes
                     Ok(Self::new(meta, ActivityContent::OtherChanges { object }))
                 }
@@ -843,18 +880,21 @@ impl Activity {
                         object_id: e.inner.task_list.event_id.clone(),
                     });
 
-                if let Some(new_title) = e.inner.name {
+                if let Some(name) = e.inner.name {
+                    let content = status::TitleContent::new("Changed".to_owned(), name);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::TitleChange { object, new_title },
+                        ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(new_content)) = e.inner.description {
+                } else if let Some(content) = e.inner.description {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::DescriptionChange {
-                            object,
-                            content: Some(new_content),
-                        },
+                        ActivityContent::DescriptionChange { object, content },
                     ))
                 } else {
                     // fallback: other changes
@@ -907,25 +947,30 @@ impl Activity {
                         },
                     ))
                 } else if let Some(due_date) = e.inner.due_date {
+                    let change = match due_date {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DateContent::new(change, due_date);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::TaskDueDateChange {
-                            object,
-                            new_due_date: due_date,
-                        },
+                        ActivityContent::TaskDueDateChange { object, content },
                     ))
-                } else if let Some(new_title) = e.inner.title {
+                } else if let Some(title) = e.inner.title {
+                    let content = status::TitleContent::new("Changed".to_owned(), title);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::TitleChange { object, new_title },
+                        ActivityContent::TitleChange { object, content },
                     ))
-                } else if let Some(Some(new_content)) = e.inner.description {
+                } else if let Some(content) = e.inner.description {
+                    let change = match content {
+                        Some(_) => "Changed".to_owned(),
+                        None => "Unset".to_owned(),
+                    };
+                    let content = status::DescriptionContent::new(change, content);
                     Ok(Self::new(
                         meta,
-                        ActivityContent::DescriptionChange {
-                            object,
-                            content: Some(new_content),
-                        },
+                        ActivityContent::DescriptionChange { object, content },
                     ))
                 } else {
                     // fallback: other changes
