@@ -245,14 +245,16 @@ async fn create_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
-    let mut settings_builder = new_space_settings_builder();
-    settings_builder.set_name("subspace".to_owned());
-    settings_builder.set_visibility("Public".to_owned());
-    settings_builder.set_alias("wombat".to_owned()); // this means #wombat:example.com
-    settings_builder.set_topic("Here is test space".to_owned());
-    settings_builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
-    settings_builder.set_parent(first.room_id().to_string())?;
-    let settings = settings_builder.build()?;
+    let settings = {
+        let mut builder = new_space_settings_builder();
+        builder.set_name("subspace".to_owned());
+        builder.set_visibility("Public".to_owned());
+        builder.set_alias("wombat".to_owned()); // this means #wombat:example.com
+        builder.set_topic("Here is test space".to_owned());
+        builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
+        builder.set_parent(first.room_id().to_string())?;
+        builder.build()?
+    };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
     let fetcher_client = user.clone();
