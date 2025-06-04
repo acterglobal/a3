@@ -652,6 +652,23 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               ),
             );
           },
+          onEdit: (location) {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              isDismissible: true,
+              enableDrag: true,
+              showDragHandle: true,
+              useSafeArea: true,
+              builder: (context) => AddEventLocationWidget(
+                initialLocation: location,
+                onAdd: (updatedLocation) {
+                  ref.read(eventLocationsProvider.notifier).updateLocation(location, updatedLocation);
+                  Navigator.pop(context);
+                },
+              ),
+            );
+          },
         );
       },
     );
