@@ -5,16 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class EventLocationListWidget extends ConsumerWidget {
   final VoidCallback onAdd;
+  final String? eventId;
 
-  const EventLocationListWidget({super.key, required this.onAdd});
+  const EventLocationListWidget({
+    super.key, 
+    required this.onAdd,
+    this.eventId,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
-    final locations = ref.watch(eventLocationsProvider);
+    final locations = eventId != null 
+        ? ref.watch(asyncEventLocationsProvider(eventId!)).valueOrNull ?? []
+        : ref.watch(eventLocationsProvider);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -23,7 +31,7 @@ class EventLocationListWidget extends ConsumerWidget {
         locations.isEmpty
             ? _buildEmptyState(context)
             : _buildLocationList(context, ref, locations),
-        if (locations.isNotEmpty) _buildActionButton(context, ref),
+        if (locations.isNotEmpty && eventId == null) _buildActionButton(context, ref),
       ],
     );
   }
@@ -41,11 +49,12 @@ class EventLocationListWidget extends ConsumerWidget {
               style: theme.textTheme.titleMedium,
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            tooltip: lang.addLocation,
-            onPressed: onAdd,
-          ),
+          if (eventId == null)
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline),
+              tooltip: lang.addLocation,
+              onPressed: onAdd,
+            ),
         ],
       ),
     );
@@ -64,7 +73,7 @@ class EventLocationListWidget extends ConsumerWidget {
   Widget _buildLocationList(
     BuildContext context,
     WidgetRef ref,
-    List<EventLocationDraft> locations,
+    List<dynamic> locations,
   ) {
     return Flexible(
       child: ListView.builder(
@@ -72,7 +81,42 @@ class EventLocationListWidget extends ConsumerWidget {
         itemCount: locations.length,
         padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
-          return _buildLocationTile(context, ref, locations[index]);
+          final location = locations[index];
+          if (location is EventLocationInfo) {
+            return _buildEditEventLocationTile(context, location);
+          } else {
+            return _buildLocationTile(context, ref, location as EventLocationDraft);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildEditEventLocationTile(
+    BuildContext context,
+    EventLocationInfo location,
+  ) {
+    final theme = Theme.of(context);
+    final isVirtual = location.locationType().toLowerCase() == LocationType.virtual.name;
+
+    return ListTile(
+      leading: Icon(
+        isVirtual ? Icons.language : Icons.map_outlined,
+        color: theme.colorScheme.primary,
+      ),
+      title: Text(location.name() ?? ''),
+      subtitle: Text(
+        isVirtual
+            ? (location.uri() ?? '')
+            : (location.address()?.split('\n').first ?? ''),
+        style: theme.textTheme.bodySmall,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.edit_location_alt_outlined),
+        onPressed: () {
+          onAdd();
         },
       ),
     );

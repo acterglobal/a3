@@ -636,6 +636,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       useSafeArea: true,
       builder: (_) {
         return EventLocationListWidget(
+          eventId: widget.calendarId,
           onAdd: () {
             showModalBottomSheet(
               context: context,
