@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'dart:ui';
 
 final _log = Logger('a3::chat_ng::room::app_bar_widget');
 
@@ -28,14 +29,30 @@ class ChatRoomAppBarWidget extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppBar(
-      title: Row(
+    return ClipRect(
+      child: Stack(
         children: [
-          _buildRoomAvatar(context),
-          Expanded(child: _buildRoomTitle(context, ref)),
+          // Blur effect
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.5), // Optional overlay
+            ),
+          ),
+          // AppBar content
+          AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            title: Row(
+              children: [
+                _buildRoomAvatar(context),
+                Expanded(child: _buildRoomTitle(context, ref)),
+              ],
+            ),
+            actions: _buildActions(context, ref),
+          ),
         ],
       ),
-      actions: _buildActions(context, ref),
     );
   }
 

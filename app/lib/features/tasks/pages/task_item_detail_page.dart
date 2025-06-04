@@ -21,6 +21,7 @@ import 'package:acter/features/comments/widgets/comments_section_widget.dart';
 import 'package:acter/features/home/widgets/space_chip.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:acter/features/notifications/widgets/object_notification_status.dart';
+import 'package:acter/features/home/providers/task_providers.dart';
 import 'package:acter/features/tasks/providers/task_items_providers.dart';
 import 'package:acter/features/tasks/providers/tasklists_providers.dart';
 import 'package:acter/features/tasks/widgets/due_picker.dart';
@@ -36,7 +37,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:acter/features/tasks/actions/add_task.dart';
 
 final _log = Logger('a3::tasks::task_item_details');
 
@@ -261,10 +261,7 @@ class _TaskItemBody extends ConsumerWidget {
   }
 
   List<Widget> _widgetDescription(BuildContext context) {
-
-    // Check if migration is needed
     final description = task.description();
-    migrateTaskDescription(task);
     if (description == null) return [];
     final formattedBody = description.formattedBody();
     final textTheme = Theme.of(context).textTheme;
@@ -293,11 +290,10 @@ class _TaskItemBody extends ConsumerWidget {
   }
 
   void showEditDescriptionSheet(BuildContext context) {
-    final description = task.description();
     showEditHtmlDescriptionBottomSheet(
       context: context,
-      descriptionHtmlValue: description?.formattedBody() ?? '',
-      descriptionMarkdownValue: description?.body() ?? '',
+      descriptionHtmlValue: task.description()?.formattedBody(),
+      descriptionMarkdownValue: task.description()?.body(),
       onSave: (ref, htmlBodyDescription, plainDescription) {
         _saveDescription(
           context,
@@ -385,6 +381,9 @@ class _TaskItemBody extends ConsumerWidget {
         updater.unsetUtcDueTimeOfDay();
       }
       await updater.send();
+
+      // Invalidate both providers to ensure proper task reordering
+      ref.invalidate(myOpenTasksProvider);
 
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       if (!context.mounted) {
