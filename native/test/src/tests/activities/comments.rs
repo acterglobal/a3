@@ -74,7 +74,7 @@ async fn task_comment_activity() -> Result<()> {
     let task = tasks.first().expect("first task should be available");
 
     let comments_manager = task.comments().await?;
-    let comment_1_id = comments_manager
+    let comment_id = comments_manager
         .comment_draft()?
         .content_text("Looking forward to it!".to_owned())
         .send()
@@ -94,7 +94,7 @@ async fn task_comment_activity() -> Result<()> {
         }
     })
     .await?;
-    let activity = user.activity(comment_1_id.to_string()).await?;
+    let activity = user.activity(comment_id.to_string()).await?;
     assert_eq!(
         activity.msg_content().map(|c| c.body()).as_deref(),
         Some("Looking forward to it!")
@@ -105,7 +105,7 @@ async fn task_comment_activity() -> Result<()> {
     assert_eq!(object.title().as_deref(), Some("Check the weather"));
     assert_eq!(object.task_list_id_str(), Some(task_list.event_id_str()));
 
-    assert_triggered_with_latest_activity(&mut act_obs, comment_1_id.to_string()).await?;
+    assert_triggered_with_latest_activity(&mut act_obs, comment_id.to_string()).await?;
 
     Ok(())
 }

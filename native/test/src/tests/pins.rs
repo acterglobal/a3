@@ -99,7 +99,7 @@ async fn pin_comments() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
-    let comment_1_id = comments_manager
+    let comment_id = comments_manager
         .comment_draft()?
         .content_text("I updated the pin".to_owned())
         .send()
@@ -116,7 +116,7 @@ async fn pin_comments() -> Result<()> {
 
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
-    assert_eq!(comments[0].event_id(), comment_1_id);
+    assert_eq!(comments[0].event_id(), comment_id);
     assert_eq!(comments[0].content().body, "I updated the pin");
 
     Ok(())
@@ -164,7 +164,7 @@ async fn pin_attachments() -> Result<()> {
         jpg_file.path().to_string_lossy().to_string(),
         "image/jpeg".to_owned(),
     );
-    let attachment_1_id = attachments_manager
+    let jpg_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
         .send()
@@ -184,7 +184,7 @@ async fn pin_attachments() -> Result<()> {
     let attachment = attachments
         .first()
         .expect("first attachment should be available");
-    assert_eq!(attachment.event_id(), attachment_1_id);
+    assert_eq!(attachment.event_id(), jpg_attach_id);
     assert_eq!(attachment.type_str(), "image");
 
     // go for the second
@@ -198,7 +198,7 @@ async fn pin_attachments() -> Result<()> {
         png_file.path().to_string_lossy().to_string(),
         "image/png".to_owned(),
     );
-    let attachment_2_id = attachments_manager
+    let png_attach_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
         .send()
@@ -216,7 +216,7 @@ async fn pin_attachments() -> Result<()> {
     assert_eq!(attachments.len(), 2);
     let _attachment = attachments
         .iter()
-        .find(|a| a.event_id() == attachment_2_id)
+        .find(|a| a.event_id() == png_attach_id)
         .expect("File not found");
     // FIXME: for some reason this comes back as 'image'` rather than `file`
     // assert_eq!(attachment.type_str(), "file");
@@ -312,7 +312,7 @@ async fn pin_self_ref_attachments() -> Result<()> {
 
     // ---- let’s make an attachment by referencing the same pin -- cheeky
     let ref_details = pin.ref_details().await?;
-    let attachment_1_id = attachments_manager
+    let ref_attach_id = attachments_manager
         .reference_draft(Box::new(ref_details))
         .await?
         .send()
@@ -332,7 +332,7 @@ async fn pin_self_ref_attachments() -> Result<()> {
     let attachment = attachments
         .first()
         .expect("first attachment should be available");
-    assert_eq!(attachment.event_id(), attachment_1_id);
+    assert_eq!(attachment.event_id(), ref_attach_id);
     assert_eq!(attachment.type_str(), "ref");
 
     Ok(())
