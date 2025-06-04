@@ -39,19 +39,24 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
     _selectedType = widget.initialLocation?.type ?? LocationType.physical;
 
     // Initialize editor states with initial data
-    textEditorNoteState = EditorState(
-      document: ActerDocumentHelpers.parse(
-        widget.initialLocation?.note ?? '',
-        htmlContent: widget.initialLocation?.note ?? '',
-      ),
-    );
+    if (widget.initialLocation == null) {
+      textEditorNoteState = EditorState.blank();
+      textEditorAddressState = EditorState.blank();
+    } else {
+      textEditorNoteState = EditorState(
+        document: ActerDocumentHelpers.parse(
+          widget.initialLocation?.note ?? '',
+          htmlContent: widget.initialLocation?.note ?? '',
+        ),
+      );
 
-    textEditorAddressState = EditorState(
-      document: ActerDocumentHelpers.parse(
-        widget.initialLocation?.address ?? '',
-        htmlContent: widget.initialLocation?.address ?? '',
-      ),
-    );
+      textEditorAddressState = EditorState(
+        document: ActerDocumentHelpers.parse(
+          widget.initialLocation?.address ?? '',
+          htmlContent: widget.initialLocation?.address ?? '',
+        ),
+      );
+    }
   }
 
   @override
@@ -205,7 +210,7 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
                   ),
                 );
                 _addressError = null; // Clear error on change
-              },
+            },
             ),
           ),
         ),
