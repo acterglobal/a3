@@ -56,13 +56,9 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    final document = ActerDocumentHelpers.parse(
-      widget.descriptionMarkdownValue ?? '',
-      htmlContent: widget.descriptionHtmlValue,
+    textEditorState.insertTextAtCurrentSelection(
+      widget.descriptionHtmlValue ?? widget.descriptionMarkdownValue ?? '',
     );
-    if (!document.isEmpty) {
-      textEditorState = EditorState(document: document);
-    }
   }
 
   @override

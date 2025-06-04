@@ -58,9 +58,8 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           nextSlide != null && nextSlide.type == UpdateSlideType.text;
       final changed = prevState?.currentUpdateSlide != nextSlide;
       if (isText && changed) {
-        final document = ActerDocumentHelpers.parse(
-          nextSlide.text ?? '',
-          htmlContent: nextSlide.html,
+        textEditorState.insertTextAtCurrentSelection(
+          nextSlide.html ?? nextSlide.text ?? '',
         );
 
         final autoFocus =
@@ -69,13 +68,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
         setState(() {
           selectedNewsPost = nextSlide;
-          if (!document.isEmpty) {
-            // If the slide has content, update the editor state with it
-            textEditorState = EditorState(document: document);
-          } else {
-            // If no content, create a blank editor state
-            textEditorState = EditorState.blank();
-          }
+          textEditorState.insertTextAtCurrentSelection(
+            nextSlide.html ?? nextSlide.text ?? '',
+          );
         });
 
         if (autoFocus) {

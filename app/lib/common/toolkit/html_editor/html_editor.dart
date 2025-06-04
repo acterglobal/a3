@@ -11,7 +11,6 @@ import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -81,26 +80,30 @@ extension ActerEditorStateHelpers on EditorState {
   }
 
   /// copy message content to editor
-  void copyMessageText(String text, String? htmlText) {
-    final doc = ActerDocumentHelpers.parse(text, htmlContent: htmlText);
-    // clear current content first
-    if (!doc.isEmpty) {
-      clear();
+  void copyMessageText(String text, String? htmlText) async {
+    clear();
+    if (htmlText != null && htmlText.isNotEmpty) {
+      final doc = defaultHtmlCodec.decode(htmlText);
+      final transaction = this.transaction;
+      for (final node in doc.root.children) {
+        transaction.insertNode([0], node);
+      }
+      apply(transaction);
+    } else {
+      final transaction = this.transaction;
+      transaction.insertText(document.root.children.first, 0, text);
+      apply(transaction);
     }
 
-    final transaction = this.transaction;
-
-    int index = 0;
-    for (final node in doc.root.children) {
-      transaction.insertNode([index], node);
-      index++;
-    }
-    apply(transaction);
-    final node = doc.root.children.lastOrNull;
-    updateSelectionWithReason(
-      Selection.single(path: [0], startOffset: node?.delta?.length ?? 0),
-      reason: SelectionUpdateReason.uiEvent,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      updateSelectionWithReason(
+        Selection.single(
+          path: document.root.children.first.path,
+          startOffset: document.root.children.first.delta?.length ?? 0,
+        ),
+        reason: SelectionUpdateReason.uiEvent,
+      );
+    });
   }
 
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
@@ -136,49 +139,6 @@ extension ActerEditorStateHelpers on EditorState {
         );
       });
     }
-  }
-}
-
-extension ActerDocumentHelpers on Document {
-  static Document? _fromHtml(String content, {AppFlowyEditorHTMLCodec? codec}) {
-    if (content.isEmpty) {
-      return null;
-    }
-
-    Document document = (codec ?? defaultHtmlCodec).decode(content);
-    if (document.isEmpty) {
-      return null;
-    }
-    return document;
-  }
-
-  static Document _fromMarkdown(
-    String content, {
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    return (codec ?? defaultMarkdownCodec).decode(content);
-  }
-
-  static Document parse(
-    String content, {
-    String? htmlContent,
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    if (htmlContent != null) {
-      final document = ActerDocumentHelpers._fromHtml(htmlContent);
-      if (document != null && !document.isEmpty) {
-        return document;
-      }
-    }
-    // fallback: parse from markdown
-    return ActerDocumentHelpers._fromMarkdown(content);
-  }
-
-  static Document fromMsgContent(MsgContent msgContent) {
-    return ActerDocumentHelpers.parse(
-      msgContent.body(),
-      htmlContent: msgContent.formattedBody(),
-    );
   }
 }
 

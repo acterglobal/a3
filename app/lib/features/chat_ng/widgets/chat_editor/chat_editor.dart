@@ -100,8 +100,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final msgContent = item.msgContent();
     if (msgContent == null) return;
 
-    // clear the editor first
-    textEditorState.clear();
     // copy the message text to the editor
     textEditorState.copyMessageText(
       msgContent.body(),
