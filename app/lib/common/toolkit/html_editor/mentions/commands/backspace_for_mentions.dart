@@ -1,4 +1,4 @@
-import 'package:acter/common/toolkit/html_editor/services/mention_detection.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
