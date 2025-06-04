@@ -29,48 +29,39 @@ class MyTasksPage extends ConsumerWidget {
               context,
               title: lang.overdue,
               tasks: sortedTasks.overdue,
-              icon: Icons.warning_amber_rounded,
-              color: Theme.of(context).colorScheme.error,
+              sectionHeaderStyle: Theme.of(context).textTheme.titleSmall
+                  ?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           if (sortedTasks.hasTasksInCategory(TaskDueCategory.today))
             _buildTaskSection(
               context,
               title: lang.today,
               tasks: sortedTasks.today,
-              icon: Icons.today_rounded,
-              color: Theme.of(context).colorScheme.primary,
+              sectionHeaderStyle: Theme.of(context).textTheme.titleSmall,
             ),
           if (sortedTasks.hasTasksInCategory(TaskDueCategory.tomorrow))
             _buildTaskSection(
               context,
               title: lang.tomorrow,
               tasks: sortedTasks.tomorrow,
-              icon: Icons.event_rounded,
-              color: Theme.of(context).colorScheme.primary,
             ),
           if (sortedTasks.hasTasksInCategory(TaskDueCategory.laterThisWeek))
             _buildTaskSection(
               context,
               title: lang.laterThisWeek,
               tasks: sortedTasks.laterThisWeek,
-              icon: Icons.calendar_month_rounded,
-              color: Theme.of(context).colorScheme.primary,
             ),
           if (sortedTasks.hasTasksInCategory(TaskDueCategory.later))
             _buildTaskSection(
               context,
               title: lang.later,
               tasks: sortedTasks.later,
-              icon: Icons.event_note_rounded,
-              color: Theme.of(context).colorScheme.primary,
             ),
           if (sortedTasks.hasTasksInCategory(TaskDueCategory.noDueDate))
             _buildTaskSection(
               context,
               title: lang.noDueDate,
               tasks: sortedTasks.noDueDate,
-              icon: Icons.event_busy_rounded,
-              color: Theme.of(context).colorScheme.outline,
             ),
         ],
       ),
@@ -81,8 +72,7 @@ class MyTasksPage extends ConsumerWidget {
     BuildContext context, {
     required String title,
     required List<Task> tasks,
-    required IconData icon,
-    required Color color,
+    TextStyle? sectionHeaderStyle,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,8 +80,7 @@ class MyTasksPage extends ConsumerWidget {
         _buildTaskSectionHeader(
           context,
           title: title,
-          icon: icon,
-          color: color,
+          sectionHeaderStyle: sectionHeaderStyle,
         ),
         _buildTaskSectionBody(context, tasks: tasks),
         const SizedBox(height: 16),
@@ -102,34 +91,33 @@ class MyTasksPage extends ConsumerWidget {
   Widget _buildTaskSectionHeader(
     BuildContext context, {
     required String title,
-    required IconData icon,
-    required Color color,
+    TextStyle? sectionHeaderStyle,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
           Text(
             title,
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall
-                ?.copyWith(color: color),
+            style:
+                sectionHeaderStyle ?? Theme.of(context).textTheme.labelMedium,
           ),
+          Expanded(child: const Divider(color: Colors.white24, indent: 12)),
         ],
       ),
     );
   }
 
-  Widget _buildTaskSectionBody(BuildContext context, {required List<Task> tasks}) {
+  Widget _buildTaskSectionBody(
+    BuildContext context, {
+    required List<Task> tasks,
+  }) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      separatorBuilder: (context, index) =>
-          const Divider(color: Colors.white24, indent: 30),
+      separatorBuilder:
+          (context, index) => const Divider(color: Colors.white12, indent: 30),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
@@ -143,4 +131,3 @@ class MyTasksPage extends ConsumerWidget {
     );
   }
 }
-
