@@ -50,20 +50,15 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
             ? _buildEmojiMessage(context)
             : _buildTextMessage(context);
 
-    if (widget.isReply) {
+    final repliedTo = widget.repliedTo;
+    if (widget.isReply || repliedTo == null) {
       // we return the widget without any additional reply data
       return inner;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.repliedTo != null) ...[
-          widget.repliedTo!,
-          const SizedBox(height: 10),
-        ],
-        inner,
-      ],
+      children: [repliedTo, const SizedBox(height: 10), inner],
     );
   }
 
