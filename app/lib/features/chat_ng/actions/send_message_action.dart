@@ -1,7 +1,7 @@
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/models/mention_attributes.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter/features/home/providers/client_providers.dart';

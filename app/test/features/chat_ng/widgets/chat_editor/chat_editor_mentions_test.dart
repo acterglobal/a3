@@ -1,6 +1,6 @@
 import 'package:acter/common/toolkit/html_editor/html_editor.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
-import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/models/mention_attributes.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter_test/flutter_test.dart';

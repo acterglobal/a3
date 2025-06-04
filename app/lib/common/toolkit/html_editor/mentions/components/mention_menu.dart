@@ -1,4 +1,4 @@
-import 'package:acter/common/toolkit/html_editor/components/mention_list.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/components/mention_list.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/features/chat_ng/globals.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
