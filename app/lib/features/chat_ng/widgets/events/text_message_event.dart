@@ -50,20 +50,15 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
             ? _buildEmojiMessage(context)
             : _buildTextMessage(context);
 
-    if (widget.isReply) {
+    final repliedTo = widget.repliedTo;
+    if (widget.isReply || repliedTo == null) {
       // we return the widget without any additional reply data
       return inner;
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.repliedTo != null) ...[
-          widget.repliedTo!,
-          const SizedBox(height: 10),
-        ],
-        inner,
-      ],
+      children: [repliedTo, const SizedBox(height: 10), inner],
     );
   }
 
@@ -87,6 +82,11 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
             ? colorScheme.onSurface.withValues(alpha: 0.5)
             : colorScheme.onSurface.withValues(alpha: 0.9);
 
+    final textStyle = textTheme.bodySmall?.copyWith(
+      color: color,
+      overflow: widget.isNotice ? TextOverflow.ellipsis : null,
+    );
+
     final html = bodyFormatted;
     if (html != null) {
       return RenderHtml(
@@ -94,10 +94,7 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
         roomId: widget.roomId,
         shrinkToFit: true,
         maxLines: widget.isReply ? 2 : null,
-        defaultTextStyle: textTheme.bodySmall?.copyWith(
-          color: color,
-          overflow: widget.isNotice ? TextOverflow.ellipsis : null,
-        ),
+        defaultTextStyle: textStyle,
       );
     }
 
@@ -107,6 +104,7 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
       roomId: widget.roomId,
       shrinkToFit: true,
       maxLines: widget.isReply ? 2 : null,
+      defaultTextStyle: textStyle,
     );
   }
 }
