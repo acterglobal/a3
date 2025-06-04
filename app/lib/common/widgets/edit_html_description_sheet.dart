@@ -56,8 +56,9 @@ class _EditHtmlDescriptionSheetState
   @override
   void initState() {
     super.initState();
-    textEditorState.insertTextAtCurrentSelection(
-      widget.descriptionHtmlValue ?? widget.descriptionMarkdownValue ?? '',
+    textEditorState.copyMessageText(
+      widget.descriptionMarkdownValue ?? '',
+      widget.descriptionHtmlValue,
     );
   }
 
