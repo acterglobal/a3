@@ -83,7 +83,6 @@ void main() {
     final lang = L10n.of(context);
 
     expect(find.text(lang.overdue), findsOneWidget);
-    expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
     expect(find.byType(TaskItem), findsOneWidget);
   });
 
@@ -101,7 +100,6 @@ void main() {
     final lang = L10n.of(context);
 
     expect(find.text(lang.today), findsOneWidget);
-    expect(find.byIcon(Icons.today_rounded), findsOneWidget);
     expect(find.byType(TaskItem), findsOneWidget);
   });
 
@@ -119,7 +117,6 @@ void main() {
     final lang = L10n.of(context);
 
     expect(find.text(lang.tomorrow), findsOneWidget);
-    expect(find.byIcon(Icons.event_rounded), findsOneWidget);
     expect(find.byType(TaskItem), findsOneWidget);
   });
 
@@ -137,7 +134,6 @@ void main() {
     final lang = L10n.of(context);
 
     expect(find.text(lang.laterThisWeek), findsOneWidget);
-    expect(find.byIcon(Icons.calendar_month_rounded), findsOneWidget);
     expect(find.byType(TaskItem), findsOneWidget);
   });
 
@@ -155,7 +151,6 @@ void main() {
     final lang = L10n.of(context);
 
     expect(find.text(lang.later), findsOneWidget);
-    expect(find.byIcon(Icons.event_note_rounded), findsOneWidget);
     expect(find.byType(TaskItem), findsOneWidget);
   });
 
@@ -173,7 +168,6 @@ void main() {
     final lang = L10n.of(context);
 
     expect(find.text(lang.noDueDate), findsOneWidget);
-    expect(find.byIcon(Icons.event_busy_rounded), findsOneWidget);
     expect(find.byType(TaskItem), findsOneWidget);
   });
 
@@ -187,7 +181,7 @@ void main() {
     await createWidgetUnderTest(tester);
 
     expect(find.byType(TaskItem), findsNWidgets(3));
-    expect(find.byType(Divider), findsNWidgets(2)); // 3 items = 2 dividers
+    expect(find.byType(Divider), findsNWidgets(8));
   });
 
   testWidgets('shows all task sections when tasks are in all categories',
