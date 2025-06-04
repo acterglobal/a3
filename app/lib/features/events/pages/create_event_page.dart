@@ -594,6 +594,9 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
 
+      // Clear event locations after successful creation
+      ref.read(eventLocationsProvider.notifier).clearLocations();
+
       EasyLoading.dismiss();
 
       if (mounted) {

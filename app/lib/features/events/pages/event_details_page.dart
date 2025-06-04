@@ -129,6 +129,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final canPostEvent = membership?.canString('CanPostEvent') == true;
     final canChangeDate =
         ref.watch(eventTypeProvider(event)) == EventFilters.upcoming;
+    final locations = ref.watch(asyncEventLocationsProvider(event.eventId().toString())).valueOrNull ?? [];
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
@@ -166,16 +167,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
           ),
         );
 
-        // Add Location
+        // Add/Edit Location
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
             onTap: () => showEventLocationList(event.roomIdStr()),
             child: Row(
               children: <Widget>[
-                const Icon(Icons.add_location_alt_outlined),
+                Icon(locations.isEmpty ? Icons.add_location_alt_outlined : Icons.edit_location_alt_outlined),
                 const SizedBox(width: 10),
-                Text(lang.addLocation),
+                Text(locations.isEmpty ? lang.addLocation : lang.editLocation),
               ],
             ),
           ),

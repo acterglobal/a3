@@ -165,15 +165,13 @@ class _AddEventLocationWidgetState
               editable: true,
               hintText: lang.enterLocationAddress,
               onChanged: (body, html) {
-                setState(() {
-                  textEditorAddressState = EditorState(
-                    document: ActerDocumentHelpers.parse(
-                      body,
-                      htmlContent: html,
-                    ),
-                  );
-                  _addressError = null; // Clear error on change
-                });
+                textEditorAddressState = EditorState(
+                  document: ActerDocumentHelpers.parse(
+                    body,
+                    htmlContent: html,
+                  ),
+                );
+                _addressError = null; // Clear error on change
               },
             ),
           ),
