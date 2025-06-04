@@ -115,7 +115,7 @@ async fn story_plain_text_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -128,7 +128,6 @@ async fn story_plain_text_test() -> Result<()> {
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
@@ -177,7 +176,7 @@ async fn story_slide_color_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.to_string();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -197,7 +196,6 @@ async fn story_slide_color_test() -> Result<()> {
     draft.add_slide(Box::new(slide_draft)).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
@@ -240,7 +238,7 @@ async fn story_markdown_text_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -253,7 +251,6 @@ async fn story_markdown_text_test() -> Result<()> {
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
@@ -305,7 +302,7 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -325,7 +322,6 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
@@ -372,7 +368,7 @@ async fn story_png_image_with_text_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -392,7 +388,6 @@ async fn story_png_image_with_text_test() -> Result<()> {
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
@@ -424,7 +419,7 @@ async fn story_multiple_slide_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -464,7 +459,6 @@ async fn story_multiple_slide_test() -> Result<()> {
     draft.add_slide(Box::new(video_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();
@@ -515,7 +509,7 @@ async fn story_like_reaction_test() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -535,7 +529,6 @@ async fn story_like_reaction_test() -> Result<()> {
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let space_cl = space.clone();
     Retry::spawn(retry_strategy, move || {
         let inner_space = space_cl.clone();

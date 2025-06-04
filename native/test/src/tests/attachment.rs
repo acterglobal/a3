@@ -85,7 +85,7 @@ async fn attachment_can_redact() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -156,7 +156,7 @@ async fn attachment_download_media() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }

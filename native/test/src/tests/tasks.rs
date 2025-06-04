@@ -97,7 +97,6 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
@@ -124,7 +123,6 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if task_1_updater.is_empty() {
             bail!("all still empty");
@@ -147,8 +145,7 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
         }
@@ -387,7 +384,6 @@ async fn task_comment_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
@@ -444,8 +440,7 @@ async fn task_comment_smoketests() -> Result<()> {
         .redact_content(comment_id.to_string(), Some(reason.to_owned()))
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }

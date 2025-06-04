@@ -17,7 +17,7 @@ async fn onboarding_is_created() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.space(room_id.to_string()).await }
@@ -34,7 +34,6 @@ async fn onboarding_is_created() -> Result<()> {
 
     space.create_onboarding_data().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let calendar_client = user.clone();
     Retry::spawn(retry_strategy.clone(), move || {
         let client = calendar_client.clone();
@@ -76,7 +75,7 @@ async fn onboarding_is_created() -> Result<()> {
     .await?;
 
     let news_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = news_client.clone();
         async move {
             if client.latest_news_entries(10).await?.len() != 1 {

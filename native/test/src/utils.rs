@@ -336,7 +336,7 @@ pub(crate) async fn invite_user(
 ) -> Result<Room> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
-    let room = Retry::spawn(retry_strategy.clone(), || async {
+    let room = Retry::spawn(retry_strategy, || async {
         client.room(room_id.as_str().into()).await
     })
     .await?;

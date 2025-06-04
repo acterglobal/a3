@@ -46,7 +46,7 @@ async fn get_latest_activity(
 
     // check the create event
     let room_activities = observer_room_activities.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let room_activities = room_activities.clone();
         async move {
             let stream = room_activities.iter().await?;

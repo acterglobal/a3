@@ -27,7 +27,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    let convo = Retry::spawn(retry_strategy, move || {
+    let convo = Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.convo(room_id.to_string()).await }
@@ -90,7 +90,6 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let sent_event_id = sent_event_id.context("Even after 30 seconds, text msg not received")?;
 
     // get the message
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_timeline = timeline.clone();
     let target_id = sent_event_id.clone();
     let _message = Retry::spawn(retry_strategy, move || {
@@ -163,7 +162,7 @@ async fn joining_room_triggers_room_update() -> Result<()> {
 
     invite_user(&sisko, &room_id, &kyra.user_id()?).await?;
 
-    let invited = Retry::spawn(retry_strategy.clone(), || async {
+    let invited = Retry::spawn(retry_strategy, || async {
         let invited = kyra.invitations().room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))

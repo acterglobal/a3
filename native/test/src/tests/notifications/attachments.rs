@@ -76,7 +76,7 @@ async fn image_attachment_on_pin() -> Result<()> {
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let obj_id = obj_id.clone();
         async move {
@@ -173,7 +173,7 @@ async fn file_attachment_on_event() -> Result<()> {
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let obj_id = obj_id.clone();
         async move {
@@ -271,7 +271,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let obj_id = obj_id.clone();
         async move {
@@ -375,7 +375,7 @@ async fn link_attachment_on_task() -> Result<()> {
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
     let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
+    Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         let obj_id = obj_id.clone();
         async move {

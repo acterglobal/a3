@@ -25,7 +25,7 @@ async fn initial_events() -> Result<()> {
     assert_eq!(activity.type_str(), "roomName");
     // // check the create event
     // let room_activities = observer_room_activities.clone();
-    // let created = Retry::spawn(retry_strategy.clone(), move || {
+    // let created = Retry::spawn(retry_strategy, move || {
     //     let room_activities = room_activities.clone();
     //     async move {
     //         let Some(a) = room_activities
@@ -119,7 +119,7 @@ async fn invite_and_join() -> Result<()> {
     // wait for the event to come in
     let obs = observer.clone();
     let room_activities = observer_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let room_activities = room_activities.clone();
         let ob = obs.clone();
         async move {
@@ -162,7 +162,7 @@ async fn kicked() -> Result<()> {
     // wait for the event to come in
     let cl = admin.clone();
     let room_activities = room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let room_activities = room_activities.clone();
         let cl = cl.clone();
         async move {
@@ -257,7 +257,7 @@ async fn invite_and_rejected() -> Result<()> {
     // wait for the event to come in
     let obs = observer.clone();
     let room_activities = observer_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let room_activities = room_activities.clone();
         let ob = obs.clone();
         async move {
@@ -331,7 +331,7 @@ async fn kickban_and_unban() -> Result<()> {
     // wait for the event to come in
     let cl = admin.clone();
     let room_activities = main_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let room_activities = room_activities.clone();
         let cl = cl.clone();
         async move {
@@ -374,7 +374,7 @@ async fn left() -> Result<()> {
     // wait for the event to come in
     let cl = admin.clone();
     let room_activities = room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
+    let activity = Retry::spawn(retry_strategy, move || {
         let room_activities = room_activities.clone();
         let cl = cl.clone();
         async move {

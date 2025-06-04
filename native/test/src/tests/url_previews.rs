@@ -70,7 +70,7 @@ async fn ref_details_as_url_preview() -> Result<()> {
 
     let fetcher_client = second.clone();
     let target_chat_id = chat_id.to_string();
-    let latest_msg = Retry::spawn(retry_strategy.clone(), move || {
+    let latest_msg = Retry::spawn(retry_strategy, move || {
         let second = fetcher_client.clone();
         let chat_id = target_chat_id.clone();
         async move {

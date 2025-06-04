@@ -459,7 +459,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -557,7 +557,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }

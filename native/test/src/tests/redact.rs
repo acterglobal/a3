@@ -24,7 +24,7 @@ async fn message_redaction() -> Result<()> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_client = user.clone();
     let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
+    Retry::spawn(retry_strategy.clone(), move || {
         let client = fetcher_client.clone();
         let room_id = target_id.clone();
         async move { client.convo(room_id.to_string()).await }
@@ -78,7 +78,6 @@ async fn message_redaction() -> Result<()> {
     let received = received.context("Even after 30 seconds, text msg not received")?;
 
     // wait for sync to catch up
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     let fetcher_timeline = timeline.clone();
     let target_id = received.clone();
     Retry::spawn(retry_strategy, move || {

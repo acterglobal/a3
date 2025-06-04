@@ -57,7 +57,7 @@ async fn has_seen_suggested_test() -> Result<()> {
     user_room_settings.set_has_seen_suggested(false).await?;
 
     // wait for update to come through
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if subscriber.is_empty() {
             bail!("not been alerted to reload");
         }
@@ -119,7 +119,7 @@ async fn include_cal_sync_test() -> Result<()> {
     user_room_settings.set_include_cal_sync(true).await?;
 
     // wait for update to come through
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if subscriber.is_empty() {
             bail!("not been alerted to reload");
         }
