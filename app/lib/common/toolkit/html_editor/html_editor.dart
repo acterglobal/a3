@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/common/toolkit/html_editor/services/commands/backspace_for_mentions.dart';
+import 'package:acter/common/toolkit/html_editor/services/mention_detection.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
 import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
@@ -567,7 +569,10 @@ class _HtmlEditorState extends State<HtmlEditor> {
       footer: generateFooter(),
       blockComponentBuilders: _buildBlockComponentBuilders(),
       characterShortcutEvents: _buildCharacterShortcutEvents(),
-      commandShortcutEvents: standardCommandShortcutEvents,
+      commandShortcutEvents: [
+        backSpaceCommandForMentions,
+        ...standardCommandShortcutEvents,
+      ],
       disableAutoScroll: false,
       autoScrollEdgeOffset: 20,
     );
@@ -633,12 +638,32 @@ class _HtmlEditorState extends State<HtmlEditor> {
     TextSpan before,
     TextSpan after,
   ) {
+    // fast track if there are no attributes
     final attributes = text.attributes;
     if (attributes == null) {
       return before;
     }
 
-    TextSpan fallback() => defaultTextSpanDecoratorForAttribute(
+    final roomId = widget.roomId;
+    final parsed = getMentionForInsert(text);
+
+    if (parsed != null) {
+      final inner = switch (parsed.type) {
+        (LinkType.userId) => UserChip(roomId: roomId, memberId: parsed.target),
+        (LinkType.roomId) => RoomChip(roomId: parsed.target),
+        (LinkType.spaceObject) => InlineItemPreview(
+          roomId: roomId,
+          uriResult: parsed,
+        ),
+        _ => null,
+      };
+      if (inner != null) {
+        return WidgetSpan(alignment: PlaceholderAlignment.middle, child: inner);
+      }
+    }
+
+    // fallback to the default behavior
+    return defaultTextSpanDecoratorForAttribute(
       context,
       node,
       index,
@@ -646,44 +671,5 @@ class _HtmlEditorState extends State<HtmlEditor> {
       before,
       after,
     );
-
-    final roomId = widget.roomId;
-
-    final href = attributes[AppFlowyRichTextKeys.href] as String?;
-    if (href != null) {
-      try {
-        final uri = Uri.tryParse(href);
-        if (uri == null) {
-          return fallback();
-        }
-        final parsed = parseActerUri(uri);
-        final inner = switch (parsed.type) {
-          (LinkType.userId) => UserChip(
-            roomId: roomId,
-            memberId: parsed.target,
-          ),
-          (LinkType.roomId) => RoomChip(roomId: parsed.target),
-          (LinkType.spaceObject) => InlineItemPreview(
-            roomId: roomId,
-            uriResult: parsed,
-          ),
-          _ => null,
-        };
-        if (inner == null) {
-          return fallback();
-        }
-
-        return WidgetSpan(
-          alignment: PlaceholderAlignment.middle,
-          // style: after.style,
-          child: inner,
-        );
-      } catch (error) {
-        _log.warning('failed to parse acter uri', error);
-        return fallback();
-      }
-    }
-
-    return fallback();
   }
 }
