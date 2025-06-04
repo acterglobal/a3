@@ -211,28 +211,24 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                   enableDrag: true,
                   showDragHandle: true,
                   useSafeArea: true,
-                  builder:
-                      (context) => EventLocationListWidget(
-                        onAdd: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            isDismissible: true,
-                            enableDrag: true,
-                            showDragHandle: true,
-                            useSafeArea: true,
-                            builder:
-                                (context) => AddEventLocationWidget(
-                                  onAdd: (location) {
-                                    ref
-                                        .read(eventLocationsProvider.notifier)
-                                        .addLocation(location);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                          );
-                        },
-                      ),
+                  builder: (context) => EventLocationListWidget(
+                    onAdd: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        isDismissible: true,
+                        enableDrag: true,
+                        showDragHandle: true,
+                        useSafeArea: true,
+                        builder: (context) => AddEventLocationWidget(
+                          onAdd: (location) {
+                            ref.read(eventLocationsProvider.notifier).addLocation(location);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),

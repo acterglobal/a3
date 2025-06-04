@@ -11,7 +11,11 @@ class EventLocationsNotifier extends StateNotifier<List<EventLocationDraft>> {
   }
 
   void removeLocation(EventLocationDraft location) {
-    state = state.where((loc) => loc != location).toList();
+    state = state.where((l) => l != location).toList();
+  }
+
+  void updateLocation(EventLocationDraft oldLocation, EventLocationDraft newLocation) {
+    state = state.map((location) => location == oldLocation ? newLocation : location).toList();
   }
 
   void clearLocations() {

@@ -9,11 +9,13 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class EventLocationListWidget extends ConsumerWidget {
   final VoidCallback onAdd;
+  final Function(EventLocationDraft location)? onEdit;
   final String? eventId;
 
   const EventLocationListWidget({
     super.key, 
     required this.onAdd,
+    this.onEdit,
     this.eventId,
   });
 
@@ -31,7 +33,7 @@ class EventLocationListWidget extends ConsumerWidget {
         locations.isEmpty
             ? _buildEmptyState(context)
             : _buildLocationList(context, ref, locations),
-        if (locations.isNotEmpty && eventId == null) _buildActionButton(context, ref),
+        _buildActionButton(context, ref),
       ],
     );
   }
@@ -49,12 +51,12 @@ class EventLocationListWidget extends ConsumerWidget {
               style: theme.textTheme.titleMedium,
             ),
           ),
-          if (eventId == null)
-            IconButton(
+          IconButton(
               icon: const Icon(Icons.add_circle_outline),
               tooltip: lang.addLocation,
               onPressed: onAdd,
-            ),
+          ),
+            
         ],
       ),
     );
@@ -82,41 +84,7 @@ class EventLocationListWidget extends ConsumerWidget {
         padding: EdgeInsets.zero,
         itemBuilder: (context, index) {
           final location = locations[index];
-          if (location is EventLocationInfo) {
-            return _buildEditEventLocationTile(context, location);
-          } else {
-            return _buildLocationTile(context, ref, location as EventLocationDraft);
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildEditEventLocationTile(
-    BuildContext context,
-    EventLocationInfo location,
-  ) {
-    final theme = Theme.of(context);
-    final isVirtual = location.locationType().toLowerCase() == LocationType.virtual.name;
-
-    return ListTile(
-      leading: Icon(
-        isVirtual ? Icons.language : Icons.map_outlined,
-        color: theme.colorScheme.primary,
-      ),
-      title: Text(location.name() ?? ''),
-      subtitle: Text(
-        isVirtual
-            ? (location.uri() ?? '')
-            : (location.address()?.split('\n').first ?? ''),
-        style: theme.textTheme.bodySmall,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: IconButton(
-        icon: Icon(Icons.edit_location_alt_outlined),
-        onPressed: () {
-          onAdd();
+          return _buildLocationTile(context, ref, location);
         },
       ),
     );
@@ -125,32 +93,56 @@ class EventLocationListWidget extends ConsumerWidget {
   Widget _buildLocationTile(
     BuildContext context,
     WidgetRef ref,
-    EventLocationDraft location,
+    dynamic location,
   ) {
     final theme = Theme.of(context);
-    final isVirtual = location.type == LocationType.virtual;
+    final isVirtual = location is EventLocationInfo 
+        ? location.locationType().toLowerCase() == LocationType.virtual.name
+        : location.type == LocationType.virtual;
 
     return ListTile(
       leading: Icon(
         isVirtual ? Icons.language : Icons.map_outlined,
         color: theme.colorScheme.primary,
       ),
-      title: Text(location.name),
+      title: Text(location is EventLocationInfo ? location.name() ?? '' : location.name),
       subtitle: Text(
         isVirtual
-            ? (location.url ?? '')
-            : (location.address?.split('\n').first ?? ''),
+            ? (location is EventLocationInfo ? location.uri() ?? '' : location.url ?? '')
+            : (location is EventLocationInfo 
+                ? location.address()?.split('\n').first ?? ''
+                : location.address?.split('\n').first ?? ''),
         style: theme.textTheme.bodySmall,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: IconButton(
-        icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
-        onPressed:
-            () => ref
-                .read(eventLocationsProvider.notifier)
-                .removeLocation(location),
-      ),
+      trailing: location is EventLocationInfo
+          ? IconButton(
+              icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
+              onPressed: () {
+    
+              },
+            )
+          : IconButton(
+              icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
+              onPressed: () => ref
+                  .read(eventLocationsProvider.notifier)
+                  .removeLocation(location),
+            ),
+      onTap: () {
+        final draftLocation = EventLocationDraft(
+            name: location.name() ?? '',
+            type: location.locationType().toLowerCase() == LocationType.virtual.name 
+                ? LocationType.virtual 
+                : LocationType.physical,
+            url: location.uri(),
+            address: location.address(),
+            note: location.notes(),
+          );
+          if (onEdit != null) {
+            onEdit?.call(draftLocation);
+          }
+      },
     );
   }
 

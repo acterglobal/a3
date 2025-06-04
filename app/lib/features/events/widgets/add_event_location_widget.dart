@@ -8,25 +8,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddEventLocationWidget extends ConsumerStatefulWidget {
-  final Function(EventLocationDraft) onAdd;
+  final Function(EventLocationDraft location) onAdd;
+  final EventLocationDraft? initialLocation;
 
-  const AddEventLocationWidget({super.key, required this.onAdd});
+  const AddEventLocationWidget({
+    super.key,
+    required this.onAdd,
+    this.initialLocation,
+  });
 
   @override
-  ConsumerState<AddEventLocationWidget> createState() =>
-      _AddEventLocationWidgetState();
+  ConsumerState<AddEventLocationWidget> createState() => _AddEventLocationWidgetState();
 }
 
-class _AddEventLocationWidgetState
-    extends ConsumerState<AddEventLocationWidget> {
+class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget> {
   final _formKey = GlobalKey<FormState>(debugLabel: 'location form key');
-  final _locationNameController = TextEditingController();
-  final _locationUrlController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _urlController;
+  late LocationType _selectedType;
 
-  EditorState textEditorNoteState = EditorState.blank();
-  EditorState textEditorAddressState = EditorState.blank();
-  LocationType _selectedType = LocationType.virtual;
+  late EditorState textEditorNoteState;
+  late EditorState textEditorAddressState;
   String? _addressError;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialLocation?.name);
+    _urlController = TextEditingController(text: widget.initialLocation?.url);
+    _selectedType = widget.initialLocation?.type ?? LocationType.physical;
+
+    // Initialize editor states with initial data
+    textEditorNoteState = EditorState(
+      document: ActerDocumentHelpers.parse(
+        widget.initialLocation?.note ?? '',
+        htmlContent: widget.initialLocation?.note ?? '',
+      ),
+    );
+
+    textEditorAddressState = EditorState(
+      document: ActerDocumentHelpers.parse(
+        widget.initialLocation?.address ?? '',
+        htmlContent: widget.initialLocation?.address ?? '',
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _urlController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +91,20 @@ class _AddEventLocationWidgetState
 
   Widget _buildTypeSelector(BuildContext context) {
     final lang = L10n.of(context);
+    final isEditing = widget.initialLocation != null;
+    final hasVirtualData = isEditing && widget.initialLocation?.url?.isNotEmpty == true;
+    final hasPhysicalData = isEditing && widget.initialLocation?.address?.isNotEmpty == true;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FilterChip(
           label: Text(lang.virtual),
           selected: _selectedType == LocationType.virtual,
-          onSelected: (selected) {
+          onSelected: isEditing && !hasVirtualData ? null : (selected) {
             if (!(_selectedType == LocationType.virtual)) {
               setState(() {
                 _selectedType = LocationType.virtual;
-                // Reset address editor state when switching to virtual
-                textEditorAddressState = EditorState.blank();
               });
             }
           },
@@ -78,12 +113,10 @@ class _AddEventLocationWidgetState
         FilterChip(
           label: Text(lang.realWorld),
           selected: _selectedType == LocationType.physical,
-          onSelected: (selected) {
+          onSelected: isEditing && !hasPhysicalData ? null : (selected) {
             if (!(_selectedType == LocationType.physical)) {
               setState(() {
                 _selectedType = LocationType.physical;
-                // Reset URL controller when switching to physical
-                _locationUrlController.clear();
               });
             }
           },
@@ -104,7 +137,7 @@ class _AddEventLocationWidgetState
           key: EventsKeys.eventLocationNameTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
-          controller: _locationNameController,
+          controller: _nameController,
           decoration: InputDecoration(hintText: lang.enterLocationName),
           // required field, space not allowed
           validator:
@@ -128,7 +161,7 @@ class _AddEventLocationWidgetState
           key: EventsKeys.eventLocationUrlTextField,
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
-          controller: _locationUrlController,
+          controller: _urlController,
           decoration: InputDecoration(hintText: lang.enterLocationUrl),
           // required field, space not allowed
           validator:
@@ -221,7 +254,7 @@ class _AddEventLocationWidgetState
       children: [
         ActerPrimaryActionButton(
           onPressed: () => _addLocation(),
-          child: Text(lang.addLocation),
+          child: Text(widget.initialLocation != null ? lang.editLocation : lang.addLocation),
         ),
         const SizedBox(height: 10),
         OutlinedButton(
@@ -250,11 +283,11 @@ class _AddEventLocationWidgetState
     }
     if (valid) {
       final location = EventLocationDraft(
-        name: _locationNameController.text,
+        name: _nameController.text,
         type: _selectedType,
         url:
             _selectedType == LocationType.virtual
-                ? _locationUrlController.text
+                ? _urlController.text
                 : null,
         address:
             _selectedType == LocationType.physical

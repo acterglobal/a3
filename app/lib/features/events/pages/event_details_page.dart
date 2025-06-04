@@ -632,7 +632,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       isDismissible: true,
       enableDrag: true,
       showDragHandle: true,
-      constraints: const BoxConstraints(maxHeight: 350),
       useSafeArea: true,
       builder: (_) {
         return EventLocationListWidget(
@@ -645,13 +644,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               enableDrag: true,
               showDragHandle: true,
               useSafeArea: true,
-              builder:
-                  (context) => AddEventLocationWidget(
-                    onAdd: (location) {
-                      ref.read(eventLocationsProvider.notifier).addLocation(location);
-                      Navigator.pop(context);
-                    },
-                  ),
+              builder: (context) => AddEventLocationWidget(
+                onAdd: (location) {
+                  ref.read(eventLocationsProvider.notifier).addLocation(location);
+                  Navigator.pop(context);
+                },
+              ),
             );
           },
         );
