@@ -3069,5 +3069,7 @@
   "openLink": "Open link",
   "@openLink": {},
   "createJitsiCallLink": "Create automatic Jitsi Call Link",
-  "@createJitsiCallLink": {}
+  "@createJitsiCallLink": {},
+  "jitsiMeeting": "Jitsi Meeting",
+  "@jitsiMeeting": {}
 }

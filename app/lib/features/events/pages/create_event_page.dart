@@ -568,13 +568,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       // Add locations to the event
       final locations = ref.read(eventLocationsProvider);
       for (final location in locations) {
-        if (location.type == LocationType.physical) {}
-        if (location.type == LocationType.virtual) {
-          if (_isJitsiEnabled) {
-            final jitsiLink = _createJitsiCallLink(title);
-            print('Jitsi Link: $jitsiLink');
-          }
+        if (location.type == LocationType.physical) {
+          draft.physicalLocation(location.name, '', '', '', '',location.address,location.note);
         }
+        if (location.type == LocationType.virtual) {
+          draft.virtualLocation(location.name, '', '',location.url ?? '',location.note);
+        }
+      }
+      
+      // Add Jitsi link if enabled
+      if (_isJitsiEnabled) {
+        final jitsiLink = _createJitsiCallLink(title);
+        draft.virtualLocation(lang.jitsiMeeting, '', '', jitsiLink, '');
       }
 
       final eventId = (await draft.send()).toString();

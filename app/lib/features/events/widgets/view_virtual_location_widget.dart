@@ -29,7 +29,8 @@ class ViewVirtualLocationWidget extends ConsumerWidget {
               children: [
                 _buildLocationInfo(),
                 const SizedBox(height: 10),
-                _buildLocationNotes(),
+                if (location.notes() != null && location.notes()!.isNotEmpty)
+                  _buildLocationNotes(),
               ],
             ),
           ),
@@ -41,14 +42,14 @@ class ViewVirtualLocationWidget extends ConsumerWidget {
 
   Widget _buildLocationInfo() {
     return ListTile(
-      leading: const Icon(Icons.map_outlined),
-      title: Text(location.name().toString()),
+      leading: const Icon(Icons.language),
+      title: Text(location.name() ?? ''),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             maxLines: 2,
-            location.description()?.body() ?? '',
+            location.uri() ?? '',
             overflow: TextOverflow.ellipsis,
             style: Theme.of(
               context,
@@ -63,16 +64,24 @@ class ViewVirtualLocationWidget extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${L10n.of(context).notes}:'),
-          const SizedBox(width: 5),
           Text(
-            '',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: colorScheme.surfaceTint),
+            '${L10n.of(context).notes}:',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              location.notes() ?? '',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
+            ),
           ),
         ],
       ),
@@ -118,7 +127,16 @@ class ViewVirtualLocationWidget extends ConsumerWidget {
   }
 
   void _openInBrowser() {
-    final url = location.uri().toString();
-    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    final url = location.uri() ?? '';
+    if (url.isNotEmpty) {
+      String formattedUrl = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        formattedUrl = 'https://$url';
+      }
+      launchUrl(
+        Uri.parse(formattedUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    }
   }
 }

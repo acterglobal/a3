@@ -48,7 +48,7 @@ class ViewPhysicalLocationWidget extends ConsumerWidget {
         children: [
           Text(
             maxLines: 2,
-            location.description()?.body() ?? '',
+            location.address() ?? '',
             overflow: TextOverflow.ellipsis,
             style: Theme.of(
               context,
@@ -63,16 +63,24 @@ class ViewPhysicalLocationWidget extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${L10n.of(context).notes}:'),
-          const SizedBox(width: 5),
           Text(
-            '',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: colorScheme.surfaceTint),
+            '${L10n.of(context).notes}:',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              location.notes() ?? '',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.surfaceTint,
+                  ),
+            ),
           ),
         ],
       ),

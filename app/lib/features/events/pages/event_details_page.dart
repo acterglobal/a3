@@ -286,7 +286,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             _buildEventRsvpActions(calendarEvent),
             const SizedBox(height: 10),
             _buildEventDataSet(calendarEvent),
-            const SizedBox(height: 10),
             _buildEventLocationList(calendarEvent),
             const SizedBox(height: 10),
             _buildEventDescription(calendarEvent),
@@ -629,7 +628,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
+      isDismissible: true,
       enableDrag: true,
       showDragHandle: true,
       constraints: const BoxConstraints(maxHeight: 350),
@@ -647,9 +646,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               builder:
                   (context) => AddEventLocationWidget(
                     onAdd: (location) {
-                      ref
-                          .read(eventLocationsProvider.notifier)
-                          .addLocation(location);
+                      ref.read(eventLocationsProvider.notifier).addLocation(location);
                       Navigator.pop(context);
                     },
                   ),
@@ -736,43 +733,58 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   }
 
   Widget _buildEventLocationList(CalendarEvent ev) {
-    final locations =
-        ref.watch(asyncEventLocationsProvider(ev.eventId().toString())).valueOrNull ?? [];
-
+    final locations = ref.watch(asyncEventLocationsProvider(ev.eventId().toString())).valueOrNull ?? [];
     if (locations.isEmpty) {
       return const SizedBox.shrink();
     }
-
+    
     return ListView.builder(
       shrinkWrap: true,
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       physics: const NeverScrollableScrollPhysics(),
       itemCount: locations.length,
       itemBuilder: (context, index) {
         final location = locations[index];
-        return ListTile(
-          onTap: () => location.locationType().toLowerCase() ==
-                      LocationType.physical.name
-                  ? showPhysicalLocation(location)
-                  : showVirtualLocation(location),
-          leading:
-              location.locationType().toLowerCase() ==
-                      LocationType.physical.name
-                  ? const Icon(Icons.map_outlined)
-                  : const Icon(Icons.language),
-          title: Text(location.name() ?? ''),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (location.locationType().toLowerCase() ==
-                  LocationType.physical.name)
-                Text(location.description()?.body() ?? ''),
-              if (location.locationType() == LocationType.virtual.name)
-                Text(location.uri() ?? ''),
-            ],
-          ),
-        );
+        return _buildEventLocationItem(location);
       },
     );
+  }
+
+  Widget _buildEventLocationItem(EventLocationInfo location) {
+    final locationType = location.locationType().toLowerCase();
+    return ListTile(
+          onTap: () => locationType == LocationType.physical.name
+                      ? showPhysicalLocation(location)
+                      : showVirtualLocation(location),
+          leading: locationType ==  LocationType.physical.name
+                  ? const Icon(Icons.map_outlined)
+                  : const Icon(Icons.language),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: -8.0),
+          visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+          minVerticalPadding: 0,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (locationType == LocationType.physical.name)
+                Text(location.name() ?? ''),
+              if (locationType == LocationType.virtual.name)
+                Text(
+                  location.uri() ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+            ],
+          ),
+          subtitle: locationType ==  LocationType.physical.name
+                  ? Text(location.address() ?? '',style : Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.surfaceTint,
+                  ))
+                  : const SizedBox.shrink(),
+        );
   }
 
   void showPhysicalLocation(EventLocationInfo location) {
@@ -783,11 +795,13 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       enableDrag: true,
       showDragHandle: true,
       useSafeArea: true,
-      constraints: const BoxConstraints(maxHeight: 280),
-      builder: (context) => ViewPhysicalLocationWidget(context: context, location: location),
+      constraints: const BoxConstraints(maxHeight: 300),
+      builder:
+          (context) =>
+              ViewPhysicalLocationWidget(context: context, location: location),
     );
   }
-  
+
   void showVirtualLocation(EventLocationInfo location) {
     showModalBottomSheet(
       context: context,
@@ -797,7 +811,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       showDragHandle: true,
       useSafeArea: true,
       constraints: const BoxConstraints(maxHeight: 280),
-      builder: (context) => ViewVirtualLocationWidget(context: context, location: location),
+      builder:
+          (context) =>
+              ViewVirtualLocationWidget(context: context, location: location),
     );
   }
 }
