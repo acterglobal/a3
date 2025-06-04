@@ -87,6 +87,11 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
             ? colorScheme.onSurface.withValues(alpha: 0.5)
             : colorScheme.onSurface.withValues(alpha: 0.9);
 
+    final textStyle = textTheme.bodySmall?.copyWith(
+      color: color,
+      overflow: widget.isNotice ? TextOverflow.ellipsis : null,
+    );
+
     final html = bodyFormatted;
     if (html != null) {
       return RenderHtml(
@@ -94,10 +99,7 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
         roomId: widget.roomId,
         shrinkToFit: true,
         maxLines: widget.isReply ? 2 : null,
-        defaultTextStyle: textTheme.bodySmall?.copyWith(
-          color: color,
-          overflow: widget.isNotice ? TextOverflow.ellipsis : null,
-        ),
+        defaultTextStyle: textStyle,
       );
     }
 
@@ -107,6 +109,7 @@ class _TextMessageEventState extends ConsumerState<TextMessageEvent> {
       roomId: widget.roomId,
       shrinkToFit: true,
       maxLines: widget.isReply ? 2 : null,
+      defaultTextStyle: textStyle,
     );
   }
 }
