@@ -21,17 +21,45 @@ class ChatRoomNgPage extends ConsumerWidget {
       builder:
           (context, orientation) => Scaffold(
             resizeToAvoidBottomInset: orientation == Orientation.portrait,
-            appBar: ChatRoomAppBarWidget(
-              roomId: roomId,
-              onProfileTap:
-                  () => context.pushNamed(
-                    Routes.chatProfile.name,
-                    pathParameters: {'roomId': roomId},
-                  ),
-            ),
             body: Column(
               children: [
-                Expanded(child: ChatMessages(roomId: roomId)),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Opacity(
+                          opacity: 0.07,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/images/chat_bg.png'),
+                                repeat: ImageRepeat.repeat,
+                                fit: BoxFit.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(child: ChatMessages(roomId: roomId)),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: SizedBox(
+                          height: kToolbarHeight,
+                          child: ChatRoomAppBarWidget(
+                            roomId: roomId,
+                            onProfileTap:
+                                () => context.pushNamed(
+                                  Routes.chatProfile.name,
+                                  pathParameters: {'roomId': roomId},
+                                ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 chatInput(context, ref),
               ],
             ),

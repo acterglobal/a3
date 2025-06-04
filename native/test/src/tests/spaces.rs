@@ -302,7 +302,7 @@ async fn create_subspace() -> Result<()> {
 async fn create_with_default_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, sync_state, _engine) =
-        random_user_with_template("subspace_create_default", TMPL).await?;
+        random_user_with_template("space_default_settings", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -373,7 +373,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 #[tokio::test]
 async fn create_with_custom_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
-    let mut user = random_user("settings").await?;
+    let mut user = random_user("space_custom_settings").await?;
     let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 
@@ -477,8 +477,7 @@ async fn create_with_custom_space_settings() -> Result<()> {
 #[tokio::test]
 async fn create_private_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) =
-        random_user_with_template("subspace_create_private", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_private", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -555,8 +554,7 @@ async fn create_private_subspace() -> Result<()> {
 #[tokio::test]
 async fn create_public_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) =
-        random_user_with_template("subspace_create_public", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_public", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -632,8 +630,7 @@ async fn create_public_subspace() -> Result<()> {
 #[tokio::test]
 async fn change_subspace_join_rule() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) =
-        random_user_with_template("subspace_create_join_rule", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_join_rule", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up

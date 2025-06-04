@@ -1,3 +1,5 @@
+mod invitations;
+
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};

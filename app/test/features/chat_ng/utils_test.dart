@@ -1,0 +1,49 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:acter/features/chat_ng/utils.dart';
+
+void main() {
+  group('isOnlyEmojis', () {
+    test('should return true for single emoji', () {
+      expect(isOnlyEmojis('😊'), true);
+      expect(isOnlyEmojis('👍'), true);
+      expect(isOnlyEmojis('🎉'), true);
+    });
+
+    test('should return true for multiple emojis', () {
+      expect(isOnlyEmojis('😊👍🎉'), true);
+      expect(isOnlyEmojis('👋👋👋'), true);
+      expect(isOnlyEmojis('❤️💕💖'), true);
+    });
+
+    test('should return true for emojis with variation selectors', () {
+      expect(isOnlyEmojis('👋🏽'), true); // Emoji with skin tone modifier
+      expect(isOnlyEmojis('❤️'), true); // Emoji with variation selector
+      expect(isOnlyEmojis('👨‍👩‍👧‍👦'), true); // Family emoji with ZWJ
+    });
+
+    test('should return false for text with emojis', () {
+      expect(isOnlyEmojis('Hello 😊'), false);
+      expect(isOnlyEmojis('😊 World'), false);
+      expect(isOnlyEmojis('Hello 😊 World'), false);
+    });
+
+    test('should return false for plain text', () {
+      expect(isOnlyEmojis('Hello'), false);
+      expect(isOnlyEmojis('123'), false);
+      expect(isOnlyEmojis(''), false);
+      expect(isOnlyEmojis('   '), false);
+    });
+
+    test('should handle whitespace correctly', () {
+      expect(isOnlyEmojis(' 😊 '), true); // Emoji with spaces
+      expect(isOnlyEmojis('\n😊\n'), true); // Emoji with newlines
+      expect(isOnlyEmojis('\t😊\t'), true); // Emoji with tabs
+    });
+
+    test('should handle special emoji cases', () {
+      expect(isOnlyEmojis('🏳️‍🌈'), true); // Rainbow flag
+      expect(isOnlyEmojis('👨‍💻'), true); // Person with profession
+      expect(isOnlyEmojis('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), true); // Regional indicator
+    });
+  });
+}
