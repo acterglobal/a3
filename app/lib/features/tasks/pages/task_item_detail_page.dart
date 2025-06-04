@@ -37,7 +37,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:acter/features/tasks/actions/add_task.dart';
 
 final _log = Logger('a3::tasks::task_item_details');
 
@@ -262,10 +261,7 @@ class _TaskItemBody extends ConsumerWidget {
   }
 
   List<Widget> _widgetDescription(BuildContext context) {
-
-    // Check if migration is needed
     final description = task.description();
-    migrateTaskDescription(task);
     if (description == null) return [];
     final formattedBody = description.formattedBody();
     final textTheme = Theme.of(context).textTheme;
@@ -294,11 +290,10 @@ class _TaskItemBody extends ConsumerWidget {
   }
 
   void showEditDescriptionSheet(BuildContext context) {
-    final description = task.description();
     showEditHtmlDescriptionBottomSheet(
       context: context,
-      descriptionHtmlValue: description?.formattedBody() ?? '',
-      descriptionMarkdownValue: description?.body() ?? '',
+      descriptionHtmlValue: task.description()?.formattedBody(),
+      descriptionMarkdownValue: task.description()?.body(),
       onSave: (ref, htmlBodyDescription, plainDescription) {
         _saveDescription(
           context,
