@@ -33,7 +33,7 @@ class EventLocationListWidget extends ConsumerWidget {
         locations.isEmpty
             ? _buildEmptyState(context)
             : _buildLocationList(context, ref, locations),
-        _buildActionButton(context, ref),
+        locations.isNotEmpty ? _buildActionButton(context, ref) : const SizedBox.shrink(),
       ],
     );
   }
