@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:math' as math;
+import 'dart:math';
 
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/components/mention_item.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/selected_mention_provider.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
-import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class UserMentionList extends ConsumerWidget {
   final VoidCallback onDismiss;
   final VoidCallback onShow;
   final String roomId;
+  final MentionSelectedFn onSelected;
 
   const UserMentionList({
     super.key,
@@ -23,6 +25,7 @@ class UserMentionList extends ConsumerWidget {
     required this.onDismiss,
     required this.onShow,
     required this.roomId,
+    required this.onSelected,
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) => MentionList(
@@ -31,7 +34,8 @@ class UserMentionList extends ConsumerWidget {
     onDismiss: onDismiss,
     onShow: onShow,
     // the actual provider
-    mentionsProvider: userMentionSuggestionsProvider(roomId),
+    mentionsProvider: filteredUserSuggestionsProvider(roomId),
+    selectedIndexProvider: selecteUserMentionProvider(roomId),
     avatarBuilder: (matchId, ref) {
       final avatarInfo = ref.watch(
         memberAvatarInfoProvider((roomId: roomId, userId: matchId)),
@@ -41,6 +45,8 @@ class UserMentionList extends ConsumerWidget {
     // the fields
     headerTitle: L10n.of(context).users,
     notFoundTitle: L10n.of(context).noUserFoundTitle,
+    onSelected:
+        (id, displayName) => onSelected(MentionType.user, id, displayName),
   );
 }
 
@@ -49,13 +55,14 @@ class RoomMentionList extends StatelessWidget {
   final VoidCallback onDismiss;
   final VoidCallback onShow;
   final String roomId;
-
+  final MentionSelectedFn onSelected;
   const RoomMentionList({
     super.key,
     required this.editorState,
     required this.onDismiss,
     required this.onShow,
     required this.roomId,
+    required this.onSelected,
   });
   @override
   Widget build(BuildContext context) => MentionList(
@@ -64,7 +71,7 @@ class RoomMentionList extends StatelessWidget {
     onDismiss: onDismiss,
     onShow: onShow,
     // the actual provider
-    mentionsProvider: roomMentionsSuggestionsProvider(roomId),
+    mentionsProvider: filteredRoomSuggestionsProvider(roomId),
     avatarBuilder: (matchId, ref) {
       final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
       return AvatarOptions(avatarInfo, size: 28);
@@ -72,6 +79,9 @@ class RoomMentionList extends StatelessWidget {
     // the fields
     headerTitle: L10n.of(context).chats,
     notFoundTitle: L10n.of(context).noChatsFound,
+    selectedIndexProvider: selectedRoomMentionProvider(roomId),
+    onSelected:
+        (id, displayName) => onSelected(MentionType.room, id, displayName),
   );
 }
 
@@ -86,6 +96,8 @@ class MentionList extends ConsumerStatefulWidget {
     required this.notFoundTitle,
     required this.onDismiss,
     required this.onShow,
+    required this.onSelected,
+    required this.selectedIndexProvider,
   });
 
   final String roomId;
@@ -96,15 +108,15 @@ class MentionList extends ConsumerStatefulWidget {
   final String notFoundTitle;
   final VoidCallback onDismiss;
   final VoidCallback onShow;
-
+  final ProviderBase<int?> selectedIndexProvider;
+  final Function(String id, String? displayName) onSelected;
   @override
-  ConsumerState<MentionList> createState() => _MentionHandlerState();
+  ConsumerState<MentionList> createState() => MentionHandlerState();
 }
 
-class _MentionHandlerState extends ConsumerState<MentionList> {
+class MentionHandlerState extends ConsumerState<MentionList> {
   final _scrollController = ScrollController();
   StreamSubscription<EditorTransactionValue>? _updateListener;
-  Map<String, String>? _filteredSuggestions;
 
   @override
   void initState() {
@@ -134,22 +146,27 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
   }
 
   @override
+  void didUpdateWidget(covariant MentionList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mentionsProvider != widget.mentionsProvider) {
+      ref.read(mentionQueryProvider.notifier).state = null;
+    }
+  }
+
+  @override
   void dispose() {
     widget.onDismiss();
     _updateListener?.cancel();
     _scrollController.dispose();
+    ref.read(mentionQueryProvider.notifier).state = null;
     super.dispose();
   }
 
+  Map<String, String> get filteredSuggestions =>
+      ref.watch(widget.mentionsProvider) ?? {};
+
   @override
   Widget build(BuildContext context) {
-    final mentionsProvider = widget.mentionsProvider;
-    // All suggestions list
-    final suggestions = ref.watch(mentionsProvider);
-    if (suggestions == null) {
-      return ErrorWidget(L10n.of(context).loadingFailed);
-    }
-    final displaySuggestions = _filteredSuggestions ?? suggestions;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,15 +175,15 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
           child: Text(widget.headerTitle),
         ),
-        _buildMenuList(displaySuggestions),
+        _buildMenuList(),
       ],
     );
   }
 
-  Widget _buildMenuList(Map<String, String?> suggestions) {
+  Widget _buildMenuList() {
     final theme = Theme.of(context);
     final options = widget.avatarBuilder;
-    if (suggestions.isEmpty) {
+    if (filteredSuggestions.isEmpty) {
       return ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 100, minWidth: 100),
         child: Center(child: Text(widget.notFoundTitle)),
@@ -177,7 +194,7 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
         padding: EdgeInsets.zero,
         shrinkWrap: true,
         controller: _scrollController,
-        itemCount: suggestions.length,
+        itemCount: filteredSuggestions.length,
         separatorBuilder:
             (context, index) => Divider(
               endIndent: 5,
@@ -185,16 +202,17 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
               color: theme.dividerTheme.color,
             ),
         itemBuilder: (context, index) {
-          final mentionId = suggestions.keys.elementAt(index);
-          final displayName = suggestions.values.elementAt(index);
+          final mentionId = filteredSuggestions.keys.elementAt(index);
+          final displayName = filteredSuggestions.values.elementAt(index);
 
           return MentionItem(
             mentionId: mentionId,
             displayName: displayName,
             avatarOptions: options(mentionId, ref),
+            selected: index == ref.watch(widget.selectedIndexProvider),
             onTap:
                 (String id, {String? displayName}) =>
-                    _selectItem(id, displayName),
+                    widget.onSelected(id, displayName),
           );
         },
       ),
@@ -209,8 +227,8 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     }
 
     // ensure within bounds
-    final effectiveCursorPos = math.min(cursorPosition, text.length);
-    final searchStartIndex = math.max(0, effectiveCursorPos - 1);
+    final effectiveCursorPos = min(cursorPosition, text.length);
+    final searchStartIndex = max(0, effectiveCursorPos - 1);
 
     // last trigger char before cursor
     int triggerIndex = -1;
@@ -254,89 +272,18 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
     String searchQuery = '';
 
     // ensure search start index is within bounds
-    final searchStartIndex = math.min(cursorPosition - 1, text.length - 1);
+    final searchStartIndex = min(cursorPosition - 1, text.length - 1);
 
     for (int i = searchStartIndex; i >= 0; i--) {
       if (mentionTriggers.contains(text[i])) {
         // Ensure substring bounds are within text length
-        final endIndex = math.min(cursorPosition, text.length);
+        final endIndex = min(cursorPosition, text.length);
         searchQuery = text.substring(i + 1, endIndex).trim().toLowerCase();
         break;
       }
     }
 
     // Update filtered suggestions based on search query
-    _updateFilteredSuggestions(searchQuery);
-  }
-
-  void _updateFilteredSuggestions(String query) {
-    final allSuggestions = ref.read(widget.mentionsProvider);
-    if (allSuggestions == null) return;
-
-    if (query.isEmpty) {
-      setState(() => _filteredSuggestions = allSuggestions);
-      return;
-    }
-
-    // Filter suggestions based on query
-    final filtered = Map.fromEntries(
-      allSuggestions.entries.where((entry) {
-        final displayName = entry.value.toLowerCase();
-        final id = entry.key.toLowerCase();
-        return displayName.contains(query) || id.contains(query);
-      }),
-    );
-
-    setState(() => _filteredSuggestions = filtered);
-  }
-
-  String _makeUri(String id) => switch (id[0]) {
-    '@' => 'matrix:u/${id.substring(1)}',
-    '!' => 'matrix:roomid/${id.substring(1)}',
-    _ => 'acter:',
-  };
-
-  void _selectItem(String id, String? displayName) {
-    final selection = widget.editorState.selection;
-    if (selection == null) return;
-
-    final transaction = widget.editorState.transaction;
-    final node = widget.editorState.getNodeAtPath(selection.end.path);
-    if (node == null) return;
-
-    final text = node.delta?.toPlainText() ?? '';
-    final cursorPosition = selection.end.offset;
-
-    // Find the trigger symbol position by searching backwards from cursor
-    int atSymbolPosition = -1;
-    final mentionTriggers = [userMentionChar, roomMentionChar];
-    for (int i = cursorPosition - 1; i >= 0; i--) {
-      if (mentionTriggers.contains(text[i])) {
-        atSymbolPosition = i;
-        break;
-      }
-    }
-
-    if (atSymbolPosition == -1) return; // No trigger found
-    final lengthToReplace = cursorPosition - atSymbolPosition;
-    final replacementText = displayName ?? id;
-
-    transaction.replaceText(
-      // remove the trigger and content
-      node,
-      atSymbolPosition,
-      lengthToReplace,
-      replacementText,
-      attributes: {'href': _makeUri(id), 'inline': true},
-    );
-    // insert space after so we can go on
-    transaction.insertText(
-      node,
-      atSymbolPosition + replacementText.length,
-      ' ',
-    );
-
-    widget.editorState.apply(transaction);
-    widget.onDismiss();
+    ref.read(mentionQueryProvider.notifier).state = searchQuery;
   }
 }

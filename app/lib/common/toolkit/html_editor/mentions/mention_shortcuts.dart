@@ -1,10 +1,13 @@
 import 'package:acter/common/toolkit/html_editor/mentions/components/mention_menu.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 List<CharacterShortcutEvent> mentionShortcuts(
   BuildContext context,
+  WidgetRef ref,
   String roomId,
 ) {
   return [
@@ -13,9 +16,10 @@ List<CharacterShortcutEvent> mentionShortcuts(
       handler:
           (editorState) => _handleMentionTrigger(
             context: context,
-            mentionTrigger: userMentionChar,
+            mentionType: MentionType.user,
             editorState: editorState,
             roomId: roomId,
+            ref: ref,
           ),
       key: userMentionChar,
     ),
@@ -24,9 +28,10 @@ List<CharacterShortcutEvent> mentionShortcuts(
       handler:
           (editorState) => _handleMentionTrigger(
             context: context,
-            mentionTrigger: roomMentionChar,
+            mentionType: MentionType.room,
             editorState: editorState,
             roomId: roomId,
+            ref: ref,
           ),
       key: roomMentionChar,
     ),
@@ -35,9 +40,10 @@ List<CharacterShortcutEvent> mentionShortcuts(
 
 Future<bool> _handleMentionTrigger({
   required BuildContext context,
-  required String mentionTrigger,
+  required MentionType mentionType,
   required EditorState editorState,
   required String roomId,
+  required WidgetRef ref,
 }) async {
   final selection = editorState.selection;
   if (selection == null) return false;
@@ -47,7 +53,7 @@ Future<bool> _handleMentionTrigger({
   }
   // Insert the trigger character
   await editorState.insertTextAtPosition(
-    mentionTrigger,
+    mentionType.toString(),
     position: selection.start,
   );
 
@@ -57,7 +63,8 @@ Future<bool> _handleMentionTrigger({
       context: context,
       editorState: editorState,
       roomId: roomId,
-      mentionTrigger: mentionTrigger,
+      mentionType: mentionType,
+      ref: ref,
     );
 
     menu.show();

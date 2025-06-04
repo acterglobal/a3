@@ -5,10 +5,9 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/commands/backspace_for_mentions.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/commands/mention_movements.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/models/mention_attributes.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart';
 import 'package:acter/features/deep_linking/types.dart';
@@ -17,6 +16,7 @@ import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::common::html_editor');
@@ -47,140 +47,7 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
       ],
     );
 
-// contains final input string with mentions processed and mentions
-typedef MentionParsedText = (String, List<MentionAttributes>);
-
 extension ActerEditorStateHelpers on EditorState {
-  // helper to parse mentions to markdown/html format
-  MentionParsedText toMentionText(String plainText, String? htmlText) {
-    List<MentionAttributes> mentionAttributes = [];
-
-    // Get the base text
-    var processedText = htmlText ?? plainText;
-
-    // Process mentions
-    int index = 0;
-    while (true) {
-      final node = document.nodeAtPath([index]);
-      if (node == null) break;
-
-      final delta = node.delta;
-      if (delta != null) {
-        for (final op in delta) {
-          if (op.attributes != null && op.attributes?['@'] != null) {
-            final mention = op.attributes!['@'] as MentionAttributes;
-            final displayText =
-                mention.displayName ?? mention.mentionId.substring(1);
-            final replacement =
-                htmlText != null
-                    ? '<a href="https://matrix.to/#/${mention.mentionId}">@$displayText</a>'
-                    : '[@$displayText](https://matrix.to/#/${mention.mentionId})';
-            processedText = processedText.replaceFirst(
-              userMentionMarker,
-              replacement,
-            );
-            mentionAttributes.add(mention);
-          }
-        }
-      }
-      index++;
-    }
-
-    // Remove only trailing <br> tag if it exists
-    if (processedText.endsWith('<br>')) {
-      processedText = processedText.substring(
-        0,
-        processedText.length - '<br>'.length,
-      );
-    }
-
-    return (processedText.trimRight(), mentionAttributes);
-  }
-
-  void toMentionPills(String text, Node targetNode) {
-    final userMatches = userMentionRegExp.allMatches(text);
-    List<(int, int, String, String, MentionType)> allMentions = [];
-
-    for (final match in userMatches) {
-      final displayName = match.group(1);
-      final userId = match.group(2);
-      if (userId != null && displayName != null) {
-        allMentions.add((
-          match.start,
-          match.end,
-          userId,
-          displayName,
-          MentionType.user,
-        ));
-      }
-    }
-
-    bool hasMentions = allMentions.isNotEmpty;
-    if (!hasMentions) {
-      // no mentions found,insert plain text and return as it is
-      final transaction = this.transaction;
-      transaction.replaceText(targetNode, 0, 0, text);
-      apply(transaction);
-      return;
-    }
-    // else continue with processing mentions
-    // sort positions in reverse order to avoid index shifting
-    allMentions.sort((a, b) => b.$1.compareTo(a.$1));
-
-    // replace all matches with markers
-    for (final mention in allMentions) {
-      final start = mention.$1;
-      final end = mention.$2;
-
-      if (start >= 0 && end <= text.length && start < end) {
-        text = text.replaceRange(start, end, userMentionMarker);
-      }
-    }
-
-    final transaction = this.transaction;
-    transaction.replaceText(targetNode, 0, 0, text);
-    apply(transaction);
-
-    final targetNodeText = targetNode.delta?.toPlainText() ?? '';
-
-    // find all marker positions
-    final markerPositions = <int>[];
-    for (int i = 0; i < targetNodeText.length; i++) {
-      if (targetNodeText[i] == userMentionMarker) {
-        markerPositions.add(i);
-      }
-    }
-
-    // now apply attributes
-    if (markerPositions.isNotEmpty) {
-      for (int i = 0; i < allMentions.length; i++) {
-        if (i >= markerPositions.length) break;
-
-        final (_, _, mentionId, displayName, type) = allMentions[i];
-        final position = markerPositions[i];
-        final typeStr =
-            type == MentionType.user ? userMentionChar : roomMentionChar;
-
-        final replaceTransaction = this.transaction;
-        replaceTransaction.replaceText(
-          targetNode,
-          position,
-          1,
-          userMentionMarker,
-          attributes: {
-            typeStr: MentionAttributes(
-              type: type,
-              mentionId: mentionId,
-              displayName: displayName,
-            ),
-            'inline': true,
-          },
-        );
-        apply(replaceTransaction);
-      }
-    }
-  }
-
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
     return (codec ?? defaultMarkdownCodec).encode(document);
   }
@@ -262,7 +129,7 @@ extension ActerDocumentHelpers on Document {
 
 typedef ExportCallback = Function(String, String?);
 
-class HtmlEditor extends StatefulWidget {
+class HtmlEditor extends ConsumerStatefulWidget {
   static const saveEditKey = Key('html-editor-save');
   static const cancelEditKey = Key('html-editor-cancel');
   final String? roomId;
@@ -299,14 +166,14 @@ class HtmlEditor extends StatefulWidget {
   });
 
   @override
-  State<HtmlEditor> createState() => _HtmlEditorState();
+  ConsumerState<HtmlEditor> createState() => _HtmlEditorState();
 }
 
 const innnerMargin = 10.0;
 const defaultMinHeight = 40.0;
 const lineHeight = 16.0;
 
-class _HtmlEditorState extends State<HtmlEditor> {
+class _HtmlEditorState extends ConsumerState<HtmlEditor> {
   late EditorState editorState;
   late EditorScrollController editorScrollController;
 
@@ -441,7 +308,8 @@ class _HtmlEditorState extends State<HtmlEditor> {
   List<CharacterShortcutEvent> _buildCharacterShortcutEvents() {
     return [
       ...standardCharacterShortcutEvents.where((e) => e != slashCommand),
-      if (widget.roomId != null) ...mentionShortcuts(context, widget.roomId!),
+      if (widget.roomId != null)
+        ...mentionShortcuts(context, ref, widget.roomId!),
     ];
   }
 
@@ -570,6 +438,9 @@ class _HtmlEditorState extends State<HtmlEditor> {
       characterShortcutEvents: _buildCharacterShortcutEvents(),
       commandShortcutEvents: [
         backSpaceCommandForMentions,
+        selectCurrentCommandForMentions,
+        upCommandForMentions,
+        downCommandForMentions,
         ...standardCommandShortcutEvents,
       ],
       disableAutoScroll: false,

@@ -14,3 +14,6 @@ enum MentionType {
     _ => throw UnsupportedError('invalid string'),
   };
 }
+
+typedef MentionSelectedFn =
+    void Function(MentionType type, String id, String? displayName);
