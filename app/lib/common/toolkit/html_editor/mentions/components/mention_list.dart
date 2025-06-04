@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/html_editor/components/mention_item.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/components/mention_item.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/features/chat_ng/providers/chat_room_messages_provider.dart';
 import 'package:acter_avatar/acter_avatar.dart';
