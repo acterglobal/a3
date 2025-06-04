@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:acter/common/toolkit/html_editor/mentions/components/mention_list.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/features/chat_ng/globals.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
+
+OverlayEntry? _menuEntry;
 
 class MentionMenu {
   MentionMenu({
@@ -17,11 +21,16 @@ class MentionMenu {
   final String roomId;
   final String mentionTrigger;
 
-  OverlayEntry? _menuEntry;
   bool selectionChangedByMenu = false;
-  static const menuHeight = 200.0;
 
-  void dismiss() {
+  static void dismissAll() {
+    _menuEntry?.remove();
+    _menuEntry = null;
+  }
+
+  static bool isShowing() => _menuEntry != null;
+
+  static void dismiss() {
     _menuEntry?.remove();
     _menuEntry = null;
   }
@@ -38,9 +47,10 @@ class MentionMenu {
     if (editorBox == null) return;
 
     final editorPosition = editorBox.localToGlobal(Offset.zero);
-    final isLargeScreen = MediaQuery.sizeOf(context).width > 600;
+    final maxHeight = max(300, MediaQuery.sizeOf(context).height * 0.5);
+    final isWide = MediaQuery.sizeOf(context).width > 600;
 
-    final top = editorPosition.dy - menuHeight - 4;
+    final bottom = editorPosition.dy - 4;
 
     // render based on mention type
     final Widget listWidget = switch (mentionTrigger) {
@@ -59,43 +69,42 @@ class MentionMenu {
       _ => const SizedBox.shrink(),
     };
 
-    _menuEntry = OverlayEntry(
-      builder:
-          (context) => Stack(
-            children: [
-              Positioned.fill(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: dismiss,
-                  child: Container(color: Colors.transparent),
-                ),
-              ),
-
-              Positioned(
-                top: top,
-                left: isLargeScreen ? editorPosition.dx : 12,
-                right: isLargeScreen ? editorPosition.dx : 12,
-                child: Material(
-                  elevation: 8,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    height: menuHeight,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
+    final menuEntry =
+        _menuEntry = OverlayEntry(
+          builder:
+              (context) => Positioned(
+                top: max(0, bottom - maxHeight),
+                height: maxHeight.toDouble(),
+                left: isWide ? editorPosition.dx : 12,
+                right: isWide ? editorPosition.dx : 12,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: TapRegion(
+                    behavior: HitTestBehavior.opaque,
+                    onTapOutside: (event) => dismiss(),
+                    child: Material(
+                      elevation: 8,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxHeight: maxHeight.toDouble(),
+                        ),
+                        padding: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            topRight: Radius.circular(8),
+                          ),
+                        ),
+                        child: listWidget,
                       ),
                     ),
-                    child: listWidget,
                   ),
                 ),
               ),
-            ],
-          ),
-    );
+        );
 
-    Overlay.of(context).insert(_menuEntry!);
+    Overlay.of(context).insert(menuEntry);
   }
 }
