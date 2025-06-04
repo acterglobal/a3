@@ -1,6 +1,6 @@
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
+import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';

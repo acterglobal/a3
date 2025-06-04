@@ -1,5 +1,5 @@
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -25,20 +25,28 @@ void main() {
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         child: Builder(
-          builder: (context) => EditHtmlDescriptionSheet(
-            descriptionHtmlValue: '',
-            descriptionMarkdownValue: '',
-            onSave: (ref, html, plain) {
-              saveCalled = true;
-              savedHtml = html;
-              savedPlain = plain;
-            },
-          ),
+          builder:
+              (context) => EditHtmlDescriptionSheet(
+                descriptionHtmlValue: '',
+                descriptionMarkdownValue: '',
+                onSave: (ref, html, plain) {
+                  saveCalled = true;
+                  savedHtml = html;
+                  savedPlain = plain;
+                },
+              ),
         ),
       );
 
       // Verify initial state
-      expect(find.text(L10n.of(tester.element(find.byType(EditHtmlDescriptionSheet))).editDescription), findsOneWidget);
+      expect(
+        find.text(
+          L10n.of(
+            tester.element(find.byType(EditHtmlDescriptionSheet)),
+          ).editDescription,
+        ),
+        findsOneWidget,
+      );
       expect(find.byType(OutlinedButton), findsOneWidget);
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
 
@@ -59,21 +67,31 @@ void main() {
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         child: Builder(
-          builder: (context) => EditHtmlDescriptionSheet(
-            descriptionHtmlValue: initialHtml,
-            descriptionMarkdownValue: initialMarkdown,
-            onSave: (ref, html, plain) {},
-          ),
+          builder:
+              (context) => EditHtmlDescriptionSheet(
+                descriptionHtmlValue: initialHtml,
+                descriptionMarkdownValue: initialMarkdown,
+                onSave: (ref, html, plain) {},
+              ),
         ),
       );
 
       // Verify initial values are loaded
-      expect(find.text(L10n.of(tester.element(find.byType(EditHtmlDescriptionSheet))).editDescription), findsOneWidget);
+      expect(
+        find.text(
+          L10n.of(
+            tester.element(find.byType(EditHtmlDescriptionSheet)),
+          ).editDescription,
+        ),
+        findsOneWidget,
+      );
       expect(find.byType(OutlinedButton), findsOneWidget);
       expect(find.byType(ActerPrimaryActionButton), findsOneWidget);
     });
 
-    testWidgets('calls onSave with correct values when save is pressed', (tester) async {
+    testWidgets('calls onSave with correct values when save is pressed', (
+      tester,
+    ) async {
       bool saveCalled = false;
       String? savedHtml;
       String? savedPlain;
@@ -81,23 +99,23 @@ void main() {
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         child: Builder(
-          builder: (context) => EditHtmlDescriptionSheet(
-            descriptionHtmlValue: '',
-            descriptionMarkdownValue: '',
-            onSave: (ref, html, plain) {
-              saveCalled = true;
-              savedHtml = html;
-              savedPlain = plain;
-            },
-          ),
+          builder:
+              (context) => EditHtmlDescriptionSheet(
+                descriptionHtmlValue: '',
+                descriptionMarkdownValue: '',
+                onSave: (ref, html, plain) {
+                  saveCalled = true;
+                  savedHtml = html;
+                  savedPlain = plain;
+                },
+              ),
         ),
       );
 
       // Enter some text in the editor
       final editor = find.byType(HtmlEditor);
       expect(editor, findsOneWidget);
-    
-      
+
       // Press save button
       await tester.tap(find.byType(ActerPrimaryActionButton));
       await tester.pumpAndSettle();
@@ -113,13 +131,14 @@ void main() {
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         child: Builder(
-          builder: (context) => EditHtmlDescriptionSheet(
-            descriptionHtmlValue: '',
-            descriptionMarkdownValue: '',
-            onSave: (ref, html, plain) {
-              saveCalled = true;
-            },
-          ),
+          builder:
+              (context) => EditHtmlDescriptionSheet(
+                descriptionHtmlValue: '',
+                descriptionMarkdownValue: '',
+                onSave: (ref, html, plain) {
+                  saveCalled = true;
+                },
+              ),
         ),
       );
 
@@ -136,12 +155,13 @@ void main() {
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         child: Builder(
-          builder: (context) => EditHtmlDescriptionSheet(
-            bottomSheetTitle: customTitle,
-            descriptionHtmlValue: '',
-            descriptionMarkdownValue: '',
-            onSave: (ref, html, plain) {},
-          ),
+          builder:
+              (context) => EditHtmlDescriptionSheet(
+                bottomSheetTitle: customTitle,
+                descriptionHtmlValue: '',
+                descriptionMarkdownValue: '',
+                onSave: (ref, html, plain) {},
+              ),
         ),
       );
 
@@ -156,13 +176,14 @@ void main() {
       await tester.pumpProviderWidget(
         navigatorOverride: navigator,
         child: Builder(
-          builder: (context) => EditHtmlDescriptionSheet(
-            descriptionHtmlValue: initialHtml,
-            descriptionMarkdownValue: initialMarkdown,
-            onSave: (ref, html, plain) {
-              saveCalled = true;
-            },
-          ),
+          builder:
+              (context) => EditHtmlDescriptionSheet(
+                descriptionHtmlValue: initialHtml,
+                descriptionMarkdownValue: initialMarkdown,
+                onSave: (ref, html, plain) {
+                  saveCalled = true;
+                },
+              ),
         ),
       );
 
@@ -173,4 +194,4 @@ void main() {
       expect(saveCalled, false);
     });
   });
-} 
+}

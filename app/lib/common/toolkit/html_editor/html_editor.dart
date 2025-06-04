@@ -3,15 +3,18 @@ import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/config/constants.dart';
-import 'package:acter/common/widgets/html_editor/components/mention_block.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_attributes.dart';
-import 'package:acter/common/widgets/html_editor/models/mention_type.dart';
-import 'package:acter/common/widgets/html_editor/services/constants.dart';
-import 'package:acter/common/widgets/html_editor/services/mention_shortcuts.dart';
+import 'package:acter/common/toolkit/html_editor/models/mention_attributes.dart';
+import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
+import 'package:acter/common/toolkit/html_editor/services/constants.dart';
+import 'package:acter/common/toolkit/html_editor/services/mention_shortcuts.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
+import 'package:acter/features/deep_linking/types.dart';
+import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
+import 'package:acter/features/room/widgets/room_chip.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
@@ -635,43 +638,7 @@ class _HtmlEditorState extends State<HtmlEditor> {
       return before;
     }
 
-    final roomId = widget.roomId;
-    // Inline Mentions
-    MentionAttributes? mention;
-    try {
-      mention =
-          attributes.entries
-                  .firstWhereOrNull((e) => e.value is MentionAttributes)
-                  ?.value
-              as MentionAttributes?;
-    } catch (e) {
-      // If any error occurs while processing mention attributes,
-      // fallback to default decoration
-      return defaultTextSpanDecoratorForAttribute(
-        context,
-        node,
-        index,
-        text,
-        before,
-        after,
-      );
-    }
-
-    if (mention != null && roomId != null) {
-      return WidgetSpan(
-        alignment: PlaceholderAlignment.middle,
-        style: after.style,
-        child: MentionBlock(
-          key: ValueKey(mention.mentionId),
-          userRoomId: roomId,
-          node: node,
-          index: index,
-          mentionAttributes: mention,
-        ),
-      );
-    }
-
-    return defaultTextSpanDecoratorForAttribute(
+    TextSpan fallback() => defaultTextSpanDecoratorForAttribute(
       context,
       node,
       index,
@@ -679,5 +646,44 @@ class _HtmlEditorState extends State<HtmlEditor> {
       before,
       after,
     );
+
+    final roomId = widget.roomId;
+
+    final href = attributes[AppFlowyRichTextKeys.href] as String?;
+    if (href != null) {
+      try {
+        final uri = Uri.tryParse(href);
+        if (uri == null) {
+          return fallback();
+        }
+        final parsed = parseActerUri(uri);
+        final inner = switch (parsed.type) {
+          (LinkType.userId) => UserChip(
+            roomId: roomId,
+            memberId: parsed.target,
+          ),
+          (LinkType.roomId) => RoomChip(roomId: parsed.target),
+          (LinkType.spaceObject) => InlineItemPreview(
+            roomId: roomId,
+            uriResult: parsed,
+          ),
+          _ => null,
+        };
+        if (inner == null) {
+          return fallback();
+        }
+
+        return WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          // style: after.style,
+          child: inner,
+        );
+      } catch (error) {
+        _log.warning('failed to parse acter uri', error);
+        return fallback();
+      }
+    }
+
+    return fallback();
   }
 }

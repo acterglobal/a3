@@ -844,6 +844,74 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           ),
         ),
 
+        MockTimelineEventItem(
+          mockEventId: 'mock-reply-emoji-only',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744098120000, // April 8, 2025 16:02:00
+          mockMsgContent: MockMsgContent(mockBody: '🚀🏗️🗓️🔑'),
+          mockInReplyToId: 'mock-reply-1',
+          mockIsReplyToEvent: MockTimelineEventItem(
+            mockEventId: 'mock-reply-1',
+            mockSenderId: '@sarah:acter.global',
+            mockOriginServerTs: 1744098060000,
+            mockMsgContent: MockMsgContent(
+              mockBody:
+                  'I have have share file as requested.\n\nYes, thanks a lot for it. :)',
+            ),
+            mockInReplyToId: 'mock-reply-base',
+            mockIsReplyToEvent: MockTimelineEventItem(
+              mockEventId: 'mock-reply-base',
+              mockSenderId: userId,
+              mockOriginServerTs: 1744098000000, // April 8, 2025 16:00:00
+              mockMsgContent: MockMsgContent(
+                mockBody:
+                    'I would like to see some UI example of how media messages are renders in ...',
+              ),
+            ),
+          ),
+          mockReactionKeys: MockFfiListFfiString(
+            mockStrings: [
+              MockFfiString('👍'),
+              MockFfiString('🙏'),
+              MockFfiString('✨'),
+            ],
+          ),
+          mockReactionRecords: {
+            '👍': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@sarah:acter.global'),
+                  mockTimestamp: 1744098220000,
+                  mockSentByMe: false,
+                ),
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@michael:acter.global'),
+                  mockTimestamp: 1744098230000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '🙏': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@lisa:acter.global'),
+                  mockTimestamp: 1744098240000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+            '✨': MockFfiListReactionRecord(
+              records: [
+                MockReactionRecord(
+                  mockSenderId: MockUserId(mockUserId: '@alex:acter.global'),
+                  mockTimestamp: 1744098250000,
+                  mockSentByMe: false,
+                ),
+              ],
+            ),
+          },
+        ),
+
         // --- URL messages example ---
         MockTimelineEventItem(
           mockEventId: 'mock-url-1',
@@ -859,8 +927,51 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockSenderId: userId,
           mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
           mockMsgContent: MockMsgContent(
-            mockFormattedBody:
+            mockBody:
                 'I found a great resource about CI/CD best practices: https://medium.com/tech-blog/ci-cd-best-practices-2025',
+          ),
+        ),
+
+        MockTimelineEventItem(
+          mockEventId: 'mock-user-url-1',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'acter:u/sarah:acter.global acter:u/lisa:acter.global I need your input on the database schema changes',
+          ),
+        ),
+
+        MockTimelineEventItem(
+          mockEventId: 'mock-acter-url-1',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'acter:o/somewhere:example.org/calendarEvent/spaceObjectId?title=Code+of+Conduct acter:o/somewhere:example.org/pin/spaceObjectId I need your input on those changes',
+          ),
+        ),
+
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-html-1',
+          mockSenderId: '@michael:acter.global',
+          mockOriginServerTs: 1744097206000, // April 8, 2025 15:46:46
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                'Check out the deployment documentation at <a href="https://docs.example.com/deployment-guide">deployment-guide</a>',
+            mockBody:
+                'Check out the deployment documentation at https://docs.example.com/deployment-guide',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-url-html-2',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744097216000, // April 8, 2025 15:46:56
+          mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                'I found a great resource about CI/CD best practices: <a href="https://medium.com/tech-blog/ci-cd-best-practices-2025">ci-cd-best-practices-2025</a>',
+            mockBody:
+                'I found a great resource about CI/CD best practices: ttps://medium.com/tech-blog/ci-cd-best-practices-2025',
           ),
         ),
 
@@ -870,8 +981,9 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockSenderId: '@sarah:acter.global',
           mockOriginServerTs: 1744097226000, // April 8, 2025 15:47:06
           mockMsgContent: MockMsgContent(
-            mockBody:
-                '[@Michael](https://matrix.to/#/@michael:acter.global) can you review the deployment checklist?',
+            mockFormattedBody:
+                '<a href="https://matrix.to/#/@michael:acter.global">@Michael</a> is the deployment checklist ready?',
+            mockBody: '@Michael is the deployment checklist ready?',
           ),
         ),
         MockTimelineEventItem(
@@ -879,8 +991,9 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockSenderId: '@sarah:acter.global',
           mockOriginServerTs: 1744097226000, // April 8, 2025 15:47:06
           mockMsgContent: MockMsgContent(
-            mockBody:
-                '[@{$userId}](https://matrix.to/#/$userId) can you review the deployment checklist?',
+            mockFormattedBody:
+                '<a href="https://matrix.to/#/$userId">@{$userId}</a> can you review the deployment checklist?',
+            mockBody: '@{$userId} can you review the deployment checklist?',
           ),
         ),
         MockTimelineEventItem(
@@ -888,8 +1001,10 @@ final productTeamMutedWithSingleTypingUserRoom2 = createMockChatItem(
           mockSenderId: userId,
           mockOriginServerTs: 1744097236000, // April 8, 2025 15:47:16
           mockMsgContent: MockMsgContent(
+            mockFormattedBody:
+                '<a href="https://matrix.to/#/@sarah:acter.global">@Sarah</a> <a href="https://matrix.to/#/@lisa:acter.global">@Lisa</a> I need your input on the database schema changes',
             mockBody:
-                '[@Sarah](https://matrix.to/#/@sarah:acter.global) [@Lisa](https://matrix.to/#/@lisa:acter.global) I need your input on the database schema changes',
+                '@Sarah @Lisa I need your input on the database schema changes',
           ),
         ),
         MockTimelineEventItem(
