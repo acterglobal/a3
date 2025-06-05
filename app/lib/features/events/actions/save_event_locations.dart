@@ -1,5 +1,6 @@
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,6 +9,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger('a3::cal_event::actions::save_locations');
+
+Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
+  final asyncLocations = ref.read(asyncEventLocationsProvider(eventId)).valueOrNull;
+  if (asyncLocations != null) {
+    final locations = asyncLocations.map((location) => EventLocationDraft(
+      name: location.name() ?? '',
+      type: location.locationType().toLowerCase() == LocationType.virtual.name 
+          ? LocationType.virtual 
+          : LocationType.physical,
+      url: location.uri(),
+      address: location.address(),
+      note: location.notes(),
+    )).toList();
+    ref.read(eventDraftLocationsProvider.notifier).clearLocations();
+    for (final location in locations) {
+      ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
+    }
+  }
+}
 
 Future<void> saveEventLocations({
   required BuildContext context,
