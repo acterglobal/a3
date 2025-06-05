@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
-class EventLocationListWidget extends ConsumerWidget {
+class EventLocationListWidget extends ConsumerStatefulWidget {
   final VoidCallback onAdd;
   final Function(EventLocationDraft location)? onEdit;
   final String? eventId;
@@ -20,11 +20,40 @@ class EventLocationListWidget extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EventLocationListWidget> createState() => _EventLocationListWidgetState();
+}
+
+class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidget> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.eventId != null) {
+      // Load async locations into the provider when widget initializes
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final asyncLocations = ref.read(asyncEventLocationsProvider(widget.eventId!)).valueOrNull;
+        if (asyncLocations != null) {
+          final locations = asyncLocations.map((location) => EventLocationDraft(
+            name: location.name() ?? '',
+            type: location.locationType().toLowerCase() == LocationType.virtual.name 
+                ? LocationType.virtual 
+                : LocationType.physical,
+            url: location.uri(),
+            address: location.address(),
+            note: location.notes(),
+          )).toList();
+          ref.read(eventLocationsProvider.notifier).clearLocations();
+          for (final location in locations) {
+            ref.read(eventLocationsProvider.notifier).addLocation(location);
+          }
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final locations = eventId != null 
-        ? ref.watch(asyncEventLocationsProvider(eventId!)).valueOrNull ?? []
-        : ref.watch(eventLocationsProvider);
+    final locations = ref.watch(eventLocationsProvider);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -54,9 +83,8 @@ class EventLocationListWidget extends ConsumerWidget {
           IconButton(
               icon: const Icon(Icons.add_circle_outline),
               tooltip: lang.addLocation,
-              onPressed: onAdd,
+              onPressed: widget.onAdd,
           ),
-            
         ],
       ),
     );
@@ -116,32 +144,42 @@ class EventLocationListWidget extends ConsumerWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: location is EventLocationInfo
-          ? IconButton(
-              icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
-              onPressed: () {
-    
-              },
-            )
-          : IconButton(
-              icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
-              onPressed: () => ref
-                  .read(eventLocationsProvider.notifier)
-                  .removeLocation(location),
-            ),
-      onTap: () {
-        final draftLocation = EventLocationDraft(
-            name: location.name() ?? '',
-            type: location.locationType().toLowerCase() == LocationType.virtual.name 
-                ? LocationType.virtual 
-                : LocationType.physical,
-            url: location.uri(),
-            address: location.address(),
-            note: location.notes(),
-          );
-          if (onEdit != null) {
-            onEdit?.call(draftLocation);
+      trailing: IconButton(
+        icon: Icon(PhosphorIcons.trash(), color: theme.colorScheme.error),
+        onPressed: () {
+          if (location is EventLocationInfo) {
+            // Handle deletion of existing location
+            final draftLocation = EventLocationDraft(
+              name: location.name() ?? '',
+              type: location.locationType().toLowerCase() == LocationType.virtual.name 
+                  ? LocationType.virtual 
+                  : LocationType.physical,
+              url: location.uri(),
+              address: location.address(),
+              note: location.notes(),
+            );
+            ref.read(eventLocationsProvider.notifier).removeLocation(draftLocation);
+          } else {
+            // Handle deletion of draft location
+            ref.read(eventLocationsProvider.notifier).removeLocation(location);
           }
+        },
+      ),
+      onTap: () {
+        final draftLocation = location is EventLocationInfo
+            ? EventLocationDraft(
+                name: location.name() ?? '',
+                type: location.locationType().toLowerCase() == LocationType.virtual.name 
+                    ? LocationType.virtual 
+                    : LocationType.physical,
+                url: location.uri(),
+                address: location.address(),
+                note: location.notes(),
+              )
+            : location;
+        if (widget.onEdit != null) {
+          widget.onEdit?.call(draftLocation);
+        }
       },
     );
   }
