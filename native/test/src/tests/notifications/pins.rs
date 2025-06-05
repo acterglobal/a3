@@ -25,7 +25,7 @@ url = "https://acter.global"
 #[tokio::test]
 async fn pins_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("pins_creation_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("pins_creation_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -77,7 +77,7 @@ async fn pins_creation_notification() -> Result<()> {
 #[tokio::test]
 async fn pin_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("pinTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -131,7 +131,7 @@ async fn pin_title_update() -> Result<()> {
 #[tokio::test]
 async fn pin_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("pinDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -185,7 +185,7 @@ async fn pin_desc_update() -> Result<()> {
 #[tokio::test]
 async fn pin_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("pinRedaction", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];

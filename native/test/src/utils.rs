@@ -72,15 +72,18 @@ pub async fn random_user_with_random_space(prefix: &str) -> Result<(Client, Owne
 
 pub async fn random_users_with_random_space(
     prefix: &str,
-    user_count: u8,
+    observer_count: usize,
 ) -> Result<(Vec<Client>, OwnedRoomId)> {
-    assert!(user_count > 0, "User Counts must be more than 0");
+    assert!(
+        observer_count > 0,
+        "The count of observers must be more than 0"
+    );
     let (main_user, uuid) = random_user_with_uuid(prefix).await?;
     let mut settings = CreateSpaceSettingsBuilder::default();
     settings.name(format!("it-room-{prefix}-{uuid}"));
 
     let mut users = vec![];
-    for _x in 0..user_count {
+    for _x in 0..observer_count {
         let (new_user, _uuid) = random_user_with_uuid(prefix).await?;
         settings.add_invitee(new_user.user_id()?.to_string())?;
         users.push(new_user)
@@ -207,10 +210,10 @@ pub async fn random_user_with_template(
 
 pub async fn random_users_with_random_space_under_template(
     prefix: &str,
-    user_count: u8,
+    observer_count: usize,
     template: &str,
 ) -> Result<(Vec<Client>, Vec<SyncState>, OwnedRoomId, Engine)> {
-    let (mut clients, room_id) = random_users_with_random_space(prefix, user_count).await?;
+    let (mut clients, room_id) = random_users_with_random_space(prefix, observer_count).await?;
     let user = clients.first().expect("there are more than one");
 
     let mut tmpl_engine = user.template_engine(template).await?;
@@ -236,7 +239,7 @@ pub async fn random_users_with_random_space_under_template(
 
 pub async fn random_users_with_random_chat_and_space_under_template(
     prefix: &str,
-    user_count: u8,
+    observer_count: usize,
     template: &str,
 ) -> Result<(
     Vec<Client>,
@@ -246,7 +249,7 @@ pub async fn random_users_with_random_chat_and_space_under_template(
     Engine,
 )> {
     let (clients, sync_states, space_id, engine) =
-        random_users_with_random_space_under_template(prefix, user_count, template).await?;
+        random_users_with_random_space_under_template(prefix, observer_count, template).await?;
 
     let main_user = clients.first().expect("more than one user generated");
     let user_ids = clients

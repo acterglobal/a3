@@ -63,7 +63,7 @@ async fn get_latest_activity(
 async fn setup_accounts(
     prefix: &str,
 ) -> Result<((Client, SyncState), (Client, SyncState), OwnedRoomId)> {
-    let (users, room_id) = random_users_with_random_space(prefix, 2).await?;
+    let (users, room_id) = random_users_with_random_space(prefix, 1).await?;
     let mut admin = users[0].clone();
     let mut observer = users[1].clone();
 

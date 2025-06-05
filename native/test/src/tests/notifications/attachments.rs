@@ -46,7 +46,7 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn image_attachment_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -135,7 +135,7 @@ async fn image_attachment_on_pin() -> Result<()> {
 #[tokio::test]
 async fn file_attachment_on_event() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -225,7 +225,7 @@ async fn file_attachment_on_event() -> Result<()> {
 #[tokio::test]
 async fn video_attachment_on_tasklist() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -315,7 +315,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
 #[tokio::test]
 async fn link_attachment_on_task() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];

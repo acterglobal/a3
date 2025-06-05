@@ -38,7 +38,7 @@ url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG"
 #[tokio::test]
 async fn like_activity_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -76,7 +76,7 @@ async fn like_activity_on_news() -> Result<()> {
 #[tokio::test]
 async fn like_activity_on_story() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("likeOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("likeOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];

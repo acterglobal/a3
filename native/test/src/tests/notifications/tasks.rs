@@ -30,7 +30,7 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn tasklist_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("tl_creation_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("tl_creation_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -82,7 +82,7 @@ async fn tasklist_creation_notification() -> Result<()> {
 #[tokio::test]
 async fn tasklist_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -139,7 +139,7 @@ async fn tasklist_title_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasklistDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -198,7 +198,7 @@ async fn tasklist_desc_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasklistRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistRedaction", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -249,7 +249,7 @@ async fn tasklist_redaction() -> Result<()> {
 #[tokio::test]
 async fn task_created() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskCreated", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskCreated", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -308,7 +308,7 @@ async fn task_created() -> Result<()> {
 #[tokio::test]
 async fn task_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -369,7 +369,7 @@ async fn task_title_update() -> Result<()> {
 #[tokio::test]
 async fn task_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -434,7 +434,7 @@ async fn task_desc_update() -> Result<()> {
 #[tokio::test]
 async fn task_due_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasDueUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasDueUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -505,7 +505,7 @@ async fn task_due_update() -> Result<()> {
 #[tokio::test]
 async fn task_done_and_undone() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDoneUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDoneUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -600,7 +600,7 @@ async fn task_done_and_undone() -> Result<()> {
 #[tokio::test]
 async fn task_self_assign_and_unassign() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDoneUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDoneUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
