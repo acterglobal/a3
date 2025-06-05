@@ -43,6 +43,7 @@ enum Routes {
 
   // --- tasks
   tasks('/tasks'),
+  myTasks('/myTasks'),
   taskListDetails('/tasks/:taskListId([^/]+)'),
   taskItemDetails('/tasks/:taskListId([^/]+)/:taskId([^/]+)'),
 

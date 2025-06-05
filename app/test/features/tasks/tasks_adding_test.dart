@@ -77,7 +77,7 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title(any())).thenAnswer((_) => true);
-      when(() => mockTaskDraft.descriptionHtml(any(), any())).thenAnswer((_) => true);
+      when(() => mockTaskDraft.descriptionText(any())).thenAnswer((_) => true);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -130,7 +130,7 @@ void main() {
       verify(() => mockTaskList.taskBuilder()).called(1);
       verify(() => mockTaskDraft.title('Task with Description')).called(1);
       verify(
-        () => mockTaskDraft.descriptionHtml('This is the description', 'This is the description'),
+        () => mockTaskDraft.descriptionText('This is the description'),
       ).called(1);
       verify(() => mockTaskDraft.send()).called(1);
       verifyNever(() => mockTaskDraft.dueDate(any(), any(), any()));
@@ -142,7 +142,7 @@ void main() {
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
       when(() => mockTaskDraft.title(any())).thenAnswer((_) => true);
-      when(() => mockTaskDraft.descriptionHtml(any(), any())).thenAnswer((_) => true);
+      when(() => mockTaskDraft.descriptionText(any())).thenAnswer((_) => true);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -202,7 +202,7 @@ void main() {
       verify(() => mockTaskDraft.send()).called(1);
 
       verifyNever(
-        () => mockTaskDraft.descriptionHtml('This is the description', 'This is the description'),
+        () => mockTaskDraft.descriptionText('This is the description'),
       );
       verifyNever(() => mockTaskDraft.dueDate(any(), any(), any()));
     });

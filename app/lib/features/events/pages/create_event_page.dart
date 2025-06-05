@@ -5,7 +5,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/common/widgets/spaces/select_space_form_field.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/utils/events_utils.dart';

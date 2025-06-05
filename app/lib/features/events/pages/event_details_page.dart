@@ -5,6 +5,7 @@ import 'package:acter/common/actions/report_content.dart';
 import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
+import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:acter/features/events/widgets/event_location_list_widget.dart';
@@ -13,7 +14,6 @@ import 'package:acter/features/events/widgets/view_virtual_location_widget.dart'
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/widgets/edit_html_description_sheet.dart';
 import 'package:acter/common/widgets/edit_title_sheet.dart';
-import 'package:acter/common/widgets/render_html.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_section.dart';
 import 'package:acter/features/bookmarks/types.dart';
@@ -706,6 +706,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                       ? RenderHtml(
                         text: formattedText,
                         defaultTextStyle: textTheme.labelMedium,
+                        roomId: ev.roomIdStr(),
                       )
                       : Text(bodyText, style: textTheme.labelMedium),
             ),

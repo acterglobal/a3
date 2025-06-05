@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -69,22 +69,19 @@ class _EditHtmlDescriptionSheetState
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: MediaQuery.of(context).viewInsets,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(widget.bottomSheetTitle ?? lang.editDescription),
           const SizedBox(height: 20),
           Container(
-            height: 150,
+            height: 200,
             decoration: BoxDecoration(
               border: Border.all(color: brandColor),
               borderRadius: BorderRadius.circular(10.0),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: HtmlEditor(editorState: textEditorState, editable: true),
-            ),
+            child: HtmlEditor(editorState: textEditorState, editable: true),
           ),
           const SizedBox(height: 20),
           Row(
@@ -112,7 +109,7 @@ class _EditHtmlDescriptionSheetState
               ),
             ],
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 100),
         ],
       ),
     );

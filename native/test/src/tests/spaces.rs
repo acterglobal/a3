@@ -296,7 +296,8 @@ async fn create_subspace() -> Result<()> {
 #[tokio::test]
 async fn create_with_default_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) =
+        random_user_with_template("space_default_settings", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -367,7 +368,7 @@ async fn create_with_default_space_settings() -> Result<()> {
 #[tokio::test]
 async fn create_with_custom_space_settings() -> Result<()> {
     let _ = env_logger::try_init();
-    let mut user = random_user("settigs").await?;
+    let mut user = random_user("space_custom_settings").await?;
     let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 
@@ -380,15 +381,15 @@ async fn create_with_custom_space_settings() -> Result<()> {
     settings.tasks(false);
     settings.calendar_events(false);
     settings.stories(false);
-    settings.news_permisisons(1);
-    settings.pins_permisisons(2);
-    settings.task_lists_permisisons(3);
-    settings.tasks_permisisons(4);
-    settings.calendar_events_permisisons(5);
-    settings.stories_permisisons(6);
-    settings.comments_permisisons(7);
-    settings.attachments_permisisons(8);
-    settings.rsvp_permisisons(9);
+    settings.news_permissions(1);
+    settings.pins_permissions(2);
+    settings.task_lists_permissions(3);
+    settings.tasks_permissions(4);
+    settings.calendar_events_permissions(5);
+    settings.stories_permissions(6);
+    settings.comments_permissions(7);
+    settings.attachments_permissions(8);
+    settings.rsvp_permissions(9);
     settings.users_default(10);
     settings.events_default(11);
     settings.kick(12);
@@ -467,7 +468,7 @@ async fn create_with_custom_space_settings() -> Result<()> {
 #[tokio::test]
 async fn create_private_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_private", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -542,7 +543,7 @@ async fn create_private_subspace() -> Result<()> {
 #[tokio::test]
 async fn create_public_subspace() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_public", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
@@ -617,7 +618,7 @@ async fn create_public_subspace() -> Result<()> {
 #[tokio::test]
 async fn change_subspace_join_rule() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("subspace_create", TMPL).await?;
+    let (user, sync_state, _engine) = random_user_with_template("subspace_join_rule", TMPL).await?;
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
