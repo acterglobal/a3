@@ -70,7 +70,7 @@ async fn task_smoketests() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy, || async {
+    Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
         }
@@ -343,7 +343,7 @@ async fn task_comment_smoketests() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy, || async {
+    Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
         }

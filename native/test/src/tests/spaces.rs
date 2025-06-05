@@ -621,7 +621,7 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
-    let space = Retry::spawn(retry_strategy, || async {
+    let space = Retry::spawn(retry_strategy.clone(), || async {
         let space = user.space(subspace_id.to_string()).await?;
         if space.join_rule_str() != join_rule {
             bail!("update did not occur");
