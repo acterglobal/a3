@@ -39,7 +39,7 @@ url = "https://acter.global"
 #[tokio::test]
 async fn comment_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -113,7 +113,7 @@ async fn comment_on_news() -> Result<()> {
 #[tokio::test]
 async fn comment_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -187,7 +187,7 @@ async fn comment_on_pin() -> Result<()> {
 #[tokio::test]
 async fn comment_on_calendar_events() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];

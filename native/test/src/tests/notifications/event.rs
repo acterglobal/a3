@@ -27,7 +27,7 @@ utc_end = "{{ future(add_mins=60).as_rfc3339 }}"
 async fn event_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, room_id) =
-        random_users_with_random_space("event_creation_notifications", 2).await?;
+        random_users_with_random_space("event_creation_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -84,7 +84,7 @@ async fn event_creation_notification() -> Result<()> {
 #[tokio::test]
 async fn event_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -139,7 +139,7 @@ async fn event_title_update() -> Result<()> {
 #[tokio::test]
 async fn event_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -195,7 +195,7 @@ async fn event_desc_update() -> Result<()> {
 #[tokio::test]
 async fn event_rescheduled() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -255,7 +255,7 @@ async fn event_rescheduled() -> Result<()> {
 #[tokio::test]
 async fn event_rsvp() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -373,7 +373,7 @@ async fn event_rsvp() -> Result<()> {
 #[tokio::test]
 async fn event_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventRedaction", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
