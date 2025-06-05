@@ -1,1 +1,0 @@
-- [Labs] Add a fresh new HTML rendere to the labs which allows for inline links to acter item, objects and rooms
