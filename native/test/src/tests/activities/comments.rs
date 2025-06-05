@@ -39,26 +39,22 @@ async fn task_comment_activity() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let task_lists = client.task_lists().await?;
-            if task_lists.len() != 1 {
-                bail!("not all task_lists found");
-            }
-            if task_lists
-                .first()
-                .expect("first tasklist should be available")
-                .tasks()
-                .await?
-                .len()
-                != 1
-            {
-                bail!("not all tasks found");
-            }
-            Ok(task_lists)
+    let task_lists = Retry::spawn(retry_strategy.clone(), || async {
+        let task_lists = user.task_lists().await?;
+        if task_lists.len() != 1 {
+            bail!("not all task_lists found");
         }
+        if task_lists
+            .first()
+            .expect("first tasklist should be available")
+            .tasks()
+            .await?
+            .len()
+            != 1
+        {
+            bail!("not all tasks found");
+        }
+        Ok(task_lists)
     })
     .await?;
 
@@ -81,17 +77,13 @@ async fn task_comment_activity() -> Result<()> {
         .await?;
 
     // ensure we have seen it
-    let fetcher_client = comments_manager.clone();
-    Retry::spawn(retry_strategy, move || {
-        let manager = fetcher_client.clone();
-        async move {
-            let manager = manager.reload().await?;
-            let comments = manager.comments().await?;
-            if comments.len() != 1 {
-                bail!("not all comments found");
-            }
-            Ok(comments)
+    Retry::spawn(retry_strategy, || async {
+        let manager = comments_manager.reload().await?;
+        let comments = manager.comments().await?;
+        if comments.len() != 1 {
+            bail!("not all comments found");
         }
+        Ok(comments)
     })
     .await?;
     let activity = user.activity(comment_id.to_string()).await?;

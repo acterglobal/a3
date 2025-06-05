@@ -79,10 +79,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
         .send()
         .await?;
 
-    let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy, || {
-        let activity_id = activity_id_str.clone();
-        async { first.activity(activity_id).await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        first.activity(activity_id.to_string()).await
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
@@ -151,10 +149,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
         .send()
         .await?;
 
-    let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy, || {
-        let activity_id = activity_id_str.clone();
-        async { first.activity(activity_id).await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        first.activity(activity_id.to_string()).await
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
@@ -220,10 +216,8 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
         .send()
         .await?;
 
-    let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy, || {
-        let activity_id = activity_id_str.clone();
-        async { first.activity(activity_id).await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        first.activity(activity_id.to_string()).await
     })
     .await?;
     assert_eq!(activity.type_str(), "references");
