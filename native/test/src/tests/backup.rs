@@ -15,15 +15,12 @@ async fn can_recover_and_read_message() -> Result<()> {
     let (user_id, room_id, backup_pass) = {
         let (mut user, room_id) = random_user_with_random_convo("recovering_message").await?;
         let state_sync = user.start_sync();
+        state_sync.await_has_synced_history().await?;
 
         // wait for sync to catch up
         let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-        let fetcher_client = user.clone();
-        let target_id = room_id.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let client = fetcher_client.clone();
-            let room_id = target_id.clone();
-            async move { client.convo(room_id.to_string()).await }
+        Retry::spawn(retry_strategy.clone(), || async {
+            user.convo(room_id.to_string()).await
         })
         .await?;
 
@@ -33,16 +30,11 @@ async fn can_recover_and_read_message() -> Result<()> {
         let draft = user.text_plain_draft("Hi, everyone".to_owned());
         timeline.send_message(Box::new(draft)).await?;
 
-        let convo_loader = convo.clone();
-
-        let msg = Retry::spawn(retry_strategy, move || {
-            let convo = convo_loader.clone();
-            async move {
-                let Some(msg) = convo.latest_message() else {
-                    bail!("No message found")
-                };
-                Ok(msg)
-            }
+        let msg = Retry::spawn(retry_strategy, || async {
+            let Some(msg) = convo.latest_message() else {
+                bail!("No message found")
+            };
+            Ok(msg)
         })
         .await?;
 
@@ -78,27 +70,18 @@ async fn can_recover_and_read_message() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.convo(room_id.to_string()).await
     })
     .await?;
 
     let convo = user.convo(room_id.to_string()).await?;
 
-    let convo_loader = convo.clone();
-
-    let msg = Retry::spawn(retry_strategy.clone(), move || {
-        let convo = convo_loader.clone();
-        async move {
-            let Some(msg) = convo.latest_message() else {
-                bail!("No message found")
-            };
-            Ok(msg)
-        }
+    let msg = Retry::spawn(retry_strategy.clone(), || async {
+        let Some(msg) = convo.latest_message() else {
+            bail!("No message found")
+        };
+        Ok(msg)
     })
     .await?;
 
@@ -115,18 +98,14 @@ async fn can_recover_and_read_message() -> Result<()> {
 
     // and try again to read the message.
 
-    let convo_loader = convo.clone();
-    let msg = Retry::spawn(retry_strategy, move || {
-        let convo = convo_loader.clone();
-        async move {
-            let Some(msg) = convo.latest_message() else {
-                bail!("No message found")
-            };
-            if msg.event_item().expect("exists").event_type() == "m.room.encrypted" {
-                bail!("Message is still encrypted.")
-            }
-            Ok(msg)
+    let msg = Retry::spawn(retry_strategy, || async {
+        let Some(msg) = convo.latest_message() else {
+            bail!("No message found")
+        };
+        if msg.event_item().expect("exists").event_type() == "m.room.encrypted" {
+            bail!("Message is still encrypted.")
         }
+        Ok(msg)
     })
     .await?;
 
