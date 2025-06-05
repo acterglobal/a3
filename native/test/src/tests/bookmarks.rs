@@ -25,17 +25,12 @@ async fn bookmarks_e2e() -> Result<()> {
     assert!(bookmarks.entries("events".to_owned()).is_empty());
 
     bookmarks.add("pins".to_owned(), "AsdfG".to_owned()).await?;
-    let fetch_account = account.clone();
-    let bookmarks = Retry::spawn(retry_strategy.clone(), move || {
-        let account = fetch_account.clone();
-        async move {
-            let bookmarks = account.bookmarks().await?;
-            if bookmarks.entries("pins".to_owned()).is_empty() {
-                bail!("Bookmarks not found");
-            }
-
-            Ok(bookmarks)
+    let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
+        let bookmarks = account.bookmarks().await?;
+        if bookmarks.entries("pins".to_owned()).is_empty() {
+            bail!("Bookmarks not found");
         }
+        Ok(bookmarks)
     })
     .await?;
 
@@ -45,16 +40,12 @@ async fn bookmarks_e2e() -> Result<()> {
 
     // adding it again, doesn’t actually add it again
     bookmarks.add("pins".to_owned(), "AsdfG".to_owned()).await?;
-    let fetch_account = account.clone();
-    let bookmarks = Retry::spawn(retry_strategy.clone(), move || {
-        let account = fetch_account.clone();
-        async move {
-            let bookmarks = account.bookmarks().await?;
-            if !bookmarks.entries("pins".to_owned()).is_empty() {
-                Ok(bookmarks)
-            } else {
-                bail!("Bookmarks not found");
-            }
+    let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
+        let bookmarks = account.bookmarks().await?;
+        if !bookmarks.entries("pins".to_owned()).is_empty() {
+            Ok(bookmarks)
+        } else {
+            bail!("Bookmarks not found");
         }
     })
     .await?;
@@ -67,16 +58,12 @@ async fn bookmarks_e2e() -> Result<()> {
     bookmarks
         .add("pins".to_owned(), "SEcDondD".to_owned())
         .await?;
-    let fetch_account = account.clone();
-    let bookmarks = Retry::spawn(retry_strategy.clone(), move || {
-        let account = fetch_account.clone();
-        async move {
-            let bookmarks = account.bookmarks().await?;
-            if bookmarks.entries("pins".to_owned()).len() == 2 {
-                Ok(bookmarks)
-            } else {
-                bail!("Bookmarks not found");
-            }
+    let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
+        let bookmarks = account.bookmarks().await?;
+        if bookmarks.entries("pins".to_owned()).len() == 2 {
+            Ok(bookmarks)
+        } else {
+            bail!("Bookmarks not found");
         }
     })
     .await?;
@@ -91,16 +78,12 @@ async fn bookmarks_e2e() -> Result<()> {
     // add different type
 
     bookmarks.add("news".to_owned(), "super".to_owned()).await?;
-    let fetch_account = account.clone();
-    let bookmarks = Retry::spawn(retry_strategy.clone(), move || {
-        let account = fetch_account.clone();
-        async move {
-            let bookmarks = account.bookmarks().await?;
-            if !bookmarks.entries("news".to_owned()).is_empty() {
-                Ok(bookmarks)
-            } else {
-                bail!("Bookmarks not found");
-            }
+    let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
+        let bookmarks = account.bookmarks().await?;
+        if !bookmarks.entries("news".to_owned()).is_empty() {
+            Ok(bookmarks)
+        } else {
+            bail!("Bookmarks not found");
         }
     })
     .await?;
@@ -116,16 +99,12 @@ async fn bookmarks_e2e() -> Result<()> {
     bookmarks
         .remove("pins".to_owned(), "AsdfG".to_owned())
         .await?;
-    let fetch_account = account.clone();
-    let bookmarks = Retry::spawn(retry_strategy, move || {
-        let account = fetch_account.clone();
-        async move {
-            let bookmarks = account.bookmarks().await?;
-            if bookmarks.entries("pins".to_owned()).len() == 1 {
-                Ok(bookmarks)
-            } else {
-                bail!("Bookmarks not found");
-            }
+    let bookmarks = Retry::spawn(retry_strategy, || async {
+        let bookmarks = account.bookmarks().await?;
+        if bookmarks.entries("pins".to_owned()).len() == 1 {
+            Ok(bookmarks)
+        } else {
+            bail!("Bookmarks not found");
         }
     })
     .await?;
