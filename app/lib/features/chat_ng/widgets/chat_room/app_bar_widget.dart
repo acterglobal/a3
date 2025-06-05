@@ -29,8 +29,6 @@ class ChatRoomAppBarWidget extends ConsumerWidget
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
       title: Row(
         children: [
           _buildRoomAvatar(context),
