@@ -70,15 +70,13 @@ class MentionMenu {
   }
 
   bool _selectCurrent() {
-    final client = _menu;
-    if (client == null) return false;
-    final filtered = switch (client.mentionType) {
+    final filtered = switch (mentionType) {
       MentionType.user => ref.read(filteredUserSuggestionsProvider(roomId)),
       MentionType.room => ref.read(filteredRoomSuggestionsProvider(roomId)),
     };
     final selected = max(
       0, // 0 or higher
-      switch (client.mentionType) {
+      switch (mentionType) {
             MentionType.user => ref.read(selecteUserMentionProvider(roomId)),
             MentionType.room => ref.read(selectedRoomMentionProvider(roomId)),
           } ??
@@ -86,7 +84,7 @@ class MentionMenu {
     );
     if (selected >= filtered.length) return false; // too long, ignore
     final item = filtered.keys.elementAt(selected);
-    client._select(client.mentionType, item, filtered[item]);
+    _select(mentionType, item, filtered[item]);
     return true;
   }
 

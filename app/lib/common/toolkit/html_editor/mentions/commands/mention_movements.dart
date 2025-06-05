@@ -70,8 +70,8 @@ CommandShortcutEventHandler _dismissMentionMenuCommandHandler = (editorState) {
 };
 
 final mentionMenuCommandShortcutEvents = [
-  // upCommandForMentions,
-  // downCommandForMentions,
+  upCommandForMentions,
+  downCommandForMentions,
   selectCurrentCommandForMentions,
   dismissMentionMenuCommand,
 ];

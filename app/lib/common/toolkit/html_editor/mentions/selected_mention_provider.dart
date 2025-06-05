@@ -46,7 +46,7 @@ final selectedRoomMentionProvider =
 
 class SelectedMentionNotifier extends FamilyNotifier<int?, String> {
   late String _roomId;
-  late MentionType _mentionType;
+  final MentionType _mentionType;
 
   SelectedMentionNotifier(this._mentionType);
 
@@ -65,27 +65,25 @@ class SelectedMentionNotifier extends FamilyNotifier<int?, String> {
 
   void _updateIndex(int newIndex) {
     final filtered = maxCount;
-    int? updateIndex;
-    if (filtered != null) {
-      if (newIndex < 0) {
-        updateIndex = 0;
-      } else if (newIndex >= filtered) {
-        updateIndex = filtered - 1;
-      }
+    if (filtered == null) {
+      return;
     }
-    state = updateIndex;
+    state =
+        newIndex < 0
+            ? 0
+            : newIndex >= filtered
+            ? filtered - 1
+            : newIndex;
   }
 
   // external control functions
   void next() {
     final selected = state;
-    if (selected == null) _updateIndex(0);
-    _updateIndex(selected! + 1);
+    _updateIndex(selected == null ? 0 : selected + 1);
   }
 
   void prev() {
     final selected = state;
-    if (selected == null) _updateIndex(0);
-    _updateIndex(selected! - 1);
+    _updateIndex(selected == null ? 0 : selected - 1);
   }
 }
