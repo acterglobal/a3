@@ -66,7 +66,9 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
-    final locations = ref.watch(asyncEventLocationsProvider(widget.calendarId)).valueOrNull ?? [];
+    final locations =
+        ref.watch(asyncEventLocationsProvider(widget.calendarId)).valueOrNull ??
+        [];
     final errored = calEventLoader.asError;
     if (errored != null) {
       _log.severe(
@@ -88,12 +90,18 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
       body: CustomScrollView(
-        slivers: [_buildEventAppBar(calEvent, locations), _buildEventBody(calEvent, locations)],
+        slivers: [
+          _buildEventAppBar(calEvent, locations),
+          _buildEventBody(calEvent, locations),
+        ],
       ),
     );
   }
 
-  Widget _buildEventAppBar(CalendarEvent? calendarEvent, List<EventLocationInfo> locations) {
+  Widget _buildEventAppBar(
+    CalendarEvent? calendarEvent,
+    List<EventLocationInfo> locations,
+  ) {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
@@ -120,7 +128,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildActionMenu(CalendarEvent event, List<EventLocationInfo> locations) {
+  Widget _buildActionMenu(
+    CalendarEvent event,
+    List<EventLocationInfo> locations,
+  ) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     //Get membership details
@@ -174,7 +185,11 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             onTap: () => showEventLocationList(),
             child: Row(
               children: <Widget>[
-                Icon(locations.isEmpty ? Icons.add_location_alt_outlined : Icons.edit_location_alt_outlined),
+                Icon(
+                  locations.isEmpty
+                      ? Icons.add_location_alt_outlined
+                      : Icons.edit_location_alt_outlined,
+                ),
                 const SizedBox(width: 10),
                 Text(locations.isEmpty ? lang.addLocation : lang.editLocation),
               ],
@@ -274,7 +289,10 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventBody(CalendarEvent? calendarEvent, List<EventLocationInfo> locations) {
+  Widget _buildEventBody(
+    CalendarEvent? calendarEvent,
+    List<EventLocationInfo> locations,
+  ) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -644,12 +662,15 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               enableDrag: true,
               showDragHandle: true,
               useSafeArea: true,
-              builder: (context) => AddEventLocationWidget(
-                onAdd: (location) {
-                  ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
-                  Navigator.pop(context);
-                },
-              ),
+              builder:
+                  (context) => AddEventLocationWidget(
+                    onAdd: (location) {
+                      ref
+                          .read(eventDraftLocationsProvider.notifier)
+                          .addLocation(location);
+                      Navigator.pop(context);
+                    },
+                  ),
             );
           },
           onEdit: (location) {
@@ -660,13 +681,16 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               enableDrag: true,
               showDragHandle: true,
               useSafeArea: true,
-              builder: (context) => AddEventLocationWidget(
-                initialLocation: location,
-                onAdd: (updatedLocation) {
-                  ref.read(eventDraftLocationsProvider.notifier).updateLocation(location, updatedLocation);
-                  Navigator.pop(context);
-                },
-              ),
+              builder:
+                  (context) => AddEventLocationWidget(
+                    initialLocation: location,
+                    onAdd: (updatedLocation) {
+                      ref
+                          .read(eventDraftLocationsProvider.notifier)
+                          .updateLocation(location, updatedLocation);
+                      Navigator.pop(context);
+                    },
+                  ),
             );
           },
         );
@@ -749,11 +773,14 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventLocationList(CalendarEvent ev, List<EventLocationInfo> locations) {
+  Widget _buildEventLocationList(
+    CalendarEvent ev,
+    List<EventLocationInfo> locations,
+  ) {
     if (locations.isEmpty) {
       return const SizedBox.shrink();
     }
-    
+
     return ListView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -769,38 +796,33 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   Widget _buildEventLocationItem(EventLocationInfo location) {
     final locationType = location.locationType().toLowerCase();
     return ListTile(
-          onTap: () => locationType == LocationType.physical.name
-                      ? showPhysicalLocation(location)
-                      : showVirtualLocation(location),
-          leading: locationType ==  LocationType.physical.name
-                  ? const Icon(Icons.map_outlined)
-                  : const Icon(Icons.language),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: -8.0),
-          visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
-          minVerticalPadding: 0,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (locationType == LocationType.physical.name)
-                Text(location.name() ?? ''),
-              if (locationType == LocationType.virtual.name)
-                Text(
-                  location.uri() ?? '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-            ],
-          ),
-          subtitle: locationType ==  LocationType.physical.name
-                  ? Text(location.address() ?? '',style : Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.surfaceTint,
-                  ))
-                  : const SizedBox.shrink(),
-        );
+      onTap: () => locationType == LocationType.physical.name
+          ? showPhysicalLocation(location)
+          : showVirtualLocation(location),
+      leading: locationType == LocationType.physical.name
+          ? const Icon(Icons.map_outlined)
+          : const Icon(Icons.language),
+      visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+      minVerticalPadding: 0,
+      title: Text(location.name() ?? ''),
+      subtitle: locationType == LocationType.physical.name
+          ? Text(
+              location.address() ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Theme.of(context).colorScheme.surfaceTint,
+              ),
+            )
+          : Text(
+              location.uri() ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+    );
   }
 
   void showPhysicalLocation(EventLocationInfo location) {
