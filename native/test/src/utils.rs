@@ -19,10 +19,8 @@ use uuid::Uuid;
 
 pub async fn wait_for_convo_joined(client: Client, convo_id: OwnedRoomId) -> Result<Convo> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    Retry::spawn(retry_strategy, move || {
-        let client = client.clone();
-        let convo_id_str = convo_id.to_string();
-        async move { client.convo(convo_id_str).await }
+    Retry::spawn(retry_strategy, || async {
+        client.convo(convo_id.to_string()).await
     })
     .await
 }
@@ -336,7 +334,7 @@ pub(crate) async fn invite_user(
 ) -> Result<Room> {
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
 
-    let room = Retry::spawn(retry_strategy.clone(), || async {
+    let room = Retry::spawn(retry_strategy, || async {
         client.room(room_id.as_str().into()).await
     })
     .await?;

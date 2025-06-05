@@ -16,12 +16,8 @@ async fn categories_e2e() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    let space = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    let space = Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -46,16 +42,12 @@ async fn categories_e2e() -> Result<()> {
         .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
         .await?;
 
-    let fetching_space = space.clone();
-    let new_space_categories = Retry::spawn(retry_strategy.clone(), move || {
-        let space = fetching_space.clone();
-        async move {
-            let categories = space.categories("spaces".to_owned()).await?;
-            if categories.categories().is_empty() {
-                bail!("No updated list of categories found")
-            }
-            Ok(categories)
+    let new_space_categories = Retry::spawn(retry_strategy.clone(), || async {
+        let categories = space.categories("spaces".to_owned()).await?;
+        if categories.categories().is_empty() {
+            bail!("No updated list of categories found")
         }
+        Ok(categories)
     })
     .await?;
 
@@ -93,16 +85,12 @@ async fn categories_e2e() -> Result<()> {
         .set_categories("spaces".to_owned(), Box::new(space_cat_updater))
         .await?;
 
-    let fetching_space = space.clone();
-    let new_new_space_categories = Retry::spawn(retry_strategy, move || {
-        let space = fetching_space.clone();
-        async move {
-            let categories = space.categories("spaces".to_owned()).await?;
-            if categories.categories().len() != 2 {
-                bail!("Not all categories found")
-            }
-            Ok(categories)
+    let new_new_space_categories = Retry::spawn(retry_strategy, || async {
+        let categories = space.categories("spaces".to_owned()).await?;
+        if categories.categories().len() != 2 {
+            bail!("Not all categories found")
         }
+        Ok(categories)
     })
     .await?;
 

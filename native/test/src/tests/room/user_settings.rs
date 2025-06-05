@@ -21,12 +21,8 @@ async fn has_seen_suggested_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    let room = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.room(room_id.to_string()).await }
+    let room = Retry::spawn(retry_strategy.clone(), || async {
+        user.room(room_id.to_string()).await
     })
     .await?;
 
@@ -57,7 +53,7 @@ async fn has_seen_suggested_test() -> Result<()> {
     user_room_settings.set_has_seen_suggested(false).await?;
 
     // wait for update to come through
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if subscriber.is_empty() {
             bail!("not been alerted to reload");
         }
@@ -83,12 +79,8 @@ async fn include_cal_sync_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    let room = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.room(room_id.to_string()).await }
+    let room = Retry::spawn(retry_strategy.clone(), || async {
+        user.room(room_id.to_string()).await
     })
     .await?;
 
@@ -119,7 +111,7 @@ async fn include_cal_sync_test() -> Result<()> {
     user_room_settings.set_include_cal_sync(true).await?;
 
     // wait for update to come through
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if subscriber.is_empty() {
             bail!("not been alerted to reload");
         }

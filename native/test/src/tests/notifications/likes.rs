@@ -34,16 +34,12 @@ async fn like_on_news() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let news_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_news_entries(1).await?;
-            if news_entries.len() != 1 {
-                bail!("news entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let news_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_news_entries(1).await?;
+        if news_entries.len() != 1 {
+            bail!("news entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
 
@@ -56,18 +52,14 @@ async fn like_on_news() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.clone(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 

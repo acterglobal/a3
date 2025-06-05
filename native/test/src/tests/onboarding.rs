@@ -15,12 +15,8 @@ async fn onboarding_is_created() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -34,56 +30,39 @@ async fn onboarding_is_created() -> Result<()> {
 
     space.create_onboarding_data().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let calendar_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = calendar_client.clone();
-        async move {
-            let task_lists = client.task_lists().await?;
-            let Some(tk) = task_lists.first() else {
-                bail!("task list not found")
-            };
-            if tk.tasks().await?.len() != 2 {
-                bail!("not all tasks found yet");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        let task_lists = user.task_lists().await?;
+        let Some(tk) = task_lists.first() else {
+            bail!("task list not found")
+        };
+        if tk.tasks().await?.len() != 2 {
+            bail!("not all tasks found yet");
         }
+        Ok(())
     })
     .await?;
 
-    let pin_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = pin_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
-    let calendar_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = calendar_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 1 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.calendar_events().await?.len() != 1 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
-    let news_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = news_client.clone();
-        async move {
-            if client.latest_news_entries(10).await?.len() != 1 {
-                bail!("not all news found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.latest_news_entries(10).await?.len() != 1 {
+            bail!("not all news found");
         }
+        Ok(())
     })
     .await?;
 

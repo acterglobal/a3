@@ -45,16 +45,12 @@ async fn tasklist_creation_notification() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let main_space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            if spaces.len() != 1 {
-                bail!("space not found");
-            }
-            Ok(spaces.first().cloned().expect("space found"))
+    let main_space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("space not found");
         }
+        Ok(spaces.first().cloned().expect("space found"))
     })
     .await?;
 
@@ -93,16 +89,12 @@ async fn tasklist_title_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -154,16 +146,12 @@ async fn tasklist_desc_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -217,16 +205,12 @@ async fn tasklist_redaction() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = first.clone();
-    let event = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let event = Retry::spawn(retry_strategy, || async {
+        let entries = first.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -272,16 +256,12 @@ async fn task_created() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -335,20 +315,16 @@ async fn task_title_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -400,20 +376,16 @@ async fn task_desc_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -469,20 +441,16 @@ async fn task_due_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -544,20 +512,16 @@ async fn task_done_and_undone() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -643,20 +607,16 @@ async fn task_self_assign_and_unassign() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 

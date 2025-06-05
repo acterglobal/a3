@@ -45,28 +45,22 @@ async fn like_activity_on_news() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = second_user.clone();
-    let news_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_news_entries(1).await?;
-            if news_entries.len() != 1 {
-                bail!("news entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let news_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_news_entries(1).await?;
+        if news_entries.len() != 1 {
+            bail!("news entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(first).await?;
+    let mut act_obs = all_activities_observer(&first).await?;
 
     let reactions = news_entry.reactions().await?;
     reactions.send_like().await?;
 
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let first = first.clone();
-        let space_id = space_id.clone();
-        async move { get_latest_activity(&first, space_id.to_string(), "reaction").await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        get_latest_activity(&first, space_id.to_string(), "reaction").await
     })
     .await?;
     assert_eq!(activity.type_str(), "reaction");
@@ -89,28 +83,22 @@ async fn like_activity_on_story() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = second_user.clone();
-    let story = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_stories(1).await?;
-            if news_entries.len() != 1 {
-                bail!("story entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let story = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_stories(1).await?;
+        if news_entries.len() != 1 {
+            bail!("story entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(first).await?;
+    let mut act_obs = all_activities_observer(&first).await?;
 
     let reactions = story.reactions().await?;
     reactions.send_like().await?;
 
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let first = first.clone();
-        let space_id = space_id.clone();
-        async move { get_latest_activity(&first, space_id.to_string(), "reaction").await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        get_latest_activity(&first, space_id.to_string(), "reaction").await
     })
     .await?;
     assert_eq!(activity.type_str(), "reaction");
