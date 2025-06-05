@@ -25,12 +25,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -126,12 +122,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -226,12 +218,8 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -257,15 +245,11 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_news_entries(1).await?.len() != 1 {
-                bail!("news not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_news_entries(1).await?.len() != 1 {
+            bail!("news not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -305,12 +289,8 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -336,15 +316,11 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
     draft.send().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_news_entries(1).await?.len() != 1 {
-                bail!("news not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_news_entries(1).await?.len() != 1 {
+            bail!("news not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -409,15 +385,11 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -459,7 +431,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -507,15 +479,11 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -557,7 +525,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }

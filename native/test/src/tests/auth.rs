@@ -447,18 +447,12 @@ async fn get_emails_of(email_addr: String) -> Result<MessageList> {
     };
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let mailhog_cl = mailhog.clone();
-    let params_cl = params.clone();
-    Retry::spawn(retry_strategy, move || {
-        let mailhog = mailhog_cl.clone();
-        let params = params_cl.clone();
-        async move {
-            let msg_list = mailhog.search(params).await?;
-            if msg_list.count == 0 {
-                bail!("email msg not found");
-            }
-            Ok(msg_list)
+    Retry::spawn(retry_strategy, || async {
+        let msg_list = mailhog.search(params.clone()).await?;
+        if msg_list.count == 0 {
+            bail!("email msg not found");
         }
+        Ok(msg_list)
     })
     .await
 }
