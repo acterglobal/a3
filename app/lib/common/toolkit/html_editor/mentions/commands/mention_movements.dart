@@ -39,7 +39,7 @@ final CommandShortcutEvent selectCurrentCommandForMentions =
     CommandShortcutEvent(
       key: 'select current mention',
       getDescription: () => 'select current mention',
-      command: 'tab, shift+tab, enter, space, return',
+      command: 'tab,space,enter',
       handler: _selectCurrentCommandHandlerForMentions,
     );
 
@@ -72,6 +72,6 @@ CommandShortcutEventHandler _dismissMentionMenuCommandHandler = (editorState) {
 final mentionMenuCommandShortcutEvents = [
   // upCommandForMentions,
   // downCommandForMentions,
-  // selectCurrentCommandForMentions,
+  selectCurrentCommandForMentions,
   dismissMentionMenuCommand,
 ];
