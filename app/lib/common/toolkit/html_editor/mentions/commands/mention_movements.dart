@@ -73,5 +73,5 @@ final mentionMenuCommandShortcutEvents = [
   // upCommandForMentions,
   // downCommandForMentions,
   // selectCurrentCommandForMentions,
-  // dismissMentionMenuCommand,
+  dismissMentionMenuCommand,
 ];
