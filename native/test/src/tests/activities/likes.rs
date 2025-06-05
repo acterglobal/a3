@@ -54,7 +54,7 @@ async fn like_activity_on_news() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = news_entry.reactions().await?;
     reactions.send_like().await?;
@@ -92,7 +92,7 @@ async fn like_activity_on_story() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
 
     let reactions = story.reactions().await?;
     reactions.send_like().await?;
