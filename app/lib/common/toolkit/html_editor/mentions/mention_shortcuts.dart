@@ -1,4 +1,4 @@
-import 'package:acter/common/toolkit/html_editor/components/mention_menu.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/components/mention_menu.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';

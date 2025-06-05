@@ -32,17 +32,12 @@ async fn test_space_parent() -> Result<()> {
     activities_listenerd.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let cl = observer.clone();
-    let activity = Retry::spawn(retry_strategy, move || {
-        let room_activities = room_activities.clone();
-        let cl = cl.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            cl.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy, || async {
+        let m = room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        observer.activity(id).await
     })
     .await?;
 

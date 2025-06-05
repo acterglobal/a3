@@ -46,16 +46,12 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -83,12 +79,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
         .send()
         .await?;
 
-    let fetcher_client = first.clone();
-    let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let activity_id = activity_id_str.clone();
-        async move { client.activity(activity_id).await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        first.activity(activity_id.to_string()).await
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
@@ -123,16 +115,12 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -161,12 +149,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
         .send()
         .await?;
 
-    let fetcher_client = first.clone();
-    let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let activity_id = activity_id_str.clone();
-        async move { client.activity(activity_id).await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        first.activity(activity_id.to_string()).await
     })
     .await?;
     assert_eq!(activity.type_str(), "attachment");
@@ -201,32 +185,24 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let pin = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let pin = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
     let mut act_obs = all_activities_observer(first).await?;
     let ref_details = pin.ref_details().await?;
 
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -240,12 +216,8 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
         .send()
         .await?;
 
-    let fetcher_client = first.clone();
-    let activity_id_str = activity_id.to_string();
-    let activity = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let activity_id = activity_id_str.clone();
-        async move { client.activity(activity_id).await }
+    let activity = Retry::spawn(retry_strategy, || async {
+        first.activity(activity_id.to_string()).await
     })
     .await?;
     assert_eq!(activity.type_str(), "references");

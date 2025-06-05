@@ -44,36 +44,28 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn ref_event_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
@@ -87,18 +79,14 @@ async fn ref_event_on_pin() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.clone(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -141,36 +129,28 @@ async fn ref_event_on_pin() -> Result<()> {
 #[tokio::test]
 async fn reference_pin_on_event() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
@@ -184,18 +164,14 @@ async fn reference_pin_on_event() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.to_string();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -238,36 +214,28 @@ async fn reference_pin_on_event() -> Result<()> {
 #[tokio::test]
 async fn reference_pin_on_tasklist() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
@@ -281,18 +249,14 @@ async fn reference_pin_on_tasklist() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.to_string();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
@@ -335,42 +299,34 @@ async fn reference_pin_on_tasklist() -> Result<()> {
 #[tokio::test]
 async fn link_attachment_on_task() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("aOevent", 2, TMPL).await?;
+        random_users_with_random_space_under_template("aOevent", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tl = entries[0].clone();
-            let tasks = tl.tasks().await?;
-            if tasks.is_empty() {
-                bail!("task not found");
-            }
-            let task = tasks.first().expect("first task should be available");
-            Ok(task.clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tl = entries[0].clone();
+        let tasks = tl.tasks().await?;
+        if tasks.is_empty() {
+            bail!("task not found");
+        }
+        let task = tasks.first().expect("first task should be available");
+        Ok(task.clone())
     })
     .await?;
 
-    let fetcher_client = second_user.clone();
-    let ref_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let ref_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
     let ref_details = ref_entry.ref_details().await?;
@@ -384,18 +340,14 @@ async fn link_attachment_on_task() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.to_string();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 

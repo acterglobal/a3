@@ -1,4 +1,4 @@
-import 'package:acter/common/toolkit/html_editor/models/mention_type.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 
 class MentionAttributes {
   final String mentionId;

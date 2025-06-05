@@ -49,15 +49,11 @@ async fn calendar_smoketest() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -90,15 +86,11 @@ async fn edit_calendar_event() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -116,8 +108,6 @@ async fn edit_calendar_event() -> Result<()> {
         .send()
         .await?;
 
-    let cal_event = main_event.clone();
-
     Retry::spawn(retry_strategy.clone(), || async {
         if subscriber.is_empty() {
             bail!("not been alerted to reload");
@@ -126,15 +116,12 @@ async fn edit_calendar_event() -> Result<()> {
     })
     .await?;
 
-    Retry::spawn(retry_strategy, move || {
-        let cal_event = cal_event.clone();
-        async move {
-            let edited_event = cal_event.refresh().await?;
-            if edited_event.title() != title {
-                bail!("Update not yet received");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let edited_event = main_event.refresh().await?;
+        if edited_event.title() != title {
+            bail!("Update not yet received");
         }
+        Ok(())
     })
     .await?;
 
@@ -150,15 +137,11 @@ async fn calendar_event_external_link() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 

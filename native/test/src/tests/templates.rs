@@ -45,15 +45,11 @@ async fn template_creates_space() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 2 || client.task_lists().await?.len() != 1 {
-                bail!("not all pins and task lists found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 2 || user.task_lists().await?.len() != 1 {
+            bail!("not all pins and task lists found");
         }
+        Ok(())
     })
     .await?;
 

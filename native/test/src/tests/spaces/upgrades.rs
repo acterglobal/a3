@@ -27,15 +27,11 @@ async fn upgrade_flow() -> Result<()> {
     });
     let _non_acter_space = user.create_room(req).await?;
 
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.spaces().await?.len() != 1 {
-                bail!("not all spaces found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.spaces().await?.len() != 1 {
+            bail!("not all spaces found");
         }
+        Ok(())
     })
     .await?;
 
@@ -52,19 +48,15 @@ async fn upgrade_flow() -> Result<()> {
 
     space.set_acter_space_states().await?;
 
-    let fetcher_client = user.clone();
-    let space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            let Some(space) = spaces.first() else {
-                bail!("not all spaces found");
-            };
-            if !space.is_acter_space().await? {
-                bail!("not converted")
-            }
-            Ok(space.clone())
+    let space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        let Some(space) = spaces.first() else {
+            bail!("not all spaces found");
+        };
+        if !space.is_acter_space().await? {
+            bail!("not converted")
         }
+        Ok(space.clone())
     })
     .await?;
 

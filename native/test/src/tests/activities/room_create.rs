@@ -18,23 +18,18 @@ async fn test_room_create() -> Result<()> {
     let room_activities = user.activities_for_room(room_id.to_string())?;
 
     // wait for the event to come in
-    let cl = user.clone();
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let activity = Retry::spawn(retry_strategy, move || {
-        let room_activities = room_activities.clone();
-        let cl = cl.clone();
-        async move {
-            // when creating a room, matrix-sdk receives the several events in a batch, and room create event is not the latest activity
-            // we need to check the several activities to find the room create event
-            let m = room_activities.get_ids(0, 10).await?;
-            for idx in m.clone() {
-                let activity = cl.activity(idx.clone()).await?;
-                if activity.type_str() == "roomCreate" {
-                    return Ok(activity);
-                }
+    let activity = Retry::spawn(retry_strategy, || async {
+        // when creating a room, matrix-sdk receives the several events in a batch, and room create event is not the latest activity
+        // we need to check the several activities to find the room create event
+        let m = room_activities.get_ids(0, 10).await?;
+        for idx in m.clone() {
+            let activity = user.activity(idx.clone()).await?;
+            if activity.type_str() == "roomCreate" {
+                return Ok(activity);
             }
-            bail!("no room create activity found");
         }
+        bail!("no room create activity found");
     })
     .await?;
 

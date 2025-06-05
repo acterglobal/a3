@@ -9,7 +9,7 @@ use crate::utils::random_users_with_random_space;
 #[tokio::test]
 async fn news_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("news_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("news_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -24,16 +24,12 @@ async fn news_notification() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let main_space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            if spaces.len() != 1 {
-                bail!("space not found");
-            }
-            Ok(spaces.first().cloned().expect("space found"))
+    let main_space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("space not found");
         }
+        Ok(spaces.first().cloned().expect("space found"))
     })
     .await?;
 
