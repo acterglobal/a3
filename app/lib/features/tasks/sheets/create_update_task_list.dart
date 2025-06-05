@@ -165,12 +165,9 @@ class _CreateUpdateTaskListConsumerState
                 editorState: textEditorState,
                 editable: true,
                 onChanged: (body, html) {
-                  textEditorState = EditorState(
-                    document: ActerDocumentHelpers.parse(
-                      body,
-                      htmlContent: html,
-                    ),
-                  );
+                  // textEditorState.insertTextAtCurrentSelection(
+                  //   html ?? body,
+                  // );
                 },
               ),
             ),

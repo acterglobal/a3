@@ -59,11 +59,8 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     // description
     final desc = event.description();
     if (desc != null) {
-      textEditorState = EditorState(
-        document: ActerDocumentHelpers.parse(
-          desc.body(),
-          htmlContent: desc.formatted(),
-        ),
+      textEditorState.insertTextAtCurrentSelection(
+        desc.formatted() ?? desc.body(),
       );
     } else {
       textEditorState = EditorState.blank();
@@ -389,9 +386,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             editorState: textEditorState,
             editable: true,
             onChanged: (body, html) {
-              textEditorState = EditorState(
-                document: ActerDocumentHelpers.parse(body, htmlContent: html),
-              );
+              // textEditorState.insertTextAtCurrentSelection(html ?? body);
             },
           ),
         ),
