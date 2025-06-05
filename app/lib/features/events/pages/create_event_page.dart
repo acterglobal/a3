@@ -98,9 +98,18 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     ref.read(selectedSpaceIdProvider.notifier).state = spaceId;
   }
 
+  void _clearLocations() {
+    ref.read(eventDraftLocationsProvider.notifier).clearLocations();
+  }
+
   @override
   void initState() {
     super.initState();
+    // Clear locations when widget is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _clearLocations();
+    });
+    // Set data from template event if available
     widget.templateEvent.map(
       (p0) => WidgetsBinding.instance.addPostFrameCallback((Duration dur) {
         _setFromTemplate(p0);
