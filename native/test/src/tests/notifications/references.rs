@@ -52,7 +52,7 @@ async fn ref_event_on_pin() -> Result<()> {
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
     let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
-        let entries = first.pins().await?;
+        let entries = second_user.pins().await?;
         if entries.is_empty() {
             bail!("entries not found");
         }
