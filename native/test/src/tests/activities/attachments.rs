@@ -40,9 +40,9 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
         random_users_with_random_space_under_template("aOnpin", 1, TMPL).await?;
 
-    let first = users[0].clone();
-    let second_user = users[1].clone();
-    let mut act_obs = all_activities_observer(&first).await?;
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
+    let mut act_obs = all_activities_observer(first).await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
@@ -110,8 +110,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
         random_users_with_random_space_under_template("aOncal", 1, TMPL).await?;
 
-    let first = users[0].clone();
-    let second_user = users[1].clone();
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
@@ -124,7 +124,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
     // ensure we are expected to see these activities
     let obj_id = obj_entry.event_id().to_string();
 
@@ -180,8 +180,8 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     let (users, _sync_states, _space_id, _engine) =
         random_users_with_random_space_under_template("aOncal", 1, TMPL).await?;
 
-    let first = users[0].clone();
-    let second_user = users[1].clone();
+    let first = users.first().expect("exists");
+    let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
@@ -194,7 +194,7 @@ async fn reference_attachment_activity_on_calendar() -> Result<()> {
     })
     .await?;
 
-    let mut act_obs = all_activities_observer(&first).await?;
+    let mut act_obs = all_activities_observer(first).await?;
     let ref_details = pin.ref_details().await?;
 
     let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
