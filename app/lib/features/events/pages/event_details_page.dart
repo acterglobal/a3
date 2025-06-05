@@ -7,7 +7,6 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
-import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 import 'package:acter/features/events/widgets/view_physical_location_widget.dart';
 import 'package:acter/features/events/widgets/view_virtual_location_widget.dart';
@@ -654,45 +653,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       builder: (_) {
         return EventLocationListWidget(
           eventId: widget.calendarId,
-          onAdd: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              isDismissible: true,
-              enableDrag: true,
-              showDragHandle: true,
-              useSafeArea: true,
-              builder:
-                  (context) => AddEventLocationWidget(
-                    onAdd: (location) {
-                      ref
-                          .read(eventDraftLocationsProvider.notifier)
-                          .addLocation(location);
-                      Navigator.pop(context);
-                    },
-                  ),
-            );
-          },
-          onEdit: (location) {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              isDismissible: true,
-              enableDrag: true,
-              showDragHandle: true,
-              useSafeArea: true,
-              builder:
-                  (context) => AddEventLocationWidget(
-                    initialLocation: location,
-                    onAdd: (updatedLocation) {
-                      ref
-                          .read(eventDraftLocationsProvider.notifier)
-                          .updateLocation(location, updatedLocation);
-                      Navigator.pop(context);
-                    },
-                  ),
-            );
-          },
         );
       },
     );

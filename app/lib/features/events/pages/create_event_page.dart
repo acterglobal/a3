@@ -3,7 +3,6 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
-import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
@@ -220,24 +219,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                   enableDrag: true,
                   showDragHandle: true,
                   useSafeArea: true,
-                  builder: (context) => EventLocationListWidget(
-                    onAdd: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        isDismissible: true,
-                        enableDrag: true,
-                        showDragHandle: true,
-                        useSafeArea: true,
-                        builder: (context) => AddEventLocationWidget(
-                          onAdd: (location) {
-                            ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
-                            Navigator.pop(context);
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                  builder: (context) => EventLocationListWidget(),
                 );
               },
             ),

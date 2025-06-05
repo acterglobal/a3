@@ -2,18 +2,17 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/widgets/html_editor/html_editor.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/model/keys.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddEventLocationWidget extends ConsumerStatefulWidget {
-  final Function(EventLocationDraft location) onAdd;
   final EventLocationDraft? initialLocation;
 
   const AddEventLocationWidget({
     super.key,
-    required this.onAdd,
     this.initialLocation,
   });
 
@@ -300,7 +299,12 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
                 : null,
         note: textEditorNoteState.intoMarkdown(),
       );
-      widget.onAdd(location);
+      if (widget.initialLocation == null) {
+        ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
+      } else {
+        ref.read(eventDraftLocationsProvider.notifier).updateLocation(widget.initialLocation!, location);
+      }
+      Navigator.pop(context);
     }
   }
 }

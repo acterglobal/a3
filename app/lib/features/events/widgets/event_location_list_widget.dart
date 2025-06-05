@@ -1,6 +1,7 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
+import 'package:acter/features/events/widgets/add_event_location_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,14 +9,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 
 class EventLocationListWidget extends ConsumerStatefulWidget {
-  final VoidCallback onAdd;
-  final Function(EventLocationDraft location)? onEdit;
   final String? eventId;
 
   const EventLocationListWidget({
     super.key, 
-    required this.onAdd,
-    this.onEdit,
     this.eventId,
   });
 
@@ -83,7 +80,16 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
           IconButton(
               icon: const Icon(Icons.add_circle_outline),
               tooltip: lang.addLocation,
-              onPressed: widget.onAdd,
+              onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              isDismissible: true,
+              enableDrag: true,
+              showDragHandle: true,
+              useSafeArea: true,
+              builder:
+                  (context) => AddEventLocationWidget(),
+            ),
           ),
         ],
       ),
@@ -177,9 +183,18 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
                 note: location.notes(),
               )
             : location;
-        if (widget.onEdit != null) {
-          widget.onEdit?.call(draftLocation);
-        }
+         showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              isDismissible: true,
+              enableDrag: true,
+              showDragHandle: true,
+              useSafeArea: true,
+              builder:
+                  (context) => AddEventLocationWidget(
+                    initialLocation: draftLocation,
+                  ),
+            );
       },
     );
   }
