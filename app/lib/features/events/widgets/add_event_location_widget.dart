@@ -1,5 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/model/keys.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
