@@ -20,16 +20,12 @@ class MentionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 60,
-      child: ListTile(
-        dense: true,
-        onTap: () => onTap(mentionId, displayName: displayName),
-        contentPadding: const EdgeInsets.all(8.0),
-        leading: ActerAvatar(options: avatarOptions),
-        title: Text(displayName ?? mentionId),
-        subtitle: displayName != null ? Text(mentionId) : null,
-      ),
+    return ListTile(
+      dense: true,
+      onTap: () => onTap(mentionId, displayName: displayName),
+      leading: ActerAvatar(options: avatarOptions),
+      title: Text(displayName ?? mentionId),
+      subtitle: displayName != null ? Text(mentionId) : null,
     );
   }
 }

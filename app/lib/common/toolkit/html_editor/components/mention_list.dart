@@ -150,6 +150,9 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
       return ErrorWidget(L10n.of(context).loadingFailed);
     }
     final displaySuggestions = _filteredSuggestions ?? suggestions;
+
+    if (displaySuggestions.isEmpty) return const SizedBox.shrink();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,40 +168,33 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
 
   Widget _buildMenuList(Map<String, String?> suggestions) {
     final theme = Theme.of(context);
-    final String notFoundTitle = widget.notFoundTitle;
     final options = widget.avatarBuilder;
     return Flexible(
-      child:
-          suggestions.isEmpty
-              ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(notFoundTitle),
-              )
-              : ListView.separated(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                controller: _scrollController,
-                itemCount: suggestions.length,
-                separatorBuilder:
-                    (context, index) => Divider(
-                      endIndent: 5,
-                      indent: 5,
-                      color: theme.dividerTheme.color,
-                    ),
-                itemBuilder: (context, index) {
-                  final mentionId = suggestions.keys.elementAt(index);
-                  final displayName = suggestions.values.elementAt(index);
+      child: ListView.separated(
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        controller: _scrollController,
+        itemCount: suggestions.length,
+        separatorBuilder:
+            (context, index) => Divider(
+              indent: 70,
+              color: theme.unselectedWidgetColor,
+              height: 1,
+            ),
+        itemBuilder: (context, index) {
+          final mentionId = suggestions.keys.elementAt(index);
+          final displayName = suggestions.values.elementAt(index);
 
-                  return MentionItem(
-                    mentionId: mentionId,
-                    displayName: displayName,
-                    avatarOptions: options(mentionId, ref),
-                    onTap:
-                        (String id, {String? displayName}) =>
-                            _selectItem(id, displayName),
-                  );
-                },
-              ),
+          return MentionItem(
+            mentionId: mentionId,
+            displayName: displayName,
+            avatarOptions: options(mentionId, ref),
+            onTap:
+                (String id, {String? displayName}) =>
+                    _selectItem(id, displayName),
+          );
+        },
+      ),
     );
   }
 

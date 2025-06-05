@@ -19,7 +19,6 @@ class MentionMenu {
 
   OverlayEntry? _menuEntry;
   bool selectionChangedByMenu = false;
-  static const menuHeight = 200.0;
 
   void dismiss() {
     _menuEntry?.remove();
@@ -37,10 +36,10 @@ class MentionMenu {
         chatEditorKey.currentContext?.findRenderObject() as RenderBox?;
     if (editorBox == null) return;
 
-    final editorPosition = editorBox.localToGlobal(Offset.zero);
     final isLargeScreen = MediaQuery.sizeOf(context).width > 600;
-
-    final top = editorPosition.dy - menuHeight - 4;
+    const chatInputHeight = 56.0;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final menuBottom = bottomInset + chatInputHeight;
 
     // render based on mention type
     final Widget listWidget = switch (mentionTrigger) {
@@ -72,15 +71,22 @@ class MentionMenu {
               ),
 
               Positioned(
-                top: top,
-                left: isLargeScreen ? editorPosition.dx : 12,
-                right: isLargeScreen ? editorPosition.dx : 12,
+                left:
+                    isLargeScreen
+                        ? editorBox.localToGlobal(Offset.zero).dx
+                        : 12,
+                right:
+                    isLargeScreen
+                        ? editorBox.localToGlobal(Offset.zero).dx
+                        : 12,
+                bottom: menuBottom,
                 child: Material(
-                  elevation: 8,
+                  elevation: 0,
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    height: menuHeight,
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.8,
+                    ),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.only(
