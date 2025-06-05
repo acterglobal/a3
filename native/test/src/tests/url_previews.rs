@@ -38,21 +38,13 @@ async fn ref_details_as_url_preview() -> Result<()> {
     sync_state2.await_has_synced_history().await?;
 
     // wait for sync to catch up
-    let first = users.first().expect("exists");
-    let second_user = &users[1];
-
-    // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -61,33 +53,27 @@ async fn ref_details_as_url_preview() -> Result<()> {
     let mut draft = user.text_plain_draft("look at this pin".to_owned());
     draft = draft.add_ref_details(Box::new(ref_details))?;
 
-    let convo = first
+    let convo = user
         .convo(chat_id.to_string())
         .await
         .expect("we are in the chat");
     let tl = convo.timeline_stream();
     tl.send_message(Box::new(draft)).await?;
 
-    let fetcher_client = second.clone();
-    let target_chat_id = chat_id.to_string();
-    let latest_msg = Retry::spawn(retry_strategy, move || {
-        let second = fetcher_client.clone();
-        let chat_id = target_chat_id.clone();
-        async move {
-            accept_all_invites(&second).await?;
+    let latest_msg = Retry::spawn(retry_strategy, || async {
+        accept_all_invites(&second).await?;
 
-            let convo = second.convo(chat_id).await?;
-            let Some(msg) = convo.latest_message() else {
-                bail!("no latest message found");
-            };
-            let Some(item) = msg.event_item() else {
-                bail!("Not the proper event");
-            };
-            if item.event_type() != "m.room.message" {
-                bail!(format!("Not the message we are looking for {item:?}"));
-            }
-            Ok(msg)
+        let convo = second.convo(chat_id.to_string()).await?;
+        let Some(msg) = convo.latest_message() else {
+            bail!("no latest message found");
+        };
+        let Some(item) = msg.event_item() else {
+            bail!("Not the proper event");
+        };
+        if item.event_type() != "m.room.message" {
+            bail!(format!("Not the message we are looking for {item:?}"));
         }
+        Ok(msg)
     })
     .await?;
 
@@ -143,28 +129,22 @@ async fn url_preview_on_message() -> Result<()> {
     let tl = convo.timeline_stream();
     tl.send_message(Box::new(draft)).await?;
 
-    let fetcher_client = second.clone();
-    let target_chat_id = chat_id.to_string();
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let latest_msg = Retry::spawn(retry_strategy, move || {
-        let second = fetcher_client.clone();
-        let chat_id = target_chat_id.clone();
-        async move {
-            accept_all_invites(&second).await?;
+    let latest_msg = Retry::spawn(retry_strategy, || async {
+        accept_all_invites(&second).await?;
 
-            let convo = second.convo(chat_id).await?;
-            let Some(msg) = convo.latest_message() else {
-                bail!("no latest message found");
-            };
-            let Some(item) = msg.event_item() else {
-                bail!("Not the proper event");
-            };
-            if item.event_type() != "m.room.message" {
-                bail!(format!("Not the message we are looking for {item:?}"));
-            }
-            Ok(msg)
+        let convo = second.convo(chat_id.to_string()).await?;
+        let Some(msg) = convo.latest_message() else {
+            bail!("no latest message found");
+        };
+        let Some(item) = msg.event_item() else {
+            bail!("Not the proper event");
+        };
+        if item.event_type() != "m.room.message" {
+            bail!(format!("Not the message we are looking for {item:?}"));
         }
+        Ok(msg)
     })
     .await?;
 

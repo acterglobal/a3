@@ -20,12 +20,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = sisko.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        sisko.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -43,12 +39,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     }
 
     // wait for sync to catch up
-    let fetcher_client = kyra.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        kyra.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -102,12 +94,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     let received = received.context("Even after 30 seconds, text msg not received")?;
 
     // wait for sync to catch up
-    let fetcher_timeline = kyra_timeline.clone();
-    let target_id = received.clone();
-    Retry::spawn(retry_strategy, move || {
-        let timeline = fetcher_timeline.clone();
-        let received = target_id.clone();
-        async move { timeline.get_message(received).await }
+    Retry::spawn(retry_strategy, || async {
+        kyra_timeline.get_message(received.clone()).await
     })
     .await?;
 
