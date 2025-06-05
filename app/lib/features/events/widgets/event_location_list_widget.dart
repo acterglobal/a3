@@ -1,4 +1,5 @@
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
+import 'package:acter/features/events/actions/save_event_locations.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:acter/features/events/widgets/add_event_location_widget.dart';
@@ -216,7 +217,18 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
           const SizedBox(width: 16),
           Expanded(
             child: ActerPrimaryActionButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                if (widget.eventId != null) {
+                saveEventLocations(
+                context: context,
+                ref: ref,
+                locations: ref.read(eventDraftLocationsProvider),
+                calendarId: widget.eventId.toString(),
+              );
+              } else {
+               Navigator.pop(context);
+              }
+              },
               child: Text(L10n.of(context).save),
             ),
           ),

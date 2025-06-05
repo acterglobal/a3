@@ -3085,5 +3085,7 @@
   "createJitsiCallLink": "Create automatic Jitsi Call Link",
   "@createJitsiCallLink": {},
   "jitsiMeeting": "Jitsi Meeting",
-  "@jitsiMeeting": {}
+  "@jitsiMeeting": {},
+  "updatingLocations": "Updating locations...",
+  "@updatingLocations": {}
 }
