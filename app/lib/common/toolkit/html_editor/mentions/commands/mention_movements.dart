@@ -1,12 +1,12 @@
-import 'package:acter/common/toolkit/html_editor/mentions/components/mention_menu.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/mention_menu.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 
 /// If the mention menu is open , his reacts to up and forwards that to the MentionMenu controller
 final CommandShortcutEvent upCommandForMentions = CommandShortcutEvent(
-  key: 'up',
-  getDescription: () => AppFlowyEditorL10n.current.cmdDeleteLeft,
-  command: 'up, shift+up',
+  key: 'select previous mention',
+  getDescription: () => 'select previous mention',
+  command: 'arrow up',
   handler: _upCommandHandlerForMentions,
 );
 
@@ -20,9 +20,9 @@ CommandShortcutEventHandler _upCommandHandlerForMentions = (editorState) {
 
 /// If the mention menu is open , his reacts to up and forwards that to the MentionMenu controller
 final CommandShortcutEvent downCommandForMentions = CommandShortcutEvent(
-  key: 'down',
-  getDescription: () => AppFlowyEditorL10n.current.cmdDeleteLeft,
-  command: 'down, shift+down',
+  key: 'select next mention',
+  getDescription: () => 'select next mention',
+  command: 'arrow down',
   handler: _downCommandHandlerForMentions,
 );
 
@@ -37,9 +37,9 @@ CommandShortcutEventHandler _downCommandHandlerForMentions = (editorState) {
 /// If the mention menu is open , his reacts to up and forwards that to the MentionMenu controller
 final CommandShortcutEvent selectCurrentCommandForMentions =
     CommandShortcutEvent(
-      key: 'tab',
-      getDescription: () => AppFlowyEditorL10n.current.cmdDeleteLeft,
-      command: 'tab, shift+tab',
+      key: 'select current mention',
+      getDescription: () => 'select current mention',
+      command: 'tab, shift+tab, enter, space, return',
       handler: _selectCurrentCommandHandlerForMentions,
     );
 
@@ -52,3 +52,26 @@ CommandShortcutEventHandler _selectCurrentCommandHandlerForMentions = (
   }
   return KeyEventResult.ignored;
 };
+
+/// If the mention menu is open , his reacts to up and forwards that to the MentionMenu controller
+final CommandShortcutEvent dismissMentionMenuCommand = CommandShortcutEvent(
+  key: 'dismiss mention menu',
+  getDescription: () => 'dismiss mention menu',
+  command: 'escape',
+  handler: _dismissMentionMenuCommandHandler,
+);
+
+CommandShortcutEventHandler _dismissMentionMenuCommandHandler = (editorState) {
+  if (MentionMenu.isShowing()) {
+    MentionMenu.dismiss();
+    return KeyEventResult.handled;
+  }
+  return KeyEventResult.ignored;
+};
+
+final mentionMenuCommandShortcutEvents = [
+  // upCommandForMentions,
+  // downCommandForMentions,
+  // selectCurrentCommandForMentions,
+  // dismissMentionMenuCommand,
+];

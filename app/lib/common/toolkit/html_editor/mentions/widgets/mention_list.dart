@@ -1,11 +1,7 @@
-import 'dart:async';
-import 'dart:math';
-
 import 'package:acter/common/providers/room_providers.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/components/mention_item.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/widgets/mention_item.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/selected_mention_provider.dart';
-import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -116,49 +112,11 @@ class MentionList extends ConsumerStatefulWidget {
 
 class MentionHandlerState extends ConsumerState<MentionList> {
   final _scrollController = ScrollController();
-  StreamSubscription<EditorTransactionValue>? _updateListener;
-
-  @override
-  void initState() {
-    super.initState();
-    _updateListener?.cancel();
-    _updateListener = widget.editorState.transactionStream.listen((data) {
-      // to use dismiss overlay also search list
-      final selection = widget.editorState.selection;
-      if (selection == null) {
-        widget.onDismiss();
-        return;
-      }
-
-      final node = widget.editorState.getNodeAtPath(selection.end.path);
-      if (node == null) {
-        widget.onDismiss();
-        return;
-      }
-
-      final text = node.delta?.toPlainText() ?? '';
-      final cursorPosition = selection.end.offset;
-
-      // inject handlers
-      _overlayHandler(text, cursorPosition);
-      _mentionSearchHandler(text, cursorPosition);
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant MentionList oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.mentionsProvider != widget.mentionsProvider) {
-      ref.read(mentionQueryProvider.notifier).state = null;
-    }
-  }
 
   @override
   void dispose() {
     widget.onDismiss();
-    _updateListener?.cancel();
     _scrollController.dispose();
-    ref.read(mentionQueryProvider.notifier).state = null;
     super.dispose();
   }
 
@@ -217,73 +175,5 @@ class MentionHandlerState extends ConsumerState<MentionList> {
         },
       ),
     );
-  }
-
-  void _overlayHandler(String text, int cursorPosition) {
-    // basic validation
-    if (text.isEmpty || cursorPosition < 0) {
-      widget.onDismiss();
-      return;
-    }
-
-    // ensure within bounds
-    final effectiveCursorPos = min(cursorPosition, text.length);
-    final searchStartIndex = max(0, effectiveCursorPos - 1);
-
-    // last trigger char before cursor
-    int triggerIndex = -1;
-    for (int i = searchStartIndex; i >= 0; i--) {
-      if (text[i] == userMentionChar || text[i] == roomMentionChar) {
-        triggerIndex = i;
-
-        break;
-      }
-    }
-
-    // no trigger found, dismiss
-    if (triggerIndex == -1) {
-      widget.onDismiss();
-      return;
-    }
-
-    //cursor is before or at trigger position, dismiss
-    if (effectiveCursorPos <= triggerIndex) {
-      widget.onDismiss();
-      return;
-    }
-
-    final textBetween = text.substring(triggerIndex + 1, effectiveCursorPos);
-
-    if (textBetween.contains(' ')) {
-      widget.onDismiss();
-    } else {
-      // we're in a valid mention context
-
-      widget.onShow();
-    }
-  }
-
-  void _mentionSearchHandler(String text, int cursorPosition) {
-    if (text.isEmpty || cursorPosition <= 0 || cursorPosition > text.length) {
-      return;
-    }
-
-    final mentionTriggers = [userMentionChar, roomMentionChar];
-    String searchQuery = '';
-
-    // ensure search start index is within bounds
-    final searchStartIndex = min(cursorPosition - 1, text.length - 1);
-
-    for (int i = searchStartIndex; i >= 0; i--) {
-      if (mentionTriggers.contains(text[i])) {
-        // Ensure substring bounds are within text length
-        final endIndex = min(cursorPosition, text.length);
-        searchQuery = text.substring(i + 1, endIndex).trim().toLowerCase();
-        break;
-      }
-    }
-
-    // Update filtered suggestions based on search query
-    ref.read(mentionQueryProvider.notifier).state = searchQuery;
   }
 }

@@ -437,10 +437,7 @@ class _HtmlEditorState extends ConsumerState<HtmlEditor> {
       blockComponentBuilders: _buildBlockComponentBuilders(),
       characterShortcutEvents: _buildCharacterShortcutEvents(),
       commandShortcutEvents: [
-        backSpaceCommandForMentions,
-        selectCurrentCommandForMentions,
-        upCommandForMentions,
-        downCommandForMentions,
+        ...mentionMenuCommandShortcutEvents,
         ...standardCommandShortcutEvents,
       ],
       disableAutoScroll: false,

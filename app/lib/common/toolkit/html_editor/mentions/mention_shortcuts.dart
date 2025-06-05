@@ -1,4 +1,4 @@
-import 'package:acter/common/toolkit/html_editor/mentions/components/mention_menu.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/mention_menu.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
@@ -53,7 +53,7 @@ Future<bool> _handleMentionTrigger({
   }
   // Insert the trigger character
   await editorState.insertTextAtPosition(
-    mentionType.toString(),
+    mentionType.character,
     position: selection.start,
   );
 

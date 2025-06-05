@@ -4,7 +4,7 @@ enum MentionType {
   user,
   room;
 
-  static String toStr(MentionType type) => switch (type) {
+  String get character => switch (this) {
     MentionType.user => userMentionChar,
     MentionType.room => roomMentionChar,
   };

@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:acter/common/toolkit/html_editor/mentions/components/mention_list.dart';
+import 'package:acter/common/toolkit/html_editor/mentions/widgets/mention_list.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/selected_mention_provider.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
@@ -26,19 +27,29 @@ class MentionMenu {
   final MentionType mentionType;
   final WidgetRef ref;
   OverlayEntry? _menuEntry;
+  StreamSubscription<EditorTransactionValue>? _updateListener;
 
   bool selectionChangedByMenu = false;
 
   static bool isShowing() => _menu != null;
 
   static void dismiss() {
-    _menu?._menuEntry?.remove();
+    _menu?.hide();
     _menu = null;
   }
 
   void show() {
     if (_menu != null) return;
+    _listenToEditor();
     _show();
+  }
+
+  void hide() {
+    // clearing all the things
+    _updateListener?.cancel();
+    _updateListener = null;
+    _menuEntry?.remove();
+    _menuEntry = null;
   }
 
   // control functions
@@ -82,7 +93,10 @@ class MentionMenu {
 
   void _select(MentionType type, String id, String? displayName) {
     final selection = editorState.selection;
-    if (selection == null) return;
+    if (selection == null) {
+      MentionMenu.dismiss();
+      return;
+    }
 
     final transaction = editorState.transaction;
     final node = editorState.getNodeAtPath(selection.end.path);
@@ -183,5 +197,100 @@ class MentionMenu {
     );
 
     Overlay.of(context).insert(_menuEntry!);
+    _menu = this;
+  }
+
+  // internal control flow on editor updates
+  void _listenToEditor() {
+    _updateListener?.cancel();
+    _updateListener = editorState.transactionStream.listen((data) {
+      // to use dismiss overlay also search list
+      final selection = editorState.selection;
+      if (selection == null) {
+        hide();
+        return;
+      }
+
+      final node = editorState.getNodeAtPath(selection.end.path);
+      if (node == null) {
+        hide();
+        return;
+      }
+
+      final text = node.delta?.toPlainText() ?? '';
+      final cursorPosition = selection.end.offset;
+
+      // inject handlers
+      _overlayHandler(text, cursorPosition);
+      _mentionSearchHandler(text, cursorPosition);
+    });
+  }
+
+  void _overlayHandler(String text, int cursorPosition) {
+    // basic validation
+    if (text.isEmpty || cursorPosition < 0) {
+      hide();
+      return;
+    }
+
+    // ensure within bounds
+    final effectiveCursorPos = min(cursorPosition, text.length);
+    final searchStartIndex = max(0, effectiveCursorPos - 1);
+
+    // last trigger char before cursor
+    int triggerIndex = -1;
+    for (int i = searchStartIndex; i >= 0; i--) {
+      if (text[i] == userMentionChar || text[i] == roomMentionChar) {
+        triggerIndex = i;
+
+        break;
+      }
+    }
+
+    // no trigger found, dismiss
+    if (triggerIndex == -1) {
+      hide();
+      return;
+    }
+
+    //cursor is before or at trigger position, dismiss
+    if (effectiveCursorPos <= triggerIndex) {
+      hide();
+      return;
+    }
+
+    final textBetween = text.substring(triggerIndex + 1, effectiveCursorPos);
+
+    if (textBetween.contains(' ')) {
+      hide();
+    } else {
+      // we're in a valid mention context
+
+      show();
+    }
+  }
+
+  void _mentionSearchHandler(String text, int cursorPosition) {
+    if (text.isEmpty || cursorPosition <= 0 || cursorPosition > text.length) {
+      return;
+    }
+
+    final mentionTriggers = [userMentionChar, roomMentionChar];
+    String searchQuery = '';
+
+    // ensure search start index is within bounds
+    final searchStartIndex = min(cursorPosition - 1, text.length - 1);
+
+    for (int i = searchStartIndex; i >= 0; i--) {
+      if (mentionTriggers.contains(text[i])) {
+        // Ensure substring bounds are within text length
+        final endIndex = min(cursorPosition, text.length);
+        searchQuery = text.substring(i + 1, endIndex).trim().toLowerCase();
+        break;
+      }
+    }
+
+    // Update filtered suggestions based on search query
+    ref.read(mentionQueryProvider.notifier).state = searchQuery;
   }
 }
