@@ -41,9 +41,9 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
             address: location.address(),
             note: location.notes(),
           )).toList();
-          ref.read(eventLocationsProvider.notifier).clearLocations();
+          ref.read(eventDraftLocationsProvider.notifier).clearLocations();
           for (final location in locations) {
-            ref.read(eventLocationsProvider.notifier).addLocation(location);
+            ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
           }
         }
       });
@@ -53,7 +53,7 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
-    final locations = ref.watch(eventLocationsProvider);
+    final locations = ref.watch(eventDraftLocationsProvider);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -158,10 +158,10 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
               address: location.address(),
               note: location.notes(),
             );
-            ref.read(eventLocationsProvider.notifier).removeLocation(draftLocation);
+            ref.read(eventDraftLocationsProvider.notifier).removeLocation(draftLocation);
           } else {
             // Handle deletion of draft location
-            ref.read(eventLocationsProvider.notifier).removeLocation(location);
+            ref.read(eventDraftLocationsProvider.notifier).removeLocation(location);
           }
         },
       ),
@@ -228,7 +228,7 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
             OutlinedButton(child: Text(lang.keepChanges), onPressed: () => Navigator.pop(context)),
             ActerPrimaryActionButton(
               onPressed: () {
-                ref.read(eventLocationsProvider.notifier).clearLocations();
+                ref.read(eventDraftLocationsProvider.notifier).clearLocations();
                 Navigator.pop(context);
               },
               child: Text(lang.discard),

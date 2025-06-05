@@ -171,7 +171,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
-            onTap: () => showEventLocationList(event.roomIdStr()),
+            onTap: () => showEventLocationList(),
             child: Row(
               children: <Widget>[
                 Icon(locations.isEmpty ? Icons.add_location_alt_outlined : Icons.edit_location_alt_outlined),
@@ -625,7 +625,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  void showEventLocationList(String roomId) {
+  void showEventLocationList() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -646,7 +646,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               useSafeArea: true,
               builder: (context) => AddEventLocationWidget(
                 onAdd: (location) {
-                  ref.read(eventLocationsProvider.notifier).addLocation(location);
+                  ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
                   Navigator.pop(context);
                 },
               ),
@@ -663,7 +663,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
               builder: (context) => AddEventLocationWidget(
                 initialLocation: location,
                 onAdd: (updatedLocation) {
-                  ref.read(eventLocationsProvider.notifier).updateLocation(location, updatedLocation);
+                  ref.read(eventDraftLocationsProvider.notifier).updateLocation(location, updatedLocation);
                   Navigator.pop(context);
                 },
               ),

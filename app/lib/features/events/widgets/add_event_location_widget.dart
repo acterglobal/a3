@@ -36,7 +36,7 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
     super.initState();
     _nameController = TextEditingController(text: widget.initialLocation?.name);
     _urlController = TextEditingController(text: widget.initialLocation?.url);
-    _selectedType = widget.initialLocation?.type ?? LocationType.physical;
+    _selectedType = widget.initialLocation?.type ?? LocationType.virtual;
 
     // Initialize editor states with initial data
     if (widget.initialLocation == null) {

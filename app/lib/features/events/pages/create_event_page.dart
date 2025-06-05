@@ -222,7 +222,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
                         useSafeArea: true,
                         builder: (context) => AddEventLocationWidget(
                           onAdd: (location) {
-                            ref.read(eventLocationsProvider.notifier).addLocation(location);
+                            ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
                             Navigator.pop(context);
                           },
                         ),
@@ -562,7 +562,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       draft.descriptionHtml(plainDescription, htmlBodyDescription);
 
       // Add locations to the event
-      final locations = ref.read(eventLocationsProvider);
+      final locations = ref.read(eventDraftLocationsProvider);
       for (final location in locations) {
         if (location.type == LocationType.physical) {
           draft.physicalLocation(location.name, '', '', '', '',location.address,location.note);
@@ -591,7 +591,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       _log.info('Created Calendar Event: $eventId');
 
       // Clear event locations after successful creation
-      ref.read(eventLocationsProvider.notifier).clearLocations();
+      ref.read(eventDraftLocationsProvider.notifier).clearLocations();
 
       EasyLoading.dismiss();
 

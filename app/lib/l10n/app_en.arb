@@ -3016,7 +3016,7 @@
   "@dontForgetToStoreTheKeySecurely": {},
   "addLocation": "Add Location",
   "@addLocation": {},
-  "editLocation": "Edit Location",
+  "editLocation": "Update Location",
   "@editLocation": {},
   "eventLocations": "Event Locations",
   "@eventLocations": {},
