@@ -766,6 +766,15 @@ object CalendarEventUpdateBuilder {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+
+    /// set the physical location details for this calendar event
+    /// description_html means by markdown
+    /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    /// set the virtual location details for this calendar event
+    /// description_html means by markdown
+    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    /// clear all locations of this cal event
     fn unset_locations();
 
     /// send builder update
