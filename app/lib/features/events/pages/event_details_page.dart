@@ -66,6 +66,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
   @override
   Widget build(BuildContext context) {
     final calEventLoader = ref.watch(calendarEventProvider(widget.calendarId));
+    final locations = ref.watch(asyncEventLocationsProvider(widget.calendarId)).valueOrNull ?? [];
     final errored = calEventLoader.asError;
     if (errored != null) {
       _log.severe(
@@ -87,12 +88,12 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final calEvent = calEventLoader.valueOrNull;
     return Scaffold(
       body: CustomScrollView(
-        slivers: [_buildEventAppBar(calEvent), _buildEventBody(calEvent)],
+        slivers: [_buildEventAppBar(calEvent, locations), _buildEventBody(calEvent, locations)],
       ),
     );
   }
 
-  Widget _buildEventAppBar(CalendarEvent? calendarEvent) {
+  Widget _buildEventAppBar(CalendarEvent? calendarEvent, List<EventLocationInfo> locations) {
     return SliverAppBar(
       expandedHeight: 200.0,
       pinned: true,
@@ -107,7 +108,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                   bookmarker: BookmarkType.forEvent(widget.calendarId),
                 ),
                 ObjectNotificationStatus(objectId: widget.calendarId),
-                _buildActionMenu(calendarEvent),
+                _buildActionMenu(calendarEvent, locations),
               ]
               : [],
       flexibleSpace: Container(
@@ -119,7 +120,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildActionMenu(CalendarEvent event) {
+  Widget _buildActionMenu(CalendarEvent event, List<EventLocationInfo> locations) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     //Get membership details
@@ -129,7 +130,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     final canPostEvent = membership?.canString('CanPostEvent') == true;
     final canChangeDate =
         ref.watch(eventTypeProvider(event)) == EventFilters.upcoming;
-    final locations = ref.watch(asyncEventLocationsProvider(event.eventId().toString())).valueOrNull ?? [];
 
     //Create event actions
     List<PopupMenuEntry> actions = [];
@@ -274,7 +274,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventBody(CalendarEvent? calendarEvent) {
+  Widget _buildEventBody(CalendarEvent? calendarEvent, List<EventLocationInfo> locations) {
     return SliverToBoxAdapter(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +287,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             _buildEventRsvpActions(calendarEvent),
             const SizedBox(height: 10),
             _buildEventDataSet(calendarEvent),
-            _buildEventLocationList(calendarEvent),
+            _buildEventLocationList(calendarEvent, locations),
             const SizedBox(height: 10),
             _buildEventDescription(calendarEvent),
             const SizedBox(height: 40),
@@ -749,8 +749,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
     );
   }
 
-  Widget _buildEventLocationList(CalendarEvent ev) {
-    final locations = ref.watch(asyncEventLocationsProvider(ev.eventId().toString())).valueOrNull ?? [];
+  Widget _buildEventLocationList(CalendarEvent ev, List<EventLocationInfo> locations) {
     if (locations.isEmpty) {
       return const SizedBox.shrink();
     }
