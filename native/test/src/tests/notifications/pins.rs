@@ -40,16 +40,12 @@ async fn pins_creation_notification() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let main_space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            if spaces.len() != 1 {
-                bail!("space not found");
-            }
-            Ok(spaces.first().cloned().expect("space found"))
+    let main_space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("space not found");
         }
+        Ok(spaces.first().cloned().expect("space found"))
     })
     .await?;
 
@@ -88,16 +84,12 @@ async fn pin_title_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -146,16 +138,12 @@ async fn pin_desc_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -204,16 +192,12 @@ async fn pin_redaction() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = first.clone();
-    let pin = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let pin = Retry::spawn(retry_strategy, || async {
+        let entries = first.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 

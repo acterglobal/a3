@@ -21,12 +21,8 @@ async fn test_room_pinned_events() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.convo(room_id.to_string()).await
     })
     .await?;
 
