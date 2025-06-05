@@ -29,30 +29,16 @@ class ChatRoomAppBarWidget extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ClipRect(
-      child: Stack(
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Row(
         children: [
-          // Blur effect
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.5), // Optional overlay
-            ),
-          ),
-          // AppBar content
-          AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Row(
-              children: [
-                _buildRoomAvatar(context),
-                Expanded(child: _buildRoomTitle(context, ref)),
-              ],
-            ),
-            actions: _buildActions(context, ref),
-          ),
+          _buildRoomAvatar(context),
+          Expanded(child: _buildRoomTitle(context, ref)),
         ],
       ),
+      actions: _buildActions(context, ref),
     );
   }
 
