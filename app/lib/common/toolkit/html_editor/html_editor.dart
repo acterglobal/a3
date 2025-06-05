@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
-import 'package:acter/common/toolkit/html_editor/mentions/commands/backspace_for_mentions.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/commands/mention_movements.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
 import 'package:acter/config/constants.dart';

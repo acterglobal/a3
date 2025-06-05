@@ -125,6 +125,10 @@ class MentionHandlerState extends ConsumerState<MentionList> {
 
   @override
   Widget build(BuildContext context) {
+    if (filteredSuggestions.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,12 +145,7 @@ class MentionHandlerState extends ConsumerState<MentionList> {
   Widget _buildMenuList() {
     final theme = Theme.of(context);
     final options = widget.avatarBuilder;
-    if (filteredSuggestions.isEmpty) {
-      return ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 100, minWidth: 100),
-        child: Center(child: Text(widget.notFoundTitle)),
-      );
-    }
+
     return Flexible(
       child: ListView.separated(
         padding: EdgeInsets.zero,
@@ -155,9 +154,9 @@ class MentionHandlerState extends ConsumerState<MentionList> {
         itemCount: filteredSuggestions.length,
         separatorBuilder:
             (context, index) => Divider(
-              endIndent: 5,
-              indent: 5,
-              color: theme.dividerTheme.color,
+              indent: 70,
+              color: theme.unselectedWidgetColor,
+              height: 1,
             ),
         itemBuilder: (context, index) {
           final mentionId = filteredSuggestions.keys.elementAt(index);
