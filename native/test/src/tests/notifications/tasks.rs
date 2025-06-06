@@ -105,9 +105,12 @@ async fn tasklist_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.name("Renamed Tasklist".to_owned());
-    let notification_ev = update.send().await?;
+    let title = "Renamed Tasklist";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .name(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -122,7 +125,7 @@ async fn tasklist_title_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(notification_item.title(), "Renamed Tasklist"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -162,9 +165,12 @@ async fn tasklist_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.description_text("Added description".to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Added description";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .description_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -180,7 +186,7 @@ async fn tasklist_desc_update() -> Result<()> {
     let obj_id = obj_entry.event_id_str();
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added description"); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -272,11 +278,13 @@ async fn task_created() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut task = obj_entry.task_builder()?;
-    task.due_date(2025, 11, 13);
-    task.title("Baby's first task".to_owned());
-
-    let notification_ev = task.send().await?;
+    let title = "Baby's first task";
+    let notification_ev = obj_entry
+        .task_builder()?
+        .due_date(2025, 11, 13)
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -291,7 +299,7 @@ async fn task_created() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(notification_item.title(), "Baby's first task"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -335,9 +343,12 @@ async fn task_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Task".to_owned());
-    let notification_ev = update.send().await?;
+    let title = "Renamed Task";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -352,7 +363,7 @@ async fn task_title_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(notification_item.title(), "Renamed Task"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -396,9 +407,12 @@ async fn task_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.description_text("Task is complicated".to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Task is complicated";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .description_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -408,13 +422,13 @@ async fn task_desc_update() -> Result<()> {
         notification_item
             .parent_id_str()
             .expect("parent is in change"),
-        obj_entry.event_id_str(),
+        obj_entry.event_id_str()
     );
 
     let obj_id = obj_entry.event_id_str();
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Task is complicated"); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -532,9 +546,7 @@ async fn task_done_and_undone() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.mark_done();
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry.update_builder()?.mark_done().send().await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -564,9 +576,7 @@ async fn task_done_and_undone() -> Result<()> {
 
     // and undone
 
-    let mut update = obj_entry.update_builder()?;
-    update.mark_undone();
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry.update_builder()?.mark_undone().send().await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())

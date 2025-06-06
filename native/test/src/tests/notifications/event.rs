@@ -107,9 +107,12 @@ async fn event_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Event".to_owned());
-    let notification_ev = update.send().await?;
+    let title = "Renamed Event";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -122,7 +125,7 @@ async fn event_title_update() -> Result<()> {
         obj_entry.event_id()
     );
 
-    assert_eq!(notification_item.title(), "Renamed Event"); // new title
+    assert_eq!(notification_item.title(), title); // new title
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -162,9 +165,12 @@ async fn event_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.description_text("Added content".to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Added content";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .description_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -178,7 +184,7 @@ async fn event_desc_update() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added content"); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -221,10 +227,12 @@ async fn event_rescheduled() -> Result<()> {
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    let mut update = obj_entry.update_builder()?;
-    update.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
-    update.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
-    let notification_ev = update.send().await?;
+    let notification_ev = {
+        let mut update = obj_entry.update_builder()?;
+        update.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+        update.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+        update.send().await?
+    };
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
