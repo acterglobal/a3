@@ -524,7 +524,7 @@ async fn create_public_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string());
+        builder.set_parent(first.room_id().to_string())?;
         builder.join_rule(join_rule.to_owned());
         builder.build()?
     };
