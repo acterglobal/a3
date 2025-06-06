@@ -7,6 +7,7 @@ import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/toolkit/html/render_html.dart';
 import 'package:acter/common/toolkit/menu_item_widget.dart';
+import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter/router/routes.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/acter_icon_picker/acter_icon_widget.dart';
@@ -117,6 +118,7 @@ class _TaskItemBody extends ConsumerWidget {
               const SizedBox(height: 10),
               _widgetTaskDate(context, ref),
               _widgetTaskAssignment(context, ref),
+              _widgetTaskInvitations(context, ref),
               ..._widgetDescription(context),
               const SizedBox(height: 40),
               AttachmentSectionWidget(
@@ -495,7 +497,10 @@ class _TaskItemBody extends ConsumerWidget {
               ),
       subtitle:
           hasAssignees
-              ? buildAssignees(context, assignees, task.roomIdStr(), ref)
+              ? Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: buildAssignees(context, assignees, task.roomIdStr(), ref),
+              )
               : null,
       trailing:
           hasAssignees
@@ -507,6 +512,49 @@ class _TaskItemBody extends ConsumerWidget {
     );
   }
 
+  Widget _widgetTaskInvitations(BuildContext context, WidgetRef ref) {
+     final lang = L10n.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final hasInvitations = ref.watch(taskHasInvitationsProvider(task)).valueOrNull ?? false;
+    final invitedUsers = ref.watch(taskInvitedUsersProvider(task)).valueOrNull ?? [];
+    return ListTile(
+      onTap: () => assigneesAction(context, ref),
+      dense: true,
+      leading: const Padding(
+        padding: EdgeInsets.only(left: 15),
+        child: Icon(Icons.send),
+      ),
+      title:
+          hasInvitations
+              ? Text(lang.invited, style: textTheme.bodySmall)
+              : Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                  lang.notAssigned,
+                  style: textTheme.bodyMedium?.copyWith(
+                    decoration: TextDecoration.underline,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+      subtitle:
+          hasInvitations
+              ? Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: buildInvitedUsers(context, invitedUsers, task.roomIdStr(), ref),
+              )
+              : null,
+      trailing:
+          hasInvitations
+              ? InkWell(
+                onTap: () => assigneesAction(context, ref),
+                child: const Icon(Icons.more_vert),
+              )
+              : null,
+    );
+  }
+
+  // Build assignees for task item detail page
   Widget buildAssignees(
     BuildContext context,
     List<String> assignees,
@@ -539,6 +587,40 @@ class _TaskItemBody extends ConsumerWidget {
               .toList(),
     );
   }
+
+  // Build invited users for task item detail page
+  Widget buildInvitedUsers(
+    BuildContext context,
+    List<String> invitedUsers,
+    String roomId,
+    WidgetRef ref,
+  ) {
+    return Wrap(
+      direction: Axis.horizontal,
+      spacing: 5,
+      runSpacing: 5,
+      children: invitedUsers.map((userId) {
+        final displayName = ref.watch(invitedUserDisplayNameProvider(userId));
+        return UserChip(
+          key: ValueKey(userId),
+          roomId: roomId,
+          memberId: displayName,
+          style: Theme.of(context).textTheme.bodyLarge,
+          onTap: (context, {required bool isMe, required VoidCallback defaultOnTap}) {
+            if (isMe) {
+              onUnAssign(context, ref);
+            } else {
+              defaultOnTap();
+            }
+          },
+          trailingBuilder: (context, {bool isMe = false, double fontSize = 12}) {
+            return isMe ? Icon(PhosphorIconsLight.x, size: fontSize) : null;
+          },
+        );
+      }).toList(),
+    );
+  }
+
 
   Future<void> onAssign(BuildContext context, WidgetRef ref) async {
     final lang = L10n.of(context);
