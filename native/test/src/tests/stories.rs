@@ -91,10 +91,12 @@ async fn story_smoketest() -> Result<()> {
     let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.latest_stories(10).await?.len(), 3);
 
-    let mut draft = main_space.story_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
     print!("draft sent event id: {}", event_id);
 
     Ok(())
@@ -647,15 +649,20 @@ async fn multi_story_read_receipt_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
-    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let first_story_id = draft.send().await?;
 
-    let mut draft = space.story_draft()?;
+    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
+    let first_story_id = {
+        let mut draft = space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
+
     let text_draft = user.text_markdown_draft("## This is a second story".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let second_story_id = draft.send().await?;
+    let second_story_id = {
+        let mut draft = space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
 
     let slides = Retry::spawn(retry_strategy.clone(), || async {
         let story_entries = space.latest_stories(2).await?;
