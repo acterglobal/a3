@@ -770,10 +770,10 @@ object CalendarEventUpdateBuilder {
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
     /// clear all locations of this cal event
     fn unset_locations();
 
@@ -810,10 +810,10 @@ object CalendarEventDraft {
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;

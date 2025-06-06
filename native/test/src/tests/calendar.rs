@@ -115,7 +115,7 @@ async fn edit_calendar_event() -> Result<()> {
     main_event
         .update_builder()?
         .title(title.to_owned())
-        .physical_location(
+        .add_physical_location(
             Some(name.to_owned()),
             Some(description.to_owned()),
             Some(description_html.to_owned()),
@@ -124,7 +124,7 @@ async fn edit_calendar_event() -> Result<()> {
             Some(address.to_owned()),
             Some(notes.to_owned()),
         )
-        .virtual_location(
+        .add_virtual_location(
             Some(name.to_owned()),
             Some(description.to_owned()),
             Some(description_html.to_owned()),
@@ -321,7 +321,7 @@ async fn calendar_event_create() -> Result<()> {
     let uri = "https://example.com/location";
     let address = "123 Test St, Philadelphia, PA 19103";
     let notes = "Please bring your laptop.";
-    draft.physical_location(
+    draft.add_physical_location(
         Some(name.to_owned()),
         Some(description.to_owned()),
         Some(description_html.to_owned()),
@@ -330,7 +330,7 @@ async fn calendar_event_create() -> Result<()> {
         Some(address.to_owned()),
         Some(notes.to_owned()),
     );
-    draft.virtual_location(
+    draft.add_virtual_location(
         Some(name.to_owned()),
         Some(description.to_owned()),
         Some(description_html.to_owned()),

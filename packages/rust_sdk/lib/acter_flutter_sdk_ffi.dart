@@ -20723,7 +20723,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventUpdateBuilderPhysicalLocationPtr = _lookup<
+  late final _calendarEventUpdateBuilderAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -20757,10 +20757,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventUpdateBuilder_physical_location");
+  >("__CalendarEventUpdateBuilder_add_physical_location");
 
-  late final _calendarEventUpdateBuilderPhysicalLocation =
-      _calendarEventUpdateBuilderPhysicalLocationPtr
+  late final _calendarEventUpdateBuilderAddPhysicalLocation =
+      _calendarEventUpdateBuilderAddPhysicalLocationPtr
           .asFunction<
             void Function(
               int,
@@ -20794,7 +20794,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventUpdateBuilderVirtualLocationPtr = _lookup<
+  late final _calendarEventUpdateBuilderAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -20819,10 +20819,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventUpdateBuilder_virtual_location");
+  >("__CalendarEventUpdateBuilder_add_virtual_location");
 
-  late final _calendarEventUpdateBuilderVirtualLocation =
-      _calendarEventUpdateBuilderVirtualLocationPtr
+  late final _calendarEventUpdateBuilderAddVirtualLocation =
+      _calendarEventUpdateBuilderAddVirtualLocationPtr
           .asFunction<
             void Function(
               int,
@@ -21042,7 +21042,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventDraftPhysicalLocationPtr = _lookup<
+  late final _calendarEventDraftAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -21076,10 +21076,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventDraft_physical_location");
+  >("__CalendarEventDraft_add_physical_location");
 
-  late final _calendarEventDraftPhysicalLocation =
-      _calendarEventDraftPhysicalLocationPtr
+  late final _calendarEventDraftAddPhysicalLocation =
+      _calendarEventDraftAddPhysicalLocationPtr
           .asFunction<
             void Function(
               int,
@@ -21113,7 +21113,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventDraftVirtualLocationPtr = _lookup<
+  late final _calendarEventDraftAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -21138,10 +21138,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventDraft_virtual_location");
+  >("__CalendarEventDraft_add_virtual_location");
 
-  late final _calendarEventDraftVirtualLocation =
-      _calendarEventDraftVirtualLocationPtr
+  late final _calendarEventDraftAddVirtualLocation =
+      _calendarEventDraftAddVirtualLocationPtr
           .asFunction<
             void Function(
               int,
@@ -43137,7 +43137,7 @@ class CalendarEventUpdateBuilder {
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void physicalLocation(
+  void addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43281,7 +43281,7 @@ class CalendarEventUpdateBuilder {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventUpdateBuilderPhysicalLocation(
+    _api._calendarEventUpdateBuilderAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43317,7 +43317,7 @@ class CalendarEventUpdateBuilder {
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void virtualLocation(
+  void addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43414,7 +43414,7 @@ class CalendarEventUpdateBuilder {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventUpdateBuilderVirtualLocation(
+    _api._calendarEventUpdateBuilderAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43857,7 +43857,7 @@ class CalendarEventDraft {
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void physicalLocation(
+  void addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -44001,7 +44001,7 @@ class CalendarEventDraft {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventDraftPhysicalLocation(
+    _api._calendarEventDraftAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -44037,7 +44037,7 @@ class CalendarEventDraft {
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void virtualLocation(
+  void addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -44134,7 +44134,7 @@ class CalendarEventDraft {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventDraftVirtualLocation(
+    _api._calendarEventDraftAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,

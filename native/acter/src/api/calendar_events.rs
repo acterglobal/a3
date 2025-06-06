@@ -379,7 +379,7 @@ impl CalendarEventDraft {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn physical_location(
+    pub fn add_physical_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
@@ -409,7 +409,7 @@ impl CalendarEventDraft {
         self
     }
 
-    pub fn virtual_location(
+    pub fn add_virtual_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
@@ -539,7 +539,7 @@ impl CalendarEventUpdateBuilder {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn physical_location(
+    pub fn add_physical_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
@@ -569,7 +569,7 @@ impl CalendarEventUpdateBuilder {
         self
     }
 
-    pub fn virtual_location(
+    pub fn add_virtual_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
