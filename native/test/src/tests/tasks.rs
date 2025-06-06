@@ -115,10 +115,10 @@ async fn task_smoketests() -> Result<()> {
 
     let task_1_updater = task_1.subscribe();
 
-    let new_title = "Replacement Name";
+    let title = "Replacement Name";
     task_1
         .update_builder()?
-        .title(new_title.to_owned())
+        .title(title.to_owned())
         .mark_done()
         .send()
         .await?;
@@ -133,17 +133,17 @@ async fn task_smoketests() -> Result<()> {
 
     let task_1 = task_1.refresh().await?;
     // Update has been applied properly
-    assert_eq!(task_1.title(), new_title);
+    assert_eq!(task_1.title(), title);
     assert!(task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
 
-    let new_name = "Setup";
-    let new_body = "All done now";
+    let name = "Setup";
+    let body = "All done now";
     task_list
         .update_builder()?
-        .name(new_name.to_owned())
-        .description_text(new_body.to_owned())
+        .name(name.to_owned())
+        .description_text(body.to_owned())
         .send()
         .await?;
 
@@ -157,10 +157,10 @@ async fn task_smoketests() -> Result<()> {
 
     let task_list = task_list.refresh().await?;
 
-    assert_eq!(task_list.name(), new_name);
+    assert_eq!(task_list.name(), name);
     assert_eq!(
-        task_list.description().map(|desc| desc.body()).as_deref(),
-        Some(new_body)
+        task_list.description().map(|c| c.body()).as_deref(),
+        Some(body)
     );
 
     Ok(())
@@ -336,9 +336,10 @@ async fn task_comment_smoketests() -> Result<()> {
 
     let task_list_listener = task_list.subscribe();
 
+    let title = "Testing 1";
     let task_1_id = task_list
         .task_builder()?
-        .title("Testing 1".into())
+        .title(title.to_owned())
         .send()
         .await?;
 

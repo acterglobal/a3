@@ -91,10 +91,12 @@ async fn story_smoketest() -> Result<()> {
     let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.latest_stories(10).await?.len(), 3);
 
-    let mut draft = main_space.story_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
     print!("draft sent event id: {}", event_id);
 
     Ok(())
@@ -116,7 +118,8 @@ async fn story_plain_text_test() -> Result<()> {
 
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.story_draft()?;
-    let text_draft = user.text_plain_draft("This is a simple text".to_owned());
+    let body = "This is a simple text";
+    let text_draft = user.text_plain_draft(body.to_owned());
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
@@ -135,7 +138,7 @@ async fn story_plain_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "This is a simple text");
+    assert_eq!(msg_content.body(), body);
 
     // FIXME: notifications need to be checked against a secondary client..
     // // also check what the notification will be like
@@ -392,7 +395,8 @@ async fn story_multiple_slide_test() -> Result<()> {
     let markdown_draft =
         user.text_markdown_draft("This update is ***reallly important***".to_owned());
 
-    let plain_draft = user.text_plain_draft("Hello Updates!".to_owned());
+    let plain_body = "Hello Updates!";
+    let plain_draft = user.text_plain_draft(plain_body.to_owned());
 
     let mut vid_file = NamedTempFile::new()?;
     vid_file
@@ -439,7 +443,7 @@ async fn story_multiple_slide_test() -> Result<()> {
     assert_eq!(third_slide.type_str(), "text");
     let msg_content = third_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "Hello Updates!");
+    assert_eq!(msg_content.body(), plain_body);
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");
@@ -647,15 +651,20 @@ async fn multi_story_read_receipt_test() -> Result<()> {
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
-    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let first_story_id = draft.send().await?;
 
-    let mut draft = space.story_draft()?;
+    let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
+    let first_story_id = {
+        let mut draft = space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
+
     let text_draft = user.text_markdown_draft("## This is a second story".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let second_story_id = draft.send().await?;
+    let second_story_id = {
+        let mut draft = space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
 
     let slides = Retry::spawn(retry_strategy.clone(), || async {
         let story_entries = space.latest_stories(2).await?;

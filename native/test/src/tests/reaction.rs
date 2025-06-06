@@ -106,12 +106,13 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
     let worf_timeline = worf_convo.timeline_stream();
     let worf_stream = worf_timeline.messages_stream();
 
-    let draft = sisko.text_plain_draft("Hi, everyone".to_owned());
+    let body = "Hi, everyone";
+    let draft = sisko.text_plain_draft(body.to_owned());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     let (kyra_received, kyra_unique_id) = wait_for_message(
         kyra_stream,
-        &|m| match_text_msg(m, "Hi, everyone", false).is_some(),
+        &|m| match_text_msg(m, body, false).is_some(),
         "even after 30 seconds, kyra didn’t see sisko’s message",
     )
     .await?;
@@ -157,8 +158,8 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
                     .value()
                     .expect("diff set action should have valid value");
                 info!("diff set - {:?}", value);
-                if match_msg_reaction(&value, "Hi, everyone", "👏".to_owned())
-                    && match_msg_reaction(&value, "Hi, everyone", "😎".to_owned())
+                if match_msg_reaction(&value, body, "👏".to_owned())
+                    && match_msg_reaction(&value, body, "😎".to_owned())
                 {
                     found = true;
                 }

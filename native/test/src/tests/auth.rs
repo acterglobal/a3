@@ -512,7 +512,7 @@ async fn get_email_tokens(email_addr: String, dir: &str) -> Result<(String, Stri
                 }
             }
         }
-        let content = format!("{}\r\n\r\n{}", headers.join("\r\n"), msg.content.body,);
+        let content = format!("{}\r\n\r\n{}", headers.join("\r\n"), msg.content.body);
         let mail_msg = MessageParser::default()
             .parse(&content)
             .context("mail content should be parsed")?;

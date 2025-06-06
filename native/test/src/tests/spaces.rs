@@ -520,11 +520,12 @@ async fn create_public_subspace() -> Result<()> {
 
     let first = spaces.pop().expect("first space should be available");
 
+    let join_rule = "PUBLIC"; // uppercase
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string())?;
-        builder.join_rule("PUBLIC".to_owned());
+        builder.set_parent(first.room_id().to_string());
+        builder.join_rule(join_rule.to_owned());
         builder.build()?
     };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -538,7 +539,7 @@ async fn create_public_subspace() -> Result<()> {
     .await?;
 
     let space = user.space(subspace_id.to_string()).await?;
-    assert_eq!(space.join_rule_str(), "public");
+    assert_eq!(space.join_rule_str(), join_rule.to_lowercase());
     let space_parent = Retry::spawn(retry_strategy, || async {
         let space_relations = space.space_relations().await?;
         let Some(space_parent) = space_relations.main_parent() else {
@@ -708,12 +709,13 @@ async fn update_name() -> Result<()> {
 
     // set name
 
-    let _event_id = space.set_name("New Name".to_owned()).await?;
+    let name = "New Name";
+    let _event_id = space.set_name(name.to_owned()).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         let space = user.space(space_id.clone()).await?;
-        if space.name().as_deref() != Some("New Name") {
+        if space.name().as_deref() != Some(name) {
             bail!("Name not set");
         }
         Ok(())
@@ -792,12 +794,13 @@ async fn update_topic() -> Result<()> {
 
     // set topic
 
-    let _event_id = space.set_topic("New Topic".to_owned()).await?;
+    let topic = "New Topic";
+    let _event_id = space.set_topic(topic.to_owned()).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         let space = user.space(space_id.clone()).await?;
-        if space.topic().as_deref() != Some("New topic") {
+        if space.topic().as_deref() != Some(topic) {
             bail!("Topic not set");
         }
         Ok(())

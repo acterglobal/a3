@@ -50,13 +50,15 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
     let mut tmp_png = NamedTempFile::new()?;
     tmp_png.as_file_mut().write_all(bytes)?;
 
+    let mimetype = "image/jpeg";
+    let thumb_mimetype = "image/png";
     let draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
-            "image/jpeg".to_owned(),
+            mimetype.to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -69,7 +71,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(msg_content) = match_media_msg(&value, "image/jpeg", &jpg_name) {
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &jpg_name) {
                         found = Some(msg_content);
                     }
                 }
@@ -78,7 +80,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(msg_content) = match_media_msg(value, "image/jpeg", &jpg_name) {
+                        if let Some(msg_content) = match_media_msg(value, mimetype, &jpg_name) {
                             found = Some(msg_content);
                             break;
                         }
@@ -100,7 +102,7 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
         .context("thumbnail info should exist")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
-        Some("image/png"),
+        Some(thumb_mimetype),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -147,13 +149,15 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
     let mut tmp_png = NamedTempFile::new()?;
     tmp_png.as_file_mut().write_all(bytes)?;
 
+    let mimetype = "video/mp4";
+    let thumb_mimetype = "image/png";
     let draft = user
         .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
-            "video/mp4".to_owned(),
+            mimetype.to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -166,7 +170,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some(msg_content) = match_media_msg(&value, "video/mp4", &mp4_name) {
+                    if let Some(msg_content) = match_media_msg(&value, mimetype, &mp4_name) {
                         found = Some(msg_content);
                     }
                 }
@@ -175,7 +179,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some(msg_content) = match_media_msg(value, "video/mp4", &mp4_name) {
+                        if let Some(msg_content) = match_media_msg(value, mimetype, &mp4_name) {
                             found = Some(msg_content);
                             break;
                         }
@@ -197,7 +201,7 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
         .context("thumbnail info should exist")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
-        Some("image/png"),
+        Some(thumb_mimetype),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -234,13 +238,14 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
 
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
+    let thumb_mimetype = "image/png";
     let image_draft = user
         .image_draft(
             tmp_jpg.path().to_string_lossy().to_string(),
             "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
@@ -268,7 +273,7 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
-        Some("image/png"),
+        Some(thumb_mimetype),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -305,13 +310,14 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
 
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.news_draft()?;
+    let thumb_mimetype = "image/png";
     let video_draft = user
         .video_draft(
             tmp_mp4.path().to_string_lossy().to_string(),
             "video/mp4".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
     draft.add_slide(Box::new(video_draft.into())).await?;
     draft.send().await?;
 
@@ -339,7 +345,7 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
-        Some("image/png"),
+        Some(thumb_mimetype),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -417,13 +423,14 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
+    let thumb_mimetype = "image/png";
     let base_draft = user
         .image_draft(
             jpg_file.path().to_string_lossy().to_string(),
             "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -459,7 +466,7 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
-        Some("image/png"),
+        Some(thumb_mimetype),
         "we sent thumbnail in png format",
     );
     assert_eq!(
@@ -511,13 +518,14 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
     png_file.as_file_mut().write_all(bytes)?;
 
     let attachments_listener = attachments_manager.subscribe();
+    let thumb_mimetype = "image/png";
     let base_draft = user
         .video_draft(
             mp4_file.path().to_string_lossy().to_string(),
             "video/mp4".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some("image/png".to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -553,7 +561,7 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
         .context("we sent thumbnail, but thumbnail info not available")?;
     assert_eq!(
         thumbnail_info.mimetype().as_deref(),
-        Some("image/png"),
+        Some(thumb_mimetype),
         "we sent thumbnail in png format",
     );
     assert_eq!(

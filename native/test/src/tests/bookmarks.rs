@@ -4,7 +4,7 @@ use tokio_retry::{
     Retry,
 };
 
-use crate::utils::random_user;
+use crate::utils::{random_string, random_user};
 
 #[tokio::test]
 async fn bookmarks_e2e() -> Result<()> {
@@ -15,6 +15,8 @@ async fn bookmarks_e2e() -> Result<()> {
     state_sync.await_has_synced_history().await?;
 
     let account = user.account()?;
+    let charset: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                           abcdefghijklmnopqrstuvwxyz";
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
@@ -24,7 +26,12 @@ async fn bookmarks_e2e() -> Result<()> {
     assert!(bookmarks.entries("news".to_owned()).is_empty());
     assert!(bookmarks.entries("events".to_owned()).is_empty());
 
-    bookmarks.add("pins".to_owned(), "AsdfG".to_owned()).await?;
+    let first_entry = random_string(5, charset);
+    let second_entry = random_string(8, charset);
+
+    bookmarks
+        .add("pins".to_owned(), first_entry.clone())
+        .await?;
     let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
         let bookmarks = account.bookmarks().await?;
         if bookmarks.entries("pins".to_owned()).is_empty() {
@@ -34,12 +41,17 @@ async fn bookmarks_e2e() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(bookmarks.entries("pins".to_owned()), vec!["AsdfG"]);
+    assert_eq!(
+        bookmarks.entries("pins".to_owned()),
+        vec![first_entry.clone()]
+    );
     assert!(bookmarks.entries("news".to_owned()).is_empty());
     assert!(bookmarks.entries("events".to_owned()).is_empty());
 
     // adding it again, doesn’t actually add it again
-    bookmarks.add("pins".to_owned(), "AsdfG".to_owned()).await?;
+    bookmarks
+        .add("pins".to_owned(), first_entry.clone())
+        .await?;
     let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
         let bookmarks = account.bookmarks().await?;
         if !bookmarks.entries("pins".to_owned()).is_empty() {
@@ -51,12 +63,15 @@ async fn bookmarks_e2e() -> Result<()> {
     .await?;
 
     // add another
-    assert_eq!(bookmarks.entries("pins".to_owned()), vec!["AsdfG"]);
+    assert_eq!(
+        bookmarks.entries("pins".to_owned()),
+        vec![first_entry.clone()]
+    );
     assert!(bookmarks.entries("news".to_owned()).is_empty());
     assert!(bookmarks.entries("events".to_owned()).is_empty());
 
     bookmarks
-        .add("pins".to_owned(), "SEcDondD".to_owned())
+        .add("pins".to_owned(), second_entry.clone())
         .await?;
     let bookmarks = Retry::spawn(retry_strategy.clone(), || async {
         let bookmarks = account.bookmarks().await?;
@@ -70,7 +85,7 @@ async fn bookmarks_e2e() -> Result<()> {
 
     assert_eq!(
         bookmarks.entries("pins".to_owned()),
-        vec!["AsdfG", "SEcDondD"]
+        vec![first_entry.clone(), second_entry.clone()]
     );
     assert!(bookmarks.entries("news".to_owned()).is_empty());
     assert!(bookmarks.entries("events".to_owned()).is_empty());
@@ -90,15 +105,13 @@ async fn bookmarks_e2e() -> Result<()> {
 
     assert_eq!(
         bookmarks.entries("pins".to_owned()),
-        vec!["AsdfG", "SEcDondD"]
+        vec![first_entry.clone(), second_entry.clone()]
     );
     assert_eq!(bookmarks.entries("news".to_owned()), vec!["super"]);
     assert!(bookmarks.entries("events".to_owned()).is_empty());
 
     // test remove
-    bookmarks
-        .remove("pins".to_owned(), "AsdfG".to_owned())
-        .await?;
+    bookmarks.remove("pins".to_owned(), first_entry).await?;
     let bookmarks = Retry::spawn(retry_strategy, || async {
         let bookmarks = account.bookmarks().await?;
         if bookmarks.entries("pins".to_owned()).len() == 1 {
@@ -109,7 +122,7 @@ async fn bookmarks_e2e() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(bookmarks.entries("pins".to_owned()), vec!["SEcDondD"]);
+    assert_eq!(bookmarks.entries("pins".to_owned()), vec![second_entry]);
     assert_eq!(bookmarks.entries("news".to_owned()), vec!["super"]);
     assert!(bookmarks.entries("events".to_owned()).is_empty());
     Ok(())

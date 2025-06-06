@@ -57,14 +57,16 @@ async fn event_creation_notification() -> Result<()> {
         .await?; // we want to see push for everything;
 
     let title = "First meeting";
-    let mut draft = main_space.calendar_event_draft()?;
-    draft.title(title.to_owned());
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
-    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+        draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+        draft.send().await?
+    };
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -228,10 +230,12 @@ async fn event_rescheduled() -> Result<()> {
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    let mut update = obj_entry.update_builder()?;
-    update.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
-    update.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
-    let notification_ev = update.send().await?;
+    let notification_ev = {
+        let mut update = obj_entry.update_builder()?;
+        update.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+        update.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+        update.send().await?
+    };
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())

@@ -379,7 +379,7 @@ impl CalendarEventDraft {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn physical_location(
+    pub fn add_physical_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
@@ -409,7 +409,7 @@ impl CalendarEventDraft {
         self
     }
 
-    pub fn virtual_location(
+    pub fn add_virtual_location(
         &mut self,
         name: Option<String>,
         description: Option<String>,
@@ -535,6 +535,59 @@ impl CalendarEventUpdateBuilder {
 
     pub fn unset_utc_end_update(&mut self) -> &mut Self {
         self.inner.utc_end(None);
+        self
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_physical_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<String>,
+        description_html: Option<String>,
+        coordinates: Option<String>,
+        uri: Option<String>,
+        address: Option<String>,
+        notes: Option<String>,
+    ) -> &mut Self {
+        let mut desc_plain = None;
+        let mut desc_html = None;
+        if let Some(desc) = &description {
+            if !desc.is_empty() {
+                desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
+                desc_html =
+                    description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
+            }
+        }
+        self.inner.add_physical_location(
+            name,
+            desc_html.or(desc_plain),
+            coordinates,
+            uri,
+            address,
+            notes,
+        );
+        self
+    }
+
+    pub fn add_virtual_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<String>,
+        description_html: Option<String>,
+        uri: String,
+        notes: Option<String>,
+    ) -> &mut Self {
+        let mut desc_plain = None;
+        let mut desc_html = None;
+        if let Some(desc) = &description {
+            if !desc.is_empty() {
+                desc_plain = Some(TextMessageEventContent::plain(desc.clone()));
+                desc_html =
+                    description_html.map(|html| TextMessageEventContent::html(desc.clone(), html));
+            }
+        }
+        self.inner
+            .add_virtual_location(name, desc_html.or(desc_plain), uri, notes);
         self
     }
 

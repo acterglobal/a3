@@ -125,7 +125,7 @@ async fn pin_title_update() -> Result<()> {
 
     assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
+    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id));
     assert_eq!(parent.type_str(), "pin");
     // assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
@@ -160,7 +160,7 @@ async fn pin_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let body = "Added content";
+    let body = "Added description";
     let notification_ev = obj_entry
         .update_builder()?
         .content_text(body.to_owned())
@@ -181,7 +181,7 @@ async fn pin_desc_update() -> Result<()> {
     let content = notification_item.body().expect("found content");
     assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
+    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id));
     assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon

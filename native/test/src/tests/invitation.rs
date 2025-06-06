@@ -309,8 +309,9 @@ async fn no_invite_count_update_on_message() -> Result<()> {
     let room = kyra.room(sisko_room_id.to_string()).await?;
     let timeline = room.timeline().await?;
 
+    let body = "hello";
     sisko_room
-        .send(RoomMessageEventContent::text_plain("hello"))
+        .send(RoomMessageEventContent::text_plain(body))
         .await?;
 
     // ensure we received the message
@@ -325,7 +326,7 @@ async fn no_invite_count_update_on_message() -> Result<()> {
         else {
             bail!("not a text message");
         };
-        if msg.body() == "hello" {
+        if msg.body() == body {
             Ok(true)
         } else {
             Err(anyhow::anyhow!("wrong message"))
