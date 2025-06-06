@@ -227,7 +227,7 @@ async fn create_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string())?;
+        builder.set_parent(first.room_id().to_string());
         builder.build()?
     };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -452,7 +452,7 @@ async fn create_private_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string())?;
+        builder.set_parent(first.room_id().to_string());
         builder.join_rule(join_rule.to_owned());
         builder.build()?
     };
@@ -518,7 +518,7 @@ async fn create_public_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string())?;
+        builder.set_parent(first.room_id().to_string());
         builder.join_rule(join_rule.to_owned());
         builder.build()?
     };
@@ -583,7 +583,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string())?;
+        builder.set_parent(first.room_id().to_string());
         builder.build()?
     };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
