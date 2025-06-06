@@ -10,6 +10,7 @@ use anyhow::Result;
 use futures::{pin_mut, stream::StreamExt};
 use matrix_sdk::config::StoreConfig;
 use matrix_sdk_base::ruma::{OwnedRoomId, UserId};
+use rand::{thread_rng, Rng};
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
@@ -345,4 +346,15 @@ pub(crate) async fn invite_user(
     room.invite_user_by_id(other_user_id).await?;
 
     Ok(room)
+}
+
+pub fn random_string(length: usize, charset: &[u8]) -> String {
+    let mut rng = thread_rng();
+
+    (0..length)
+        .map(|_| {
+            let idx = rng.gen_range(0..charset.len());
+            charset[idx] as char
+        })
+        .collect()
 }

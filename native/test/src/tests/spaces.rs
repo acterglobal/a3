@@ -631,15 +631,16 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     assert!(matches!(join_rule, JoinRule::Invite));
 
+    let new_rule = "restricted";
     let mut update = new_join_rule_builder();
-    update.join_rule("restricted".to_owned());
+    update.join_rule(new_rule.to_owned());
     update.add_room(space_parent.room_id().to_string());
 
     space.set_join_rule(Box::new(update)).await?;
 
     Retry::spawn(retry_strategy, || async {
         let space = user.space(subspace_id.to_string()).await?;
-        if space.join_rule_str() != "restricted" {
+        if space.join_rule_str() != new_rule {
             bail!("update did not occur");
         }
         Ok(())
@@ -702,12 +703,13 @@ async fn update_name() -> Result<()> {
 
     // set name
 
-    let _event_id = space.set_name("New Name".to_owned()).await?;
+    let name = "New Name";
+    let _event_id = space.set_name(name.to_owned()).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         let space = user.space(space_id.clone()).await?;
-        if space.name().as_deref() != Some("New Name") {
+        if space.name().as_deref() != Some(name) {
             bail!("Name not set");
         }
         Ok(())
@@ -786,12 +788,13 @@ async fn update_topic() -> Result<()> {
 
     // set topic
 
-    let _event_id = space.set_topic("New Topic".to_owned()).await?;
+    let topic = "New Topic";
+    let _event_id = space.set_topic(topic.to_owned()).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         let space = user.space(space_id.clone()).await?;
-        if space.topic().as_deref() != Some("New topic") {
+        if space.topic().as_deref() != Some(topic) {
             bail!("Topic not set");
         }
         Ok(())

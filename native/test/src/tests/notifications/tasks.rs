@@ -130,10 +130,7 @@ async fn tasklist_title_update() -> Result<()> {
 
     assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(
-        notification_item.target_url(),
-        format!("/tasks/{}", obj_id,)
-    );
+    assert_eq!(notification_item.target_url(), format!("/tasks/{}", obj_id));
     assert_eq!(parent.type_str(), "task-list");
     // assert_eq!(parent.title().as_deref(), Some("Renamed Tasklist"));
     assert_eq!(parent.emoji(), "📋"); // task list icon
@@ -191,10 +188,7 @@ async fn tasklist_desc_update() -> Result<()> {
     let content = notification_item.body().expect("found content");
     assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(
-        notification_item.target_url(),
-        format!("/tasks/{}", obj_id,)
-    );
+    assert_eq!(notification_item.target_url(), format!("/tasks/{}", obj_id));
     assert_eq!(parent.type_str(), "task-list");
     assert_eq!(parent.title().as_deref(), Some("Onboarding list"));
     assert_eq!(parent.emoji(), "📋"); // task list icon

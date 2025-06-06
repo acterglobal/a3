@@ -47,7 +47,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
     let kyra_timeline = kyra_convo.timeline_stream();
 
-    let draft = sisko.text_plain_draft("Hi, everyone".to_owned());
+    let body = "Hi, everyone";
+    let draft = sisko.text_plain_draft(body.to_owned());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -64,7 +65,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
+                        if let Some(event_id) = match_text_msg(value, body, false) {
                             received = Some(event_id);
                             break;
                         }
@@ -75,7 +76,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
+                    if let Some(event_id) = match_text_msg(&value, body, false) {
                         received = Some(event_id);
                     }
                 }
@@ -99,7 +100,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     })
     .await?;
 
-    let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_owned());
+    let body = "Sorry, it’s my bad";
+    let draft = kyra.text_plain_draft(body.to_owned());
     kyra_timeline
         .reply_message(received, Box::new(draft))
         .await?;
@@ -116,7 +118,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                     .value()
                     .expect("diff pushback action should have valid value");
                 info!("diff pushback - {:?}", value);
-                if match_text_msg(&value, "Sorry, it’s my bad", false).is_some() {
+                if match_text_msg(&value, body, false).is_some() {
                     found = true;
                 }
             }

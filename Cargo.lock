@@ -142,6 +142,7 @@ dependencies = [
  "matrix-sdk",
  "matrix-sdk-base",
  "nanoid",
+ "rand 0.8.5",
  "regex",
  "serde_json",
  "tempfile",

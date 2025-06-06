@@ -93,15 +93,13 @@ async fn change_space_topic() -> Result<()> {
 
     // admin changes space topic
     let room = admin.room(room_id.to_string()).await?;
-    room.set_topic("Here is playground".to_owned()).await?;
+    let topic = "Here is playground";
+    room.set_topic(topic.to_owned()).await?;
 
     // observer detects the change of space topic
     let activity = get_latest_activity(&observer, room_id.to_string(), "roomTopic").await?;
     assert_eq!(activity.type_str(), "roomTopic");
-    let room_topic = activity
-        .room_topic()
-        .expect("space topic should be already assigned");
-    assert_eq!(room_topic, "Here is playground");
+    assert_eq!(activity.room_topic().as_deref(), Some(topic));
     assert_eq!(activity.target_url(), "/activities");
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     Ok(())
