@@ -36,12 +36,13 @@ async fn categories_e2e() -> Result<()> {
         builder.build()?
     };
 
+    let title = "Campaigns";
     let new_cat = {
         let mut builder = space_cats.new_category_builder();
         builder.add_entry("a".to_owned());
         builder.add_entry("b".to_owned());
         builder.add_entry("c".to_owned());
-        builder.title("Campaigns".to_owned());
+        builder.title(title.to_owned());
         builder.display(Box::new(display));
         builder.build()?
     };
@@ -66,7 +67,7 @@ async fn categories_e2e() -> Result<()> {
     assert_eq!(categories.len(), 1, "Exepected one item");
     let campaign = categories[0].clone();
     assert_eq!(campaign, new_cat);
-    assert_eq!(campaign.title(), "Campaigns");
+    assert_eq!(campaign.title(), title);
     assert_eq!(
         campaign.entries(),
         ["a".to_owned(), "b".to_owned(), "c".to_owned()]
@@ -99,7 +100,7 @@ async fn categories_e2e() -> Result<()> {
         builder.add_entry("c".to_owned());
         builder.add_entry("b".to_owned());
         builder.add_entry("a".to_owned());
-        builder.title("Campaigns".to_owned());
+        builder.title(title.to_owned());
         builder.display(Box::new(display));
         builder.build()?
     };
