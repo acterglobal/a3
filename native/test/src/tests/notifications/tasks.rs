@@ -30,7 +30,7 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn tasklist_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("tl_creation_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("tl_creation_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -45,16 +45,12 @@ async fn tasklist_creation_notification() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let main_space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            if spaces.len() != 1 {
-                bail!("space not found");
-            }
-            Ok(spaces.first().cloned().expect("space found"))
+    let main_space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("space not found");
         }
+        Ok(spaces.first().cloned().expect("space found"))
     })
     .await?;
 
@@ -86,23 +82,19 @@ async fn tasklist_creation_notification() -> Result<()> {
 #[tokio::test]
 async fn tasklist_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -147,23 +139,19 @@ async fn tasklist_title_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasklistDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -210,23 +198,19 @@ async fn tasklist_desc_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasklistRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistRedaction", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = first.clone();
-    let event = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let event = Retry::spawn(retry_strategy, || async {
+        let entries = first.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -265,23 +249,19 @@ async fn tasklist_redaction() -> Result<()> {
 #[tokio::test]
 async fn task_created() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskCreated", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskCreated", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -328,27 +308,23 @@ async fn task_created() -> Result<()> {
 #[tokio::test]
 async fn task_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -393,27 +369,23 @@ async fn task_title_update() -> Result<()> {
 #[tokio::test]
 async fn task_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -462,27 +434,23 @@ async fn task_desc_update() -> Result<()> {
 #[tokio::test]
 async fn task_due_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasDueUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasDueUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -537,27 +505,23 @@ async fn task_due_update() -> Result<()> {
 #[tokio::test]
 async fn task_done_and_undone() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDoneUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDoneUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -636,27 +600,23 @@ async fn task_done_and_undone() -> Result<()> {
 #[tokio::test]
 async fn task_self_assign_and_unassign() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDoneUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDoneUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 

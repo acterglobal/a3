@@ -143,25 +143,25 @@ void applyPermissions(
         final permissionLevel = permission.permissionLevel.value;
 
         final _ = switch (permissionKey) {
-          PermissionType.boostPost => builder.newsPermisisons(permissionLevel),
-          PermissionType.storyPost => builder.storiesPermisisons(
+          PermissionType.boostPost => builder.newsPermissions(permissionLevel),
+          PermissionType.storyPost => builder.storiesPermissions(
             permissionLevel,
           ),
-          PermissionType.pinPost => builder.pinsPermisisons(permissionLevel),
-          PermissionType.eventPost => builder.calendarEventsPermisisons(
+          PermissionType.pinPost => builder.pinsPermissions(permissionLevel),
+          PermissionType.eventPost => builder.calendarEventsPermissions(
             permissionLevel,
           ),
-          PermissionType.taskListPost => builder.taskListsPermisisons(
+          PermissionType.taskListPost => builder.taskListsPermissions(
             permissionLevel,
           ),
-          PermissionType.taskItemPost => builder.tasksPermisisons(
+          PermissionType.taskItemPost => builder.tasksPermissions(
             permissionLevel,
           ),
-          PermissionType.eventRsvp => builder.rsvpPermisisons(permissionLevel),
-          PermissionType.commentPost => builder.commentsPermisisons(
+          PermissionType.eventRsvp => builder.rsvpPermissions(permissionLevel),
+          PermissionType.commentPost => builder.commentsPermissions(
             permissionLevel,
           ),
-          PermissionType.attachmentPost => builder.attachmentsPermisisons(
+          PermissionType.attachmentPost => builder.attachmentsPermissions(
             permissionLevel,
           ),
         };

@@ -17,25 +17,49 @@ class ChatRoomNgPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return OrientationBuilder(
-      builder:
-          (context, orientation) => Scaffold(
-            resizeToAvoidBottomInset: orientation == Orientation.portrait,
-            appBar: ChatRoomAppBarWidget(
-              roomId: roomId,
-              onProfileTap:
-                  () => context.pushNamed(
-                    Routes.chatProfile.name,
-                    pathParameters: {'roomId': roomId},
+    return Scaffold(
+      appBar: ChatRoomAppBarWidget(
+        roomId: roomId,
+        onProfileTap:
+            () => context.pushNamed(
+              Routes.chatProfile.name,
+              pathParameters: {'roomId': roomId},
+            ),
+      ),
+      body: OrientationBuilder(
+        builder:
+            (context, orientation) => Scaffold(
+              resizeToAvoidBottomInset: orientation == Orientation.portrait,
+              body: Column(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Opacity(
+                            opacity: 0.07,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/chat_bg.png',
+                                  ),
+                                  repeat: ImageRepeat.repeat,
+                                  fit: BoxFit.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned.fill(child: ChatMessages(roomId: roomId)),
+                      ],
+                    ),
                   ),
+                  chatInput(context, ref),
+                ],
+              ),
             ),
-            body: Column(
-              children: [
-                Expanded(child: ChatMessages(roomId: roomId)),
-                chatInput(context, ref),
-              ],
-            ),
-          ),
+      ),
     );
   }
 

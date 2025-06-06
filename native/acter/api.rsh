@@ -739,10 +739,8 @@ object CalendarEvent {
     /// get all location details
     fn locations() -> Vec<EventLocationInfo>;
 
-
     /// get the internal reference object
     fn ref_details() -> Future<Result<RefDetails>>;
-
 }
 
 object CalendarEventUpdateBuilder {
@@ -799,11 +797,14 @@ object CalendarEventDraft {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
-    /// set the physical location details for this calendar event
-    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>) -> Result<()>;
-    /// set the virtual location details for this calendar event
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string) -> Result<()>;
 
+    /// set the physical location details for this calendar event
+    /// description_html means by markdown
+    /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    /// set the virtual location details for this calendar event
+    /// description_html means by markdown
+    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -812,14 +813,21 @@ object CalendarEventDraft {
 object EventLocationInfo {
     /// either of `Physical` or `Virtual`
     fn location_type() -> string;
+
     /// get the name of location
     fn name() -> Option<string>;
     /// get the location description
     fn description() -> Option<TextMessageContent>;
+
     /// geo uri for the location
     fn coordinates() -> Option<string>;
     /// an online link for the location
     fn uri() -> Option<string>;
+
+    /// available for physical event only
+    fn address() -> Option<string>;
+    /// available for both physical and virtual
+    fn notes() -> Option<string>;
 }
 
 
@@ -3243,23 +3251,23 @@ object AppPermissionsBuilder {
     fn tasks(value: bool);
 
     /// specific permissions levels needed to post boosts
-    fn news_permisisons(value: u32);
+    fn news_permissions(value: u32);
     /// specific permissions levels needed to post stories
-    fn stories_permisisons(value: u32);
+    fn stories_permissions(value: u32);
     /// specific permissions levels needed to post calender events
-    fn calendar_events_permisisons(value: u32);
+    fn calendar_events_permissions(value: u32);
     /// specific permissions levels needed for task lists
-    fn task_lists_permisisons(value: u32);
+    fn task_lists_permissions(value: u32);
     /// specific permissions levels needed for tasks
-    fn tasks_permisisons(value: u32);
+    fn tasks_permissions(value: u32);
     /// specific permissions levels needed for pins
-    fn pins_permisisons(value: u32);
+    fn pins_permissions(value: u32);
     /// specific permissions levels needed for comments
-    fn comments_permisisons(value: u32);
+    fn comments_permissions(value: u32);
     /// specific permissions levels needed for attachments
-    fn attachments_permisisons(value: u32);
+    fn attachments_permissions(value: u32);
     /// specific permissions levels needed to rsvp
-    fn rsvp_permisisons(value: u32);
+    fn rsvp_permissions(value: u32);
 
     /// set level to kick a user
     fn kick(value: u32);

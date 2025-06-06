@@ -12,12 +12,14 @@ class UpdateSlideItem extends StatelessWidget {
   final UpdateSlide slide;
   final bool showRichContent;
   final NewsMediaErrorState errorState;
+  final String roomId;
 
   const UpdateSlideItem({
     super.key,
     required this.slide,
     this.showRichContent = true,
     required this.errorState,
+    required this.roomId,
   });
 
   @override
@@ -38,7 +40,9 @@ class UpdateSlideItem extends StatelessWidget {
               'image' => ImageSlide(slide: slide, errorState: errorState),
               'video' => VideoSlide(slide: slide, errorState: errorState),
               'text' =>
-                showRichContent ? TextSlide(slide: slide) : normalTextSlide(),
+                showRichContent
+                    ? TextSlide(slide: slide, roomId: roomId)
+                    : normalTextSlide(),
               _ => notSupportedSlide(context, slideType),
             },
           ),

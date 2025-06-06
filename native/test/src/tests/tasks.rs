@@ -1,3 +1,5 @@
+mod invitations;
+
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
@@ -21,12 +23,8 @@ async fn task_smoketests() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -95,7 +93,6 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
@@ -122,7 +119,6 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if task_1_updater.is_empty() {
             bail!("all still empty");
@@ -145,8 +141,7 @@ async fn task_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
         }
@@ -173,12 +168,8 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -257,15 +248,12 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
     let comment = &comments[0];
 
-    Retry::spawn(retry_strategy.clone(), move || {
-        let comment = comment.clone();
-        async move {
-            let edited_comment = comment.refresh().await?;
-            if edited_comment.content().body != updated_body {
-                bail!("Update not yet received");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        let edited_comment = comment.refresh().await?;
+        if edited_comment.content().body != updated_body {
+            bail!("Update not yet received");
         }
+        Ok(())
     })
     .await?;
 
@@ -276,18 +264,14 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let reply_comment = Retry::spawn(retry_strategy, move || {
-        let comments_manager = comments_manager.clone();
-        let replied_id = replied_id.clone();
-        async move {
-            let comments = comments_manager.comments().await?;
-            if comments.len() < 2 {
-                bail!("Expected 2 comments, got {}", comments.len());
-            }
-            match comments.iter().find(|c| c.event_id() == replied_id) {
-                Some(comment) => Ok(comment.clone()),
-                None => bail!("Expected comment with id {replied_id} not found"),
-            }
+    let reply_comment = Retry::spawn(retry_strategy, || async {
+        let comments = comments_manager.comments().await?;
+        if comments.len() < 2 {
+            bail!("Expected 2 comments, got {}", comments.len());
+        }
+        match comments.iter().find(|c| c.event_id() == replied_id) {
+            Some(comment) => Ok(comment.clone()),
+            None => bail!("Expected comment with id {replied_id} not found"),
         }
     })
     .await?;
@@ -307,12 +291,8 @@ async fn task_comment_smoketests() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -385,7 +365,6 @@ async fn task_comment_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
@@ -423,15 +402,12 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
     let comment = &comments[0];
 
-    Retry::spawn(retry_strategy.clone(), move || {
-        let comment = comment.clone();
-        async move {
-            let edited_comment = comment.refresh().await?;
-            if edited_comment.content().body != updated_body {
-                bail!("Update not yet received");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        let edited_comment = comment.refresh().await?;
+        if edited_comment.content().body != updated_body {
+            bail!("Update not yet received");
         }
+        Ok(())
     })
     .await?;
 
@@ -442,8 +418,7 @@ async fn task_comment_smoketests() -> Result<()> {
         .redact_content(comment_id.to_string(), Some(reason.to_owned()))
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -472,12 +447,8 @@ async fn task_list_external_link() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
