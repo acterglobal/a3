@@ -3027,5 +3027,7 @@
   "noTasks": "No tasks",
   "@noTasks": {},
   "overdue": "Overdue",
-  "@overdue": {}
+  "@overdue": {},
+  "inviteSomeoneElse": "Invite someone else",
+  "@inviteSomeoneElse": {}
 }

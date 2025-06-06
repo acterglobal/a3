@@ -62,3 +62,53 @@ final filteredSuggestedUsersProvider =
             true;
       }).toList();
     });
+
+/// Provider for getting the invitations manager for a specific task
+final taskInvitationsManagerProvider = FutureProvider.family<ObjectInvitationsManager, Task>(
+  (ref, task) => task.invitations(),
+);
+
+/// Provider for getting the list of invited users for a task
+final taskInvitedUsersProvider = FutureProvider.family<List<String>, Task>(
+  (ref, task) async {
+    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
+    final invitedList = manager.invited();
+    return invitedList.map((data) => data.toDartString()).toList();
+  },
+);
+
+/// Provider for checking if a user is invited to a task
+final isUserInvitedToTaskProvider = FutureProvider.family<bool, (Task, String)>(
+  (ref, params) async {
+    final (task, userId) = params;
+    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
+    return manager.isInvited();
+  },
+);
+
+/// Provider for inviting a user to a task
+final inviteUserToTaskProvider = FutureProvider.family<String, (Task, String)>(
+  (ref, params) async {
+    final (task, userId) = params;
+    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
+    return await manager.invite(userId);
+  },
+);
+
+/// Provider for checking if a task has any invitations
+final taskHasInvitationsProvider = FutureProvider.family<bool, Task>(
+  (ref, task) async {
+    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
+    return manager.hasInvitations();
+  },
+);
+
+/// Provider for getting display names of invited users
+final invitedUserDisplayNameProvider = Provider.family<String, String>(
+  (ref, userId) {
+    // Extract username from Matrix ID (e.g., @acter017:m-1.acter.global -> acter017)
+    return userId.startsWith('@') 
+        ? userId.substring(1).split(':')[0] 
+        : userId.split(':')[0];
+  },
+);
