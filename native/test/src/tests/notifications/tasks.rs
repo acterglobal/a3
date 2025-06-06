@@ -59,9 +59,12 @@ async fn tasklist_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.task_list_draft()?;
-    draft.name("Babies first task list".to_owned());
-    let event_id = draft.send().await?;
+    let title = "Babies first task list";
+    let event_id = main_space
+        .task_list_draft()?
+        .name(title.to_owned())
+        .send()
+        .await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -72,7 +75,7 @@ async fn tasklist_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/tasks/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "task-list");
-    assert_eq!(parent.title().as_deref(), Some("Babies first task list"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "📋"); // task list icon
     assert_eq!(parent.object_id_str(), event_id);
 

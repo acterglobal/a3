@@ -56,14 +56,17 @@ async fn event_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.calendar_event_draft()?;
-    draft.title("First meeting".to_owned());
+    let title = "First meeting";
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
-    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+        draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+        draft.send().await?
+    };
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -74,7 +77,7 @@ async fn event_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/events/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "event");
-    assert_eq!(parent.title().as_deref(), Some("First meeting"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "🗓️"); // calendar icon
     assert_eq!(parent.object_id_str(), event_id);
 
@@ -289,10 +292,11 @@ async fn event_rsvp() -> Result<()> {
     let rsvp_manager = obj_entry.rsvps().await?;
     // test yes
     {
-        let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("yes".to_owned());
-
-        let notification_ev = rsvp.send().await?;
+        let notification_ev = rsvp_manager
+            .rsvp_draft()?
+            .status("yes".to_owned())
+            .send()
+            .await?;
 
         let notification_item = first
             .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -318,10 +322,11 @@ async fn event_rsvp() -> Result<()> {
 
     // test no
     {
-        let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("no".to_owned());
-
-        let notification_ev = rsvp.send().await?;
+        let notification_ev = rsvp_manager
+            .rsvp_draft()?
+            .status("no".to_owned())
+            .send()
+            .await?;
 
         let notification_item = first
             .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -347,10 +352,11 @@ async fn event_rsvp() -> Result<()> {
 
     // test no
     {
-        let mut rsvp = rsvp_manager.rsvp_draft()?;
-        rsvp.status("maybe".to_owned());
-
-        let notification_ev = rsvp.send().await?;
+        let notification_ev = rsvp_manager
+            .rsvp_draft()?
+            .status("maybe".to_owned())
+            .send()
+            .await?;
 
         let notification_item = first
             .get_notification_item(space_id.to_string(), notification_ev.to_string())

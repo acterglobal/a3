@@ -54,9 +54,12 @@ async fn pins_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.pin_draft()?;
-    draft.title("Acter Website".to_owned());
-    let event_id = draft.send().await?;
+    let title = "Acter Website";
+    let event_id = main_space
+        .pin_draft()?
+        .title(title.to_owned())
+        .send()
+        .await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -67,7 +70,7 @@ async fn pins_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "pin");
-    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), event_id);
 
