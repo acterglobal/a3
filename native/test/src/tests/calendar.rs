@@ -196,14 +196,10 @@ async fn calendar_event_create() -> Result<()> {
     })
     .await?;
 
-    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
-    draft.title(title.to_owned());
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
-    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
 
     let name = "Test Location";
     let description = "Philadelphia Office";
@@ -212,24 +208,30 @@ async fn calendar_event_create() -> Result<()> {
     let uri = "https://example.com/location";
     let address = "123 Test St, Philadelphia, PA 19103";
     let notes = "Please bring your laptop.";
-    draft.physical_location(
-        Some(name.to_owned()),
-        Some(description.to_owned()),
-        Some(description_html.to_owned()),
-        Some(coordinates.to_owned()),
-        Some(uri.to_owned()),
-        Some(address.to_owned()),
-        Some(notes.to_owned()),
-    );
-    draft.virtual_location(
-        Some(name.to_owned()),
-        Some(description.to_owned()),
-        Some(description_html.to_owned()),
-        uri.to_owned(),
-        Some(notes.to_owned()),
-    );
 
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+        draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+        draft.physical_location(
+            Some(name.to_owned()),
+            Some(description.to_owned()),
+            Some(description_html.to_owned()),
+            Some(coordinates.to_owned()),
+            Some(uri.to_owned()),
+            Some(address.to_owned()),
+            Some(notes.to_owned()),
+        );
+        draft.virtual_location(
+            Some(name.to_owned()),
+            Some(description.to_owned()),
+            Some(description_html.to_owned()),
+            uri.to_owned(),
+            Some(notes.to_owned()),
+        );
+        draft.send().await?
+    };
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -302,16 +304,18 @@ async fn calendar_event_rfc2822() -> Result<()> {
     })
     .await?;
 
-    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
-    draft.title(title.to_owned());
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    draft.utc_start_from_rfc2822(utc_start.to_rfc2822())?;
-    draft.utc_end_from_rfc2822(utc_end.to_rfc2822())?;
 
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_rfc2822(utc_start.to_rfc2822())?;
+        draft.utc_end_from_rfc2822(utc_end.to_rfc2822())?;
+        draft.send().await?
+    };
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -349,17 +353,19 @@ async fn calendar_event_format() -> Result<()> {
     })
     .await?;
 
-    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
-    draft.title(title.to_owned());
     let fmt = "%Y-%m-%dT%H:%M:%S%:z"; // ISO 8601 format with timezone
     let now = Utc::now();
     let utc_start = (now + Duration::days(1)).format(fmt).to_string();
     let utc_end = (now + Duration::days(2)).format(fmt).to_string();
-    draft.utc_start_from_format(utc_start.clone(), fmt.to_owned())?;
-    draft.utc_end_from_format(utc_end.clone(), fmt.to_owned())?;
 
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_format(utc_start.clone(), fmt.to_owned())?;
+        draft.utc_end_from_format(utc_end.clone(), fmt.to_owned())?;
+        draft.send().await?
+    };
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
