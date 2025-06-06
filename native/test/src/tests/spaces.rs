@@ -227,7 +227,11 @@ async fn create_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string());
+        builder.set_visibility("Public".to_owned());
+        builder.set_alias("wombat".to_owned()); // this means #wombat:example.com
+        builder.set_topic("Here is test space".to_owned());
+        builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
+        builder.set_parent(first.room_id().to_string())?;
         builder.build()?
     };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -356,10 +360,11 @@ async fn create_with_custom_space_settings() -> Result<()> {
     permissions_builder.rsvp_permissions(9);
     permissions_builder.users_default(10);
     permissions_builder.events_default(11);
-    permissions_builder.kick(12);
-    permissions_builder.invite(13);
-    permissions_builder.redact(14);
-    permissions_builder.state_default(15);
+    permissions_builder.ban(12);
+    permissions_builder.kick(13);
+    permissions_builder.invite(14);
+    permissions_builder.redact(15);
+    permissions_builder.state_default(16);
 
     let settings = {
         let mut builder = new_space_settings_builder();
@@ -415,14 +420,15 @@ async fn create_with_custom_space_settings() -> Result<()> {
     assert_eq!(power_levels.rsvp(), Some(9i64));
 
     // default power levels
-    assert_eq!(power_levels.kick(), 12i64);
-    assert_eq!(power_levels.invite(), 13i64);
-    assert_eq!(power_levels.redact(), 14i64);
+    assert_eq!(power_levels.ban(), 12i64);
+    assert_eq!(power_levels.kick(), 13i64);
+    assert_eq!(power_levels.invite(), 14i64);
+    assert_eq!(power_levels.redact(), 15i64);
 
     //
     assert_eq!(power_levels.users_default(), 10i64);
     assert_eq!(power_levels.events_default(), 11i64);
-    assert_eq!(power_levels.state_default(), 15i64);
+    assert_eq!(power_levels.state_default(), 16i64);
     Ok(())
 }
 
@@ -452,7 +458,7 @@ async fn create_private_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string());
+        builder.set_parent(first.room_id().to_string())?;
         builder.join_rule(join_rule.to_owned());
         builder.build()?
     };
@@ -518,7 +524,7 @@ async fn create_public_subspace() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string());
+        builder.set_parent(first.room_id().to_string())?;
         builder.join_rule(join_rule.to_owned());
         builder.build()?
     };
@@ -583,7 +589,7 @@ async fn change_subspace_join_rule() -> Result<()> {
     let settings = {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
-        builder.set_parent(first.room_id().to_string());
+        builder.set_parent(first.room_id().to_string())?;
         builder.build()?
     };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
@@ -608,11 +614,11 @@ async fn change_subspace_join_rule() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
     assert_eq!(space.join_rule_str(), "restricted"); // default with a parent means restricted
 
+    let mut rule_builder = new_join_rule_builder();
     let join_rule = "invite";
-    let mut update = new_join_rule_builder();
-    update.join_rule(join_rule.to_owned());
+    rule_builder.join_rule(join_rule.to_owned());
 
-    space.set_join_rule(Box::new(update)).await?;
+    space.set_join_rule(Box::new(rule_builder)).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
 
@@ -631,16 +637,16 @@ async fn change_subspace_join_rule() -> Result<()> {
 
     assert!(matches!(join_rule, JoinRule::Invite));
 
-    let new_rule = "restricted";
-    let mut update = new_join_rule_builder();
-    update.join_rule(new_rule.to_owned());
-    update.add_room(space_parent.room_id().to_string());
+    let mut rule_builder = new_join_rule_builder();
+    let join_rule = "restricted";
+    rule_builder.join_rule(join_rule.to_owned());
+    rule_builder.add_room(space_parent.room_id().to_string());
 
-    space.set_join_rule(Box::new(update)).await?;
+    space.set_join_rule(Box::new(rule_builder)).await?;
 
     Retry::spawn(retry_strategy, || async {
         let space = user.space(subspace_id.to_string()).await?;
-        if space.join_rule_str() != new_rule {
+        if space.join_rule_str() != join_rule {
             bail!("update did not occur");
         }
         Ok(())

@@ -109,11 +109,14 @@ impl CreateSpaceSettingsBuilder {
     }
 
     pub fn add_invitee(&mut self, value: String) -> Result<()> {
-        if let Ok(user_id) = UserId::parse(value) {
-            if let Some(mut invites) = self.invites.clone() {
-                invites.push(user_id);
-                self.invites = Some(invites);
-            } else {
+        let user_id = UserId::parse(value)?;
+        match self.invites.as_mut() {
+            Some(invites) => {
+                if !invites.contains(&user_id) {
+                    invites.push(user_id);
+                }
+            }
+            None => {
                 self.invites = Some(vec![user_id]);
             }
         }
@@ -132,11 +135,12 @@ impl CreateSpaceSettingsBuilder {
         self.avatar_uri(value);
     }
 
-    pub fn set_parent(&mut self, value: String) {
-        if let Ok(parent) = RoomId::parse(value) {
-            self.parent(parent);
-        }
+    pub fn set_parent(&mut self, value: String) -> Result<()> {
+        let room_id = RoomId::parse(value)?;
+        self.parent(room_id);
+        Ok(())
     }
+
     #[allow(clippy::boxed_local)]
     pub fn set_permissions(&mut self, value: Box<AppPermissionsBuilder>) {
         self.permissions(*value);

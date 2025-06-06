@@ -13,7 +13,10 @@ use crate::utils::{match_text_msg, random_users_with_random_convo};
 #[tokio::test]
 async fn sisko_reads_kyra_reply() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("reply").await?;
+    let (users, room_id) = random_users_with_random_convo("reply", 1).await?;
+
+    let mut sisko = users[0].clone();
+    let mut kyra = users[1].clone();
 
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;

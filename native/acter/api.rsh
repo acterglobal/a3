@@ -3583,9 +3583,9 @@ object CreateConvoSettingsBuilder {
     fn set_avatar_uri(value: string);
 
     /// set the parent of convo
-    fn set_parent(value: string);
+    fn set_parent(value: string) -> Result<()>;
 
-    fn build() -> CreateConvoSettings;
+    fn build() -> Result<CreateConvoSettings>;
 }
 
 object CreateConvoSettings {}
@@ -3620,12 +3620,12 @@ object CreateSpaceSettingsBuilder {
     /// set the parent of space
     /// if the join rule is restricted or knockrestricted AND a parent is set
     /// the space will be a subspace of the parent space
-    fn set_parent(value: string);
+    fn set_parent(value: string) -> Result<()>;
 
     /// set the permissions for apps and events for the space creation
     fn set_permissions(value: AppPermissionsBuilder);
 
-    fn build() -> CreateSpaceSettings;
+    fn build() -> Result<CreateSpaceSettings>;
 }
 
 object CreateSpaceSettings {}

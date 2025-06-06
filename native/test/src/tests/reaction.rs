@@ -76,8 +76,11 @@ async fn wait_for_message(
 #[tokio::test]
 async fn sisko_reads_msg_reactions() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut sisko, mut kyra, mut worf, room_id) =
-        random_users_with_random_convo("reaction").await?;
+    let (users, room_id) = random_users_with_random_convo("reaction", 2).await?;
+
+    let mut sisko = users[0].clone();
+    let mut kyra = users[1].clone();
+    let mut worf = users[2].clone();
 
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
