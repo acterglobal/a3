@@ -4,11 +4,11 @@ import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/member/actions/invite_actions.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -126,7 +126,19 @@ class UserBuilder extends ConsumerWidget {
       return room.map((r) => UserStateButton(
         userId: userId, 
         room: r, 
-        task: task,
+        onInvite: (userId) => InviteActions.handleInvite(
+          context: context,
+          ref: ref,
+          userId: userId,
+          room: r,
+          task: task,
+        ),
+        onCancelInvite: (userId) => InviteActions.handleCancelInvite(
+          context: context,
+          ref: ref,
+          userId: userId,
+          room: r,
+        ),
       )) ??
           const Skeletonizer(child: Text('user'));
     });
@@ -213,49 +225,16 @@ class UserBuilder extends ConsumerWidget {
 class UserStateButton extends ConsumerWidget {
   final String userId;
   final Room room;
-  final Task? task;
+  final Future<void> Function(String userId) onInvite;
+  final Future<void> Function(String userId) onCancelInvite;
 
-  const UserStateButton({super.key, required this.room, required this.userId, this.task});
-
-  Future<void> _handleInvite(BuildContext context) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(status: lang.invitingLoading(userId), dismissOnTap: false);
-    try {
-      if (task != null) {
-        final invitationsManager = await task?.invitations();
-        if (invitationsManager != null) {
-          await invitationsManager.invite(userId);
-        }
-      } else {
-        await room.inviteUser(userId);
-      }
-      EasyLoading.dismiss();
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showToast(lang.invitingError(e, userId));
-    }
-  }
-
-  Future<void> _cancelInvite(BuildContext context, WidgetRef ref) async {
-    final lang = L10n.of(context);
-    EasyLoading.show(
-      status: lang.cancelInviteLoading(userId),
-      dismissOnTap: false,
-    );
-    try {
-      final member =
-          ref
-              .read(memberProvider((userId: userId, roomId: room.roomIdStr())))
-              .valueOrNull;
-      if (member != null) {
-        await member.kick('Cancel Invite');
-      }
-      EasyLoading.dismiss();
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      EasyLoading.showToast(lang.cancelInviteError(e, userId));
-    }
-  }
+  const UserStateButton({
+    super.key, 
+    required this.room, 
+    required this.userId, 
+    required this.onInvite,
+    required this.onCancelInvite,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -267,7 +246,7 @@ class UserStateButton extends ConsumerWidget {
     final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
     if (isInvited(userId, invited)) {
       return InkWell(
-        onTap: () => _cancelInvite(context, ref),
+        onTap: () => onCancelInvite.call(userId),
         child: Chip(
           label: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -295,7 +274,7 @@ class UserStateButton extends ConsumerWidget {
       );
     }
     return InkWell(
-      onTap: () => _handleInvite(context),
+      onTap: () => onInvite.call(userId),
       child: Chip(
         label: Row(
           mainAxisSize: MainAxisSize.min,
