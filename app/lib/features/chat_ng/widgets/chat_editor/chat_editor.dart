@@ -108,12 +108,11 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final docNode = textEditorState.getNodeAtPath([0]);
     if (docNode == null) return;
 
-    final text = docNode.delta?.toPlainText() ?? '';
-    final pos = Position(path: [0], offset: text.length);
-    textEditorState.updateSelectionWithReason(
-      Selection.collapsed(pos),
-      reason: SelectionUpdateReason.uiEvent,
-    );
+    final html = msgContent.formattedBody() ?? body;
+
+    final tr = textEditorState.transaction;
+    tr.replaceText(docNode, 0, 0, html);
+    textEditorState.apply(tr);
   }
 
   void _editorUpdate(Transaction data) {
