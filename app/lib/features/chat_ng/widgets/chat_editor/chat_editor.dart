@@ -108,9 +108,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     final docNode = textEditorState.getNodeAtPath([0]);
     if (docNode == null) return;
 
-    // process text and apply mention attributes , if any
-    textEditorState.toMentionPills(body, docNode);
-
     final text = docNode.delta?.toPlainText() ?? '';
     final pos = Position(path: [0], offset: text.length);
     textEditorState.updateSelectionWithReason(

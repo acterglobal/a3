@@ -4,7 +4,7 @@ enum MentionType {
   user,
   room;
 
-  static String toStr(MentionType type) => switch (type) {
+  String get character => switch (this) {
     MentionType.user => userMentionChar,
     MentionType.room => roomMentionChar,
   };
@@ -14,3 +14,6 @@ enum MentionType {
     _ => throw UnsupportedError('invalid string'),
   };
 }
+
+typedef MentionSelectedFn =
+    void Function(MentionType type, String id, String? displayName);
