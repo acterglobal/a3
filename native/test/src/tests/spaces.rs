@@ -13,6 +13,7 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+use tracing::info;
 
 pub mod upgrades;
 
@@ -781,7 +782,7 @@ async fn update_topic() -> Result<()> {
     assert_eq!(spaces.len(), 1);
 
     let space = spaces.first().expect("first space should be available");
-    let mut listener = space.subscribe();
+    let mut listener = space.subscribe_info();
     let space_id = space.room_id().to_string();
 
     // set topic
@@ -789,7 +790,9 @@ async fn update_topic() -> Result<()> {
     let topic = "New Topic";
     space.set_topic(topic.to_owned()).await?;
 
-    listener.recv().await?;
+    while listener.next().await.is_none() {
+        info!("space change not reached");
+    }
 
     let space = user.space(space_id).await?;
     assert_eq!(space.topic().as_deref(), Some(topic));
