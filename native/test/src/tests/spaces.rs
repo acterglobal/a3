@@ -794,7 +794,7 @@ async fn update_topic() -> Result<()> {
         info!("space change not reached");
     }
 
-    let space = user.space(space_id).await?;
+    // will not refetch space, so that just listened room info would be valid
     assert_eq!(space.topic().as_deref(), Some(topic));
 
     Ok(())
