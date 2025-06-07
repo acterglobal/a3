@@ -783,7 +783,6 @@ async fn update_topic() -> Result<()> {
 
     let space = spaces.first().expect("first space should be available");
     let mut listener = space.subscribe_info();
-    let space_id = space.room_id().to_string();
 
     // set topic
 
