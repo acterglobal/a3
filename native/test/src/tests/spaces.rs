@@ -16,7 +16,9 @@ use tokio_retry::{
 
 pub mod upgrades;
 
-use crate::utils::{random_user, random_user_with_random_space, random_user_with_template};
+use crate::utils::{
+    random_string, random_user, random_user_with_random_space, random_user_with_template,
+};
 
 const THREE_SPACES_TMPL: &str = r#"
 version = "0.1"
@@ -228,7 +230,9 @@ async fn create_subspace() -> Result<()> {
         let mut builder = new_space_settings_builder();
         builder.set_name("subspace".to_owned());
         builder.set_visibility("Public".to_owned());
-        builder.set_alias("wombat".to_owned()); // this means #wombat:example.com
+        let charset: &[u8] = b"abcdefghijklmnopqrstuvwxyz";
+        let alias = random_string(6, charset); // for example, wombat
+        builder.set_alias(alias); // this means #wombat:example.com
         builder.set_topic("Here is test space".to_owned());
         builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
         builder.set_parent(first.room_id().to_string())?;
