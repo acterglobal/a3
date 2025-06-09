@@ -513,7 +513,7 @@ class _TaskItemBody extends ConsumerWidget {
   }
 
   Widget _widgetTaskInvitations(BuildContext context, WidgetRef ref) {
-     final lang = L10n.of(context);
+    final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final hasInvitations = ref.watch(taskHasInvitationsProvider(task)).valueOrNull ?? false;
     final invitedUsers = ref.watch(taskInvitedUsersProvider(task)).valueOrNull ?? [];
@@ -530,7 +530,7 @@ class _TaskItemBody extends ConsumerWidget {
               : Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: Text(
-                  lang.notAssigned,
+                  lang.noOneIsInvited,
                   style: textTheme.bodyMedium?.copyWith(
                     decoration: TextDecoration.underline,
                     fontStyle: FontStyle.italic,

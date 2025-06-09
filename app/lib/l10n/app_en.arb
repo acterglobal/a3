@@ -3029,5 +3029,7 @@
   "overdue": "Overdue",
   "@overdue": {},
   "inviteSomeoneElse": "Invite someone else",
-  "@inviteSomeoneElse": {}
+  "@inviteSomeoneElse": {},
+  "noOneIsInvited": "No one invited",
+  "@noOneIsInvited": {}
 }
