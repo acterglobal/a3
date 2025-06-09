@@ -32,7 +32,7 @@ async fn test_room_topic() -> Result<()> {
     pin_mut!(stream);
 
     let topic = "Here is test channel";
-    convo.set_topic(topic.to_owned()).await?;
+    let topic_event_id = convo.set_topic(topic.to_owned()).await?;
 
     // room state event may reach via pushback action or reset action
     let mut i = 30;
@@ -69,7 +69,9 @@ async fn test_room_topic() -> Result<()> {
         i -= 1;
         sleep(Duration::from_secs(1)).await;
     }
-    let (_, content) = found_result.expect("Even after 30 seconds, room topic not received");
+    let (found_event_id, content) =
+        found_result.expect("Even after 30 seconds, room topic not received");
+    assert_eq!(found_event_id, topic_event_id, "event id should match");
 
     assert_eq!(
         content.change().as_deref(),

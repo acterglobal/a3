@@ -1565,7 +1565,7 @@ object Room {
     fn topic() -> Option<string>;
 
     /// set description / topic of the room
-    fn set_topic(topic: string) -> Future<Result<bool>>;
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
@@ -1741,7 +1741,7 @@ object Convo {
     fn set_name(name: string) -> Future<Result<EventId>>;
 
     /// set description / topic of the room
-    fn set_topic(topic: string) -> Future<Result<bool>>;
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// the members currently in the convo
     fn active_members_ids() -> Future<Result<Vec<string>>>;
@@ -2921,7 +2921,7 @@ object Space {
     fn is_joined() -> bool;
 
     /// set description / topic of the room
-    fn set_topic(topic: string) -> Future<Result<bool>>;
+    fn set_topic(topic: string) -> Future<Result<EventId>>;
 
     /// set name of the room
     fn set_name(name: string) -> Future<Result<EventId>>;
