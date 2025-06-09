@@ -1,4 +1,4 @@
-use acter::api::{new_join_rule_builder, new_space_settings_builder};
+use acter::api::{new_convo_settings_builder, new_join_rule_builder, new_space_settings_builder};
 use acter_core::{
     referencing::{IndexKey, SectionIndex},
     spaces::new_app_permissions_builder,
@@ -203,6 +203,67 @@ main = { type = "user", is-default = true, required = true, description = "The s
 type = "space"
 name = "{{ main.display_name }}’s main test space"
 "#;
+
+#[tokio::test]
+async fn create_subconvo() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (user, sync_state, _engine) = random_user_with_template("subconvo_create", TMPL).await?;
+    sync_state.await_has_synced_history().await?;
+
+    // wait for sync to catch up
+    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
+    Retry::spawn(retry_strategy.clone(), || async {
+        if user.spaces().await?.len() != 1 {
+            bail!("not all spaces found");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let mut spaces = user.spaces().await?;
+
+    assert_eq!(spaces.len(), 1);
+
+    let first = spaces.pop().expect("first space should be available");
+
+    let settings = {
+        let mut builder = new_convo_settings_builder();
+        builder.set_name("testconvo".to_owned());
+        let charset: &[u8] = b"abcdefghijklmnopqrstuvwxyz";
+        let alias = random_string(6, charset); // for example, wombat
+        builder.set_alias(alias); // this means #wombat:example.com
+        builder.set_topic("Here is test convo".to_owned());
+        builder.set_avatar_uri("mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD".to_owned());
+        builder.set_parent(first.room_id().to_string())?;
+        builder.build()?
+    };
+    let convo_id = user.create_convo(Box::new(settings)).await?;
+
+    let convo = user.convo(convo_id.to_string()).await?;
+    assert_eq!(convo.join_rule_str(), "public");
+    let space_parent = Retry::spawn(retry_strategy, || async {
+        let space_relations = convo.space_relations().await?;
+        let Some(space_parent) = space_relations.main_parent() else {
+            bail!("space misses main parent");
+        };
+        Ok(space_parent)
+    })
+    .await?;
+
+    assert_eq!(space_parent.room_id(), first.room_id());
+
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+
+    Retry::spawn(retry_strategy, || async {
+        if user.spaces().await?.is_empty() {
+            bail!("still no spaces found");
+        }
+        Ok(())
+    })
+    .await?;
+
+    Ok(())
+}
 
 #[tokio::test]
 async fn create_subspace() -> Result<()> {
