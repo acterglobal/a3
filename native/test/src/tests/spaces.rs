@@ -244,7 +244,7 @@ async fn create_subconvo() -> Result<()> {
     })
     .await?;
 
-    assert_eq!(convo.join_rule_str(), "public");
+    assert_eq!(convo.join_rule_str(), "restricted");
 
     let space_parent = Retry::spawn(retry_strategy, || async {
         let space_relations = convo.space_relations().await?;
