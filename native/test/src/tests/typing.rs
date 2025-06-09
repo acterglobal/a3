@@ -13,7 +13,6 @@ use crate::utils::random_users_with_random_convo;
 async fn kyra_detects_sisko_typing() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, room_id) = random_users_with_random_convo("detect_read", 1).await?;
-
     let mut sisko = users[0].clone();
     let mut kyra = users[1].clone();
 

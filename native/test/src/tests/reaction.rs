@@ -77,7 +77,6 @@ async fn wait_for_message(
 async fn sisko_reads_msg_reactions() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, room_id) = random_users_with_random_convo("reaction", 2).await?;
-
     let mut sisko = users[0].clone();
     let mut kyra = users[1].clone();
     let mut worf = users[2].clone();

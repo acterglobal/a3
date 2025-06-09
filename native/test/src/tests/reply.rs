@@ -14,7 +14,6 @@ use crate::utils::{match_text_msg, random_users_with_random_convo};
 async fn sisko_reads_kyra_reply() -> Result<()> {
     let _ = env_logger::try_init();
     let (users, room_id) = random_users_with_random_convo("reply", 1).await?;
-
     let mut sisko = users[0].clone();
     let mut kyra = users[1].clone();
 

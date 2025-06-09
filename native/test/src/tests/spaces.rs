@@ -16,7 +16,7 @@ use tokio_retry::{
 
 pub mod upgrades;
 
-use crate::utils::{random_user, random_user_with_template};
+use crate::utils::{random_user, random_user_with_random_space, random_user_with_template};
 
 const THREE_SPACES_TMPL: &str = r#"
 version = "0.1"
@@ -768,47 +768,28 @@ async fn update_name() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore = "topic updating seems broken"]
 async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("space_update_topic", TMPL).await?;
+    let (mut user, space_id) = random_user_with_random_space("space_update_topic").await?;
+
+    let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    Retry::spawn(retry_strategy, || async {
-        if user.spaces().await?.len() != 1 {
-            bail!("not all spaces found");
-        }
-        Ok(())
+    let space = Retry::spawn(retry_strategy, || async {
+        user.space(space_id.to_string()).await
     })
     .await?;
 
-    let mut spaces = user.spaces().await?;
-
-    assert_eq!(spaces.len(), 1);
-
-    let space = spaces.pop().expect("first space should be available");
     let listener = space.subscribe();
-    let space_id = space.room_id().to_string();
 
     // set topic
 
     let topic = "New Topic";
-    let _event_id = space.set_topic(topic.to_owned()).await?;
+    space.set_topic(topic.to_owned()).await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
-        let space = user.space(space_id.clone()).await?;
-        if space.topic().as_deref() != Some(topic) {
-            bail!("Topic not set");
-        }
-        Ok(())
-    })
-    .await?;
-
-    // and we’ve seen the update
-
     Retry::spawn(retry_strategy, || async {
         if listener.is_empty() {
             bail!("no updates received");
@@ -816,6 +797,9 @@ async fn update_topic() -> Result<()> {
         Ok(())
     })
     .await?;
+
+    // will not refetch space, so that just listened room info would be valid
+    assert_eq!(space.topic().as_deref(), Some(topic));
 
     Ok(())
 }
