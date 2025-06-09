@@ -965,7 +965,7 @@ impl Room {
             .await?
     }
 
-    pub async fn set_topic(&self, topic: String) -> Result<OwnedEventId> {
+    pub async fn set_topic(&self, topic: String) -> Result<bool> {
         if !self.is_joined() {
             bail!("Unable to set topic to a room we are not in");
         }
@@ -980,8 +980,8 @@ impl Room {
                 if !permitted {
                     bail!("No permissions to change topic of this room");
                 }
-                let response = room.set_room_topic(&topic).await?;
-                Ok(response.event_id)
+                room.set_room_topic(&topic).await?;
+                Ok(true)
             })
             .await?
     }

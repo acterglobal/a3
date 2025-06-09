@@ -5478,7 +5478,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __roomSetTopicFuturePoll(int boxed, int postCobject, int port) {
+  bool? __roomSetTopicFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
     final tmp4 = port;
@@ -5512,10 +5512,7 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -6242,7 +6239,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __convoSetTopicFuturePoll(int boxed, int postCobject, int port) {
+  bool? __convoSetTopicFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
     final tmp4 = port;
@@ -6276,10 +6273,7 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -10150,7 +10144,7 @@ class Api {
     return tmp7;
   }
 
-  EventId? __spaceSetTopicFuturePoll(int boxed, int postCobject, int port) {
+  bool? __spaceSetTopicFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
     final tmp4 = port;
@@ -10184,10 +10178,7 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = EventId._(this, tmp13_1);
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -50549,7 +50540,7 @@ class Room {
   }
 
   /// set description / topic of the room
-  Future<EventId> setTopic(String topic) {
+  Future<bool> setTopic(String topic) {
     final tmp1 = topic;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -51767,7 +51758,7 @@ class Convo {
   }
 
   /// set description / topic of the room
-  Future<EventId> setTopic(String topic) {
+  Future<bool> setTopic(String topic) {
     final tmp1 = topic;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -60038,7 +60029,7 @@ class Space {
   }
 
   /// set description / topic of the room
-  Future<EventId> setTopic(String topic) {
+  Future<bool> setTopic(String topic) {
     final tmp1 = topic;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -75950,7 +75941,7 @@ class _RoomSetTopicFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.IntPtr()
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -76220,7 +76211,7 @@ class _ConvoSetTopicFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.IntPtr()
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -77574,7 +77565,7 @@ class _SpaceSetTopicFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.IntPtr()
+  @ffi.Uint8()
   external int arg5;
 }
 

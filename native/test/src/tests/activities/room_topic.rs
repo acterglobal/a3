@@ -22,7 +22,7 @@ async fn test_room_topic() -> Result<()> {
 
     // ensure it was sent
     let topic = "Here is test channel";
-    let topic_event_id = room.set_topic(topic.to_owned()).await?;
+    room.set_topic(topic.to_owned()).await?;
 
     activities_listenerd.recv().await?; // await for it have been coming in
 
@@ -38,11 +38,6 @@ async fn test_room_topic() -> Result<()> {
 
     // external API check
     let meta = activity.event_meta();
-    assert_eq!(
-        meta.event_id.clone(),
-        topic_event_id,
-        "event id should match"
-    );
     assert_eq!(activity.sender_id_str(), admin.user_id()?);
     assert_eq!(activity.event_id_str(), meta.event_id);
     assert_eq!(activity.room_id_str(), room_id);
