@@ -4,6 +4,7 @@ use acter_core::{
     spaces::new_app_permissions_builder,
 };
 use anyhow::{bail, Result};
+use futures::{pin_mut, stream::StreamExt, FutureExt};
 use matrix_sdk_base::ruma::events::{
     room::join_rules::{AllowRule, JoinRule, Restricted},
     StateEventType,
@@ -782,16 +783,25 @@ async fn update_topic() -> Result<()> {
     assert_eq!(spaces.len(), 1);
 
     let space = spaces.first().expect("first space should be available");
-    let mut listener = space.subscribe_info();
+    let mut listener = space.subscribe();
+
+    let timeline = space.timeline_stream().await;
+    let stream = timeline.messages_stream();
+    pin_mut!(stream);
 
     // set topic
 
     let topic = "New Topic";
     space.set_topic(topic.to_owned()).await?;
 
-    while listener.next().await.is_none() {
-        info!("space change not reached");
-    }
+    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
+    Retry::spawn(retry_strategy, || async {
+        if listener.is_empty() {
+            bail!("no updates received");
+        };
+        Ok(())
+    })
+    .await?;
 
     // will not refetch space, so that just listened room info would be valid
     assert_eq!(space.topic().as_deref(), Some(topic));
