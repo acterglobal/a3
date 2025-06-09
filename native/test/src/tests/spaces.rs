@@ -792,7 +792,7 @@ async fn update_topic() -> Result<()> {
     Retry::spawn(retry_strategy, || async {
         if listener.is_empty() {
             bail!("no updates received");
-        };
+        }
         Ok(())
     })
     .await?;
