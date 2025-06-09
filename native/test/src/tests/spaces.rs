@@ -239,8 +239,13 @@ async fn create_subconvo() -> Result<()> {
     };
     let convo_id = user.create_convo(Box::new(settings)).await?;
 
-    let convo = user.convo(convo_id.to_string()).await?;
+    let convo = Retry::spawn(retry_strategy.clone(), || async {
+        user.convo(convo_id.to_string()).await
+    })
+    .await?;
+
     assert_eq!(convo.join_rule_str(), "public");
+
     let space_parent = Retry::spawn(retry_strategy, || async {
         let space_relations = convo.space_relations().await?;
         let Some(space_parent) = space_relations.main_parent() else {
@@ -253,7 +258,6 @@ async fn create_subconvo() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-
     Retry::spawn(retry_strategy, || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
@@ -301,16 +305,13 @@ async fn create_subspace() -> Result<()> {
     };
     let subspace_id = user.create_acter_space(Box::new(settings)).await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
-        if user.spaces().await?.len() != 2 {
-            bail!("not the right number of spaces found");
-        }
-        Ok(())
+    let space = Retry::spawn(retry_strategy.clone(), || async {
+        user.space(subspace_id.to_string()).await
     })
     .await?;
 
-    let space = user.space(subspace_id.to_string()).await?;
     assert_eq!(space.join_rule_str(), "restricted");
+
     let space_parent = Retry::spawn(retry_strategy, || async {
         let space_relations = space.space_relations().await?;
         let Some(space_parent) = space_relations.main_parent() else {
@@ -323,7 +324,6 @@ async fn create_subspace() -> Result<()> {
     assert_eq!(space_parent.room_id(), first.room_id());
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-
     Retry::spawn(retry_strategy, || async {
         if user.spaces().await?.is_empty() {
             bail!("still no spaces found");
