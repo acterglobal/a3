@@ -46,8 +46,17 @@ Future<void> saveEventLocations({
   
     final updateBuilder = calendarEvent.updateBuilder();
     updateBuilder.unsetLocations();
-    await updateBuilder.send();
+
+    for (final location in locations) {
+      if (location.type == LocationType.physical) {
+        updateBuilder.addPhysicalLocation(location.name, '', '', '', '',location.address,location.note);
+      }
+      if (location.type == LocationType.virtual) {
+        updateBuilder.addVirtualLocation(location.name, '', '',location.url ?? '',location.note);
+      }
+    }
     
+    await updateBuilder.send();
     await autosubscribe(
       ref: ref,
       objectId: calendarEvent.eventId().toString(),

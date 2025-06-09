@@ -556,17 +556,17 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       final locations = ref.read(eventDraftLocationsProvider);
       for (final location in locations) {
         if (location.type == LocationType.physical) {
-          draft.physicalLocation(location.name, '', '', '', '',location.address,location.note);
+          draft.addPhysicalLocation(location.name, '', '', '', '',location.address,location.note);
         }
         if (location.type == LocationType.virtual) {
-          draft.virtualLocation(location.name, '', '',location.url ?? '',location.note);
+          draft.addVirtualLocation(location.name, '', '',location.url ?? '',location.note);
         }
       }
       
       // Add Jitsi link if enabled
       if (_isJitsiEnabled) {
         final jitsiLink = _createJitsiCallLink(title);
-        draft.virtualLocation(lang.jitsiMeeting, '', '', jitsiLink, '');
+        draft.addVirtualLocation(lang.jitsiMeeting, '', '', jitsiLink, '');
       }
 
       final eventId = (await draft.send()).toString();
