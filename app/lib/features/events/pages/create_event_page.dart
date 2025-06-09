@@ -254,7 +254,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
   }
 
   // Create Jitsi call link
-  String _createJitsiCallLink(String title) {   
+  String createJitsiCallLink(String title) {   
     // Generate a random 10-digit number
     final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
     // Format the number to ensure it's 10 digits by padding with zeros if needed
@@ -565,7 +565,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       
       // Add Jitsi link if enabled
       if (_isJitsiEnabled) {
-        final jitsiLink = _createJitsiCallLink(title);
+        final jitsiLink = createJitsiCallLink(title);
         draft.addVirtualLocation(lang.jitsiMeeting, '', '', jitsiLink, '');
       }
 

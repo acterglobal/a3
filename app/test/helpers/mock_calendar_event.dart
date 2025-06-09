@@ -2,22 +2,18 @@
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../features/activity/item_widgets/activity_event_item_widget_test.dart';
 import 'mock_event_providers.dart';
-
-class MockSpace extends Mock implements Space {
-  @override
-  CalendarEventDraft calendarEventDraft() => MockCalendarEventDraft();
-}
 
 class MockCalendarEvent extends Mock implements CalendarEvent {
   @override
   String title() => 'Test Event';
   
   @override
-  UtcDateTime utcStart() => MockUtcDateTime(millis: DateTime.now().millisecondsSinceEpoch);
+  UtcDateTime utcStart() => MockUtcDateTime();
   
   @override
-  UtcDateTime utcEnd() => MockUtcDateTime(millis: DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch);
+  UtcDateTime utcEnd() => MockUtcDateTime();
   
   @override
   String roomIdStr() => 'test-space-id';
@@ -30,26 +26,6 @@ class MockCalendarEvent extends Mock implements CalendarEvent {
 }
 
 class MockCalendarEventDraft extends Mock implements CalendarEventDraft {
-  @override
-  Future<EventId> send() async => MockEventId('test-event-id');
-  
-  @override
-  void title(String title) {}
-  
-  @override
-  void utcStartFromRfc3339(String start) {}
-  
-  @override
-  void utcEndFromRfc3339(String end) {}
-  
-  @override
-  void descriptionHtml(String plain, String html) {}
-  
-  @override
-  void addPhysicalLocation(String? name, String? description, String? address, String? city, String? country, String? postalCode, String? note) {}
-  
-  @override
-  void addVirtualLocation(String? name, String? description, String? url, String note, String? type) {}
 }
 
 class MockRsvpManager extends Mock implements RsvpManager {
@@ -63,12 +39,4 @@ class MockRsvpDraft extends Mock implements RsvpDraft {
   
   @override
   void status(String status) {}
-}
-
-class MockUtcDateTime extends Mock implements UtcDateTime {
-  final int millis;
-  MockUtcDateTime({required this.millis});
-
-  @override
-  int timestampMillis() => millis;
 }
