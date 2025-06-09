@@ -780,7 +780,9 @@ async fn update_topic() -> Result<()> {
     let spaces = user.spaces().await?;
     assert_eq!(spaces.len(), 1);
 
-    let space = spaces.first().expect("first space should be available");
+    let first = spaces.first().expect("first space should be available");
+    let space_id = first.room_id_str();
+    let space = user.space(space_id).await?;
     let listener = space.subscribe();
 
     // set topic
