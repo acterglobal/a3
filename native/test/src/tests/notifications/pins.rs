@@ -25,7 +25,7 @@ url = "https://acter.global"
 #[tokio::test]
 async fn pins_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("pins_creation_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("pins_creation_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -40,16 +40,12 @@ async fn pins_creation_notification() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let main_space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            if spaces.len() != 1 {
-                bail!("space not found");
-            }
-            Ok(spaces.first().cloned().expect("space found"))
+    let main_space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("space not found");
         }
+        Ok(spaces.first().cloned().expect("space found"))
     })
     .await?;
 
@@ -58,9 +54,12 @@ async fn pins_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.pin_draft()?;
-    draft.title("Acter Website".to_owned());
-    let event_id = draft.send().await?;
+    let title = "Acter Website";
+    let event_id = main_space
+        .pin_draft()?
+        .title(title.to_owned())
+        .send()
+        .await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -71,7 +70,7 @@ async fn pins_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/pins/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "pin");
-    assert_eq!(parent.title().as_deref(), Some("Acter Website"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "📌"); // pin icon
     assert_eq!(parent.object_id_str(), event_id);
 
@@ -81,23 +80,19 @@ async fn pins_creation_notification() -> Result<()> {
 #[tokio::test]
 async fn pin_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("pinTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -108,9 +103,12 @@ async fn pin_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.title("Renamed Pin".to_owned());
-    let notification_ev = update.send().await?;
+    let title = "Renamed Pin";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -125,9 +123,9 @@ async fn pin_title_update() -> Result<()> {
 
     let obj_id = obj_entry.event_id_str();
 
-    assert_eq!(notification_item.title(), "Renamed Pin"); // old title
+    assert_eq!(notification_item.title(), title); // old title
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
+    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id));
     assert_eq!(parent.type_str(), "pin");
     // assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
@@ -139,23 +137,19 @@ async fn pin_title_update() -> Result<()> {
 #[tokio::test]
 async fn pin_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("pinDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -166,9 +160,12 @@ async fn pin_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.content_text("Added description".to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Added description";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -182,9 +179,9 @@ async fn pin_desc_update() -> Result<()> {
     let obj_id = obj_entry.event_id_str();
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "Added description"); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
-    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id,));
+    assert_eq!(notification_item.target_url(), format!("/pins/{}", obj_id));
     assert_eq!(parent.type_str(), "pin");
     assert_eq!(parent.title().as_deref(), Some("Acter Website"));
     assert_eq!(parent.emoji(), "📌"); // pin icon
@@ -197,23 +194,19 @@ async fn pin_desc_update() -> Result<()> {
 #[tokio::test]
 async fn pin_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("pinRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("pinRedaction", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = first.clone();
-    let pin = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let pin = Retry::spawn(retry_strategy, || async {
+        let entries = first.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 

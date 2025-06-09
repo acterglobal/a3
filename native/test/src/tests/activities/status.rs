@@ -25,7 +25,7 @@ async fn initial_events() -> Result<()> {
     assert_eq!(activity.type_str(), "roomName");
     // // check the create event
     // let room_activities = observer_room_activities.clone();
-    // let created = Retry::spawn(retry_strategy.clone(), move || {
+    // let created = Retry::spawn(retry_strategy, move || {
     //     let room_activities = room_activities.clone();
     //     async move {
     //         let Some(a) = room_activities
@@ -75,18 +75,12 @@ async fn invite_and_join() -> Result<()> {
     obs_observer.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let obs = observer.clone();
-    let room_activities = observer_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let ob = obs.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            ob.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy.clone(), || async {
+        let m = observer_room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        observer.activity(id).await
     })
     .await?;
 
@@ -99,16 +93,11 @@ async fn invite_and_join() -> Result<()> {
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // let the third accept the invite
 
-    let third = third.clone();
-    let invited_room = Retry::spawn(retry_strategy.clone(), move || {
-        let third = third.clone();
-
-        async move {
-            let Some(room) = third.invited_rooms().first().cloned() else {
-                bail!("No invite found");
-            };
-            Ok(room)
-        }
+    let invited_room = Retry::spawn(retry_strategy.clone(), || async {
+        let Some(room) = third.invited_rooms().first().cloned() else {
+            bail!("No invite found");
+        };
+        Ok(room)
     })
     .await?;
 
@@ -117,18 +106,12 @@ async fn invite_and_join() -> Result<()> {
     obs_observer.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let obs = observer.clone();
-    let room_activities = observer_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let ob = obs.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            ob.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy, || async {
+        let m = observer_room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        observer.activity(id).await
     })
     .await?;
 
@@ -160,18 +143,12 @@ async fn kicked() -> Result<()> {
     activities_listenerd.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let cl = admin.clone();
-    let room_activities = room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let cl = cl.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            cl.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy, || async {
+        let m = room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        admin.activity(id).await
     })
     .await?;
 
@@ -211,18 +188,12 @@ async fn invite_and_rejected() -> Result<()> {
     obs_observer.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let obs = observer.clone();
-    let room_activities = observer_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let ob = obs.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            ob.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy.clone(), || async {
+        let m = observer_room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        observer.activity(id).await
     })
     .await?;
 
@@ -237,16 +208,11 @@ async fn invite_and_rejected() -> Result<()> {
     assert_triggered_with_latest_activity(&mut act_obs, activity.event_id_str()).await?;
     // let the third accept the invite
 
-    let third = third.clone();
-    let invited_room = Retry::spawn(retry_strategy.clone(), move || {
-        let third = third.clone();
-
-        async move {
-            let Some(room) = third.invited_rooms().first().cloned() else {
-                bail!("No invite found");
-            };
-            Ok(room)
-        }
+    let invited_room = Retry::spawn(retry_strategy.clone(), || async {
+        let Some(room) = third.invited_rooms().first().cloned() else {
+            bail!("No invite found");
+        };
+        Ok(room)
     })
     .await?;
 
@@ -255,18 +221,12 @@ async fn invite_and_rejected() -> Result<()> {
     obs_observer.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let obs = observer.clone();
-    let room_activities = observer_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let ob = obs.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            ob.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy, || async {
+        let m = observer_room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        observer.activity(id).await
     })
     .await?;
 
@@ -299,18 +259,12 @@ async fn kickban_and_unban() -> Result<()> {
     activities_listenerd.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let cl = admin.clone();
-    let room_activities = main_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let cl = cl.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            cl.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy.clone(), || async {
+        let m = main_room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        admin.activity(id).await
     })
     .await?;
 
@@ -329,18 +283,12 @@ async fn kickban_and_unban() -> Result<()> {
     activities_listenerd.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let cl = admin.clone();
-    let room_activities = main_room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let cl = cl.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            cl.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy, || async {
+        let m = main_room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        admin.activity(id).await
     })
     .await?;
 
@@ -372,18 +320,12 @@ async fn left() -> Result<()> {
     activities_listenerd.recv().await?; // await for it have been coming in
 
     // wait for the event to come in
-    let cl = admin.clone();
-    let room_activities = room_activities.clone();
-    let activity = Retry::spawn(retry_strategy.clone(), move || {
-        let room_activities = room_activities.clone();
-        let cl = cl.clone();
-        async move {
-            let m = room_activities.get_ids(0, 1).await?;
-            let Some(id) = m.first().cloned() else {
-                bail!("no latest room activity found");
-            };
-            cl.activity(id).await
-        }
+    let activity = Retry::spawn(retry_strategy, || async {
+        let m = room_activities.get_ids(0, 1).await?;
+        let Some(id) = m.first().cloned() else {
+            bail!("no latest room activity found");
+        };
+        admin.activity(id).await
     })
     .await?;
 
@@ -416,7 +358,8 @@ async fn display_name() -> Result<()> {
     let mut act_obs = all_activities_observer(&observer).await?;
     // ensure it was sent
     let account = observer.account()?;
-    account.set_display_name("Mickey Mouse".to_owned()).await?;
+    let name = "Mickey Mouse";
+    account.set_display_name(name.to_owned()).await?;
 
     // wait for the event to come in
     let activity = get_latest_activity(&admin, room_id.to_string(), "displayName").await?;
@@ -427,7 +370,7 @@ async fn display_name() -> Result<()> {
     };
     let meta = activity.event_meta();
 
-    assert_eq!(r.display_name_new_val().as_deref(), Some("Mickey Mouse"));
+    assert_eq!(r.display_name_new_val().as_deref(), Some(name));
     assert_eq!(meta.sender, observer.user_id()?);
 
     // external API check
