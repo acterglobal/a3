@@ -16,7 +16,7 @@ use tokio_retry::{
 
 pub mod upgrades;
 
-use crate::utils::{random_user, random_user_with_template};
+use crate::utils::{random_user, random_user_with_random_space, random_user_with_template};
 
 const THREE_SPACES_TMPL: &str = r#"
 version = "0.1"
@@ -764,25 +764,18 @@ async fn update_name() -> Result<()> {
 #[tokio::test]
 async fn update_topic() -> Result<()> {
     let _ = env_logger::try_init();
-    let (user, sync_state, _engine) = random_user_with_template("space_update_topic", TMPL).await?;
+    let (mut user, space_id) = random_user_with_random_space("space_update_topic").await?;
+
+    let sync_state = user.start_sync();
     sync_state.await_has_synced_history().await?;
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    Retry::spawn(retry_strategy, || async {
-        if user.spaces().await?.len() != 1 {
-            bail!("not all spaces found");
-        }
-        Ok(())
+    let space = Retry::spawn(retry_strategy, || async {
+        user.space(space_id.to_string()).await
     })
     .await?;
 
-    let spaces = user.spaces().await?;
-    assert_eq!(spaces.len(), 1);
-
-    let first = spaces.first().expect("first space should be available");
-    let space_id = first.room_id_str();
-    let space = user.space(space_id).await?;
     let listener = space.subscribe();
 
     // set topic
