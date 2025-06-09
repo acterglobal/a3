@@ -29,7 +29,7 @@ utc_due = "{{ now().as_rfc3339 }}"
 #[tokio::test]
 async fn tasklist_creation_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("tl_creation_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("tl_creation_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -44,16 +44,12 @@ async fn tasklist_creation_notification() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let main_space = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let spaces = client.spaces().await?;
-            if spaces.len() != 1 {
-                bail!("space not found");
-            }
-            Ok(spaces.first().cloned().expect("space found"))
+    let main_space = Retry::spawn(retry_strategy, || async {
+        let spaces = user.spaces().await?;
+        if spaces.len() != 1 {
+            bail!("space not found");
         }
+        Ok(spaces.first().cloned().expect("space found"))
     })
     .await?;
 
@@ -62,9 +58,12 @@ async fn tasklist_creation_notification() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?; // we want to see push for everything;
 
-    let mut draft = main_space.task_list_draft()?;
-    draft.name("Babies first task list".to_owned());
-    let event_id = draft.send().await?;
+    let title = "Babies first task list";
+    let event_id = main_space
+        .task_list_draft()?
+        .name(title.to_owned())
+        .send()
+        .await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second
@@ -75,7 +74,7 @@ async fn tasklist_creation_notification() -> Result<()> {
     assert_eq!(notifications.target_url(), format!("/tasks/{event_id}"));
     let parent = notifications.parent().expect("parent should be available");
     assert_eq!(parent.type_str(), "task-list");
-    assert_eq!(parent.title().as_deref(), Some("Babies first task list"));
+    assert_eq!(parent.title().as_deref(), Some(title));
     assert_eq!(parent.emoji(), "📋"); // task list icon
     assert_eq!(parent.object_id_str(), event_id);
 
@@ -85,23 +84,19 @@ async fn tasklist_creation_notification() -> Result<()> {
 #[tokio::test]
 async fn tasklist_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("eventTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("eventTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -112,10 +107,12 @@ async fn tasklist_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
     let title = "Renamed Tasklist";
-    update.name(title.to_owned());
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry
+        .update_builder()?
+        .name(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -145,23 +142,19 @@ async fn tasklist_title_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasklistDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -172,10 +165,12 @@ async fn tasklist_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    let desc = "Added description";
-    update.description_text(desc.to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Added description";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .description_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -189,7 +184,7 @@ async fn tasklist_desc_update() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), desc); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -207,23 +202,19 @@ async fn tasklist_desc_update() -> Result<()> {
 #[tokio::test]
 async fn tasklist_redaction() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasklistRedaction", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasklistRedaction", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = first.clone();
-    let event = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let event = Retry::spawn(retry_strategy, || async {
+        let entries = first.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -261,23 +252,19 @@ async fn tasklist_redaction() -> Result<()> {
 #[tokio::test]
 async fn task_created() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskCreated", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskCreated", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -288,12 +275,13 @@ async fn task_created() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut task = obj_entry.task_builder()?;
-    task.due_date(2025, 11, 13);
     let title = "Baby’s first task";
-    task.title(title.to_owned());
-
-    let notification_ev = task.send().await?;
+    let notification_ev = obj_entry
+        .task_builder()?
+        .due_date(2025, 11, 13)
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -323,27 +311,23 @@ async fn task_created() -> Result<()> {
 #[tokio::test]
 async fn task_title_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskTitleUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskTitleUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -354,10 +338,12 @@ async fn task_title_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
     let title = "Renamed Task";
-    update.title(title.to_owned());
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry
+        .update_builder()?
+        .title(title.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -387,27 +373,23 @@ async fn task_title_update() -> Result<()> {
 #[tokio::test]
 async fn task_desc_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDescUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDescUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -418,10 +400,12 @@ async fn task_desc_update() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    let desc = "Task is complicated";
-    update.description_text(desc.to_owned());
-    let notification_ev = update.send().await?;
+    let body = "Task is complicated";
+    let notification_ev = obj_entry
+        .update_builder()?
+        .description_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -435,7 +419,7 @@ async fn task_desc_update() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), desc); // new description
+    assert_eq!(content.body(), body); // new description
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -455,27 +439,23 @@ async fn task_desc_update() -> Result<()> {
 #[tokio::test]
 async fn task_due_update() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("tasDueUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("tasDueUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -524,27 +504,23 @@ async fn task_due_update() -> Result<()> {
 #[tokio::test]
 async fn task_done_and_undone() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDoneUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDoneUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 
@@ -555,9 +531,7 @@ async fn task_done_and_undone() -> Result<()> {
         .set_notification_mode(Some("all".to_owned()))
         .await?;
 
-    let mut update = obj_entry.update_builder()?;
-    update.mark_done();
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry.update_builder()?.mark_done().send().await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -585,9 +559,7 @@ async fn task_done_and_undone() -> Result<()> {
 
     // and undone
 
-    let mut update = obj_entry.update_builder()?;
-    update.mark_undone();
-    let notification_ev = update.send().await?;
+    let notification_ev = obj_entry.update_builder()?.mark_undone().send().await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -619,27 +591,23 @@ async fn task_done_and_undone() -> Result<()> {
 #[tokio::test]
 async fn task_self_assign_and_unassign() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("taskDoneUpdate", 2, TMPL).await?;
+        random_users_with_random_space_under_template("taskDoneUpdate", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let (tl_id, obj_entry) = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.task_lists().await?;
-            if entries.is_empty() {
-                bail!("entries not found");
-            }
-            let tasks = entries[0].tasks().await?;
-            let Some(task) = tasks.first() else {
-                bail!("task not found");
-            };
-            Ok((entries[0].event_id_str(), task.clone()))
+    let (tl_id, obj_entry) = Retry::spawn(retry_strategy, || async {
+        let entries = second_user.task_lists().await?;
+        if entries.is_empty() {
+            bail!("entries not found");
         }
+        let tasks = entries[0].tasks().await?;
+        let Some(task) = tasks.first() else {
+            bail!("task not found");
+        };
+        Ok((entries[0].event_id_str(), task.clone()))
     })
     .await?;
 

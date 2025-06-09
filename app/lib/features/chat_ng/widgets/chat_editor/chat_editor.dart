@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:acter/common/providers/chat_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
-import 'package:acter/common/widgets/html_editor/html_editor.dart';
+import 'package:acter/common/toolkit/html_editor/html_editor.dart';
 import 'package:acter/features/attachments/actions/select_attachment.dart';
 import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat_ng/actions/attachment_upload_action.dart';
@@ -286,7 +286,7 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
         disableAutoScroll: false,
         editorState: textEditorState,
         // scrollController: scrollController,
-        maxHeight: MediaQuery.sizeOf(context).height * 0.5,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.2,
         minHeight: 24,
         onChanged: (body, html) {
           final isTyping = html != null ? html.isNotEmpty : body.isNotEmpty;

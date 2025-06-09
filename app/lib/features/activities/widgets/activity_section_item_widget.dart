@@ -8,6 +8,7 @@ class ActivitySectionItemWidget extends ConsumerWidget {
   final String title;
   final String? subtitle;
   final List<Widget>? actions;
+  final Widget? trailing;
 
   const ActivitySectionItemWidget({
     super.key,
@@ -17,6 +18,7 @@ class ActivitySectionItemWidget extends ConsumerWidget {
     required this.title,
     this.subtitle,
     this.actions,
+    this.trailing,
   });
 
   @override
@@ -25,7 +27,7 @@ class ActivitySectionItemWidget extends ConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: borderColor ?? Colors.transparent, width: 0.5),
-      ),  
+      ),
       elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -46,6 +48,7 @@ class ActivitySectionItemWidget extends ConsumerWidget {
                 ],
               ),
             ),
+            if (trailing != null) ...[const SizedBox(width: 10), trailing!],
           ],
         ),
       ),

@@ -244,16 +244,12 @@ async fn task_update_title() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = user.clone();
-    let task_lists = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            let task_lists = client.task_lists().await?;
-            if task_lists.len() != 1 {
-                bail!("not all task_lists found");
-            }
-            Ok(task_lists)
+    let task_lists = Retry::spawn(retry_strategy, || async {
+        let task_lists = user.task_lists().await?;
+        if task_lists.len() != 1 {
+            bail!("not all task_lists found");
         }
+        Ok(task_lists)
     })
     .await?;
 

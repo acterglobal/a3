@@ -58,7 +58,7 @@ class SearchPublicDirectory extends ConsumerWidget {
       return;
     }
     final newRoomId = await joinRoom(
-      context: context,
+      lang: lang,
       ref: ref,
       roomIdOrAlias: roomId,
       serverNames: searchServer != null ? [searchServer] : [],

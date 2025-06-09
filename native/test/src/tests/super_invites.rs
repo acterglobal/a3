@@ -17,12 +17,8 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -32,11 +28,13 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(tokens.len(), 0); // we start with zero tokens
 
     // let’s create a new one
-    let mut builder = SuperInvitesTokenUpdateBuilder::new();
-    builder.add_room(room_id.to_string());
+    let mut token_builder = SuperInvitesTokenUpdateBuilder::new();
+    let given_token = "1234567890"; // will not use the auto-generated token string
+    token_builder.token(given_token.to_owned());
+    token_builder.add_room(room_id.to_string());
 
     let token = super_invites
-        .create_or_update_token(Box::new(builder))
+        .create_or_update_token(Box::new(token_builder))
         .await?;
     assert_eq!(token.accepted_count(), 0);
     let rooms = token.rooms();
@@ -44,6 +42,7 @@ async fn super_invites_flow_with_registration_and_rooms() -> Result<()> {
     assert_eq!(rooms[0], room_id);
 
     let token_str = token.token();
+    assert_eq!(token_str, given_token);
 
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 1); // we have one now
@@ -78,12 +77,8 @@ async fn super_invites_manage() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -94,10 +89,10 @@ async fn super_invites_manage() -> Result<()> {
 
     // let’s create a new one
 
-    let mut builder = SuperInvitesTokenUpdateBuilder::new();
-    builder.add_room(room_id.to_string());
+    let mut token_builder = SuperInvitesTokenUpdateBuilder::new();
+    token_builder.add_room(room_id.to_string());
     let token = super_invites
-        .create_or_update_token(Box::new(builder))
+        .create_or_update_token(Box::new(token_builder))
         .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 1);
@@ -107,11 +102,11 @@ async fn super_invites_manage() -> Result<()> {
     let tokens = super_invites.tokens().await?;
     assert_eq!(tokens.len(), 1); // we start with zero tokens
 
-    let mut builder = token.update_builder();
-    builder.remove_room(room_id.to_string());
-    builder.create_dm(true);
+    let mut token_builder = token.update_builder();
+    token_builder.remove_room(room_id.to_string());
+    token_builder.create_dm(true);
     let token = super_invites
-        .create_or_update_token(Box::new(builder))
+        .create_or_update_token(Box::new(token_builder))
         .await?;
     let rooms = token.rooms();
     assert_eq!(rooms.len(), 0);

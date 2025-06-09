@@ -254,7 +254,7 @@ void main() {
 
         // Check ❤️ tab
         await tester.tap(
-          find.byKey(Key('reaction-tab-❤️')),
+          find.byKey(Key('reaction-tab-❤️'), skipOffstage: false),
         ); // Second tab with count 2
         await tester.pumpAndSettle();
         expect(find.byType(ReactionUserItem), findsNWidgets(2));

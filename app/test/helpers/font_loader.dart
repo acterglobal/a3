@@ -13,6 +13,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
+final fonts = [
+  ('Roboto', 'assets/fonts/Roboto-Regular.ttf'),
+  // for testing we provide these as monospace fonts
+  ('Courier', 'assets/fonts/RobotoMono-Regular.ttf'),
+  ('monospace', 'assets/fonts/RobotoMono-Regular.ttf'),
+  ('Inter', 'assets/fonts/Inter.ttf'),
+  ('Noto', 'assets/fonts/Noto-COLRv1.ttf'),
+  ('AppleColorEmoji', 'assets/fonts/AppleColorEmoji.ttc'),
+];
+
 ///By default, flutter test only uses a single "test" font called Ahem.
 ///
 ///This font is designed to show black spaces for every character and icon. This obviously makes goldens much less valuable.
@@ -22,12 +32,12 @@ import 'package:flutter/material.dart';
 ///packages you depend on, as well as Roboto Regular.
 Future<void> loadTestFonts() async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  final Future<ByteData> font = rootBundle.load(
-    'assets/fonts/Roboto-Regular.ttf', // added roboot font to assets
-  );
 
-  final FontLoader fontLoader = FontLoader('Roboto')..addFont(font);
-  await fontLoader.load();
+  for (final (fontFamily, fontPath) in fonts) {
+    final Future<ByteData> font = rootBundle.load(fontPath);
+    final FontLoader fontLoader = FontLoader(fontFamily)..addFont(font);
+    await fontLoader.load();
+  }
 
   final fontManifest = await rootBundle.loadStructuredData<Iterable<dynamic>>(
     'FontManifest.json',

@@ -36,6 +36,16 @@ class RetryMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
   }
 }
 
+class MaybeMockAsyncSpaceNotifier extends FamilyAsyncNotifier<Space?, String>
+    with Mock
+    implements AsyncMaybeSpaceNotifier {
+  final Space? mockSpace;
+  MaybeMockAsyncSpaceNotifier({this.mockSpace});
+
+  @override
+  Future<Space?> build(String arg) async => mockSpace;
+}
+
 class MockSpace extends Mock implements Space {
   final String id;
   final bool bookmarked;

@@ -44,15 +44,11 @@ async fn rsvp_last_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -90,7 +86,7 @@ async fn rsvp_last_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -116,15 +112,11 @@ async fn rsvp_my_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -162,7 +154,7 @@ async fn rsvp_my_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -193,15 +185,11 @@ async fn rsvp_count_at_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -239,7 +227,7 @@ async fn rsvp_count_at_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }
@@ -270,15 +258,11 @@ async fn rsvp_users_at_status() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.calendar_events().await?.len() != 3 {
-                bail!("not all calendar_events found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.calendar_events().await?.len() != 3 {
+            bail!("not all calendar_events found");
         }
+        Ok(())
     })
     .await?;
 
@@ -316,7 +300,7 @@ async fn rsvp_users_at_status() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if rsvp_listener.is_empty() {
             bail!("all still empty");
         }

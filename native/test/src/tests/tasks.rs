@@ -1,3 +1,5 @@
+mod invitations;
+
 use acter::testing::wait_for;
 use acter_core::models::ActerModel;
 use anyhow::{bail, Context, Result};
@@ -22,12 +24,8 @@ async fn task_smoketests() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -39,11 +37,12 @@ async fn task_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Starting up".to_owned());
-        draft.send().await?
-    };
+    let name = "Starting up";
+    let task_list_id = space
+        .task_list_draft()?
+        .name(name.to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 
@@ -59,14 +58,15 @@ async fn task_smoketests() -> Result<()> {
     .await?
     .expect("freshly created Task List couldn’t be found");
 
-    assert_eq!(task_list.name(), "Starting up");
+    assert_eq!(task_list.name(), name);
     assert_eq!(task_list.tasks().await?.len(), 0);
 
     let task_list_listener = task_list.subscribe();
 
+    let title = "Testing 1";
     let task_1_id = task_list
         .task_builder()?
-        .title("Testing 1".into())
+        .title(title.to_owned())
         .description_text("This is testing task".into())
         .send()
         .await?;
@@ -86,7 +86,7 @@ async fn task_smoketests() -> Result<()> {
     assert_eq!(tasks[0].event_id(), task_1_id);
 
     let task_1 = tasks[0].clone();
-    assert_eq!(task_1.title(), "Testing 1");
+    assert_eq!(task_1.title(), title);
     assert_eq!(
         task_1.description().map(|msg| msg.body()),
         Some("This is testing task".to_owned())
@@ -95,14 +95,14 @@ async fn task_smoketests() -> Result<()> {
 
     let task_list_listener = task_list.subscribe();
 
+    let title = "Testing 2";
     let task_2_id = task_list
         .task_builder()?
-        .title("Testing 2".into())
+        .title(title.to_owned())
         .sort_order(1)
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
@@ -119,14 +119,15 @@ async fn task_smoketests() -> Result<()> {
     assert_eq!(tasks[1].sort_order(), 1);
 
     let task_2 = tasks[1].clone();
-    assert_eq!(task_2.title(), "Testing 2");
+    assert_eq!(task_2.title(), title);
     assert!(!task_2.is_done());
 
     let task_1_updater = task_1.subscribe();
 
+    let title = "Replacement Name";
     task_1
         .update_builder()?
-        .title("Replacement Name".into())
+        .title(title.to_owned())
         .mark_done()
         .send()
         .await?;
@@ -144,22 +145,23 @@ async fn task_smoketests() -> Result<()> {
 
     let task_1 = task_1.refresh().await?;
     // Update has been applied properly
-    assert_eq!(task_1.title(), "Replacement Name");
+    assert_eq!(task_1.title(), title);
     let assignees = task_1.assignees();
     assert_eq!(assignees, vec![user_id]);
     assert!(task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
 
+    let name = "Setup";
+    let body = "All done now";
     task_list
         .update_builder()?
-        .name("Setup".into())
-        .description_text("All done now".into())
+        .name(name.to_owned())
+        .description_text(body.to_owned())
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if task_list_listener.is_empty() {
             bail!("all still empty");
         }
@@ -169,9 +171,11 @@ async fn task_smoketests() -> Result<()> {
 
     let task_list = task_list.refresh().await?;
 
-    assert_eq!(task_list.name(), "Setup");
-    let description = task_list.description().expect("description needed");
-    assert_eq!(description.body(), "All done now");
+    assert_eq!(task_list.name(), name);
+    assert_eq!(
+        task_list.description().map(|c| c.body()).as_deref(),
+        Some(body)
+    );
 
     Ok(())
 }
@@ -186,12 +190,8 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -203,11 +203,12 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Comments test".to_owned());
-        draft.send().await?
-    };
+    let name = "Comments test";
+    let task_list_id = space
+        .task_list_draft()?
+        .name(name.to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 
@@ -222,7 +223,7 @@ async fn task_lists_comments_smoketests() -> Result<()> {
 
     let comments_manager = task_list.comments().await?;
 
-    assert_eq!(task_list.name(), "Comments test");
+    assert_eq!(task_list.name(), name);
     assert_eq!(task_list.tasks().await?.len(), 0);
     assert!(!comments_manager.stats().has_comments());
 
@@ -270,15 +271,12 @@ async fn task_lists_comments_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
     let comment = &comments[0];
 
-    Retry::spawn(retry_strategy.clone(), move || {
-        let comment = comment.clone();
-        async move {
-            let edited_comment = comment.refresh().await?;
-            if edited_comment.content().body != updated_body {
-                bail!("Update not yet received");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        let edited_comment = comment.refresh().await?;
+        if edited_comment.content().body != updated_body {
+            bail!("Update not yet received");
         }
+        Ok(())
     })
     .await?;
 
@@ -289,18 +287,14 @@ async fn task_lists_comments_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let reply_comment = Retry::spawn(retry_strategy, move || {
-        let comments_manager = comments_manager.clone();
-        let replied_id = replied_id.clone();
-        async move {
-            let comments = comments_manager.comments().await?;
-            if comments.len() < 2 {
-                bail!("Expected 2 comments, got {}", comments.len());
-            }
-            match comments.iter().find(|c| c.event_id() == replied_id) {
-                Some(comment) => Ok(comment.clone()),
-                None => bail!("Expected comment with id {replied_id} not found"),
-            }
+    let reply_comment = Retry::spawn(retry_strategy, || async {
+        let comments = comments_manager.comments().await?;
+        if comments.len() < 2 {
+            bail!("Expected 2 comments, got {}", comments.len());
+        }
+        match comments.iter().find(|c| c.event_id() == replied_id) {
+            Some(comment) => Ok(comment.clone()),
+            None => bail!("Expected comment with id {replied_id} not found"),
         }
     })
     .await?;
@@ -320,12 +314,8 @@ async fn task_comment_smoketests() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -337,11 +327,12 @@ async fn task_comment_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Starting up".to_owned());
-        draft.send().await?
-    };
+    let name = "Starting up";
+    let task_list_id = space
+        .task_list_draft()?
+        .name(name.to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 
@@ -354,14 +345,15 @@ async fn task_comment_smoketests() -> Result<()> {
     .await?
     .expect("freshly created Task List couldn’t be found");
 
-    assert_eq!(task_list.name(), "Starting up");
+    assert_eq!(task_list.name(), name);
     assert_eq!(task_list.tasks().await?.len(), 0);
 
     let task_list_listener = task_list.subscribe();
 
+    let title = "Testing 1";
     let task_1_id = task_list
         .task_builder()?
-        .title("Testing 1".into())
+        .title(title.to_owned())
         .send()
         .await?;
 
@@ -398,7 +390,6 @@ async fn task_comment_smoketests() -> Result<()> {
         .send()
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
     Retry::spawn(retry_strategy.clone(), || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
@@ -436,15 +427,12 @@ async fn task_comment_smoketests() -> Result<()> {
     assert_eq!(comments.len(), 1);
     let comment = &comments[0];
 
-    Retry::spawn(retry_strategy.clone(), move || {
-        let comment = comment.clone();
-        async move {
-            let edited_comment = comment.refresh().await?;
-            if edited_comment.content().body != updated_body {
-                bail!("Update not yet received");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        let edited_comment = comment.refresh().await?;
+        if edited_comment.content().body != updated_body {
+            bail!("Update not yet received");
         }
+        Ok(())
     })
     .await?;
 
@@ -455,8 +443,7 @@ async fn task_comment_smoketests() -> Result<()> {
         .redact_content(comment_id.to_string(), Some(reason.to_owned()))
         .await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -485,12 +472,8 @@ async fn task_list_external_link() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy, || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -502,11 +485,11 @@ async fn task_list_external_link() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = {
-        let mut draft = space.task_list_draft()?;
-        draft.name("Starting up".to_owned());
-        draft.send().await?
-    };
+    let task_list_id = space
+        .task_list_draft()?
+        .name("Starting up".to_owned())
+        .send()
+        .await?;
 
     let task_list_key = task_list_id.clone();
 

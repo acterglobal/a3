@@ -122,8 +122,17 @@ class _OriginalEventItem extends ConsumerWidget {
     }
 
     return switch (msgType) {
-      'm.emote' ||
-      'm.text' => TextMessageEvent.reply(roomId: roomId, content: content),
+      'm.notice' => TextMessageEvent(
+        roomId: roomId,
+        content: content,
+        isReply: true,
+        isNotice: true,
+      ),
+      'm.emote' || 'm.text' => TextMessageEvent(
+        roomId: roomId,
+        content: content,
+        isReply: true,
+      ),
       'm.image' => ImageMessageEvent(
         messageId: messageId,
         roomId: roomId,
