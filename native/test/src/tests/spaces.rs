@@ -4,7 +4,6 @@ use acter_core::{
     spaces::new_app_permissions_builder,
 };
 use anyhow::{bail, Result};
-use futures::{pin_mut, stream::StreamExt, FutureExt};
 use matrix_sdk_base::ruma::events::{
     room::join_rules::{AllowRule, JoinRule, Restricted},
     StateEventType,
@@ -14,7 +13,6 @@ use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
-use tracing::info;
 
 pub mod upgrades;
 
@@ -783,11 +781,7 @@ async fn update_topic() -> Result<()> {
     assert_eq!(spaces.len(), 1);
 
     let space = spaces.first().expect("first space should be available");
-    let mut listener = space.subscribe();
-
-    let timeline = space.timeline_stream().await;
-    let stream = timeline.messages_stream();
-    pin_mut!(stream);
+    let listener = space.subscribe();
 
     // set topic
 
