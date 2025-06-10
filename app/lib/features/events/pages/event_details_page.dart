@@ -190,7 +190,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
                       : Icons.edit_location_alt_outlined,
                 ),
                 const SizedBox(width: 10),
-                Text(locations.isEmpty ? lang.addLocation : lang.editLocation),
+                Text(locations.isEmpty ? lang.addLocation : lang.updateLocation),
               ],
             ),
           ),

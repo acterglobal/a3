@@ -258,7 +258,7 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
       children: [
         ActerPrimaryActionButton(
           onPressed: () => _addLocation(),
-          child: Text(widget.initialLocation != null ? lang.editLocation : lang.addLocation),
+          child: Text(widget.initialLocation != null ? lang.updateLocation : lang.addLocation),
         ),
         const SizedBox(height: 10),
         OutlinedButton(
