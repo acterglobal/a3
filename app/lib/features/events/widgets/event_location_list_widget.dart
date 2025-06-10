@@ -28,6 +28,25 @@ class _EventLocationListWidgetState extends ConsumerState<EventLocationListWidge
     }
   }
 
+Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
+  final asyncLocations = ref.read(asyncEventLocationsProvider(eventId)).valueOrNull;
+  if (asyncLocations != null) {
+    final locations = asyncLocations.map((location) => EventLocationDraft(
+      name: location.name() ?? '',
+      type: location.locationType().toLowerCase() == LocationType.virtual.name
+          ? LocationType.virtual
+          : LocationType.physical,
+      url: location.uri(),
+      address: location.address(),
+      note: location.notes(),
+    )).toList();
+    ref.read(eventDraftLocationsProvider.notifier).clearLocations();
+    for (final location in locations) {
+      ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
+    }
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     final lang = L10n.of(context);
