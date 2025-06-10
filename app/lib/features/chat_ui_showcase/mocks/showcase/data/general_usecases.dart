@@ -1030,14 +1030,154 @@ final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
     '@david:acter.global',
     '@patricia:acter.global',
   ],
-  timelineEventItems: [
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-31',
-      mockSenderId: '@robert:acter.global',
-      mockOriginServerTs: 1744010166000, // April 7, 2025
-      mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
-    ),
-  ],
+  timelineEventItemsBuilder:
+      (userId) => [
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-1',
+          mockSenderId: '@jennifer:acter.global',
+          mockOriginServerTs: 1743318000000, // March 30, 2025 09:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Good morning team! Starting sprint planning today.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-2',
+          mockSenderId: '@david:acter.global',
+          mockOriginServerTs: 1743405600000, // March 31, 2025 10:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'API documentation needs updating after the latest changes.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-3',
+          mockSenderId: userId,
+          mockOriginServerTs: 1743492000000, // April 1, 2025 11:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Database migration completed successfully on staging.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-4',
+          mockSenderId: '@robert:acter.global',
+          mockOriginServerTs: 1743578400000, // April 2, 2025 12:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Load testing shows 25% improvement in response times.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-5',
+          mockSenderId: userId,
+          mockOriginServerTs: 1743664800000, // April 3, 2025 13:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Code review session scheduled for tomorrow at 2 PM.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-6',
+          mockSenderId: '@david:acter.global',
+          mockOriginServerTs: 1743751200000, // April 4, 2025 14:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Security audit findings addressed. All vulnerabilities patched.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-7',
+          mockSenderId: '@patricia:acter.global',
+          mockOriginServerTs: 1743837600000, // April 5, 2025 15:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'New monitoring dashboards are live. Check Grafana for metrics.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-8',
+          mockSenderId: userId,
+          mockOriginServerTs: 1743924000000, // April 6, 2025 16:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Docker containers optimized. Build time reduced by 40%.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-9',
+          mockSenderId: '@jennifer:acter.global',
+          mockOriginServerTs: 1744010400000, // April 7, 2025 17:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Unit test coverage increased to 95%. Great job everyone!',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-10',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744096800000, // April 8, 2025 18:00:00
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Redis caching implementation completed. Performance boost confirmed.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-11',
+          mockSenderId: '@patricia:acter.global',
+          mockOriginServerTs:
+              DateTime.now()
+                  .subtract(const Duration(days: 1))
+                  .copyWith(hour: 10, minute: 0, second: 0, millisecond: 0)
+                  .millisecondsSinceEpoch, // Yesterday 10:00 AM
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Kubernetes cluster upgrade scheduled for next weekend.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-12',
+          mockSenderId: '@robert:acter.global',
+          mockOriginServerTs:
+              DateTime.now()
+                  .subtract(const Duration(days: 1))
+                  .copyWith(hour: 11, minute: 0, second: 0, millisecond: 0)
+                  .millisecondsSinceEpoch, // Yesterday 11:00 AM
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Automated deployment pipeline is working perfectly.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-13',
+          mockSenderId: '@jennifer:acter.global',
+          mockOriginServerTs:
+              DateTime.now()
+                  .subtract(const Duration(days: 1))
+                  .copyWith(hour: 12, minute: 0, second: 0, millisecond: 0)
+                  .millisecondsSinceEpoch, // Yesterday 12:00 PM
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Code refactoring completed. Much cleaner architecture now.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-eng-14',
+          mockSenderId: '@david:acter.global',
+          mockOriginServerTs:
+              DateTime.now()
+                  .copyWith(hour: 10, minute: 0, second: 0, millisecond: 0)
+                  .millisecondsSinceEpoch, // Today 10:00 AM
+          mockMsgContent: MockMsgContent(
+            mockBody:
+                'Integration tests passing. Ready for production deployment.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-31',
+          mockSenderId: userId,
+          mockOriginServerTs:
+              DateTime.now()
+                  .copyWith(hour: 11, minute: 0, second: 0, millisecond: 0)
+                  .millisecondsSinceEpoch, // Today 11:00 AM
+          mockMsgContent: MockMsgContent(
+            mockBody: 'CI/CD fixed. Tests passing.',
+          ),
+        ),
+      ],
 );
 
 final designReviewMutedBookmarkedWithUnreadRoom4 = createMockChatItem(
