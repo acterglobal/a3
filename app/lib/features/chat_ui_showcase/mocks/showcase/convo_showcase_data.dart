@@ -56,18 +56,7 @@ MockChatItem Function(String userId) createMockChatItem({
             .toList() ??
         [];
 
-    // Randomly insert virtual timeline items throughout the timeline
-    for (final virtualItem in virtualTimelineItems) {
-      final randomIndex =
-          (timelineItems.length *
-                  ((virtualTimelineItems.indexOf(virtualItem) /
-                      virtualTimelineItems.length)))
-              .round();
-      timelineItems.insert(
-        randomIndex.clamp(0, timelineItems.length),
-        virtualItem,
-      );
-    }
+    timelineItems.addAll(virtualTimelineItems);
 
     return MockChatItem(
       roomId: roomId,
