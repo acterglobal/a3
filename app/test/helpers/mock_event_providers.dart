@@ -4,17 +4,24 @@ import 'package:acter/features/datetime/providers/notifiers/now_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/event_notifiers.dart';
 import 'package:acter/features/events/providers/notifiers/participants_notifier.dart';
 import 'package:acter/features/events/providers/notifiers/rsvp_notifier.dart';
+import 'package:acter/features/events/providers/notifiers/event_location_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
+import 'mock_event_location.dart';
 
 class MockAsyncCalendarEventNotifier
     extends AutoDisposeFamilyAsyncNotifier<CalendarEvent, String>
     with Mock
     implements AsyncCalendarEventNotifier {
   bool shouldFail;
+  CalendarEvent? _event;
 
-  MockAsyncCalendarEventNotifier({this.shouldFail = true});
+  MockAsyncCalendarEventNotifier({this.shouldFail = true,});
+
+  void setEvent(CalendarEvent event) {
+    _event = event;
+  }
 
   @override
   Future<CalendarEvent> build(String arg) async {
@@ -23,7 +30,7 @@ class MockAsyncCalendarEventNotifier
       shouldFail = !shouldFail;
       throw 'Expected fail: Space not loaded';
     }
-    return MockEvent();
+    return _event ?? MockEvent();
   }
 }
 
@@ -87,12 +94,25 @@ class MockAsyncRsvpStatusNotifier
   }
 }
 
-class MockEvent extends Fake implements CalendarEvent {
-  final String fakeEventTitle;
+class MockAsyncEventLocationsNotifier extends AutoDisposeFamilyAsyncNotifier<List<EventLocationInfo>, String> with Mock implements AsyncEventLocationsNotifier {
+  List<EventLocationInfo>? _locations;
+
+  void setLocations(List<EventLocationInfo> locations) {
+    _locations = locations;
+  }
+
+  @override
+  Future<List<EventLocationInfo>> build(String arg) async {
+    return _locations ?? [];
+  }
+}
+
+class MockEvent extends Mock implements CalendarEvent {
   final String fakeEventId;
+  final String fakeEventTitle;
   final int? fakeEventTs;
 
-  MockEvent({
+MockEvent({
     this.fakeEventId = 'eventId',
     this.fakeEventTitle = 'Fake Event',
     this.fakeEventTs,
@@ -126,6 +146,9 @@ class MockEvent extends Fake implements CalendarEvent {
 
   @override
   Future<CommentsManager> comments() => Completer<CommentsManager>().future;
+
+  @override
+  FfiListEventLocationInfo locations() => MockFfiListEventLocationInfo(items: []);
 }
 
 class FakeUtcDateTime extends Fake implements UtcDateTime {

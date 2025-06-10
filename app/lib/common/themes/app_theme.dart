@@ -17,7 +17,7 @@ const defaultEmojiFont = 'NotoEmoji';
 
 String? selectEmojiFont() {
   return switch (Platform.operatingSystem) {
-    'ios' || 'macos' => 'AppleColorEmoji',
+    'ios' || 'macos' => 'Apple Color Emoji',
     'windows' => 'Segoe UI Emoji',
     'linux' => defaultEmojiFont,
     // we fallback to system supported emoji otherwise
