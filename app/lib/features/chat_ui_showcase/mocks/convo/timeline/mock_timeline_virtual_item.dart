@@ -11,4 +11,10 @@ class MockTimelineVirtualItem extends Mock implements TimelineVirtualItem {
     this.mockEventType,
     this.mockDesc,
   });
+
+  @override
+  String eventType() => mockEventType ?? 'Unknown';
+
+  @override
+  String? desc() => mockDesc;
 }
