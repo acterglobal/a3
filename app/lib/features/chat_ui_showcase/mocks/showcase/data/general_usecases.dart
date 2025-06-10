@@ -1031,20 +1031,42 @@ final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
     '@david:acter.global',
     '@patricia:acter.global',
   ],
-  timelineEventItems: [
-    MockTimelineEventItem(
-      mockEventId: 'mock-event-id-31',
-      mockSenderId: '@robert:acter.global',
-      mockOriginServerTs: 1744010166000, // April 7, 2025
-      mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
-    ),
-  ],
+  timelineEventItemsBuilder:
+      (userId) => [
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-32',
+          mockSenderId: '@jennifer:acter.global',
+          mockOriginServerTs: 1744009800000, // April 7, 2025 - earlier
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Starting the deployment preparation checklist.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-33',
+          mockSenderId: userId,
+          mockOriginServerTs: 1744010000000, // April 7, 2025 - before original
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Database migration scripts are ready for review.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-31',
+          mockSenderId: '@robert:acter.global',
+          mockOriginServerTs: 1744010166000, // April 7, 2025
+          mockMsgContent: MockMsgContent(
+            mockBody: 'CI/CD fixed. Tests passing.',
+          ),
+        ),
+        MockTimelineEventItem(
+          mockEventId: 'mock-event-id-34-$userId',
+          mockSenderId: '@patricia:acter.global',
+          mockOriginServerTs: 1744010300000, // April 7, 2025 - after original
+          mockMsgContent: MockMsgContent(
+            mockBody: 'Great work! Performance metrics look good.',
+          ),
+        ),
+      ],
   mockVirtualTimelineItem: [
-    MockTimelineVirtualItem(
-      mockEventId: 'virtual-1',
-      mockEventType: 'DayDivider',
-      mockDesc: '2024-12-17',
-    ),
     MockTimelineVirtualItem(
       mockEventId: 'virtual-2',
       mockEventType: 'DayDivider',
