@@ -1,4 +1,3 @@
-
 import 'package:acter/features/events/widgets/view_physical_location_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +10,14 @@ void main() {
   late BuildContext context;
 
   setUp(() {
-    mockLocation = MockEventLocationInfo();
-    when(() => mockLocation.name()).thenReturn('Test Location');
-    when(() => mockLocation.address()).thenReturn('123 Test Street');
-    when(() => mockLocation.notes()).thenReturn('Test notes');
+    mockLocation = MockEventLocationInfo(
+      name: 'Test Location',
+      locationType: 'physical',
+      address: '123 Test Street',
+      notes: 'Test notes',
+    );
+    // Register fallback value for the mock
+    registerFallbackValue(mockLocation);
   });
 
   Future<void> pumpViewPhysicalLocationWidget(WidgetTester tester) async {
@@ -56,7 +59,9 @@ void main() {
       expect(find.text('Test notes'), findsOneWidget);
     });
 
-    testWidgets('copies location to clipboard when copy button is tapped', (tester) async {
+    testWidgets('copies location to clipboard when copy button is tapped', (
+      tester,
+    ) async {
       await pumpViewPhysicalLocationWidget(tester);
 
       // Tap copy button
@@ -80,7 +85,12 @@ void main() {
     });
 
     testWidgets('handles missing address gracefully', (tester) async {
-      when(() => mockLocation.address()).thenReturn(null);
+      mockLocation = MockEventLocationInfo(
+        name: 'Test Location',
+        locationType: 'physical',
+        address: '',
+        notes: 'Test notes',
+      );
       await pumpViewPhysicalLocationWidget(tester);
 
       // Verify widget still renders without crashing
@@ -89,7 +99,12 @@ void main() {
     });
 
     testWidgets('handles missing notes gracefully', (tester) async {
-      when(() => mockLocation.notes()).thenReturn(null);
+      mockLocation = MockEventLocationInfo(
+        name: 'Test Location',
+        locationType: 'physical',
+        address: '123 Test Street',
+        notes: '',
+      );
       await pumpViewPhysicalLocationWidget(tester);
 
       // Verify widget still renders without crashing
@@ -98,18 +113,25 @@ void main() {
     });
 
     testWidgets('displays long address with ellipsis', (tester) async {
-      const longAddress = 'This is a very long address that should be truncated with ellipsis '
+      const longAddress =
+          'This is a very long address that should be truncated with ellipsis '
           'when it exceeds the maximum number of lines allowed in the UI. '
           'This helps maintain a consistent layout while still showing the most important '
           'information to the user.';
-      when(() => mockLocation.address()).thenReturn(longAddress);
-      
+
+      mockLocation = MockEventLocationInfo(
+        name: 'Test Location',
+        locationType: 'physical',
+        address: longAddress,
+        notes: 'Test notes',
+      );
+
       await pumpViewPhysicalLocationWidget(tester);
 
       // Verify the address is displayed with ellipsis
       final addressFinder = find.text(longAddress);
       expect(addressFinder, findsOneWidget);
-      
+
       // Get the Text widget and verify its properties
       final textWidget = tester.widget<Text>(addressFinder);
       expect(textWidget.maxLines, 2);
@@ -117,22 +139,29 @@ void main() {
     });
 
     testWidgets('displays long notes with ellipsis', (tester) async {
-      const longNotes = 'These are very long notes that should be truncated with ellipsis '
+      const longNotes =
+          'These are very long notes that should be truncated with ellipsis '
           'when they exceed the maximum number of lines allowed in the UI. '
           'This helps maintain a consistent layout while still showing the most important '
           'information to the user.';
-      when(() => mockLocation.notes()).thenReturn(longNotes);
-      
+
+      mockLocation = MockEventLocationInfo(
+        name: 'Test Location',
+        locationType: 'physical',
+        address: '123 Test Street',
+        notes: longNotes,
+      );
+
       await pumpViewPhysicalLocationWidget(tester);
 
       // Verify the notes are displayed with ellipsis
       final notesFinder = find.text(longNotes);
       expect(notesFinder, findsOneWidget);
-      
+
       // Get the Text widget and verify its properties
       final textWidget = tester.widget<Text>(notesFinder);
       expect(textWidget.maxLines, 2);
       expect(textWidget.overflow, TextOverflow.ellipsis);
     });
   });
-} 
+}

@@ -2,7 +2,6 @@ import 'package:acter/features/events/widgets/view_virtual_location_widget.dart'
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import '../../../helpers/mock_event_location.dart';
 
 void main() {
@@ -10,10 +9,12 @@ void main() {
   late BuildContext context;
 
   setUp(() {
-    mockLocation = MockEventLocationInfo();
-    when(() => mockLocation.name()).thenReturn('Virtual Meeting');
-    when(() => mockLocation.uri()).thenReturn('https://meet.example.com');
-    when(() => mockLocation.notes()).thenReturn('Test notes');
+    mockLocation = MockEventLocationInfo(
+      name: 'Virtual Meeting',
+      locationType: 'virtual',
+      uri: 'https://meet.example.com',
+      notes: 'Test notes',
+    );
   });
 
   Future<void> pumpViewVirtualLocationWidget(WidgetTester tester) async {
@@ -56,7 +57,12 @@ void main() {
     });
 
     testWidgets('hides notes section when notes are empty', (tester) async {
-      when(() => mockLocation.notes()).thenReturn('');
+      mockLocation = MockEventLocationInfo(
+        name: 'Virtual Meeting',
+        locationType: 'virtual',
+        uri: 'https://meet.example.com',
+        notes: '',
+      );
       await pumpViewVirtualLocationWidget(tester);
 
       // Verify notes section is not displayed
@@ -65,7 +71,12 @@ void main() {
     });
 
     testWidgets('hides notes section when notes are null', (tester) async {
-      when(() => mockLocation.notes()).thenReturn(null);
+      mockLocation = MockEventLocationInfo(
+        name: 'Virtual Meeting',
+        locationType: 'virtual',
+        uri: 'https://meet.example.com',
+        notes: null,
+      );
       await pumpViewVirtualLocationWidget(tester);
 
       // Verify notes section is not displayed
@@ -73,7 +84,9 @@ void main() {
       expect(find.text('Test notes'), findsNothing);
     });
 
-    testWidgets('copies URL to clipboard when copy button is tapped', (tester) async {
+    testWidgets('copies URL to clipboard when copy button is tapped', (
+      tester,
+    ) async {
       await pumpViewVirtualLocationWidget(tester);
 
       // Tap copy button
@@ -84,7 +97,9 @@ void main() {
       expect(find.text(L10n.of(context).copyToClipboard), findsOneWidget);
     });
 
-    testWidgets('opens URL in browser when open link button is tapped', (tester) async {
+    testWidgets('opens URL in browser when open link button is tapped', (
+      tester,
+    ) async {
       await pumpViewVirtualLocationWidget(tester);
 
       // Tap open link button
@@ -97,7 +112,12 @@ void main() {
     });
 
     testWidgets('handles missing URL gracefully', (tester) async {
-      when(() => mockLocation.uri()).thenReturn(null);
+      mockLocation = MockEventLocationInfo(
+        name: 'Virtual Meeting',
+        locationType: 'virtual',
+        uri: null,
+        notes: 'Test notes',
+      );
       await pumpViewVirtualLocationWidget(tester);
 
       // Verify widget still renders without crashing
@@ -106,7 +126,12 @@ void main() {
     });
 
     testWidgets('handles missing name gracefully', (tester) async {
-      when(() => mockLocation.name()).thenReturn(null);
+      mockLocation = MockEventLocationInfo(
+        name: null,
+        locationType: 'virtual',
+        uri: 'https://meet.example.com',
+        notes: 'Test notes',
+      );
       await pumpViewVirtualLocationWidget(tester);
 
       // Verify widget still renders without crashing
@@ -114,18 +139,24 @@ void main() {
     });
 
     testWidgets('displays long URL with ellipsis', (tester) async {
-      const longUrl = 'https://very.long.url.that.should.be.truncated.with.ellipsis.'
+      const longUrl =
+          'https://very.long.url.that.should.be.truncated.with.ellipsis.'
           'when.it.exceeds.the.maximum.number.of.lines.allowed.in.the.UI.'
           'This.helps.maintain.a.consistent.layout.while.still.showing.the.most.important.'
           'information.to.the.user.com';
-      when(() => mockLocation.uri()).thenReturn(longUrl);
-      
+      mockLocation = MockEventLocationInfo(
+        name: 'Virtual Meeting',
+        locationType: 'virtual',
+        uri: longUrl,
+        notes: 'Test notes',
+      );
+
       await pumpViewVirtualLocationWidget(tester);
 
       // Verify the URL is displayed with ellipsis
       final urlFinder = find.text(longUrl);
       expect(urlFinder, findsOneWidget);
-      
+
       // Get the Text widget and verify its properties
       final textWidget = tester.widget<Text>(urlFinder);
       expect(textWidget.maxLines, 2);
@@ -133,22 +164,28 @@ void main() {
     });
 
     testWidgets('displays long notes with ellipsis', (tester) async {
-      const longNotes = 'These are very long notes that should be truncated with ellipsis '
+      const longNotes =
+          'These are very long notes that should be truncated with ellipsis '
           'when they exceed the maximum number of lines allowed in the UI. '
           'This helps maintain a consistent layout while still showing the most important '
           'information to the user.';
-      when(() => mockLocation.notes()).thenReturn(longNotes);
-      
+      mockLocation = MockEventLocationInfo(
+        name: 'Virtual Meeting',
+        locationType: 'virtual',
+        uri: 'https://meet.example.com',
+        notes: longNotes,
+      );
+
       await pumpViewVirtualLocationWidget(tester);
 
       // Verify the notes are displayed with ellipsis
       final notesFinder = find.text(longNotes);
       expect(notesFinder, findsOneWidget);
-      
+
       // Get the Text widget and verify its properties
       final textWidget = tester.widget<Text>(notesFinder);
       expect(textWidget.maxLines, 2);
       expect(textWidget.overflow, TextOverflow.ellipsis);
     });
   });
-} 
+}
