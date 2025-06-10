@@ -95,7 +95,7 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
   }
 
   /// List of locations
-  Widget _buildLocationList(BuildContext context, List<dynamic> locations) {
+  Widget _buildLocationList(BuildContext context, List<EventLocationDraft> locations) {
     return Flexible(
       child: ListView.builder(
         shrinkWrap: true,
@@ -110,9 +110,8 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
   }
 
   /// Individual location tile
-  Widget _buildLocationTile(BuildContext context, dynamic location) {
+  Widget _buildLocationTile(BuildContext context, EventLocationDraft draftLocation) {
     final theme = Theme.of(context);
-    final draftLocation = _convertToDraft(location);
     final isVirtual = draftLocation.type == LocationType.virtual;
 
     return ListTile(
@@ -166,21 +165,6 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
           ),
         ],
       ),
-    );
-  }
-
-  /// Convert either existing or draft location to a unified draft
-  EventLocationDraft _convertToDraft(dynamic location) {
-    if (location is EventLocationDraft) return location;
-
-    return EventLocationDraft(
-      name: location.name() ?? '',
-      type: location.locationType().toLowerCase() == LocationType.virtual.name
-          ? LocationType.virtual
-          : LocationType.physical,
-      url: location.uri(),
-      address: location.address(),
-      note: location.notes(),
     );
   }
 
