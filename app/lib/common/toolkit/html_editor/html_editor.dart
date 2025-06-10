@@ -43,6 +43,7 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
         ImageNodeParser(),
         TableNodeParser(),
       ],
+      lineBreak: ' ',
     );
 
 // contains final input string with mentions processed and mentions
@@ -85,24 +86,39 @@ extension ActerEditorStateHelpers on EditorState {
   void copyMessageText(String text, String? htmlText) async {
     clear();
     if (htmlText != null && htmlText.isNotEmpty) {
-      final doc = defaultHtmlCodec.decode(htmlText);
+      var processedHtml = htmlText.trim();
+      // enclose with <p> tag if not present
+      if (!processedHtml.startsWith('<p>')) {
+        processedHtml = '<p>$processedHtml</p>';
+      }
+
+      final doc = defaultHtmlCodec.decode(processedHtml);
       final transaction = this.transaction;
       for (final node in doc.root.children) {
         transaction.insertNode([0], node);
       }
       apply(transaction);
     } else {
-      final transaction = this.transaction;
-      transaction.insertText(document.root.children.first, 0, text);
-      apply(transaction);
+      // copy plain text to editor
+      final docNode = getNodeAtPath([0]);
+      if (docNode != null) {
+        final transaction = this.transaction;
+        transaction.replaceText(docNode, 0, 0, text);
+        apply(transaction);
+      }
     }
+
+    var lastNode = document.root.children.lastWhere(
+      (node) => node.delta?.toPlainText().isNotEmpty ?? false,
+      orElse: () => document.root.children.last,
+    );
+
+    final path = lastNode.path;
+    final offset = lastNode.delta?.length ?? 0;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       updateSelectionWithReason(
-        Selection.single(
-          path: document.root.children.first.path,
-          startOffset: document.root.children.first.delta?.length ?? 0,
-        ),
+        Selection.single(path: path, startOffset: offset),
         reason: SelectionUpdateReason.uiEvent,
       );
     });
