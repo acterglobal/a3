@@ -7,13 +7,14 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-final _log = Logger('a3::activities::widgets::task_due_date_change');
+final _log = Logger('a3::activities::widgets::description_change');
 
-class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
+class ActivityDescriptionChangeItemWidget extends ConsumerWidget {
   final Activity activity;
 
-  const ActivityTaskDueDateChangedItemWidget({
+  const ActivityDescriptionChangeItemWidget({
     super.key,
     required this.activity,
   });
@@ -36,21 +37,20 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
     final stateMsg = getMessage(lang, myId == senderId, senderName);
 
     return ActivityUserCentricItemContainerWidget(
-      actionIcon: Icons.access_time,
-      actionTitle: L10n.of(context).rescheduled,
-      actionIconColor: Colors.grey.shade400,
+      actionIcon: PhosphorIconsRegular.pencilLine,
+      actionTitle: lang.updatedDescription,
       activityObject: activity.object(),
       userId: senderId,
       roomId: roomId,
-      originServerTs: activity.originServerTs(),
       subtitle: getSubtitle(context, stateMsg),
+      originServerTs: activity.originServerTs(),
     );
   }
 
   String? getMessage(L10n lang, bool isMe, String senderName) {
-    final content = activity.dateContent();
+    final content = activity.descriptionContent();
     if (content == null) {
-      _log.severe('failed to get content of date change');
+      _log.severe('failed to get content of description change');
       return null;
     }
     switch (content.change()) {
@@ -59,22 +59,22 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
         // because the internal state machine is not ready about acter custom message, like pin or task
         final newVal = content.newVal() ?? '';
         if (isMe) {
-          return lang.activityDueDateYouChanged(newVal);
+          return lang.activityDescriptionYouChanged(newVal);
         } else {
-          return lang.activityDueDateOtherChanged(senderName, newVal);
+          return lang.activityDescriptionOtherChanged(senderName, newVal);
         }
       case 'Set':
         final newVal = content.newVal() ?? '';
         if (isMe) {
-          return lang.activityDueDateYouSet(newVal);
+          return lang.activityDescriptionYouSet(newVal);
         } else {
-          return lang.activityDueDateOtherSet(senderName, newVal);
+          return lang.activityDescriptionOtherSet(senderName, newVal);
         }
       case 'Unset':
         if (isMe) {
-          return lang.activityDueDateYouUnset;
+          return lang.activityDescriptionYouUnset;
         } else {
-          return lang.activityDueDateOtherUnset(senderName);
+          return lang.activityDescriptionOtherUnset(senderName);
         }
     }
     return null;

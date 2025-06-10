@@ -52,7 +52,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         let backup_pass = backup_manager.enable().await?;
         assert_eq!(backup_manager.state_str(), "enabled");
 
-        // let's wind down
+        // let’s wind down
         state_sync.cancel();
         let user_id = user.user_id()?;
         user.logout().await?;
@@ -92,7 +92,7 @@ async fn can_recover_and_read_message() -> Result<()> {
         "m.room.encrypted"
     );
 
-    // let's try to enable backuo
+    // let’s try to enable backuo
     let backup = user.backup_manager();
     backup.recover(backup_pass).await?;
     assert_eq!(backup.state_str(), "enabled");

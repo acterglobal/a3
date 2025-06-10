@@ -1,5 +1,7 @@
-use matrix_sdk::ruma::OwnedEventId;
-use matrix_sdk_base::ruma::{events::OriginalMessageLikeEvent, RoomId, UserId};
+use matrix_sdk_base::ruma::{
+    events::{room::message::TextMessageEventContent, OriginalMessageLikeEvent},
+    OwnedEventId, RoomId, UserId,
+};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
@@ -28,6 +30,10 @@ impl Pin {
         self.inner.title.clone()
     }
 
+    pub fn description(&self) -> Option<TextMessageEventContent> {
+        self.inner.content.clone()
+    }
+
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
     }
@@ -35,6 +41,7 @@ impl Pin {
     pub fn sender(&self) -> &UserId {
         &self.meta.sender
     }
+
     pub fn is_link(&self) -> bool {
         self.inner.url.is_some()
     }
