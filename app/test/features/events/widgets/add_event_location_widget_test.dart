@@ -128,7 +128,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField).last, 'https://updated.com');
 
       // Submit the form
-      await tester.tap(find.text(L10n.of(tester.element(find.byType(AddEventLocationWidget))).editLocation));
+      await tester.tap(find.text(L10n.of(tester.element(find.byType(AddEventLocationWidget))).updateLocation));
       await tester.pumpAndSettle();
 
       // Verify the location was updated
