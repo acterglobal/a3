@@ -42875,7 +42875,7 @@ class CalendarEventUpdateBuilder {
   }
 
   /// set utc start in rfc3339 string
-  void utcStartFromRfc3339(String utcStart) {
+  CalendarEventUpdateBuilder utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42900,6 +42900,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -42914,11 +42915,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc start in rfc2822 string
-  void utcStartFromRfc2822(String utcStart) {
+  CalendarEventUpdateBuilder utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42943,6 +42948,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -42957,11 +42963,18 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc start in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  CalendarEventUpdateBuilder utcStartFromFormat(
+    String utcStart,
+    String format,
+  ) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43001,6 +43014,7 @@ class CalendarEventUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43015,11 +43029,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set utc end in rfc3339 string
-  void utcEndFromRfc3339(String utcEnd) {
+  CalendarEventUpdateBuilder utcEndFromRfc3339(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43044,6 +43062,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43058,11 +43077,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc end in rfc2822 string
-  void utcEndFromRfc2822(String utcEnd) {
+  CalendarEventUpdateBuilder utcEndFromRfc2822(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43087,6 +43110,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43101,11 +43125,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc end in custom format
-  void utcEndFromFormat(String utcEnd, String format) {
+  CalendarEventUpdateBuilder utcEndFromFormat(String utcEnd, String format) {
     final tmp1 = utcEnd;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43145,6 +43173,7 @@ class CalendarEventUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43159,7 +43188,11 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set the physical location details for this calendar event
@@ -43595,7 +43628,7 @@ class CalendarEventDraft {
   }
 
   /// set the utc_start for this calendar event in rfc3339 format
-  void utcStartFromRfc3339(String utcStart) {
+  CalendarEventDraft utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43620,6 +43653,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43634,11 +43668,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this calendar event in rfc2822 format
-  void utcStartFromRfc2822(String utcStart) {
+  CalendarEventDraft utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43663,6 +43701,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43677,11 +43716,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this calendar event in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  CalendarEventDraft utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43721,6 +43764,7 @@ class CalendarEventDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43735,11 +43779,15 @@ class CalendarEventDraft {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventDraft._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set the utc_end for this calendar event in rfc3339 format
-  void utcEndFromRfc3339(String utcEnd) {
+  CalendarEventDraft utcEndFromRfc3339(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43764,6 +43812,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43778,11 +43827,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_end for this calendar event in rfc2822 format
-  void utcEndFromRfc2822(String utcEnd) {
+  CalendarEventDraft utcEndFromRfc2822(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43807,6 +43860,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43821,11 +43875,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_end for this calendar event in custom format
-  void utcEndFromFormat(String utcEnd, String format) {
+  CalendarEventDraft utcEndFromFormat(String utcEnd, String format) {
     final tmp1 = utcEnd;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43865,6 +43923,7 @@ class CalendarEventDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43879,7 +43938,11 @@ class CalendarEventDraft {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventDraft._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set the physical location details for this calendar event
@@ -70943,6 +71006,8 @@ class _CalendarEventUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -70954,6 +71019,8 @@ class _CalendarEventUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -70965,6 +71032,8 @@ class _CalendarEventUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromRfc3339Return extends ffi.Struct {
@@ -70976,6 +71045,8 @@ class _CalendarEventUpdateBuilderUtcEndFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromRfc2822Return extends ffi.Struct {
@@ -70987,6 +71058,8 @@ class _CalendarEventUpdateBuilderUtcEndFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromFormatReturn extends ffi.Struct {
@@ -70998,6 +71071,8 @@ class _CalendarEventUpdateBuilderUtcEndFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -71009,6 +71084,8 @@ class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -71020,6 +71097,8 @@ class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -71031,6 +71110,8 @@ class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
@@ -71042,6 +71123,8 @@ class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
@@ -71053,6 +71136,8 @@ class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
@@ -71064,6 +71149,8 @@ class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _EventLocationInfoLocationTypeReturn extends ffi.Struct {

@@ -754,18 +754,18 @@ object CalendarEventUpdateBuilder {
     fn description_html(body: string, html_body: string);
 
     /// set utc start in rfc3339 string
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc start in rfc2822 string
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc start in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<CalendarEventUpdateBuilder>;
 
     /// set utc end in rfc3339 string
-    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc end in rfc2822 string
-    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc end in custom format
-    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<CalendarEventUpdateBuilder>;
 
     /// set the physical location details for this calendar event
     /// description_html means by markdown
@@ -794,18 +794,18 @@ object CalendarEventDraft {
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventDraft>;
     /// set the utc_start for this calendar event in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<CalendarEventDraft>;
     /// set the utc_start for this calendar event in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<CalendarEventDraft>;
 
     /// set the utc_end for this calendar event in rfc3339 format
-    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<CalendarEventDraft>;
     /// set the utc_end for this calendar event in rfc2822 format
-    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<CalendarEventDraft>;
     /// set the utc_end for this calendar event in custom format
-    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<CalendarEventDraft>;
 
     /// set the physical location details for this calendar event
     /// description_html means by markdown
