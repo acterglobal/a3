@@ -2255,11 +2255,11 @@ object TaskUpdateBuilder {
     fn unset_utc_due_time_of_day_update();
 
     /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskUpdateBuilder>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskUpdateBuilder>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskUpdateBuilder>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -2315,11 +2315,11 @@ object TaskDraft {
     fn unset_utc_due_time_of_day();
 
     /// set the utc_start for this task in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskDraft>;
     /// set the utc_start for this task in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskDraft>;
     /// set the utc_start for this task in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskDraft>;
     fn unset_utc_start();
 
     /// set the sort order for this task

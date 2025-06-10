@@ -55221,7 +55221,7 @@ class TaskUpdateBuilder {
   }
 
   /// set the utc_start for this task list in rfc3339 format
-  void utcStartFromRfc3339(String utcStart) {
+  TaskUpdateBuilder utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55246,6 +55246,7 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55260,11 +55261,15 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task list in rfc2822 format
-  void utcStartFromRfc2822(String utcStart) {
+  TaskUpdateBuilder utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55289,6 +55294,7 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55303,11 +55309,15 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task list in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  TaskUpdateBuilder utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -55347,6 +55357,7 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -55361,7 +55372,11 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_TaskUpdateBuilder");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = TaskUpdateBuilder._(_api, tmp15_1);
+    return tmp10;
   }
 
   void unsetUtcStart() {
@@ -55646,7 +55661,7 @@ class TaskDraft {
   }
 
   /// set the utc_start for this task in rfc3339 format
-  void utcStartFromRfc3339(String utcStart) {
+  TaskDraft utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55666,6 +55681,7 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55680,11 +55696,15 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task in rfc2822 format
-  void utcStartFromRfc2822(String utcStart) {
+  TaskDraft utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55704,6 +55724,7 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55718,11 +55739,15 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  TaskDraft utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -55762,6 +55787,7 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -55776,7 +55802,11 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_TaskDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = TaskDraft._(_api, tmp15_1);
+    return tmp10;
   }
 
   void unsetUtcStart() {
@@ -73106,6 +73136,8 @@ class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -73117,6 +73149,8 @@ class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -73128,6 +73162,8 @@ class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -73139,6 +73175,8 @@ class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -73150,6 +73188,8 @@ class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -73161,6 +73201,8 @@ class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskListNameReturn extends ffi.Struct {
