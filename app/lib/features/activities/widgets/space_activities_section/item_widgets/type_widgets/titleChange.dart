@@ -37,8 +37,8 @@ class ActivityTitleChangeItemWidget extends ConsumerWidget {
       actionIcon: PhosphorIconsRegular.pencilLine,
       actionTitle: lang.updatedTitle,
       activityObject: activity.object(),
-      userId: activity.senderIdStr(),
-      roomId: activity.roomIdStr(),
+      userId: senderId,
+      roomId: roomId,
       subtitle: getSubtitle(context, stateMsg),
       originServerTs: activity.originServerTs(),
     );

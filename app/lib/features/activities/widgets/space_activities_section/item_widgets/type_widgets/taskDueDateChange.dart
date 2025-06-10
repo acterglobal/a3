@@ -40,8 +40,8 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
       actionTitle: L10n.of(context).rescheduled,
       actionIconColor: Colors.grey.shade400,
       activityObject: activity.object(),
-      userId: activity.senderIdStr(),
-      roomId: activity.roomIdStr(),
+      userId: senderId,
+      roomId: roomId,
       originServerTs: activity.originServerTs(),
       subtitle: getSubtitle(context, stateMsg),
     );

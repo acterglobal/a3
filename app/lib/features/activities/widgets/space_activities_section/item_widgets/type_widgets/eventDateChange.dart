@@ -36,8 +36,8 @@ class ActivityEventDateChangeItemWidget extends ConsumerWidget {
       actionIcon: Icons.access_time,
       actionTitle: L10n.of(context).rescheduled,
       activityObject: activity.object(),
-      userId: activity.senderIdStr(),
-      roomId: activity.roomIdStr(),
+      userId: senderId,
+      roomId: roomId,
       subtitle: getSubtitle(context, stateMsg),
       originServerTs: activity.originServerTs(),
     );
