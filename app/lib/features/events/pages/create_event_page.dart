@@ -97,7 +97,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     ref.read(selectedSpaceIdProvider.notifier).state = spaceId;
   }
 
-  void _clearLocations() {
+  void clearEventDraftLocations() {
     ref.read(eventDraftLocationsProvider.notifier).clearLocations();
   }
 
@@ -106,7 +106,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     super.initState();
     // Clear locations when widget is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _clearLocations();
+      clearEventDraftLocations();
     });
     // Set data from template event if available
     widget.templateEvent.map(
@@ -582,7 +582,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       _log.info('Created Calendar Event: $eventId');
 
       // Clear event locations after successful creation
-      ref.read(eventDraftLocationsProvider.notifier).clearLocations();
+      clearEventDraftLocations();
 
       EasyLoading.dismiss();
 
