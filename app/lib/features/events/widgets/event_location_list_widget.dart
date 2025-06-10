@@ -155,7 +155,6 @@ Future<void> loadExistingLocations(WidgetRef ref, String eventId) async {
                   saveEventLocations(
                     context: context,
                     ref: ref,
-                    locations: ref.read(eventDraftLocationsProvider),
                     calendarId: eventId,
                   );
                 } else {

@@ -1,4 +1,5 @@
 import 'package:acter/features/events/model/event_location_model.dart';
+import 'package:acter/features/events/providers/event_location_provider.dart';
 import 'package:acter/features/events/providers/event_providers.dart';
 import 'package:acter/features/notifications/actions/autosubscribe.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,11 @@ final _log = Logger('a3::cal_event::actions::save_locations');
 Future<void> saveEventLocations({
   required BuildContext context,
   required WidgetRef ref,
-  required List<EventLocationDraft> locations,
   required String calendarId,
 }) async {
   final lang = L10n.of(context);
   EasyLoading.show(status: lang.updatingLocations);
+  final locations = ref.read(eventDraftLocationsProvider);
   try {
     final calendarEvent =
         ref.read(calendarEventProvider(calendarId)).valueOrNull;
