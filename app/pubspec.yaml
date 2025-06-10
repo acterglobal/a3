@@ -283,9 +283,6 @@ flutter:
     - family: NotoEmoji
       fonts:
         - asset: assets/fonts/Noto-COLRv1.ttf
-    - family: AppleColorEmoji
-      fonts:
-        - asset: assets/fonts/AppleColorEmoji.ttc
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

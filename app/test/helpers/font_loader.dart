@@ -20,7 +20,6 @@ final fonts = [
   ('monospace', 'assets/fonts/RobotoMono-Regular.ttf'),
   ('Inter', 'assets/fonts/Inter.ttf'),
   ('Noto', 'assets/fonts/Noto-COLRv1.ttf'),
-  ('AppleColorEmoji', 'assets/fonts/AppleColorEmoji.ttc'),
 ];
 
 ///By default, flutter test only uses a single "test" font called Ahem.
