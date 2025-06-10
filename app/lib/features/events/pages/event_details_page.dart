@@ -767,22 +767,27 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
       minVerticalPadding: 0,
       title: Text(location.name() ?? ''),
       subtitle: locationType == LocationType.physical.name
-          ? Text(
-              location.address() ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.surfaceTint,
-              ),
+          ? _buildLocationSubtitleText(
+              location.address(),
+              Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.surfaceTint,
+                  ),
             )
-          : Text(
-              location.uri() ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+          : _buildLocationSubtitleText(
+              location.uri(),
+              Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
+    );
+  }
+
+  Widget _buildLocationSubtitleText(String? text, TextStyle? style) {
+    return Text(
+      text ?? '',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: style,
     );
   }
 
