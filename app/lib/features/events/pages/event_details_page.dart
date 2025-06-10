@@ -6,9 +6,9 @@ import 'package:acter/common/providers/common_providers.dart';
 import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/toolkit/errors/error_page.dart';
 import 'package:acter/common/toolkit/html/render_html.dart';
+import 'package:acter/features/events/actions/show_event_location_list.dart';
 import 'package:acter/features/events/model/event_location_model.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
-import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 import 'package:acter/features/events/widgets/view_physical_location_widget.dart';
 import 'package:acter/features/events/widgets/view_virtual_location_widget.dart';
 import 'package:acter/router/routes.dart';
@@ -181,7 +181,7 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
         actions.add(
           PopupMenuItem(
             key: EventsKeys.eventEditBtn,
-            onTap: () => showEventLocationList(),
+            onTap: () => showEventLocationList(context, eventId: widget.calendarId),
             child: Row(
               children: <Widget>[
                 Icon(
@@ -639,22 +639,6 @@ class _EventDetailPageConsumerState extends ConsumerState<EventDetailPage> {
             ),
         ],
       ),
-    );
-  }
-
-  void showEventLocationList() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      enableDrag: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      builder: (_) {
-        return EventLocationListWidget(
-          eventId: widget.calendarId,
-        );
-      },
     );
   }
 

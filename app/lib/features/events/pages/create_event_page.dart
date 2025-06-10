@@ -21,8 +21,8 @@ import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
-import 'package:acter/features/events/widgets/event_location_list_widget.dart';
 import 'package:acter/features/events/providers/event_location_provider.dart';
+import 'package:acter/features/events/actions/show_event_location_list.dart';
 
 final _log = Logger('a3::cal_event::create');
 
@@ -211,17 +211,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             trailing: IconButton(
               icon: const Icon(Icons.add_circle_outline, size: 26),
               tooltip: L10n.of(context).addLocation,
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  isDismissible: true,
-                  enableDrag: true,
-                  showDragHandle: true,
-                  useSafeArea: true,
-                  builder: (context) => EventLocationListWidget(),
-                );
-              },
+              onPressed: () => showEventLocationList(context),
             ),
           ),
           _buildJitsiCallLinkWidget(),
