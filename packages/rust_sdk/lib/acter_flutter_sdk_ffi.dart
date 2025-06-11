@@ -20043,32 +20043,32 @@ class Api {
       _storyUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _pinDraftTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_title");
 
   late final _pinDraftTitle =
-      _pinDraftTitlePtr.asFunction<void Function(int, int, int, int)>();
+      _pinDraftTitlePtr.asFunction<int Function(int, int, int, int)>();
   late final _pinDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_content_text");
 
   late final _pinDraftContentText =
-      _pinDraftContentTextPtr.asFunction<void Function(int, int, int, int)>();
+      _pinDraftContentTextPtr.asFunction<int Function(int, int, int, int)>();
   late final _pinDraftContentMarkdownPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_content_markdown");
 
   late final _pinDraftContentMarkdown =
       _pinDraftContentMarkdownPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _pinDraftContentHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20082,43 +20082,43 @@ class Api {
 
   late final _pinDraftContentHtml =
       _pinDraftContentHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _pinDraftUnsetContentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_unset_content",
       );
 
   late final _pinDraftUnsetContent =
-      _pinDraftUnsetContentPtr.asFunction<void Function(int)>();
+      _pinDraftUnsetContentPtr.asFunction<int Function(int)>();
   late final _pinDraftUrlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_url");
 
   late final _pinDraftUrl =
-      _pinDraftUrlPtr.asFunction<void Function(int, int, int, int)>();
+      _pinDraftUrlPtr.asFunction<int Function(int, int, int, int)>();
   late final _pinDraftUnsetUrlPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_unset_url",
       );
 
   late final _pinDraftUnsetUrl =
-      _pinDraftUnsetUrlPtr.asFunction<void Function(int)>();
+      _pinDraftUnsetUrlPtr.asFunction<int Function(int)>();
   late final _pinDraftDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__PinDraft_display",
       );
 
   late final _pinDraftDisplay =
-      _pinDraftDisplayPtr.asFunction<void Function(int, int)>();
+      _pinDraftDisplayPtr.asFunction<int Function(int, int)>();
   late final _pinDraftUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_unset_display",
       );
 
   late final _pinDraftUnsetDisplay =
-      _pinDraftUnsetDisplayPtr.asFunction<void Function(int)>();
+      _pinDraftUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _pinDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_send",
@@ -20246,40 +20246,40 @@ class Api {
       _acterPinAttachmentsPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_title");
 
   late final _pinUpdateBuilderTitle =
-      _pinUpdateBuilderTitlePtr.asFunction<void Function(int, int, int, int)>();
+      _pinUpdateBuilderTitlePtr.asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderUnsetTitleUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_title_update",
       );
 
   late final _pinUpdateBuilderUnsetTitleUpdate =
-      _pinUpdateBuilderUnsetTitleUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetTitleUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderContentTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_content_text");
 
   late final _pinUpdateBuilderContentText =
       _pinUpdateBuilderContentTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderContentMarkdownPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_content_markdown");
 
   late final _pinUpdateBuilderContentMarkdown =
       _pinUpdateBuilderContentMarkdownPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderContentHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20293,64 +20293,64 @@ class Api {
 
   late final _pinUpdateBuilderContentHtml =
       _pinUpdateBuilderContentHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _pinUpdateBuilderUnsetContentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_content",
       );
 
   late final _pinUpdateBuilderUnsetContent =
-      _pinUpdateBuilderUnsetContentPtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetContentPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUnsetContentUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_content_update",
       );
 
   late final _pinUpdateBuilderUnsetContentUpdate =
-      _pinUpdateBuilderUnsetContentUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetContentUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUrlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_url");
 
   late final _pinUpdateBuilderUrl =
-      _pinUpdateBuilderUrlPtr.asFunction<void Function(int, int, int, int)>();
+      _pinUpdateBuilderUrlPtr.asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderUnsetUrlPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_url",
       );
 
   late final _pinUpdateBuilderUnsetUrl =
-      _pinUpdateBuilderUnsetUrlPtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetUrlPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUnsetUrlUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_url_update",
       );
 
   late final _pinUpdateBuilderUnsetUrlUpdate =
-      _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__PinUpdateBuilder_display",
       );
 
   late final _pinUpdateBuilderDisplay =
-      _pinUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
+      _pinUpdateBuilderDisplayPtr.asFunction<int Function(int, int)>();
   late final _pinUpdateBuilderUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_display",
       );
 
   late final _pinUpdateBuilderUnsetDisplay =
-      _pinUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUnsetDisplayUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_display_update",
       );
 
   late final _pinUpdateBuilderUnsetDisplayUpdate =
-      _pinUpdateBuilderUnsetDisplayUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetDisplayUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_send",
@@ -20516,25 +20516,25 @@ class Api {
       _calendarEventRefDetailsPtr.asFunction<int Function(int)>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventUpdateBuilder_title");
 
   late final _calendarEventUpdateBuilderTitle =
       _calendarEventUpdateBuilderTitlePtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventUpdateBuilderDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventUpdateBuilder_description_text");
 
   late final _calendarEventUpdateBuilderDescriptionText =
       _calendarEventUpdateBuilderDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventUpdateBuilderDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20548,7 +20548,7 @@ class Api {
 
   late final _calendarEventUpdateBuilderDescriptionHtml =
       _calendarEventUpdateBuilderDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
     ffi.NativeFunction<
       _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
@@ -20689,7 +20689,7 @@ class Api {
           >();
   late final _calendarEventUpdateBuilderAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -20726,7 +20726,7 @@ class Api {
   late final _calendarEventUpdateBuilderAddPhysicalLocation =
       _calendarEventUpdateBuilderAddPhysicalLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -20760,7 +20760,7 @@ class Api {
           >();
   late final _calendarEventUpdateBuilderAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -20788,7 +20788,7 @@ class Api {
   late final _calendarEventUpdateBuilderAddVirtualLocation =
       _calendarEventUpdateBuilderAddVirtualLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -20812,13 +20812,13 @@ class Api {
             )
           >();
   late final _calendarEventUpdateBuilderUnsetLocationsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CalendarEventUpdateBuilder_unset_locations",
       );
 
   late final _calendarEventUpdateBuilderUnsetLocations =
       _calendarEventUpdateBuilderUnsetLocationsPtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _calendarEventUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CalendarEventUpdateBuilder_send",
@@ -20828,25 +20828,25 @@ class Api {
       _calendarEventUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _calendarEventDraftTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventDraft_title");
 
   late final _calendarEventDraftTitle =
       _calendarEventDraftTitlePtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventDraftDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventDraft_description_text");
 
   late final _calendarEventDraftDescriptionText =
       _calendarEventDraftDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventDraftDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20860,14 +20860,14 @@ class Api {
 
   late final _calendarEventDraftDescriptionHtml =
       _calendarEventDraftDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _calendarEventDraftUnsetDescriptionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CalendarEventDraft_unset_description",
       );
 
   late final _calendarEventDraftUnsetDescription =
-      _calendarEventDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
+      _calendarEventDraftUnsetDescriptionPtr.asFunction<int Function(int)>();
   late final _calendarEventDraftUtcStartFromRfc3339Ptr = _lookup<
     ffi.NativeFunction<
       _CalendarEventDraftUtcStartFromRfc3339Return Function(
@@ -21008,7 +21008,7 @@ class Api {
           >();
   late final _calendarEventDraftAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -21045,7 +21045,7 @@ class Api {
   late final _calendarEventDraftAddPhysicalLocation =
       _calendarEventDraftAddPhysicalLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -21079,7 +21079,7 @@ class Api {
           >();
   late final _calendarEventDraftAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -21107,7 +21107,7 @@ class Api {
   late final _calendarEventDraftAddVirtualLocation =
       _calendarEventDraftAddVirtualLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -41812,7 +41812,7 @@ class PinDraft {
   PinDraft._(this._api, this._box);
 
   /// set the title for this pin
-  void title(String title) {
+  PinDraft title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41827,12 +41827,17 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content for this pin
-  void contentText(String text) {
+  PinDraft contentText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41847,12 +41852,17 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftContentText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftContentText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content of the pin through markdown
-  void contentMarkdown(String text) {
+  PinDraft contentMarkdown(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41867,12 +41877,17 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftContentMarkdown(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftContentMarkdown(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content of the pin through html
-  void contentHtml(String text, String html) {
+  PinDraft contentHtml(String text, String html) {
     final tmp1 = text;
     final tmp5 = html;
     var tmp0 = 0;
@@ -41899,19 +41914,37 @@ class PinDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._pinDraftContentHtml(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
-    return;
+    final tmp9 = _api._pinDraftContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_PinDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = PinDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetContent() {
+  PinDraft unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinDraftUnsetContent(tmp0);
-    return;
+    final tmp1 = _api._pinDraftUnsetContent(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the url for this pin
-  void url(String text) {
+  PinDraft url(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41926,33 +41959,53 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftUrl(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftUrl(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetUrl() {
+  PinDraft unsetUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinDraftUnsetUrl(tmp0);
-    return;
+    final tmp1 = _api._pinDraftUnsetUrl(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the display for this pin
-  void display(Display display) {
+  PinDraft display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._pinDraftDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._pinDraftDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_PinDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = PinDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  PinDraft unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinDraftUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._pinDraftUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// fire this pin over - the event_id is the confirmation from the server.
@@ -42326,7 +42379,7 @@ class PinUpdateBuilder {
   PinUpdateBuilder._(this._api, this._box);
 
   /// set the title for this pin
-  void title(String title) {
+  PinUpdateBuilder title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42341,19 +42394,29 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetTitleUpdate() {
+  PinUpdateBuilder unsetTitleUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetTitleUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetTitleUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the content for this pin
-  void contentText(String text) {
+  PinUpdateBuilder contentText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42368,11 +42431,16 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderContentText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderContentText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void contentMarkdown(String text) {
+  PinUpdateBuilder contentMarkdown(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42387,11 +42455,16 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderContentMarkdown(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderContentMarkdown(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void contentHtml(String text, String html) {
+  PinUpdateBuilder contentHtml(String text, String html) {
     final tmp1 = text;
     final tmp5 = html;
     var tmp0 = 0;
@@ -42418,26 +42491,49 @@ class PinUpdateBuilder {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._pinUpdateBuilderContentHtml(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
-    return;
+    final tmp9 = _api._pinUpdateBuilderContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_PinUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = PinUpdateBuilder._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetContent() {
+  PinUpdateBuilder unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetContent(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetContent(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetContentUpdate() {
+  PinUpdateBuilder unsetContentUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetContentUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetContentUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the url for this pin
-  void url(String text) {
+  PinUpdateBuilder url(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42452,47 +42548,77 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderUrl(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderUrl(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetUrl() {
+  PinUpdateBuilder unsetUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetUrl(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetUrl(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetUrlUpdate() {
+  PinUpdateBuilder unsetUrlUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetUrlUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetUrlUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the display for this pin
-  void display(Display display) {
+  PinUpdateBuilder display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._pinUpdateBuilderDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._pinUpdateBuilderDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_PinUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = PinUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  PinUpdateBuilder unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDisplayUpdate() {
+  PinUpdateBuilder unsetDisplayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetDisplayUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetDisplayUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// fire this update over - the event_id is the confirmation from the server.
@@ -42913,7 +43039,7 @@ class CalendarEventUpdateBuilder {
   CalendarEventUpdateBuilder._(this._api, this._box);
 
   /// set title of the event>
-  void title(String title) {
+  CalendarEventUpdateBuilder title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42928,12 +43054,17 @@ class CalendarEventUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description text
-  void descriptionText(String body) {
+  CalendarEventUpdateBuilder descriptionText(String body) {
     final tmp1 = body;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42948,12 +43079,22 @@ class CalendarEventUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventUpdateBuilderDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventUpdateBuilderDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description html text
-  void descriptionHtml(String body, String htmlBody) {
+  CalendarEventUpdateBuilder descriptionHtml(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -42980,7 +43121,7 @@ class CalendarEventUpdateBuilder {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._calendarEventUpdateBuilderDescriptionHtml(
+    final tmp9 = _api._calendarEventUpdateBuilderDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -42989,7 +43130,12 @@ class CalendarEventUpdateBuilder {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// set utc start in rfc3339 string
@@ -43316,7 +43462,7 @@ class CalendarEventUpdateBuilder {
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void addPhysicalLocation(
+  CalendarEventUpdateBuilder addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43460,7 +43606,7 @@ class CalendarEventUpdateBuilder {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventUpdateBuilderAddPhysicalLocation(
+    final tmp43 = _api._calendarEventUpdateBuilderAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43491,12 +43637,17 @@ class CalendarEventUpdateBuilder {
       tmp41,
       tmp42,
     );
-    return;
+    final tmp45 = tmp43;
+    final ffi.Pointer<ffi.Void> tmp45_0 = ffi.Pointer.fromAddress(tmp45);
+    final tmp45_1 = _Box(_api, tmp45_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp45_1._finalizer = _api._registerFinalizer(tmp45_1);
+    final tmp44 = CalendarEventUpdateBuilder._(_api, tmp45_1);
+    return tmp44;
   }
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void addVirtualLocation(
+  CalendarEventUpdateBuilder addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43593,7 +43744,7 @@ class CalendarEventUpdateBuilder {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventUpdateBuilderAddVirtualLocation(
+    final tmp29 = _api._calendarEventUpdateBuilderAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43615,15 +43766,25 @@ class CalendarEventUpdateBuilder {
       tmp27,
       tmp28,
     );
-    return;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 = _Box(_api, tmp31_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 = CalendarEventUpdateBuilder._(_api, tmp31_1);
+    return tmp30;
   }
 
   /// clear all locations of this cal event
-  void unsetLocations() {
+  CalendarEventUpdateBuilder unsetLocations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._calendarEventUpdateBuilderUnsetLocations(tmp0);
-    return;
+    final tmp1 = _api._calendarEventUpdateBuilderUnsetLocations(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CalendarEventUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// send builder update
@@ -43659,7 +43820,7 @@ class CalendarEventDraft {
   CalendarEventDraft._(this._api, this._box);
 
   /// set the title for this calendar event
-  void title(String title) {
+  CalendarEventDraft title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43674,12 +43835,17 @@ class CalendarEventDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventDraftTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventDraftTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description for this calendar event
-  void descriptionText(String text) {
+  CalendarEventDraft descriptionText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43694,12 +43860,22 @@ class CalendarEventDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventDraftDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventDraftDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description html for this calendar event
-  void descriptionHtml(String text, String html) {
+  CalendarEventDraft descriptionHtml(String text, String html) {
     final tmp1 = text;
     final tmp5 = html;
     var tmp0 = 0;
@@ -43726,7 +43902,7 @@ class CalendarEventDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._calendarEventDraftDescriptionHtml(
+    final tmp9 = _api._calendarEventDraftDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -43735,14 +43911,24 @@ class CalendarEventDraft {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetDescription() {
+  CalendarEventDraft unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._calendarEventDraftUnsetDescription(tmp0);
-    return;
+    final tmp1 = _api._calendarEventDraftUnsetDescription(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CalendarEventDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CalendarEventDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the utc_start for this calendar event in rfc3339 format
@@ -44066,7 +44252,7 @@ class CalendarEventDraft {
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void addPhysicalLocation(
+  CalendarEventDraft addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -44210,7 +44396,7 @@ class CalendarEventDraft {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventDraftAddPhysicalLocation(
+    final tmp43 = _api._calendarEventDraftAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -44241,12 +44427,17 @@ class CalendarEventDraft {
       tmp41,
       tmp42,
     );
-    return;
+    final tmp45 = tmp43;
+    final ffi.Pointer<ffi.Void> tmp45_0 = ffi.Pointer.fromAddress(tmp45);
+    final tmp45_1 = _Box(_api, tmp45_0, "drop_box_CalendarEventDraft");
+    tmp45_1._finalizer = _api._registerFinalizer(tmp45_1);
+    final tmp44 = CalendarEventDraft._(_api, tmp45_1);
+    return tmp44;
   }
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void addVirtualLocation(
+  CalendarEventDraft addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -44343,7 +44534,7 @@ class CalendarEventDraft {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventDraftAddVirtualLocation(
+    final tmp29 = _api._calendarEventDraftAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -44365,7 +44556,12 @@ class CalendarEventDraft {
       tmp27,
       tmp28,
     );
-    return;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 = _Box(_api, tmp31_0, "drop_box_CalendarEventDraft");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 = CalendarEventDraft._(_api, tmp31_1);
+    return tmp30;
   }
 
   /// create this calendar event

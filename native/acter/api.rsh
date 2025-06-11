@@ -586,23 +586,23 @@ object StoryUpdateBuilder {
 /// Draft a Pin
 object PinDraft {
     /// set the title for this pin
-    fn title(title: string);
+    fn title(title: string) -> PinDraft;
 
     /// set the content for this pin
-    fn content_text(text: string);
+    fn content_text(text: string) -> PinDraft;
     /// set the content of the pin through markdown
-    fn content_markdown(text: string);
+    fn content_markdown(text: string) -> PinDraft;
     /// set the content of the pin through html
-    fn content_html(text: string, html: string);
-    fn unset_content();
+    fn content_html(text: string, html: string) -> PinDraft;
+    fn unset_content() -> PinDraft;
 
     /// set the url for this pin
-    fn url(text: string);
-    fn unset_url();
+    fn url(text: string) -> PinDraft;
+    fn unset_url() -> PinDraft;
 
     /// set the display for this pin
-    fn display(display: Display);
-    fn unset_display();
+    fn display(display: Display) -> PinDraft;
+    fn unset_display() -> PinDraft;
 
     /// fire this pin over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -660,25 +660,25 @@ object ActerPin {
 
 object PinUpdateBuilder {
     /// set the title for this pin
-    fn title(title: string);
-    fn unset_title_update();
+    fn title(title: string) -> PinUpdateBuilder;
+    fn unset_title_update() -> PinUpdateBuilder;
 
     /// set the content for this pin
-    fn content_text(text: string);
-    fn content_markdown(text: string);
-    fn content_html(text: string, html: string);
-    fn unset_content();
-    fn unset_content_update();
+    fn content_text(text: string) -> PinUpdateBuilder;
+    fn content_markdown(text: string) -> PinUpdateBuilder;
+    fn content_html(text: string, html: string) -> PinUpdateBuilder;
+    fn unset_content() -> PinUpdateBuilder;
+    fn unset_content_update() -> PinUpdateBuilder;
 
     /// set the url for this pin
-    fn url(text: string);
-    fn unset_url();
-    fn unset_url_update();
+    fn url(text: string) -> PinUpdateBuilder;
+    fn unset_url() -> PinUpdateBuilder;
+    fn unset_url_update() -> PinUpdateBuilder;
 
     /// set the display for this pin
-    fn display(display: Display);
-    fn unset_display();
-    fn unset_display_update();
+    fn display(display: Display) -> PinUpdateBuilder;
+    fn unset_display() -> PinUpdateBuilder;
+    fn unset_display_update() -> PinUpdateBuilder;
 
     /// fire this update over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -751,13 +751,13 @@ object CalendarEvent {
 
 object CalendarEventUpdateBuilder {
     /// set title of the event>
-    fn title(title: string);
+    fn title(title: string) -> CalendarEventUpdateBuilder;
 
     /// set description text
-    fn description_text(body: string);
+    fn description_text(body: string) -> CalendarEventUpdateBuilder;
 
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> CalendarEventUpdateBuilder;
 
     /// set utc start in rfc3339 string
     fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
@@ -776,12 +776,12 @@ object CalendarEventUpdateBuilder {
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>) -> CalendarEventUpdateBuilder;
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>) -> CalendarEventUpdateBuilder;
     /// clear all locations of this cal event
-    fn unset_locations();
+    fn unset_locations() -> CalendarEventUpdateBuilder;
 
     /// send builder update
     fn send() -> Future<Result<EventId>>;
@@ -789,15 +789,15 @@ object CalendarEventUpdateBuilder {
 
 object CalendarEventDraft {
     /// set the title for this calendar event
-    fn title(title: string);
+    fn title(title: string) -> CalendarEventDraft;
 
     /// set the description for this calendar event
-    fn description_text(text: string);
+    fn description_text(text: string) -> CalendarEventDraft;
 
     /// set the description html for this calendar event
-    fn description_html(text: string, html: string);
+    fn description_html(text: string, html: string) -> CalendarEventDraft;
 
-    fn unset_description();
+    fn unset_description() -> CalendarEventDraft;
 
     /// set the utc_start for this calendar event in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventDraft>;
@@ -816,10 +816,10 @@ object CalendarEventDraft {
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>) -> CalendarEventDraft;
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>) -> CalendarEventDraft;
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
