@@ -20,6 +20,15 @@ class SpaceToolbar extends ConsumerWidget {
 
   const SpaceToolbar({super.key, required this.spaceId, this.spaceTitle});
 
+  Future<void> _bookmarkSpace(WidgetRef ref) async {
+    final space = await ref.read(spaceProvider(spaceId).future);
+    final isBookmarked = await ref.read(spaceIsBookmarkedProvider(spaceId).future);
+    await space.setBookmarked(!isBookmarked);
+    
+    // Invalidate providers to update UI
+    ref.invalidate(spaceIsBookmarkedProvider(spaceId));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
@@ -112,13 +121,7 @@ class SpaceToolbar extends ConsumerWidget {
           ),
         IconButton(
           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border),
-          onPressed: () async {
-            final bookmarked = await ref.read(
-              spaceIsBookmarkedProvider(spaceId).future,
-            );
-            final space = await ref.read(spaceProvider(spaceId).future);
-            await space.setBookmarked(!bookmarked);
-          },
+          onPressed: () => _bookmarkSpace(ref),
         ),
         PopupMenuButton(
           icon: const Icon(Icons.more_vert, key: optionsMenu),
