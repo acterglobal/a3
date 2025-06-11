@@ -51,7 +51,7 @@ Future<void> sendNews(BuildContext context, WidgetRef ref) async {
         UpdateSlideType.image => makeImageSlideForNews(ref, slidePost, lang),
         UpdateSlideType.video => makeVideoSlideForNews(ref, slidePost, lang),
       };
-      await draft.addSlide(slide);
+      draft.addSlide(slide);
     } catch (err, s) {
       _log.severe('Failed to process ${slidePost.type} at $slideIdx ', err, s);
       EasyLoading.showError(
