@@ -20723,6 +20723,130 @@ class Api {
               int,
             )
           >();
+  late final _calendarEventUpdateBuilderAddPhysicalLocationPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_add_physical_location");
+
+  late final _calendarEventUpdateBuilderAddPhysicalLocation =
+      _calendarEventUpdateBuilderAddPhysicalLocationPtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _calendarEventUpdateBuilderAddVirtualLocationPtr = _lookup<
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+        ffi.Uint8,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
+    >
+  >("__CalendarEventUpdateBuilder_add_virtual_location");
+
+  late final _calendarEventUpdateBuilderAddVirtualLocation =
+      _calendarEventUpdateBuilderAddVirtualLocationPtr
+          .asFunction<
+            void Function(
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _calendarEventUpdateBuilderUnsetLocationsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__CalendarEventUpdateBuilder_unset_locations",
@@ -20918,7 +21042,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventDraftPhysicalLocationPtr = _lookup<
+  late final _calendarEventDraftAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -20952,10 +21076,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventDraft_physical_location");
+  >("__CalendarEventDraft_add_physical_location");
 
-  late final _calendarEventDraftPhysicalLocation =
-      _calendarEventDraftPhysicalLocationPtr
+  late final _calendarEventDraftAddPhysicalLocation =
+      _calendarEventDraftAddPhysicalLocationPtr
           .asFunction<
             void Function(
               int,
@@ -20989,7 +21113,7 @@ class Api {
               int,
             )
           >();
-  late final _calendarEventDraftVirtualLocationPtr = _lookup<
+  late final _calendarEventDraftAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(
         ffi.IntPtr,
@@ -21014,10 +21138,10 @@ class Api {
         ffi.UintPtr,
       )
     >
-  >("__CalendarEventDraft_virtual_location");
+  >("__CalendarEventDraft_add_virtual_location");
 
-  late final _calendarEventDraftVirtualLocation =
-      _calendarEventDraftVirtualLocationPtr
+  late final _calendarEventDraftAddVirtualLocation =
+      _calendarEventDraftAddVirtualLocationPtr
           .asFunction<
             void Function(
               int,
@@ -28639,20 +28763,34 @@ class Api {
           .asFunction<void Function(int, int, int, int)>();
   late final _createConvoSettingsBuilderSetParentPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _CreateConvoSettingsBuilderSetParentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__CreateConvoSettingsBuilder_set_parent");
 
   late final _createConvoSettingsBuilderSetParent =
       _createConvoSettingsBuilderSetParentPtr
-          .asFunction<void Function(int, int, int, int)>();
-  late final _createConvoSettingsBuilderBuildPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__CreateConvoSettingsBuilder_build",
-      );
+          .asFunction<
+            _CreateConvoSettingsBuilderSetParentReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
+  late final _createConvoSettingsBuilderBuildPtr = _lookup<
+    ffi.NativeFunction<
+      _CreateConvoSettingsBuilderBuildReturn Function(ffi.IntPtr)
+    >
+  >("__CreateConvoSettingsBuilder_build");
 
   late final _createConvoSettingsBuilderBuild =
-      _createConvoSettingsBuilderBuildPtr.asFunction<int Function(int)>();
+      _createConvoSettingsBuilderBuildPtr
+          .asFunction<_CreateConvoSettingsBuilderBuildReturn Function(int)>();
   late final _createSpaceSettingsBuilderSetNamePtr = _lookup<
     ffi.NativeFunction<
       ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -28730,13 +28868,25 @@ class Api {
           .asFunction<void Function(int, int, int, int)>();
   late final _createSpaceSettingsBuilderSetParentPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _CreateSpaceSettingsBuilderSetParentReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__CreateSpaceSettingsBuilder_set_parent");
 
   late final _createSpaceSettingsBuilderSetParent =
       _createSpaceSettingsBuilderSetParentPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<
+            _CreateSpaceSettingsBuilderSetParentReturn Function(
+              int,
+              int,
+              int,
+              int,
+            )
+          >();
   late final _createSpaceSettingsBuilderSetPermissionsPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__CreateSpaceSettingsBuilder_set_permissions",
@@ -28745,13 +28895,15 @@ class Api {
   late final _createSpaceSettingsBuilderSetPermissions =
       _createSpaceSettingsBuilderSetPermissionsPtr
           .asFunction<void Function(int, int)>();
-  late final _createSpaceSettingsBuilderBuildPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
-        "__CreateSpaceSettingsBuilder_build",
-      );
+  late final _createSpaceSettingsBuilderBuildPtr = _lookup<
+    ffi.NativeFunction<
+      _CreateSpaceSettingsBuilderBuildReturn Function(ffi.IntPtr)
+    >
+  >("__CreateSpaceSettingsBuilder_build");
 
   late final _createSpaceSettingsBuilderBuild =
-      _createSpaceSettingsBuilderBuildPtr.asFunction<int Function(int)>();
+      _createSpaceSettingsBuilderBuildPtr
+          .asFunction<_CreateSpaceSettingsBuilderBuildReturn Function(int)>();
   late final _invitationsManagerRoomInvitationsPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__InvitationsManager_room_invitations",
@@ -43010,6 +43162,312 @@ class CalendarEventUpdateBuilder {
     return;
   }
 
+  /// set the physical location details for this calendar event
+  /// description_html means by markdown
+  /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+  void addPhysicalLocation(
+    String? name,
+    String? description,
+    String? descriptionHtml,
+    String? coordinates,
+    String? uri,
+    String? address,
+    String? notes,
+  ) {
+    final tmp1 = name;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = coordinates;
+    final tmp25 = uri;
+    final tmp31 = address;
+    final tmp37 = notes;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp23 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp28 = 0;
+    var tmp29 = 0;
+    var tmp30 = 0;
+    var tmp32 = 0;
+    var tmp34 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    var tmp38 = 0;
+    var tmp40 = 0;
+    var tmp41 = 0;
+    var tmp42 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    if (tmp19 == null) {
+      tmp20 = 0;
+    } else {
+      tmp20 = 1;
+      final tmp21 = tmp19;
+      final tmp21_0 = utf8.encode(tmp21);
+      tmp23 = tmp21_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp22_0 = _api.__allocate(tmp23 * 1, 1);
+      final Uint8List tmp22_1 = tmp22_0.asTypedList(tmp23);
+      tmp22_1.setAll(0, tmp21_0);
+      tmp22 = tmp22_0.address;
+      tmp24 = tmp23;
+    }
+    if (tmp25 == null) {
+      tmp26 = 0;
+    } else {
+      tmp26 = 1;
+      final tmp27 = tmp25;
+      final tmp27_0 = utf8.encode(tmp27);
+      tmp29 = tmp27_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp28_0 = _api.__allocate(tmp29 * 1, 1);
+      final Uint8List tmp28_1 = tmp28_0.asTypedList(tmp29);
+      tmp28_1.setAll(0, tmp27_0);
+      tmp28 = tmp28_0.address;
+      tmp30 = tmp29;
+    }
+    if (tmp31 == null) {
+      tmp32 = 0;
+    } else {
+      tmp32 = 1;
+      final tmp33 = tmp31;
+      final tmp33_0 = utf8.encode(tmp33);
+      tmp35 = tmp33_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp34_0 = _api.__allocate(tmp35 * 1, 1);
+      final Uint8List tmp34_1 = tmp34_0.asTypedList(tmp35);
+      tmp34_1.setAll(0, tmp33_0);
+      tmp34 = tmp34_0.address;
+      tmp36 = tmp35;
+    }
+    if (tmp37 == null) {
+      tmp38 = 0;
+    } else {
+      tmp38 = 1;
+      final tmp39 = tmp37;
+      final tmp39_0 = utf8.encode(tmp39);
+      tmp41 = tmp39_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp40_0 = _api.__allocate(tmp41 * 1, 1);
+      final Uint8List tmp40_1 = tmp40_0.asTypedList(tmp41);
+      tmp40_1.setAll(0, tmp39_0);
+      tmp40 = tmp40_0.address;
+      tmp42 = tmp41;
+    }
+    _api._calendarEventUpdateBuilderAddPhysicalLocation(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp22,
+      tmp23,
+      tmp24,
+      tmp26,
+      tmp28,
+      tmp29,
+      tmp30,
+      tmp32,
+      tmp34,
+      tmp35,
+      tmp36,
+      tmp38,
+      tmp40,
+      tmp41,
+      tmp42,
+    );
+    return;
+  }
+
+  /// set the virtual location details for this calendar event
+  /// description_html means by markdown
+  void addVirtualLocation(
+    String? name,
+    String? description,
+    String? descriptionHtml,
+    String uri,
+    String? notes,
+  ) {
+    final tmp1 = name;
+    final tmp7 = description;
+    final tmp13 = descriptionHtml;
+    final tmp19 = uri;
+    final tmp23 = notes;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp14 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
+    var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
+    var tmp26 = 0;
+    var tmp27 = 0;
+    var tmp28 = 0;
+    tmp0 = _box.borrow();
+    if (tmp1 == null) {
+      tmp2 = 0;
+    } else {
+      tmp2 = 1;
+      final tmp3 = tmp1;
+      final tmp3_0 = utf8.encode(tmp3);
+      tmp5 = tmp3_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = _api.__allocate(tmp5 * 1, 1);
+      final Uint8List tmp4_1 = tmp4_0.asTypedList(tmp5);
+      tmp4_1.setAll(0, tmp3_0);
+      tmp4 = tmp4_0.address;
+      tmp6 = tmp5;
+    }
+    if (tmp7 == null) {
+      tmp8 = 0;
+    } else {
+      tmp8 = 1;
+      final tmp9 = tmp7;
+      final tmp9_0 = utf8.encode(tmp9);
+      tmp11 = tmp9_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = _api.__allocate(tmp11 * 1, 1);
+      final Uint8List tmp10_1 = tmp10_0.asTypedList(tmp11);
+      tmp10_1.setAll(0, tmp9_0);
+      tmp10 = tmp10_0.address;
+      tmp12 = tmp11;
+    }
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      final tmp15_0 = utf8.encode(tmp15);
+      tmp17 = tmp15_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp16_0 = _api.__allocate(tmp17 * 1, 1);
+      final Uint8List tmp16_1 = tmp16_0.asTypedList(tmp17);
+      tmp16_1.setAll(0, tmp15_0);
+      tmp16 = tmp16_0.address;
+      tmp18 = tmp17;
+    }
+    final tmp19_0 = utf8.encode(tmp19);
+    tmp21 = tmp19_0.length;
+
+    final ffi.Pointer<ffi.Uint8> tmp20_0 = _api.__allocate(tmp21 * 1, 1);
+    final Uint8List tmp20_1 = tmp20_0.asTypedList(tmp21);
+    tmp20_1.setAll(0, tmp19_0);
+    tmp20 = tmp20_0.address;
+    tmp22 = tmp21;
+    if (tmp23 == null) {
+      tmp24 = 0;
+    } else {
+      tmp24 = 1;
+      final tmp25 = tmp23;
+      final tmp25_0 = utf8.encode(tmp25);
+      tmp27 = tmp25_0.length;
+
+      final ffi.Pointer<ffi.Uint8> tmp26_0 = _api.__allocate(tmp27 * 1, 1);
+      final Uint8List tmp26_1 = tmp26_0.asTypedList(tmp27);
+      tmp26_1.setAll(0, tmp25_0);
+      tmp26 = tmp26_0.address;
+      tmp28 = tmp27;
+    }
+    _api._calendarEventUpdateBuilderAddVirtualLocation(
+      tmp0,
+      tmp2,
+      tmp4,
+      tmp5,
+      tmp6,
+      tmp8,
+      tmp10,
+      tmp11,
+      tmp12,
+      tmp14,
+      tmp16,
+      tmp17,
+      tmp18,
+      tmp20,
+      tmp21,
+      tmp22,
+      tmp24,
+      tmp26,
+      tmp27,
+      tmp28,
+    );
+    return;
+  }
+
+  /// clear all locations of this cal event
   void unsetLocations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -43427,7 +43885,7 @@ class CalendarEventDraft {
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void physicalLocation(
+  void addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43571,7 +44029,7 @@ class CalendarEventDraft {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventDraftPhysicalLocation(
+    _api._calendarEventDraftAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43607,7 +44065,7 @@ class CalendarEventDraft {
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void virtualLocation(
+  void addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43704,7 +44162,7 @@ class CalendarEventDraft {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventDraftVirtualLocation(
+    _api._calendarEventDraftAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -64003,7 +64461,30 @@ class CreateConvoSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createConvoSettingsBuilderSetParent(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._createConvoSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -64011,11 +64492,29 @@ class CreateConvoSettingsBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._createConvoSettingsBuilderBuild(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateConvoSettings");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = CreateConvoSettings._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CreateConvoSettings");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = CreateConvoSettings._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -64225,7 +64724,30 @@ class CreateSpaceSettingsBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._createSpaceSettingsBuilderSetParent(tmp0, tmp2, tmp3, tmp4);
+    final tmp5 = _api._createSpaceSettingsBuilderSetParent(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
     return;
   }
 
@@ -64244,11 +64766,29 @@ class CreateSpaceSettingsBuilder {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._createSpaceSettingsBuilderBuild(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CreateSpaceSettings");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = CreateSpaceSettings._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CreateSpaceSettings");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = CreateSpaceSettings._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -73864,6 +74404,30 @@ class _CreateConvoSettingsBuilderAddInviteeReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _CreateConvoSettingsBuilderSetParentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _CreateConvoSettingsBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
 class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73873,6 +74437,30 @@ class _CreateSpaceSettingsBuilderAddInviteeReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+}
+
+class _CreateSpaceSettingsBuilderSetParentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+}
+
+class _CreateSpaceSettingsBuilderBuildReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _ClientAccountReturn extends ffi.Struct {

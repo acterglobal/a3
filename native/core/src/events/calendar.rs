@@ -411,3 +411,55 @@ impl CalendarEventUpdateEventContent {
         Ok(updated)
     }
 }
+
+impl CalendarEventUpdateBuilder {
+    pub fn add_physical_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<TextMessageEventContent>,
+        coordinates: Option<String>,
+        uri: Option<String>,
+        address: Option<String>,
+        notes: Option<String>,
+    ) -> &mut Self {
+        let mut locations = self
+            .locations
+            .clone()
+            .map(|x| x.unwrap_or_default())
+            .unwrap_or_default();
+        locations.push(EventLocation::Physical {
+            name,
+            description,
+            icon: None,
+            coordinates,
+            uri,
+            address,
+            notes,
+        });
+        self.locations(Some(locations));
+        self
+    }
+
+    pub fn add_virtual_location(
+        &mut self,
+        name: Option<String>,
+        description: Option<TextMessageEventContent>,
+        uri: String,
+        notes: Option<String>,
+    ) -> &mut Self {
+        let mut locations = self
+            .locations
+            .clone()
+            .map(|x| x.unwrap_or_default())
+            .unwrap_or_default();
+        locations.push(EventLocation::Virtual {
+            uri,
+            name,
+            description,
+            icon: None,
+            notes,
+        });
+        self.locations(Some(locations));
+        self
+    }
+}

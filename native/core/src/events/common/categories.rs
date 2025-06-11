@@ -24,9 +24,11 @@ impl Category {
     pub fn title(&self) -> String {
         self.title.clone()
     }
+
     pub fn entries(&self) -> Vec<String> {
         self.entries.clone()
     }
+
     pub fn display(&self) -> Option<Display> {
         self.display.clone()
     }
@@ -42,16 +44,22 @@ impl Category {
 
 impl CategoryBuilder {
     pub fn clear_entries(&mut self) {
-        self.entries = Some(Vec::new())
+        self.entries = Some(Vec::new());
     }
+
     pub fn add_entry(&mut self, entry: String) {
         match self.entries.as_mut() {
-            Some(i) => i.push(entry),
+            Some(entries) => {
+                if !entries.contains(&entry) {
+                    entries.push(entry);
+                }
+            }
             None => {
                 self.entries = Some(vec![entry]);
             }
         }
     }
+
     pub fn unset_display(&mut self) {
         self.display_typed(None);
     }

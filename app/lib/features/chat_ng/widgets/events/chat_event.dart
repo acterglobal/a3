@@ -10,6 +10,7 @@ import 'package:acter/features/chat_ng/widgets/events/room_membership_event_widg
 import 'package:acter/features/chat_ng/widgets/events/message_event_item.dart';
 import 'package:acter/features/chat_ng/widgets/events/room_update_event.dart';
 import 'package:acter/features/chat_ng/widgets/events/state_event_container_widget.dart';
+import 'package:acter/features/chat_ng/widgets/events/virtual_day_divider_event_widget.dart';
 import 'package:acter/features/chat_ng/widgets/read_receipts_widget.dart';
 import 'package:acter/features/chat_ng/widgets/reactions/reactions_list.dart';
 import 'package:acter/features/member/dialogs/show_member_info_drawer.dart';
@@ -81,7 +82,10 @@ class ChatEvent extends ConsumerWidget {
   }
 
   Widget renderVirtual(TimelineItem msg, TimelineVirtualItem virtual) {
-    // TODO: virtual Objects support
+    if (virtual.eventType() == 'DayDivider') {
+      return VirtualDayDividerEventWidget(date: virtual.desc());
+    }
+
     return const SizedBox.shrink();
   }
 

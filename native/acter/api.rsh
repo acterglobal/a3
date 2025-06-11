@@ -766,6 +766,15 @@ object CalendarEventUpdateBuilder {
     fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
     fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+
+    /// set the physical location details for this calendar event
+    /// description_html means by markdown
+    /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    /// set the virtual location details for this calendar event
+    /// description_html means by markdown
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    /// clear all locations of this cal event
     fn unset_locations();
 
     /// send builder update
@@ -801,10 +810,10 @@ object CalendarEventDraft {
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -3574,9 +3583,9 @@ object CreateConvoSettingsBuilder {
     fn set_avatar_uri(value: string);
 
     /// set the parent of convo
-    fn set_parent(value: string);
+    fn set_parent(value: string) -> Result<()>;
 
-    fn build() -> CreateConvoSettings;
+    fn build() -> Result<CreateConvoSettings>;
 }
 
 object CreateConvoSettings {}
@@ -3611,12 +3620,12 @@ object CreateSpaceSettingsBuilder {
     /// set the parent of space
     /// if the join rule is restricted or knockrestricted AND a parent is set
     /// the space will be a subspace of the parent space
-    fn set_parent(value: string);
+    fn set_parent(value: string) -> Result<()>;
 
     /// set the permissions for apps and events for the space creation
     fn set_permissions(value: AppPermissionsBuilder);
 
-    fn build() -> CreateSpaceSettings;
+    fn build() -> Result<CreateSpaceSettings>;
 }
 
 object CreateSpaceSettings {}

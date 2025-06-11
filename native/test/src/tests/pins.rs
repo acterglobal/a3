@@ -91,14 +91,15 @@ async fn pin_comments() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
+    let body = "I updated the pin";
     let comment_id = comments_manager
         .comment_draft()?
-        .content_text("I updated the pin".to_owned())
+        .content_text(body.to_owned())
         .send()
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -109,7 +110,7 @@ async fn pin_comments() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_id);
-    assert_eq!(comments[0].content().body, "I updated the pin");
+    assert_eq!(comments[0].content().body, body);
 
     Ok(())
 }

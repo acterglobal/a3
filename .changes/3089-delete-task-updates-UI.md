@@ -1,0 +1,1 @@
+- [Fixes] : Now, when a user deletes a task, the UI updates accordingly.
