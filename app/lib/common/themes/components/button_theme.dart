@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/themes/components/text_theme.dart';
 import 'package:flutter/material.dart';
@@ -43,9 +45,12 @@ TextButtonThemeData inlineTextButtonThemeMaker() => TextButtonThemeData(
 OutlinedButtonThemeData outlinedButtonTheme() => OutlinedButtonThemeData(
   style: OutlinedButton.styleFrom(
     foregroundColor: colorScheme.primary,
-    side: BorderSide(color: colorScheme.primary),
+    side: BorderSide(color: colorScheme.outline),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    padding: EdgeInsets.symmetric(
+      horizontal: 12,
+      vertical: Platform.isAndroid || Platform.isIOS ? 6 : 12,
+    ),
     textStyle: textTheme.titleMedium?.copyWith(
       color: colorScheme.primary,
       fontSize: 15,
