@@ -241,4 +241,51 @@ class AsyncTaskHasInvitationsNotifier extends FamilyAsyncNotifier<bool, Task> {
     state = AsyncValue.data(await _getHasInvitations(client, arg));
   }
 }
+class AsyncTaskUserInvitationNotifier extends FamilyAsyncNotifier<bool, (Task, String)> {
+  late Stream<bool> _listener;
+  late StreamSubscription<bool> _poller;
 
+  Future<bool> _getIsInvited(Client client, Task task, String userId) async {
+    // First refresh the task to get latest data
+    final refreshedTask = await task.refresh();
+    final invitationsManager = await refreshedTask.invitations();
+    // Reload the invitations manager to get fresh data from database
+    final reloadedManager = await invitationsManager.reload();
+    final invitedList = reloadedManager.invited();
+    return invitedList.any((invite) => invite.toDartString() == userId);
+  }
+
+  @override
+  Future<bool> build((Task, String) params) async {
+    final (task, userId) = params;
+    final client = await ref.watch(alwaysClientProvider.future);
+    
+    // Get initial invitations manager
+    final invitationsManager = await task.invitations();
+    
+    // Subscribe to invitations updates directly
+    _listener = invitationsManager.subscribeStream(); // keep it resident in memory
+    _poller = _listener.listen(
+      (data) async {
+        _log.info('got invitations update');
+        state = AsyncValue.data(await _getIsInvited(client, task, userId));
+      },
+      onError: (e, s) {
+        _log.severe('invitations stream errored', e, s);
+      },
+      onDone: () {
+        _log.info('invitations stream ended');
+      },
+    );
+    
+    ref.onDispose(() => _poller.cancel());
+    return await _getIsInvited(client, task, userId);
+  }
+
+  // Add a method to force refresh the data
+  Future<void> refresh() async {
+    final client = await ref.watch(alwaysClientProvider.future);
+    final (task, userId) = arg;
+    state = AsyncValue.data(await _getIsInvited(client, task, userId));
+  }
+}

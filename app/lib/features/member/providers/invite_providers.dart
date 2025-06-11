@@ -64,11 +64,6 @@ final filteredSuggestedUsersProvider =
       }).toList();
     });
 
-/// Provider for getting the invitations manager for a specific task
-final taskInvitationsManagerProvider = FutureProvider.family<ObjectInvitationsManager, Task>(
-  (ref, task) => task.invitations(),
-);
-
 // Provider for getting the list of invited users for a task
 final taskInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskInvitationsNotifier, List<String>, Task>(
   () => AsyncTaskInvitationsNotifier(),
@@ -79,13 +74,9 @@ final taskHasInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskHasInvi
   () => AsyncTaskHasInvitationsNotifier(),
 );
 
-/// Provider for checking if a user is invited to a task
-final isUserInvitedToTaskProvider = FutureProvider.family<bool, (Task, String)>(
-  (ref, params) async {
-    final (task, userId) = params;
-    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
-    return manager.isInvited();
-  },
+// Provider for checking if a user is invited to a task
+final taskUserInvitationProvider = AsyncNotifierProvider.family<AsyncTaskUserInvitationNotifier, bool, (Task, String)>(
+  () => AsyncTaskUserInvitationNotifier(),
 );
 
 /// Provider for getting display names of invited users

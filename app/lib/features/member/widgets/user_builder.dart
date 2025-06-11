@@ -5,6 +5,7 @@ import 'package:acter/common/providers/room_providers.dart';
 import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:acter/common/utils/utils.dart';
 import 'package:acter/features/member/actions/invite_actions.dart';
+import 'package:acter/features/member/providers/invite_providers.dart';
 import 'package:acter_avatar/acter_avatar.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:atlas_icons/atlas_icons.dart';
@@ -110,7 +111,7 @@ class UserBuilder extends ConsumerWidget {
         title: Text(displayName ?? userId),
         subtitle: (displayName == null) ? null : Text(userId),
         leading: ActerAvatar(options: AvatarOptions.DM(avatarInfo, size: 18)),
-        trailing: _renderTrailing(context, ref),
+        trailing: _renderTrailing(context, ref, task),
       ),
     );
     if (includeSharedRooms) {
@@ -119,7 +120,7 @@ class UserBuilder extends ConsumerWidget {
     return tile;
   }
 
-  Widget? _renderTrailing(BuildContext context, WidgetRef ref) {
+  Widget? _renderTrailing(BuildContext context, WidgetRef ref, Task? task) {
     if (!includeUserJoinState) return null;
     return roomId.map((rId) {
       final room = ref.watch(maybeRoomProvider(rId)).valueOrNull;
@@ -139,6 +140,7 @@ class UserBuilder extends ConsumerWidget {
           userId: userId,
           room: r,
         ),
+        task: task,
       )) ??
           const Skeletonizer(child: Text('user'));
     });
@@ -227,6 +229,7 @@ class UserStateButton extends ConsumerWidget {
   final Room room;
   final Future<void> Function(String userId) onInvite;
   final Future<void> Function(String userId) onCancelInvite;
+  final Task? task;
 
   const UserStateButton({
     super.key, 
@@ -234,16 +237,19 @@ class UserStateButton extends ConsumerWidget {
     required this.userId, 
     required this.onInvite,
     required this.onCancelInvite,
+    this.task,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final disabledColor = Theme.of(context).disabledColor;
     final roomId = room.roomIdStr();
     final invited =
         ref.watch(roomInvitedMembersProvider(roomId)).valueOrNull ?? [];
     final joined = ref.watch(membersIdsProvider(roomId)).valueOrNull ?? [];
+    final isUserInvitedForTask = task != null ? ref.watch(taskUserInvitationProvider((task!, userId))).valueOrNull ?? false : false;
     if (isInvited(userId, invited)) {
       return InkWell(
         onTap: () => onCancelInvite.call(userId),
@@ -274,21 +280,22 @@ class UserStateButton extends ConsumerWidget {
       );
     }
     return InkWell(
-      onTap: () => onInvite.call(userId),
+      onTap: () => isUserInvitedForTask ? null : onInvite.call(userId),
       child: Chip(
+        backgroundColor: isUserInvitedForTask ? disabledColor : null,
         label: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(lang.invite, style: TextStyle(color: colorScheme.primary)),
+            Text(isUserInvitedForTask ? lang.invited : lang.invite, style: TextStyle(color: isUserInvitedForTask ? colorScheme.onSecondary : colorScheme.primary)),
             const SizedBox(width: 5),
-            Icon(
+            isUserInvitedForTask ? const SizedBox.shrink() : Icon(
               Atlas.paper_airplane_thin,
               color: colorScheme.primary,
               size: 16,
             ),
           ],
         ),
-        side: BorderSide(color: Theme.of(context).colorScheme.primary),
+        side: isUserInvitedForTask ? BorderSide.none : BorderSide(color: colorScheme.primary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );

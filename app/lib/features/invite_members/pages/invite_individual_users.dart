@@ -83,7 +83,7 @@ class InviteIndividualUsers extends ConsumerWidget {
                 },
               ),
             ),
-            if (!isFullPageMode)...[
+            if (!isFullPageMode || task != null)...[
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
