@@ -96,10 +96,6 @@ class SpaceToolbar extends ConsumerWidget {
       actions: [
         if (showInviteBtn && invited.length <= 100)
           OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              side: BorderSide(color: colorScheme.outline),
-            ),
             onPressed:
                 () => context.pushNamed(
                   Routes.spaceInvite.name,
