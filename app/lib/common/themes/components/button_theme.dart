@@ -44,17 +44,14 @@ TextButtonThemeData inlineTextButtonThemeMaker() => TextButtonThemeData(
 
 OutlinedButtonThemeData outlinedButtonTheme() => OutlinedButtonThemeData(
   style: OutlinedButton.styleFrom(
-    foregroundColor: colorScheme.primary,
+    foregroundColor: colorScheme.outline,
     side: BorderSide(color: colorScheme.outline),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     padding: EdgeInsets.symmetric(
       horizontal: 12,
       vertical: Platform.isAndroid || Platform.isIOS ? 6 : 12,
     ),
-    textStyle: textTheme.titleMedium?.copyWith(
-      color: colorScheme.primary,
-      fontSize: 15,
-    ),
+    textStyle: textTheme.titleMedium?.copyWith(fontSize: 15),
     minimumSize: Size.zero,
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
   ),
