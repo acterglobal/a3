@@ -1,3 +1,4 @@
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -9,12 +10,14 @@ class VirtualDayDividerEventWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (date == null) return const SizedBox.shrink();
 
-    final formattedDate = _formatDateString(date!);
+    final formattedDate = _formatDateString(context, date!);
     return _buildDayDivider(context, formattedDate);
   }
 
-  String _formatDateString(String dateString) {
+  String _formatDateString(BuildContext context, String dateString) {
     try {
+      final lang = L10n.of(context);
+
       // Parse the date string (assuming it's in YYYY-MM-DD format)
       final date = DateTime.parse(dateString);
       final now = DateTime.now();
@@ -23,9 +26,9 @@ class VirtualDayDividerEventWidget extends StatelessWidget {
       final messageDate = DateTime(date.year, date.month, date.day);
 
       if (messageDate == today) {
-        return 'Today';
+        return lang.today;
       } else if (messageDate == yesterday) {
-        return 'Yesterday';
+        return lang.yesterday;
       } else {
         // Check if it's the same year
         if (date.year == now.year) {
