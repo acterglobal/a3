@@ -1,5 +1,6 @@
 import 'package:acter/common/extensions/ref_debounce.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
+import 'package:acter/features/tasks/providers/notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -68,13 +69,14 @@ final taskInvitationsManagerProvider = FutureProvider.family<ObjectInvitationsMa
   (ref, task) => task.invitations(),
 );
 
-/// Provider for getting the list of invited users for a task
-final taskInvitedUsersProvider = FutureProvider.family<List<String>, Task>(
-  (ref, task) async {
-    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
-    final invitedList = manager.invited();
-    return invitedList.map((data) => data.toDartString()).toList();
-  },
+// Provider for getting the list of invited users for a task
+final taskInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskInvitationsNotifier, List<String>, Task>(
+  () => AsyncTaskInvitationsNotifier(),
+);
+
+// Provider for checking if a task has any invitations
+final taskHasInvitationsProvider = AsyncNotifierProvider.family<AsyncTaskHasInvitationsNotifier, bool, Task>(
+  () => AsyncTaskHasInvitationsNotifier(),
 );
 
 /// Provider for checking if a user is invited to a task
@@ -83,23 +85,6 @@ final isUserInvitedToTaskProvider = FutureProvider.family<bool, (Task, String)>(
     final (task, userId) = params;
     final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
     return manager.isInvited();
-  },
-);
-
-/// Provider for inviting a user to a task
-final inviteUserToTaskProvider = FutureProvider.family<String, (Task, String)>(
-  (ref, params) async {
-    final (task, userId) = params;
-    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
-    return await manager.invite(userId);
-  },
-);
-
-/// Provider for checking if a task has any invitations
-final taskHasInvitationsProvider = FutureProvider.family<bool, Task>(
-  (ref, task) async {
-    final manager = await ref.watch(taskInvitationsManagerProvider(task).future);
-    return manager.hasInvitations();
   },
 );
 

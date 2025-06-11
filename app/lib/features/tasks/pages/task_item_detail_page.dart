@@ -519,7 +519,7 @@ class _TaskItemBody extends ConsumerWidget {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final hasInvitations = ref.watch(taskHasInvitationsProvider(task)).valueOrNull ?? false;
-    final invitedUsers = ref.watch(taskInvitedUsersProvider(task)).valueOrNull ?? [];
+    final invitedUsersAsync = ref.watch(taskInvitationsProvider(task));
     return ListTile(
       onTap: () => assigneesAction(context, ref),
       dense: true,
@@ -527,33 +527,35 @@ class _TaskItemBody extends ConsumerWidget {
         padding: EdgeInsets.only(left: 15),
         child: Icon(Icons.send),
       ),
-      title:
-          hasInvitations
-              ? Text(lang.invited, style: textTheme.bodySmall)
-              : Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Text(
-                  lang.noOneIsInvited,
-                  style: textTheme.bodyMedium?.copyWith(
-                    decoration: TextDecoration.underline,
-                    fontStyle: FontStyle.italic,
-                  ),
+      title: hasInvitations
+          ? Text(lang.invited, style: textTheme.bodySmall)
+          : Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Text(
+                lang.noOneIsInvited,
+                style: textTheme.bodyMedium?.copyWith(
+                  decoration: TextDecoration.underline,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
-      subtitle:
-          hasInvitations
-              ? Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: buildInvitedUsers(context, invitedUsers, task.roomIdStr(), ref),
-              )
-              : null,
-      trailing:
-          hasInvitations
-              ? InkWell(
-                onTap: () => assigneesAction(context, ref),
-                child: const Icon(Icons.more_vert),
-              )
-              : null,
+            ),
+      subtitle: invitedUsersAsync.valueOrNull != null
+          ? Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: buildInvitedUsers(
+                context,
+                invitedUsersAsync.valueOrNull!,
+                task.roomIdStr(),
+                ref,
+              ),
+            )
+          : const SizedBox.shrink(),
+      trailing: hasInvitations
+          ? InkWell(
+              onTap: () => assigneesAction(context, ref),
+              child: const Icon(Icons.more_vert),
+            )
+          : null,
     );
   }
 
