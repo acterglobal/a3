@@ -34,13 +34,13 @@ void main() {
 
     // Set up mock behavior
     when(() => mockSpace.calendarEventDraft()).thenReturn(mockDraft);
-    mockDraft.title(any());
+    when(() => mockDraft.title(any())).thenReturn(mockDraft);
     when(() => mockDraft.utcStartFromRfc3339(any())).thenReturn(mockDraft);
     when(() => mockDraft.utcEndFromRfc3339(any())).thenReturn(mockDraft);
-    mockDraft.descriptionHtml(any(), any());
+    when(() => mockDraft.descriptionHtml(any(), any())).thenReturn(mockDraft);
 
     // Set up location-related mock behavior
-    mockDraft.addPhysicalLocation(
+    when(() => mockDraft.addPhysicalLocation(
       any(),
       any(),
       any(),
@@ -48,15 +48,15 @@ void main() {
       any(),
       any(),
       any(),
-    );
+    )).thenReturn(mockDraft);
 
-    mockDraft.addVirtualLocation(
+    when(() => mockDraft.addVirtualLocation(
       any(),
       any(),
       any(),
       any(),
       any(),
-    );
+    )).thenReturn(mockDraft);
 
     when(() => mockDraft.send()).thenAnswer((_) async => MockEventId('test-event-id'));
     when(() => mockClient.waitForCalendarEvent(any(), any())).thenAnswer((_) async => mockEvent);
