@@ -44,7 +44,6 @@ TextButtonThemeData inlineTextButtonThemeMaker() => TextButtonThemeData(
 
 OutlinedButtonThemeData outlinedButtonTheme() => OutlinedButtonThemeData(
   style: OutlinedButton.styleFrom(
-    foregroundColor: colorScheme.outline,
     side: BorderSide(color: colorScheme.outline),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     padding: EdgeInsets.symmetric(
