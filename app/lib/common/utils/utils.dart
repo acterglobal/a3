@@ -228,3 +228,32 @@ bool hasValidEditorContent({required String plainText, required String html}) {
 
   return !hasOnlyStructure;
 }
+
+String formatChatDayDividerDateString(BuildContext context, String dateString) {
+  try {
+    final lang = L10n.of(context);
+
+    // Parse the date string using Jiffy
+    final messageDate = Jiffy.parse(dateString).startOf(Unit.day);
+    final today = Jiffy.now().startOf(Unit.day);
+    final yesterday = today.subtract(days: 1);
+
+    if (messageDate.isSame(today, unit: Unit.day)) {
+      return lang.today;
+    } else if (messageDate.isSame(yesterday, unit: Unit.day)) {
+      return lang.yesterday;
+    } else {
+      // Check if it's the same year
+      if (messageDate.isSame(today, unit: Unit.year)) {
+        // Same year: show day name, date and month (e.g., "Fri, May 17")
+        return messageDate.format(pattern: 'EEE, d MMM');
+      } else {
+        // Different year: show month, date and year (e.g., "May 17, 2025")
+        return messageDate.format(pattern: 'd MMM, y');
+      }
+    }
+  } catch (e) {
+    // If parsing fails, return the original string
+    return dateString;
+  }
+}
