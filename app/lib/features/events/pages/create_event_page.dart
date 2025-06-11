@@ -566,8 +566,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
-      final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('yes');
+      final rsvpDraft = rsvpManager.rsvpDraft().status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
 

@@ -294,7 +294,7 @@ async fn event_rsvp() -> Result<()> {
     {
         let notification_ev = rsvp_manager
             .rsvp_draft()?
-            .status("yes".to_owned())
+            .status("yes".to_owned())?
             .send()
             .await?;
 
@@ -324,7 +324,7 @@ async fn event_rsvp() -> Result<()> {
     {
         let notification_ev = rsvp_manager
             .rsvp_draft()?
-            .status("no".to_owned())
+            .status("no".to_owned())?
             .send()
             .await?;
 
@@ -354,7 +354,7 @@ async fn event_rsvp() -> Result<()> {
     {
         let notification_ev = rsvp_manager
             .rsvp_draft()?
-            .status("maybe".to_owned())
+            .status("maybe".to_owned())?
             .send()
             .await?;
 

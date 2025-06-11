@@ -210,13 +210,10 @@ pub struct RsvpDraft {
 }
 
 impl RsvpDraft {
-    pub fn status(&mut self, status: String) -> &mut Self {
-        if let Ok(s) = RsvpStatus::from_str(&status) {
-            self.inner.status(s);
-        } else {
-            error!("Wrong status about RSVP");
-        }
-        self
+    pub fn status(&mut self, status: String) -> Result<&mut Self> {
+        let s = RsvpStatus::from_str(&status)?;
+        self.inner.status(s);
+        Ok(self)
     }
 
     pub async fn send(&self) -> Result<OwnedEventId> {

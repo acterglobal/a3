@@ -890,7 +890,7 @@ object RsvpManager {
 
 object RsvpDraft {
     /// set status of this RSVP
-    fn status(status: string);
+    fn status(status: string) -> Result<RsvpDraft>;
 
     /// create this RSVP
     fn send() -> Future<Result<EventId>>;

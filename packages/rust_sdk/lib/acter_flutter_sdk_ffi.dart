@@ -21250,12 +21250,18 @@ class Api {
       _rsvpManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _rsvpDraftStatusPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _RsvpDraftStatusReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__RsvpDraft_status");
 
   late final _rsvpDraftStatus =
-      _rsvpDraftStatusPtr.asFunction<void Function(int, int, int, int)>();
+      _rsvpDraftStatusPtr
+          .asFunction<_RsvpDraftStatusReturn Function(int, int, int, int)>();
   late final _rsvpDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__RsvpDraft_send",
@@ -44987,7 +44993,7 @@ class RsvpDraft {
   RsvpDraft._(this._api, this._box);
 
   /// set status of this RSVP
-  void status(String status) {
+  RsvpDraft status(String status) {
     final tmp1 = status;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -45002,8 +45008,31 @@ class RsvpDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._rsvpDraftStatus(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._rsvpDraftStatus(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_RsvpDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = RsvpDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// create this RSVP
@@ -71647,6 +71676,19 @@ class _EventLocationInfoNotesReturn extends ffi.Struct {
 }
 
 class _RsvpManagerRsvpDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _RsvpDraftStatusReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
