@@ -519,44 +519,29 @@ class _TaskItemBody extends ConsumerWidget {
     final lang = L10n.of(context);
     final textTheme = Theme.of(context).textTheme;
     final hasInvitations = ref.watch(taskHasInvitationsProvider(task)).valueOrNull ?? false;
-    final invitedUsersAsync = ref.watch(taskInvitationsProvider(task));
-    return ListTile(
+    final invitedUsersAsync = ref.watch(taskInvitationsProvider(task)).valueOrNull ?? [];
+    return hasInvitations ? ListTile(
       onTap: () => assigneesAction(context, ref),
       dense: true,
       leading: const Padding(
         padding: EdgeInsets.only(left: 15),
         child: Icon(Icons.send),
       ),
-      title: hasInvitations
-          ? Text(lang.invited, style: textTheme.bodySmall)
-          : Padding(
-              padding: const EdgeInsets.only(top: 5),
-              child: Text(
-                lang.noOneIsInvited,
-                style: textTheme.bodyMedium?.copyWith(
-                  decoration: TextDecoration.underline,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-      subtitle: invitedUsersAsync.valueOrNull != null
-          ? Padding(
+      title: Text(lang.invited, style: textTheme.bodySmall),
+      subtitle: Padding(
               padding: const EdgeInsets.only(top: 5),
               child: buildInvitedUsers(
                 context,
-                invitedUsersAsync.valueOrNull!,
+                invitedUsersAsync,
                 task.roomIdStr(),
                 ref,
               ),
-            )
-          : const SizedBox.shrink(),
-      trailing: hasInvitations
-          ? InkWell(
-              onTap: () => assigneesAction(context, ref),
-              child: const Icon(Icons.more_vert),
-            )
-          : null,
-    );
+            ),
+      trailing: InkWell(
+        onTap: () => assigneesAction(context, ref),
+        child: const Icon(Icons.more_vert),
+      ),
+    ) : const SizedBox.shrink();
   }
 
   // Build assignees for task item detail page
