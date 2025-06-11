@@ -521,11 +521,10 @@ class _TaskItemBody extends ConsumerWidget {
     final hasInvitations = ref.watch(taskHasInvitationsProvider(task)).valueOrNull ?? false;
     final invitedUsersAsync = ref.watch(taskInvitationsProvider(task)).valueOrNull ?? [];
     return hasInvitations ? ListTile(
-      onTap: () => assigneesAction(context, ref),
       dense: true,
       leading: const Padding(
         padding: EdgeInsets.only(left: 15),
-        child: Icon(Icons.send),
+        child: Icon(PhosphorIconsLight.userCheck),
       ),
       title: Text(lang.invited, style: textTheme.bodySmall),
       subtitle: Padding(
@@ -538,8 +537,14 @@ class _TaskItemBody extends ConsumerWidget {
               ),
             ),
       trailing: InkWell(
-        onTap: () => assigneesAction(context, ref),
-        child: const Icon(Icons.more_vert),
+        onTap: () => context.pushNamed(
+                      Routes.inviteIndividual.name,
+                      queryParameters: {
+                        'roomId': task.roomIdStr(),
+                      },
+                      extra: task,
+                    ),
+        child: const Icon(Icons.add),
       ),
     ) : const SizedBox.shrink();
   }
@@ -593,16 +598,8 @@ class _TaskItemBody extends ConsumerWidget {
         final displayName = ref.watch(invitedUserDisplayNameProvider(userId));
         return UserChip(
           key: ValueKey(userId),
-          roomId: roomId,
           memberId: displayName,
           style: Theme.of(context).textTheme.bodyLarge,
-          onTap: (context, {required bool isMe, required VoidCallback defaultOnTap}) {
-            if (isMe) {
-              onUnAssign(context, ref);
-            } else {
-              defaultOnTap();
-            }
-          },
           trailingBuilder: (context, {bool isMe = false, double fontSize = 12}) {
             return isMe ? Icon(PhosphorIconsLight.x, size: fontSize) : null;
           },
