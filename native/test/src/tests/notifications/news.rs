@@ -34,11 +34,11 @@ async fn news_notification() -> Result<()> {
     .await?;
 
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    let event_id = {
-        let mut draft = main_space.news_draft()?;
-        draft.add_slide(Box::new(text_draft.into())).await?;
-        draft.send().await?
-    };
+    let event_id = main_space
+        .news_draft()?
+        .add_slide(Box::new(text_draft.into()))
+        .send()
+        .await?;
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second

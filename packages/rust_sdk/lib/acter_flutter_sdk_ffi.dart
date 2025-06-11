@@ -2571,48 +2571,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __newsEntryDraftAddSlideFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsEntryDraftAddSlideFuturePoll(tmp1, tmp3, tmp5);
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(
-        tmp10_0.asTypedList(tmp11),
-        allowMalformed: true,
-      );
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   EventId? __newsEntryDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -2658,7 +2616,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __newsEntryUpdateBuilderAddSlideFuturePoll(
+  NewsEntryUpdateBuilder? __newsEntryUpdateBuilderAddSlideFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2696,7 +2654,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = NewsEntryUpdateBuilder._(this, tmp13_1);
     return tmp7;
   }
 
@@ -2964,44 +2925,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __storyDraftAddSlideFuturePoll(int boxed, int postCobject, int port) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _storyDraftAddSlideFuturePoll(tmp1, tmp3, tmp5);
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(
-        tmp10_0.asTypedList(tmp11),
-        allowMalformed: true,
-      );
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   EventId? __storyDraftSendFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -3043,7 +2966,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __storyUpdateBuilderAddSlideFuturePoll(
+  StoryUpdateBuilder? __storyUpdateBuilderAddSlideFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3081,7 +3004,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_StoryUpdateBuilder");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = StoryUpdateBuilder._(this, tmp13_1);
     return tmp7;
   }
 
@@ -19770,6 +19696,13 @@ class Api {
 
   late final _newsEntryOriginServerTs =
       _newsEntryOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _newsEntryUpdateBuilderPtr = _lookup<
+    ffi.NativeFunction<_NewsEntryUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__NewsEntry_update_builder");
+
+  late final _newsEntryUpdateBuilder =
+      _newsEntryUpdateBuilderPtr
+          .asFunction<_NewsEntryUpdateBuilderReturn Function(int)>();
   late final _newsEntryCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntry_can_redact",
@@ -19813,11 +19746,16 @@ class Api {
   late final _newsEntryDraftAddSlide =
       _newsEntryDraftAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryDraftSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _NewsEntryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
+    >
   >("__NewsEntryDraft_swap_slides");
 
   late final _newsEntryDraftSwapSlides =
-      _newsEntryDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
+      _newsEntryDraftSwapSlidesPtr
+          .asFunction<
+            _NewsEntryDraftSwapSlidesReturn Function(int, int, int)
+          >();
   late final _newsEntryDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_slides",
@@ -19826,12 +19764,12 @@ class Api {
   late final _newsEntryDraftSlides =
       _newsEntryDraftSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_unset_slides",
       );
 
   late final _newsEntryDraftUnsetSlides =
-      _newsEntryDraftUnsetSlidesPtr.asFunction<void Function(int)>();
+      _newsEntryDraftUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_send",
@@ -19847,27 +19785,35 @@ class Api {
   late final _newsEntryUpdateBuilderAddSlide =
       _newsEntryUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_unset_slides",
       );
 
   late final _newsEntryUpdateBuilderUnsetSlides =
-      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
+      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_unset_slides_update",
       );
 
   late final _newsEntryUpdateBuilderUnsetSlidesUpdate =
       _newsEntryUpdateBuilderUnsetSlidesUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _newsEntryUpdateBuilderSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _NewsEntryUpdateBuilderSwapSlidesReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
   >("__NewsEntryUpdateBuilder_swap_slides");
 
   late final _newsEntryUpdateBuilderSwapSlides =
       _newsEntryUpdateBuilderSwapSlidesPtr
-          .asFunction<void Function(int, int, int)>();
+          .asFunction<
+            _NewsEntryUpdateBuilderSwapSlidesReturn Function(int, int, int)
+          >();
   late final _newsEntryUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_send",
@@ -19981,6 +19927,13 @@ class Api {
 
   late final _storyOriginServerTs =
       _storyOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _storyUpdateBuilderPtr = _lookup<
+    ffi.NativeFunction<_StoryUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__Story_update_builder");
+
+  late final _storyUpdateBuilder =
+      _storyUpdateBuilderPtr
+          .asFunction<_StoryUpdateBuilderReturn Function(int)>();
   late final _storyCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Story_can_redact",
@@ -20016,11 +19969,14 @@ class Api {
   late final _storyDraftAddSlide =
       _storyDraftAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyDraftSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _StoryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
+    >
   >("__StoryDraft_swap_slides");
 
   late final _storyDraftSwapSlides =
-      _storyDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
+      _storyDraftSwapSlidesPtr
+          .asFunction<_StoryDraftSwapSlidesReturn Function(int, int, int)>();
   late final _storyDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_slides",
@@ -20029,12 +19985,12 @@ class Api {
   late final _storyDraftSlides =
       _storyDraftSlidesPtr.asFunction<int Function(int)>();
   late final _storyDraftUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_unset_slides",
       );
 
   late final _storyDraftUnsetSlides =
-      _storyDraftUnsetSlidesPtr.asFunction<void Function(int)>();
+      _storyDraftUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _storyDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_send",
@@ -20050,26 +20006,34 @@ class Api {
   late final _storyUpdateBuilderAddSlide =
       _storyUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyUpdateBuilderUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_unset_slides",
       );
 
   late final _storyUpdateBuilderUnsetSlides =
-      _storyUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
+      _storyUpdateBuilderUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _storyUpdateBuilderUnsetSlidesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_unset_slides_update",
       );
 
   late final _storyUpdateBuilderUnsetSlidesUpdate =
-      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<void Function(int)>();
+      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<int Function(int)>();
   late final _storyUpdateBuilderSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _StoryUpdateBuilderSwapSlidesReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
   >("__StoryUpdateBuilder_swap_slides");
 
   late final _storyUpdateBuilderSwapSlides =
       _storyUpdateBuilderSwapSlidesPtr
-          .asFunction<void Function(int, int, int)>();
+          .asFunction<
+            _StoryUpdateBuilderSwapSlidesReturn Function(int, int, int)
+          >();
   late final _storyUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_send",
@@ -30954,21 +30918,6 @@ class Api {
           .asFunction<
             _NewsEntryRefDetailsFuturePollReturn Function(int, int, int)
           >();
-  late final _newsEntryDraftAddSlideFuturePollPtr = _lookup<
-    ffi.NativeFunction<
-      _NewsEntryDraftAddSlideFuturePollReturn Function(
-        ffi.IntPtr,
-        ffi.IntPtr,
-        ffi.Int64,
-      )
-    >
-  >("__NewsEntryDraft_add_slide_future_poll");
-
-  late final _newsEntryDraftAddSlideFuturePoll =
-      _newsEntryDraftAddSlideFuturePollPtr
-          .asFunction<
-            _NewsEntryDraftAddSlideFuturePollReturn Function(int, int, int)
-          >();
   late final _newsEntryDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _NewsEntryDraftSendFuturePollReturn Function(
@@ -31087,21 +31036,6 @@ class Api {
   late final _storyCommentsFuturePoll =
       _storyCommentsFuturePollPtr
           .asFunction<_StoryCommentsFuturePollReturn Function(int, int, int)>();
-  late final _storyDraftAddSlideFuturePollPtr = _lookup<
-    ffi.NativeFunction<
-      _StoryDraftAddSlideFuturePollReturn Function(
-        ffi.IntPtr,
-        ffi.IntPtr,
-        ffi.Int64,
-      )
-    >
-  >("__StoryDraft_add_slide_future_poll");
-
-  late final _storyDraftAddSlideFuturePoll =
-      _storyDraftAddSlideFuturePollPtr
-          .asFunction<
-            _StoryDraftAddSlideFuturePollReturn Function(int, int, int)
-          >();
   late final _storyDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _StoryDraftSendFuturePollReturn Function(
@@ -40962,6 +40896,37 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// make a builder for updating the news entry
+  NewsEntryUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryUpdateBuilder(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// whether or not this user can redact this item
   Future<bool> canRedact() {
     var tmp0 = 0;
@@ -41040,7 +41005,7 @@ class NewsEntryDraft {
   NewsEntryDraft._(this._api, this._box);
 
   /// create news slide draft
-  Future<bool> addSlide(NewsSlideDraft baseDraft) {
+  NewsEntryDraft addSlide(NewsSlideDraft baseDraft) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41049,14 +41014,14 @@ class NewsEntryDraft {
     final tmp3 = _api._newsEntryDraftAddSlide(tmp0, tmp2);
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__NewsEntryDraft_add_slide_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_NewsEntryDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__newsEntryDraftAddSlideFuturePoll);
+    final tmp4 = NewsEntryDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// change position of slides draft of this news entry
-  void swapSlides(int from, int to) {
+  NewsEntryDraft swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41065,8 +41030,31 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._newsEntryDraftSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._newsEntryDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_NewsEntryDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = NewsEntryDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// get a copy of the news slide set for this news entry draft
@@ -41084,11 +41072,16 @@ class NewsEntryDraft {
   }
 
   /// clear slides
-  void unsetSlides() {
+  NewsEntryDraft unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._newsEntryDraftUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._newsEntryDraftUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsEntryDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// create this news entry
@@ -41117,7 +41110,7 @@ class NewsEntryUpdateBuilder {
   NewsEntryUpdateBuilder._(this._api, this._box);
 
   /// set the slides for this news entry
-  Future<bool> addSlide(NewsSlideDraft draft) {
+  Future<NewsEntryUpdateBuilder> addSlide(NewsSlideDraft draft) {
     final tmp1 = draft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41140,22 +41133,32 @@ class NewsEntryUpdateBuilder {
   }
 
   /// reset slides for this news entry
-  void unsetSlides() {
+  NewsEntryUpdateBuilder unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._newsEntryUpdateBuilderUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._newsEntryUpdateBuilderUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetSlidesUpdate() {
+  NewsEntryUpdateBuilder unsetSlidesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._newsEntryUpdateBuilderUnsetSlidesUpdate(tmp0);
-    return;
+    final tmp1 = _api._newsEntryUpdateBuilderUnsetSlidesUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set position of slides for this news entry
-  void swapSlides(int from, int to) {
+  NewsEntryUpdateBuilder swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41164,8 +41167,31 @@ class NewsEntryUpdateBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._newsEntryUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._newsEntryUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = NewsEntryUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// update this news entry
@@ -41474,6 +41500,37 @@ class Story {
     return tmp2;
   }
 
+  /// make a builder for updating the story
+  StoryUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyUpdateBuilder(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_StoryUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// whether or not this user can redact this item
   Future<bool> canRedact() {
     var tmp0 = 0;
@@ -41539,7 +41596,7 @@ class StoryDraft {
   StoryDraft._(this._api, this._box);
 
   /// create news slide draft
-  Future<bool> addSlide(StorySlideDraft baseDraft) {
+  StoryDraft addSlide(StorySlideDraft baseDraft) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41548,14 +41605,14 @@ class StoryDraft {
     final tmp3 = _api._storyDraftAddSlide(tmp0, tmp2);
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__StoryDraft_add_slide_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_StoryDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__storyDraftAddSlideFuturePoll);
+    final tmp4 = StoryDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// change position of slides draft of this news entry
-  void swapSlides(int from, int to) {
+  StoryDraft swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41564,8 +41621,31 @@ class StoryDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._storyDraftSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._storyDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_StoryDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = StoryDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// get a copy of the news slide set for this news entry draft
@@ -41583,11 +41663,16 @@ class StoryDraft {
   }
 
   /// clear slides
-  void unsetSlides() {
+  StoryDraft unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._storyDraftUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._storyDraftUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoryDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// create this news entry
@@ -41616,7 +41701,7 @@ class StoryUpdateBuilder {
   StoryUpdateBuilder._(this._api, this._box);
 
   /// set the slides for this news entry
-  Future<bool> addSlide(StorySlideDraft draft) {
+  Future<StoryUpdateBuilder> addSlide(StorySlideDraft draft) {
     final tmp1 = draft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41639,22 +41724,32 @@ class StoryUpdateBuilder {
   }
 
   /// reset slides for this news entry
-  void unsetSlides() {
+  StoryUpdateBuilder unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._storyUpdateBuilderUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._storyUpdateBuilderUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetSlidesUpdate() {
+  StoryUpdateBuilder unsetSlidesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._storyUpdateBuilderUnsetSlidesUpdate(tmp0);
-    return;
+    final tmp1 = _api._storyUpdateBuilderUnsetSlidesUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set position of slides for this news entry
-  void swapSlides(int from, int to) {
+  StoryUpdateBuilder swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41663,8 +41758,31 @@ class StoryUpdateBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._storyUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._storyUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_StoryUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = StoryUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// update this news entry
@@ -70868,6 +70986,45 @@ class _NewsEntryGetSlideReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _NewsEntryUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _NewsEntryDraftSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _NewsEntryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
 class _StorySlideTypeStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -70898,6 +71055,45 @@ class _StoryGetSlideReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _StoryUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _StoryDraftSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _StoryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _ActerPinTitleReturn extends ffi.Struct {
@@ -75220,21 +75416,6 @@ class _NewsEntryRefDetailsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _NewsEntryDraftAddSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _NewsEntryDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -75261,7 +75442,7 @@ class _NewsEntryUpdateBuilderAddSlideFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.IntPtr()
   external int arg5;
 }
 
@@ -75355,21 +75536,6 @@ class _StoryCommentsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _StoryDraftAddSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _StoryDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -75396,7 +75562,7 @@ class _StoryUpdateBuilderAddSlideFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.IntPtr()
   external int arg5;
 }
 

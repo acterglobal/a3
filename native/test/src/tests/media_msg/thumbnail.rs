@@ -237,7 +237,6 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
     tmp_png.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.news_draft()?;
     let thumb_mimetype = "image/png";
     let image_draft = user
         .image_draft(
@@ -246,8 +245,11 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
-    draft.add_slide(Box::new(image_draft.into())).await?;
-    draft.send().await?;
+    space
+        .news_draft()?
+        .add_slide(Box::new(image_draft.into()))
+        .send()
+        .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     Retry::spawn(retry_strategy, || async {
@@ -309,7 +311,6 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
     tmp_png.as_file_mut().write_all(bytes)?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.news_draft()?;
     let thumb_mimetype = "image/png";
     let video_draft = user
         .video_draft(
@@ -318,8 +319,11 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
         .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
-    draft.add_slide(Box::new(video_draft.into())).await?;
-    draft.send().await?;
+    space
+        .news_draft()?
+        .add_slide(Box::new(video_draft.into()))
+        .send()
+        .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
     Retry::spawn(retry_strategy, || async {

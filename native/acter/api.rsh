@@ -406,6 +406,9 @@ object NewsEntry {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the news entry
+    fn update_builder() -> Result<NewsEntryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -424,16 +427,16 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft) -> NewsEntryDraft;
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<NewsEntryDraft>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
 
     /// clear slides
-    fn unset_slides();
+    fn unset_slides() -> NewsEntryDraft;
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
@@ -441,14 +444,14 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: NewsSlideDraft) -> Future<Result<NewsEntryUpdateBuilder>>;
 
     /// reset slides for this news entry
-    fn unset_slides();
-    fn unset_slides_update();
+    fn unset_slides() -> NewsEntryUpdateBuilder;
+    fn unset_slides_update() -> NewsEntryUpdateBuilder;
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<NewsEntryUpdateBuilder>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -520,6 +523,9 @@ object Story {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the story
+    fn update_builder() -> Result<StoryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -535,16 +541,16 @@ object Story {
 
 object StoryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: StorySlideDraft) -> StoryDraft;
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<StoryDraft>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<StorySlideDraft>;
 
     /// clear slides
-    fn unset_slides();
+    fn unset_slides() -> StoryDraft;
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
@@ -552,14 +558,14 @@ object StoryDraft {
 
 object StoryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: StorySlideDraft) -> Future<Result<StoryUpdateBuilder>>;
 
     /// reset slides for this news entry
-    fn unset_slides();
-    fn unset_slides_update();
+    fn unset_slides() -> StoryUpdateBuilder;
+    fn unset_slides_update() -> StoryUpdateBuilder;
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<StoryUpdateBuilder>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
