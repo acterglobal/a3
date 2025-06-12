@@ -24430,16 +24430,16 @@ class Api {
           .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _commentDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CommentDraft_content_text");
 
   late final _commentDraftContentText =
       _commentDraftContentTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _commentDraftContentFormattedPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -24453,7 +24453,7 @@ class Api {
 
   late final _commentDraftContentFormatted =
       _commentDraftContentFormattedPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _commentDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CommentDraft_send",
@@ -53716,7 +53716,7 @@ class CommentDraft {
   CommentDraft._(this._api, this._box);
 
   /// set the content of the draft to body
-  void contentText(String body) {
+  CommentDraft contentText(String body) {
     final tmp1 = body;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -53731,12 +53731,17 @@ class CommentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._commentDraftContentText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._commentDraftContentText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CommentDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CommentDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content to a formatted body of html_body, where body is the tag-stripped version
-  void contentFormatted(String body, String htmlBody) {
+  CommentDraft contentFormatted(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -53763,7 +53768,7 @@ class CommentDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._commentDraftContentFormatted(
+    final tmp9 = _api._commentDraftContentFormatted(
       tmp0,
       tmp2,
       tmp3,
@@ -53772,7 +53777,12 @@ class CommentDraft {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CommentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = CommentDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// fire this comment over - the event_id is the confirmation from the server.

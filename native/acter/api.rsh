@@ -1960,10 +1960,10 @@ object Convo {
 
 object CommentDraft {
     /// set the content of the draft to body
-    fn content_text(body: string);
+    fn content_text(body: string) -> CommentDraft;
 
     /// set the content to a formatted body of html_body, where body is the tag-stripped version
-    fn content_formatted(body: string, html_body: string);
+    fn content_formatted(body: string, html_body: string) -> CommentDraft;
 
     /// fire this comment over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
