@@ -1,1 +1,0 @@
-- [Improvement] : Now you can see day label indicator in chat for better sepratation of different messages by day.
