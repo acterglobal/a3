@@ -79,5 +79,5 @@ class MockRsvpDraft extends Mock implements RsvpDraft {
   Future<EventId> send() async => a3sdk.MockEventId(id: 'test-rsvp-id');
 
   @override
-  void status(String status) {}
+  RsvpDraft status(String status) => MockRsvpDraft();
 }
