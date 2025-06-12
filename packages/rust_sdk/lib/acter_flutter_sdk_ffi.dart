@@ -23588,15 +23588,13 @@ class Api {
   late final _msgDraftAddUrlPreview =
       _msgDraftAddUrlPreviewPtr
           .asFunction<_MsgDraftAddUrlPreviewReturn Function(int, int)>();
-  late final _msgDraftAddRoomMentionPtr = _lookup<
-    ffi.NativeFunction<
-      _MsgDraftAddRoomMentionReturn Function(ffi.IntPtr, ffi.Uint8)
-    >
-  >("__MsgDraft_add_room_mention");
+  late final _msgDraftAddRoomMentionPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__MsgDraft_add_room_mention",
+      );
 
   late final _msgDraftAddRoomMention =
-      _msgDraftAddRoomMentionPtr
-          .asFunction<_MsgDraftAddRoomMentionReturn Function(int, int)>();
+      _msgDraftAddRoomMentionPtr.asFunction<int Function(int, int)>();
   late final _msgDraftMimetypePtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -51467,29 +51465,11 @@ class MsgDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
     final tmp3 = _api._msgDraftAddRoomMention(tmp0, tmp2);
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    final tmp9 = tmp3.arg4;
-    if (tmp5 == 0) {
-      debugAllocation("handle error", tmp6, tmp7);
-      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      final tmp5_0 = utf8.decode(
-        tmp6_0.asTypedList(tmp7),
-        allowMalformed: true,
-      );
-      if (tmp7 > 0) {
-        final ffi.Pointer<ffi.Void> tmp6_0;
-        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-        _api.__deallocate(tmp6_0, tmp8, 1);
-      }
-      throw tmp5_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp4 = MsgDraft._(_api, tmp9_1);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
@@ -73286,19 +73266,6 @@ class _MsgDraftAddRefDetailsReturn extends ffi.Struct {
 }
 
 class _MsgDraftAddUrlPreviewReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
-}
-
-class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()

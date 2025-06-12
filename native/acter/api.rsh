@@ -1644,7 +1644,7 @@ object MsgDraft {
     fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
+    fn add_room_mention(mention: bool) -> MsgDraft;
 
     /// available for only image/audio/video/file
     fn mimetype(value: string) -> MsgDraft;
