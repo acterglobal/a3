@@ -23,8 +23,7 @@ Future<void> updatePinTitle(
   final lang = L10n.of(context);
   try {
     EasyLoading.show(status: lang.updateName);
-    final updateBuilder = pin.updateBuilder();
-    updateBuilder.title(newTitle);
+    final updateBuilder = pin.updateBuilder().title(newTitle);
     await updateBuilder.send();
 
     await autosubscribe(ref: ref, objectId: pin.eventIdStr(), lang: lang);

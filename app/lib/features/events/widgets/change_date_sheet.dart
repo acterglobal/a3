@@ -338,9 +338,10 @@ class _ChangeDateSheetState extends ConsumerState<ChangeDateSheet> {
       final utcEndDateTime = endDateTime.toUtc().toIso8601String();
 
       // Updating calender event
-      final updateBuilder = calendarEvent.updateBuilder();
-      updateBuilder.utcStartFromRfc3339(utcStartDateTime);
-      updateBuilder.utcEndFromRfc3339(utcEndDateTime);
+      final updateBuilder = calendarEvent
+          .updateBuilder()
+          .utcStartFromRfc3339(utcStartDateTime)
+          .utcEndFromRfc3339(utcEndDateTime);
       final eventId = await updateBuilder.send();
       _log.info('Calendar Event updated $eventId');
 
