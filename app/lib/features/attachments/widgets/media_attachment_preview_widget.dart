@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/attachments/types.dart';
+import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -62,7 +63,7 @@ class MediaAttachmentPreviewWidget extends StatelessWidget {
       children: [
         Icon(Atlas.warning, size: 60),
         const SizedBox(height: 30),
-        Text('Unsupported file type'),
+        Text(L10n.of(context).unsupportedFile),
       ],
     );
   }

@@ -3085,6 +3085,7 @@
   "createJitsiCallLink": "Create automatic Jitsi Call Link",
   "@createJitsiCallLink": {},
   "jitsiMeeting": "Jitsi Meeting",
+  "unsupportedFile": "Unsupported File Type",
   "@jitsiMeeting": {},
   "updatingLocations": "Updating locations...",
   "@updatingLocations": {}
