@@ -35,7 +35,9 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.title('My new Task'),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -76,8 +78,10 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title(any())).thenAnswer((_) => true);
-      when(() => mockTaskDraft.descriptionText(any())).thenAnswer((_) => true);
+      when(() => mockTaskDraft.title(any())).thenAnswer((_) => mockTaskDraft);
+      when(
+        () => mockTaskDraft.descriptionText(any()),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -141,8 +145,10 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title(any())).thenAnswer((_) => true);
-      when(() => mockTaskDraft.descriptionText(any())).thenAnswer((_) => true);
+      when(() => mockTaskDraft.title(any())).thenAnswer((_) => mockTaskDraft);
+      when(
+        () => mockTaskDraft.descriptionText(any()),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -212,10 +218,12 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.title('My new Task'),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.dueDate(any(), any(), any()),
-      ).thenAnswer((_) => true);
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -297,10 +305,12 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.title('My new Task'),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.dueDate(any(), any(), any()),
-      ).thenAnswer((_) => true);
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -387,10 +397,12 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.title('My new Task'),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.dueDate(any(), any(), any()),
-      ).thenAnswer((_) => true);
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));
@@ -463,7 +475,9 @@ void main() {
       final mockTaskList = MockTaskList();
       final mockTaskDraft = MockTaskDraft();
       when(() => mockTaskList.taskBuilder()).thenAnswer((_) => mockTaskDraft);
-      when(() => mockTaskDraft.title('My new Task')).thenAnswer((_) => true);
+      when(
+        () => mockTaskDraft.title('My new Task'),
+      ).thenAnswer((_) => mockTaskDraft);
       when(
         () => mockTaskDraft.send(),
       ).thenAnswer((_) async => MockEventId(id: 'test'));

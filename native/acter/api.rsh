@@ -2230,35 +2230,35 @@ object Task {
 
 object TaskUpdateBuilder {
     /// set the title for this task
-    fn title(title: string);
-    fn unset_title_update();
+    fn title(title: string) -> TaskUpdateBuilder;
+    fn unset_title_update() -> TaskUpdateBuilder;
 
     /// set the description for this task list
-    fn description_text(text: string);
+    fn description_text(text: string) -> TaskUpdateBuilder;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskUpdateBuilder;
 
-    fn unset_description();
-    fn unset_description_update();
+    fn unset_description() -> TaskUpdateBuilder;
+    fn unset_description_update() -> TaskUpdateBuilder;
 
     /// set the sort order for this task list
-    fn sort_order(sort_order: u32);
-    fn unset_sort_order_update();
+    fn sort_order(sort_order: u32) -> TaskUpdateBuilder;
+    fn unset_sort_order_update() -> TaskUpdateBuilder;
 
     /// set the display of the update
-    fn display(display: Display);
-    fn unset_display();
-    fn unset_display_update();
+    fn display(display: Display) -> TaskUpdateBuilder;
+    fn unset_display() -> TaskUpdateBuilder;
+    fn unset_display_update() -> TaskUpdateBuilder;
 
     /// set the due day for this task
-    fn due_date(year: i32, month: u32, day: u32);
-    fn unset_due_date();
-    fn unset_due_date_update();
+    fn due_date(year: i32, month: u32, day: u32) -> TaskUpdateBuilder;
+    fn unset_due_date() -> TaskUpdateBuilder;
+    fn unset_due_date_update() -> TaskUpdateBuilder;
 
     /// set the due time of day in seconds since midnight UTC
-    fn utc_due_time_of_day(seconds: i32);
-    fn unset_utc_due_time_of_day();
-    fn unset_utc_due_time_of_day_update();
+    fn utc_due_time_of_day(seconds: i32) -> TaskUpdateBuilder;
+    fn unset_utc_due_time_of_day() -> TaskUpdateBuilder;
+    fn unset_utc_due_time_of_day_update() -> TaskUpdateBuilder;
 
     /// set the utc_start for this task list in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskUpdateBuilder>;
@@ -2266,30 +2266,30 @@ object TaskUpdateBuilder {
     fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskUpdateBuilder>;
     /// set the utc_start for this task list in custom format
     fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskUpdateBuilder>;
-    fn unset_utc_start();
-    fn unset_utc_start_update();
+    fn unset_utc_start() -> TaskUpdateBuilder;
+    fn unset_utc_start_update() -> TaskUpdateBuilder;
 
     /// set the sort order for this task list
-    fn progress_percent(progress_percent: u8);
-    fn unset_progress_percent();
-    fn unset_progress_percent_update();
+    fn progress_percent(progress_percent: u8) -> TaskUpdateBuilder;
+    fn unset_progress_percent() -> TaskUpdateBuilder;
+    fn unset_progress_percent_update() -> TaskUpdateBuilder;
 
     /// set the keywords for this task list
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
-    fn unset_keywords_update();
+    fn keywords(keywords: Vec<string>) -> TaskUpdateBuilder;
+    fn unset_keywords() -> TaskUpdateBuilder;
+    fn unset_keywords_update() -> TaskUpdateBuilder;
 
     /// set the categories for this task list
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
-    fn unset_categories_update();
+    fn categories(categories: Vec<string>) -> TaskUpdateBuilder;
+    fn unset_categories() -> TaskUpdateBuilder;
+    fn unset_categories_update() -> TaskUpdateBuilder;
 
     /// send this task list draft
     /// mark it done
-    fn mark_done();
+    fn mark_done() -> TaskUpdateBuilder;
 
     /// mark as not done
-    fn mark_undone();
+    fn mark_undone() -> TaskUpdateBuilder;
 
     /// update this task
     fn send() -> Future<Result<EventId>>;
@@ -2297,28 +2297,28 @@ object TaskUpdateBuilder {
 
 object TaskDraft {
     /// set the title for this task
-    fn title(title: string);
+    fn title(title: string) -> TaskDraft;
 
     /// set the description for this task
-    fn description_text(text: string);
+    fn description_text(text: string) -> TaskDraft;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskDraft;
 
-    fn unset_description();
+    fn unset_description() -> TaskDraft;
 
     /// set the sort order for this task
-    fn sort_order(sort_order: u32);
+    fn sort_order(sort_order: u32) -> TaskDraft;
 
     /// set the disply options for this task
-    fn display(display: Display);
-    fn unset_display();
+    fn display(display: Display) -> TaskDraft;
+    fn unset_display() -> TaskDraft;
 
     /// set the due day for this task
-    fn due_date(year: i32, month: u32, day: u32);
-    fn unset_due_date();
+    fn due_date(year: i32, month: u32, day: u32) -> TaskDraft;
+    fn unset_due_date() -> TaskDraft;
     /// set the due time of day in seconds since midnight UTC
-    fn utc_due_time_of_day(seconds: i32);
-    fn unset_utc_due_time_of_day();
+    fn utc_due_time_of_day(seconds: i32) -> TaskDraft;
+    fn unset_utc_due_time_of_day() -> TaskDraft;
 
     /// set the utc_start for this task in rfc3339 format
     fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskDraft>;
@@ -2326,19 +2326,19 @@ object TaskDraft {
     fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskDraft>;
     /// set the utc_start for this task in custom format
     fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskDraft>;
-    fn unset_utc_start();
+    fn unset_utc_start() -> TaskDraft;
 
     /// set the sort order for this task
-    fn progress_percent(progress_percent: u8);
-    fn unset_progress_percent();
+    fn progress_percent(progress_percent: u8) -> TaskDraft;
+    fn unset_progress_percent() -> TaskDraft;
 
     /// set the keywords for this task
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
+    fn keywords(keywords: Vec<string>) -> TaskDraft;
+    fn unset_keywords() -> TaskDraft;
 
     /// set the categories for this task
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
+    fn categories(categories: Vec<string>) -> TaskDraft;
+    fn unset_categories() -> TaskDraft;
 
     /// create this task
     fn send() -> Future<Result<EventId>>;
@@ -2411,30 +2411,30 @@ object TaskList {
 
 object TaskListDraft {
     /// set the name for this task list
-    fn name(name: string);
+    fn name(name: string) -> TaskListDraft;
 
     /// set the description for this task list
-    fn description_text(text: string);
-    fn description_markdown(text: string);
+    fn description_text(text: string) -> TaskListDraft;
+    fn description_markdown(text: string) -> TaskListDraft;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskListDraft;
 
-    fn unset_description();
+    fn unset_description() -> TaskListDraft;
 
     /// set the sort order for this task list
-    fn sort_order(sort_order: u32);
+    fn sort_order(sort_order: u32) -> TaskListDraft;
 
     /// set the display for this task list
-    fn display(display: Display);
-    fn unset_display();
+    fn display(display: Display) -> TaskListDraft;
+    fn unset_display() -> TaskListDraft;
 
     /// set the keywords for this task list
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
+    fn keywords(keywords: Vec<string>) -> TaskListDraft;
+    fn unset_keywords() -> TaskListDraft;
 
     /// set the categories for this task list
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
+    fn categories(categories: Vec<string>) -> TaskListDraft;
+    fn unset_categories() -> TaskListDraft;
 
     /// create this task list
     fn send() -> Future<Result<EventId>>;
@@ -2442,33 +2442,33 @@ object TaskListDraft {
 
 object TaskListUpdateBuilder {
     /// set the name for this task list
-    fn name(name: string);
+    fn name(name: string) -> TaskListUpdateBuilder;
 
     /// set the description for this task list
-    fn description_text(text: string);
+    fn description_text(text: string) -> TaskListUpdateBuilder;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskListUpdateBuilder;
 
-    fn unset_description();
-    fn unset_description_update();
+    fn unset_description() -> TaskListUpdateBuilder;
+    fn unset_description_update() -> TaskListUpdateBuilder;
 
     /// set the sort order for this task list
-    fn sort_order(sort_order: u32);
+    fn sort_order(sort_order: u32) -> TaskListUpdateBuilder;
 
     /// set the display for this task list
-    fn display(display: Display);
-    fn unset_display();
-    fn unset_display_update();
+    fn display(display: Display) -> TaskListUpdateBuilder;
+    fn unset_display() -> TaskListUpdateBuilder;
+    fn unset_display_update() -> TaskListUpdateBuilder;
 
     /// set the keywords for this task list
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
-    fn unset_keywords_update();
+    fn keywords(keywords: Vec<string>) -> TaskListUpdateBuilder;
+    fn unset_keywords() -> TaskListUpdateBuilder;
+    fn unset_keywords_update() -> TaskListUpdateBuilder;
 
     /// set the categories for this task list
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
-    fn unset_categories_update();
+    fn categories(categories: Vec<string>) -> TaskListUpdateBuilder;
+    fn unset_categories() -> TaskListUpdateBuilder;
+    fn unset_categories_update() -> TaskListUpdateBuilder;
 
     /// update this task
     fn send() -> Future<Result<EventId>>;
