@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acter/common/providers/space_providers.dart';
 import 'package:acter/features/home/providers/client_providers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Space, SpaceDiff;
@@ -184,4 +185,25 @@ class SpaceListNotifier extends Notifier<List<Space>> {
         break;
     }
   }
+}
+
+class SpaceBookmarkNotifier extends Notifier<Map<String, bool>> {
+  @override
+  Map<String, bool> build() {
+    final spaces = ref.watch(spacesProvider);
+    return Map.fromEntries(
+      spaces.map((space) => MapEntry(
+        space.getRoomIdStr(),
+        space.isBookmarked(),
+      )),
+    );
+  }
+
+  Future<void> setBookmark(String spaceId, bool isBookmarked) async {
+    final space = await ref.read(spaceProvider(spaceId).future);
+    await space.setBookmarked(isBookmarked);
+    state = {...state, spaceId: isBookmarked};
+  }
+
+  bool getBookmark(String spaceId) => state[spaceId] ?? false;
 }
