@@ -205,6 +205,4 @@ class SpaceBookmarkNotifier extends Notifier<Map<String, bool>> {
     await space.setBookmarked(newValue);
     state = {...state, spaceId: newValue};
   }
-
-  bool getBookmark(String spaceId) => state[spaceId] ?? false;
 }
