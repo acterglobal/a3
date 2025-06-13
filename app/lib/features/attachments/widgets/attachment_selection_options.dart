@@ -1,20 +1,15 @@
 import 'dart:io';
 
-import 'package:acter/common/extensions/acter_build_context.dart';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/themes/app_theme.dart';
-import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/models/attachment_model.dart';
 import 'package:acter/features/attachments/types.dart';
-import 'package:acter/features/attachments/widgets/attachment_container.dart';
 import 'package:acter/features/attachments/widgets/media_attachment_preview_widget.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as p;
 
 enum AttachmentOptions { link, camera, image, video, audio, file }
 
@@ -174,7 +169,12 @@ class AttachmentSelectionOptions extends StatelessWidget {
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
     Navigator.pop(context);
-    _showMediaAttachmentPreview(context, files, AttachmentType.video, onSelected);
+    _showMediaAttachmentPreview(
+      context,
+      files,
+      AttachmentType.video,
+      onSelected,
+    );
   }
 
   Future<void> onTapAudio(BuildContext context) async {
@@ -188,7 +188,12 @@ class AttachmentSelectionOptions extends StatelessWidget {
     }
     if (!context.mounted) return;
     Navigator.pop(context);
-    _attachmentConfirmation(context, files, AttachmentType.audio, onSelected);
+    _showMediaAttachmentPreview(
+      context,
+      files,
+      AttachmentType.audio,
+      onSelected,
+    );
   }
 
   Future<void> onTapFile(BuildContext context) async {
@@ -203,7 +208,12 @@ class AttachmentSelectionOptions extends StatelessWidget {
     }
     if (!context.mounted) return;
     Navigator.pop(context);
-    _attachmentConfirmation(context, files, AttachmentType.file, onSelected);
+    _showMediaAttachmentPreview(
+      context,
+      files,
+      AttachmentType.file,
+      onSelected,
+    );
   }
 
   void _showMediaAttachmentPreview(
@@ -222,122 +232,5 @@ class AttachmentSelectionOptions extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _attachmentConfirmation(
-    BuildContext context,
-    List<File> selectedFiles,
-    AttachmentType type,
-    OnAttachmentSelected handleFileUpload,
-  ) {
-    if (selectedFiles.isEmpty) return;
-    if (context.isLargeScreen) {
-      final size = MediaQuery.of(context).size;
-      showAdaptiveDialog(
-        context: context,
-        builder:
-            (context) => Dialog(
-              insetPadding: const EdgeInsets.all(8),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: size.width * 0.5,
-                  maxHeight: size.height * 0.5,
-                ),
-                child: _FileWidget(selectedFiles, type, handleFileUpload),
-              ),
-            ),
-      );
-    } else {
-      showModalBottomSheet(
-        context: context,
-        builder:
-            (context) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _FileWidget(selectedFiles, type, handleFileUpload),
-            ),
-      );
-    }
-  }
-}
-
-class _FileWidget extends StatelessWidget {
-  final List<File> selectedFiles;
-  final AttachmentType type;
-  final OnAttachmentSelected handleFileUpload;
-
-  const _FileWidget(this.selectedFiles, this.type, this.handleFileUpload);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('${L10n.of(context).attachments} (${selectedFiles.length})'),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 5.0,
-            runSpacing: 10.0,
-            children:
-                selectedFiles
-                    .map((file) => _filePreview(context, file))
-                    .toList(),
-          ),
-          _buildActionBtns(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionBtns(BuildContext context) {
-    final lang = L10n.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          OutlinedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text(lang.cancel),
-          ),
-          ActerPrimaryActionButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              handleFileUpload(selectedFiles, type);
-            },
-            child: Text(lang.send),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _filePreview(BuildContext context, File file) {
-    final fileName = p.basename(file.path);
-    if (type == AttachmentType.camera || type == AttachmentType.image) {
-      return AttachmentContainer(
-        name: fileName,
-        child: Image.file(file, height: 200, fit: BoxFit.cover),
-      );
-    } else if (type == AttachmentType.audio) {
-      return AttachmentContainer(
-        name: fileName,
-        child: const Center(child: Icon(Atlas.file_sound_thin)),
-      );
-    } else if (type == AttachmentType.video) {
-      return AttachmentContainer(
-        name: fileName,
-        child: const Center(child: Icon(Atlas.file_video_thin)),
-      );
-    } else {
-      return AttachmentContainer(
-        name: fileName,
-        child: const Center(child: Icon(Atlas.plus_file_thin)),
-      );
-    }
   }
 }

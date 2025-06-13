@@ -3,13 +3,16 @@ import 'dart:io';
 import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/attachments/types.dart';
+import 'package:acter/features/attachments/widgets/audio_attachment_preview.dart';
+import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
+import 'package:acter/features/attachments/widgets/multiple_media_preview_list.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 
-class MediaAttachmentPreviewWidget extends StatelessWidget {
+class MediaAttachmentPreviewWidget extends StatefulWidget {
   final List<File> selectedFiles;
   final AttachmentType type;
   final OnAttachmentSelected handleFileUpload;
@@ -22,22 +25,52 @@ class MediaAttachmentPreviewWidget extends StatelessWidget {
   });
 
   @override
+  State<MediaAttachmentPreviewWidget> createState() =>
+      _MediaAttachmentPreviewWidgetState();
+}
+
+class _MediaAttachmentPreviewWidgetState
+    extends State<MediaAttachmentPreviewWidget> {
+  int _currentIndex = 0;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  void _onPageChanged(int index) {
+    _pageController.jumpToPage(index);
+    setState(() => _currentIndex = index);
+  }
+
+  void _onDeleted(int index) {
+    if (widget.selectedFiles.length == 1) {
+      Navigator.pop(context);
+      return;
+    }
+    setState(() {
+      if (index == widget.selectedFiles.length - 1) {
+        _currentIndex = _currentIndex - 1;
+        _onPageChanged(_currentIndex);
+      }
+      widget.selectedFiles.removeAt(index);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final file = selectedFiles.first;
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.9),
       alignment: Alignment.center,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (type == AttachmentType.camera || type == AttachmentType.image)
-            _imagePreview(context, file)
-          else if (type == AttachmentType.video)
-            ActerVideoPlayer(videoFile: file)
-          else
-            _unSupportedPreview(context, file),
+          _buildPageView(context),
           _buildCloseBtn(context),
-          _buildNameAndSendBtn(context, file),
+          _multipleMediaPreviewList(context),
+          _buildNameAndSendBtn(context),
         ],
       ),
     );
@@ -55,6 +88,29 @@ class MediaAttachmentPreviewWidget extends StatelessWidget {
         icon: const Icon(Icons.close),
       ),
     );
+  }
+
+  Widget _buildPageView(BuildContext context) {
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: widget.selectedFiles.length,
+      itemBuilder: (context, index) {
+        final file = widget.selectedFiles[index];
+        return _buildMediaPreview(context, file);
+      },
+      onPageChanged: _onPageChanged,
+    );
+  }
+
+  Widget _buildMediaPreview(BuildContext context, File file) {
+    return switch (widget.type) {
+      AttachmentType.image => _imagePreview(context, file),
+      AttachmentType.camera => _imagePreview(context, file),
+      AttachmentType.video => ActerVideoPlayer(videoFile: file),
+      AttachmentType.audio => AudioAttachmentPreview(file: file),
+      AttachmentType.file => FileAttachmentPreview(file: file),
+      _ => _unSupportedPreview(context, file),
+    };
   }
 
   Widget _unSupportedPreview(BuildContext context, File file) {
@@ -76,7 +132,23 @@ class MediaAttachmentPreviewWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNameAndSendBtn(BuildContext context, File file) {
+  Widget _multipleMediaPreviewList(BuildContext context) {
+    return Positioned(
+      bottom: 100,
+      left: 0,
+      right: 0,
+      child: MultipleMediaPreviewList(
+        selectedFiles: widget.selectedFiles,
+        type: widget.type,
+        currentIndex: _currentIndex,
+        onPageChanged: _onPageChanged,
+        onDeleted: _onDeleted,
+      ),
+    );
+  }
+
+  Widget _buildNameAndSendBtn(BuildContext context) {
+    final file = widget.selectedFiles[_currentIndex];
     return Positioned(
       bottom: 20,
       left: 20,
@@ -96,7 +168,7 @@ class MediaAttachmentPreviewWidget extends StatelessWidget {
             iconSize: 20,
             onPressed: () {
               Navigator.pop(context);
-              handleFileUpload([file], type);
+              widget.handleFileUpload(widget.selectedFiles, widget.type);
             },
             icon: const Icon(Icons.send),
           ),
