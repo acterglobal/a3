@@ -25,12 +25,8 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    let convo = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    let convo = Retry::spawn(retry_strategy.clone(), || async {
+        user.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -42,7 +38,8 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_owned());
+    let body = "Hi, everyone";
+    let draft = user.text_plain_draft(body.to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -59,7 +56,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
+                        if let Some(event_id) = match_text_msg(value, body, false) {
                             sent_event_id = Some(event_id);
                             break;
                         }
@@ -70,7 +67,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
+                    if let Some(event_id) = match_text_msg(&value, body, false) {
                         sent_event_id = Some(event_id);
                     }
                 }
@@ -90,13 +87,8 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let sent_event_id = sent_event_id.context("Even after 30 seconds, text msg not received")?;
 
     // get the message
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_timeline = timeline.clone();
-    let target_id = sent_event_id.clone();
-    let _message = Retry::spawn(retry_strategy, move || {
-        let timeline = fetcher_timeline.clone();
-        let event_id = target_id.clone();
-        async move { timeline.get_message(event_id).await }
+    let _message = Retry::spawn(retry_strategy, || async {
+        timeline.get_message(sent_event_id.clone()).await
     })
     .await?;
 
@@ -123,12 +115,8 @@ async fn state_update_triggers_room_update() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    let convo = Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.convo(room_id.to_string()).await }
+    let convo = Retry::spawn(retry_strategy, || async {
+        user.convo(room_id.to_string()).await
     })
     .await?;
 
@@ -163,8 +151,8 @@ async fn joining_room_triggers_room_update() -> Result<()> {
 
     invite_user(&sisko, &room_id, &kyra.user_id()?).await?;
 
-    let invited = Retry::spawn(retry_strategy.clone(), || async {
-        let invited = kyra.invitations().room_invitations().await?;
+    let invited = Retry::spawn(retry_strategy, || async {
+        let invited = invites.room_invitations().await?;
         if invited.is_empty() {
             Err(anyhow::anyhow!("No pending invitations found"))
         } else {

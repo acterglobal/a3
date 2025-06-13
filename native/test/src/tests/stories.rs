@@ -75,15 +75,11 @@ async fn story_smoketest() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.latest_stories(10).await?.len() != 3 {
-                bail!("not all story found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.latest_stories(10).await?.len() != 3 {
+            bail!("not all story found");
         }
+        Ok(())
     })
     .await?;
 
@@ -95,10 +91,12 @@ async fn story_smoketest() -> Result<()> {
     let main_space = spaces.first().expect("main space should be available");
     assert_eq!(main_space.latest_stories(10).await?.len(), 3);
 
-    let mut draft = main_space.story_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
     print!("draft sent event id: {}", event_id);
 
     Ok(())
@@ -113,31 +111,23 @@ async fn story_plain_text_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
     let mut draft = space.story_draft()?;
-    let text_draft = user.text_plain_draft("This is a simple text".to_owned());
+    let body = "This is a simple text";
+    let text_draft = user.text_plain_draft(body.to_owned());
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -148,7 +138,7 @@ async fn story_plain_text_test() -> Result<()> {
     assert_eq!(text_slide.type_str(), "text");
     let msg_content = text_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "This is a simple text");
+    assert_eq!(msg_content.body(), body);
 
     // FIXME: notifications need to be checked against a secondary client..
     // // also check what the notification will be like
@@ -175,12 +165,8 @@ async fn story_slide_color_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.to_string();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -197,16 +183,11 @@ async fn story_slide_color_test() -> Result<()> {
     draft.add_slide(Box::new(slide_draft)).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -238,12 +219,8 @@ async fn story_markdown_text_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -253,16 +230,11 @@ async fn story_markdown_text_test() -> Result<()> {
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -303,12 +275,8 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -325,16 +293,11 @@ async fn story_jpg_image_with_text_test() -> Result<()> {
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -370,12 +333,8 @@ async fn story_png_image_with_text_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -392,16 +351,11 @@ async fn story_png_image_with_text_test() -> Result<()> {
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -422,12 +376,8 @@ async fn story_multiple_slide_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -445,7 +395,8 @@ async fn story_multiple_slide_test() -> Result<()> {
     let markdown_draft =
         user.text_markdown_draft("This update is ***reallly important***".to_owned());
 
-    let plain_draft = user.text_plain_draft("Hello Updates!".to_owned());
+    let plain_body = "Hello Updates!";
+    let plain_draft = user.text_plain_draft(plain_body.to_owned());
 
     let mut vid_file = NamedTempFile::new()?;
     vid_file
@@ -464,16 +415,11 @@ async fn story_multiple_slide_test() -> Result<()> {
     draft.add_slide(Box::new(video_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -497,7 +443,7 @@ async fn story_multiple_slide_test() -> Result<()> {
     assert_eq!(third_slide.type_str(), "text");
     let msg_content = third_slide.msg_content();
     assert!(msg_content.formatted_body().is_none());
-    assert_eq!(msg_content.body(), "Hello Updates!");
+    assert_eq!(msg_content.body(), plain_body);
 
     let fourth_slide = final_entry.get_slide(3).expect("We have video slide");
     assert_eq!(fourth_slide.type_str(), "video");
@@ -513,12 +459,8 @@ async fn story_like_reaction_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -535,16 +477,11 @@ async fn story_like_reaction_test() -> Result<()> {
     draft.add_slide(Box::new(image_draft.into())).await?;
     draft.send().await?;
 
-    let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy, move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -618,12 +555,8 @@ async fn story_read_receipt_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -633,15 +566,11 @@ async fn story_read_receipt_test() -> Result<()> {
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_stories(1).await?.len() != 1 {
-                bail!("story not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy.clone(), || async {
+        if space.latest_stories(1).await?.len() != 1 {
+            bail!("story not found");
         }
+        Ok(())
     })
     .await?;
 
@@ -656,26 +585,18 @@ async fn story_read_receipt_test() -> Result<()> {
         let uidx = idx as u32;
         let subscriber = main_receipts_manager.subscribe();
 
-        let fetcher_client = user.clone();
-        let target_id = room_id.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let client = fetcher_client.clone();
-            let room_id = target_id.clone();
-            async move { client.space(room_id.to_string()).await }
+        Retry::spawn(retry_strategy.clone(), || async {
+            user.space(room_id.to_string()).await
         })
         .await?;
 
         let space = user.space(room_id.to_string()).await?;
 
-        let space_cl = space.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let inner_space = space_cl.clone();
-            async move {
-                if inner_space.latest_stories(1).await?.len() != 1 {
-                    bail!("story not found");
-                }
-                Ok(())
+        Retry::spawn(retry_strategy.clone(), || async {
+            if space.latest_stories(1).await?.len() != 1 {
+                bail!("story not found");
             }
+            Ok(())
         })
         .await?;
 
@@ -694,16 +615,12 @@ async fn story_read_receipt_test() -> Result<()> {
         })
         .await?;
 
-        let receipts_manager = main_receipts_manager.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let receipts_manager = receipts_manager.clone();
-            async move {
-                let new_receipts_manager = receipts_manager.reload().await?;
-                if new_receipts_manager.read_count() != uidx + 1 {
-                    bail!("story read receipt after {uidx} not found");
-                }
-                Ok(())
+        Retry::spawn(retry_strategy.clone(), || async {
+            let new_receipts_manager = main_receipts_manager.reload().await?;
+            if new_receipts_manager.read_count() != uidx + 1 {
+                bail!("story read receipt after {uidx} not found");
             }
+            Ok(())
         })
         .await?;
     }
@@ -728,36 +645,33 @@ async fn multi_story_read_receipt_test() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
     let space = user.space(room_id.to_string()).await?;
-    let mut draft = space.story_draft()?;
+
     let text_draft = user.text_markdown_draft("## This is a simple text".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let first_story_id = draft.send().await?;
+    let first_story_id = {
+        let mut draft = space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
 
-    let mut draft = space.story_draft()?;
     let text_draft = user.text_markdown_draft("## This is a second story".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let second_story_id = draft.send().await?;
+    let second_story_id = {
+        let mut draft = space.story_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
 
-    let space_cl = space.clone();
-    let slides = Retry::spawn(retry_strategy.clone(), move || {
-        let inner_space = space_cl.clone();
-        async move {
-            let story_entries = inner_space.latest_stories(2).await?;
-            if story_entries.len() != 2 {
-                bail!("story not found");
-            }
-            Ok(story_entries)
+    let slides = Retry::spawn(retry_strategy.clone(), || async {
+        let story_entries = space.latest_stories(2).await?;
+        if story_entries.len() != 2 {
+            bail!("story not found");
         }
+        Ok(story_entries)
     })
     .await?;
     let mut slides_iter = slides.into_iter();
@@ -780,27 +694,19 @@ async fn multi_story_read_receipt_test() -> Result<()> {
         let newest_subscriber = newest_slide_rr_manager.subscribe();
         let older_subscriber = older_slide_rr_manager.subscribe();
 
-        let fetcher_client = user.clone();
-        let target_id = room_id.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let client = fetcher_client.clone();
-            let room_id = target_id.clone();
-            async move { client.space(room_id.to_string()).await }
+        Retry::spawn(retry_strategy.clone(), || async {
+            user.space(room_id.to_string()).await
         })
         .await?;
 
         let space = user.space(room_id.to_string()).await?;
 
-        let space_cl = space.clone();
-        let mut slides = Retry::spawn(retry_strategy.clone(), move || {
-            let inner_space = space_cl.clone();
-            async move {
-                let story_entries = inner_space.latest_stories(2).await?;
-                if story_entries.len() != 2 {
-                    bail!("story not found");
-                }
-                Ok(story_entries)
+        let mut slides = Retry::spawn(retry_strategy.clone(), || async {
+            let story_entries = space.latest_stories(2).await?;
+            if story_entries.len() != 2 {
+                bail!("story not found");
             }
+            Ok(story_entries)
         })
         .await?
         .into_iter();
@@ -822,17 +728,13 @@ async fn multi_story_read_receipt_test() -> Result<()> {
 
         assert!(older_subscriber.is_empty());
 
-        let receipts_manager = newest_slide_rr_manager.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let receipts_manager = receipts_manager.clone();
-            async move {
-                let new_receipts_manager = receipts_manager.reload().await?;
-                let read_count = new_receipts_manager.read_count();
-                if read_count != uidx + 1 {
-                    bail!("newer: story read receipt {read_count} wrong at {uidx} ");
-                }
-                Ok(())
+        Retry::spawn(retry_strategy.clone(), || async {
+            let new_receipts_manager = newest_slide_rr_manager.reload().await?;
+            let read_count = new_receipts_manager.read_count();
+            if read_count != uidx + 1 {
+                bail!("newer: story read receipt {read_count} wrong at {uidx} ");
             }
+            Ok(())
         })
         .await?;
 
@@ -853,17 +755,13 @@ async fn multi_story_read_receipt_test() -> Result<()> {
         })
         .await?;
 
-        let receipts_manager = older_slide_rr_manager.clone();
-        Retry::spawn(retry_strategy.clone(), move || {
-            let receipts_manager = receipts_manager.clone();
-            async move {
-                let new_receipts_manager = receipts_manager.reload().await?;
-                let read_count = new_receipts_manager.read_count();
-                if read_count != uidx + 1 {
-                    bail!("older: story read receipt {read_count} wrong at {uidx} ");
-                }
-                Ok(())
+        Retry::spawn(retry_strategy.clone(), || async {
+            let new_receipts_manager = older_slide_rr_manager.reload().await?;
+            let read_count = new_receipts_manager.read_count();
+            if read_count != uidx + 1 {
+                bail!("older: story read receipt {read_count} wrong at {uidx} ");
             }
+            Ok(())
         })
         .await?;
     }

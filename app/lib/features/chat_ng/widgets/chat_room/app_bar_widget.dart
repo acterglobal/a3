@@ -3,13 +3,14 @@ import 'package:acter/features/chat/providers/chat_providers.dart';
 import 'package:acter/features/chat/widgets/room_avatar.dart';
 import 'package:acter/features/chat_ng/widgets/chat_item/display_name_widget.dart';
 import 'package:acter/l10n/generated/l10n.dart';
+import 'package:acter/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'dart:ui';
 
 final _log = Logger('a3::chat_ng::room::app_bar_widget');
 
@@ -29,30 +30,14 @@ class ChatRoomAppBarWidget extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ClipRect(
-      child: Stack(
+    return AppBar(
+      title: Row(
         children: [
-          // Blur effect
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.5), // Optional overlay
-            ),
-          ),
-          // AppBar content
-          AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Row(
-              children: [
-                _buildRoomAvatar(context),
-                Expanded(child: _buildRoomTitle(context, ref)),
-              ],
-            ),
-            actions: _buildActions(context, ref),
-          ),
+          _buildRoomAvatar(context),
+          Expanded(child: _buildRoomTitle(context, ref)),
         ],
       ),
+      actions: _buildActions(context, ref),
     );
   }
 
@@ -100,9 +85,27 @@ class ChatRoomAppBarWidget extends ConsumerWidget
 
   List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     final lang = L10n.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final isEncrypted =
         ref.watch(isRoomEncryptedProvider(roomId)).valueOrNull ?? false;
+
+    final isDirectChat =
+        ref.watch(isDirectChatProvider(roomId)).valueOrNull ?? false;
+    final membership = ref.watch(roomMembershipProvider(roomId)).valueOrNull;
+    final canInvite = membership?.canString('CanInvite') == true;
     return [
+      if (!isDirectChat && canInvite)
+        OutlinedButton(
+          onPressed:
+              () => context.pushNamed(
+                Routes.chatInvite.name,
+                pathParameters: {'roomId': roomId},
+              ),
+          child: Text(
+            lang.invite,
+            style: TextStyle(color: colorScheme.outline),
+          ),
+        ),
       if (!isEncrypted)
         IconButton(
           onPressed: () => EasyLoading.showInfo(lang.chatNotEncrypted),

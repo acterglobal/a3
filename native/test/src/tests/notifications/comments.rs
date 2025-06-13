@@ -39,23 +39,19 @@ url = "https://acter.global"
 #[tokio::test]
 async fn comment_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let news_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let news_entries = client.latest_news_entries(1).await?;
-            if news_entries.len() != 1 {
-                bail!("news entries not found found");
-            }
-            Ok(news_entries[0].clone())
+    let news_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let news_entries = second_user.latest_news_entries(1).await?;
+        if news_entries.len() != 1 {
+            bail!("news entries not found found");
         }
+        Ok(news_entries[0].clone())
     })
     .await?;
 
@@ -68,27 +64,24 @@ async fn comment_on_news() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.to_string();
-        async move {
-            if client
-                .object_push_subscription_status(obj_id.clone(), None)
-                .await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.to_string(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
     let comments = news_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("this is great".to_owned());
-    let notification_ev = draft.send().await?;
+    let body = "this is great";
+    let notification_ev = comments
+        .comment_draft()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -102,7 +95,7 @@ async fn comment_on_news() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "this is great");
+    assert_eq!(content.body(), body);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -123,23 +116,19 @@ async fn comment_on_news() -> Result<()> {
 #[tokio::test]
 async fn comment_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.pins().await?;
-            if entries.is_empty() {
-                bail!("entries not found found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.pins().await?;
+        if entries.is_empty() {
+            bail!("entries not found found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -152,25 +141,24 @@ async fn comment_on_pin() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.clone(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
     let comments = obj_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("now we just need to find dory".to_owned());
-    let notification_ev = draft.send().await?;
+    let body = "now we just need to find dory";
+    let notification_ev = comments
+        .comment_draft()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -184,7 +172,7 @@ async fn comment_on_pin() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "now we just need to find dory");
+    assert_eq!(content.body(), body);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -205,23 +193,19 @@ async fn comment_on_pin() -> Result<()> {
 #[tokio::test]
 async fn comment_on_calendar_events() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(30);
-    let fetcher_client = second_user.clone();
-    let obj_entry = Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        async move {
-            let entries = client.calendar_events().await?;
-            if entries.is_empty() {
-                bail!("entries not found found");
-            }
-            Ok(entries[0].clone())
+    let obj_entry = Retry::spawn(retry_strategy.clone(), || async {
+        let entries = second_user.calendar_events().await?;
+        if entries.is_empty() {
+            bail!("entries not found found");
         }
+        Ok(entries[0].clone())
     })
     .await?;
 
@@ -234,25 +218,24 @@ async fn comment_on_calendar_events() -> Result<()> {
         .await
         .expect("setting notifications subscription works");
     // ensure this has been locally synced
-    let fetcher_client = notif_settings.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let obj_id = obj_id.clone();
-        async move {
-            if client.object_push_subscription_status(obj_id, None).await?
-                != SubscriptionStatus::Subscribed
-            {
-                bail!("not yet subscribed");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        let status = notif_settings
+            .object_push_subscription_status(obj_id.clone(), None)
+            .await?;
+        if status != SubscriptionStatus::Subscribed {
+            bail!("not yet subscribed");
         }
+        Ok(())
     })
     .await?;
 
     let comments = obj_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("looking forward to it".to_owned());
-    let notification_ev = draft.send().await?;
+    let body = "looking forward to it";
+    let notification_ev = comments
+        .comment_draft()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -266,7 +249,7 @@ async fn comment_on_calendar_events() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "looking forward to it");
+    assert_eq!(content.body(), body);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),

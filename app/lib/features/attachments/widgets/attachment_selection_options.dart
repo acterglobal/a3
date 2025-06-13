@@ -8,6 +8,7 @@ import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.da
 import 'package:acter/features/attachments/models/attachment_model.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/attachment_container.dart';
+import 'package:acter/features/attachments/widgets/media_attachment_preview_widget.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -141,7 +142,12 @@ class AttachmentSelectionOptions extends StatelessWidget {
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
     Navigator.pop(context);
-    _attachmentConfirmation(context, files, AttachmentType.camera, onSelected);
+    _showMediaAttachmentPreview(
+      context,
+      files,
+      AttachmentType.camera,
+      onSelected,
+    );
   }
 
   Future<void> onTapImage(BuildContext context) async {
@@ -152,7 +158,12 @@ class AttachmentSelectionOptions extends StatelessWidget {
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
     Navigator.pop(context);
-    _attachmentConfirmation(context, files, AttachmentType.image, onSelected);
+    _showMediaAttachmentPreview(
+      context,
+      files,
+      AttachmentType.image,
+      onSelected,
+    );
   }
 
   Future<void> onTapVideo(BuildContext context) async {
@@ -163,7 +174,7 @@ class AttachmentSelectionOptions extends StatelessWidget {
     List<File> files = [File(imageFile.path)];
     if (!context.mounted) return;
     Navigator.pop(context);
-    _attachmentConfirmation(context, files, AttachmentType.video, onSelected);
+    _showMediaAttachmentPreview(context, files, AttachmentType.video, onSelected);
   }
 
   Future<void> onTapAudio(BuildContext context) async {
@@ -193,6 +204,24 @@ class AttachmentSelectionOptions extends StatelessWidget {
     if (!context.mounted) return;
     Navigator.pop(context);
     _attachmentConfirmation(context, files, AttachmentType.file, onSelected);
+  }
+
+  void _showMediaAttachmentPreview(
+    BuildContext context,
+    List<File> selectedFiles,
+    AttachmentType type,
+    OnAttachmentSelected handleFileUpload,
+  ) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return MediaAttachmentPreviewWidget(
+          selectedFiles: selectedFiles,
+          type: type,
+          handleFileUpload: handleFileUpload,
+        );
+      },
+    );
   }
 
   void _attachmentConfirmation(

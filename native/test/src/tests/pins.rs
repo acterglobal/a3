@@ -43,15 +43,11 @@ async fn pins_smoketest() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -72,15 +68,11 @@ async fn pin_comments() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -99,14 +91,15 @@ async fn pin_comments() -> Result<()> {
     // ---- let’s make a comment
 
     let comments_listener = comments_manager.subscribe();
+    let body = "I updated the pin";
     let comment_id = comments_manager
         .comment_draft()?
-        .content_text("I updated the pin".to_owned())
+        .content_text(body.to_owned())
         .send()
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if comments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -117,7 +110,7 @@ async fn pin_comments() -> Result<()> {
     let comments = comments_manager.comments().await?;
     assert_eq!(comments.len(), 1);
     assert_eq!(comments[0].event_id(), comment_id);
-    assert_eq!(comments[0].content().body, "I updated the pin");
+    assert_eq!(comments[0].content().body, body);
 
     Ok(())
 }
@@ -129,15 +122,11 @@ async fn pin_attachments() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -204,7 +193,7 @@ async fn pin_attachments() -> Result<()> {
         .send()
         .await?;
 
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }
@@ -239,15 +228,11 @@ async fn pin_external_link() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -284,15 +269,11 @@ async fn pin_self_ref_attachments() -> Result<()> {
     sync_state.await_has_synced_history().await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    Retry::spawn(retry_strategy, move || {
-        let client = fetcher_client.clone();
-        async move {
-            if client.pins().await?.len() != 3 {
-                bail!("not all pins found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if user.pins().await?.len() != 3 {
+            bail!("not all pins found");
         }
+        Ok(())
     })
     .await?;
 
@@ -319,7 +300,7 @@ async fn pin_self_ref_attachments() -> Result<()> {
         .await?;
 
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
-    Retry::spawn(retry_strategy.clone(), || async {
+    Retry::spawn(retry_strategy, || async {
         if attachments_listener.is_empty() {
             bail!("all still empty");
         }

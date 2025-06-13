@@ -15,12 +15,8 @@ async fn history_sync_restart() -> Result<()> {
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(100).map(jitter).take(10);
-    let fetcher_client = user.clone();
-    let target_id = room_id.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let client = fetcher_client.clone();
-        let room_id = target_id.clone();
-        async move { client.space(room_id.to_string()).await }
+    Retry::spawn(retry_strategy.clone(), || async {
+        user.space(room_id.to_string()).await
     })
     .await?;
 
@@ -30,15 +26,11 @@ async fn history_sync_restart() -> Result<()> {
     draft.add_slide(Box::new(text_draft.into())).await?;
     draft.send().await?;
 
-    let space_cl = space.clone();
-    Retry::spawn(retry_strategy.clone(), move || {
-        let inner_space = space_cl.clone();
-        async move {
-            if inner_space.latest_news_entries(1).await?.len() != 1 {
-                bail!("news not found");
-            }
-            Ok(())
+    Retry::spawn(retry_strategy, || async {
+        if space.latest_news_entries(1).await?.len() != 1 {
+            bail!("news not found");
         }
+        Ok(())
     })
     .await?;
 
