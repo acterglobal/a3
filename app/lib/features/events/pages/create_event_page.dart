@@ -532,15 +532,15 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
       // Creating calendar event
       final space = await ref.read(spaceProvider(spaceId).future);
-      final draft = space.calendarEventDraft();
       final title = _eventNameController.text;
       // Description text
       final plainDescription = textEditorState.intoMarkdown();
       final htmlBodyDescription = textEditorState.intoHtml();
-      draft.title(title);
-      draft.utcStartFromRfc3339(utcStartDateTime);
-      draft.utcEndFromRfc3339(utcEndDateTime);
-      draft.descriptionHtml(plainDescription, htmlBodyDescription);
+      final draft = space.calendarEventDraft()
+          .title(title)
+          .utcStartFromRfc3339(utcStartDateTime)
+          .utcEndFromRfc3339(utcEndDateTime)
+          .descriptionHtml(plainDescription, htmlBodyDescription);
 
       // Add locations to the event
       final locations = ref.read(eventDraftLocationsProvider);
@@ -566,8 +566,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
-      final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('yes');
+      final rsvpDraft = rsvpManager.rsvpDraft().status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
 

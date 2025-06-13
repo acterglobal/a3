@@ -319,8 +319,10 @@ class _TaskItemBody extends ConsumerWidget {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingDescription);
     try {
-      final updater = task.updateBuilder();
-      updater.descriptionHtml(plainDescription, htmlBodyDescription);
+      final updater = task.updateBuilder().descriptionHtml(
+        plainDescription,
+        htmlBodyDescription,
+      );
       await updater.send();
       await autosubscribe(ref: ref, objectId: task.eventIdStr(), lang: lang);
       EasyLoading.dismiss();
@@ -370,8 +372,11 @@ class _TaskItemBody extends ConsumerWidget {
     if (newDue == null) return;
     EasyLoading.show(status: lang.updatingDue);
     try {
-      final updater = task.updateBuilder();
-      updater.dueDate(newDue.due.year, newDue.due.month, newDue.due.day);
+      final updater = task.updateBuilder().dueDate(
+        newDue.due.year,
+        newDue.due.month,
+        newDue.due.day,
+      );
       if (newDue.includeTime) {
         final seconds =
             newDue.due.hour * 60 * 60 +
@@ -594,8 +599,7 @@ class _TaskItemBody extends ConsumerWidget {
   ) async {
     final lang = L10n.of(context);
     EasyLoading.show(status: lang.updatingTask);
-    final updater = task.updateBuilder();
-    updater.title(newName);
+    final updater = task.updateBuilder().title(newName);
     try {
       await updater.send();
 

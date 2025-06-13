@@ -408,13 +408,13 @@ impl MsgDraft {
         Ok(MsgDraft { inner, mentions })
     }
 
-    pub fn add_room_mention(&self, mention: bool) -> Result<Self> {
+    pub fn add_room_mention(&self, mention: bool) -> Self {
         let MsgDraft {
             inner,
             mut mentions,
         } = self.clone();
         mentions.room = mention;
-        Ok(MsgDraft { inner, mentions })
+        MsgDraft { inner, mentions }
     }
 
     pub fn mimetype(&self, value: String) -> Self {

@@ -62,7 +62,7 @@ async fn rsvp_last_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_owned())
+        .status("yes".to_owned())?
         .send()
         .await?;
 
@@ -82,7 +82,7 @@ async fn rsvp_last_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_owned())
+        .status("no".to_owned())?
         .send()
         .await?;
 
@@ -130,7 +130,7 @@ async fn rsvp_my_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_owned())
+        .status("yes".to_owned())?
         .send()
         .await?;
 
@@ -150,7 +150,7 @@ async fn rsvp_my_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_owned())
+        .status("no".to_owned())?
         .send()
         .await?;
 
@@ -203,7 +203,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_owned())
+        .status("yes".to_owned())?
         .send()
         .await?;
 
@@ -223,7 +223,7 @@ async fn rsvp_count_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_owned())
+        .status("no".to_owned())?
         .send()
         .await?;
 
@@ -276,7 +276,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_1_id = rsvp_manager
         .rsvp_draft()?
-        .status("yes".to_owned())
+        .status("yes".to_owned())?
         .send()
         .await?;
 
@@ -296,7 +296,7 @@ async fn rsvp_users_at_status() -> Result<()> {
     let rsvp_listener = rsvp_manager.subscribe(); // call subscribe to get rsvp entries properly
     let _rsvp_2_id = rsvp_manager
         .rsvp_draft()?
-        .status("no".to_owned())
+        .status("no".to_owned())?
         .send()
         .await?;
 

@@ -2571,48 +2571,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __newsEntryDraftAddSlideFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _newsEntryDraftAddSlideFuturePoll(tmp1, tmp3, tmp5);
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(
-        tmp10_0.asTypedList(tmp11),
-        allowMalformed: true,
-      );
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   EventId? __newsEntryDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -2658,7 +2616,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __newsEntryUpdateBuilderAddSlideFuturePoll(
+  NewsEntryUpdateBuilder? __newsEntryUpdateBuilderAddSlideFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2696,7 +2654,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = NewsEntryUpdateBuilder._(this, tmp13_1);
     return tmp7;
   }
 
@@ -2964,44 +2925,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __storyDraftAddSlideFuturePoll(int boxed, int postCobject, int port) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _storyDraftAddSlideFuturePoll(tmp1, tmp3, tmp5);
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      debugAllocation("handle error", tmp10, tmp11);
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(
-        tmp10_0.asTypedList(tmp11),
-        allowMalformed: true,
-      );
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   EventId? __storyDraftSendFuturePoll(int boxed, int postCobject, int port) {
     final tmp0 = boxed;
     final tmp2 = postCobject;
@@ -3043,7 +2966,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __storyUpdateBuilderAddSlideFuturePoll(
+  StoryUpdateBuilder? __storyUpdateBuilderAddSlideFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3081,7 +3004,10 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_StoryUpdateBuilder");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = StoryUpdateBuilder._(this, tmp13_1);
     return tmp7;
   }
 
@@ -19770,6 +19696,13 @@ class Api {
 
   late final _newsEntryOriginServerTs =
       _newsEntryOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _newsEntryUpdateBuilderPtr = _lookup<
+    ffi.NativeFunction<_NewsEntryUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__NewsEntry_update_builder");
+
+  late final _newsEntryUpdateBuilder =
+      _newsEntryUpdateBuilderPtr
+          .asFunction<_NewsEntryUpdateBuilderReturn Function(int)>();
   late final _newsEntryCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntry_can_redact",
@@ -19813,11 +19746,16 @@ class Api {
   late final _newsEntryDraftAddSlide =
       _newsEntryDraftAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryDraftSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _NewsEntryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
+    >
   >("__NewsEntryDraft_swap_slides");
 
   late final _newsEntryDraftSwapSlides =
-      _newsEntryDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
+      _newsEntryDraftSwapSlidesPtr
+          .asFunction<
+            _NewsEntryDraftSwapSlidesReturn Function(int, int, int)
+          >();
   late final _newsEntryDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_slides",
@@ -19826,12 +19764,12 @@ class Api {
   late final _newsEntryDraftSlides =
       _newsEntryDraftSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_unset_slides",
       );
 
   late final _newsEntryDraftUnsetSlides =
-      _newsEntryDraftUnsetSlidesPtr.asFunction<void Function(int)>();
+      _newsEntryDraftUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryDraft_send",
@@ -19847,27 +19785,35 @@ class Api {
   late final _newsEntryUpdateBuilderAddSlide =
       _newsEntryUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_unset_slides",
       );
 
   late final _newsEntryUpdateBuilderUnsetSlides =
-      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
+      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_unset_slides_update",
       );
 
   late final _newsEntryUpdateBuilderUnsetSlidesUpdate =
       _newsEntryUpdateBuilderUnsetSlidesUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _newsEntryUpdateBuilderSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _NewsEntryUpdateBuilderSwapSlidesReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
   >("__NewsEntryUpdateBuilder_swap_slides");
 
   late final _newsEntryUpdateBuilderSwapSlides =
       _newsEntryUpdateBuilderSwapSlidesPtr
-          .asFunction<void Function(int, int, int)>();
+          .asFunction<
+            _NewsEntryUpdateBuilderSwapSlidesReturn Function(int, int, int)
+          >();
   late final _newsEntryUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_send",
@@ -19981,6 +19927,13 @@ class Api {
 
   late final _storyOriginServerTs =
       _storyOriginServerTsPtr.asFunction<int Function(int)>();
+  late final _storyUpdateBuilderPtr = _lookup<
+    ffi.NativeFunction<_StoryUpdateBuilderReturn Function(ffi.IntPtr)>
+  >("__Story_update_builder");
+
+  late final _storyUpdateBuilder =
+      _storyUpdateBuilderPtr
+          .asFunction<_StoryUpdateBuilderReturn Function(int)>();
   late final _storyCanRedactPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__Story_can_redact",
@@ -20016,11 +19969,14 @@ class Api {
   late final _storyDraftAddSlide =
       _storyDraftAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyDraftSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _StoryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
+    >
   >("__StoryDraft_swap_slides");
 
   late final _storyDraftSwapSlides =
-      _storyDraftSwapSlidesPtr.asFunction<void Function(int, int, int)>();
+      _storyDraftSwapSlidesPtr
+          .asFunction<_StoryDraftSwapSlidesReturn Function(int, int, int)>();
   late final _storyDraftSlidesPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_slides",
@@ -20029,12 +19985,12 @@ class Api {
   late final _storyDraftSlides =
       _storyDraftSlidesPtr.asFunction<int Function(int)>();
   late final _storyDraftUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_unset_slides",
       );
 
   late final _storyDraftUnsetSlides =
-      _storyDraftUnsetSlidesPtr.asFunction<void Function(int)>();
+      _storyDraftUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _storyDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_send",
@@ -20050,26 +20006,34 @@ class Api {
   late final _storyUpdateBuilderAddSlide =
       _storyUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyUpdateBuilderUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_unset_slides",
       );
 
   late final _storyUpdateBuilderUnsetSlides =
-      _storyUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
+      _storyUpdateBuilderUnsetSlidesPtr.asFunction<int Function(int)>();
   late final _storyUpdateBuilderUnsetSlidesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_unset_slides_update",
       );
 
   late final _storyUpdateBuilderUnsetSlidesUpdate =
-      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<void Function(int)>();
+      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<int Function(int)>();
   late final _storyUpdateBuilderSwapSlidesPtr = _lookup<
-    ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)>
+    ffi.NativeFunction<
+      _StoryUpdateBuilderSwapSlidesReturn Function(
+        ffi.IntPtr,
+        ffi.Uint8,
+        ffi.Uint8,
+      )
+    >
   >("__StoryUpdateBuilder_swap_slides");
 
   late final _storyUpdateBuilderSwapSlides =
       _storyUpdateBuilderSwapSlidesPtr
-          .asFunction<void Function(int, int, int)>();
+          .asFunction<
+            _StoryUpdateBuilderSwapSlidesReturn Function(int, int, int)
+          >();
   late final _storyUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_send",
@@ -20079,32 +20043,32 @@ class Api {
       _storyUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _pinDraftTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_title");
 
   late final _pinDraftTitle =
-      _pinDraftTitlePtr.asFunction<void Function(int, int, int, int)>();
+      _pinDraftTitlePtr.asFunction<int Function(int, int, int, int)>();
   late final _pinDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_content_text");
 
   late final _pinDraftContentText =
-      _pinDraftContentTextPtr.asFunction<void Function(int, int, int, int)>();
+      _pinDraftContentTextPtr.asFunction<int Function(int, int, int, int)>();
   late final _pinDraftContentMarkdownPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_content_markdown");
 
   late final _pinDraftContentMarkdown =
       _pinDraftContentMarkdownPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _pinDraftContentHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20118,43 +20082,43 @@ class Api {
 
   late final _pinDraftContentHtml =
       _pinDraftContentHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _pinDraftUnsetContentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_unset_content",
       );
 
   late final _pinDraftUnsetContent =
-      _pinDraftUnsetContentPtr.asFunction<void Function(int)>();
+      _pinDraftUnsetContentPtr.asFunction<int Function(int)>();
   late final _pinDraftUrlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinDraft_url");
 
   late final _pinDraftUrl =
-      _pinDraftUrlPtr.asFunction<void Function(int, int, int, int)>();
+      _pinDraftUrlPtr.asFunction<int Function(int, int, int, int)>();
   late final _pinDraftUnsetUrlPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_unset_url",
       );
 
   late final _pinDraftUnsetUrl =
-      _pinDraftUnsetUrlPtr.asFunction<void Function(int)>();
+      _pinDraftUnsetUrlPtr.asFunction<int Function(int)>();
   late final _pinDraftDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__PinDraft_display",
       );
 
   late final _pinDraftDisplay =
-      _pinDraftDisplayPtr.asFunction<void Function(int, int)>();
+      _pinDraftDisplayPtr.asFunction<int Function(int, int)>();
   late final _pinDraftUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_unset_display",
       );
 
   late final _pinDraftUnsetDisplay =
-      _pinDraftUnsetDisplayPtr.asFunction<void Function(int)>();
+      _pinDraftUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _pinDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinDraft_send",
@@ -20282,40 +20246,40 @@ class Api {
       _acterPinAttachmentsPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_title");
 
   late final _pinUpdateBuilderTitle =
-      _pinUpdateBuilderTitlePtr.asFunction<void Function(int, int, int, int)>();
+      _pinUpdateBuilderTitlePtr.asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderUnsetTitleUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_title_update",
       );
 
   late final _pinUpdateBuilderUnsetTitleUpdate =
-      _pinUpdateBuilderUnsetTitleUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetTitleUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderContentTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_content_text");
 
   late final _pinUpdateBuilderContentText =
       _pinUpdateBuilderContentTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderContentMarkdownPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_content_markdown");
 
   late final _pinUpdateBuilderContentMarkdown =
       _pinUpdateBuilderContentMarkdownPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderContentHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20329,64 +20293,64 @@ class Api {
 
   late final _pinUpdateBuilderContentHtml =
       _pinUpdateBuilderContentHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _pinUpdateBuilderUnsetContentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_content",
       );
 
   late final _pinUpdateBuilderUnsetContent =
-      _pinUpdateBuilderUnsetContentPtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetContentPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUnsetContentUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_content_update",
       );
 
   late final _pinUpdateBuilderUnsetContentUpdate =
-      _pinUpdateBuilderUnsetContentUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetContentUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUrlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__PinUpdateBuilder_url");
 
   late final _pinUpdateBuilderUrl =
-      _pinUpdateBuilderUrlPtr.asFunction<void Function(int, int, int, int)>();
+      _pinUpdateBuilderUrlPtr.asFunction<int Function(int, int, int, int)>();
   late final _pinUpdateBuilderUnsetUrlPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_url",
       );
 
   late final _pinUpdateBuilderUnsetUrl =
-      _pinUpdateBuilderUnsetUrlPtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetUrlPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUnsetUrlUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_url_update",
       );
 
   late final _pinUpdateBuilderUnsetUrlUpdate =
-      _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__PinUpdateBuilder_display",
       );
 
   late final _pinUpdateBuilderDisplay =
-      _pinUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
+      _pinUpdateBuilderDisplayPtr.asFunction<int Function(int, int)>();
   late final _pinUpdateBuilderUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_display",
       );
 
   late final _pinUpdateBuilderUnsetDisplay =
-      _pinUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderUnsetDisplayUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_unset_display_update",
       );
 
   late final _pinUpdateBuilderUnsetDisplayUpdate =
-      _pinUpdateBuilderUnsetDisplayUpdatePtr.asFunction<void Function(int)>();
+      _pinUpdateBuilderUnsetDisplayUpdatePtr.asFunction<int Function(int)>();
   late final _pinUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__PinUpdateBuilder_send",
@@ -20552,25 +20516,25 @@ class Api {
       _calendarEventRefDetailsPtr.asFunction<int Function(int)>();
   late final _calendarEventUpdateBuilderTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventUpdateBuilder_title");
 
   late final _calendarEventUpdateBuilderTitle =
       _calendarEventUpdateBuilderTitlePtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventUpdateBuilderDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventUpdateBuilder_description_text");
 
   late final _calendarEventUpdateBuilderDescriptionText =
       _calendarEventUpdateBuilderDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventUpdateBuilderDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20584,7 +20548,7 @@ class Api {
 
   late final _calendarEventUpdateBuilderDescriptionHtml =
       _calendarEventUpdateBuilderDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _calendarEventUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
     ffi.NativeFunction<
       _CalendarEventUpdateBuilderUtcStartFromRfc3339Return Function(
@@ -20725,7 +20689,7 @@ class Api {
           >();
   late final _calendarEventUpdateBuilderAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -20762,7 +20726,7 @@ class Api {
   late final _calendarEventUpdateBuilderAddPhysicalLocation =
       _calendarEventUpdateBuilderAddPhysicalLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -20796,7 +20760,7 @@ class Api {
           >();
   late final _calendarEventUpdateBuilderAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -20824,7 +20788,7 @@ class Api {
   late final _calendarEventUpdateBuilderAddVirtualLocation =
       _calendarEventUpdateBuilderAddVirtualLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -20848,13 +20812,13 @@ class Api {
             )
           >();
   late final _calendarEventUpdateBuilderUnsetLocationsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CalendarEventUpdateBuilder_unset_locations",
       );
 
   late final _calendarEventUpdateBuilderUnsetLocations =
       _calendarEventUpdateBuilderUnsetLocationsPtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _calendarEventUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CalendarEventUpdateBuilder_send",
@@ -20864,25 +20828,25 @@ class Api {
       _calendarEventUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _calendarEventDraftTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventDraft_title");
 
   late final _calendarEventDraftTitle =
       _calendarEventDraftTitlePtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventDraftDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CalendarEventDraft_description_text");
 
   late final _calendarEventDraftDescriptionText =
       _calendarEventDraftDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _calendarEventDraftDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -20896,14 +20860,14 @@ class Api {
 
   late final _calendarEventDraftDescriptionHtml =
       _calendarEventDraftDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _calendarEventDraftUnsetDescriptionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CalendarEventDraft_unset_description",
       );
 
   late final _calendarEventDraftUnsetDescription =
-      _calendarEventDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
+      _calendarEventDraftUnsetDescriptionPtr.asFunction<int Function(int)>();
   late final _calendarEventDraftUtcStartFromRfc3339Ptr = _lookup<
     ffi.NativeFunction<
       _CalendarEventDraftUtcStartFromRfc3339Return Function(
@@ -21044,7 +21008,7 @@ class Api {
           >();
   late final _calendarEventDraftAddPhysicalLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -21081,7 +21045,7 @@ class Api {
   late final _calendarEventDraftAddPhysicalLocation =
       _calendarEventDraftAddPhysicalLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -21115,7 +21079,7 @@ class Api {
           >();
   late final _calendarEventDraftAddVirtualLocationPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.Uint8,
         ffi.IntPtr,
@@ -21143,7 +21107,7 @@ class Api {
   late final _calendarEventDraftAddVirtualLocation =
       _calendarEventDraftAddVirtualLocationPtr
           .asFunction<
-            void Function(
+            int Function(
               int,
               int,
               int,
@@ -21286,12 +21250,18 @@ class Api {
       _rsvpManagerSubscribeStreamPtr.asFunction<int Function(int)>();
   late final _rsvpDraftStatusPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      _RsvpDraftStatusReturn Function(
+        ffi.IntPtr,
+        ffi.IntPtr,
+        ffi.UintPtr,
+        ffi.UintPtr,
+      )
     >
   >("__RsvpDraft_status");
 
   late final _rsvpDraftStatus =
-      _rsvpDraftStatusPtr.asFunction<void Function(int, int, int, int)>();
+      _rsvpDraftStatusPtr
+          .asFunction<_RsvpDraftStatusReturn Function(int, int, int, int)>();
   late final _rsvpDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__RsvpDraft_send",
@@ -23618,15 +23588,13 @@ class Api {
   late final _msgDraftAddUrlPreview =
       _msgDraftAddUrlPreviewPtr
           .asFunction<_MsgDraftAddUrlPreviewReturn Function(int, int)>();
-  late final _msgDraftAddRoomMentionPtr = _lookup<
-    ffi.NativeFunction<
-      _MsgDraftAddRoomMentionReturn Function(ffi.IntPtr, ffi.Uint8)
-    >
-  >("__MsgDraft_add_room_mention");
+  late final _msgDraftAddRoomMentionPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
+        "__MsgDraft_add_room_mention",
+      );
 
   late final _msgDraftAddRoomMention =
-      _msgDraftAddRoomMentionPtr
-          .asFunction<_MsgDraftAddRoomMentionReturn Function(int, int)>();
+      _msgDraftAddRoomMentionPtr.asFunction<int Function(int, int)>();
   late final _msgDraftMimetypePtr = _lookup<
     ffi.NativeFunction<
       ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
@@ -24462,16 +24430,16 @@ class Api {
           .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _commentDraftContentTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__CommentDraft_content_text");
 
   late final _commentDraftContentText =
       _commentDraftContentTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _commentDraftContentFormattedPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -24485,7 +24453,7 @@ class Api {
 
   late final _commentDraftContentFormatted =
       _commentDraftContentFormattedPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _commentDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__CommentDraft_send",
@@ -25041,32 +25009,31 @@ class Api {
       _taskInvitationsPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskUpdateBuilder_title");
 
   late final _taskUpdateBuilderTitle =
-      _taskUpdateBuilderTitlePtr
-          .asFunction<void Function(int, int, int, int)>();
+      _taskUpdateBuilderTitlePtr.asFunction<int Function(int, int, int, int)>();
   late final _taskUpdateBuilderUnsetTitleUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_title_update",
       );
 
   late final _taskUpdateBuilderUnsetTitleUpdate =
-      _taskUpdateBuilderUnsetTitleUpdatePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetTitleUpdatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskUpdateBuilder_description_text");
 
   late final _taskUpdateBuilderDescriptionText =
       _taskUpdateBuilderDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskUpdateBuilderDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -25080,105 +25047,102 @@ class Api {
 
   late final _taskUpdateBuilderDescriptionHtml =
       _taskUpdateBuilderDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _taskUpdateBuilderUnsetDescriptionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_description",
       );
 
   late final _taskUpdateBuilderUnsetDescription =
-      _taskUpdateBuilderUnsetDescriptionPtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetDescriptionPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetDescriptionUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_description_update",
       );
 
   late final _taskUpdateBuilderUnsetDescriptionUpdate =
       _taskUpdateBuilderUnsetDescriptionUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskUpdateBuilderSortOrderPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
         "__TaskUpdateBuilder_sort_order",
       );
 
   late final _taskUpdateBuilderSortOrder =
-      _taskUpdateBuilderSortOrderPtr.asFunction<void Function(int, int)>();
+      _taskUpdateBuilderSortOrderPtr.asFunction<int Function(int, int)>();
   late final _taskUpdateBuilderUnsetSortOrderUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_sort_order_update",
       );
 
   late final _taskUpdateBuilderUnsetSortOrderUpdate =
-      _taskUpdateBuilderUnsetSortOrderUpdatePtr
-          .asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetSortOrderUpdatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskUpdateBuilder_display",
       );
 
   late final _taskUpdateBuilderDisplay =
-      _taskUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
+      _taskUpdateBuilderDisplayPtr.asFunction<int Function(int, int)>();
   late final _taskUpdateBuilderUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_display",
       );
 
   late final _taskUpdateBuilderUnsetDisplay =
-      _taskUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetDisplayUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_display_update",
       );
 
   late final _taskUpdateBuilderUnsetDisplayUpdate =
-      _taskUpdateBuilderUnsetDisplayUpdatePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetDisplayUpdatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderDueDatePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.Int32, ffi.Uint32, ffi.Uint32)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.Int32, ffi.Uint32, ffi.Uint32)
     >
   >("__TaskUpdateBuilder_due_date");
 
   late final _taskUpdateBuilderDueDate =
       _taskUpdateBuilderDueDatePtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskUpdateBuilderUnsetDueDatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_due_date",
       );
 
   late final _taskUpdateBuilderUnsetDueDate =
-      _taskUpdateBuilderUnsetDueDatePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetDueDatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetDueDateUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_due_date_update",
       );
 
   late final _taskUpdateBuilderUnsetDueDateUpdate =
-      _taskUpdateBuilderUnsetDueDateUpdatePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetDueDateUpdatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUtcDueTimeOfDayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
         "__TaskUpdateBuilder_utc_due_time_of_day",
       );
 
   late final _taskUpdateBuilderUtcDueTimeOfDay =
-      _taskUpdateBuilderUtcDueTimeOfDayPtr
-          .asFunction<void Function(int, int)>();
+      _taskUpdateBuilderUtcDueTimeOfDayPtr.asFunction<int Function(int, int)>();
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_utc_due_time_of_day",
       );
 
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDay =
-      _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr
-          .asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetUtcDueTimeOfDayPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_utc_due_time_of_day_update",
       );
 
   late final _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdate =
       _taskUpdateBuilderUnsetUtcDueTimeOfDayUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
     ffi.NativeFunction<
       _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
@@ -25249,100 +25213,98 @@ class Api {
             )
           >();
   late final _taskUpdateBuilderUnsetUtcStartPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_utc_start",
       );
 
   late final _taskUpdateBuilderUnsetUtcStart =
-      _taskUpdateBuilderUnsetUtcStartPtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetUtcStartPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetUtcStartUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_utc_start_update",
       );
 
   late final _taskUpdateBuilderUnsetUtcStartUpdate =
-      _taskUpdateBuilderUnsetUtcStartUpdatePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetUtcStartUpdatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderProgressPercentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
         "__TaskUpdateBuilder_progress_percent",
       );
 
   late final _taskUpdateBuilderProgressPercent =
-      _taskUpdateBuilderProgressPercentPtr
-          .asFunction<void Function(int, int)>();
+      _taskUpdateBuilderProgressPercentPtr.asFunction<int Function(int, int)>();
   late final _taskUpdateBuilderUnsetProgressPercentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_progress_percent",
       );
 
   late final _taskUpdateBuilderUnsetProgressPercent =
-      _taskUpdateBuilderUnsetProgressPercentPtr
-          .asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetProgressPercentPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetProgressPercentUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_progress_percent_update",
       );
 
   late final _taskUpdateBuilderUnsetProgressPercentUpdate =
       _taskUpdateBuilderUnsetProgressPercentUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskUpdateBuilderKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskUpdateBuilder_keywords",
       );
 
   late final _taskUpdateBuilderKeywords =
-      _taskUpdateBuilderKeywordsPtr.asFunction<void Function(int, int)>();
+      _taskUpdateBuilderKeywordsPtr.asFunction<int Function(int, int)>();
   late final _taskUpdateBuilderUnsetKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_keywords",
       );
 
   late final _taskUpdateBuilderUnsetKeywords =
-      _taskUpdateBuilderUnsetKeywordsPtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetKeywordsPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetKeywordsUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_keywords_update",
       );
 
   late final _taskUpdateBuilderUnsetKeywordsUpdate =
-      _taskUpdateBuilderUnsetKeywordsUpdatePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetKeywordsUpdatePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskUpdateBuilder_categories",
       );
 
   late final _taskUpdateBuilderCategories =
-      _taskUpdateBuilderCategoriesPtr.asFunction<void Function(int, int)>();
+      _taskUpdateBuilderCategoriesPtr.asFunction<int Function(int, int)>();
   late final _taskUpdateBuilderUnsetCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_categories",
       );
 
   late final _taskUpdateBuilderUnsetCategories =
-      _taskUpdateBuilderUnsetCategoriesPtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderUnsetCategoriesPtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderUnsetCategoriesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_unset_categories_update",
       );
 
   late final _taskUpdateBuilderUnsetCategoriesUpdate =
       _taskUpdateBuilderUnsetCategoriesUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskUpdateBuilderMarkDonePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_mark_done",
       );
 
   late final _taskUpdateBuilderMarkDone =
-      _taskUpdateBuilderMarkDonePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderMarkDonePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderMarkUndonePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_mark_undone",
       );
 
   late final _taskUpdateBuilderMarkUndone =
-      _taskUpdateBuilderMarkUndonePtr.asFunction<void Function(int)>();
+      _taskUpdateBuilderMarkUndonePtr.asFunction<int Function(int)>();
   late final _taskUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskUpdateBuilder_send",
@@ -25352,24 +25314,24 @@ class Api {
       _taskUpdateBuilderSendPtr.asFunction<int Function(int)>();
   late final _taskDraftTitlePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskDraft_title");
 
   late final _taskDraftTitle =
-      _taskDraftTitlePtr.asFunction<void Function(int, int, int, int)>();
+      _taskDraftTitlePtr.asFunction<int Function(int, int, int, int)>();
   late final _taskDraftDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskDraft_description_text");
 
   late final _taskDraftDescriptionText =
       _taskDraftDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskDraftDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -25383,64 +25345,64 @@ class Api {
 
   late final _taskDraftDescriptionHtml =
       _taskDraftDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _taskDraftUnsetDescriptionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_description",
       );
 
   late final _taskDraftUnsetDescription =
-      _taskDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetDescriptionPtr.asFunction<int Function(int)>();
   late final _taskDraftSortOrderPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
         "__TaskDraft_sort_order",
       );
 
   late final _taskDraftSortOrder =
-      _taskDraftSortOrderPtr.asFunction<void Function(int, int)>();
+      _taskDraftSortOrderPtr.asFunction<int Function(int, int)>();
   late final _taskDraftDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskDraft_display",
       );
 
   late final _taskDraftDisplay =
-      _taskDraftDisplayPtr.asFunction<void Function(int, int)>();
+      _taskDraftDisplayPtr.asFunction<int Function(int, int)>();
   late final _taskDraftUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_display",
       );
 
   late final _taskDraftUnsetDisplay =
-      _taskDraftUnsetDisplayPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _taskDraftDueDatePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.Int32, ffi.Uint32, ffi.Uint32)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.Int32, ffi.Uint32, ffi.Uint32)
     >
   >("__TaskDraft_due_date");
 
   late final _taskDraftDueDate =
-      _taskDraftDueDatePtr.asFunction<void Function(int, int, int, int)>();
+      _taskDraftDueDatePtr.asFunction<int Function(int, int, int, int)>();
   late final _taskDraftUnsetDueDatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_due_date",
       );
 
   late final _taskDraftUnsetDueDate =
-      _taskDraftUnsetDueDatePtr.asFunction<void Function(int)>();
+      _taskDraftUnsetDueDatePtr.asFunction<int Function(int)>();
   late final _taskDraftUtcDueTimeOfDayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Int32)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Int32)>>(
         "__TaskDraft_utc_due_time_of_day",
       );
 
   late final _taskDraftUtcDueTimeOfDay =
-      _taskDraftUtcDueTimeOfDayPtr.asFunction<void Function(int, int)>();
+      _taskDraftUtcDueTimeOfDayPtr.asFunction<int Function(int, int)>();
   late final _taskDraftUnsetUtcDueTimeOfDayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_utc_due_time_of_day",
       );
 
   late final _taskDraftUnsetUtcDueTimeOfDay =
-      _taskDraftUnsetUtcDueTimeOfDayPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetUtcDueTimeOfDayPtr.asFunction<int Function(int)>();
   late final _taskDraftUtcStartFromRfc3339Ptr = _lookup<
     ffi.NativeFunction<
       _TaskDraftUtcStartFromRfc3339Return Function(
@@ -25501,54 +25463,54 @@ class Api {
             )
           >();
   late final _taskDraftUnsetUtcStartPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_utc_start",
       );
 
   late final _taskDraftUnsetUtcStart =
-      _taskDraftUnsetUtcStartPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetUtcStartPtr.asFunction<int Function(int)>();
   late final _taskDraftProgressPercentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint8)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint8)>>(
         "__TaskDraft_progress_percent",
       );
 
   late final _taskDraftProgressPercent =
-      _taskDraftProgressPercentPtr.asFunction<void Function(int, int)>();
+      _taskDraftProgressPercentPtr.asFunction<int Function(int, int)>();
   late final _taskDraftUnsetProgressPercentPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_progress_percent",
       );
 
   late final _taskDraftUnsetProgressPercent =
-      _taskDraftUnsetProgressPercentPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetProgressPercentPtr.asFunction<int Function(int)>();
   late final _taskDraftKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskDraft_keywords",
       );
 
   late final _taskDraftKeywords =
-      _taskDraftKeywordsPtr.asFunction<void Function(int, int)>();
+      _taskDraftKeywordsPtr.asFunction<int Function(int, int)>();
   late final _taskDraftUnsetKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_keywords",
       );
 
   late final _taskDraftUnsetKeywords =
-      _taskDraftUnsetKeywordsPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetKeywordsPtr.asFunction<int Function(int)>();
   late final _taskDraftCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskDraft_categories",
       );
 
   late final _taskDraftCategories =
-      _taskDraftCategoriesPtr.asFunction<void Function(int, int)>();
+      _taskDraftCategoriesPtr.asFunction<int Function(int, int)>();
   late final _taskDraftUnsetCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_unset_categories",
       );
 
   late final _taskDraftUnsetCategories =
-      _taskDraftUnsetCategoriesPtr.asFunction<void Function(int)>();
+      _taskDraftUnsetCategoriesPtr.asFunction<int Function(int)>();
   late final _taskDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskDraft_send",
@@ -25703,33 +25665,33 @@ class Api {
       _taskListAttachmentsPtr.asFunction<int Function(int)>();
   late final _taskListDraftNamePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskListDraft_name");
 
   late final _taskListDraftName =
-      _taskListDraftNamePtr.asFunction<void Function(int, int, int, int)>();
+      _taskListDraftNamePtr.asFunction<int Function(int, int, int, int)>();
   late final _taskListDraftDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskListDraft_description_text");
 
   late final _taskListDraftDescriptionText =
       _taskListDraftDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskListDraftDescriptionMarkdownPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskListDraft_description_markdown");
 
   late final _taskListDraftDescriptionMarkdown =
       _taskListDraftDescriptionMarkdownPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskListDraftDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -25743,63 +25705,63 @@ class Api {
 
   late final _taskListDraftDescriptionHtml =
       _taskListDraftDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _taskListDraftUnsetDescriptionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListDraft_unset_description",
       );
 
   late final _taskListDraftUnsetDescription =
-      _taskListDraftUnsetDescriptionPtr.asFunction<void Function(int)>();
+      _taskListDraftUnsetDescriptionPtr.asFunction<int Function(int)>();
   late final _taskListDraftSortOrderPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
         "__TaskListDraft_sort_order",
       );
 
   late final _taskListDraftSortOrder =
-      _taskListDraftSortOrderPtr.asFunction<void Function(int, int)>();
+      _taskListDraftSortOrderPtr.asFunction<int Function(int, int)>();
   late final _taskListDraftDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskListDraft_display",
       );
 
   late final _taskListDraftDisplay =
-      _taskListDraftDisplayPtr.asFunction<void Function(int, int)>();
+      _taskListDraftDisplayPtr.asFunction<int Function(int, int)>();
   late final _taskListDraftUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListDraft_unset_display",
       );
 
   late final _taskListDraftUnsetDisplay =
-      _taskListDraftUnsetDisplayPtr.asFunction<void Function(int)>();
+      _taskListDraftUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _taskListDraftKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskListDraft_keywords",
       );
 
   late final _taskListDraftKeywords =
-      _taskListDraftKeywordsPtr.asFunction<void Function(int, int)>();
+      _taskListDraftKeywordsPtr.asFunction<int Function(int, int)>();
   late final _taskListDraftUnsetKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListDraft_unset_keywords",
       );
 
   late final _taskListDraftUnsetKeywords =
-      _taskListDraftUnsetKeywordsPtr.asFunction<void Function(int)>();
+      _taskListDraftUnsetKeywordsPtr.asFunction<int Function(int)>();
   late final _taskListDraftCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskListDraft_categories",
       );
 
   late final _taskListDraftCategories =
-      _taskListDraftCategoriesPtr.asFunction<void Function(int, int)>();
+      _taskListDraftCategoriesPtr.asFunction<int Function(int, int)>();
   late final _taskListDraftUnsetCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListDraft_unset_categories",
       );
 
   late final _taskListDraftUnsetCategories =
-      _taskListDraftUnsetCategoriesPtr.asFunction<void Function(int)>();
+      _taskListDraftUnsetCategoriesPtr.asFunction<int Function(int)>();
   late final _taskListDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListDraft_send",
@@ -25809,25 +25771,25 @@ class Api {
       _taskListDraftSendPtr.asFunction<int Function(int)>();
   late final _taskListUpdateBuilderNamePtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskListUpdateBuilder_name");
 
   late final _taskListUpdateBuilderName =
       _taskListUpdateBuilderNamePtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskListUpdateBuilderDescriptionTextPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
+      ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr, ffi.UintPtr, ffi.UintPtr)
     >
   >("__TaskListUpdateBuilder_description_text");
 
   late final _taskListUpdateBuilderDescriptionText =
       _taskListUpdateBuilderDescriptionTextPtr
-          .asFunction<void Function(int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int)>();
   late final _taskListUpdateBuilderDescriptionHtmlPtr = _lookup<
     ffi.NativeFunction<
-      ffi.Void Function(
+      ffi.IntPtr Function(
         ffi.IntPtr,
         ffi.IntPtr,
         ffi.UintPtr,
@@ -25841,96 +25803,95 @@ class Api {
 
   late final _taskListUpdateBuilderDescriptionHtml =
       _taskListUpdateBuilderDescriptionHtmlPtr
-          .asFunction<void Function(int, int, int, int, int, int, int)>();
+          .asFunction<int Function(int, int, int, int, int, int, int)>();
   late final _taskListUpdateBuilderUnsetDescriptionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_description",
       );
 
   late final _taskListUpdateBuilderUnsetDescription =
-      _taskListUpdateBuilderUnsetDescriptionPtr
-          .asFunction<void Function(int)>();
+      _taskListUpdateBuilderUnsetDescriptionPtr.asFunction<int Function(int)>();
   late final _taskListUpdateBuilderUnsetDescriptionUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_description_update",
       );
 
   late final _taskListUpdateBuilderUnsetDescriptionUpdate =
       _taskListUpdateBuilderUnsetDescriptionUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskListUpdateBuilderSortOrderPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.Uint32)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
         "__TaskListUpdateBuilder_sort_order",
       );
 
   late final _taskListUpdateBuilderSortOrder =
-      _taskListUpdateBuilderSortOrderPtr.asFunction<void Function(int, int)>();
+      _taskListUpdateBuilderSortOrderPtr.asFunction<int Function(int, int)>();
   late final _taskListUpdateBuilderDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_display",
       );
 
   late final _taskListUpdateBuilderDisplay =
-      _taskListUpdateBuilderDisplayPtr.asFunction<void Function(int, int)>();
+      _taskListUpdateBuilderDisplayPtr.asFunction<int Function(int, int)>();
   late final _taskListUpdateBuilderUnsetDisplayPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_display",
       );
 
   late final _taskListUpdateBuilderUnsetDisplay =
-      _taskListUpdateBuilderUnsetDisplayPtr.asFunction<void Function(int)>();
+      _taskListUpdateBuilderUnsetDisplayPtr.asFunction<int Function(int)>();
   late final _taskListUpdateBuilderUnsetDisplayUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_display_update",
       );
 
   late final _taskListUpdateBuilderUnsetDisplayUpdate =
       _taskListUpdateBuilderUnsetDisplayUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskListUpdateBuilderKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_keywords",
       );
 
   late final _taskListUpdateBuilderKeywords =
-      _taskListUpdateBuilderKeywordsPtr.asFunction<void Function(int, int)>();
+      _taskListUpdateBuilderKeywordsPtr.asFunction<int Function(int, int)>();
   late final _taskListUpdateBuilderUnsetKeywordsPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_keywords",
       );
 
   late final _taskListUpdateBuilderUnsetKeywords =
-      _taskListUpdateBuilderUnsetKeywordsPtr.asFunction<void Function(int)>();
+      _taskListUpdateBuilderUnsetKeywordsPtr.asFunction<int Function(int)>();
   late final _taskListUpdateBuilderUnsetKeywordsUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_keywords_update",
       );
 
   late final _taskListUpdateBuilderUnsetKeywordsUpdate =
       _taskListUpdateBuilderUnsetKeywordsUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskListUpdateBuilderCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_categories",
       );
 
   late final _taskListUpdateBuilderCategories =
-      _taskListUpdateBuilderCategoriesPtr.asFunction<void Function(int, int)>();
+      _taskListUpdateBuilderCategoriesPtr.asFunction<int Function(int, int)>();
   late final _taskListUpdateBuilderUnsetCategoriesPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_categories",
       );
 
   late final _taskListUpdateBuilderUnsetCategories =
-      _taskListUpdateBuilderUnsetCategoriesPtr.asFunction<void Function(int)>();
+      _taskListUpdateBuilderUnsetCategoriesPtr.asFunction<int Function(int)>();
   late final _taskListUpdateBuilderUnsetCategoriesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_unset_categories_update",
       );
 
   late final _taskListUpdateBuilderUnsetCategoriesUpdate =
       _taskListUpdateBuilderUnsetCategoriesUpdatePtr
-          .asFunction<void Function(int)>();
+          .asFunction<int Function(int)>();
   late final _taskListUpdateBuilderSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__TaskListUpdateBuilder_send",
@@ -30954,21 +30915,6 @@ class Api {
           .asFunction<
             _NewsEntryRefDetailsFuturePollReturn Function(int, int, int)
           >();
-  late final _newsEntryDraftAddSlideFuturePollPtr = _lookup<
-    ffi.NativeFunction<
-      _NewsEntryDraftAddSlideFuturePollReturn Function(
-        ffi.IntPtr,
-        ffi.IntPtr,
-        ffi.Int64,
-      )
-    >
-  >("__NewsEntryDraft_add_slide_future_poll");
-
-  late final _newsEntryDraftAddSlideFuturePoll =
-      _newsEntryDraftAddSlideFuturePollPtr
-          .asFunction<
-            _NewsEntryDraftAddSlideFuturePollReturn Function(int, int, int)
-          >();
   late final _newsEntryDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _NewsEntryDraftSendFuturePollReturn Function(
@@ -31087,21 +31033,6 @@ class Api {
   late final _storyCommentsFuturePoll =
       _storyCommentsFuturePollPtr
           .asFunction<_StoryCommentsFuturePollReturn Function(int, int, int)>();
-  late final _storyDraftAddSlideFuturePollPtr = _lookup<
-    ffi.NativeFunction<
-      _StoryDraftAddSlideFuturePollReturn Function(
-        ffi.IntPtr,
-        ffi.IntPtr,
-        ffi.Int64,
-      )
-    >
-  >("__StoryDraft_add_slide_future_poll");
-
-  late final _storyDraftAddSlideFuturePoll =
-      _storyDraftAddSlideFuturePollPtr
-          .asFunction<
-            _StoryDraftAddSlideFuturePollReturn Function(int, int, int)
-          >();
   late final _storyDraftSendFuturePollPtr = _lookup<
     ffi.NativeFunction<
       _StoryDraftSendFuturePollReturn Function(
@@ -40962,6 +40893,37 @@ class NewsEntry {
     return tmp2;
   }
 
+  /// make a builder for updating the news entry
+  NewsEntryUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryUpdateBuilder(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// whether or not this user can redact this item
   Future<bool> canRedact() {
     var tmp0 = 0;
@@ -41040,7 +41002,7 @@ class NewsEntryDraft {
   NewsEntryDraft._(this._api, this._box);
 
   /// create news slide draft
-  Future<bool> addSlide(NewsSlideDraft baseDraft) {
+  NewsEntryDraft addSlide(NewsSlideDraft baseDraft) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41049,14 +41011,14 @@ class NewsEntryDraft {
     final tmp3 = _api._newsEntryDraftAddSlide(tmp0, tmp2);
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__NewsEntryDraft_add_slide_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_NewsEntryDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__newsEntryDraftAddSlideFuturePoll);
+    final tmp4 = NewsEntryDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// change position of slides draft of this news entry
-  void swapSlides(int from, int to) {
+  NewsEntryDraft swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41065,8 +41027,31 @@ class NewsEntryDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._newsEntryDraftSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._newsEntryDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_NewsEntryDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = NewsEntryDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// get a copy of the news slide set for this news entry draft
@@ -41084,11 +41069,16 @@ class NewsEntryDraft {
   }
 
   /// clear slides
-  void unsetSlides() {
+  NewsEntryDraft unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._newsEntryDraftUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._newsEntryDraftUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsEntryDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// create this news entry
@@ -41117,7 +41107,7 @@ class NewsEntryUpdateBuilder {
   NewsEntryUpdateBuilder._(this._api, this._box);
 
   /// set the slides for this news entry
-  Future<bool> addSlide(NewsSlideDraft draft) {
+  Future<NewsEntryUpdateBuilder> addSlide(NewsSlideDraft draft) {
     final tmp1 = draft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41140,22 +41130,32 @@ class NewsEntryUpdateBuilder {
   }
 
   /// reset slides for this news entry
-  void unsetSlides() {
+  NewsEntryUpdateBuilder unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._newsEntryUpdateBuilderUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._newsEntryUpdateBuilderUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetSlidesUpdate() {
+  NewsEntryUpdateBuilder unsetSlidesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._newsEntryUpdateBuilderUnsetSlidesUpdate(tmp0);
-    return;
+    final tmp1 = _api._newsEntryUpdateBuilderUnsetSlidesUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set position of slides for this news entry
-  void swapSlides(int from, int to) {
+  NewsEntryUpdateBuilder swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41164,8 +41164,31 @@ class NewsEntryUpdateBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._newsEntryUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._newsEntryUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_NewsEntryUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = NewsEntryUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// update this news entry
@@ -41474,6 +41497,37 @@ class Story {
     return tmp2;
   }
 
+  /// make a builder for updating the story
+  StoryUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._storyUpdateBuilder(tmp0);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      debugAllocation("handle error", tmp4, tmp5);
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(
+        tmp4_0.asTypedList(tmp5),
+        allowMalformed: true,
+      );
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_StoryUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// whether or not this user can redact this item
   Future<bool> canRedact() {
     var tmp0 = 0;
@@ -41539,7 +41593,7 @@ class StoryDraft {
   StoryDraft._(this._api, this._box);
 
   /// create news slide draft
-  Future<bool> addSlide(StorySlideDraft baseDraft) {
+  StoryDraft addSlide(StorySlideDraft baseDraft) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41548,14 +41602,14 @@ class StoryDraft {
     final tmp3 = _api._storyDraftAddSlide(tmp0, tmp2);
     final tmp5 = tmp3;
     final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__StoryDraft_add_slide_future_drop");
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_StoryDraft");
     tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__storyDraftAddSlideFuturePoll);
+    final tmp4 = StoryDraft._(_api, tmp5_1);
     return tmp4;
   }
 
   /// change position of slides draft of this news entry
-  void swapSlides(int from, int to) {
+  StoryDraft swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41564,8 +41618,31 @@ class StoryDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._storyDraftSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._storyDraftSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_StoryDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = StoryDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// get a copy of the news slide set for this news entry draft
@@ -41583,11 +41660,16 @@ class StoryDraft {
   }
 
   /// clear slides
-  void unsetSlides() {
+  StoryDraft unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._storyDraftUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._storyDraftUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoryDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// create this news entry
@@ -41616,7 +41698,7 @@ class StoryUpdateBuilder {
   StoryUpdateBuilder._(this._api, this._box);
 
   /// set the slides for this news entry
-  Future<bool> addSlide(StorySlideDraft draft) {
+  Future<StoryUpdateBuilder> addSlide(StorySlideDraft draft) {
     final tmp1 = draft;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41639,22 +41721,32 @@ class StoryUpdateBuilder {
   }
 
   /// reset slides for this news entry
-  void unsetSlides() {
+  StoryUpdateBuilder unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._storyUpdateBuilderUnsetSlides(tmp0);
-    return;
+    final tmp1 = _api._storyUpdateBuilderUnsetSlides(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetSlidesUpdate() {
+  StoryUpdateBuilder unsetSlidesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._storyUpdateBuilderUnsetSlidesUpdate(tmp0);
-    return;
+    final tmp1 = _api._storyUpdateBuilderUnsetSlidesUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = StoryUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set position of slides for this news entry
-  void swapSlides(int from, int to) {
+  StoryUpdateBuilder swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41663,8 +41755,31 @@ class StoryUpdateBuilder {
     tmp0 = _box.borrow();
     tmp2 = tmp1;
     tmp4 = tmp3;
-    _api._storyUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
-    return;
+    final tmp5 = _api._storyUpdateBuilderSwapSlides(tmp0, tmp2, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_StoryUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = StoryUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// update this news entry
@@ -41694,7 +41809,7 @@ class PinDraft {
   PinDraft._(this._api, this._box);
 
   /// set the title for this pin
-  void title(String title) {
+  PinDraft title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41709,12 +41824,17 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content for this pin
-  void contentText(String text) {
+  PinDraft contentText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41729,12 +41849,17 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftContentText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftContentText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content of the pin through markdown
-  void contentMarkdown(String text) {
+  PinDraft contentMarkdown(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41749,12 +41874,17 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftContentMarkdown(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftContentMarkdown(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content of the pin through html
-  void contentHtml(String text, String html) {
+  PinDraft contentHtml(String text, String html) {
     final tmp1 = text;
     final tmp5 = html;
     var tmp0 = 0;
@@ -41781,19 +41911,37 @@ class PinDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._pinDraftContentHtml(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
-    return;
+    final tmp9 = _api._pinDraftContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_PinDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = PinDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetContent() {
+  PinDraft unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinDraftUnsetContent(tmp0);
-    return;
+    final tmp1 = _api._pinDraftUnsetContent(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the url for this pin
-  void url(String text) {
+  PinDraft url(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -41808,33 +41956,53 @@ class PinDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinDraftUrl(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinDraftUrl(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetUrl() {
+  PinDraft unsetUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinDraftUnsetUrl(tmp0);
-    return;
+    final tmp1 = _api._pinDraftUnsetUrl(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the display for this pin
-  void display(Display display) {
+  PinDraft display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._pinDraftDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._pinDraftDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_PinDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = PinDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  PinDraft unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinDraftUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._pinDraftUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// fire this pin over - the event_id is the confirmation from the server.
@@ -42208,7 +42376,7 @@ class PinUpdateBuilder {
   PinUpdateBuilder._(this._api, this._box);
 
   /// set the title for this pin
-  void title(String title) {
+  PinUpdateBuilder title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42223,19 +42391,29 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetTitleUpdate() {
+  PinUpdateBuilder unsetTitleUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetTitleUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetTitleUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the content for this pin
-  void contentText(String text) {
+  PinUpdateBuilder contentText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42250,11 +42428,16 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderContentText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderContentText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void contentMarkdown(String text) {
+  PinUpdateBuilder contentMarkdown(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42269,11 +42452,16 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderContentMarkdown(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderContentMarkdown(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void contentHtml(String text, String html) {
+  PinUpdateBuilder contentHtml(String text, String html) {
     final tmp1 = text;
     final tmp5 = html;
     var tmp0 = 0;
@@ -42300,26 +42488,49 @@ class PinUpdateBuilder {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._pinUpdateBuilderContentHtml(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
-    return;
+    final tmp9 = _api._pinUpdateBuilderContentHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_PinUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = PinUpdateBuilder._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetContent() {
+  PinUpdateBuilder unsetContent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetContent(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetContent(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetContentUpdate() {
+  PinUpdateBuilder unsetContentUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetContentUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetContentUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the url for this pin
-  void url(String text) {
+  PinUpdateBuilder url(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42334,47 +42545,77 @@ class PinUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._pinUpdateBuilderUrl(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._pinUpdateBuilderUrl(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetUrl() {
+  PinUpdateBuilder unsetUrl() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetUrl(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetUrl(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetUrlUpdate() {
+  PinUpdateBuilder unsetUrlUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetUrlUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetUrlUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the display for this pin
-  void display(Display display) {
+  PinUpdateBuilder display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._pinUpdateBuilderDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._pinUpdateBuilderDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_PinUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = PinUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  PinUpdateBuilder unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDisplayUpdate() {
+  PinUpdateBuilder unsetDisplayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._pinUpdateBuilderUnsetDisplayUpdate(tmp0);
-    return;
+    final tmp1 = _api._pinUpdateBuilderUnsetDisplayUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_PinUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// fire this update over - the event_id is the confirmation from the server.
@@ -42795,7 +43036,7 @@ class CalendarEventUpdateBuilder {
   CalendarEventUpdateBuilder._(this._api, this._box);
 
   /// set title of the event>
-  void title(String title) {
+  CalendarEventUpdateBuilder title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42810,12 +43051,17 @@ class CalendarEventUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description text
-  void descriptionText(String body) {
+  CalendarEventUpdateBuilder descriptionText(String body) {
     final tmp1 = body;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42830,12 +43076,22 @@ class CalendarEventUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventUpdateBuilderDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventUpdateBuilderDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description html text
-  void descriptionHtml(String body, String htmlBody) {
+  CalendarEventUpdateBuilder descriptionHtml(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -42862,7 +43118,7 @@ class CalendarEventUpdateBuilder {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._calendarEventUpdateBuilderDescriptionHtml(
+    final tmp9 = _api._calendarEventUpdateBuilderDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -42871,11 +43127,16 @@ class CalendarEventUpdateBuilder {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// set utc start in rfc3339 string
-  void utcStartFromRfc3339(String utcStart) {
+  CalendarEventUpdateBuilder utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42900,6 +43161,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -42914,11 +43176,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc start in rfc2822 string
-  void utcStartFromRfc2822(String utcStart) {
+  CalendarEventUpdateBuilder utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -42943,6 +43209,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -42957,11 +43224,18 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc start in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  CalendarEventUpdateBuilder utcStartFromFormat(
+    String utcStart,
+    String format,
+  ) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43001,6 +43275,7 @@ class CalendarEventUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43015,11 +43290,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set utc end in rfc3339 string
-  void utcEndFromRfc3339(String utcEnd) {
+  CalendarEventUpdateBuilder utcEndFromRfc3339(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43044,6 +43323,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43058,11 +43338,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc end in rfc2822 string
-  void utcEndFromRfc2822(String utcEnd) {
+  CalendarEventUpdateBuilder utcEndFromRfc2822(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43087,6 +43371,7 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43101,11 +43386,15 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set utc end in custom format
-  void utcEndFromFormat(String utcEnd, String format) {
+  CalendarEventUpdateBuilder utcEndFromFormat(String utcEnd, String format) {
     final tmp1 = utcEnd;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43145,6 +43434,7 @@ class CalendarEventUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43159,13 +43449,17 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void addPhysicalLocation(
+  CalendarEventUpdateBuilder addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43309,7 +43603,7 @@ class CalendarEventUpdateBuilder {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventUpdateBuilderAddPhysicalLocation(
+    final tmp43 = _api._calendarEventUpdateBuilderAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43340,12 +43634,17 @@ class CalendarEventUpdateBuilder {
       tmp41,
       tmp42,
     );
-    return;
+    final tmp45 = tmp43;
+    final ffi.Pointer<ffi.Void> tmp45_0 = ffi.Pointer.fromAddress(tmp45);
+    final tmp45_1 = _Box(_api, tmp45_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp45_1._finalizer = _api._registerFinalizer(tmp45_1);
+    final tmp44 = CalendarEventUpdateBuilder._(_api, tmp45_1);
+    return tmp44;
   }
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void addVirtualLocation(
+  CalendarEventUpdateBuilder addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -43442,7 +43741,7 @@ class CalendarEventUpdateBuilder {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventUpdateBuilderAddVirtualLocation(
+    final tmp29 = _api._calendarEventUpdateBuilderAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -43464,15 +43763,25 @@ class CalendarEventUpdateBuilder {
       tmp27,
       tmp28,
     );
-    return;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 = _Box(_api, tmp31_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 = CalendarEventUpdateBuilder._(_api, tmp31_1);
+    return tmp30;
   }
 
   /// clear all locations of this cal event
-  void unsetLocations() {
+  CalendarEventUpdateBuilder unsetLocations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._calendarEventUpdateBuilderUnsetLocations(tmp0);
-    return;
+    final tmp1 = _api._calendarEventUpdateBuilderUnsetLocations(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CalendarEventUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CalendarEventUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// send builder update
@@ -43508,7 +43817,7 @@ class CalendarEventDraft {
   CalendarEventDraft._(this._api, this._box);
 
   /// set the title for this calendar event
-  void title(String title) {
+  CalendarEventDraft title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43523,12 +43832,17 @@ class CalendarEventDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventDraftTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventDraftTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description for this calendar event
-  void descriptionText(String text) {
+  CalendarEventDraft descriptionText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43543,12 +43857,22 @@ class CalendarEventDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._calendarEventDraftDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._calendarEventDraftDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CalendarEventDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description html for this calendar event
-  void descriptionHtml(String text, String html) {
+  CalendarEventDraft descriptionHtml(String text, String html) {
     final tmp1 = text;
     final tmp5 = html;
     var tmp0 = 0;
@@ -43575,7 +43899,7 @@ class CalendarEventDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._calendarEventDraftDescriptionHtml(
+    final tmp9 = _api._calendarEventDraftDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -43584,18 +43908,28 @@ class CalendarEventDraft {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetDescription() {
+  CalendarEventDraft unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._calendarEventDraftUnsetDescription(tmp0);
-    return;
+    final tmp1 = _api._calendarEventDraftUnsetDescription(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CalendarEventDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CalendarEventDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the utc_start for this calendar event in rfc3339 format
-  void utcStartFromRfc3339(String utcStart) {
+  CalendarEventDraft utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43620,6 +43954,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43634,11 +43969,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this calendar event in rfc2822 format
-  void utcStartFromRfc2822(String utcStart) {
+  CalendarEventDraft utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43663,6 +44002,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43677,11 +44017,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this calendar event in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  CalendarEventDraft utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43721,6 +44065,7 @@ class CalendarEventDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43735,11 +44080,15 @@ class CalendarEventDraft {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventDraft._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set the utc_end for this calendar event in rfc3339 format
-  void utcEndFromRfc3339(String utcEnd) {
+  CalendarEventDraft utcEndFromRfc3339(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43764,6 +44113,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43778,11 +44128,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_end for this calendar event in rfc2822 format
-  void utcEndFromRfc2822(String utcEnd) {
+  CalendarEventDraft utcEndFromRfc2822(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43807,6 +44161,7 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43821,11 +44176,15 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_end for this calendar event in custom format
-  void utcEndFromFormat(String utcEnd, String format) {
+  CalendarEventDraft utcEndFromFormat(String utcEnd, String format) {
     final tmp1 = utcEnd;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43865,6 +44224,7 @@ class CalendarEventDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43879,13 +44239,17 @@ class CalendarEventDraft {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = CalendarEventDraft._(_api, tmp15_1);
+    return tmp10;
   }
 
   /// set the physical location details for this calendar event
   /// description_html means by markdown
   /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-  void addPhysicalLocation(
+  CalendarEventDraft addPhysicalLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -44029,7 +44393,7 @@ class CalendarEventDraft {
       tmp40 = tmp40_0.address;
       tmp42 = tmp41;
     }
-    _api._calendarEventDraftAddPhysicalLocation(
+    final tmp43 = _api._calendarEventDraftAddPhysicalLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -44060,12 +44424,17 @@ class CalendarEventDraft {
       tmp41,
       tmp42,
     );
-    return;
+    final tmp45 = tmp43;
+    final ffi.Pointer<ffi.Void> tmp45_0 = ffi.Pointer.fromAddress(tmp45);
+    final tmp45_1 = _Box(_api, tmp45_0, "drop_box_CalendarEventDraft");
+    tmp45_1._finalizer = _api._registerFinalizer(tmp45_1);
+    final tmp44 = CalendarEventDraft._(_api, tmp45_1);
+    return tmp44;
   }
 
   /// set the virtual location details for this calendar event
   /// description_html means by markdown
-  void addVirtualLocation(
+  CalendarEventDraft addVirtualLocation(
     String? name,
     String? description,
     String? descriptionHtml,
@@ -44162,7 +44531,7 @@ class CalendarEventDraft {
       tmp26 = tmp26_0.address;
       tmp28 = tmp27;
     }
-    _api._calendarEventDraftAddVirtualLocation(
+    final tmp29 = _api._calendarEventDraftAddVirtualLocation(
       tmp0,
       tmp2,
       tmp4,
@@ -44184,7 +44553,12 @@ class CalendarEventDraft {
       tmp27,
       tmp28,
     );
-    return;
+    final tmp31 = tmp29;
+    final ffi.Pointer<ffi.Void> tmp31_0 = ffi.Pointer.fromAddress(tmp31);
+    final tmp31_1 = _Box(_api, tmp31_0, "drop_box_CalendarEventDraft");
+    tmp31_1._finalizer = _api._registerFinalizer(tmp31_1);
+    final tmp30 = CalendarEventDraft._(_api, tmp31_1);
+    return tmp30;
   }
 
   /// create this calendar event
@@ -44610,7 +44984,7 @@ class RsvpDraft {
   RsvpDraft._(this._api, this._box);
 
   /// set status of this RSVP
-  void status(String status) {
+  RsvpDraft status(String status) {
     final tmp1 = status;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -44625,8 +44999,31 @@ class RsvpDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._rsvpDraftStatus(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._rsvpDraftStatus(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      debugAllocation("handle error", tmp8, tmp9);
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(
+        tmp8_0.asTypedList(tmp9),
+        allowMalformed: true,
+      );
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_RsvpDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = RsvpDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// create this RSVP
@@ -51061,29 +51458,11 @@ class MsgDraft {
     tmp0 = _box.borrow();
     tmp2 = tmp1 ? 1 : 0;
     final tmp3 = _api._msgDraftAddRoomMention(tmp0, tmp2);
-    final tmp5 = tmp3.arg0;
-    final tmp6 = tmp3.arg1;
-    final tmp7 = tmp3.arg2;
-    final tmp8 = tmp3.arg3;
-    final tmp9 = tmp3.arg4;
-    if (tmp5 == 0) {
-      debugAllocation("handle error", tmp6, tmp7);
-      final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      final tmp5_0 = utf8.decode(
-        tmp6_0.asTypedList(tmp7),
-        allowMalformed: true,
-      );
-      if (tmp7 > 0) {
-        final ffi.Pointer<ffi.Void> tmp6_0;
-        tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-        _api.__deallocate(tmp6_0, tmp8, 1);
-      }
-      throw tmp5_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
-    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_MsgDraft");
-    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
-    final tmp4 = MsgDraft._(_api, tmp9_1);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_MsgDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = MsgDraft._(_api, tmp5_1);
     return tmp4;
   }
 
@@ -53330,7 +53709,7 @@ class CommentDraft {
   CommentDraft._(this._api, this._box);
 
   /// set the content of the draft to body
-  void contentText(String body) {
+  CommentDraft contentText(String body) {
     final tmp1 = body;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -53345,12 +53724,17 @@ class CommentDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._commentDraftContentText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._commentDraftContentText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_CommentDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = CommentDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the content to a formatted body of html_body, where body is the tag-stripped version
-  void contentFormatted(String body, String htmlBody) {
+  CommentDraft contentFormatted(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -53377,7 +53761,7 @@ class CommentDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._commentDraftContentFormatted(
+    final tmp9 = _api._commentDraftContentFormatted(
       tmp0,
       tmp2,
       tmp3,
@@ -53386,7 +53770,12 @@ class CommentDraft {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CommentDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = CommentDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
   /// fire this comment over - the event_id is the confirmation from the server.
@@ -54958,7 +55347,7 @@ class TaskUpdateBuilder {
   TaskUpdateBuilder._(this._api, this._box);
 
   /// set the title for this task
-  void title(String title) {
+  TaskUpdateBuilder title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -54973,19 +55362,29 @@ class TaskUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskUpdateBuilderTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void unsetTitleUpdate() {
+  TaskUpdateBuilder unsetTitleUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetTitleUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetTitleUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the description for this task list
-  void descriptionText(String text) {
+  TaskUpdateBuilder descriptionText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55000,12 +55399,17 @@ class TaskUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskUpdateBuilderDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskUpdateBuilderDescriptionText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description html text
-  void descriptionHtml(String body, String htmlBody) {
+  TaskUpdateBuilder descriptionHtml(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -55032,7 +55436,7 @@ class TaskUpdateBuilder {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._taskUpdateBuilderDescriptionHtml(
+    final tmp9 = _api._taskUpdateBuilderDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -55041,68 +55445,108 @@ class TaskUpdateBuilder {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = TaskUpdateBuilder._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetDescription() {
+  TaskUpdateBuilder unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetDescription(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetDescription(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDescriptionUpdate() {
+  TaskUpdateBuilder unsetDescriptionUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetDescriptionUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetDescriptionUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the sort order for this task list
-  void sortOrder(int sortOrder) {
+  TaskUpdateBuilder sortOrder(int sortOrder) {
     final tmp1 = sortOrder;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskUpdateBuilderSortOrder(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskUpdateBuilderSortOrder(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetSortOrderUpdate() {
+  TaskUpdateBuilder unsetSortOrderUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetSortOrderUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetSortOrderUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the display of the update
-  void display(Display display) {
+  TaskUpdateBuilder display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskUpdateBuilderDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskUpdateBuilderDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  TaskUpdateBuilder unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDisplayUpdate() {
+  TaskUpdateBuilder unsetDisplayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetDisplayUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetDisplayUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the due day for this task
-  void dueDate(int year, int month, int day) {
+  TaskUpdateBuilder dueDate(int year, int month, int day) {
     final tmp1 = year;
     final tmp3 = month;
     final tmp5 = day;
@@ -55114,51 +55558,81 @@ class TaskUpdateBuilder {
     tmp2 = tmp1;
     tmp4 = tmp3;
     tmp6 = tmp5;
-    _api._taskUpdateBuilderDueDate(tmp0, tmp2, tmp4, tmp6);
-    return;
+    final tmp7 = _api._taskUpdateBuilderDueDate(tmp0, tmp2, tmp4, tmp6);
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_TaskUpdateBuilder");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = TaskUpdateBuilder._(_api, tmp9_1);
+    return tmp8;
   }
 
-  void unsetDueDate() {
+  TaskUpdateBuilder unsetDueDate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetDueDate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetDueDate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDueDateUpdate() {
+  TaskUpdateBuilder unsetDueDateUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetDueDateUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetDueDateUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the due time of day in seconds since midnight UTC
-  void utcDueTimeOfDay(int seconds) {
+  TaskUpdateBuilder utcDueTimeOfDay(int seconds) {
     final tmp1 = seconds;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskUpdateBuilderUtcDueTimeOfDay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskUpdateBuilderUtcDueTimeOfDay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetUtcDueTimeOfDay() {
+  TaskUpdateBuilder unsetUtcDueTimeOfDay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetUtcDueTimeOfDay(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetUtcDueTimeOfDay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetUtcDueTimeOfDayUpdate() {
+  TaskUpdateBuilder unsetUtcDueTimeOfDayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetUtcDueTimeOfDayUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetUtcDueTimeOfDayUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the utc_start for this task list in rfc3339 format
-  void utcStartFromRfc3339(String utcStart) {
+  TaskUpdateBuilder utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55183,6 +55657,7 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55197,11 +55672,15 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task list in rfc2822 format
-  void utcStartFromRfc2822(String utcStart) {
+  TaskUpdateBuilder utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55226,6 +55705,7 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55240,11 +55720,15 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskUpdateBuilder._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task list in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  TaskUpdateBuilder utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -55284,6 +55768,7 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -55298,113 +55783,182 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_TaskUpdateBuilder");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = TaskUpdateBuilder._(_api, tmp15_1);
+    return tmp10;
   }
 
-  void unsetUtcStart() {
+  TaskUpdateBuilder unsetUtcStart() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetUtcStart(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetUtcStart(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetUtcStartUpdate() {
+  TaskUpdateBuilder unsetUtcStartUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetUtcStartUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetUtcStartUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the sort order for this task list
-  void progressPercent(int progressPercent) {
+  TaskUpdateBuilder progressPercent(int progressPercent) {
     final tmp1 = progressPercent;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskUpdateBuilderProgressPercent(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskUpdateBuilderProgressPercent(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetProgressPercent() {
+  TaskUpdateBuilder unsetProgressPercent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetProgressPercent(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetProgressPercent(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetProgressPercentUpdate() {
+  TaskUpdateBuilder unsetProgressPercentUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetProgressPercentUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetProgressPercentUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the keywords for this task list
-  void keywords(FfiListFfiString keywords) {
+  TaskUpdateBuilder keywords(FfiListFfiString keywords) {
     final tmp1 = keywords;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskUpdateBuilderKeywords(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskUpdateBuilderKeywords(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetKeywords() {
+  TaskUpdateBuilder unsetKeywords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetKeywords(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetKeywords(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetKeywordsUpdate() {
+  TaskUpdateBuilder unsetKeywordsUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetKeywordsUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetKeywordsUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the categories for this task list
-  void categories(FfiListFfiString categories) {
+  TaskUpdateBuilder categories(FfiListFfiString categories) {
     final tmp1 = categories;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskUpdateBuilderCategories(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskUpdateBuilderCategories(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetCategories() {
+  TaskUpdateBuilder unsetCategories() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetCategories(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetCategories(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetCategoriesUpdate() {
+  TaskUpdateBuilder unsetCategoriesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderUnsetCategoriesUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderUnsetCategoriesUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// send this task list draft
   /// mark it done
-  void markDone() {
+  TaskUpdateBuilder markDone() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderMarkDone(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderMarkDone(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// mark as not done
-  void markUndone() {
+  TaskUpdateBuilder markUndone() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskUpdateBuilderMarkUndone(tmp0);
-    return;
+    final tmp1 = _api._taskUpdateBuilderMarkUndone(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// update this task
@@ -55433,7 +55987,7 @@ class TaskDraft {
   TaskDraft._(this._api, this._box);
 
   /// set the title for this task
-  void title(String title) {
+  TaskDraft title(String title) {
     final tmp1 = title;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55448,12 +56002,17 @@ class TaskDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskDraftTitle(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskDraftTitle(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description for this task
-  void descriptionText(String text) {
+  TaskDraft descriptionText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55468,12 +56027,17 @@ class TaskDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskDraftDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskDraftDescriptionText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description html text
-  void descriptionHtml(String body, String htmlBody) {
+  TaskDraft descriptionHtml(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -55500,48 +56064,81 @@ class TaskDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._taskDraftDescriptionHtml(tmp0, tmp2, tmp3, tmp4, tmp6, tmp7, tmp8);
-    return;
+    final tmp9 = _api._taskDraftDescriptionHtml(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = TaskDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetDescription() {
+  TaskDraft unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetDescription(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetDescription(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the sort order for this task
-  void sortOrder(int sortOrder) {
+  TaskDraft sortOrder(int sortOrder) {
     final tmp1 = sortOrder;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskDraftSortOrder(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskDraftSortOrder(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
   /// set the disply options for this task
-  void display(Display display) {
+  TaskDraft display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskDraftDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskDraftDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  TaskDraft unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the due day for this task
-  void dueDate(int year, int month, int day) {
+  TaskDraft dueDate(int year, int month, int day) {
     final tmp1 = year;
     final tmp3 = month;
     final tmp5 = day;
@@ -55553,37 +56150,57 @@ class TaskDraft {
     tmp2 = tmp1;
     tmp4 = tmp3;
     tmp6 = tmp5;
-    _api._taskDraftDueDate(tmp0, tmp2, tmp4, tmp6);
-    return;
+    final tmp7 = _api._taskDraftDueDate(tmp0, tmp2, tmp4, tmp6);
+    final tmp9 = tmp7;
+    final ffi.Pointer<ffi.Void> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
+    final tmp9_1 = _Box(_api, tmp9_0, "drop_box_TaskDraft");
+    tmp9_1._finalizer = _api._registerFinalizer(tmp9_1);
+    final tmp8 = TaskDraft._(_api, tmp9_1);
+    return tmp8;
   }
 
-  void unsetDueDate() {
+  TaskDraft unsetDueDate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetDueDate(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetDueDate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the due time of day in seconds since midnight UTC
-  void utcDueTimeOfDay(int seconds) {
+  TaskDraft utcDueTimeOfDay(int seconds) {
     final tmp1 = seconds;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskDraftUtcDueTimeOfDay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskDraftUtcDueTimeOfDay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetUtcDueTimeOfDay() {
+  TaskDraft unsetUtcDueTimeOfDay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetUtcDueTimeOfDay(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetUtcDueTimeOfDay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the utc_start for this task in rfc3339 format
-  void utcStartFromRfc3339(String utcStart) {
+  TaskDraft utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55603,6 +56220,7 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55617,11 +56235,15 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task in rfc2822 format
-  void utcStartFromRfc2822(String utcStart) {
+  TaskDraft utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55641,6 +56263,7 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55655,11 +56278,15 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp6 = TaskDraft._(_api, tmp11_1);
+    return tmp6;
   }
 
   /// set the utc_start for this task in custom format
-  void utcStartFromFormat(String utcStart, String format) {
+  TaskDraft utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -55699,6 +56326,7 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -55713,68 +56341,107 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    return;
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_TaskDraft");
+    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
+    final tmp10 = TaskDraft._(_api, tmp15_1);
+    return tmp10;
   }
 
-  void unsetUtcStart() {
+  TaskDraft unsetUtcStart() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetUtcStart(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetUtcStart(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the sort order for this task
-  void progressPercent(int progressPercent) {
+  TaskDraft progressPercent(int progressPercent) {
     final tmp1 = progressPercent;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskDraftProgressPercent(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskDraftProgressPercent(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetProgressPercent() {
+  TaskDraft unsetProgressPercent() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetProgressPercent(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetProgressPercent(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the keywords for this task
-  void keywords(FfiListFfiString keywords) {
+  TaskDraft keywords(FfiListFfiString keywords) {
     final tmp1 = keywords;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskDraftKeywords(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskDraftKeywords(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetKeywords() {
+  TaskDraft unsetKeywords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetKeywords(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetKeywords(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the categories for this task
-  void categories(FfiListFfiString categories) {
+  TaskDraft categories(FfiListFfiString categories) {
     final tmp1 = categories;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskDraftCategories(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskDraftCategories(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetCategories() {
+  TaskDraft unsetCategories() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskDraftUnsetCategories(tmp0);
-    return;
+    final tmp1 = _api._taskDraftUnsetCategories(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// create this task
@@ -56233,7 +56900,7 @@ class TaskListDraft {
   TaskListDraft._(this._api, this._box);
 
   /// set the name for this task list
-  void name(String name) {
+  TaskListDraft name(String name) {
     final tmp1 = name;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -56248,12 +56915,17 @@ class TaskListDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskListDraftName(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskListDraftName(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskListDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description for this task list
-  void descriptionText(String text) {
+  TaskListDraft descriptionText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -56268,11 +56940,16 @@ class TaskListDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskListDraftDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskListDraftDescriptionText(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskListDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
-  void descriptionMarkdown(String text) {
+  TaskListDraft descriptionMarkdown(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -56287,12 +56964,17 @@ class TaskListDraft {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskListDraftDescriptionMarkdown(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskListDraftDescriptionMarkdown(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskListDraft._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description html text
-  void descriptionHtml(String body, String htmlBody) {
+  TaskListDraft descriptionHtml(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -56319,7 +57001,7 @@ class TaskListDraft {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._taskListDraftDescriptionHtml(
+    final tmp9 = _api._taskListDraftDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -56328,79 +57010,124 @@ class TaskListDraft {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskListDraft");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = TaskListDraft._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetDescription() {
+  TaskListDraft unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListDraftUnsetDescription(tmp0);
-    return;
+    final tmp1 = _api._taskListDraftUnsetDescription(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the sort order for this task list
-  void sortOrder(int sortOrder) {
+  TaskListDraft sortOrder(int sortOrder) {
     final tmp1 = sortOrder;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskListDraftSortOrder(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListDraftSortOrder(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
   /// set the display for this task list
-  void display(Display display) {
+  TaskListDraft display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskListDraftDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListDraftDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  TaskListDraft unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListDraftUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._taskListDraftUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the keywords for this task list
-  void keywords(FfiListFfiString keywords) {
+  TaskListDraft keywords(FfiListFfiString keywords) {
     final tmp1 = keywords;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskListDraftKeywords(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListDraftKeywords(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetKeywords() {
+  TaskListDraft unsetKeywords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListDraftUnsetKeywords(tmp0);
-    return;
+    final tmp1 = _api._taskListDraftUnsetKeywords(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the categories for this task list
-  void categories(FfiListFfiString categories) {
+  TaskListDraft categories(FfiListFfiString categories) {
     final tmp1 = categories;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskListDraftCategories(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListDraftCategories(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListDraft");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListDraft._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetCategories() {
+  TaskListDraft unsetCategories() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListDraftUnsetCategories(tmp0);
-    return;
+    final tmp1 = _api._taskListDraftUnsetCategories(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListDraft._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// create this task list
@@ -56429,7 +57156,7 @@ class TaskListUpdateBuilder {
   TaskListUpdateBuilder._(this._api, this._box);
 
   /// set the name for this task list
-  void name(String name) {
+  TaskListUpdateBuilder name(String name) {
     final tmp1 = name;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -56444,12 +57171,17 @@ class TaskListUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskListUpdateBuilderName(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskListUpdateBuilderName(tmp0, tmp2, tmp3, tmp4);
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskListUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set the description for this task list
-  void descriptionText(String text) {
+  TaskListUpdateBuilder descriptionText(String text) {
     final tmp1 = text;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -56464,12 +57196,22 @@ class TaskListUpdateBuilder {
     tmp2_1.setAll(0, tmp1_0);
     tmp2 = tmp2_0.address;
     tmp4 = tmp3;
-    _api._taskListUpdateBuilderDescriptionText(tmp0, tmp2, tmp3, tmp4);
-    return;
+    final tmp5 = _api._taskListUpdateBuilderDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = TaskListUpdateBuilder._(_api, tmp7_1);
+    return tmp6;
   }
 
   /// set description html text
-  void descriptionHtml(String body, String htmlBody) {
+  TaskListUpdateBuilder descriptionHtml(String body, String htmlBody) {
     final tmp1 = body;
     final tmp5 = htmlBody;
     var tmp0 = 0;
@@ -56496,7 +57238,7 @@ class TaskListUpdateBuilder {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    _api._taskListUpdateBuilderDescriptionHtml(
+    final tmp9 = _api._taskListUpdateBuilderDescriptionHtml(
       tmp0,
       tmp2,
       tmp3,
@@ -56505,107 +57247,172 @@ class TaskListUpdateBuilder {
       tmp7,
       tmp8,
     );
-    return;
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskListUpdateBuilder");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = TaskListUpdateBuilder._(_api, tmp11_1);
+    return tmp10;
   }
 
-  void unsetDescription() {
+  TaskListUpdateBuilder unsetDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetDescription(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetDescription(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDescriptionUpdate() {
+  TaskListUpdateBuilder unsetDescriptionUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetDescriptionUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetDescriptionUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the sort order for this task list
-  void sortOrder(int sortOrder) {
+  TaskListUpdateBuilder sortOrder(int sortOrder) {
     final tmp1 = sortOrder;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1;
-    _api._taskListUpdateBuilderSortOrder(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListUpdateBuilderSortOrder(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
   /// set the display for this task list
-  void display(Display display) {
+  TaskListUpdateBuilder display(Display display) {
     final tmp1 = display;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskListUpdateBuilderDisplay(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListUpdateBuilderDisplay(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetDisplay() {
+  TaskListUpdateBuilder unsetDisplay() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetDisplay(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetDisplay(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetDisplayUpdate() {
+  TaskListUpdateBuilder unsetDisplayUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetDisplayUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetDisplayUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the keywords for this task list
-  void keywords(FfiListFfiString keywords) {
+  TaskListUpdateBuilder keywords(FfiListFfiString keywords) {
     final tmp1 = keywords;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskListUpdateBuilderKeywords(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListUpdateBuilderKeywords(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetKeywords() {
+  TaskListUpdateBuilder unsetKeywords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetKeywords(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetKeywords(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetKeywordsUpdate() {
+  TaskListUpdateBuilder unsetKeywordsUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetKeywordsUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetKeywordsUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// set the categories for this task list
-  void categories(FfiListFfiString categories) {
+  TaskListUpdateBuilder categories(FfiListFfiString categories) {
     final tmp1 = categories;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    _api._taskListUpdateBuilderCategories(tmp0, tmp2);
-    return;
+    final tmp3 = _api._taskListUpdateBuilderCategories(tmp0, tmp2);
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_TaskListUpdateBuilder");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 = TaskListUpdateBuilder._(_api, tmp5_1);
+    return tmp4;
   }
 
-  void unsetCategories() {
+  TaskListUpdateBuilder unsetCategories() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetCategories(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetCategories(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
-  void unsetCategoriesUpdate() {
+  TaskListUpdateBuilder unsetCategoriesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    _api._taskListUpdateBuilderUnsetCategoriesUpdate(tmp0);
-    return;
+    final tmp1 = _api._taskListUpdateBuilderUnsetCategoriesUpdate(tmp0);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_TaskListUpdateBuilder");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp3_1);
+    return tmp2;
   }
 
   /// update this task
@@ -70775,6 +71582,45 @@ class _NewsEntryGetSlideReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _NewsEntryUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _NewsEntryDraftSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _NewsEntryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
 class _StorySlideTypeStrReturn extends ffi.Struct {
   @ffi.IntPtr()
   external int arg0;
@@ -70805,6 +71651,45 @@ class _StoryGetSlideReturn extends ffi.Struct {
   external int arg0;
   @ffi.IntPtr()
   external int arg1;
+}
+
+class _StoryUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _StoryDraftSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _StoryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _ActerPinTitleReturn extends ffi.Struct {
@@ -70943,6 +71828,8 @@ class _CalendarEventUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -70954,6 +71841,8 @@ class _CalendarEventUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -70965,6 +71854,8 @@ class _CalendarEventUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromRfc3339Return extends ffi.Struct {
@@ -70976,6 +71867,8 @@ class _CalendarEventUpdateBuilderUtcEndFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromRfc2822Return extends ffi.Struct {
@@ -70987,6 +71880,8 @@ class _CalendarEventUpdateBuilderUtcEndFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromFormatReturn extends ffi.Struct {
@@ -70998,6 +71893,8 @@ class _CalendarEventUpdateBuilderUtcEndFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -71009,6 +71906,8 @@ class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -71020,6 +71919,8 @@ class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -71031,6 +71932,8 @@ class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
@@ -71042,6 +71945,8 @@ class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
@@ -71053,6 +71958,8 @@ class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
@@ -71064,6 +71971,8 @@ class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _EventLocationInfoLocationTypeReturn extends ffi.Struct {
@@ -71138,6 +72047,19 @@ class _EventLocationInfoNotesReturn extends ffi.Struct {
 }
 
 class _RsvpManagerRsvpDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.IntPtr()
+  external int arg1;
+  @ffi.UintPtr()
+  external int arg2;
+  @ffi.UintPtr()
+  external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
+}
+
+class _RsvpDraftStatusReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.IntPtr()
@@ -72747,19 +73669,6 @@ class _MsgDraftAddUrlPreviewReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _MsgDraftAddRoomMentionReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.IntPtr()
-  external int arg1;
-  @ffi.UintPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
-}
-
 class _ConvoTopicReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -73019,6 +73928,8 @@ class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -73030,6 +73941,8 @@ class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -73041,6 +73954,8 @@ class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -73052,6 +73967,8 @@ class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -73063,6 +73980,8 @@ class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -73074,6 +73993,8 @@ class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
+  @ffi.IntPtr()
+  external int arg4;
 }
 
 class _TaskListNameReturn extends ffi.Struct {
@@ -75091,21 +76012,6 @@ class _NewsEntryRefDetailsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _NewsEntryDraftAddSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _NewsEntryDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -75132,7 +76038,7 @@ class _NewsEntryUpdateBuilderAddSlideFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.IntPtr()
   external int arg5;
 }
 
@@ -75226,21 +76132,6 @@ class _StoryCommentsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _StoryDraftAddSlideFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.IntPtr()
-  external int arg2;
-  @ffi.UintPtr()
-  external int arg3;
-  @ffi.UintPtr()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
 class _StoryDraftSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -75267,7 +76158,7 @@ class _StoryUpdateBuilderAddSlideFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.UintPtr()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.IntPtr()
   external int arg5;
 }
 

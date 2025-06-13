@@ -406,6 +406,9 @@ object NewsEntry {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the news entry
+    fn update_builder() -> Result<NewsEntryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -424,16 +427,16 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: NewsSlideDraft) -> NewsEntryDraft;
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<NewsEntryDraft>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
 
     /// clear slides
-    fn unset_slides();
+    fn unset_slides() -> NewsEntryDraft;
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
@@ -441,14 +444,14 @@ object NewsEntryDraft {
 
 object NewsEntryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: NewsSlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: NewsSlideDraft) -> Future<Result<NewsEntryUpdateBuilder>>;
 
     /// reset slides for this news entry
-    fn unset_slides();
-    fn unset_slides_update();
+    fn unset_slides() -> NewsEntryUpdateBuilder;
+    fn unset_slides_update() -> NewsEntryUpdateBuilder;
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<NewsEntryUpdateBuilder>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -520,6 +523,9 @@ object Story {
     /// get timestamp of this event
     fn origin_server_ts() -> u64;
 
+    /// make a builder for updating the story
+    fn update_builder() -> Result<StoryUpdateBuilder>;
+
     /// whether or not this user can redact this item
     fn can_redact() -> Future<Result<bool>>;
 
@@ -535,16 +541,16 @@ object Story {
 
 object StoryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(base_draft: StorySlideDraft) -> StoryDraft;
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8);
+    fn swap_slides(from: u8, to:u8) -> Result<StoryDraft>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<StorySlideDraft>;
 
     /// clear slides
-    fn unset_slides();
+    fn unset_slides() -> StoryDraft;
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
@@ -552,14 +558,14 @@ object StoryDraft {
 
 object StoryUpdateBuilder {
     /// set the slides for this news entry
-    fn add_slide(draft: StorySlideDraft) -> Future<Result<bool>>;
+    fn add_slide(draft: StorySlideDraft) -> Future<Result<StoryUpdateBuilder>>;
 
     /// reset slides for this news entry
-    fn unset_slides();
-    fn unset_slides_update();
+    fn unset_slides() -> StoryUpdateBuilder;
+    fn unset_slides_update() -> StoryUpdateBuilder;
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8);
+    fn swap_slides(from: u8, to: u8) -> Result<StoryUpdateBuilder>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -580,23 +586,23 @@ object StoryUpdateBuilder {
 /// Draft a Pin
 object PinDraft {
     /// set the title for this pin
-    fn title(title: string);
+    fn title(title: string) -> PinDraft;
 
     /// set the content for this pin
-    fn content_text(text: string);
+    fn content_text(text: string) -> PinDraft;
     /// set the content of the pin through markdown
-    fn content_markdown(text: string);
+    fn content_markdown(text: string) -> PinDraft;
     /// set the content of the pin through html
-    fn content_html(text: string, html: string);
-    fn unset_content();
+    fn content_html(text: string, html: string) -> PinDraft;
+    fn unset_content() -> PinDraft;
 
     /// set the url for this pin
-    fn url(text: string);
-    fn unset_url();
+    fn url(text: string) -> PinDraft;
+    fn unset_url() -> PinDraft;
 
     /// set the display for this pin
-    fn display(display: Display);
-    fn unset_display();
+    fn display(display: Display) -> PinDraft;
+    fn unset_display() -> PinDraft;
 
     /// fire this pin over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -654,25 +660,25 @@ object ActerPin {
 
 object PinUpdateBuilder {
     /// set the title for this pin
-    fn title(title: string);
-    fn unset_title_update();
+    fn title(title: string) -> PinUpdateBuilder;
+    fn unset_title_update() -> PinUpdateBuilder;
 
     /// set the content for this pin
-    fn content_text(text: string);
-    fn content_markdown(text: string);
-    fn content_html(text: string, html: string);
-    fn unset_content();
-    fn unset_content_update();
+    fn content_text(text: string) -> PinUpdateBuilder;
+    fn content_markdown(text: string) -> PinUpdateBuilder;
+    fn content_html(text: string, html: string) -> PinUpdateBuilder;
+    fn unset_content() -> PinUpdateBuilder;
+    fn unset_content_update() -> PinUpdateBuilder;
 
     /// set the url for this pin
-    fn url(text: string);
-    fn unset_url();
-    fn unset_url_update();
+    fn url(text: string) -> PinUpdateBuilder;
+    fn unset_url() -> PinUpdateBuilder;
+    fn unset_url_update() -> PinUpdateBuilder;
 
     /// set the display for this pin
-    fn display(display: Display);
-    fn unset_display();
-    fn unset_display_update();
+    fn display(display: Display) -> PinUpdateBuilder;
+    fn unset_display() -> PinUpdateBuilder;
+    fn unset_display_update() -> PinUpdateBuilder;
 
     /// fire this update over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -745,37 +751,37 @@ object CalendarEvent {
 
 object CalendarEventUpdateBuilder {
     /// set title of the event>
-    fn title(title: string);
+    fn title(title: string) -> CalendarEventUpdateBuilder;
 
     /// set description text
-    fn description_text(body: string);
+    fn description_text(body: string) -> CalendarEventUpdateBuilder;
 
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> CalendarEventUpdateBuilder;
 
     /// set utc start in rfc3339 string
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc start in rfc2822 string
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc start in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<CalendarEventUpdateBuilder>;
 
     /// set utc end in rfc3339 string
-    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc end in rfc2822 string
-    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<CalendarEventUpdateBuilder>;
     /// set utc end in custom format
-    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<CalendarEventUpdateBuilder>;
 
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>) -> CalendarEventUpdateBuilder;
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>) -> CalendarEventUpdateBuilder;
     /// clear all locations of this cal event
-    fn unset_locations();
+    fn unset_locations() -> CalendarEventUpdateBuilder;
 
     /// send builder update
     fn send() -> Future<Result<EventId>>;
@@ -783,37 +789,37 @@ object CalendarEventUpdateBuilder {
 
 object CalendarEventDraft {
     /// set the title for this calendar event
-    fn title(title: string);
+    fn title(title: string) -> CalendarEventDraft;
 
     /// set the description for this calendar event
-    fn description_text(text: string);
+    fn description_text(text: string) -> CalendarEventDraft;
 
     /// set the description html for this calendar event
-    fn description_html(text: string, html: string);
+    fn description_html(text: string, html: string) -> CalendarEventDraft;
 
-    fn unset_description();
+    fn unset_description() -> CalendarEventDraft;
 
     /// set the utc_start for this calendar event in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventDraft>;
     /// set the utc_start for this calendar event in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<CalendarEventDraft>;
     /// set the utc_start for this calendar event in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<CalendarEventDraft>;
 
     /// set the utc_end for this calendar event in rfc3339 format
-    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<CalendarEventDraft>;
     /// set the utc_end for this calendar event in rfc2822 format
-    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<CalendarEventDraft>;
     /// set the utc_end for this calendar event in custom format
-    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<CalendarEventDraft>;
 
     /// set the physical location details for this calendar event
     /// description_html means by markdown
     /// coordinates follows RFC 5870, for example `geo:51.5074,-0.1278`
-    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>);
+    fn add_physical_location(name: Option<string>, description: Option<string>, description_html: Option<string>, coordinates: Option<string>, uri: Option<string>, address: Option<string>, notes: Option<string>) -> CalendarEventDraft;
     /// set the virtual location details for this calendar event
     /// description_html means by markdown
-    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>);
+    fn add_virtual_location(name: Option<string>, description: Option<string>, description_html: Option<string>, uri: string, notes: Option<string>) -> CalendarEventDraft;
 
     /// create this calendar event
     fn send() -> Future<Result<EventId>>;
@@ -884,7 +890,7 @@ object RsvpManager {
 
 object RsvpDraft {
     /// set status of this RSVP
-    fn status(status: string);
+    fn status(status: string) -> Result<RsvpDraft>;
 
     /// create this RSVP
     fn send() -> Future<Result<EventId>>;
@@ -1638,7 +1644,7 @@ object MsgDraft {
     fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
+    fn add_room_mention(mention: bool) -> MsgDraft;
 
     /// available for only image/audio/video/file
     fn mimetype(value: string) -> MsgDraft;
@@ -1954,10 +1960,10 @@ object Convo {
 
 object CommentDraft {
     /// set the content of the draft to body
-    fn content_text(body: string);
+    fn content_text(body: string) -> CommentDraft;
 
     /// set the content to a formatted body of html_body, where body is the tag-stripped version
-    fn content_formatted(body: string, html_body: string);
+    fn content_formatted(body: string, html_body: string) -> CommentDraft;
 
     /// fire this comment over - the event_id is the confirmation from the server.
     fn send() -> Future<Result<EventId>>;
@@ -2224,66 +2230,66 @@ object Task {
 
 object TaskUpdateBuilder {
     /// set the title for this task
-    fn title(title: string);
-    fn unset_title_update();
+    fn title(title: string) -> TaskUpdateBuilder;
+    fn unset_title_update() -> TaskUpdateBuilder;
 
     /// set the description for this task list
-    fn description_text(text: string);
+    fn description_text(text: string) -> TaskUpdateBuilder;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskUpdateBuilder;
 
-    fn unset_description();
-    fn unset_description_update();
+    fn unset_description() -> TaskUpdateBuilder;
+    fn unset_description_update() -> TaskUpdateBuilder;
 
     /// set the sort order for this task list
-    fn sort_order(sort_order: u32);
-    fn unset_sort_order_update();
+    fn sort_order(sort_order: u32) -> TaskUpdateBuilder;
+    fn unset_sort_order_update() -> TaskUpdateBuilder;
 
     /// set the display of the update
-    fn display(display: Display);
-    fn unset_display();
-    fn unset_display_update();
+    fn display(display: Display) -> TaskUpdateBuilder;
+    fn unset_display() -> TaskUpdateBuilder;
+    fn unset_display_update() -> TaskUpdateBuilder;
 
     /// set the due day for this task
-    fn due_date(year: i32, month: u32, day: u32);
-    fn unset_due_date();
-    fn unset_due_date_update();
+    fn due_date(year: i32, month: u32, day: u32) -> TaskUpdateBuilder;
+    fn unset_due_date() -> TaskUpdateBuilder;
+    fn unset_due_date_update() -> TaskUpdateBuilder;
 
     /// set the due time of day in seconds since midnight UTC
-    fn utc_due_time_of_day(seconds: i32);
-    fn unset_utc_due_time_of_day();
-    fn unset_utc_due_time_of_day_update();
+    fn utc_due_time_of_day(seconds: i32) -> TaskUpdateBuilder;
+    fn unset_utc_due_time_of_day() -> TaskUpdateBuilder;
+    fn unset_utc_due_time_of_day_update() -> TaskUpdateBuilder;
 
     /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskUpdateBuilder>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskUpdateBuilder>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
-    fn unset_utc_start();
-    fn unset_utc_start_update();
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskUpdateBuilder>;
+    fn unset_utc_start() -> TaskUpdateBuilder;
+    fn unset_utc_start_update() -> TaskUpdateBuilder;
 
     /// set the sort order for this task list
-    fn progress_percent(progress_percent: u8);
-    fn unset_progress_percent();
-    fn unset_progress_percent_update();
+    fn progress_percent(progress_percent: u8) -> TaskUpdateBuilder;
+    fn unset_progress_percent() -> TaskUpdateBuilder;
+    fn unset_progress_percent_update() -> TaskUpdateBuilder;
 
     /// set the keywords for this task list
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
-    fn unset_keywords_update();
+    fn keywords(keywords: Vec<string>) -> TaskUpdateBuilder;
+    fn unset_keywords() -> TaskUpdateBuilder;
+    fn unset_keywords_update() -> TaskUpdateBuilder;
 
     /// set the categories for this task list
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
-    fn unset_categories_update();
+    fn categories(categories: Vec<string>) -> TaskUpdateBuilder;
+    fn unset_categories() -> TaskUpdateBuilder;
+    fn unset_categories_update() -> TaskUpdateBuilder;
 
     /// send this task list draft
     /// mark it done
-    fn mark_done();
+    fn mark_done() -> TaskUpdateBuilder;
 
     /// mark as not done
-    fn mark_undone();
+    fn mark_undone() -> TaskUpdateBuilder;
 
     /// update this task
     fn send() -> Future<Result<EventId>>;
@@ -2291,48 +2297,48 @@ object TaskUpdateBuilder {
 
 object TaskDraft {
     /// set the title for this task
-    fn title(title: string);
+    fn title(title: string) -> TaskDraft;
 
     /// set the description for this task
-    fn description_text(text: string);
+    fn description_text(text: string) -> TaskDraft;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskDraft;
 
-    fn unset_description();
+    fn unset_description() -> TaskDraft;
 
     /// set the sort order for this task
-    fn sort_order(sort_order: u32);
+    fn sort_order(sort_order: u32) -> TaskDraft;
 
     /// set the disply options for this task
-    fn display(display: Display);
-    fn unset_display();
+    fn display(display: Display) -> TaskDraft;
+    fn unset_display() -> TaskDraft;
 
     /// set the due day for this task
-    fn due_date(year: i32, month: u32, day: u32);
-    fn unset_due_date();
+    fn due_date(year: i32, month: u32, day: u32) -> TaskDraft;
+    fn unset_due_date() -> TaskDraft;
     /// set the due time of day in seconds since midnight UTC
-    fn utc_due_time_of_day(seconds: i32);
-    fn unset_utc_due_time_of_day();
+    fn utc_due_time_of_day(seconds: i32) -> TaskDraft;
+    fn unset_utc_due_time_of_day() -> TaskDraft;
 
     /// set the utc_start for this task in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskDraft>;
     /// set the utc_start for this task in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskDraft>;
     /// set the utc_start for this task in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
-    fn unset_utc_start();
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskDraft>;
+    fn unset_utc_start() -> TaskDraft;
 
     /// set the sort order for this task
-    fn progress_percent(progress_percent: u8);
-    fn unset_progress_percent();
+    fn progress_percent(progress_percent: u8) -> TaskDraft;
+    fn unset_progress_percent() -> TaskDraft;
 
     /// set the keywords for this task
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
+    fn keywords(keywords: Vec<string>) -> TaskDraft;
+    fn unset_keywords() -> TaskDraft;
 
     /// set the categories for this task
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
+    fn categories(categories: Vec<string>) -> TaskDraft;
+    fn unset_categories() -> TaskDraft;
 
     /// create this task
     fn send() -> Future<Result<EventId>>;
@@ -2405,30 +2411,30 @@ object TaskList {
 
 object TaskListDraft {
     /// set the name for this task list
-    fn name(name: string);
+    fn name(name: string) -> TaskListDraft;
 
     /// set the description for this task list
-    fn description_text(text: string);
-    fn description_markdown(text: string);
+    fn description_text(text: string) -> TaskListDraft;
+    fn description_markdown(text: string) -> TaskListDraft;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskListDraft;
 
-    fn unset_description();
+    fn unset_description() -> TaskListDraft;
 
     /// set the sort order for this task list
-    fn sort_order(sort_order: u32);
+    fn sort_order(sort_order: u32) -> TaskListDraft;
 
     /// set the display for this task list
-    fn display(display: Display);
-    fn unset_display();
+    fn display(display: Display) -> TaskListDraft;
+    fn unset_display() -> TaskListDraft;
 
     /// set the keywords for this task list
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
+    fn keywords(keywords: Vec<string>) -> TaskListDraft;
+    fn unset_keywords() -> TaskListDraft;
 
     /// set the categories for this task list
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
+    fn categories(categories: Vec<string>) -> TaskListDraft;
+    fn unset_categories() -> TaskListDraft;
 
     /// create this task list
     fn send() -> Future<Result<EventId>>;
@@ -2436,33 +2442,33 @@ object TaskListDraft {
 
 object TaskListUpdateBuilder {
     /// set the name for this task list
-    fn name(name: string);
+    fn name(name: string) -> TaskListUpdateBuilder;
 
     /// set the description for this task list
-    fn description_text(text: string);
+    fn description_text(text: string) -> TaskListUpdateBuilder;
     /// set description html text
-    fn description_html(body: string, html_body: string);
+    fn description_html(body: string, html_body: string) -> TaskListUpdateBuilder;
 
-    fn unset_description();
-    fn unset_description_update();
+    fn unset_description() -> TaskListUpdateBuilder;
+    fn unset_description_update() -> TaskListUpdateBuilder;
 
     /// set the sort order for this task list
-    fn sort_order(sort_order: u32);
+    fn sort_order(sort_order: u32) -> TaskListUpdateBuilder;
 
     /// set the display for this task list
-    fn display(display: Display);
-    fn unset_display();
-    fn unset_display_update();
+    fn display(display: Display) -> TaskListUpdateBuilder;
+    fn unset_display() -> TaskListUpdateBuilder;
+    fn unset_display_update() -> TaskListUpdateBuilder;
 
     /// set the keywords for this task list
-    fn keywords(keywords: Vec<string>);
-    fn unset_keywords();
-    fn unset_keywords_update();
+    fn keywords(keywords: Vec<string>) -> TaskListUpdateBuilder;
+    fn unset_keywords() -> TaskListUpdateBuilder;
+    fn unset_keywords_update() -> TaskListUpdateBuilder;
 
     /// set the categories for this task list
-    fn categories(categories: Vec<string>);
-    fn unset_categories();
-    fn unset_categories_update();
+    fn categories(categories: Vec<string>) -> TaskListUpdateBuilder;
+    fn unset_categories() -> TaskListUpdateBuilder;
+    fn unset_categories_update() -> TaskListUpdateBuilder;
 
     /// update this task
     fn send() -> Future<Result<EventId>>;

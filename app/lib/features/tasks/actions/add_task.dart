@@ -29,8 +29,7 @@ Future<(String, String)?> addTask({
   }
 
   EasyLoading.show(status: lang.addingTask);
-  final taskDraft = taskList.taskBuilder();
-  taskDraft.title(title);
+  final taskDraft = taskList.taskBuilder().title(title);
   if (description != null && description.isNotEmpty == true) {
     taskDraft.descriptionText(description);
   }
