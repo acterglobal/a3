@@ -98,7 +98,10 @@ class NewsStateNotifier extends StateNotifier<NewsPostState> {
   }
 
   Future<void> selectSpaceToShare(BuildContext context) async {
-    final selectedSpaceId = await selectSpaceDrawer(context: context);
+    final selectedSpaceId = await selectSpaceDrawer(
+      context: context,
+      canCheck: (m) => m?.canString('CanPostNews') == true,
+    );
     RefDetails? refDetails;
     if (selectedSpaceId != null) {
       final selectedSpace = await ref.read(
