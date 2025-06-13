@@ -25,8 +25,8 @@ class _AddEventLocationWidgetState
   late final TextEditingController _urlController;
   late LocationType _selectedType;
 
-  late EditorState textEditorNoteState;
-  late EditorState textEditorAddressState;
+  EditorState textEditorNoteState = EditorState.blank();
+  EditorState textEditorAddressState = EditorState.blank();
   String? _addressError;
 
   @override
@@ -37,10 +37,7 @@ class _AddEventLocationWidgetState
     _selectedType = widget.initialLocation?.type ?? LocationType.virtual;
 
     // Initialize editor states with initial data
-    if (widget.initialLocation == null) {
-      textEditorNoteState = EditorState.blank();
-      textEditorAddressState = EditorState.blank();
-    } else {
+    if (widget.initialLocation != null) {
       textEditorNoteState.copyMessageText(
         widget.initialLocation?.note ?? '',
         widget.initialLocation?.note ?? '',
