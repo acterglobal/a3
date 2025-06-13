@@ -199,7 +199,7 @@ class HtmlEditor extends StatefulWidget {
 
 const innnerMargin = 10.0;
 const defaultMinHeight = 40.0;
-const lineHeight = 16.0;
+const defaultMaxHeight = 200.0;
 
 class _HtmlEditorState extends State<HtmlEditor> {
   late EditorState editorState;
@@ -222,6 +222,21 @@ class _HtmlEditorState extends State<HtmlEditor> {
     updateEditorState(widget.editorState ?? EditorState.blank());
   }
 
+  @override
+  void didUpdateWidget(covariant HtmlEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.editorState != widget.editorState) {
+      updateEditorState(widget.editorState ?? EditorState.blank());
+    }
+  }
+
+  @override
+  void dispose() {
+    editorState.selectionNotifier.removeListener(_updateEditorHeight);
+    _changeListener?.cancel();
+    super.dispose();
+  }
+
   void updateEditorState(EditorState newEditorState) {
     editorState = newEditorState;
 
@@ -230,10 +245,8 @@ class _HtmlEditorState extends State<HtmlEditor> {
       shrinkWrap: widget.shrinkWrap,
     );
 
-    // Listen to all editor transactions with a delay
-    editorState.transactionStream.listen((_) {
-      Future.delayed(const Duration(milliseconds: 50), _updateContentHeight);
-    });
+    // Listen to selection changes to detect content updates
+    editorState.selectionNotifier.addListener(_updateEditorHeight);
 
     _changeListener?.cancel();
     widget.onChanged.map((cb) {
@@ -249,61 +262,35 @@ class _HtmlEditorState extends State<HtmlEditor> {
     });
   }
 
-  @override
-  void didUpdateWidget(covariant HtmlEditor oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.editorState != widget.editorState) {
-      updateEditorState(widget.editorState ?? EditorState.blank());
-    }
-  }
-
-  @override
-  void dispose() {
-    _changeListener?.cancel();
-    super.dispose();
-  }
-
-  void _updateContentHeight() {
-    final contentHeight = _calculateContentHeight();
-
-    double newHeight = contentHeight;
-    final maxHeight = widget.maxHeight;
-    if (maxHeight != null) {
-      newHeight = min(newHeight, maxHeight);
-    }
-    final minHeight = widget.minHeight ?? defaultMinHeight;
-    newHeight = max(newHeight, minHeight);
-
-    if ((_contentHeightNotifier.value - newHeight).abs() > 1.0) {
-      _contentHeightNotifier.value = newHeight;
-    }
-  }
-
-  double _calculateContentHeight() {
+  void _updateEditorHeight() {
     final scrollService = editorState.scrollableState;
-    if (scrollService == null) return widget.minHeight ?? defaultMinHeight;
-
-    final textWidth = scrollService.position.viewportDimension;
-    if (textWidth <= 0) return widget.minHeight ?? defaultMinHeight;
-
-    final textContent = editorState.document.root.children
-        .map((node) => node.delta?.toPlainText() ?? '')
-        .join('\n');
-
-    if (textContent.isEmpty) {
-      return defaultMinHeight;
+    if (scrollService == null) {
+      _contentHeightNotifier.value = widget.minHeight ?? defaultMinHeight;
+      return;
     }
 
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: textContent,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      textDirection: TextDirection.ltr,
-      maxLines: null,
-    )..layout(maxWidth: textWidth);
+    final position = scrollService.position;
+    final viewportDimension = position.viewportDimension;
 
-    return textPainter.height + (2 * innnerMargin);
+    // If content is empty or only has one empty line, use min height
+    if (editorState.document.isEmpty) {
+      _contentHeightNotifier.value = widget.minHeight ?? defaultMinHeight;
+      return;
+    }
+
+    double newHeight = viewportDimension;
+
+    if (position.maxScrollExtent > 0) {
+      newHeight += position.maxScrollExtent;
+    }
+
+    if (widget.maxHeight != null) {
+      newHeight = min(newHeight, widget.maxHeight ?? defaultMaxHeight);
+    }
+
+    newHeight = max(newHeight, widget.minHeight ?? defaultMinHeight);
+
+    _contentHeightNotifier.value = newHeight;
   }
 
   void _triggerExport(ExportCallback exportFn) {
