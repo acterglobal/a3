@@ -5,7 +5,7 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
-
+import '../helpers/mock_a3sdk.dart';
 import '../features/comments/mock_data/mock_message_content.dart';
 
 class SimpleReturningTasklists extends AsyncNotifier<List<TaskList>>
@@ -173,12 +173,30 @@ class FakeTaskList extends Fake implements TaskList {
 
 class MockTaskList extends FakeTaskList with Mock {}
 
-class MockTask extends Fake implements Task {
+class MockTask extends Mock implements Task {
   final String fakeTitle;
   final String? date;
   final String desc;
+  final bool isAssigned;
+  final List<String> assignees;
+  final String roomId;
+  final String eventId;
+  final bool hasInvitations;
+  final List<String> invitedUsers;
+  bool assignSelfCalled = false;
+  bool unassignSelfCalled = false;
 
-  MockTask({this.fakeTitle = 'Fake Task', this.date, this.desc = ''});
+  MockTask({
+    this.fakeTitle = 'Fake Task',
+    this.date,
+    this.desc = '',
+    this.isAssigned = false,
+    this.assignees = const [],
+    this.roomId = 'room123',
+    this.eventId = 'event123',
+    this.hasInvitations = false,
+    this.invitedUsers = const [],
+  });
 
   @override
   String taskListIdStr() => 'taskListId';
@@ -187,13 +205,13 @@ class MockTask extends Fake implements Task {
   bool isDone() => false;
 
   @override
-  String title() => 'Fake Task';
+  String title() => fakeTitle;
 
   @override
-  String eventIdStr() => 'eventId';
+  String eventIdStr() => eventId;
 
   @override
-  String roomIdStr() => 'roomId';
+  String roomIdStr() => roomId;
 
   @override
   String? dueDate() => date;
@@ -202,7 +220,7 @@ class MockTask extends Fake implements Task {
   MsgContent? description() => MockMsgContent(bodyText: desc);
 
   @override
-  bool isAssignedToMe() => false;
+  bool isAssignedToMe() => isAssigned;
 
   @override
   Future<AttachmentsManager> attachments() =>
@@ -213,11 +231,20 @@ class MockTask extends Fake implements Task {
 
   @override
   FfiListFfiString assigneesStr() {
-    final mockAssignees = MockFfiListFfiString();
-    // Adding dummy FfiString objects
-    mockAssignees.add(MockFfiString('user1'));
-    mockAssignees.add(MockFfiString('user2'));
+    final mockAssignees = MockFfiListFfiString(items: assignees);
     return mockAssignees;
+  }
+
+  @override
+  Future<EventId> assignSelf() async {
+    assignSelfCalled = true;
+    return MockEventId(id: eventId);
+  }
+
+  @override
+  Future<EventId> unassignSelf() async {
+    unassignSelfCalled = true;
+    return MockEventId(id: eventId);
   }
 }
 
