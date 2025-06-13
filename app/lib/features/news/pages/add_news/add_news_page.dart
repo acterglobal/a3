@@ -58,8 +58,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
           nextSlide != null && nextSlide.type == UpdateSlideType.text;
       final changed = prevState?.currentUpdateSlide != nextSlide;
       if (isText && changed) {
-        textEditorState.insertTextAtCurrentSelection(
-          nextSlide.html ?? nextSlide.text ?? '',
+        textEditorState.copyMessageText(
+          nextSlide.text ?? '',
+          nextSlide.html ?? '',
         );
 
         final autoFocus =
@@ -68,8 +69,9 @@ class AddNewsState extends ConsumerState<AddNewsPage> {
 
         setState(() {
           selectedNewsPost = nextSlide;
-          textEditorState.insertTextAtCurrentSelection(
-            nextSlide.html ?? nextSlide.text ?? '',
+          textEditorState.copyMessageText(
+            nextSlide.text ?? '',
+            nextSlide.html ?? '',
           );
         });
 
