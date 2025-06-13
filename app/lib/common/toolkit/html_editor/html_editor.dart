@@ -6,6 +6,7 @@ import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/commands/backspace_for_mentions.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
+import 'package:acter/common/toolkit/html_editor/services/utils.dart';
 import 'package:acter/config/constants.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart';
@@ -85,27 +86,21 @@ extension ActerEditorStateHelpers on EditorState {
   /// copy message content to editor
   void copyMessageText(String text, String? htmlText) async {
     clear();
-    if (htmlText != null && htmlText.isNotEmpty) {
-      var processedHtml = htmlText.trim();
-      // enclose with <p> tag if not present
-      if (!processedHtml.startsWith('<p>')) {
-        processedHtml = '<p>$processedHtml</p>';
-      }
 
-      final doc = defaultHtmlCodec.decode(processedHtml);
+    if (htmlText != null && htmlText.isNotEmpty) {
+      //  normalize html to appflowy html, before decoding
+      htmlText = normalizeToAppflowyHtml(htmlText);
+
+      final doc = defaultHtmlCodec.decode(htmlText);
       final transaction = this.transaction;
-      for (final node in doc.root.children) {
-        transaction.insertNode([0], node);
-      }
+      transaction.insertNodes([0], doc.root.children);
       apply(transaction);
     } else {
-      // copy plain text to editor
-      final docNode = getNodeAtPath([0]);
-      if (docNode != null) {
-        final transaction = this.transaction;
-        transaction.replaceText(docNode, 0, 0, text);
-        apply(transaction);
-      }
+      // copy plain text as it is
+      final node = document.root.children.first;
+      final transaction = this.transaction;
+      transaction.replaceText(node, 0, 0, text);
+      apply(transaction);
     }
 
     var lastNode = document.root.children.lastWhere(
