@@ -247,6 +247,9 @@ class _HtmlEditorState extends State<HtmlEditor> {
 
     // Listen to selection changes to detect content updates
     editorState.selectionNotifier.addListener(_updateEditorHeight);
+    editorScrollController.visibleRangeNotifier.addListener(
+      _updateEditorHeight,
+    );
 
     _changeListener?.cancel();
     widget.onChanged.map((cb) {
