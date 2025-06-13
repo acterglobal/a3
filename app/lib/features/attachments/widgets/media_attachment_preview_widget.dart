@@ -30,7 +30,7 @@ class MediaAttachmentPreviewWidget extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (type == AttachmentType.image)
+          if (type == AttachmentType.camera || type == AttachmentType.image)
             _imagePreview(context, file)
           else if (type == AttachmentType.video)
             ActerVideoPlayer(videoFile: file)
