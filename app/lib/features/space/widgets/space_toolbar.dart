@@ -126,7 +126,6 @@ class SpaceToolbar extends ConsumerWidget {
   }
 
   Future<void> _bookmarkSpace(WidgetRef ref) async {
-    final isBookmarked = ref.read(spaceBookmarkProvider.notifier).getBookmark(spaceId);
-    await ref.read(spaceBookmarkProvider.notifier).setBookmark(spaceId, !isBookmarked);
+    await ref.read(spaceBookmarkProvider.notifier).setBookmark(spaceId);
   }
 }

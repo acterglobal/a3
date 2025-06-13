@@ -199,10 +199,11 @@ class SpaceBookmarkNotifier extends Notifier<Map<String, bool>> {
     );
   }
 
-  Future<void> setBookmark(String spaceId, bool isBookmarked) async {
+  Future<void> setBookmark(String spaceId) async {
     final space = await ref.read(spaceProvider(spaceId).future);
-    await space.setBookmarked(isBookmarked);
-    state = {...state, spaceId: isBookmarked};
+    final newValue = !(state[spaceId] ?? false);
+    await space.setBookmarked(newValue);
+    state = {...state, spaceId: newValue};
   }
 
   bool getBookmark(String spaceId) => state[spaceId] ?? false;
