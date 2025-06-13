@@ -155,10 +155,7 @@ void main() {
 
     testWidgets('renders with HTML content', (tester) async {
       final htmlContent = '<p>Hello <strong>World</strong></p>';
-      final document = ActerDocumentHelpers.parse(
-        'Hello World',
-        htmlContent: htmlContent,
-      );
+      final document = defaultHtmlCodec.decode(htmlContent);
       final editorState = EditorState(document: document);
 
       await tester.pumpWidget(

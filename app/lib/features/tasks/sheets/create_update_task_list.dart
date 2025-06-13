@@ -161,18 +161,7 @@ class _CreateUpdateTaskListConsumerState
                 border: Border.all(color: Colors.white70),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: HtmlEditor(
-                editorState: textEditorState,
-                editable: true,
-                onChanged: (body, html) {
-                  textEditorState = EditorState(
-                    document: ActerDocumentHelpers.parse(
-                      body,
-                      htmlContent: html,
-                    ),
-                  );
-                },
-              ),
+              child: HtmlEditor(editorState: textEditorState, editable: true),
             ),
           ],
         );

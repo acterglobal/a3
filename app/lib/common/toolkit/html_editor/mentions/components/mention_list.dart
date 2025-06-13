@@ -330,14 +330,9 @@ class _MentionHandlerState extends ConsumerState<MentionList> {
       replacementText,
       attributes: {'href': _makeUri(id), 'inline': true},
     );
-    // insert space after so we can go on
-    transaction.insertText(
-      node,
-      atSymbolPosition + replacementText.length,
-      ' ',
-    );
 
     widget.editorState.apply(transaction);
+
     widget.onDismiss();
   }
 }
