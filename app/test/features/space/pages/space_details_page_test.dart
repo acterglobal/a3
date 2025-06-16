@@ -74,8 +74,23 @@ class MockSpaceHierarchyRoomInfo extends Mock
 class MockFfiListFfiString extends Mock implements FfiListFfiString {
   final List<String> items;
   MockFfiListFfiString({required this.items});
-  // @override
-  // List<String> toDartList() => items;
+  
+  @override
+  bool get isEmpty => items.isEmpty;
+  
+  @override
+  List<FfiString> toList({bool growable = true}) => items.map((s) => MockFfiString(s)).toList();
+}
+
+class MockFfiString extends Mock implements FfiString {
+  final String value;
+  MockFfiString(this.value);
+  
+  @override
+  String toString() => value;
+  
+  @override
+  String toDartString() => value;
 }
 
 class MockSpace extends Mock implements Space {}
