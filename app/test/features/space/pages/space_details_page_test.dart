@@ -115,7 +115,7 @@ class MockFfiString extends Mock implements FfiString {
 }
 
 class MockSpace extends Mock implements Space {}
-space det
+
 void main() {
   group('SpaceDetailsPage', () {
     late String testSpaceId;
