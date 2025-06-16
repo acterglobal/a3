@@ -163,11 +163,17 @@ class FakeTaskList extends Fake implements TaskList {
   Future<Task> task(String taskId) async {
     if (shouldFail) {
       shouldFail = false;
-
       throw 'Expected fail';
     }
-
     return MockTask();
+  }
+
+  @override
+  Stream<bool> subscribeStream() => Stream.value(true);
+
+  @override
+  Future<FfiListTask> tasks() async {
+    return MockFfiListTask(tasks: []);
   }
 }
 
@@ -246,13 +252,27 @@ class MockTask extends Mock implements Task {
     unassignSelfCalled = true;
     return MockEventId(id: eventId);
   }
+
+  @override
+  Future<ObjectInvitationsManager> invitations() async {
+    return MockInvitationsManager(
+      hasInvitations: hasInvitations,
+      invitedUsers: invitedUsers,
+    );
+  }
+
+  @override
+  Stream<bool> subscribeStream() => Stream.value(true);
+
+  @override
+  Future<Task> refresh() async => this;
 }
 
 class MockFfiListFfiString extends Mock implements FfiListFfiString {
-  final List<FfiString> _strings = [];
+  late final List<FfiString> _strings;
 
   MockFfiListFfiString({List<String> items = const []}) {
-    _strings.addAll(items.map((e) => MockFfiString(e)));
+    _strings = items.map((e) => MockFfiString(e)).toList();
   }
 
   @override
@@ -276,10 +296,19 @@ class MockFfiListFfiString extends Mock implements FfiListFfiString {
     return _strings[index];
   }
 
-  // Corrected to include the growable parameter
   @override
   List<FfiString> toList({bool growable = true}) {
     return List<FfiString>.from(_strings, growable: growable);
+  }
+
+  @override
+  Iterable<T> map<T>(T Function(FfiString) f) {
+    return _strings.map(f);
+  }
+
+  @override
+  bool any(bool Function(FfiString) test) {
+    return _strings.any(test);
   }
 }
 
@@ -293,4 +322,47 @@ class MockFfiString extends Mock implements FfiString {
 
   @override
   String toString() => value;
+}
+
+class MockFfiListTask extends Mock implements FfiListTask {
+  final List<Task> tasks;
+
+  MockFfiListTask({required this.tasks});
+
+  @override
+  List<Task> toList({bool growable = true}) => List.from(tasks, growable: growable);
+}
+
+class MockFfiListTaskList extends Mock implements FfiListTaskList {
+  final List<TaskList> taskLists;
+
+  MockFfiListTaskList({required this.taskLists});
+
+  @override
+  List<TaskList> toList({bool growable = true}) => List.from(taskLists, growable: growable);
+}
+
+class MockInvitationsManager extends Mock implements ObjectInvitationsManager {
+  final bool _hasInvitations;
+  final List<String> invitedUsers;
+
+  MockInvitationsManager({
+    bool hasInvitations = false,
+    this.invitedUsers = const [],
+  }) : _hasInvitations = hasInvitations;
+
+  @override
+  Future<ObjectInvitationsManager> reload() async => this;
+
+  @override
+  FfiListFfiString invited() => MockFfiListFfiString(items: invitedUsers);
+
+  @override
+  bool hasInvitations() => _hasInvitations;
+
+  @override
+  Future<String> invite(String userId) async => userId;
+
+  @override
+  Stream<bool> subscribeStream() => Stream.value(true);
 }
