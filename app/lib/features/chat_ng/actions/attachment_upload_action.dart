@@ -30,7 +30,8 @@ Future<void> attachmentUploadAction({
       if (mimeType == null) throw lang.failedToDetectMimeType;
       final fileLen = file.lengthSync();
       if (mimeType.startsWith('image/') &&
-          attachmentType == AttachmentType.image) {
+          (attachmentType == AttachmentType.image ||
+              attachmentType == AttachmentType.camera)) {
         final bytes = file.readAsBytesSync();
         final image = await decodeImageFromList(bytes);
         final imageDraft = client
