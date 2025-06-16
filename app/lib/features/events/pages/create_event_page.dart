@@ -64,9 +64,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
     // description
     final desc = event.description();
     if (desc != null) {
-      textEditorState.insertTextAtCurrentSelection(
-        desc.formatted() ?? desc.body(),
-      );
+      textEditorState.copyMessageText(desc.body(), desc.formatted());
     } else {
       textEditorState = EditorState.blank();
     }
@@ -228,20 +226,20 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
           child: Switch(
             value: _isJitsiEnabled,
             onChanged: (value) {
-        setState(() {
-          _isJitsiEnabled = value;
-            });
-          },
+              setState(() {
+                _isJitsiEnabled = value;
+              });
+            },
+          ),
         ),
-      ),
-      Text(L10n.of(context).createJitsiCallLink),
-      const SizedBox(width: 10),
-        
-    ]);
+        Text(L10n.of(context).createJitsiCallLink),
+        const SizedBox(width: 10),
+      ],
+    );
   }
 
   // Create Jitsi call link
-  String createJitsiCallLink(String title) {   
+  String createJitsiCallLink(String title) {
     // Generate a random 10-digit number
     final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
     // Format the number to ensure it's 10 digits by padding with zeros if needed
@@ -460,9 +458,6 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
             key: EventsKeys.eventDescriptionTextField,
             editorState: textEditorState,
             editable: true,
-            onChanged: (body, html) {
-              // textEditorState.insertTextAtCurrentSelection(html ?? body);
-            },
           ),
         ),
       ],
@@ -541,13 +536,27 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
       final locations = ref.read(eventDraftLocationsProvider);
       for (final location in locations) {
         if (location.type == LocationType.physical) {
-          draft.addPhysicalLocation(location.name, '', '', '', '',location.address,location.note);
+          draft.addPhysicalLocation(
+            location.name,
+            '',
+            '',
+            '',
+            '',
+            location.address,
+            location.note,
+          );
         }
         if (location.type == LocationType.virtual) {
-          draft.addVirtualLocation(location.name, '', '',location.url ?? '',location.note);
+          draft.addVirtualLocation(
+            location.name,
+            '',
+            '',
+            location.url ?? '',
+            location.note,
+          );
         }
       }
-      
+
       // Add Jitsi link if enabled
       if (_isJitsiEnabled) {
         final jitsiLink = createJitsiCallLink(title);
