@@ -96,10 +96,8 @@ extension ActerEditorStateHelpers on EditorState {
       transaction.insertNodes([0], doc.root.children);
       apply(transaction);
     } else {
-      // copy plain text as it is
-      final node = document.root.children.first;
       final transaction = this.transaction;
-      transaction.replaceText(node, 0, 0, text);
+      transaction.insertNode([0], paragraphNode(text: text));
       apply(transaction);
     }
 
@@ -110,7 +108,6 @@ extension ActerEditorStateHelpers on EditorState {
 
     final path = lastNode.path;
     final offset = lastNode.delta?.length ?? 0;
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       updateSelectionWithReason(
         Selection.single(path: path, startOffset: offset),
@@ -197,7 +194,7 @@ class HtmlEditor extends StatefulWidget {
   State<HtmlEditor> createState() => _HtmlEditorState();
 }
 
-const innnerMargin = 10.0;
+const innerPadding = 24.0;
 const defaultMinHeight = 40.0;
 const defaultMaxHeight = 200.0;
 
@@ -232,7 +229,9 @@ class _HtmlEditorState extends State<HtmlEditor> {
 
   @override
   void dispose() {
-    editorState.selectionNotifier.removeListener(_updateEditorHeight);
+    editorScrollController.visibleRangeNotifier.removeListener(
+      _updateEditorHeight,
+    );
     _changeListener?.cancel();
     super.dispose();
   }
@@ -245,8 +244,6 @@ class _HtmlEditorState extends State<HtmlEditor> {
       shrinkWrap: widget.shrinkWrap,
     );
 
-    // Listen to selection changes to detect content updates
-    editorState.selectionNotifier.addListener(_updateEditorHeight);
     editorScrollController.visibleRangeNotifier.addListener(
       _updateEditorHeight,
     );
@@ -275,31 +272,46 @@ class _HtmlEditorState extends State<HtmlEditor> {
     final position = scrollService.position;
     final viewportDimension = position.viewportDimension;
 
-    // If content is empty or only has one empty line, use min height
-    if (editorState.document.isEmpty) {
+    if (viewportDimension <= 0) {
       _contentHeightNotifier.value = widget.minHeight ?? defaultMinHeight;
       return;
     }
 
-    double newHeight = viewportDimension;
+    // count paragraph nodes
+    final document = editorState.document;
+    final paragraphCount = document.root.children.length;
 
-    if (position.maxScrollExtent > 0) {
-      newHeight += position.maxScrollExtent;
+    double lineHeight = Theme.of(context).textTheme.bodySmall?.fontSize ?? 14.0;
+    double contentHeight = widget.minHeight ?? defaultMinHeight;
+    if (paragraphCount > 1) {
+      contentHeight += innerPadding + (paragraphCount - 1) * lineHeight;
+    }
+
+    // also account for viewport
+    double calculatedHeight = max(contentHeight, viewportDimension);
+
+    // smaller than viewport, shrink to content size
+    if (contentHeight < viewportDimension && position.maxScrollExtent <= 0) {
+      calculatedHeight = contentHeight;
     }
 
     if (widget.maxHeight != null) {
-      newHeight = min(newHeight, widget.maxHeight ?? defaultMaxHeight);
+      calculatedHeight = min(
+        calculatedHeight,
+        widget.maxHeight ?? defaultMaxHeight,
+      );
     }
+    calculatedHeight = max(
+      calculatedHeight,
+      widget.minHeight ?? defaultMinHeight,
+    );
 
-    newHeight = max(newHeight, widget.minHeight ?? defaultMinHeight);
-
-    _contentHeightNotifier.value = newHeight;
+    _contentHeightNotifier.value = calculatedHeight;
   }
 
   void _triggerExport(ExportCallback exportFn) {
     final plain = editorState.intoMarkdown();
     final htmlBody = editorState.intoHtml();
-
     exportFn(plain, htmlBody != plain ? htmlBody : null);
   }
 

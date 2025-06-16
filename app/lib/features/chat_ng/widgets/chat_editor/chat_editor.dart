@@ -38,7 +38,6 @@ class ChatEditor extends ConsumerStatefulWidget {
 
 class _ChatEditorState extends ConsumerState<ChatEditor> {
   EditorState textEditorState = EditorState.blank();
-  // late EditorScrollController scrollController;
   StreamSubscription<EditorTransactionValue>? _updateListener;
   final ValueNotifier<bool> _isInputEmptyNotifier = ValueNotifier(true);
   Timer? _debounceTimer;
@@ -46,12 +45,11 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
   @override
   void initState() {
     super.initState();
-    // scrollController = EditorScrollController(editorState: textEditorState);
+
     _updateListener?.cancel();
     // listener for editor input state
     _updateListener = textEditorState.transactionStream.listen((data) {
       _editorUpdate(data.$2);
-      // _updateContentHeight();
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDraft());
