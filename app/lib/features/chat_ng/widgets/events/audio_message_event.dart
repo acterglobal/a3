@@ -42,6 +42,14 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
 
   void _init() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // listen to the audio player state changes
+      ref.listenManual(audioPlayerStateProvider, (previous, next) {
+        if (next.messageId != widget.messageId &&
+            next.state == PlayerState.playing) {
+          _player.stop();
+        }
+      });
+
       // if the messageId is not the same, stop the player
       final audioPlayerInfo = ref.read(audioPlayerStateProvider);
       if (audioPlayerInfo.messageId != widget.messageId) {
@@ -63,14 +71,6 @@ class _AudioMessageEventState extends ConsumerState<AudioMessageEvent> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen to provider state changes
-    ref.listen(audioPlayerStateProvider, (previous, next) {
-      if (next.messageId != widget.messageId &&
-          next.state == PlayerState.playing) {
-        _player.stop();
-      }
-    });
-
     final ChatMessageInfo messageInfo = (
       messageId: widget.messageId,
       roomId: widget.roomId,
