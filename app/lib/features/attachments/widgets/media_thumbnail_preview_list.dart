@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:acter/common/models/types.dart';
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class MediaThumbnailPreviewList extends StatelessWidget {
   final List<File> selectedFiles;
@@ -66,12 +66,15 @@ class MediaThumbnailPreviewList extends StatelessWidget {
               AttachmentType.image => _imagePreview(context, file),
               AttachmentType.camera => _imagePreview(context, file),
               AttachmentType.video => _videoPreview(context, file),
-              AttachmentType.audio => Icon(ActerIcon.fileAudio.data, size: 20),
+              AttachmentType.audio => Icon(
+                PhosphorIconsRegular.fileAudio,
+                size: 20,
+              ),
               AttachmentType.file => FileAttachmentPreview(
                 file: file,
                 iconSize: 20,
               ),
-              _ => Icon(ActerIcon.file.data, size: 20),
+              _ => Icon(PhosphorIconsRegular.file, size: 20),
             },
             if (index == currentIndex) _buildDeleteIcon(context, index),
           ],
@@ -89,7 +92,7 @@ class MediaThumbnailPreviewList extends StatelessWidget {
       child: IconButton(
         onPressed: () => onDeleted(index),
         icon: Icon(
-          ActerIcon.trash.data,
+          PhosphorIconsRegular.trash,
           size: 20,
           color: Theme.of(context).colorScheme.error,
         ),
@@ -113,7 +116,7 @@ class MediaThumbnailPreviewList extends StatelessWidget {
           final thumbnail = snapshot.data;
           return thumbnail != null
               ? Image.file(thumbnail, fit: BoxFit.cover)
-              : Icon(ActerIcon.video.data, size: 20);
+              : Icon(PhosphorIconsRegular.video, size: 20);
         },
       ),
     );
