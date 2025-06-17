@@ -1,4 +1,5 @@
 import 'package:acter/common/providers/room_providers.dart';
+import 'package:acter/features/member/actions/invite_actions.dart';
 import 'package:acter/features/member/widgets/user_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
@@ -26,7 +27,22 @@ class DirectInvite extends ConsumerWidget {
                 : Text(userId),
         trailing:
             room != null
-                ? UserStateButton(userId: userId, room: room)
+                ? UserStateButton(
+                    userId: userId,
+                    room: room,
+                    onInvite: (userId) => InviteActions.handleInvite(
+                      context: context,
+                      ref: ref,
+                      userId: userId,
+                      room: room,
+                    ),
+                    onCancelInvite: (userId) => InviteActions.handleCancelInvite(
+                      context: context,
+                      ref: ref,
+                      userId: userId,
+                      room: room,
+                    ),
+                  )
                 : const Skeletonizer(child: Text('Loading room')),
       ),
     );

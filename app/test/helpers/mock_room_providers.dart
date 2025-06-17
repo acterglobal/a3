@@ -4,14 +4,78 @@ import 'package:acter/common/providers/notifiers/room_notifiers.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:mocktail/mocktail.dart';
+import 'mock_invites.dart' as invites;
+import 'mock_membership.dart';
+import 'mock_tasks_providers.dart' as tasks;
+
+class MockFfiListMember extends Mock implements FfiListMember {
+  final List<Member> members;
+
+  MockFfiListMember({required this.members});
+
+  @override
+  List<Member> toList({bool growable = true}) {
+    return List<Member>.from(members, growable: growable);
+  }
+}
 
 class MockRoom with Mock implements Room {
   final bool _isJoined;
+  final String _roomId;
+  final String? _displayName;
+  final List<Member> _invitedMembers;
+  final Member? _myMembership;
+  final bool _hasAvatar;
+  final OptionBuffer? _avatar;
 
-  MockRoom({bool isJoined = true}) : _isJoined = isJoined;
+  MockRoom({
+    bool isJoined = true, 
+    String roomId = 'test_room_id', 
+    String? displayName,
+    List<Member>? invitedMembers,
+    Member? myMembership,
+    bool hasAvatar = false,
+    OptionBuffer? avatar,
+  }) 
+    : _isJoined = isJoined,
+      _roomId = roomId,
+      _displayName = displayName,
+      _invitedMembers = invitedMembers ?? [],
+      _myMembership = myMembership,
+      _hasAvatar = hasAvatar,
+      _avatar = avatar;
 
   @override
   bool isJoined() => _isJoined;
+
+  @override
+  String roomIdStr() => _roomId;
+
+  @override
+  Future<OptionString> displayName() async {
+    return invites.MockOptionString(_displayName ?? 'Test Room');
+  }
+
+  @override
+  Future<FfiListMember> invitedMembers() async {
+    return MockFfiListMember(members: _invitedMembers);
+  }
+
+  @override
+  Future<Member> getMyMembership() async {
+    return _myMembership ?? MockMember();
+  }
+
+  @override
+  bool hasAvatar() => _hasAvatar;
+
+  @override
+  Future<OptionBuffer> avatar(ThumbnailSize? size) async {
+    return _avatar ?? invites.MockOptionBuffer();
+  }
+
+  @override
+  Future<FfiListFfiString> activeMembersIds() async => tasks.MockFfiListFfiString(items: ['test_user_id']);
 }
 
 class MockRoomUserSettings with Mock implements UserRoomSettings {
