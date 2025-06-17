@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:acter/common/extensions/options.dart';
@@ -626,6 +627,8 @@ class _HtmlEditorState extends State<HtmlEditor> {
           ),
       textSpanDecorator:
           widget.roomId != null ? customizeAttributeDecorator : null,
+      mobileDragHandleBallSize:
+          Platform.isIOS ? const Size.square(12) : const Size.square(8),
     );
   }
 
