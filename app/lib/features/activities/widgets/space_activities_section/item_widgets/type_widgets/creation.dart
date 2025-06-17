@@ -8,15 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger('a3::activities::widgets::task_due_date_change');
+final _log = Logger('a3::activities::widgets::creation');
 
-class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
+class ActivityCreationItemWidget extends ConsumerWidget {
   final Activity activity;
 
-  const ActivityTaskDueDateChangedItemWidget({
-    super.key,
-    required this.activity,
-  });
+  const ActivityCreationItemWidget({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,48 +33,27 @@ class ActivityTaskDueDateChangedItemWidget extends ConsumerWidget {
     final stateMsg = getMessage(lang, myId == senderId, senderName);
 
     return ActivityUserCentricItemContainerWidget(
-      actionIcon: Icons.access_time,
-      actionTitle: L10n.of(context).rescheduled,
-      actionIconColor: Colors.grey.shade400,
+      actionIcon: Icons.add_circle_outline,
+      actionTitle: L10n.of(context).creation,
       activityObject: activity.object(),
       userId: senderId,
       roomId: roomId,
-      originServerTs: activity.originServerTs(),
       subtitle: getSubtitle(context, stateMsg),
+      originServerTs: activity.originServerTs(),
     );
   }
 
   String? getMessage(L10n lang, bool isMe, String senderName) {
-    final content = activity.dateContent();
-    if (content == null) {
-      _log.severe('failed to get content of date change');
+    final obj = activity.object();
+    if (obj == null) {
+      _log.severe('failed to get object of creation');
       return null;
     }
-    switch (content.change()) {
-      case 'Changed':
-        // for now, we can't support the old value
-        // because the internal state machine is not ready about acter custom message, like pin or task
-        final newVal = content.newVal() ?? '';
-        if (isMe) {
-          return lang.activityDueDateYouChanged(newVal);
-        } else {
-          return lang.activityDueDateOtherChanged(senderName, newVal);
-        }
-      case 'Set':
-        final newVal = content.newVal() ?? '';
-        if (isMe) {
-          return lang.activityDueDateYouSet(newVal);
-        } else {
-          return lang.activityDueDateOtherSet(senderName, newVal);
-        }
-      case 'Unset':
-        if (isMe) {
-          return lang.activityDueDateYouUnset;
-        } else {
-          return lang.activityDueDateOtherUnset(senderName);
-        }
+    if (isMe) {
+      return lang.activityObjectYouCreated(obj.typeStr());
+    } else {
+      return lang.activityObjectOtherCreated(senderName, obj.typeStr());
     }
-    return null;
   }
 
   Widget? getSubtitle(BuildContext context, String? stateMsg) {
