@@ -5,7 +5,7 @@ import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/audio_attachment_preview.dart';
 import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
-import 'package:acter/features/attachments/widgets/multiple_media_preview_list.dart';
+import 'package:acter/features/attachments/widgets/media_thumbnail_preview_list.dart';
 import 'package:acter/l10n/generated/l10n.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +69,7 @@ class _MediaAttachmentPreviewWidgetState
         children: [
           _buildPageView(context),
           _buildCloseBtn(context),
-          _multipleMediaPreviewList(context),
+          _mediaThumbnailPreviewList(context),
           _buildNameAndSendBtn(context),
         ],
       ),
@@ -132,12 +132,12 @@ class _MediaAttachmentPreviewWidgetState
     );
   }
 
-  Widget _multipleMediaPreviewList(BuildContext context) {
+  Widget _mediaThumbnailPreviewList(BuildContext context) {
     return Positioned(
       bottom: 100,
       left: 0,
       right: 0,
-      child: MultipleMediaPreviewList(
+      child: MediaThumbnailPreviewList(
         selectedFiles: widget.selectedFiles,
         type: widget.type,
         currentIndex: _currentIndex,

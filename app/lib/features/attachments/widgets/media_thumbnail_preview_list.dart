@@ -7,14 +7,14 @@ import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-class MultipleMediaPreviewList extends StatelessWidget {
+class MediaThumbnailPreviewList extends StatelessWidget {
   final List<File> selectedFiles;
   final int currentIndex;
   final AttachmentType type;
   final Function(int index) onPageChanged;
   final Function(int index) onDeleted;
 
-  const MultipleMediaPreviewList({
+  const MediaThumbnailPreviewList({
     super.key,
     required this.selectedFiles,
     required this.type,
@@ -35,13 +35,13 @@ class MultipleMediaPreviewList extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: selectedFiles.length,
         itemBuilder: (context, index) {
-          return _buildMediaPreview(context, index);
+          return _buildMediaThumbnailPreview(context, index);
         },
       ),
     );
   }
 
-  Widget _buildMediaPreview(BuildContext context, int index) {
+  Widget _buildMediaThumbnailPreview(BuildContext context, int index) {
     final colorScheme = Theme.of(context).colorScheme;
     final file = selectedFiles[index];
     return GestureDetector(
