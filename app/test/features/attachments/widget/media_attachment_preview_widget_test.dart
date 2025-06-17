@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/features/attachments/widgets/media_attachment_preview_widget.dart';
-import 'package:acter/features/attachments/widgets/media_thumbnail_preview_list.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/media_attachment_preview_widget.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/media_thumbnail_preview_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -69,10 +69,7 @@ void main() {
     ) async {
       final fileName = 'test.png';
       final selectedFiles = [File(fileName)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       verifyCommonWidgetElements(
         fileName: fileName,
@@ -116,10 +113,7 @@ void main() {
     ) async {
       final fileName = 'test.txt';
       final selectedFiles = [File(fileName)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       verifyCommonWidgetElements(
         fileName: fileName,
@@ -137,10 +131,7 @@ void main() {
     ) async {
       final fileName = 'test.mp3';
       final selectedFiles = [File(fileName)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       // 4 because of Audio icon, close button icon, send button icon and file preview icon
       final expectedIconCount = 4;
@@ -164,10 +155,7 @@ void main() {
       final fileName2 = 'test2.pdf';
       final fileName3 = 'test3.docx';
       final selectedFiles = [File(fileName1), File(fileName2), File(fileName3)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       // selectedFiles.length for media attachment preview widget
       // + 2 because of Show in media attachment preview widget
@@ -194,10 +182,7 @@ void main() {
     ) async {
       final fileName = 'test.txt';
       final selectedFiles = [File(fileName)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       // 3 because of PDF file icon, close button icon, and send button icon
       final expectedIconCount = 3;
@@ -220,10 +205,7 @@ void main() {
     ) async {
       final fileName = 'test.pdf';
       final selectedFiles = [File(fileName)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       // 3 because of PDF file icon, close button icon, and send button icon
       final expectedIconCount = 3;
@@ -246,10 +228,7 @@ void main() {
     ) async {
       final fileName = 'test.docx';
       final selectedFiles = [File(fileName)];
-      await createWidgetUnderTest(
-        tester: tester,
-        selectedFiles: selectedFiles,
-      );
+      await createWidgetUnderTest(tester: tester, selectedFiles: selectedFiles);
 
       // 3 because of PDF file icon, close button icon, and send button icon
       final expectedIconCount = 3;

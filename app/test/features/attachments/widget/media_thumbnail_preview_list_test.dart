@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
-import 'package:acter/features/attachments/widgets/media_thumbnail_preview_list.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/file_attachment_preview.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/media_thumbnail_preview_list.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

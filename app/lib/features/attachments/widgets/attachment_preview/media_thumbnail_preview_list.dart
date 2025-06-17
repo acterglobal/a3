@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/file_attachment_preview.dart';
 import 'package:acter/features/news/news_utils/news_utils.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';

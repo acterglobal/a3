@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/features/attachments/widgets/audio_attachment_preview.dart';
-import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
-import 'package:acter/features/attachments/widgets/media_thumbnail_preview_list.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/audio_attachment_preview.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/file_attachment_preview.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/media_thumbnail_preview_list.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;

@@ -5,7 +5,7 @@ import 'package:acter/common/themes/app_theme.dart';
 import 'package:acter/features/attachments/actions/add_edit_link_bottom_sheet.dart';
 import 'package:acter/features/attachments/models/attachment_model.dart';
 import 'package:acter/features/attachments/types.dart';
-import 'package:acter/features/attachments/widgets/media_attachment_preview_widget.dart';
+import 'package:acter/features/attachments/widgets/attachment_preview/media_attachment_preview_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:acter/l10n/generated/l10n.dart';
