@@ -11,16 +11,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AddEventLocationWidget extends ConsumerStatefulWidget {
   final EventLocationDraft? initialLocation;
 
-  const AddEventLocationWidget({
-    super.key,
-    this.initialLocation,
-  });
+  const AddEventLocationWidget({super.key, this.initialLocation});
 
   @override
-  ConsumerState<AddEventLocationWidget> createState() => _AddEventLocationWidgetState();
+  ConsumerState<AddEventLocationWidget> createState() =>
+      _AddEventLocationWidgetState();
 }
 
-class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget> {
+class _AddEventLocationWidgetState
+    extends ConsumerState<AddEventLocationWidget> {
   final _formKey = GlobalKey<FormState>(debugLabel: 'location form key');
   late final TextEditingController _nameController;
   late final TextEditingController _urlController;
@@ -42,18 +41,14 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
       textEditorNoteState = EditorState.blank();
       textEditorAddressState = EditorState.blank();
     } else {
-      textEditorNoteState = EditorState(
-        document: ActerDocumentHelpers.parse(
-          widget.initialLocation?.note ?? '',
-          htmlContent: widget.initialLocation?.note ?? '',
-        ),
+      textEditorNoteState = ActerEditorStateHelpers.fromContent(
+        widget.initialLocation?.note ?? '',
+        widget.initialLocation?.note,
       );
 
-      textEditorAddressState = EditorState(
-        document: ActerDocumentHelpers.parse(
-          widget.initialLocation?.address ?? '',
-          htmlContent: widget.initialLocation?.address ?? '',
-        ),
+      textEditorAddressState = ActerEditorStateHelpers.fromContent(
+        widget.initialLocation?.address ?? '',
+        widget.initialLocation?.address,
       );
     }
   }
@@ -96,8 +91,10 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
   Widget _buildTypeSelector(BuildContext context) {
     final lang = L10n.of(context);
     final isEditing = widget.initialLocation != null;
-    final hasVirtualData = isEditing && widget.initialLocation?.url?.isNotEmpty == true;
-    final hasPhysicalData = isEditing && widget.initialLocation?.address?.isNotEmpty == true;
+    final hasVirtualData =
+        isEditing && widget.initialLocation?.url?.isNotEmpty == true;
+    final hasPhysicalData =
+        isEditing && widget.initialLocation?.address?.isNotEmpty == true;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -105,25 +102,31 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
         FilterChip(
           label: Text(lang.virtual),
           selected: _selectedType == LocationType.virtual,
-          onSelected: isEditing && !hasVirtualData ? null : (selected) {
-            if (!(_selectedType == LocationType.virtual)) {
-              setState(() {
-                _selectedType = LocationType.virtual;
-              });
-            }
-          },
+          onSelected:
+              isEditing && !hasVirtualData
+                  ? null
+                  : (selected) {
+                    if (!(_selectedType == LocationType.virtual)) {
+                      setState(() {
+                        _selectedType = LocationType.virtual;
+                      });
+                    }
+                  },
         ),
         const SizedBox(width: 8),
         FilterChip(
           label: Text(lang.realWorld),
           selected: _selectedType == LocationType.physical,
-          onSelected: isEditing && !hasPhysicalData ? null : (selected) {
-            if (!(_selectedType == LocationType.physical)) {
-              setState(() {
-                _selectedType = LocationType.physical;
-              });
-            }
-          },
+          onSelected:
+              isEditing && !hasPhysicalData
+                  ? null
+                  : (selected) {
+                    if (!(_selectedType == LocationType.physical)) {
+                      setState(() {
+                        _selectedType = LocationType.physical;
+                      });
+                    }
+                  },
         ),
       ],
     );
@@ -202,14 +205,12 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
               editable: true,
               hintText: lang.enterLocationAddress,
               onChanged: (body, html) {
-                textEditorAddressState = EditorState(
-                  document: ActerDocumentHelpers.parse(
-                    body,
-                    htmlContent: html,
-                  ),
+                textEditorAddressState = ActerEditorStateHelpers.fromContent(
+                  body,
+                  html,
                 );
                 _addressError = null; // Clear error on change
-            },
+              },
             ),
           ),
         ),
@@ -240,8 +241,9 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
               editable: true,
               hintText: lang.enterNote,
               onChanged: (body, html) {
-                textEditorNoteState = EditorState(
-                  document: ActerDocumentHelpers.parse(body, htmlContent: html),
+                textEditorNoteState = ActerEditorStateHelpers.fromContent(
+                  body,
+                  html,
                 );
               },
             ),
@@ -258,7 +260,11 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
       children: [
         ActerPrimaryActionButton(
           onPressed: () => _addLocation(),
-          child: Text(widget.initialLocation != null ? lang.updateLocation : lang.addLocation),
+          child: Text(
+            widget.initialLocation != null
+                ? lang.updateLocation
+                : lang.addLocation,
+          ),
         ),
         const SizedBox(height: 10),
         OutlinedButton(
@@ -289,10 +295,7 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
       final location = EventLocationDraft(
         name: _nameController.text,
         type: _selectedType,
-        url:
-            _selectedType == LocationType.virtual
-                ? _urlController.text
-                : null,
+        url: _selectedType == LocationType.virtual ? _urlController.text : null,
         address:
             _selectedType == LocationType.physical
                 ? textEditorAddressState.intoMarkdown()
@@ -302,7 +305,9 @@ class _AddEventLocationWidgetState extends ConsumerState<AddEventLocationWidget>
       if (widget.initialLocation == null) {
         ref.read(eventDraftLocationsProvider.notifier).addLocation(location);
       } else {
-        ref.read(eventDraftLocationsProvider.notifier).updateLocation(widget.initialLocation!, location);
+        ref
+            .read(eventDraftLocationsProvider.notifier)
+            .updateLocation(widget.initialLocation!, location);
       }
       Navigator.pop(context);
     }
