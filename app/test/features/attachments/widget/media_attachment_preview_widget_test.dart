@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
 import 'package:acter/features/attachments/widgets/media_attachment_preview_widget.dart';
 import 'package:acter/features/attachments/widgets/media_thumbnail_preview_list.dart';
@@ -15,7 +14,6 @@ void main() {
     Future<void> createWidgetUnderTest({
       required WidgetTester tester,
       required List<File> selectedFiles,
-      required AttachmentType type,
     }) async {
       await tester.pumpProviderWidget(
         child: MediaAttachmentPreviewWidget(
@@ -74,7 +72,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.image,
       );
 
       verifyCommonWidgetElements(
@@ -95,7 +92,6 @@ void main() {
         await createWidgetUnderTest(
           tester: tester,
           selectedFiles: selectedFiles,
-          type: AttachmentType.video,
         );
 
         // 2 because of Close button icon and send button icon
@@ -123,7 +119,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.file,
       );
 
       verifyCommonWidgetElements(
@@ -145,7 +140,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.audio,
       );
 
       // 4 because of Audio icon, close button icon, send button icon and file preview icon
@@ -173,7 +167,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.file,
       );
 
       // selectedFiles.length for media attachment preview widget
@@ -204,7 +197,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.file,
       );
 
       // 3 because of PDF file icon, close button icon, and send button icon
@@ -231,7 +223,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.file,
       );
 
       // 3 because of PDF file icon, close button icon, and send button icon
@@ -258,7 +249,6 @@ void main() {
       await createWidgetUnderTest(
         tester: tester,
         selectedFiles: selectedFiles,
-        type: AttachmentType.file,
       );
 
       // 3 because of PDF file icon, close button icon, and send button icon
