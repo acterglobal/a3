@@ -98,7 +98,7 @@ async fn image_attachment_on_pin() -> Result<()> {
             "image/png".to_owned(),
         )
         .filename(filename.to_owned())
-        .clone();
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -189,7 +189,7 @@ async fn file_attachment_on_event() -> Result<()> {
             "document/x-src".to_owned(),
         )
         .filename(filename.to_owned())
-        .clone();
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -281,7 +281,7 @@ async fn video_attachment_on_tasklist() -> Result<()> {
             "video/mpeg4".to_owned(),
         )
         .filename(filename.to_owned())
-        .clone();
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?

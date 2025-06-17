@@ -73,7 +73,7 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
             "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned())
-        .clone();
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let activity_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -144,7 +144,7 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
             "image/png".to_owned(),
         )
         .filename("Fishy.png".to_owned())
-        .clone();
+        .clone(); // switch variable from temporary to normal so that content_draft can use it
     let activity_id = manager
         .content_draft(Box::new(base_draft))
         .await?

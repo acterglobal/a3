@@ -53,7 +53,7 @@ async fn ref_details_as_url_preview() -> Result<()> {
     let draft = user
         .text_plain_draft("look at this pin".to_owned())
         .add_ref_details(Box::new(ref_details))?
-        .clone();
+        .clone(); // switch variable from temporary to normal so that send_message can use it
 
     let convo = user
         .convo(chat_id.to_string())
@@ -124,7 +124,7 @@ async fn url_preview_on_message() -> Result<()> {
     let draft = user
         .text_plain_draft("look at this pin".to_owned())
         .add_url_preview(Box::new(preview))?
-        .clone();
+        .clone(); // switch variable from temporary to normal so that send_message can use it
 
     let convo = first
         .convo(chat_id.to_string())
