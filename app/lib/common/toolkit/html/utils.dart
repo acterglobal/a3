@@ -1,7 +1,8 @@
 final linkMatcher = RegExp(
-  r'(https?:\/\/|matrix:|acter:)([^\s]+)',
+  r'(https?:\/\/|matrix:|acter:)([^\s]+[^\s.!:;])',
   multiLine: true,
   unicode: true,
+  caseSensitive: false,
 );
 
 /// A helper function that replaces simple URLs and line breaks in a simple
