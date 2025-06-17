@@ -91,21 +91,19 @@ class _MediaAttachmentPreviewWidgetState
       itemCount: widget.selectedFiles.length,
       itemBuilder: (context, index) {
         final file = widget.selectedFiles[index];
-        return _buildMediaPreview(context, file);
+        return _buildMediaPreviewItem(context, file);
       },
       onPageChanged: _onPageChanged,
     );
   }
 
-  Widget _buildMediaPreview(BuildContext context, File file) {
+  Widget _buildMediaPreviewItem(BuildContext context, File file) {
     final mimeType = lookupMimeType(file.path);
-    if (mimeType == null) {
-      return FileAttachmentPreview(file: file);
-    } else if (mimeType.startsWith('image')) {
+    if (mimeType?.startsWith('image') ?? false) {
       return _imagePreview(context, file);
-    } else if (mimeType.startsWith('video')) {
+    } else if (mimeType?.startsWith('video') ?? false) {
       return ActerVideoPlayer(videoFile: file);
-    } else if (mimeType.startsWith('audio')) {
+    } else if (mimeType?.startsWith('audio') ?? false) {
       return AudioAttachmentPreview(file: file);
     } else {
       return FileAttachmentPreview(file: file);

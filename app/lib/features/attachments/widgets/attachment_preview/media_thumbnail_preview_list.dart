@@ -13,6 +13,7 @@ class MediaThumbnailPreviewList extends StatelessWidget {
   final int currentIndex;
   final Function(int index) onPageChanged;
   final Function(int index) onDeleted;
+  final double thumbnailSize;
 
   const MediaThumbnailPreviewList({
     super.key,
@@ -20,38 +21,36 @@ class MediaThumbnailPreviewList extends StatelessWidget {
     required this.currentIndex,
     required this.onPageChanged,
     required this.onDeleted,
+    this.thumbnailSize = 55,
   });
-
-  static const double _thumbnailSize = 55;
 
   @override
   Widget build(BuildContext context) {
     if (selectedFiles.length <= 1) return const SizedBox.shrink();
 
-    return Container(
-      height: _thumbnailSize,
-      alignment: Alignment.center,
+    return Center(
       child: ListView.builder(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(horizontal: 5),
         scrollDirection: Axis.horizontal,
         itemCount: selectedFiles.length,
         itemBuilder: (context, index) {
-          return _buildMediaThumbnailPreview(context, index);
+          return _buildMediaThumbnailPreviewItem(context, index);
         },
       ),
     );
   }
 
-  Widget _buildMediaThumbnailPreview(BuildContext context, int index) {
+  Widget _buildMediaThumbnailPreviewItem(BuildContext context, int index) {
     final colorScheme = Theme.of(context).colorScheme;
-    final borderColor =
-        index == currentIndex ? colorScheme.primary : colorScheme.outline;
+    final isSelected = index == currentIndex;
+    final borderColor = isSelected ? colorScheme.primary : colorScheme.outline;
+
     return GestureDetector(
       onTap: () => onPageChanged(index),
       child: Container(
-        height: _thumbnailSize,
-        width: _thumbnailSize,
+        height: thumbnailSize,
+        width: thumbnailSize,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -60,24 +59,22 @@ class MediaThumbnailPreviewList extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _buildThumbnailItem(context, index),
-            if (index == currentIndex) _buildDeleteIcon(context, index),
+            _buildThumbnailView(context, index),
+            if (isSelected) _buildDeleteIcon(context, index),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildThumbnailItem(BuildContext context, int index) {
+  Widget _buildThumbnailView(BuildContext context, int index) {
     final file = selectedFiles[index];
     final mimeType = lookupMimeType(file.path);
-    if (mimeType == null) {
-      return FileAttachmentPreview(file: file, iconSize: 30);
-    } else if (mimeType.startsWith('image')) {
+    if (mimeType?.startsWith('image') ?? false) {
       return _imagePreview(context, file);
-    } else if (mimeType.startsWith('video')) {
+    } else if (mimeType?.startsWith('video') ?? false) {
       return _videoPreview(context, file);
-    } else if (mimeType.startsWith('audio')) {
+    } else if (mimeType?.startsWith('audio') ?? false) {
       return Icon(Atlas.music_file);
     } else {
       return FileAttachmentPreview(file: file, iconSize: 30);
