@@ -197,7 +197,7 @@ void main() {
       });
 
       test('should handle very long URLs', () {
-        final longUrl = 'https://example.com/ + ${"a" * 1000}';
+        final longUrl = 'https://example.com/${"a" * 1000}';
         final input = 'Visit $longUrl for details';
         final expected =
             'Visit <a href="$longUrl">${longUrl.replaceFirst('https://', '')}</a> for details';
