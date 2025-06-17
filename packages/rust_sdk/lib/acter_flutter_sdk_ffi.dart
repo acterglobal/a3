@@ -19739,12 +19739,12 @@ class Api {
   late final _newsEntryRefDetails =
       _newsEntryRefDetailsPtr.asFunction<int Function(int)>();
   late final _newsEntryDraftAddSlidePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__NewsEntryDraft_add_slide",
       );
 
   late final _newsEntryDraftAddSlide =
-      _newsEntryDraftAddSlidePtr.asFunction<int Function(int, int)>();
+      _newsEntryDraftAddSlidePtr.asFunction<void Function(int, int)>();
   late final _newsEntryDraftSwapSlidesPtr = _lookup<
     ffi.NativeFunction<
       _NewsEntryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
@@ -19785,20 +19785,20 @@ class Api {
   late final _newsEntryUpdateBuilderAddSlide =
       _newsEntryUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_unset_slides",
       );
 
   late final _newsEntryUpdateBuilderUnsetSlides =
-      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<int Function(int)>();
+      _newsEntryUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _newsEntryUpdateBuilderUnsetSlidesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__NewsEntryUpdateBuilder_unset_slides_update",
       );
 
   late final _newsEntryUpdateBuilderUnsetSlidesUpdate =
       _newsEntryUpdateBuilderUnsetSlidesUpdatePtr
-          .asFunction<int Function(int)>();
+          .asFunction<void Function(int)>();
   late final _newsEntryUpdateBuilderSwapSlidesPtr = _lookup<
     ffi.NativeFunction<
       _NewsEntryUpdateBuilderSwapSlidesReturn Function(
@@ -19962,12 +19962,12 @@ class Api {
 
   late final _storyComments = _storyCommentsPtr.asFunction<int Function(int)>();
   late final _storyDraftAddSlidePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
         "__StoryDraft_add_slide",
       );
 
   late final _storyDraftAddSlide =
-      _storyDraftAddSlidePtr.asFunction<int Function(int, int)>();
+      _storyDraftAddSlidePtr.asFunction<void Function(int, int)>();
   late final _storyDraftSwapSlidesPtr = _lookup<
     ffi.NativeFunction<
       _StoryDraftSwapSlidesReturn Function(ffi.IntPtr, ffi.Uint8, ffi.Uint8)
@@ -19985,12 +19985,12 @@ class Api {
   late final _storyDraftSlides =
       _storyDraftSlidesPtr.asFunction<int Function(int)>();
   late final _storyDraftUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__StoryDraft_unset_slides",
       );
 
   late final _storyDraftUnsetSlides =
-      _storyDraftUnsetSlidesPtr.asFunction<int Function(int)>();
+      _storyDraftUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _storyDraftSendPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
         "__StoryDraft_send",
@@ -20006,19 +20006,19 @@ class Api {
   late final _storyUpdateBuilderAddSlide =
       _storyUpdateBuilderAddSlidePtr.asFunction<int Function(int, int)>();
   late final _storyUpdateBuilderUnsetSlidesPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_unset_slides",
       );
 
   late final _storyUpdateBuilderUnsetSlides =
-      _storyUpdateBuilderUnsetSlidesPtr.asFunction<int Function(int)>();
+      _storyUpdateBuilderUnsetSlidesPtr.asFunction<void Function(int)>();
   late final _storyUpdateBuilderUnsetSlidesUpdatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr)>>(
         "__StoryUpdateBuilder_unset_slides_update",
       );
 
   late final _storyUpdateBuilderUnsetSlidesUpdate =
-      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<int Function(int)>();
+      _storyUpdateBuilderUnsetSlidesUpdatePtr.asFunction<void Function(int)>();
   late final _storyUpdateBuilderSwapSlidesPtr = _lookup<
     ffi.NativeFunction<
       _StoryUpdateBuilderSwapSlidesReturn Function(
@@ -41005,23 +41005,18 @@ class NewsEntryDraft {
   NewsEntryDraft._(this._api, this._box);
 
   /// create news slide draft
-  NewsEntryDraft addSlide(NewsSlideDraft baseDraft) {
+  void addSlide(NewsSlideDraft baseDraft) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    final tmp3 = _api._newsEntryDraftAddSlide(tmp0, tmp2);
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_NewsEntryDraft");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = NewsEntryDraft._(_api, tmp5_1);
-    return tmp4;
+    _api._newsEntryDraftAddSlide(tmp0, tmp2);
+    return;
   }
 
   /// change position of slides draft of this news entry
-  NewsEntryDraft swapSlides(int from, int to) {
+  void swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41035,7 +41030,6 @@ class NewsEntryDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -41050,11 +41044,7 @@ class NewsEntryDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_NewsEntryDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = NewsEntryDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// get a copy of the news slide set for this news entry draft
@@ -41133,32 +41123,22 @@ class NewsEntryUpdateBuilder {
   }
 
   /// reset slides for this news entry
-  NewsEntryUpdateBuilder unsetSlides() {
+  void unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryUpdateBuilderUnsetSlides(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryUpdateBuilder");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp3_1);
-    return tmp2;
+    _api._newsEntryUpdateBuilderUnsetSlides(tmp0);
+    return;
   }
 
-  NewsEntryUpdateBuilder unsetSlidesUpdate() {
+  void unsetSlidesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntryUpdateBuilderUnsetSlidesUpdate(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsEntryUpdateBuilder");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = NewsEntryUpdateBuilder._(_api, tmp3_1);
-    return tmp2;
+    _api._newsEntryUpdateBuilderUnsetSlidesUpdate(tmp0);
+    return;
   }
 
   /// set position of slides for this news entry
-  NewsEntryUpdateBuilder swapSlides(int from, int to) {
+  void swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41172,7 +41152,6 @@ class NewsEntryUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -41187,11 +41166,7 @@ class NewsEntryUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_NewsEntryUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = NewsEntryUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// update this news entry
@@ -41596,23 +41571,18 @@ class StoryDraft {
   StoryDraft._(this._api, this._box);
 
   /// create news slide draft
-  StoryDraft addSlide(StorySlideDraft baseDraft) {
+  void addSlide(StorySlideDraft baseDraft) {
     final tmp1 = baseDraft;
     var tmp0 = 0;
     var tmp2 = 0;
     tmp0 = _box.borrow();
     tmp2 = tmp1._box.move();
-    final tmp3 = _api._storyDraftAddSlide(tmp0, tmp2);
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "drop_box_StoryDraft");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = StoryDraft._(_api, tmp5_1);
-    return tmp4;
+    _api._storyDraftAddSlide(tmp0, tmp2);
+    return;
   }
 
   /// change position of slides draft of this news entry
-  StoryDraft swapSlides(int from, int to) {
+  void swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41626,7 +41596,6 @@ class StoryDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -41641,11 +41610,7 @@ class StoryDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_StoryDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = StoryDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// get a copy of the news slide set for this news entry draft
@@ -41663,16 +41628,11 @@ class StoryDraft {
   }
 
   /// clear slides
-  StoryDraft unsetSlides() {
+  void unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._storyDraftUnsetSlides(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryDraft");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = StoryDraft._(_api, tmp3_1);
-    return tmp2;
+    _api._storyDraftUnsetSlides(tmp0);
+    return;
   }
 
   /// create this news entry
@@ -41724,32 +41684,22 @@ class StoryUpdateBuilder {
   }
 
   /// reset slides for this news entry
-  StoryUpdateBuilder unsetSlides() {
+  void unsetSlides() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._storyUpdateBuilderUnsetSlides(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryUpdateBuilder");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = StoryUpdateBuilder._(_api, tmp3_1);
-    return tmp2;
+    _api._storyUpdateBuilderUnsetSlides(tmp0);
+    return;
   }
 
-  StoryUpdateBuilder unsetSlidesUpdate() {
+  void unsetSlidesUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._storyUpdateBuilderUnsetSlidesUpdate(tmp0);
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_StoryUpdateBuilder");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = StoryUpdateBuilder._(_api, tmp3_1);
-    return tmp2;
+    _api._storyUpdateBuilderUnsetSlidesUpdate(tmp0);
+    return;
   }
 
   /// set position of slides for this news entry
-  StoryUpdateBuilder swapSlides(int from, int to) {
+  void swapSlides(int from, int to) {
     final tmp1 = from;
     final tmp3 = to;
     var tmp0 = 0;
@@ -41763,7 +41713,6 @@ class StoryUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -41778,11 +41727,7 @@ class StoryUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_StoryUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = StoryUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// update this news entry
@@ -42993,7 +42938,7 @@ class CalendarEventUpdateBuilder {
   }
 
   /// set utc start in rfc3339 string
-  CalendarEventUpdateBuilder utcStartFromRfc3339(String utcStart) {
+  void utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43018,7 +42963,6 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43033,15 +42977,11 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set utc start in rfc2822 string
-  CalendarEventUpdateBuilder utcStartFromRfc2822(String utcStart) {
+  void utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43066,7 +43006,6 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43081,18 +43020,11 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set utc start in custom format
-  CalendarEventUpdateBuilder utcStartFromFormat(
-    String utcStart,
-    String format,
-  ) {
+  void utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43132,7 +43064,6 @@ class CalendarEventUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43147,15 +43078,11 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventUpdateBuilder");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp15_1);
-    return tmp10;
+    return;
   }
 
   /// set utc end in rfc3339 string
-  CalendarEventUpdateBuilder utcEndFromRfc3339(String utcEnd) {
+  void utcEndFromRfc3339(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43180,7 +43107,6 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43195,15 +43121,11 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set utc end in rfc2822 string
-  CalendarEventUpdateBuilder utcEndFromRfc2822(String utcEnd) {
+  void utcEndFromRfc2822(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43228,7 +43150,6 @@ class CalendarEventUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43243,15 +43164,11 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set utc end in custom format
-  CalendarEventUpdateBuilder utcEndFromFormat(String utcEnd, String format) {
+  void utcEndFromFormat(String utcEnd, String format) {
     final tmp1 = utcEnd;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43291,7 +43208,6 @@ class CalendarEventUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43306,11 +43222,7 @@ class CalendarEventUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventUpdateBuilder");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = CalendarEventUpdateBuilder._(_api, tmp15_1);
-    return tmp10;
+    return;
   }
 
   /// set the physical location details for this calendar event
@@ -43746,7 +43658,7 @@ class CalendarEventDraft {
   }
 
   /// set the utc_start for this calendar event in rfc3339 format
-  CalendarEventDraft utcStartFromRfc3339(String utcStart) {
+  void utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43771,7 +43683,6 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43786,15 +43697,11 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this calendar event in rfc2822 format
-  CalendarEventDraft utcStartFromRfc2822(String utcStart) {
+  void utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43819,7 +43726,6 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43834,15 +43740,11 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this calendar event in custom format
-  CalendarEventDraft utcStartFromFormat(String utcStart, String format) {
+  void utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -43882,7 +43784,6 @@ class CalendarEventDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -43897,15 +43798,11 @@ class CalendarEventDraft {
       }
       throw tmp11_0;
     }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventDraft");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = CalendarEventDraft._(_api, tmp15_1);
-    return tmp10;
+    return;
   }
 
   /// set the utc_end for this calendar event in rfc3339 format
-  CalendarEventDraft utcEndFromRfc3339(String utcEnd) {
+  void utcEndFromRfc3339(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43930,7 +43827,6 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43945,15 +43841,11 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_end for this calendar event in rfc2822 format
-  CalendarEventDraft utcEndFromRfc2822(String utcEnd) {
+  void utcEndFromRfc2822(String utcEnd) {
     final tmp1 = utcEnd;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -43978,7 +43870,6 @@ class CalendarEventDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -43993,15 +43884,11 @@ class CalendarEventDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_CalendarEventDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = CalendarEventDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_end for this calendar event in custom format
-  CalendarEventDraft utcEndFromFormat(String utcEnd, String format) {
+  void utcEndFromFormat(String utcEnd, String format) {
     final tmp1 = utcEnd;
     final tmp5 = format;
     var tmp0 = 0;
@@ -44041,7 +43928,6 @@ class CalendarEventDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -44056,11 +43942,7 @@ class CalendarEventDraft {
       }
       throw tmp11_0;
     }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_CalendarEventDraft");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = CalendarEventDraft._(_api, tmp15_1);
-    return tmp10;
+    return;
   }
 
   /// set the physical location details for this calendar event
@@ -55339,7 +55221,7 @@ class TaskUpdateBuilder {
   }
 
   /// set the utc_start for this task list in rfc3339 format
-  TaskUpdateBuilder utcStartFromRfc3339(String utcStart) {
+  void utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55364,7 +55246,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55379,15 +55260,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = TaskUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in rfc2822 format
-  TaskUpdateBuilder utcStartFromRfc2822(String utcStart) {
+  void utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55412,7 +55289,6 @@ class TaskUpdateBuilder {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55427,15 +55303,11 @@ class TaskUpdateBuilder {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskUpdateBuilder");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = TaskUpdateBuilder._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task list in custom format
-  TaskUpdateBuilder utcStartFromFormat(String utcStart, String format) {
+  void utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -55475,7 +55347,6 @@ class TaskUpdateBuilder {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -55490,11 +55361,7 @@ class TaskUpdateBuilder {
       }
       throw tmp11_0;
     }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_TaskUpdateBuilder");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = TaskUpdateBuilder._(_api, tmp15_1);
-    return tmp10;
+    return;
   }
 
   void unsetUtcStart() {
@@ -55779,7 +55646,7 @@ class TaskDraft {
   }
 
   /// set the utc_start for this task in rfc3339 format
-  TaskDraft utcStartFromRfc3339(String utcStart) {
+  void utcStartFromRfc3339(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55799,7 +55666,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55814,15 +55680,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = TaskDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task in rfc2822 format
-  TaskDraft utcStartFromRfc2822(String utcStart) {
+  void utcStartFromRfc2822(String utcStart) {
     final tmp1 = utcStart;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -55842,7 +55704,6 @@ class TaskDraft {
     final tmp8 = tmp5.arg1;
     final tmp9 = tmp5.arg2;
     final tmp10 = tmp5.arg3;
-    final tmp11 = tmp5.arg4;
     if (tmp7 == 0) {
       debugAllocation("handle error", tmp8, tmp9);
       final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
@@ -55857,15 +55718,11 @@ class TaskDraft {
       }
       throw tmp7_0;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(_api, tmp11_0, "drop_box_TaskDraft");
-    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
-    final tmp6 = TaskDraft._(_api, tmp11_1);
-    return tmp6;
+    return;
   }
 
   /// set the utc_start for this task in custom format
-  TaskDraft utcStartFromFormat(String utcStart, String format) {
+  void utcStartFromFormat(String utcStart, String format) {
     final tmp1 = utcStart;
     final tmp5 = format;
     var tmp0 = 0;
@@ -55905,7 +55762,6 @@ class TaskDraft {
     final tmp12 = tmp9.arg1;
     final tmp13 = tmp9.arg2;
     final tmp14 = tmp9.arg3;
-    final tmp15 = tmp9.arg4;
     if (tmp11 == 0) {
       debugAllocation("handle error", tmp12, tmp13);
       final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
@@ -55920,11 +55776,7 @@ class TaskDraft {
       }
       throw tmp11_0;
     }
-    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
-    final tmp15_1 = _Box(_api, tmp15_0, "drop_box_TaskDraft");
-    tmp15_1._finalizer = _api._registerFinalizer(tmp15_1);
-    final tmp10 = TaskDraft._(_api, tmp15_1);
-    return tmp10;
+    return;
   }
 
   void unsetUtcStart() {
@@ -71008,8 +70860,6 @@ class _NewsEntryDraftSwapSlidesReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _NewsEntryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
@@ -71021,8 +70871,6 @@ class _NewsEntryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _StorySlideTypeStrReturn extends ffi.Struct {
@@ -71079,8 +70927,6 @@ class _StoryDraftSwapSlidesReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _StoryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
@@ -71092,8 +70938,6 @@ class _StoryUpdateBuilderSwapSlidesReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _ActerPinTitleReturn extends ffi.Struct {
@@ -71232,8 +71076,6 @@ class _CalendarEventUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -71245,8 +71087,6 @@ class _CalendarEventUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -71258,8 +71098,6 @@ class _CalendarEventUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromRfc3339Return extends ffi.Struct {
@@ -71271,8 +71109,6 @@ class _CalendarEventUpdateBuilderUtcEndFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromRfc2822Return extends ffi.Struct {
@@ -71284,8 +71120,6 @@ class _CalendarEventUpdateBuilderUtcEndFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventUpdateBuilderUtcEndFromFormatReturn extends ffi.Struct {
@@ -71297,8 +71131,6 @@ class _CalendarEventUpdateBuilderUtcEndFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -71310,8 +71142,6 @@ class _CalendarEventDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -71323,8 +71153,6 @@ class _CalendarEventDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -71336,8 +71164,6 @@ class _CalendarEventDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
@@ -71349,8 +71175,6 @@ class _CalendarEventDraftUtcEndFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
@@ -71362,8 +71186,6 @@ class _CalendarEventDraftUtcEndFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
@@ -71375,8 +71197,6 @@ class _CalendarEventDraftUtcEndFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _EventLocationInfoLocationTypeReturn extends ffi.Struct {
@@ -73332,8 +73152,6 @@ class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
@@ -73345,8 +73163,6 @@ class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
@@ -73358,8 +73174,6 @@ class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
@@ -73371,8 +73185,6 @@ class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
@@ -73384,8 +73196,6 @@ class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
@@ -73397,8 +73207,6 @@ class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
   external int arg2;
   @ffi.UintPtr()
   external int arg3;
-  @ffi.IntPtr()
-  external int arg4;
 }
 
 class _TaskListNameReturn extends ffi.Struct {

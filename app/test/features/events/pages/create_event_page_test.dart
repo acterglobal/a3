@@ -36,8 +36,8 @@ void main() {
     when(() => mockSpace.calendarEventDraft()).thenReturn(mockDraft);
     when(() => mockDraft.send()).thenAnswer((_) async => MockEventId('test-event-id'));
     when(() => mockDraft.title(any())).thenReturn(null);
-    when(() => mockDraft.utcStartFromRfc3339(any())).thenReturn(mockDraft);
-    when(() => mockDraft.utcEndFromRfc3339(any())).thenReturn(mockDraft);
+    when(() => mockDraft.utcStartFromRfc3339(any())).thenReturn(null);
+    when(() => mockDraft.utcEndFromRfc3339(any())).thenReturn(null);
     when(() => mockDraft.descriptionHtml(any(), any())).thenReturn(null);
 
     // Set up location-related mock behavior

@@ -427,10 +427,10 @@ object NewsEntry {
 
 object NewsEntryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: NewsSlideDraft) -> NewsEntryDraft;
+    fn add_slide(base_draft: NewsSlideDraft);
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8) -> Result<NewsEntryDraft>;
+    fn swap_slides(from: u8, to:u8) -> Result<()>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<NewsSlideDraft>;
@@ -447,11 +447,11 @@ object NewsEntryUpdateBuilder {
     fn add_slide(draft: NewsSlideDraft) -> Future<Result<NewsEntryUpdateBuilder>>;
 
     /// reset slides for this news entry
-    fn unset_slides() -> NewsEntryUpdateBuilder;
-    fn unset_slides_update() -> NewsEntryUpdateBuilder;
+    fn unset_slides();
+    fn unset_slides_update();
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8) -> Result<NewsEntryUpdateBuilder>;
+    fn swap_slides(from: u8, to: u8) -> Result<()>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -541,16 +541,16 @@ object Story {
 
 object StoryDraft {
     /// create news slide draft
-    fn add_slide(base_draft: StorySlideDraft) -> StoryDraft;
+    fn add_slide(base_draft: StorySlideDraft);
 
     /// change position of slides draft of this news entry
-    fn swap_slides(from: u8, to:u8) -> Result<StoryDraft>;
+    fn swap_slides(from: u8, to:u8) -> Result<()>;
 
     /// get a copy of the news slide set for this news entry draft
     fn slides() -> Vec<StorySlideDraft>;
 
     /// clear slides
-    fn unset_slides() -> StoryDraft;
+    fn unset_slides();
 
     /// create this news entry
     fn send() -> Future<Result<EventId>>;
@@ -561,11 +561,11 @@ object StoryUpdateBuilder {
     fn add_slide(draft: StorySlideDraft) -> Future<Result<StoryUpdateBuilder>>;
 
     /// reset slides for this news entry
-    fn unset_slides() -> StoryUpdateBuilder;
-    fn unset_slides_update() -> StoryUpdateBuilder;
+    fn unset_slides();
+    fn unset_slides_update();
 
     /// set position of slides for this news entry
-    fn swap_slides(from: u8, to: u8) -> Result<StoryUpdateBuilder>;
+    fn swap_slides(from: u8, to: u8) -> Result<()>;
 
     /// update this news entry
     fn send() -> Future<Result<EventId>>;
@@ -760,18 +760,18 @@ object CalendarEventUpdateBuilder {
     fn description_html(body: string, html_body: string);
 
     /// set utc start in rfc3339 string
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set utc start in rfc2822 string
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<CalendarEventUpdateBuilder>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set utc start in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<CalendarEventUpdateBuilder>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
 
     /// set utc end in rfc3339 string
-    fn utc_end_from_rfc3339(utc_end: string) -> Result<CalendarEventUpdateBuilder>;
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set utc end in rfc2822 string
-    fn utc_end_from_rfc2822(utc_end: string) -> Result<CalendarEventUpdateBuilder>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set utc end in custom format
-    fn utc_end_from_format(utc_end: string, format: string) -> Result<CalendarEventUpdateBuilder>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
 
     /// set the physical location details for this calendar event
     /// description_html means by markdown
@@ -800,18 +800,18 @@ object CalendarEventDraft {
     fn unset_description();
 
     /// set the utc_start for this calendar event in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<CalendarEventDraft>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<CalendarEventDraft>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this calendar event in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<CalendarEventDraft>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
 
     /// set the utc_end for this calendar event in rfc3339 format
-    fn utc_end_from_rfc3339(utc_end: string) -> Result<CalendarEventDraft>;
+    fn utc_end_from_rfc3339(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in rfc2822 format
-    fn utc_end_from_rfc2822(utc_end: string) -> Result<CalendarEventDraft>;
+    fn utc_end_from_rfc2822(utc_end: string) -> Result<()>;
     /// set the utc_end for this calendar event in custom format
-    fn utc_end_from_format(utc_end: string, format: string) -> Result<CalendarEventDraft>;
+    fn utc_end_from_format(utc_end: string, format: string) -> Result<()>;
 
     /// set the physical location details for this calendar event
     /// description_html means by markdown
@@ -2261,11 +2261,11 @@ object TaskUpdateBuilder {
     fn unset_utc_due_time_of_day_update();
 
     /// set the utc_start for this task list in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskUpdateBuilder>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskUpdateBuilder>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task list in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskUpdateBuilder>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
     fn unset_utc_start_update();
 
@@ -2321,11 +2321,11 @@ object TaskDraft {
     fn unset_utc_due_time_of_day();
 
     /// set the utc_start for this task in rfc3339 format
-    fn utc_start_from_rfc3339(utc_start: string) -> Result<TaskDraft>;
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in rfc2822 format
-    fn utc_start_from_rfc2822(utc_start: string) -> Result<TaskDraft>;
+    fn utc_start_from_rfc2822(utc_start: string) -> Result<()>;
     /// set the utc_start for this task in custom format
-    fn utc_start_from_format(utc_start: string, format: string) -> Result<TaskDraft>;
+    fn utc_start_from_format(utc_start: string, format: string) -> Result<()>;
     fn unset_utc_start();
 
     /// set the sort order for this task
