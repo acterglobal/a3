@@ -507,7 +507,7 @@ impl Task {
     }
 
     pub fn description(&self) -> Option<MsgContent> {
-        self.content.description.as_ref().map(MsgContent::from)
+        self.content.description().map(MsgContent::from)
     }
 
     pub fn sort_order(&self) -> u32 {

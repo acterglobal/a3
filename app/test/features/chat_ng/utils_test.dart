@@ -45,5 +45,27 @@ void main() {
       expect(isOnlyEmojis('👨‍💻'), true); // Person with profession
       expect(isOnlyEmojis('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), true); // Regional indicator
     });
+
+    test(
+      'should return false for multiline text with multiple whitespace characters',
+      () {
+        expect(
+          isOnlyEmojis('Weekly Product Update 🚀 \n\r\nHello dear community!'),
+          false,
+        );
+        expect(
+          isOnlyEmojis('Line 1\n\r\nLine 2\r\n\tIndented line\n\r\nFinal line'),
+          false,
+        );
+        expect(
+          isOnlyEmojis('\n\r\t  Text with various whitespace  \t\r\n'),
+          false,
+        );
+        expect(
+          isOnlyEmojis('🚀\n\r\nActual text content\r\n\t- Bullet point'),
+          false,
+        );
+      },
+    );
   });
 }
