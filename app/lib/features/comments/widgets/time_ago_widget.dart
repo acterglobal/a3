@@ -1,3 +1,4 @@
+import 'package:acter/common/themes/colors/color_scheme.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class TimeAgoWidget extends StatelessWidget {
     final time = originServerDateTime.toLocal().timeago();
     return Text(
       time,
-      style: textStyle ?? Theme.of(context).textTheme.labelMedium,
+      style: textStyle ?? Theme.of(context).textTheme.labelSmall?.copyWith(color: colorScheme.surfaceTint),
     );
   }
 }
