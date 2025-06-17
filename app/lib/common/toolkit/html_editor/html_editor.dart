@@ -10,6 +10,7 @@ import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart
 import 'package:acter/config/constants.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart';
+import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
@@ -115,6 +116,40 @@ extension ActerEditorStateHelpers on EditorState {
         );
       });
     }
+  }
+
+  // extract the user mentions
+  List<String> extractMentions() {
+    final mentions = <String>[];
+    int index = 0;
+    while (true) {
+      final node = document.nodeAtPath([index]);
+      if (node == null) break;
+      final delta = node.delta;
+      if (delta != null) {
+        for (final op in delta) {
+          if (op.attributes != null) {
+            final href = op.attributes?[AppFlowyRichTextKeys.href] as String?;
+            if (href != null) {
+              final uri = Uri.tryParse(href);
+              if (uri != null) {
+                try {
+                  final parsed = parseActerUri(uri);
+                  if (parsed.type == LinkType.userId) {
+                    mentions.add(parsed.target);
+                  }
+                } catch (e) {
+                  // pass
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+      index++;
+    }
+    return mentions;
   }
 }
 

@@ -29,6 +29,7 @@ Future<void> sendMessageAction({
   final lang = L10n.of(context);
   final body = textEditorState.intoMarkdown();
   final html = textEditorState.intoHtml();
+  final mentions = textEditorState.extractMentions();
 
   if (!hasValidEditorContent(plainText: body, html: html)) {
     return;
@@ -48,6 +49,10 @@ Future<void> sendMessageAction({
       draft = client.textHtmlDraft(html, body);
     } else {
       draft = client.textMarkdownDraft(body);
+    }
+
+    for (final mention in mentions) {
+      draft.addMention(mention);
     }
 
     // actually send it out
