@@ -104,7 +104,7 @@ class MediaThumbnailPreviewList extends StatelessWidget {
   Widget _imagePreview(BuildContext context, File file) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
-      child: Image.file(file, fit: BoxFit.fitWidth),
+      child: Image.file(file, fit: BoxFit.cover),
     );
   }
 
@@ -113,6 +113,7 @@ class MediaThumbnailPreviewList extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: Stack(
         alignment: Alignment.center,
+        fit: StackFit.expand,
         children: [
           FutureBuilder(
             future: NewsUtils.getThumbnailData(XFile(file.path)),
