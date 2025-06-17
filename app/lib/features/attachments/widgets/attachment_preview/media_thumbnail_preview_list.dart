@@ -28,7 +28,9 @@ class MediaThumbnailPreviewList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (selectedFiles.length <= 1) return const SizedBox.shrink();
 
-    return Center(
+    return Container(
+      height: thumbnailSize,
+      alignment: Alignment.center,
       child: ListView.builder(
         shrinkWrap: true,
         padding: const EdgeInsets.symmetric(horizontal: 5),
