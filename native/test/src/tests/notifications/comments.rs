@@ -39,7 +39,7 @@ url = "https://acter.global"
 #[tokio::test]
 async fn comment_on_news() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnboost", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnboost", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -76,9 +76,12 @@ async fn comment_on_news() -> Result<()> {
     .await?;
 
     let comments = news_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("this is great".to_owned());
-    let notification_ev = draft.send().await?;
+    let body = "this is great";
+    let notification_ev = comments
+        .comment_draft()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -92,7 +95,7 @@ async fn comment_on_news() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "this is great");
+    assert_eq!(content.body(), body);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -113,7 +116,7 @@ async fn comment_on_news() -> Result<()> {
 #[tokio::test]
 async fn comment_on_pin() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -150,9 +153,12 @@ async fn comment_on_pin() -> Result<()> {
     .await?;
 
     let comments = obj_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("now we just need to find dory".to_owned());
-    let notification_ev = draft.send().await?;
+    let body = "now we just need to find dory";
+    let notification_ev = comments
+        .comment_draft()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -166,7 +172,7 @@ async fn comment_on_pin() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "now we just need to find dory");
+    assert_eq!(content.body(), body);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),
@@ -187,7 +193,7 @@ async fn comment_on_pin() -> Result<()> {
 #[tokio::test]
 async fn comment_on_calendar_events() -> Result<()> {
     let (users, _sync_states, space_id, _engine) =
-        random_users_with_random_space_under_template("cOnpin", 2, TMPL).await?;
+        random_users_with_random_space_under_template("cOnpin", 1, TMPL).await?;
 
     let first = users.first().expect("exists");
     let second_user = &users[1];
@@ -224,9 +230,12 @@ async fn comment_on_calendar_events() -> Result<()> {
     .await?;
 
     let comments = obj_entry.comments().await?;
-    let mut draft = comments.comment_draft()?;
-    draft.content_text("looking forward to it".to_owned());
-    let notification_ev = draft.send().await?;
+    let body = "looking forward to it";
+    let notification_ev = comments
+        .comment_draft()?
+        .content_text(body.to_owned())
+        .send()
+        .await?;
 
     let notification_item = first
         .get_notification_item(space_id.to_string(), notification_ev.to_string())
@@ -240,7 +249,7 @@ async fn comment_on_calendar_events() -> Result<()> {
     );
 
     let content = notification_item.body().expect("found content");
-    assert_eq!(content.body(), "looking forward to it");
+    assert_eq!(content.body(), body);
     let parent = notification_item.parent().expect("parent was found");
     assert_eq!(
         notification_item.target_url(),

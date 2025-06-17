@@ -33,7 +33,8 @@ async fn edit_text_msg() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_owned());
+    let body = "Hi, everyone";
+    let draft = user.text_plain_draft(body.to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -50,7 +51,7 @@ async fn edit_text_msg() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
+                        if let Some(event_id) = match_text_msg(value, body, false) {
                             sent_event_id = Some(event_id);
                             break;
                         }
@@ -61,7 +62,7 @@ async fn edit_text_msg() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
+                    if let Some(event_id) = match_text_msg(&value, body, false) {
                         sent_event_id = Some(event_id);
                     }
                 }
@@ -86,7 +87,8 @@ async fn edit_text_msg() -> Result<()> {
     })
     .await?;
 
-    let draft = user.text_plain_draft("This is message edition".to_owned());
+    let body = "This is message edition";
+    let draft = user.text_plain_draft(body.to_owned());
     timeline
         .edit_message(sent_event_id.clone(), Box::new(draft))
         .await?;
@@ -100,7 +102,7 @@ async fn edit_text_msg() -> Result<()> {
                 let value = diff
                     .value()
                     .expect("diff set action should have valid value");
-                if let Some(event_id) = match_text_msg(&value, "This is message edition", true) {
+                if let Some(event_id) = match_text_msg(&value, body, true) {
                     edited_event_id = Some(event_id);
                 }
             }
@@ -154,9 +156,10 @@ async fn edit_image_msg() -> Result<()> {
         .to_string_lossy()
         .to_string();
 
+    let mimetype = "image/jpeg";
     let draft = user.image_draft(
         tmp_jpg.path().to_string_lossy().to_string(),
-        "image/jpeg".to_owned(),
+        mimetype.to_owned(),
     );
     timeline.send_message(Box::new(draft)).await?;
 
@@ -170,7 +173,7 @@ async fn edit_image_msg() -> Result<()> {
                     let value = diff
                         .value()
                         .expect("diff pushback action should have valid value");
-                    if let Some((event_id, body)) = match_image_msg(&value, "image/jpeg", false) {
+                    if let Some((event_id, body)) = match_image_msg(&value, mimetype, false) {
                         assert_eq!(body, jpg_name, "msg body should be filename");
                         sent_event_id = Some(event_id);
                     }
@@ -180,8 +183,7 @@ async fn edit_image_msg() -> Result<()> {
                         .values()
                         .expect("diff reset action should have valid values");
                     for value in values.iter() {
-                        if let Some((event_id, body)) = match_image_msg(value, "image/jpeg", false)
-                        {
+                        if let Some((event_id, body)) = match_image_msg(value, mimetype, false) {
                             assert_eq!(body, jpg_name, "msg body should be filename");
                             sent_event_id = Some(event_id);
                             break;
@@ -216,9 +218,10 @@ async fn edit_image_msg() -> Result<()> {
         .to_string_lossy()
         .to_string();
 
+    let mimetype = "image/png";
     let draft = user.image_draft(
         tmp_png.path().to_string_lossy().to_string(),
-        "image/png".to_owned(),
+        mimetype.to_owned(),
     );
     timeline
         .edit_message(sent_event_id.clone(), Box::new(draft))
@@ -233,7 +236,7 @@ async fn edit_image_msg() -> Result<()> {
                 let value = diff
                     .value()
                     .expect("diff set action should have valid value");
-                if let Some((event_id, body)) = match_image_msg(&value, "image/png", true) {
+                if let Some((event_id, body)) = match_image_msg(&value, mimetype, true) {
                     assert_eq!(body, png_name, "msg body should be filename");
                     edited_event_id = Some(event_id);
                 }

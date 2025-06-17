@@ -54,13 +54,9 @@ final createSpaceOnboardingDataProvider = FutureProvider.autoDispose
       return await space.createOnboardingData();
     });
 
-final spaceIsBookmarkedProvider = FutureProvider.family<bool, String>((
-  ref,
-  spaceId,
-) async {
-  final space = await ref.watch(spaceProvider(spaceId).future);
-  return space.isBookmarked();
-});
+final spaceBookmarkProvider = NotifierProvider<SpaceBookmarkNotifier, Map<String, bool>>(
+  () => SpaceBookmarkNotifier(),
+);
 
 /// Attempts to map a spaceId to the space, but could come back empty (null) rather than throw.
 /// keeps up to date with underlying client even if the space wasn’t found initially,

@@ -9,7 +9,7 @@ use crate::utils::random_users_with_random_space;
 #[tokio::test]
 async fn news_notification() -> Result<()> {
     let _ = env_logger::try_init();
-    let (users, room_id) = random_users_with_random_space("news_notifications", 2).await?;
+    let (users, room_id) = random_users_with_random_space("news_notifications", 1).await?;
 
     let mut user = users[0].clone();
     let mut second = users[1].clone();
@@ -33,10 +33,12 @@ async fn news_notification() -> Result<()> {
     })
     .await?;
 
-    let mut draft = main_space.news_draft()?;
     let text_draft = user.text_plain_draft("This is text slide".to_owned());
-    draft.add_slide(Box::new(text_draft.into())).await?;
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = main_space.news_draft()?;
+        draft.add_slide(Box::new(text_draft.into())).await?;
+        draft.send().await?
+    };
     tracing::trace!("draft sent event id: {}", event_id);
 
     let notifications = second

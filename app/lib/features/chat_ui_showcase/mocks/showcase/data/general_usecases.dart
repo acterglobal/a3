@@ -2,6 +2,7 @@ import 'package:acter/features/chat_ui_showcase/mocks/convo/mock_profile_content
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_event_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_item_diff.dart';
+import 'package:acter/features/chat_ui_showcase/mocks/convo/timeline/mock_timeline_virtual_item.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_msg_content.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/showcase/convo_showcase_data.dart';
 import 'package:acter/features/chat_ui_showcase/mocks/general/mock_ffi_list_ffi_string.dart';
@@ -1036,6 +1037,32 @@ final engineeringTeamWithTestUpdateRoom3 = createMockChatItem(
       mockSenderId: '@robert:acter.global',
       mockOriginServerTs: 1744010166000, // April 7, 2025
       mockMsgContent: MockMsgContent(mockBody: 'CI/CD fixed. Tests passing.'),
+    ),
+  ],
+  mockVirtualTimelineItem: [
+    MockTimelineVirtualItem(
+      mockEventId: 'virtual-1',
+      mockEventType: 'DayDivider',
+      mockDesc: '2024-12-17',
+    ),
+    MockTimelineVirtualItem(
+      mockEventId: 'virtual-2',
+      mockEventType: 'DayDivider',
+      mockDesc: '2025-04-07',
+    ),
+    MockTimelineVirtualItem(
+      mockEventId: 'virtual-3',
+      mockEventType: 'DayDivider',
+      mockDesc:
+          DateTime.now()
+              .subtract(const Duration(days: 1))
+              .toIso8601String()
+              .split('T')[0],
+    ),
+    MockTimelineVirtualItem(
+      mockEventId: 'virtual-4',
+      mockEventType: 'DayDivider',
+      mockDesc: DateTime.now().toIso8601String().split('T')[0],
     ),
   ],
 );

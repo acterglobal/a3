@@ -1,0 +1,1 @@
+- [Fixes] : Pin icon updates instantly after a change.

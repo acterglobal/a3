@@ -46,10 +46,13 @@ class InvitePage extends ConsumerWidget {
           queryParameters: {'roomId': roomId.toString()},
         );
       },
-      style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(8.0)),
       child: Row(
         children: [
-          const Icon(Icons.person_outline_outlined, size: 18),
+          Icon(
+            Icons.person_outline_outlined,
+            size: 18,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(width: 5),
           Text(
             L10n.of(context).pending,
@@ -81,8 +84,7 @@ class InvitePage extends ConsumerWidget {
             ),
           ),
         ),
-        if (!showInviteSpaceMembers)
-          _buildActionButtons(context),
+        if (!showInviteSpaceMembers) _buildActionButtons(context),
       ],
     );
   }
@@ -133,7 +135,7 @@ class InvitePage extends ConsumerWidget {
                     useSafeArea: true,
                     isScrollControlled: true,
                     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    builder: (context) {    
+                    builder: (context) {
                       return InviteIndividualUsers(
                         roomId: roomId,
                         isFullPageMode: false,
@@ -184,10 +186,7 @@ class InvitePage extends ConsumerWidget {
               style: textTheme.bodySmall,
             ),
             const SizedBox(height: 20),
-            InviteCodeUI(
-              roomId: roomId,
-              isManageInviteCode: false,
-            ),
+            InviteCodeUI(roomId: roomId, isManageInviteCode: false),
           ],
         ),
       ),
@@ -199,22 +198,22 @@ class InvitePage extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ActerPrimaryActionButton(
-          onPressed: () {
-            Navigator.pop(context);
-            callNextPage?.call();
-          },
-          child: Text(lang.wizzardContinue),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            callNextPage?.call();
-          },
-          child: Text(lang.skip),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ActerPrimaryActionButton(
+            onPressed: () {
+              Navigator.pop(context);
+              callNextPage?.call();
+            },
+            child: Text(lang.wizzardContinue),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              callNextPage?.call();
+            },
+            child: Text(lang.skip),
           ),
         ],
       ),

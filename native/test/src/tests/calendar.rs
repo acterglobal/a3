@@ -101,10 +101,116 @@ async fn edit_calendar_event() -> Result<()> {
 
     let subscriber = main_event.subscribe();
 
+    // will add title & locations
     let title = "Onboarding on Acter1";
+
+    let name = "Test Location";
+    let description = "Philadelphia Office";
+    let description_html = "**Here is our office**";
+    let coordinates = "geo:51.5074,-0.1278";
+    let uri = "https://example.com/location";
+    let address = "123 Test St, Philadelphia, PA 19103";
+    let notes = "Please bring your laptop.";
+
     main_event
         .update_builder()?
         .title(title.to_owned())
+        .add_physical_location(
+            Some(name.to_owned()),
+            Some(description.to_owned()),
+            Some(description_html.to_owned()),
+            Some(coordinates.to_owned()),
+            Some(uri.to_owned()),
+            Some(address.to_owned()),
+            Some(notes.to_owned()),
+        )
+        .add_virtual_location(
+            Some(name.to_owned()),
+            Some(description.to_owned()),
+            Some(description_html.to_owned()),
+            uri.to_owned(),
+            Some(notes.to_owned()),
+        )
+        .send()
+        .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        if subscriber.is_empty() {
+            bail!("not been alerted to reload");
+        }
+        Ok(())
+    })
+    .await?;
+
+    Retry::spawn(retry_strategy.clone(), || async {
+        let edited_event = main_event.refresh().await?;
+        if edited_event.title() != title {
+            bail!("title update not yet received");
+        }
+
+        let phy_loc = edited_event.physical_locations();
+        if phy_loc.is_empty() {
+            bail!("physical location update not yet received");
+        }
+        if phy_loc[0].name().as_deref() != Some(name) {
+            bail!("physical location name not yet received");
+        }
+        if phy_loc[0].description().map(|c| c.body()).as_deref() != Some(description) {
+            bail!("physical location description not yet received");
+        }
+        if phy_loc[0]
+            .description()
+            .and_then(|c| c.formatted())
+            .as_deref()
+            != Some(description_html)
+        {
+            bail!("physical location description html not yet received");
+        }
+        if phy_loc[0].coordinates().as_deref() != Some(coordinates) {
+            bail!("physical location coordinates not yet received");
+        }
+        if phy_loc[0].uri().as_deref() != Some(uri) {
+            bail!("physical location uri not yet received");
+        }
+        if phy_loc[0].address().as_deref() != Some(address) {
+            bail!("physical location address not yet received");
+        }
+        if phy_loc[0].notes().as_deref() != Some(notes) {
+            bail!("physical location notes not yet received");
+        }
+
+        let vir_loc = edited_event.virtual_locations();
+        if vir_loc.is_empty() {
+            bail!("virtual location update not yet received");
+        }
+        if vir_loc[0].name().as_deref() != Some(name) {
+            bail!("virtual location name not yet received");
+        }
+        if vir_loc[0].description().map(|c| c.body()).as_deref() != Some(description) {
+            bail!("virtual location description not yet received");
+        }
+        if vir_loc[0]
+            .description()
+            .and_then(|c| c.formatted())
+            .as_deref()
+            != Some(description_html)
+        {
+            bail!("virtual location description html not yet received");
+        }
+        if vir_loc[0].uri().as_deref() != Some(uri) {
+            bail!("virtual location uri not yet received");
+        }
+        if vir_loc[0].notes().as_deref() != Some(notes) {
+            bail!("virtual location notes not yet received");
+        }
+        Ok(())
+    })
+    .await?;
+
+    // clear locations
+    main_event
+        .update_builder()?
+        .unset_locations()
         .send()
         .await?;
 
@@ -118,8 +224,11 @@ async fn edit_calendar_event() -> Result<()> {
 
     Retry::spawn(retry_strategy, || async {
         let edited_event = main_event.refresh().await?;
-        if edited_event.title() != title {
-            bail!("Update not yet received");
+        if !edited_event.physical_locations().is_empty() {
+            bail!("physical location update not yet received");
+        }
+        if !edited_event.virtual_locations().is_empty() {
+            bail!("virtual location update not yet received");
         }
         Ok(())
     })
@@ -196,14 +305,10 @@ async fn calendar_event_create() -> Result<()> {
     })
     .await?;
 
-    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
-    draft.title(title.to_owned());
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
-    draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
 
     let name = "Test Location";
     let description = "Philadelphia Office";
@@ -212,24 +317,30 @@ async fn calendar_event_create() -> Result<()> {
     let uri = "https://example.com/location";
     let address = "123 Test St, Philadelphia, PA 19103";
     let notes = "Please bring your laptop.";
-    draft.physical_location(
-        Some(name.to_owned()),
-        Some(description.to_owned()),
-        Some(description_html.to_owned()),
-        Some(coordinates.to_owned()),
-        Some(uri.to_owned()),
-        Some(address.to_owned()),
-        Some(notes.to_owned()),
-    );
-    draft.virtual_location(
-        Some(name.to_owned()),
-        Some(description.to_owned()),
-        Some(description_html.to_owned()),
-        uri.to_owned(),
-        Some(notes.to_owned()),
-    );
 
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_rfc3339(utc_start.to_rfc3339())?;
+        draft.utc_end_from_rfc3339(utc_end.to_rfc3339())?;
+        draft.add_physical_location(
+            Some(name.to_owned()),
+            Some(description.to_owned()),
+            Some(description_html.to_owned()),
+            Some(coordinates.to_owned()),
+            Some(uri.to_owned()),
+            Some(address.to_owned()),
+            Some(notes.to_owned()),
+        );
+        draft.add_virtual_location(
+            Some(name.to_owned()),
+            Some(description.to_owned()),
+            Some(description_html.to_owned()),
+            uri.to_owned(),
+            Some(notes.to_owned()),
+        );
+        draft.send().await?
+    };
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -302,16 +413,18 @@ async fn calendar_event_rfc2822() -> Result<()> {
     })
     .await?;
 
-    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
-    draft.title(title.to_owned());
     let now = Utc::now();
     let utc_start = now + Duration::days(1);
     let utc_end = now + Duration::days(2);
-    draft.utc_start_from_rfc2822(utc_start.to_rfc2822())?;
-    draft.utc_end_from_rfc2822(utc_end.to_rfc2822())?;
 
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_rfc2822(utc_start.to_rfc2822())?;
+        draft.utc_end_from_rfc2822(utc_end.to_rfc2822())?;
+        draft.send().await?
+    };
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);
@@ -349,17 +462,19 @@ async fn calendar_event_format() -> Result<()> {
     })
     .await?;
 
-    let mut draft = space.calendar_event_draft()?;
     let title = "First meeting";
-    draft.title(title.to_owned());
     let fmt = "%Y-%m-%dT%H:%M:%S%:z"; // ISO 8601 format with timezone
     let now = Utc::now();
     let utc_start = (now + Duration::days(1)).format(fmt).to_string();
     let utc_end = (now + Duration::days(2)).format(fmt).to_string();
-    draft.utc_start_from_format(utc_start.clone(), fmt.to_owned())?;
-    draft.utc_end_from_format(utc_end.clone(), fmt.to_owned())?;
 
-    let event_id = draft.send().await?;
+    let event_id = {
+        let mut draft = space.calendar_event_draft()?;
+        draft.title(title.to_owned());
+        draft.utc_start_from_format(utc_start.clone(), fmt.to_owned())?;
+        draft.utc_end_from_format(utc_end.clone(), fmt.to_owned())?;
+        draft.send().await?
+    };
 
     // wait for sync to catch up
     let retry_strategy = FibonacciBackoff::from_millis(500).map(jitter).take(10);

@@ -153,8 +153,7 @@ class RoomCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final avatarInfo = ref.watch(roomAvatarInfoProvider(roomId));
     final parents = ref.watch(parentAvatarInfosProvider(roomId)).valueOrNull;
-    final isBookmarked =
-        ref.watch(spaceIsBookmarkedProvider(roomId)).valueOrNull ?? false;
+    final isBookmarked = ref.watch(spaceBookmarkProvider)[roomId] ?? false;
     final room = ref.watch(maybeRoomProvider(roomId)).valueOrNull;
     if (room == null && refDetails != null) {
       return ReferenceDetailsItem(refDetails: refDetails!);

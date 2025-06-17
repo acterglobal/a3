@@ -13,7 +13,9 @@ use crate::utils::{match_text_msg, random_users_with_random_convo};
 #[tokio::test]
 async fn sisko_reads_kyra_reply() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut sisko, mut kyra, _, room_id) = random_users_with_random_convo("reply").await?;
+    let (users, room_id) = random_users_with_random_convo("reply", 1).await?;
+    let mut sisko = users[0].clone();
+    let mut kyra = users[1].clone();
 
     let sisko_sync = sisko.start_sync();
     sisko_sync.await_has_synced_history().await?;
@@ -47,7 +49,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     let kyra_convo = kyra.convo(room_id.to_string()).await?;
     let kyra_timeline = kyra_convo.timeline_stream();
 
-    let draft = sisko.text_plain_draft("Hi, everyone".to_owned());
+    let body = "Hi, everyone";
+    let draft = sisko.text_plain_draft(body.to_owned());
     sisko_timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -64,7 +67,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
+                        if let Some(event_id) = match_text_msg(value, body, false) {
                             received = Some(event_id);
                             break;
                         }
@@ -75,7 +78,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
+                    if let Some(event_id) = match_text_msg(&value, body, false) {
                         received = Some(event_id);
                     }
                 }
@@ -99,7 +102,8 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
     })
     .await?;
 
-    let draft = kyra.text_plain_draft("Sorry, it’s my bad".to_owned());
+    let body = "Sorry, it’s my bad";
+    let draft = kyra.text_plain_draft(body.to_owned());
     kyra_timeline
         .reply_message(received, Box::new(draft))
         .await?;
@@ -116,7 +120,7 @@ async fn sisko_reads_kyra_reply() -> Result<()> {
                     .value()
                     .expect("diff pushback action should have valid value");
                 info!("diff pushback - {:?}", value);
-                if match_text_msg(&value, "Sorry, it’s my bad", false).is_some() {
+                if match_text_msg(&value, body, false).is_some() {
                     found = true;
                 }
             }

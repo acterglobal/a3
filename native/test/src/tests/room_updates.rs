@@ -38,7 +38,8 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
     let stream = timeline.messages_stream();
     pin_mut!(stream);
 
-    let draft = user.text_plain_draft("Hi, everyone".to_owned());
+    let body = "Hi, everyone";
+    let draft = user.text_plain_draft(body.to_owned());
     timeline.send_message(Box::new(draft)).await?;
 
     // text msg may reach via reset action or set action
@@ -55,7 +56,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
                         .expect("diff reset action should have valid values");
                     info!("diff reset - {:?}", values);
                     for value in values.iter() {
-                        if let Some(event_id) = match_text_msg(value, "Hi, everyone", false) {
+                        if let Some(event_id) = match_text_msg(value, body, false) {
                             sent_event_id = Some(event_id);
                             break;
                         }
@@ -66,7 +67,7 @@ async fn simple_message_doesnt_trigger_room_update() -> Result<()> {
                         .value()
                         .expect("diff set action should have valid value");
                     info!("diff set - {:?}", value);
-                    if let Some(event_id) = match_text_msg(&value, "Hi, everyone", false) {
+                    if let Some(event_id) = match_text_msg(&value, body, false) {
                         sent_event_id = Some(event_id);
                     }
                 }
