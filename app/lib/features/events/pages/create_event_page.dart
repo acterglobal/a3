@@ -231,20 +231,20 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
           child: Switch(
             value: _isJitsiEnabled,
             onChanged: (value) {
-        setState(() {
-          _isJitsiEnabled = value;
-            });
-          },
+              setState(() {
+                _isJitsiEnabled = value;
+              });
+            },
+          ),
         ),
-      ),
-      Text(L10n.of(context).createJitsiCallLink),
-      const SizedBox(width: 10),
-        
-    ]);
+        Text(L10n.of(context).createJitsiCallLink),
+        const SizedBox(width: 10),
+      ],
+    );
   }
 
   // Create Jitsi call link
-  String createJitsiCallLink(String title) {   
+  String createJitsiCallLink(String title) {
     // Generate a random 10-digit number
     final random = DateTime.now().millisecondsSinceEpoch % 10000000000;
     // Format the number to ensure it's 10 digits by padding with zeros if needed
@@ -526,33 +526,44 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
         _selectedEndTime,
       );
 
-      // Convert utc time zone
-      final utcStartDateTime = startDateTime.toUtc().toIso8601String();
-      final utcEndDateTime = endDateTime.toUtc().toIso8601String();
-
       // Creating calendar event
-      final space = await ref.read(spaceProvider(spaceId).future);
-      final draft = space.calendarEventDraft();
       final title = _eventNameController.text;
-      // Description text
-      final plainDescription = textEditorState.intoMarkdown();
-      final htmlBodyDescription = textEditorState.intoHtml();
-      draft.title(title);
-      draft.utcStartFromRfc3339(utcStartDateTime);
-      draft.utcEndFromRfc3339(utcEndDateTime);
-      draft.descriptionHtml(plainDescription, htmlBodyDescription);
+      final space = await ref.read(spaceProvider(spaceId).future);
+      final draft =
+          space.calendarEventDraft()
+            ..title(title)
+            ..utcStartFromRfc3339(startDateTime.toUtc().toIso8601String())
+            ..utcEndFromRfc3339(endDateTime.toUtc().toIso8601String())
+            ..descriptionHtml(
+              textEditorState.intoMarkdown(),
+              textEditorState.intoHtml(),
+            );
 
       // Add locations to the event
       final locations = ref.read(eventDraftLocationsProvider);
       for (final location in locations) {
         if (location.type == LocationType.physical) {
-          draft.addPhysicalLocation(location.name, '', '', '', '',location.address,location.note);
+          draft.addPhysicalLocation(
+            location.name,
+            '',
+            '',
+            '',
+            '',
+            location.address,
+            location.note,
+          );
         }
         if (location.type == LocationType.virtual) {
-          draft.addVirtualLocation(location.name, '', '',location.url ?? '',location.note);
+          draft.addVirtualLocation(
+            location.name,
+            '',
+            '',
+            location.url ?? '',
+            location.note,
+          );
         }
       }
-      
+
       // Add Jitsi link if enabled
       if (_isJitsiEnabled) {
         final jitsiLink = createJitsiCallLink(title);
@@ -566,8 +577,7 @@ class CreateEventPageConsumerState extends ConsumerState<CreateEventPage> {
 
       /// Event is created, set RSVP status to `Yes` by default for host.
       final rsvpManager = await calendarEvent.rsvps();
-      final rsvpDraft = rsvpManager.rsvpDraft();
-      rsvpDraft.status('yes');
+      final rsvpDraft = rsvpManager.rsvpDraft()..status('yes');
       await rsvpDraft.send();
       _log.info('Created Calendar Event: $eventId');
 
