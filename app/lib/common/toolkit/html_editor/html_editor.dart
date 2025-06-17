@@ -58,19 +58,46 @@ extension ActerEditorStateHelpers on EditorState {
   static EditorState fromContent(String fallbackPlain, String? properHtml) =>
       EditorState(
         document: defaultHtmlCodec.decode(
-          properHtml ?? minimalMarkup(fallbackPlain),
+          properHtml != null && properHtml.isNotEmpty
+              ? properHtml
+              : minimalMarkup(fallbackPlain),
         ),
       );
 
   void replaceContent(String fallbackPlain, String? properHtml) =>
-      replaceContentHTML(properHtml ?? minimalMarkup(fallbackPlain));
+      replaceContentHTML(
+        properHtml != null && properHtml.isNotEmpty
+            ? properHtml
+            : minimalMarkup(fallbackPlain),
+      );
 
   void replaceContentHTML(String body) {
-    final newDoc = defaultHtmlCodec.decode(body);
+    // I would have expected a transaction can do both delete and insert Nodes
+    // but if we do that within the exact same transation, for an unknown reason,
+    // the order of the inserted Items is then messed up. See
+    //            https://github.com/AppFlowy-IO/appflowy-editor/issues/1122
+    // That's why we do that in two separate transactions.
 
-    final t = transaction;
+    Transaction t = transaction;
     t.deleteNodes(document.root.children); // drop previous children
-    t.insertNodes([0], newDoc.root.children); // set to new children
+    apply(t);
+
+    t = transaction;
+    bool inserted = false;
+
+    if (body.isNotEmpty) {
+      final newDoc = defaultHtmlCodec.decode(body);
+      if (newDoc.root.children.isNotEmpty) {
+        t.insertNodes([0], newDoc.root.children);
+        inserted = true;
+      }
+    }
+
+    if (!inserted) {
+      // per fallback we add one empty paragraph
+      t.insertNode([0, 0], paragraphNode());
+    }
+
     apply(t);
   }
 
