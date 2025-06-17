@@ -22,7 +22,7 @@ class _AudioAttachmentPreviewState extends State<AudioAttachmentPreview> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_playerState == PlayerState.playing) await _audioPlayer.stop();
       _audioPlayer.onPlayerStateChanged.listen((state) {
-        setState(() => _playerState = state);
+        if (mounted) setState(() => _playerState = state);
       });
     });
   }

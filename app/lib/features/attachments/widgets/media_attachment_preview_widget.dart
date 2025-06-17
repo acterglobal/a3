@@ -1,26 +1,21 @@
 import 'dart:io';
 
-import 'package:acter/common/models/types.dart';
 import 'package:acter/common/widgets/acter_video_player.dart';
-import 'package:acter/features/attachments/types.dart';
 import 'package:acter/features/attachments/widgets/audio_attachment_preview.dart';
 import 'package:acter/features/attachments/widgets/file_attachment_preview.dart';
 import 'package:acter/features/attachments/widgets/media_thumbnail_preview_list.dart';
-import 'package:acter/l10n/generated/l10n.dart';
-import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:pinch_zoom_release_unzoom/pinch_zoom_release_unzoom.dart';
 
 class MediaAttachmentPreviewWidget extends StatefulWidget {
   final List<File> selectedFiles;
-  final AttachmentType type;
-  final OnAttachmentSelected handleFileUpload;
+  final Function(List<File>) handleFileUpload;
 
   const MediaAttachmentPreviewWidget({
     super.key,
     required this.selectedFiles,
-    required this.type,
     required this.handleFileUpload,
   });
 
@@ -62,7 +57,7 @@ class _MediaAttachmentPreviewWidgetState
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.9),
+      color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
       alignment: Alignment.center,
       child: Stack(
         fit: StackFit.expand,
@@ -103,25 +98,18 @@ class _MediaAttachmentPreviewWidgetState
   }
 
   Widget _buildMediaPreview(BuildContext context, File file) {
-    return switch (widget.type) {
-      AttachmentType.image => _imagePreview(context, file),
-      AttachmentType.camera => _imagePreview(context, file),
-      AttachmentType.video => ActerVideoPlayer(videoFile: file),
-      AttachmentType.audio => AudioAttachmentPreview(file: file),
-      AttachmentType.file => FileAttachmentPreview(file: file),
-      _ => _unSupportedPreview(context, file),
-    };
-  }
-
-  Widget _unSupportedPreview(BuildContext context, File file) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Atlas.warning, size: 60),
-        const SizedBox(height: 30),
-        Text(L10n.of(context).unsupportedFile),
-      ],
-    );
+    final mimeType = lookupMimeType(file.path);
+    if (mimeType == null) {
+      return FileAttachmentPreview(file: file);
+    } else if (mimeType.startsWith('image')) {
+      return _imagePreview(context, file);
+    } else if (mimeType.startsWith('video')) {
+      return ActerVideoPlayer(videoFile: file);
+    } else if (mimeType.startsWith('audio')) {
+      return AudioAttachmentPreview(file: file);
+    } else {
+      return FileAttachmentPreview(file: file);
+    }
   }
 
   Widget _imagePreview(BuildContext context, File file) {
@@ -139,7 +127,6 @@ class _MediaAttachmentPreviewWidgetState
       right: 0,
       child: MediaThumbnailPreviewList(
         selectedFiles: widget.selectedFiles,
-        type: widget.type,
         currentIndex: _currentIndex,
         onPageChanged: _onPageChanged,
         onDeleted: _onDeleted,
@@ -168,7 +155,7 @@ class _MediaAttachmentPreviewWidgetState
             iconSize: 20,
             onPressed: () {
               Navigator.pop(context);
-              widget.handleFileUpload(widget.selectedFiles, widget.type);
+              widget.handleFileUpload(widget.selectedFiles);
             },
             icon: const Icon(Icons.send),
           ),

@@ -20,8 +20,7 @@ void main() {
       await tester.pumpProviderWidget(
         child: MediaAttachmentPreviewWidget(
           selectedFiles: selectedFiles,
-          type: type,
-          handleFileUpload: (files, type) async {},
+          handleFileUpload: (files) async {},
         ),
       );
       // Wait for the async provider to load

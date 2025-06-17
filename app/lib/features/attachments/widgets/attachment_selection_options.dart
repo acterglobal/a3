@@ -227,8 +227,7 @@ class AttachmentSelectionOptions extends StatelessWidget {
       builder: (_) {
         return MediaAttachmentPreviewWidget(
           selectedFiles: selectedFiles,
-          type: type,
-          handleFileUpload: handleFileUpload,
+          handleFileUpload: (files) => handleFileUpload(files, type),
         );
       },
     );

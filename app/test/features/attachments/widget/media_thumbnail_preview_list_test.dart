@@ -20,7 +20,6 @@ void main() {
       await tester.pumpProviderWidget(
         child: MediaThumbnailPreviewList(
           selectedFiles: selectedFiles,
-          type: type,
           currentIndex: currentIndex,
           onPageChanged: (index) {},
           onDeleted: (index) {},
