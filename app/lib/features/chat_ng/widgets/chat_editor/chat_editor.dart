@@ -104,17 +104,6 @@ class _ChatEditorState extends ConsumerState<ChatEditor> {
     if (body.isEmpty) return;
 
     textEditorState.replaceContent(body, msgContent.formattedBody());
-    // // clear the editor first
-    // textEditorState.clear();
-
-    // final docNode = textEditorState.getNodeAtPath([0]);
-    // if (docNode == null) return;
-
-    // final html = msgContent.formattedBody() ?? body;
-
-    // final tr = textEditorState.transaction;
-    // tr.replaceText(docNode, 0, 0, html);
-    // textEditorState.apply(tr);
   }
 
   void _editorUpdate(Transaction data) {

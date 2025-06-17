@@ -285,9 +285,8 @@ class RenderHtmlNg extends ConsumerWidget {
       //   // if the link title has been changed
       //   // we should show the original link
       //   return null;
-      // }
-    } on UriParseError catch (error, stackTrace) {
-      _log.warning('failed to parse acter uri', error, stackTrace);
+    } on UriParseError {
+      _log.fine('not a $uri valid acter URI');
       return null;
     }
   }
