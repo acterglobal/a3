@@ -1,8 +1,7 @@
 import 'dart:io';
-
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AudioAttachmentPreview extends StatefulWidget {
   final File file;
@@ -33,7 +32,7 @@ class _AudioAttachmentPreviewState extends State<AudioAttachmentPreview> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Icon(ActerIcon.waveform.data, size: 200),
+        Icon(PhosphorIconsRegular.waveform, size: 200),
         IconButton.filled(
           onPressed: _playAudio,
           style: IconButton.styleFrom(
@@ -43,8 +42,8 @@ class _AudioAttachmentPreviewState extends State<AudioAttachmentPreview> {
           ),
           icon: Icon(
             _playerState == PlayerState.playing
-                ? ActerIcon.pause.data
-                : ActerIcon.play.data,
+                ? PhosphorIconsRegular.pause
+                : PhosphorIconsRegular.play,
           ),
         ),
       ],

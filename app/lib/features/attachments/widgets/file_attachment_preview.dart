@@ -1,7 +1,6 @@
 import 'dart:io';
-
-import 'package:acter/common/widgets/acter_icon_picker/model/acter_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class FileAttachmentPreview extends StatelessWidget {
   final File file;
@@ -22,18 +21,18 @@ class FileAttachmentPreview extends StatelessWidget {
     final extension = file.path.split('.').last;
     switch (extension) {
       case 'pdf':
-        return ActerIcon.filePdf.data;
+        return PhosphorIconsRegular.filePdf;
       case 'doc':
       case 'docx':
-        return ActerIcon.fileDoc.data;
+        return PhosphorIconsRegular.fileDoc;
       case 'csv':
-        return ActerIcon.fileCsv.data;
+        return PhosphorIconsRegular.fileCsv;
       case 'xls':
       case 'xlsx':
-        return ActerIcon.fileXls.data;
+        return PhosphorIconsRegular.fileXls;
       case 'txt':
       default:
-        return ActerIcon.file.data;
+        return PhosphorIconsRegular.file;
     }
   }
 }
