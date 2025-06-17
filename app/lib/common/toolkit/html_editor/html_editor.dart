@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:acter/common/extensions/options.dart';
 import 'package:acter/common/toolkit/buttons/primary_action_button.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/common/toolkit/html/utils.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/commands/mention_movements.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/mention_detection.dart';
 import 'package:acter/config/constants.dart';
@@ -12,7 +13,6 @@ import 'package:acter/common/toolkit/html_editor/mentions/mention_shortcuts.dart
 import 'package:acter/features/deep_linking/types.dart';
 import 'package:acter/features/deep_linking/widgets/inline_item_preview.dart';
 import 'package:acter/features/room/widgets/room_chip.dart';
-import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show MsgContent;
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,30 +48,38 @@ AppFlowyEditorMarkdownCodec defaultMarkdownCodec =
 
 extension ActerEditorStateHelpers on EditorState {
   String intoMarkdown({AppFlowyEditorMarkdownCodec? codec}) {
-    return (codec ?? defaultMarkdownCodec).encode(document);
+    return (codec ?? defaultMarkdownCodec).encode(document).trim();
   }
 
   String intoHtml({AppFlowyEditorHTMLCodec? codec}) {
     return (codec ?? defaultHtmlCodec).encode(document);
   }
 
+  static EditorState fromContent(String fallbackPlain, String? properHtml) =>
+      EditorState(
+        document: defaultHtmlCodec.decode(
+          properHtml ?? minimalMarkup(fallbackPlain),
+        ),
+      );
+
+  void replaceContent(String fallbackPlain, String? properHtml) =>
+      replaceContentHTML(properHtml ?? minimalMarkup(fallbackPlain));
+
+  void replaceContentHTML(String body) {
+    final newDoc = defaultHtmlCodec.decode(body);
+
+    final t = transaction;
+    t.deleteNodes(document.root.children); // drop previous children
+    t.insertNodes([0], newDoc.root.children); // set to new children
+    apply(t);
+  }
+
   /// clear the editor text with selection
   void clear() async {
     if (!document.isEmpty) {
-      final transaction = this.transaction;
-
-      // Delete all existing nodes
-      int nodeIndex = 0;
-      while (true) {
-        final node = getNodeAtPath([nodeIndex]);
-        if (node == null) break;
-        transaction.deleteNode(node);
-        nodeIndex++;
-      }
-
-      transaction.insertNode([0], paragraphNode(text: ''));
-
-      apply(transaction);
+      final t = transaction;
+      t.deleteNodes(document.root.children); // clear the page
+      apply(t);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         updateSelectionWithReason(
@@ -80,49 +88,6 @@ extension ActerEditorStateHelpers on EditorState {
         );
       });
     }
-  }
-}
-
-extension ActerDocumentHelpers on Document {
-  static Document? _fromHtml(String content, {AppFlowyEditorHTMLCodec? codec}) {
-    if (content.isEmpty) {
-      return null;
-    }
-
-    Document document = (codec ?? defaultHtmlCodec).decode(content);
-    if (document.isEmpty) {
-      return null;
-    }
-    return document;
-  }
-
-  static Document _fromMarkdown(
-    String content, {
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    return (codec ?? defaultMarkdownCodec).decode(content);
-  }
-
-  static Document parse(
-    String content, {
-    String? htmlContent,
-    AppFlowyEditorMarkdownCodec? codec,
-  }) {
-    if (htmlContent != null) {
-      final document = ActerDocumentHelpers._fromHtml(htmlContent);
-      if (document != null && !document.isEmpty) {
-        return document;
-      }
-    }
-    // fallback: parse from markdown
-    return ActerDocumentHelpers._fromMarkdown(content);
-  }
-
-  static Document fromMsgContent(MsgContent msgContent) {
-    return ActerDocumentHelpers.parse(
-      msgContent.body(),
-      htmlContent: msgContent.formattedBody(),
-    );
   }
 }
 

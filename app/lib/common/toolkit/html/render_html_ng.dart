@@ -1,5 +1,6 @@
 import 'package:acter/common/actions/open_link.dart';
 import 'package:acter/common/toolkit/buttons/user_chip.dart';
+import 'package:acter/common/toolkit/html/utils.dart';
 import 'package:acter/features/chat_ng/utils.dart';
 import 'package:acter/features/deep_linking/parse_acter_uri.dart';
 import 'package:acter/features/deep_linking/types.dart';
@@ -47,12 +48,6 @@ class MaxSizeWidgetFactory extends WidgetFactory {
     );
   }
 }
-
-final linkMatcher = RegExp(
-  r'(https?:\/\/|matrix:|acter:)([^\s]+)',
-  multiLine: true,
-  unicode: true,
-);
 
 class CodeBlockWidget extends StatefulWidget {
   final String code;
@@ -177,14 +172,7 @@ class RenderHtmlNg extends ConsumerWidget {
     this.maxLines,
     this.roomId,
     this.backgroundColor,
-  }) : html = text
-           .replaceAllMapped(
-             linkMatcher,
-             // we replace links we've found with an html version for the inner
-             // rendering engine
-             (match) => '<a href="${match[0]!}">${match[2]!}</a>',
-           )
-           .replaceAll('\n', '<br>');
+  }) : html = minimalMarkup(text);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => HtmlWidget(

@@ -93,8 +93,9 @@ class ChatEditorActionsPreview extends ConsumerWidget {
             final notifier = ref.read(chatEditorStateProvider.notifier);
 
             notifier.unsetActions();
-            Future.delayed((Duration.zero), () => {});
-            if (!isEdit) {
+            if (isEdit) {
+              textEditorState.clear();
+            } else {
               final body = textEditorState.intoMarkdown();
               final bodyHtml = textEditorState.intoHtml();
 
@@ -104,7 +105,6 @@ class ChatEditorActionsPreview extends ConsumerWidget {
                 reason: SelectionUpdateReason.uiEvent,
               );
             }
-            if (isEdit) textEditorState.clear();
           },
           child: const Icon(Atlas.xmark_circle),
         ),

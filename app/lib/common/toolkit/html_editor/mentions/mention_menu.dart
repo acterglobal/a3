@@ -5,7 +5,6 @@ import 'package:acter/common/toolkit/html_editor/mentions/widgets/mention_list.d
 import 'package:acter/common/toolkit/html_editor/mentions/models/mention_type.dart';
 import 'package:acter/common/toolkit/html_editor/mentions/selected_mention_provider.dart';
 import 'package:acter/common/toolkit/html_editor/services/constants.dart';
-import 'package:acter/features/chat_ng/globals.dart';
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,14 +13,12 @@ MentionMenu? _menu;
 
 class MentionMenu {
   MentionMenu({
-    required this.context,
     required this.editorState,
     required this.roomId,
     required this.mentionType,
     required this.ref,
   });
 
-  final BuildContext context;
   final EditorState editorState;
   final String roomId;
   final MentionType mentionType;
@@ -38,10 +35,10 @@ class MentionMenu {
     _menu = null;
   }
 
-  void show() {
+  void show(BuildContext context) {
     if (_menu != null) return;
-    _listenToEditor();
-    _show();
+    _listenToEditor(context);
+    _show(context);
   }
 
   void hide() {
@@ -139,12 +136,9 @@ class MentionMenu {
     MentionMenu.dismiss();
   }
 
-  void _show() {
-    // Get position of editor field
-    final RenderBox? editorBox =
-        chatEditorKey.currentContext?.findRenderObject() as RenderBox?;
+  void _show(BuildContext context) {
+    final editorBox = editorState.renderBox;
     if (editorBox == null) return;
-
     final editorPosition = editorBox.localToGlobal(Offset.zero);
     final maxHeight = max(300, MediaQuery.sizeOf(context).height * 0.5);
     final isWide = MediaQuery.sizeOf(context).width > 600;
@@ -156,14 +150,14 @@ class MentionMenu {
       MentionType.user => UserMentionList(
         editorState: editorState,
         onDismiss: dismiss,
-        onShow: show,
+        onShow: () => show(context),
         roomId: roomId,
         onSelected: _select,
       ),
       MentionType.room => RoomMentionList(
         editorState: editorState,
         onDismiss: dismiss,
-        onShow: show,
+        onShow: () => show(context),
         roomId: roomId,
         onSelected: _select,
       ),
@@ -208,7 +202,7 @@ class MentionMenu {
   }
 
   // internal control flow on editor updates
-  void _listenToEditor() {
+  void _listenToEditor(BuildContext context) {
     _updateListener?.cancel();
     _updateListener = editorState.transactionStream.listen((data) {
       // to use dismiss overlay also search list
@@ -228,12 +222,14 @@ class MentionMenu {
       final cursorPosition = selection.end.offset;
 
       // inject handlers
-      _overlayHandler(text, cursorPosition);
-      _mentionSearchHandler(text, cursorPosition);
+      if (context.mounted) {
+        _overlayHandler(context, text, cursorPosition);
+        _mentionSearchHandler(text, cursorPosition);
+      }
     });
   }
 
-  void _overlayHandler(String text, int cursorPosition) {
+  void _overlayHandler(BuildContext context, String text, int cursorPosition) {
     // basic validation
     if (text.isEmpty || cursorPosition < 0) {
       hide();
@@ -273,7 +269,7 @@ class MentionMenu {
     } else {
       // we're in a valid mention context
 
-      show();
+      show(context);
     }
   }
 

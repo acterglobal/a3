@@ -60,14 +60,13 @@ Future<bool> _handleMentionTrigger({
   // Show menu
   if (context.mounted) {
     final menu = MentionMenu(
-      context: context,
       editorState: editorState,
       roomId: roomId,
       mentionType: mentionType,
       ref: ref,
     );
 
-    menu.show();
+    menu.show(context);
   }
   return true;
 }

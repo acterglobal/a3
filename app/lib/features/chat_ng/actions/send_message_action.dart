@@ -22,6 +22,10 @@ Future<void> sendMessageAction({
   void Function(bool)? onTyping,
   required Logger log,
 }) async {
+  if (ref.read(chatInputProvider.notifier).isSending) {
+    return; // we are in a sending process, ignore double sends
+  }
+
   final lang = L10n.of(context);
   final body = textEditorState.intoMarkdown();
   final html = textEditorState.intoHtml();

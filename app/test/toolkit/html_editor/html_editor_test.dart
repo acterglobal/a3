@@ -155,11 +155,42 @@ void main() {
 
     testWidgets('renders with HTML content', (tester) async {
       final htmlContent = '<p>Hello <strong>World</strong></p>';
-      final document = ActerDocumentHelpers.parse(
-        'Hello World',
-        htmlContent: htmlContent,
+      final editorState = ActerEditorStateHelpers.fromContent(
+        'Baaaaahhhh',
+        htmlContent,
       );
-      final editorState = EditorState(document: document);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HtmlEditor(editable: true, editorState: editorState),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Get editor state and verify content
+      final editor = tester.widget<AppFlowyEditor>(find.byType(AppFlowyEditor));
+      final actualEditorState = editor.editorState;
+      expect(actualEditorState.document.root.children.length, 1);
+      expect(
+        actualEditorState.document.root.children.first.delta?.toPlainText(),
+        'Hello World',
+      );
+    });
+
+    testWidgets('renders update of HTML content', (tester) async {
+      final htmlContent = '<p>Hello <strong>World</strong></p>';
+      final editorState = ActerEditorStateHelpers.fromContent(
+        'Baaaaahhhh',
+        null,
+      );
+      // started with an non-html-version
+      editorState.replaceContent(
+        'Bleeehhh', // stil; bad
+        htmlContent,
+      );
 
       await tester.pumpWidget(
         MaterialApp(
