@@ -1,0 +1,1 @@
+- [UI-UX] : Enhancement of attachment media preview with full screen view for better visibility. 

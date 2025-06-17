@@ -74,13 +74,29 @@ const List<MaterialAccentColor> chatBubbleDisplayNameColors =
 
 // inspired by https://github.com/mathiasbynens/emoji-regex under MIT license
 final _emojiRegex = RegExp(
-  r'^(\p{RI}{2}|(?![#*\d](?!\uFE0F?\u20E3))\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?)(?:\u200D\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?))*|\s)+$',
+  r'(\p{RI}{2}|(?![#*\d](?!\uFE0F?\u20E3))\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?)(?:\u200D\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?))*)',
   unicode: true,
-  multiLine: true,
 );
 
 bool isOnlyEmojis(String text) {
-  return _emojiRegex.hasMatch(text.trim());
+  final trimmed = text.trim();
+  if (trimmed.isEmpty) return false;
+
+  // Remove all emoji matches from the text
+  String textWithoutEmojis = trimmed;
+  final matches = _emojiRegex.allMatches(trimmed);
+
+  // Remove emoji matches in reverse order to maintain correct indices
+  final sortedMatches =
+      matches.toList()..sort((a, b) => b.start.compareTo(a.start));
+  for (final match in sortedMatches) {
+    textWithoutEmojis =
+        textWithoutEmojis.substring(0, match.start) +
+        textWithoutEmojis.substring(match.end);
+  }
+
+  // After removing all emojis, only whitespace should remain for emoji-only text
+  return textWithoutEmojis.trim().isEmpty;
 }
 
 extension ColorAsCssString on Color {
