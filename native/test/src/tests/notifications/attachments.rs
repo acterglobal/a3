@@ -97,7 +97,8 @@ async fn image_attachment_on_pin() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
         )
-        .filename(filename.to_owned());
+        .filename(filename.to_owned())
+        .clone();
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -187,7 +188,8 @@ async fn file_attachment_on_event() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "document/x-src".to_owned(),
         )
-        .filename(filename.to_owned());
+        .filename(filename.to_owned())
+        .clone();
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -278,7 +280,8 @@ async fn video_attachment_on_tasklist() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "video/mpeg4".to_owned(),
         )
-        .filename(filename.to_owned());
+        .filename(filename.to_owned())
+        .clone();
     let notification_id = manager
         .content_draft(Box::new(base_draft))
         .await?

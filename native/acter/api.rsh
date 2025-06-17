@@ -1635,49 +1635,49 @@ object SpaceDiff {
 object MsgDraft {
 
     /// add a user mention
-    fn add_mention(user_id: string) -> Result<MsgDraft>;
+    fn add_mention(user_id: string) -> Result<()>;
 
     /// add a ref details
-    fn add_ref_details(details: RefDetails) -> Result<MsgDraft>;
+    fn add_ref_details(details: RefDetails) -> Result<()>;
 
     /// add a url preview
-    fn add_url_preview(details: LocalUrlPreview) -> Result<MsgDraft>;
+    fn add_url_preview(details: LocalUrlPreview) -> Result<()>;
 
     /// whether to mention the entire room
-    fn add_room_mention(mention: bool) -> Result<MsgDraft>;
+    fn add_room_mention(mention: bool) -> Result<()>;
 
     /// available for only image/audio/video/file
-    fn mimetype(value: string) -> MsgDraft;
+    fn mimetype(value: string);
 
     /// available for only image/audio/video/file
-    fn size(value: u64) -> MsgDraft;
+    fn size(value: u64);
 
     /// available for only image/video
-    fn width(value: u64) -> MsgDraft;
+    fn width(value: u64);
 
     /// available for only image/video
-    fn height(value: u64) -> MsgDraft;
+    fn height(value: u64);
 
     /// available for only audio/video
-    fn duration(value: u64) -> MsgDraft;
+    fn duration(value: u64);
 
     /// available for only image/video
-    fn blurhash(value: string) -> MsgDraft;
+    fn blurhash(value: string);
 
     /// Provide the file system path to a static thumbnail
     /// for this media to be read and shared upon sending
     ///
     /// available for only image/video/file/location
-    fn thumbnail_file_path(value: string) -> MsgDraft;
+    fn thumbnail_file_path(value: string);
 
     /// available for only image/video/file/location
-    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>) -> MsgDraft;
+    fn thumbnail_info(width: Option<u64>, height: Option<u64>, mimetype: Option<string>, size: Option<u64>);
 
     /// available for only file
-    fn filename(value: string) -> MsgDraft;
+    fn filename(value: string);
 
     /// available for only location
-    fn geo_uri(value: string) -> MsgDraft;
+    fn geo_uri(value: string);
 
     /// convert this into a NewsSlideDraft;
     fn into_news_slide_draft() -> NewsSlideDraft;

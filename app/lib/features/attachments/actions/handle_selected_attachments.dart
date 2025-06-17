@@ -41,35 +41,35 @@ Future<void> handleAttachmentSelected({
           attachmentType == AttachmentType.image) {
         Uint8List bytes = await file.readAsBytes();
         final decodedImage = await decodeImageFromList(bytes);
-        final imageDraft = client
-            .imageDraft(file.path, mimeType)
-            .filename(title ?? fileName)
-            .size(bytes.length)
-            .width(decodedImage.width)
-            .height(decodedImage.height);
+        final imageDraft =
+            client.imageDraft(file.path, mimeType)
+              ..filename(title ?? fileName)
+              ..size(bytes.length)
+              ..width(decodedImage.width)
+              ..height(decodedImage.height);
         final attachmentDraft = await manager.contentDraft(imageDraft);
         drafts.add(attachmentDraft);
       } else if (attachmentType == AttachmentType.audio) {
         Uint8List bytes = await file.readAsBytes();
-        final audioDraft = client
-            .audioDraft(file.path, mimeType)
-            .filename(title ?? fileName)
-            .size(bytes.length);
+        final audioDraft =
+            client.audioDraft(file.path, mimeType)
+              ..filename(title ?? fileName)
+              ..size(bytes.length);
         final attachmentDraft = await manager.contentDraft(audioDraft);
         drafts.add(attachmentDraft);
       } else if (attachmentType == AttachmentType.video) {
         Uint8List bytes = await file.readAsBytes();
-        final videoDraft = client
-            .videoDraft(file.path, mimeType)
-            .filename(title ?? fileName)
-            .size(bytes.length);
+        final videoDraft =
+            client.videoDraft(file.path, mimeType)
+              ..filename(title ?? fileName)
+              ..size(bytes.length);
         final attachmentDraft = await manager.contentDraft(videoDraft);
         drafts.add(attachmentDraft);
       } else {
-        final fileDraft = client
-            .fileDraft(file.path, mimeType)
-            .filename(title ?? fileName)
-            .size(file.lengthSync());
+        final fileDraft =
+            client.fileDraft(file.path, mimeType)
+              ..filename(title ?? fileName)
+              ..size(file.lengthSync());
         final attachmentDraft = await manager.contentDraft(fileDraft);
         drafts.add(attachmentDraft);
       }

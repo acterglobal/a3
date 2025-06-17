@@ -64,31 +64,31 @@ pub(crate) enum MsgContentDraft {
 }
 
 impl MsgContentDraft {
-    fn mimetype(mut self, value: String) -> Self {
+    fn mimetype(&mut self, value: String) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.mimetype = Some(value);
                 } else {
                     *info = Some(assign!(ImageInfo::new(), { mimetype: Some(value) }));
                 }
             }
-            MsgContentDraft::Audio { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Audio { info, .. } => {
+                if let Some(o) = info {
                     o.mimetype = Some(value);
                 } else {
                     *info = Some(assign!(AudioInfo::new(), { mimetype: Some(value) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.mimetype = Some(value);
                 } else {
                     *info = Some(assign!(VideoInfo::new(), { mimetype: Some(value) }));
                 }
             }
-            MsgContentDraft::File { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::File { info, .. } => {
+                if let Some(o) = info {
                     o.mimetype = Some(value);
                 } else {
                     *info = Some(assign!(FileInfo::new(), { mimetype: Some(value) }));
@@ -125,31 +125,31 @@ impl MsgContentDraft {
         Ok(())
     }
 
-    fn size(mut self, value: u64) -> Self {
+    fn size(&mut self, value: u64) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.size = UInt::new(value);
                 } else {
                     *info = Some(assign!(ImageInfo::new(), { size: UInt::new(value) }));
                 }
             }
-            MsgContentDraft::Audio { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Audio { info, .. } => {
+                if let Some(o) = info {
                     o.size = UInt::new(value);
                 } else {
                     *info = Some(assign!(AudioInfo::new(), { size: UInt::new(value) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.size = UInt::new(value);
                 } else {
                     *info = Some(assign!(VideoInfo::new(), { size: UInt::new(value) }));
                 }
             }
-            MsgContentDraft::File { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::File { info, .. } => {
+                if let Some(o) = info {
                     o.size = UInt::new(value);
                 } else {
                     *info = Some(assign!(FileInfo::new(), { size: UInt::new(value) }));
@@ -162,17 +162,17 @@ impl MsgContentDraft {
         self
     }
 
-    fn width(mut self, value: u64) -> Self {
+    fn width(&mut self, value: u64) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.width = UInt::new(value);
                 } else {
                     *info = Some(assign!(ImageInfo::new(), { width: UInt::new(value) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.width = UInt::new(value);
                 } else {
                     *info = Some(assign!(VideoInfo::new(), { width: UInt::new(value) }));
@@ -183,17 +183,17 @@ impl MsgContentDraft {
         self
     }
 
-    fn height(mut self, value: u64) -> Self {
+    fn height(&mut self, value: u64) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.height = UInt::new(value);
                 } else {
                     *info = Some(assign!(ImageInfo::new(), { height: UInt::new(value) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.height = UInt::new(value);
                 } else {
                     *info = Some(assign!(VideoInfo::new(), { height: UInt::new(value) }));
@@ -204,31 +204,31 @@ impl MsgContentDraft {
         self
     }
 
-    fn thumbnail_source(mut self, value: MediaSource) -> Self {
+    fn thumbnail_source(&mut self, value: MediaSource) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_source = Some(value);
                 } else {
                     *info = Some(assign!(ImageInfo::new(), { thumbnail_source: Some(value) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_source = Some(value);
                 } else {
                     *info = Some(assign!(VideoInfo::new(), { thumbnail_source: Some(value) }));
                 }
             }
-            MsgContentDraft::File { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::File { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_source = Some(value);
                 } else {
                     *info = Some(assign!(FileInfo::new(), { thumbnail_source: Some(value) }));
                 }
             }
-            MsgContentDraft::Location { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Location { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_source = Some(value);
                 } else {
                     *info = Some(assign!(LocationInfo::new(), { thumbnail_source: Some(value) }));
@@ -239,34 +239,34 @@ impl MsgContentDraft {
         self
     }
 
-    fn thumbnail_info(mut self, value: ThumbnailInfo) -> Self {
+    fn thumbnail_info(&mut self, value: ThumbnailInfo) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_info = Some(Box::new(value));
                 } else {
                     *info =
                         Some(assign!(ImageInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_info = Some(Box::new(value));
                 } else {
                     *info =
                         Some(assign!(VideoInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
                 }
             }
-            MsgContentDraft::File { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::File { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_info = Some(Box::new(value));
                 } else {
                     *info =
                         Some(assign!(FileInfo::new(), { thumbnail_info: Some(Box::new(value)) }));
                 }
             }
-            MsgContentDraft::Location { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Location { info, .. } => {
+                if let Some(o) = info {
                     o.thumbnail_info = Some(Box::new(value));
                 } else {
                     *info = Some(
@@ -279,10 +279,10 @@ impl MsgContentDraft {
         self
     }
 
-    fn duration(mut self, value: u64) -> Self {
+    fn duration(&mut self, value: u64) -> &mut Self {
         match self {
-            MsgContentDraft::Audio { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Audio { info, .. } => {
+                if let Some(o) = info {
                     o.duration = Some(Duration::from_secs(value));
                 } else {
                     *info = Some(
@@ -290,8 +290,8 @@ impl MsgContentDraft {
                     );
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.duration = Some(Duration::from_secs(value));
                 } else {
                     *info = Some(
@@ -304,17 +304,17 @@ impl MsgContentDraft {
         self
     }
 
-    fn blurhash(mut self, value: String) -> Self {
+    fn blurhash(&mut self, value: String) -> &mut Self {
         match self {
-            MsgContentDraft::Image { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Image { info, .. } => {
+                if let Some(o) = info {
                     o.blurhash = Some(value);
                 } else {
                     *info = Some(assign!(ImageInfo::new(), { blurhash: Some(value) }));
                 }
             }
-            MsgContentDraft::Video { ref mut info, .. } => {
-                if let Some(o) = info.as_mut() {
+            MsgContentDraft::Video { info, .. } => {
+                if let Some(o) = info {
                     o.blurhash = Some(value);
                 } else {
                     *info = Some(assign!(VideoInfo::new(), { blurhash: Some(value) }));
@@ -325,46 +325,28 @@ impl MsgContentDraft {
         self
     }
 
-    fn filename(mut self, value: String) -> Self {
+    fn filename(&mut self, value: String) -> &mut Self {
         match self {
-            MsgContentDraft::Image { source, info, .. } => {
-                return MsgContentDraft::Image {
-                    source,
-                    filename: Some(value),
-                    info,
-                };
+            MsgContentDraft::Image { filename, .. } => {
+                *filename = Some(value);
             }
-            MsgContentDraft::Video { source, info, .. } => {
-                return MsgContentDraft::Video {
-                    source,
-                    filename: Some(value),
-                    info,
-                };
+            MsgContentDraft::Video { filename, .. } => {
+                *filename = Some(value);
             }
-            MsgContentDraft::Audio { source, info, .. } => {
-                return MsgContentDraft::Audio {
-                    source,
-                    filename: Some(value),
-                    info,
-                };
+            MsgContentDraft::Audio { filename, .. } => {
+                *filename = Some(value);
             }
-            MsgContentDraft::File { source, info, .. } => {
-                return MsgContentDraft::File {
-                    source,
-                    filename: Some(value),
-                    info,
-                };
+            MsgContentDraft::File { filename, .. } => {
+                *filename = Some(value);
             }
             _ => warn!("filename is available for only file"),
         }
         self
     }
 
-    fn geo_uri(mut self, value: String) -> Self {
+    fn geo_uri(&mut self, value: String) -> &mut Self {
         match self {
-            MsgContentDraft::Location {
-                ref mut geo_uri, ..
-            } => {
+            MsgContentDraft::Location { geo_uri, .. } => {
                 *geo_uri = value;
             }
             _ => warn!("geo_uri is available for only location"),
@@ -380,125 +362,88 @@ pub struct MsgDraft {
 }
 
 impl MsgDraft {
-    pub fn add_mention(&self, user_id: String) -> Result<Self> {
-        let MsgDraft {
-            inner,
-            mut mentions,
-        } = self.clone();
+    pub fn add_mention(&mut self, user_id: String) -> Result<&mut Self> {
         let user_id = UserId::parse(user_id)?;
-        mentions.user_ids.insert(user_id);
-        Ok(MsgDraft { inner, mentions })
+        self.mentions.user_ids.insert(user_id);
+        Ok(self)
     }
 
-    pub fn add_ref_details(&self, ref_details: Box<crate::RefDetails>) -> Result<Self> {
-        let MsgDraft {
-            mut inner,
-            mut mentions,
-        } = self.clone();
-        inner.add_ref_details(*ref_details)?;
-        Ok(MsgDraft { inner, mentions })
+    pub fn add_ref_details(&mut self, ref_details: Box<crate::RefDetails>) -> Result<&mut Self> {
+        self.inner.add_ref_details(*ref_details)?;
+        Ok(self)
     }
 
-    pub fn add_url_preview(&self, preview: Box<crate::LocalUrlPreview>) -> Result<Self> {
-        let MsgDraft {
-            mut inner,
-            mut mentions,
-        } = self.clone();
-        inner.add_url_preview((*preview).into())?;
-        Ok(MsgDraft { inner, mentions })
+    pub fn add_url_preview(&mut self, preview: Box<crate::LocalUrlPreview>) -> Result<&mut Self> {
+        self.inner.add_url_preview((*preview).into())?;
+        Ok(self)
     }
 
-    pub fn add_room_mention(&self, mention: bool) -> Result<Self> {
-        let MsgDraft {
-            inner,
-            mut mentions,
-        } = self.clone();
-        mentions.room = mention;
-        Ok(MsgDraft { inner, mentions })
+    pub fn add_room_mention(&mut self, mention: bool) -> Result<&mut Self> {
+        self.mentions.room = mention;
+        Ok(self)
     }
 
-    pub fn mimetype(&self, value: String) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.mimetype(value),
-            mentions,
-        }
+    pub fn mimetype(&mut self, value: String) -> &mut Self {
+        self.inner.mimetype(value);
+        self
     }
-    pub fn size(&self, value: u64) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.size(value),
-            mentions,
-        }
+
+    pub fn size(&mut self, value: u64) -> &mut Self {
+        self.inner.size(value);
+        self
     }
-    pub fn width(&self, value: u64) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.width(value),
-            mentions,
-        }
+
+    pub fn width(&mut self, value: u64) -> &mut Self {
+        self.inner.width(value);
+        self
     }
-    pub fn height(&self, value: u64) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.height(value),
-            mentions,
-        }
+
+    pub fn height(&mut self, value: u64) -> &mut Self {
+        self.inner.height(value);
+        self
     }
-    pub fn thumbnail_file_path(&self, value: String) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
+
+    pub fn thumbnail_file_path(&mut self, value: String) -> &mut Self {
         let v = MediaSource::Plain(OwnedMxcUri::from(value));
-        MsgDraft {
-            inner: inner.thumbnail_source(v),
-            mentions,
-        }
+        self.inner.thumbnail_source(v);
+        self
     }
+
     pub fn thumbnail_info(
-        &self,
+        &mut self,
         width: Option<u64>,
         height: Option<u64>,
         mimetype: Option<String>,
         size: Option<u64>,
-    ) -> Self {
+    ) -> &mut Self {
         let value = assign!(ThumbnailInfo::new(), {
             width: width.and_then(UInt::new),
             height: height.and_then(UInt::new),
             mimetype,
             size: size.and_then(UInt::new),
         });
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.thumbnail_info(value),
-            mentions,
-        }
+        self.inner.thumbnail_info(value);
+        self
     }
-    pub fn duration(&self, value: u64) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.duration(value),
-            mentions,
-        }
+
+    pub fn duration(&mut self, value: u64) -> &mut Self {
+        self.inner.duration(value);
+        self
     }
-    pub fn blurhash(&self, value: String) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.blurhash(value),
-            mentions,
-        }
+
+    pub fn blurhash(&mut self, value: String) -> &mut Self {
+        self.inner.blurhash(value);
+        self
     }
-    pub fn geo_uri(&self, value: String) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.geo_uri(value),
-            mentions,
-        }
+
+    pub fn geo_uri(&mut self, value: String) -> &mut Self {
+        self.inner.geo_uri(value);
+        self
     }
-    pub fn filename(&self, value: String) -> Self {
-        let MsgDraft { inner, mentions } = self.clone();
-        MsgDraft {
-            inner: inner.filename(value),
-            mentions,
-        }
+
+    pub fn filename(&mut self, value: String) -> &mut Self {
+        self.inner.filename(value);
+        self
     }
 }
 

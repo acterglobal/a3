@@ -58,7 +58,8 @@ async fn room_msg_can_support_image_thumbnail() -> Result<()> {
             mimetype.to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone();
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -157,7 +158,8 @@ async fn room_msg_can_support_video_thumbnail() -> Result<()> {
             mimetype.to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone();
     timeline.send_message(Box::new(draft)).await?;
 
     // image msg may reach via pushback action or reset action
@@ -244,7 +246,8 @@ async fn news_can_support_image_thumbnail() -> Result<()> {
             "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone();
     space
         .news_draft()?
         .add_slide(Box::new(image_draft.into()))
@@ -318,7 +321,8 @@ async fn news_can_support_video_thumbnail() -> Result<()> {
             "video/mp4".to_owned(),
         )
         .thumbnail_file_path(tmp_png.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone();
     space
         .news_draft()?
         .add_slide(Box::new(video_draft.into()))
@@ -434,7 +438,8 @@ async fn image_attachment_can_support_thumbnail() -> Result<()> {
             "image/jpeg".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone();
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -529,7 +534,8 @@ async fn video_attachment_can_support_thumbnail() -> Result<()> {
             "video/mp4".to_owned(),
         )
         .thumbnail_file_path(png_file.path().to_string_lossy().to_string())
-        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size));
+        .thumbnail_info(None, None, Some(thumb_mimetype.to_owned()), Some(size))
+        .clone();
     let attachment_id = attachments_manager
         .content_draft(Box::new(base_draft))
         .await?

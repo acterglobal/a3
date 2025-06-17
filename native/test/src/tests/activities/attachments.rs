@@ -72,7 +72,8 @@ async fn image_attachment_activity_on_pin() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
         )
-        .filename("Fishy.png".to_owned());
+        .filename("Fishy.png".to_owned())
+        .clone();
     let activity_id = manager
         .content_draft(Box::new(base_draft))
         .await?
@@ -142,7 +143,8 @@ async fn file_attachment_activity_on_calendar() -> Result<()> {
             png_file.path().to_string_lossy().to_string(),
             "image/png".to_owned(),
         )
-        .filename("Fishy.png".to_owned());
+        .filename("Fishy.png".to_owned())
+        .clone();
     let activity_id = manager
         .content_draft(Box::new(base_draft))
         .await?
