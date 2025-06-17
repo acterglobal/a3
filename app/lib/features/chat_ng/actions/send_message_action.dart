@@ -44,13 +44,14 @@ Future<void> sendMessageAction({
     final chatEditorState = ref.read(chatEditorStateProvider);
     final client = await ref.read(alwaysClientProvider.future);
     late MsgDraft draft;
-    // FIXME: add mention post-processing back in there
+
     if (html.isNotEmpty) {
       draft = client.textHtmlDraft(html, body);
     } else {
       draft = client.textMarkdownDraft(body);
     }
 
+    // add mentions to the draft
     for (final mention in mentions) {
       draft.addMention(mention);
     }
