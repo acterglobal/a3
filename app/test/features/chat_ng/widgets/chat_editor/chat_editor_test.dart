@@ -63,9 +63,7 @@ void main() {
         () => MockClientNotifier(client: MockClient()),
       ),
       chatProvider.overrideWith(() => MockAsyncConvoNotifier()),
-      chatComposerDraftProvider.overrideWith(
-        (ref, roomId) => MockComposeDraft(),
-      ),
+      chatComposerDraftProvider.overrideWith((ref, roomId) => null),
       renderableChatMessagesProvider.overrideWith(
         (ref, roomId) => ['test-messageId-1', 'formatted-message-id'],
       ),
@@ -81,23 +79,19 @@ void main() {
     testWidgets('verify chat editor correctly sets reply preview', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: overrides,
-          child: InActerContextTestWrapper(
-            child: Column(
-              children: [
-                MessageActionsWidget(
-                  isMe: false,
-                  canRedact: false,
-                  item: mockEventItem,
-                  messageId: 'test-messageId-1',
-                  roomId: 'test-roomId-1',
-                ),
-                ChatEditor(roomId: 'test-roomId-1'),
-              ],
+      await tester.pumpProviderWidget(
+        overrides: overrides,
+        child: Column(
+          children: [
+            MessageActionsWidget(
+              isMe: false,
+              canRedact: false,
+              item: mockEventItem,
+              messageId: 'test-messageId-1',
+              roomId: 'test-roomId-1',
             ),
-          ),
+            ChatEditor(roomId: 'test-roomId-1'),
+          ],
         ),
       );
 
@@ -111,7 +105,7 @@ void main() {
 
       // Tap reply
       await tester.tap(find.text('Reply'));
-      await tester.pump();
+      await tester.pump(Durations.medium2);
 
       expect(find.text('Reply'), findsOneWidget);
 
@@ -120,7 +114,7 @@ void main() {
       expect(updatedState.actionType, equals(MessageAction.reply));
       expect(updatedState.selectedMsgItem, equals(mockEventItem));
 
-      await tester.pump();
+      await tester.pump(Durations.medium2);
 
       // Verify preview appears with correct item
       expect(find.byType(ChatEditorActionsPreview), findsOneWidget);
@@ -312,7 +306,7 @@ void main() {
       // now close edit preview
       // FIXME: apparently tester cannot find the close icon for some reason.
       return markTestSkipped(
-        "Tester can't find the clsoe button for some reason",
+        "Tester can't find the close button for some reason",
       );
 
       // final closeKey = find.byKey(ChatEditorActionsPreview.closePreviewKey);
